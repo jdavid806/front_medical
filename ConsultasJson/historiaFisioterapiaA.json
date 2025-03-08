@@ -1,0 +1,464 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Sesión",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "sesionesAutorizadas",
+                "label": "Sesiones Autorizadas",
+                "type": "number",
+                "name": "sesionesAutorizadas",
+                "class": "col-4"
+              },
+              {
+                "id": "sesion",
+                "label": "Sesión",
+                "type": "number",
+                "name": "sesion",
+                "class": "col-4"
+              },
+              {
+                "id": "edad",
+                "label": "Edad",
+                "type": "number",
+                "name": "edad",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Inicial",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tasTadInicial",
+                "label": "TAS/TAD",
+                "type": "textarea",
+                "name": "tasTadInicial",
+                "class": "col-6"
+              },
+              {
+                "id": "fcInicial",
+                "label": "FC",
+                "type": "textarea",
+                "name": "fcInicial",
+                "class": "col-6"
+              },
+              {
+                "id": "fi02Inicial",
+                "label": "FI02",
+                "type": "textarea",
+                "name": "fi02Inicial",
+                "class": "col-6"
+              },
+              {
+                "id": "sp02Inicial",
+                "label": "SPO2",
+                "type": "textarea",
+                "name": "sp02Inicial",
+                "class": "col-6"
+              },
+              {
+                "id": "borgDisneaInicial",
+                "label": "BORG DISNEA",
+                "type": "textarea",
+                "name": "borgDisneaInicial",
+                "class": "col-6"
+              },
+              {
+                "id": "fatiMmIIInical",
+                "label": "FATI MM II",
+                "type": "textarea",
+                "name": "fatiMmIIInical",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Actividad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "modo",
+                "label": "Modo",
+                "type": "textarea",
+                "name": "modo"
+              },
+              {
+                "id": "velInclin1",
+                "label": "VEL/INCLIN",
+                "type": "textarea",
+                "name": "velInclin1",
+                "class": "col-6"
+              },
+              {
+                "id": "velInclin2",
+                "label": "VEL/INCLIN",
+                "type": "textarea",
+                "name": "velInclin2",
+                "class": "col-6"
+              },
+              {
+                "id": "rpmKp1",
+                "label": "RPM/KP",
+                "type": "textarea",
+                "name": "rpmKp1",
+                "class": "col-6"
+              },
+              {
+                "id": "rpmKp2",
+                "label": "RPM/KP",
+                "type": "textarea",
+                "name": "rpmKp2",
+                "class": "col-6"
+              },
+              {
+                "id": "tiempo1",
+                "label": "TIEMPO",
+                "type": "textarea",
+                "name": "tiempo1",
+                "class": "col-6"
+              },
+              {
+                "id": "tiempo2",
+                "label": "TIEMPO",
+                "type": "textarea",
+                "name": "tiempo2",
+                "class": "col-6"
+              },
+              {
+                "id": "fcActividad",
+                "label": "FC",
+                "type": "textarea",
+                "name": "fcActividad",
+                "class": "col-6"
+              },
+              {
+                "id": "fi02Actividad",
+                "label": "FI02",
+                "type": "textarea",
+                "name": "fi02Actividad",
+                "class": "col-6"
+              },
+              {
+                "id": "sp02Actividad",
+                "label": "SPO2",
+                "type": "textarea",
+                "name": "sp02Actividad",
+                "class": "col-6"
+              },
+              {
+                "id": "borgActividad",
+                "label": "BORG",
+                "type": "textarea",
+                "name": "borgActividad",
+                "class": "col-6"
+              },
+              {
+                "id": "fatiMmIIActividad",
+                "label": "FATI MM II",
+                "type": "textarea",
+                "name": "fatiMmIIActividad",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Final",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tasTadFinal1",
+                "label": "TAS/TAD",
+                "type": "textarea",
+                "name": "tasTadFinal1",
+                "class": "col-6"
+              },
+              {
+                "id": "tasTadFinal1",
+                "label": "TAS/TAD",
+                "type": "textarea",
+                "name": "tasTadFinal1",
+                "class": "col-6"
+              },
+              {
+                "id": "fcFinal",
+                "label": "FC",
+                "type": "textarea",
+                "name": "fcFinal",
+                "class": "col-6"
+              },
+              {
+                "id": "fi02Final",
+                "label": "FI02",
+                "type": "textarea",
+                "name": "fi02Final",
+                "class": "col-6"
+              },
+              {
+                "id": "sp02Final",
+                "label": "SPO2",
+                "type": "textarea",
+                "name": "sp02Final",
+                "class": "col-6"
+              },
+              {
+                "id": "borgFinal",
+                "label": "BORG",
+                "type": "textarea",
+                "name": "borgFinal",
+                "class": "col-6"
+              },
+              {
+                "id": "fatiMmIIFinal",
+                "label": "FATI MM II",
+                "type": "textarea",
+                "name": "fatiMmIIFinal",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Frecuencia Cardiaca Teórica",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "60",
+                "label": "60%",
+                "type": "number",
+                "name": "60",
+                "class": "col-3"
+              },
+              {
+                "id": "70",
+                "label": "70%",
+                "type": "number",
+                "name": "70",
+                "class": "col-3"
+              },
+              {
+                "id": "75",
+                "label": "75%",
+                "type": "number",
+                "name": "75",
+                "class": "col-3"
+              },
+              {
+                "id": "80",
+                "label": "80%",
+                "type": "number",
+                "name": "80",
+                "class": "col-3"
+              },
+              {
+                "id": "fevi",
+                "label": "FEVI",
+                "type": "textarea",
+                "name": "fevi",
+                "class": "col-6"
+              },
+              {
+                "id": "tcm6",
+                "label": "TCM6",
+                "type": "textarea",
+                "name": "tcm6",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

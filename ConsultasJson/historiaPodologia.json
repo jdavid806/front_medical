@@ -1,0 +1,792 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen",
+        "card": [
+          {
+            "title": "Tipo y Planta",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipo",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "egipcio",
+                    "text": "Egipcio"
+                  },
+                  {
+                    "value": "romano",
+                    "text": "Romano"
+                  },
+                  {
+                    "value": "griego",
+                    "text": "Griego"
+                  },
+                  {
+                    "value": "germanico",
+                    "text": "Germánico"
+                  },
+                  {
+                    "value": "celta",
+                    "text": "Celta"
+                  }
+                ]
+              },
+              {
+                "id": "planta",
+                "label": "Planta",
+                "type": "select",
+                "name": "planta",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "plano",
+                    "text": "Plano"
+                  },
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "cavo",
+                    "text": "Cavo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Sudor",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "bromhidrosisCheck",
+                "label": "Bromhidrosis",
+                "type": "checkbox",
+                "name": "bromhidrosisCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "bromhidrosisText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "bromhidrosisText"
+                  }
+                ]
+              },
+              {
+                "id": "hiperhidrosisCheck",
+                "label": "Hiperhidrosis",
+                "type": "checkbox",
+                "name": "hiperhidrosisCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "hiperhidrosisText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "hiperhidrosisText"
+                  }
+                ]
+              },
+              {
+                "id": "anhidrosisCheck",
+                "label": "Anhidrosis",
+                "type": "checkbox",
+                "name": "anhidrosisCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "anhidrosisText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "anhidrosisText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Valoración pie derecho",
+            "fields": [
+              {
+                "id": "edemaDerechoCheck",
+                "label": "Edema",
+                "type": "checkbox",
+                "name": "edemaDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "edemaDerechoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "edemaDerechoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "varicesDerechoCheck",
+                "label": "Varices",
+                "type": "checkbox",
+                "name": "varicesDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "varicesDerechoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "varicesDerechoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "requesedadDerechoCheck",
+                "label": "Requesedad",
+                "type": "checkbox",
+                "name": "requesedadDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "requesedadDerechoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "requesedadDerechoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "dermatomicosisDerechoCheck",
+                "label": "Dermatomicosis",
+                "type": "checkbox",
+                "name": "dermatomicosisDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dermatomicosisDerechoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dermatomicosisDerechoObservaciones"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Valoración pie izquierdo",
+            "fields": [
+              {
+                "id": "edemaIzquierdoCheck",
+                "label": "Edema",
+                "type": "checkbox",
+                "name": "edemaIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "edemaIzquierdoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "edemaIzquierdoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "varicesIzquierdoCheck",
+                "label": "Varices",
+                "type": "checkbox",
+                "name": "varicesIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "varicesIzquierdoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "varicesIzquierdoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "requesedadIzquierdoCheck",
+                "label": "Requesedad",
+                "type": "checkbox",
+                "name": "requesedadIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "requesedadIzquierdoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "requesedadIzquierdoObservaciones"
+                  }
+                ]
+              },
+              {
+                "id": "dermatomicosisIzquierdoCheck",
+                "label": "Dermatomicosis",
+                "type": "checkbox",
+                "name": "dermatomicosisIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dermatomicosisIzquierdoObservaciones",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dermatomicosisIzquierdoObservaciones"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Hiperqueratosis pie derecho",
+            "fields": [
+              {
+                "id": "interfalangicoDorsalDerechoCheck",
+                "label": "Interfalángico Dorsal",
+                "type": "checkbox",
+                "name": "interfalangicoDorsalDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "interfalangicoDorsalDerechoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "interfalangicoDorsalDerechoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "interdigitalesDerechoCheck",
+                "label": "Interdigitales",
+                "type": "checkbox",
+                "name": "interdigitalesDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "interdigitalesDerechoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "interdigitalesDerechoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dorsal5DerechoCheck",
+                "label": "Dorsal del 5° Dedo",
+                "type": "checkbox",
+                "name": "dorsal5DerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dorsal5DerechoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dorsal5DerechoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Hiperqueratosis pie izquierdo",
+            "fields": [
+              {
+                "id": "interfalangicoDorsalIzquierdoCheck",
+                "label": "Interfalángico Dorsal",
+                "type": "checkbox",
+                "name": "interfalangicoDorsalIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "interfalangicoDorsalIzquierdoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "interfalangicoDorsalIzquierdoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "interdigitalesIzquierdoCheck",
+                "label": "Interdigitales",
+                "type": "checkbox",
+                "name": "interdigitalesIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "interdigitalesIzquierdoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "interdigitalesIzquierdoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dorsal5IzquierdoCheck",
+                "label": "Dorsal del 5° Dedo",
+                "type": "checkbox",
+                "name": "dorsal5IzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dorsal5IzquierdoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dorsal5IzquierdoSelect",
+                    "options": [
+                      {
+                        "value": "1",
+                        "text": "1"
+                      },
+                      {
+                        "value": "2",
+                        "text": "2"
+                      },
+                      {
+                        "value": "3",
+                        "text": "3"
+                      },
+                      {
+                        "value": "4",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Alteraciones digitales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "halluxValgusCheck",
+                "label": "Hallux Valgus",
+                "type": "checkbox",
+                "name": "halluxValgusCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "halluxValgusDerecho",
+                    "label": "Dedos derecho",
+                    "type": "textarea",
+                    "name": "halluxValgusDerecho",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "halluxValgusIzquierdo",
+                    "label": "Dedos izquierdo",
+                    "type": "textarea",
+                    "name": "halluxValgusIzquierdo",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "quintoVaroCheck",
+                "label": "Quinto de Varo",
+                "type": "checkbox",
+                "name": "quintoVaroCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "quintoVaroDerecho",
+                    "label": "Dedos derecho",
+                    "type": "textarea",
+                    "name": "quintoVaroDerecho",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "quintoVaroIzquierdo",
+                    "label": "Dedos izquierdo",
+                    "type": "textarea",
+                    "name": "quintoVaroIzquierdo",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Onicopatias pie derecho",
+            "fields": [
+              {
+                "id": "anoniquiaDerechoCheck",
+                "label": "Anoniquia",
+                "type": "checkbox",
+                "name": "anoniquiaDerechoCheck"
+              },
+              {
+                "id": "microniquiaDerechoCheck",
+                "label": "Microniquia",
+                "type": "checkbox",
+                "name": "microniquiaDerechoCheck"
+              },
+              {
+                "id": "onicolisisDerechoCheck",
+                "label": "Onicolisis",
+                "type": "checkbox",
+                "name": "onicolisisDerechoCheck"
+              },
+              {
+                "id": "onicauxisDerechoCheck",
+                "label": "Onicauxis",
+                "type": "checkbox",
+                "name": "onicauxisDerechoCheck"
+              },
+              {
+                "id": "onicocriptosisDerechoCheck",
+                "label": "Onicocriptosis",
+                "type": "checkbox",
+                "name": "onicocriptosisDerechoCheck"
+              },
+              {
+                "id": "onicogriptosisDerechoCheck",
+                "label": "Onicogriptosis",
+                "type": "checkbox",
+                "name": "onicogriptosisDerechoCheck"
+              },
+              {
+                "id": "onicofosisDerechoCheck",
+                "label": "Onicofosis",
+                "type": "checkbox",
+                "name": "onicofosisDerechoCheck"
+              },
+              {
+                "id": "paquioniquiaDerechoCheck",
+                "label": "Paquioniquia",
+                "type": "checkbox",
+                "name": "paquioniquiaDerechoCheck"
+              },
+              {
+                "id": "onicomicosisDerechoCheck",
+                "label": "Onicomicosis",
+                "type": "checkbox",
+                "name": "onicomicosisDerechoCheck"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Onicopatias pie izquierdo",
+            "fields": [
+              {
+                "id": "anoniquiaIzquierdoCheck",
+                "label": "Anoniquia",
+                "type": "checkbox",
+                "name": "anoniquiaIzquierdoCheck"
+              },
+              {
+                "id": "microniquiaIzquierdoCheck",
+                "label": "Microniquia",
+                "type": "checkbox",
+                "name": "microniquiaIzquierdoCheck"
+              },
+              {
+                "id": "onicolisisIzquierdoCheck",
+                "label": "Onicolisis",
+                "type": "checkbox",
+                "name": "onicolisisIzquierdoCheck"
+              },
+              {
+                "id": "onicauxisIzquierdoCheck",
+                "label": "Onicauxis",
+                "type": "checkbox",
+                "name": "onicauxisIzquierdoCheck"
+              },
+              {
+                "id": "onicocriptosisIzquierdoCheck",
+                "label": "Onicocriptosis",
+                "type": "checkbox",
+                "name": "onicocriptosisIzquierdoCheck"
+              },
+              {
+                "id": "onicogriptosisIzquierdoCheck",
+                "label": "Onicogriptosis",
+                "type": "checkbox",
+                "name": "onicogriptosisIzquierdoCheck"
+              },
+              {
+                "id": "onicofosisIzquierdoCheck",
+                "label": "Onicofosis",
+                "type": "checkbox",
+                "name": "onicofosisIzquierdoCheck"
+              },
+              {
+                "id": "paquioniquiaIzquierdoCheck",
+                "label": "Paquioniquia",
+                "type": "checkbox",
+                "name": "paquioniquiaIzquierdoCheck"
+              },
+              {
+                "id": "onicomicosisIzquierdoCheck",
+                "label": "Onicomicosis",
+                "type": "checkbox",
+                "name": "onicomicosisIzquierdoCheck"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

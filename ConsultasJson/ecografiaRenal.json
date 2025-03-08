@@ -1,0 +1,349 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Riñón Izquierdo",
+            "fields": [
+              {
+                "id": "rinonIzquierdo",
+                "label": "",
+                "type": "textarea",
+                "name": "rinonIzquierdo"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Riñón Derecho",
+            "fields": [
+              {
+                "id": "rinonDerecho",
+                "label": "",
+                "type": "textarea",
+                "name": "rinonDerecho"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Vejiga",
+            "fields": [
+              {
+                "id": "vejiga",
+                "label": "",
+                "type": "textarea",
+                "name": "vejiga"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Próstata",
+            "fields": [
+              {
+                "id": "prostata",
+                "label": "",
+                "type": "textarea",
+                "name": "prostata"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "vesiculasSeminalesVisibles",
+                "label": "Vesículas Seminales Visibles",
+                "type": "checkbox",
+                "name": "vesiculasSeminalesVisibles",
+                "class": "col-6"
+              },
+              {
+                "id": "cuerposAmilaceosVisibles",
+                "label": "Cuerpos Amiláceos Visibles",
+                "type": "checkbox",
+                "name": "cuerposAmilaceosVisibles",
+                "class": "col-6"
+              },
+              {
+                "id": "zonaPeriferica",
+                "label": "Zona Periférica",
+                "type": "textarea",
+                "name": "zonaPeriferica",
+                "class": "col-4"
+              },
+              {
+                "id": "zonaTransicion",
+                "label": "Zona de Transición",
+                "type": "textarea",
+                "name": "zonaTransicion",
+                "class": "col-4"
+              },
+              {
+                "id": "zonaCentral",
+                "label": "Zona Central",
+                "type": "textarea",
+                "name": "zonaCentral",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Conclusiones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "conclusiones",
+                "label": "",
+                "type": "textarea",
+                "name": "conclusiones",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

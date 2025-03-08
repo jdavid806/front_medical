@@ -1,0 +1,35 @@
+.custom-btn {
+  width: 150px;
+  /* Establece el ancho fijo */
+  height: 40px;
+  /* Establece la altura fija */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 5px;
+  /* Espaciado opcional entre botones */
+}
+
+.custom-btn i {
+  margin-right: 5px;
+  /* Espaciado entre el ícono y el texto */
+}
+
+.custom-th {
+  padding: 0.25rem;
+  /* Adjust as needed */
+  height: 40px;
+  /* Set a fixed height if needed */
+  font-size: 16px;
+}
+
+.custom-td {
+  padding: 0.25rem;
+  /* Adjust as needed */
+  height: 40px;
+  /* Set a fixed height if needed */
+  font-size: 16px;
+  /* Change this value to your desired font size */
+}
+

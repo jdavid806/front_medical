@@ -1,0 +1,377 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Estudio",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "equipo",
+                "label": "Equipo",
+                "type": "select",
+                "name": "equipo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "endocavitario",
+                    "text": "Endocavitario"
+                  },
+                  {
+                    "value": "convexo",
+                    "text": "Convexo"
+                  }
+                ]
+              },
+              {
+                "id": "inputHiddenEstudio",
+                "label": "",
+                "type": "hidden",
+                "name": "inputHiddenEstudio",
+                "class": "col-6"
+              },
+              {
+                "id": "motivo",
+                "label": "Motivo",
+                "type": "textarea",
+                "name": "motivo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Dimensiones Utero",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "l",
+                "label": "L",
+                "type": "textarea",
+                "name": "l",
+                "class": "col-6"
+              },
+              {
+                "id": "ap",
+                "label": "AP",
+                "type": "textarea",
+                "name": "ap",
+                "class": "col-6"
+              },
+              {
+                "id": "t",
+                "label": "T",
+                "type": "textarea",
+                "name": "t",
+                "class": "col-6"
+              },
+              {
+                "id": "posicion",
+                "label": "Posición",
+                "type": "textarea",
+                "name": "posicion",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcion",
+                "label": "Descripción",
+                "type": "textarea",
+                "name": "descripcion",
+                "class": "col-6"
+              },
+              {
+                "id": "cervix",
+                "label": "Cervix",
+                "type": "select",
+                "name": "cervix",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "sano",
+                    "text": "Sano"
+                  },
+                  {
+                    "value": "quistesDeNaboth",
+                    "text": "Con quistes de Naboth"
+                  },
+                  {
+                    "value": "cambiosPostRadioterapia",
+                    "text": "Con cambios post radioterapia"
+                  }
+                ]
+              },
+              {
+                "id": "ovarioDerecho",
+                "label": "Ovario Derecho",
+                "type": "textarea",
+                "name": "ovarioDerecho",
+                "class": "col-6"
+              },
+              {
+                "id": "ovarioIzquierdo",
+                "label": "Ovario Izquierdo",
+                "type": "textarea",
+                "name": "ovarioIzquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "fondoDelSaco",
+                "label": "Fondo del Saco",
+                "type": "textarea",
+                "name": "fondoDelSaco",
+                "class": "col-6"
+              },
+              {
+                "id": "cupula",
+                "label": "Cúpula",
+                "type": "textarea",
+                "name": "cupula",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

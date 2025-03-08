@@ -1,0 +1,1032 @@
+<form action="" method="POST" name="FormularioHistoriaClinica" enctype="multipart/form-data" class="row" id="FormularioHistoriaClinica">
+
+                                            
+    <script type="text/javascript">
+        var recognition2604;
+        var recognizing2604 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2604 = new webkitSpeechRecognition();
+            recognition2604.lang = "es-CO";
+            recognition2604.continuous = true;
+            recognition2604.interimResults = true;
+
+            recognition2604.onstart = function() {
+                recognizing2604 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2604.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xanteceden295")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2604.onerror = function(event) {}
+            recognition2604.onend = function() {
+                recognizing2604 = false;
+                document.getElementById("procesar2604")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2604() {
+
+            if (recognizing2604 == false) {
+                recognition2604.start();
+                recognizing2604 = true;
+                document.getElementById("procesar2604")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2604.stop();
+                recognizing2604 = false;
+                document.getElementById("procesar2604")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Antecedentes Personales: </div>
+            <textarea id="xanteceden295" name="xanteceden295" class="Plantillas0 ReconocimientoVoz0 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(0)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton0" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(0)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2604()" id="procesar2604"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2605;
+        var recognizing2605 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2605 = new webkitSpeechRecognition();
+            recognition2605.lang = "es-CO";
+            recognition2605.continuous = true;
+            recognition2605.interimResults = true;
+
+            recognition2605.onstart = function() {
+                recognizing2605 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2605.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xanteceden815")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2605.onerror = function(event) {}
+            recognition2605.onend = function() {
+                recognizing2605 = false;
+                document.getElementById("procesar2605")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2605() {
+
+            if (recognizing2605 == false) {
+                recognition2605.start();
+                recognizing2605 = true;
+                document.getElementById("procesar2605")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2605.stop();
+                recognizing2605 = false;
+                document.getElementById("procesar2605")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Antecedentes Quirúrgicos: </div>
+            <textarea id="xanteceden815" name="xanteceden815" class="Plantillas1 ReconocimientoVoz1 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(1)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton1" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(1)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2605()" id="procesar2605"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2606;
+        var recognizing2606 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2606 = new webkitSpeechRecognition();
+            recognition2606.lang = "es-CO";
+            recognition2606.continuous = true;
+            recognition2606.interimResults = true;
+
+            recognition2606.onstart = function() {
+                recognizing2606 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2606.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xanteceden784")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2606.onerror = function(event) {}
+            recognition2606.onend = function() {
+                recognizing2606 = false;
+                document.getElementById("procesar2606")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2606() {
+
+            if (recognizing2606 == false) {
+                recognition2606.start();
+                recognizing2606 = true;
+                document.getElementById("procesar2606")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2606.stop();
+                recognizing2606 = false;
+                document.getElementById("procesar2606")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Antecedentes Familiares: </div>
+            <textarea id="xanteceden784" name="xanteceden784" class="Plantillas2 ReconocimientoVoz2 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(2)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton2" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(2)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2606()" id="procesar2606"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2607;
+        var recognizing2607 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2607 = new webkitSpeechRecognition();
+            recognition2607.lang = "es-CO";
+            recognition2607.continuous = true;
+            recognition2607.interimResults = true;
+
+            recognition2607.onstart = function() {
+                recognizing2607 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2607.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xfuncional476")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2607.onerror = function(event) {}
+            recognition2607.onend = function() {
+                recognizing2607 = false;
+                document.getElementById("procesar2607")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2607() {
+
+            if (recognizing2607 == false) {
+                recognition2607.start();
+                recognizing2607 = true;
+                document.getElementById("procesar2607")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2607.stop();
+                recognizing2607 = false;
+                document.getElementById("procesar2607")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Funcional: </div>
+            <textarea id="xfuncional476" name="xfuncional476" class="Plantillas3 ReconocimientoVoz3 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(3)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton3" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(3)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2607()" id="procesar2607"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2608;
+        var recognizing2608 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2608 = new webkitSpeechRecognition();
+            recognition2608.lang = "es-CO";
+            recognition2608.continuous = true;
+            recognition2608.interimResults = true;
+
+            recognition2608.onstart = function() {
+                recognizing2608 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2608.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xmotivodec243")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2608.onerror = function(event) {}
+            recognition2608.onend = function() {
+                recognizing2608 = false;
+                document.getElementById("procesar2608")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2608() {
+
+            if (recognizing2608 == false) {
+                recognition2608.start();
+                recognizing2608 = true;
+                document.getElementById("procesar2608")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2608.stop();
+                recognizing2608 = false;
+                document.getElementById("procesar2608")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Motivo de Consulta: </div>
+            <textarea id="xmotivodec243" name="xmotivodec243" class="Plantillas4 ReconocimientoVoz4 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(4)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton4" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(4)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2608()" id="procesar2608"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2609;
+        var recognizing2609 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2609 = new webkitSpeechRecognition();
+            recognition2609.lang = "es-CO";
+            recognition2609.continuous = true;
+            recognition2609.interimResults = true;
+
+            recognition2609.onstart = function() {
+                recognizing2609 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2609.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xenfermeda894")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2609.onerror = function(event) {}
+            recognition2609.onend = function() {
+                recognizing2609 = false;
+                document.getElementById("procesar2609")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2609() {
+
+            if (recognizing2609 == false) {
+                recognition2609.start();
+                recognizing2609 = true;
+                document.getElementById("procesar2609")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2609.stop();
+                recognizing2609 = false;
+                document.getElementById("procesar2609")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Enfermedad Actual: </div>
+            <textarea id="xenfermeda894" name="xenfermeda894" class="Plantillas5 ReconocimientoVoz5 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(5)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton5" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(5)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2609()" id="procesar2609"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Examen Físico</h4></div><div class="form-group col-md-3">
+<div align="left">  Signos Vitales: </div>
+<input type="text" class=" form-control input-lg" name="xsignosvit124" placeholder="" id="xsignosvit124" 0="" value="0">
+
+
+</div><div class="form-group col-md-3">
+<div align="left">  Peso: </div>
+<input type="text" class=" form-control input-lg" name="xpeso147" placeholder="" id="xpeso147" 0="" value="0">
+
+
+</div><div class="form-group col-md-3">
+<div align="left">  Talla: </div>
+<input type="text" class=" form-control input-lg" name="xtalla546" placeholder="" id="xtalla546" 0="" value="0">
+
+
+</div><div class="form-group col-md-3">
+<div align="left">  Imc: </div>
+<input type="text" class=" form-control input-lg" name="ximc619" placeholder="" id="ximc619" 0="" value="0">
+
+
+</div><div class="form-group col-md-3">
+<div align="left">  Tensión Arterial: </div>
+<input type="text" class=" form-control input-lg" name="xtensionar529" placeholder="" id="xtensionar529" 0="" value="0">
+
+
+</div><div class="form-group col-md-3">
+<div align="left">  Frecuencia Cardiaca: </div>
+<input type="text" class=" form-control input-lg" name="xfrecuenci172" placeholder="" id="xfrecuenci172" 0="" value="0">
+
+
+</div><div class="form-group col-md-6">
+<div align="left">  Frecuencia Respiratoria: </div>
+<input type="text" class=" form-control input-lg" name="xfrecuenci317" placeholder="" id="xfrecuenci317" 0="" value="0">
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2618;
+        var recognizing2618 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2618 = new webkitSpeechRecognition();
+            recognition2618.lang = "es-CO";
+            recognition2618.continuous = true;
+            recognition2618.interimResults = true;
+
+            recognition2618.onstart = function() {
+                recognizing2618 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2618.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x914")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2618.onerror = function(event) {}
+            recognition2618.onend = function() {
+                recognizing2618 = false;
+                document.getElementById("procesar2618")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2618() {
+
+            if (recognizing2618 == false) {
+                recognition2618.start();
+                recognizing2618 = true;
+                document.getElementById("procesar2618")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2618.stop();
+                recognizing2618 = false;
+                document.getElementById("procesar2618")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Notas: </div>
+            <textarea id="x914" name="x914" class="Plantillas6 ReconocimientoVoz6 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(6)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton6" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(6)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2618()" id="procesar2618"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Exámenes</h4></div><div class="form-group col-md-12" align="center"> <h4> Eda</h4></div>
+    <script type="text/javascript">
+        var recognition2621;
+        var recognizing2621 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2621 = new webkitSpeechRecognition();
+            recognition2621.lang = "es-CO";
+            recognition2621.continuous = true;
+            recognition2621.interimResults = true;
+
+            recognition2621.onstart = function() {
+                recognizing2621 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2621.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x706")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2621.onerror = function(event) {}
+            recognition2621.onend = function() {
+                recognizing2621 = false;
+                document.getElementById("procesar2621")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2621() {
+
+            if (recognizing2621 == false) {
+                recognition2621.start();
+                recognizing2621 = true;
+                document.getElementById("procesar2621")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2621.stop();
+                recognizing2621 = false;
+                document.getElementById("procesar2621")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">   </div>
+            <textarea id="x706" name="x706" class="Plantillas7 ReconocimientoVoz7 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(7)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton7" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(7)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2621()" id="procesar2621"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Colonoscopia </h4></div>
+    <script type="text/javascript">
+        var recognition2623;
+        var recognizing2623 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2623 = new webkitSpeechRecognition();
+            recognition2623.lang = "es-CO";
+            recognition2623.continuous = true;
+            recognition2623.interimResults = true;
+
+            recognition2623.onstart = function() {
+                recognizing2623 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2623.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x937")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2623.onerror = function(event) {}
+            recognition2623.onend = function() {
+                recognizing2623 = false;
+                document.getElementById("procesar2623")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2623() {
+
+            if (recognizing2623 == false) {
+                recognition2623.start();
+                recognizing2623 = true;
+                document.getElementById("procesar2623")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2623.stop();
+                recognizing2623 = false;
+                document.getElementById("procesar2623")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">   </div>
+            <textarea id="x937" name="x937" class="Plantillas8 ReconocimientoVoz8 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(8)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton8" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(8)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2623()" id="procesar2623"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Ecografía Abdominal</h4></div>
+    <script type="text/javascript">
+        var recognition2625;
+        var recognizing2625 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2625 = new webkitSpeechRecognition();
+            recognition2625.lang = "es-CO";
+            recognition2625.continuous = true;
+            recognition2625.interimResults = true;
+
+            recognition2625.onstart = function() {
+                recognizing2625 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2625.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x519")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2625.onerror = function(event) {}
+            recognition2625.onend = function() {
+                recognizing2625 = false;
+                document.getElementById("procesar2625")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2625() {
+
+            if (recognizing2625 == false) {
+                recognition2625.start();
+                recognizing2625 = true;
+                document.getElementById("procesar2625")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2625.stop();
+                recognizing2625 = false;
+                document.getElementById("procesar2625")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">   </div>
+            <textarea id="x519" name="x519" class="Plantillas9 ReconocimientoVoz9 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(9)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton9" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(9)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2625()" id="procesar2625"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Laboratorio</h4></div>
+    <script type="text/javascript">
+        var recognition2627;
+        var recognizing2627 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2627 = new webkitSpeechRecognition();
+            recognition2627.lang = "es-CO";
+            recognition2627.continuous = true;
+            recognition2627.interimResults = true;
+
+            recognition2627.onstart = function() {
+                recognizing2627 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2627.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x359")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2627.onerror = function(event) {}
+            recognition2627.onend = function() {
+                recognizing2627 = false;
+                document.getElementById("procesar2627")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2627() {
+
+            if (recognizing2627 == false) {
+                recognition2627.start();
+                recognizing2627 = true;
+                document.getElementById("procesar2627")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2627.stop();
+                recognizing2627 = false;
+                document.getElementById("procesar2627")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">   </div>
+            <textarea id="x359" name="x359" class="Plantillas10 ReconocimientoVoz10 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(10)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton10" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(10)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2627()" id="procesar2627"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="form-group col-md-12" align="center"> <h4> Otros</h4></div>
+    <script type="text/javascript">
+        var recognition2629;
+        var recognizing2629 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2629 = new webkitSpeechRecognition();
+            recognition2629.lang = "es-CO";
+            recognition2629.continuous = true;
+            recognition2629.interimResults = true;
+
+            recognition2629.onstart = function() {
+                recognizing2629 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2629.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("x470")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2629.onerror = function(event) {}
+            recognition2629.onend = function() {
+                recognizing2629 = false;
+                document.getElementById("procesar2629")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2629() {
+
+            if (recognizing2629 == false) {
+                recognition2629.start();
+                recognizing2629 = true;
+                document.getElementById("procesar2629")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2629.stop();
+                recognizing2629 = false;
+                document.getElementById("procesar2629")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">   </div>
+            <textarea id="x470" name="x470" class="Plantillas11 ReconocimientoVoz11 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(11)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton11" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(11)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2629()" id="procesar2629"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div>
+    <script type="text/javascript">
+        var recognition2630;
+        var recognizing2630 = false;
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("¡API no soportada!");
+        } else {
+
+            recognition2630 = new webkitSpeechRecognition();
+            recognition2630.lang = "es-CO";
+            recognition2630.continuous = true;
+            recognition2630.interimResults = true;
+
+            recognition2630.onstart = function() {
+                recognizing2630 = true;
+                console.log("empezando a eschucar");
+            }
+            recognition2630.onresult = function(event) {
+
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal)
+                        document.getElementById("xplanytrat201")
+                        .value += event.results[i][0].transcript;
+                }
+
+                //texto
+            }
+            recognition2630.onerror = function(event) {}
+            recognition2630.onend = function() {
+                recognizing2630 = false;
+                document.getElementById("procesar2630")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+                console.log("terminó de eschucar, llegó a su fin");
+
+            }
+
+        }
+
+        function procesar2630() {
+
+            if (recognizing2630 == false) {
+                recognition2630.start();
+                recognizing2630 = true;
+                document.getElementById("procesar2630")
+                    .innerHTML =
+                    "<i title='Detener Grabación' style='font-size: 18px;' class='fa fa-pause'>";
+            } else {
+                recognition2630.stop();
+                recognizing2630 = false;
+                document.getElementById("procesar2630")
+                    .innerHTML =
+                    "<i title='Iniciar Grabación' style='font-size: 18px;' class='fa fa-fw fa-microphone'>";
+            }
+        }
+    </script>
+    <div class="form-group col-md-12">
+<div align="left">  Plan y Tratamiento: </div>
+            <textarea id="xplanytrat201" name="xplanytrat201" class="Plantillas12 ReconocimientoVoz12 textarea" placeholder="" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd;"></textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(12)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton12" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(12)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+            <!--<div align="right">
+            <a onclick="procesar2630()" id="procesar2630"><i title="Iniciar Grabación" style="font-size: 2rem; margin-top:1rem;" class="fa fa-fw fa-microphone"></i></a>
+            </div>-->
+
+
+
+</div><div class="col-md-12" align="center"> <h4>Diagnóstico CIE10 </h4></div>                                                    
+
+<div class="col-md-12" align="left">
+Código Cie10<br>  </div>                                            
+
+<div class="" style="width:100%;"> 
+
+
+
+
+<div class="row">
+<div class="col-md-3">
+<input type="text" class="form-control input-lg" id="clienteId" onchange="verlista();" placeholder="Buscar Cie10">
+
+<input type="hidden" id="name1" value="select1">
+
+</div>
+<div id="div-results1" class="col-md-9">
+</div>
+</div>
+</div>
+
+
+<div class="col-md-12">
+<div class="form-group">
+  <label>Observaciones</label><br>
+  <textarea type="text" rows="2" class="Plantillas13 ReconocimientoVoz13 form-control nota" name="notacie" id="notacie" placeholder=""> </textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(13)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton13" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(13)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+</div>
+</div>
+
+
+<div class="" style="width:100%;"> 
+<div class="row">
+<div class="col-md-3">
+<input type="text" class="form-control input-lg" id="clienteId2" onchange="verlista2();" placeholder="Buscar Cie10">
+
+<input type="hidden" id="name2" value="select2">
+
+</div>
+<div id="div-results2" class="col-md-9">
+</div>
+</div>
+</div>
+
+
+<div class="col-md-12">
+<div class="form-group">
+  <label>Observaciones</label><br>
+  <textarea type="text" rows="2" class="Plantillas14 ReconocimientoVoz14 form-control nota" name="notacie2" id="notacie" placeholder=""> </textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(14)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton14" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(14)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+</div>
+</div>
+
+
+
+<div class="" style="width:100%;"> 
+<div class="row">
+
+<div class="col-md-3">
+<input type="text" class="form-control input-lg" id="clienteId3" onchange="verlista3();" placeholder="Buscar Cie10">
+
+<input type="hidden" id="name3" value="select3">
+
+</div>
+<div id="div-results3" class="col-md-9">
+</div>
+</div>
+
+</div>
+
+<div class="col-md-12">
+<div class="form-group">
+  <label>Observaciones</label><br>
+  <textarea type="text" rows="2" class="Plantillas15 ReconocimientoVoz15 form-control nota" name="notacie3" id="notacie" placeholder=""> </textarea><a title="Aplicar Planilla" style="float: right;top: -35px;left: -5px;position: relative;color: #3c8dbc;" onclick="PlantillaTextarea(15)"><i class="fas fa-scroll" aria-hidden="true"></i></a><a id="boton15" type="button" class="reconocimiento_de_voz" style="float: right;position: relative;top:-40px;padding: 5px;left: -5px;color: #3c8dbc;" onclick="toggleStartStop(15)"><i title="Iniciar Grabación" style="font-size: 18px; color: #3c8dbc;" class="fa fa-fw fa-microphone" aria-hidden="true"></i><span class="sr-only">Iniciar Grabación</span></a>
+</div>
+</div>                                           
+<!-- <div align="center">
+<br>
+<br>
+<br>
+<div class="col-sm-12">
+<br>
+<br>
+<center><button type="submit" class="btn btn-block btn-primary btn-sm">
+<h2> <strong> Guardar </strong> </h2>
+</button></center>
+
+</div>
+</div> -->
+
+<div class="col-md-12">
+<button class="btn btn-block btn-outline-info btn-lg rounded-pill shadow" type="submit">Guardar</button>
+</div>
+
+<input type="hidden" name="tipo_cliente" valur="1">
+<input type="hidden" name="Ruta_Historia_AutoGuardado" value="/baseDev/cHistoria?cl=16&amp;iCr=5&amp;tipo=0"></form>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("FormularioHistoriaClinica").addEventListener("submit", function (event) {
+            event.preventDefault(); // Evita el envío del formulario
+
+            let formData = new FormData(this);
+            let jsonData = [];
+
+            // Recorre todos los elementos del formulario
+            Array.from(this.elements).forEach((element) => {
+                let fieldConfig = {
+                    id: element.id || element.name, // Toma el id o el nombre
+                    label: "", // Inicializa el label como vacío
+                    type: element.type || element.tagName.toLowerCase(),
+                    name: element.name || element.id, // Toma el nombre o el id
+                };
+
+                // Intenta obtener el label, si existe
+                if (element.labels && element.labels.length > 0) {
+                    fieldConfig.label = element.labels[0].innerText; // Toma el primer label si existe
+                }
+
+                // Si el campo es un select, agrega las opciones
+                if (element.tagName.toLowerCase() === "select") {
+                    fieldConfig.options = [];
+                    Array.from(element.options).forEach((option) => {
+                        fieldConfig.options.push({
+                            value: option.value,
+                            text: option.innerText,
+                        });
+                    });
+                }
+
+                // Si es un checkbox o un radio, solo agrega la configuración
+                else if (element.type === "checkbox" || element.type === "radio") {
+                    fieldConfig.checked = element.checked;
+                }
+
+                jsonData.push(fieldConfig);
+            });
+
+            // Convertimos la configuración del formulario a JSON y lo descargamos
+            const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'configuracion_formulario.json';
+            link.click();
+        });
+    });
+</script>
+

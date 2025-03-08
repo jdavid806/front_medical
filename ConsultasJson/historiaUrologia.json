@@ -1,0 +1,700 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen general",
+        "card": [
+          {
+            "title": "Dolores",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dolorRenalCheck",
+                "label": "Dolor Renal",
+                "type": "checkbox",
+                "name": "dolorRenalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorRenalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorRenalText"
+                  }
+                ]
+              },
+              {
+                "id": "dolorUreteralCheck",
+                "label": "Dolor Ureteral",
+                "type": "checkbox",
+                "name": "dolorUreteralCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorUreteralText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorUreteralText"
+                  }
+                ]
+              },
+              {
+                "id": "dolorVesicalCheck",
+                "label": "Dolor Vesical",
+                "type": "checkbox",
+                "name": "dolorVesicalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorVesicalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorVesicalText"
+                  }
+                ]
+              },
+              {
+                "id": "dolorProstaticoCheck",
+                "label": "Dolor Prostático",
+                "type": "checkbox",
+                "name": "dolorProstaticoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorProstaticoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorProstaticoText"
+                  }
+                ]
+              },
+              {
+                "id": "dolorUretralCheck",
+                "label": "Dolor Uretral",
+                "type": "checkbox",
+                "name": "dolorUretralCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorUretralText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorUretralText"
+                  }
+                ]
+              },
+              {
+                "id": "dolorEscrotalCheck",
+                "label": "Dolor Escrotal",
+                "type": "checkbox",
+                "name": "dolorEscrotalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorEscrotalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dolorEscrotalText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Alteraciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "polaquiuriaCheck",
+                "label": "Polaquiuria",
+                "type": "checkbox",
+                "name": "polaquiuriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "polaquiuriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "polaquiuriaText"
+                  }
+                ]
+              },
+              {
+                "id": "poliuriaCheck",
+                "label": "Poliuria",
+                "type": "checkbox",
+                "name": "poliuriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "poliuriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "poliuriaText"
+                  }
+                ]
+              },
+              {
+                "id": "oliguriaAnuriaCheck",
+                "label": "Oliguria y Anuria",
+                "type": "checkbox",
+                "name": "oliguriaAnuriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "oliguriaAnuriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "oliguriaAnuriaText"
+                  }
+                ]
+              },
+              {
+                "id": "nicturiaCheck",
+                "label": "Nicturia",
+                "type": "checkbox",
+                "name": "nicturiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "nicturiaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "nicturiaText"
+                  }
+                ]
+              },
+              {
+                "id": "disuriaCheck",
+                "label": "Disuria",
+                "type": "checkbox",
+                "name": "disuriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "disuriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "disuriaText"
+                  }
+                ]
+              },
+              {
+                "id": "incontinenciaCheck",
+                "label": "Incontinencia",
+                "type": "checkbox",
+                "name": "incontinenciaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "incontinenciaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "incontinenciaText"
+                  }
+                ]
+              },
+              {
+                "id": "enuresisCheck",
+                "label": "Enuresis",
+                "type": "checkbox",
+                "name": "enuresisCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "enuresisText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "enuresisText"
+                  }
+                ]
+              },
+              {
+                "id": "neumaturiaCheck",
+                "label": "Neumaturia",
+                "type": "checkbox",
+                "name": "neumaturiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "neumaturiaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "neumaturiaText"
+                  }
+                ]
+              },
+              {
+                "id": "fecaluriaCheck",
+                "label": "Fecaluria",
+                "type": "checkbox",
+                "name": "fecaluriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fecaluriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "fecaluriaText"
+                  }
+                ]
+              },
+              {
+                "id": "quiluriaCheck",
+                "label": "Quiluria",
+                "type": "checkbox",
+                "name": "quiluriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "quiluriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "quiluriaText"
+                  }
+                ]
+              },
+              {
+                "id": "menouriaCheck",
+                "label": "Menouria",
+                "type": "checkbox",
+                "name": "menouriaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "menouriaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "menouriaText"
+                  }
+                ]
+              },
+              {
+                "id": "orinaTurbiaCheck",
+                "label": "Orina Turbia",
+                "type": "checkbox",
+                "name": "orinaTurbiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "orinaTurbiaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "orinaTurbiaText"
+                  }
+                ]
+              },
+              {
+                "id": "supuracionUretralCheck",
+                "label": "Supuración Uretral",
+                "type": "checkbox",
+                "name": "supuracionUretralCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "supuracionUretralText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "supuracionUretralText"
+                  }
+                ]
+              },
+              {
+                "id": "impotenciaCheck",
+                "label": "Impotencia",
+                "type": "checkbox",
+                "name": "impotenciaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "impotenciaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "impotenciaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exploración",
+        "card": [
+          {
+            "title": "Exploración Urológica",
+            "fields": [
+              {
+                "id": "exploracionUrologica",
+                "label": "",
+                "type": "textarea",
+                "name": "exploracionUrologica"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Exploración Renal",
+            "fields": [
+              {
+                "id": "exploracionRenal",
+                "label": "",
+                "type": "textarea",
+                "name": "exploracionRenal"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Exploración Vesical",
+            "fields": [
+              {
+                "id": "exploracionVesical",
+                "label": "",
+                "type": "textarea",
+                "name": "exploracionVesical"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Generales Externos Masculinos",
+            "fields": [
+              {
+                "id": "exploracionGeneralesExternosMasculinos",
+                "label": "",
+                "type": "textarea",
+                "name": "exploracionGeneralesExternosMasculinos"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Tacto Rectal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tactoRectal",
+                "label": "",
+                "type": "textarea",
+                "name": "tactoRectal"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Exploraciones complementarias",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "analisisSangreCheck",
+                "label": "Análisis de Sangre",
+                "type": "checkbox",
+                "name": "analisisSangreCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "funcionRenalText",
+                    "label": "Función Renal",
+                    "type": "textarea",
+                    "name": "funcionRenalText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "estadoGeneralOrganismoText",
+                    "label": "Estado General del Organismo",
+                    "type": "textarea",
+                    "name": "estadoGeneralOrganismoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "antigenosEspecificosText",
+                    "label": "Antígenos Específicos",
+                    "type": "textarea",
+                    "name": "antigenosEspecificosText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "serologiaText",
+                    "label": "Serología",
+                    "type": "textarea",
+                    "name": "serologiaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "otrasSangreText",
+                    "label": "Otras",
+                    "type": "textarea",
+                    "name": "otrasSangreText",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "analisisOrinaCheck",
+                "label": "Análisis de Orina",
+                "type": "checkbox",
+                "name": "analisisOrinaCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estudiosFisicoQuimicosText",
+                    "label": "Estudios Físico-Químicos",
+                    "type": "textarea",
+                    "name": "estudiosFisicoQuimicosText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "examenSedimentoUrinarioText",
+                    "label": "Exámen del Sedimento Urinario",
+                    "type": "textarea",
+                    "name": "examenSedimentoUrinarioText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "examenBacteriologicoText",
+                    "label": "Exámen Bacteriológico",
+                    "type": "textarea",
+                    "name": "examenBacteriologicoText",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "exudadoUretralCheck",
+                "label": "Exudado Uretral",
+                "type": "checkbox",
+                "name": "exudadoUretralCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "exploracionesComplementariasImagenText",
+                    "label": "Exploraciones Complementarias por Métodos de Imagen",
+                    "type": "textarea",
+                    "name": "exploracionesComplementariasImagenText",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "imagenologiasCheck",
+                "label": "Imagenologías",
+                "type": "checkbox",
+                "name": "imagenologiasCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "rxSimpleAbdomenText",
+                    "label": "Rx Simple de Abdomen",
+                    "type": "textarea",
+                    "name": "rxSimpleAbdomenText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "urografiaIntravenosaText",
+                    "label": "Urografía Intravenosa (UIV)",
+                    "type": "textarea",
+                    "name": "urografiaIntravenosaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "urografiaRetrogradaText",
+                    "label": "Urografía Retrógrada",
+                    "type": "textarea",
+                    "name": "urografiaRetrogradaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tacRmnText",
+                    "label": "Tac y Rmn",
+                    "type": "textarea",
+                    "name": "tacRmnText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "metodosEndoscopicosText",
+                    "label": "Métodos Endoscópicos",
+                    "type": "textarea",
+                    "name": "metodosEndoscopicosText",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

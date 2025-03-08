@@ -1,0 +1,406 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ingreso",
+        "card": [
+          {
+            "title": "Escolaridad del paciente",
+            "fields": [
+              {
+                "id": "escolaridadDelPaciente",
+                "label": "",
+                "type": "textarea",
+                "name": "escolaridadDelPaciente"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Etapa",
+            "fields": [
+              {
+                "id": "etapa",
+                "label": "",
+                "type": "textarea",
+                "name": "etapa"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Exámen mental",
+            "fields": [
+              {
+                "id": "examenMental",
+                "label": "",
+                "type": "textarea",
+                "name": "examenMental"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Diagnóstico",
+            "fields": [
+              {
+                "id": "diagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnostico"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Historia de consumo",
+        "card": [
+          {
+            "title": "Sustancias",
+            "fields": [
+              {
+                "id": "sustancia1",
+                "label": "Sustancia 1",
+                "type": "checkbox",
+                "name": "sustancia1",
+                "toggleFields": [
+                  {
+                    "id": "nombreSustancia1",
+                    "label": "",
+                    "placeholder": "Nombre Sustancia",
+                    "type": "textarea",
+                    "name": "nombreSustancia1"
+                  },
+                  {
+                    "id": "inicioSustancia1",
+                    "label": "",
+                    "placeholder": "Inicio",
+                    "type": "textarea",
+                    "name": "inicioSustancia1"
+                  },
+                  {
+                    "id": "hastaSustancia1",
+                    "label": "",
+                    "placeholder": "Hasta",
+                    "type": "textarea",
+                    "name": "hastaSustancia1"
+                  },
+                  {
+                    "id": "observacionesSustancia1",
+                    "label": "",
+                    "placeholder": "Observaciones",
+                    "type": "textarea",
+                    "name": "observacionesSustancia1"
+                  }
+                ]
+              },
+              {
+                "id": "sustancia2",
+                "label": "Sustancia 2",
+                "type": "checkbox",
+                "name": "sustancia2",
+                "toggleFields": [
+                  {
+                    "id": "nombreSustancia2",
+                    "label": "",
+                    "placeholder": "Nombre Sustancia",
+                    "type": "textarea",
+                    "name": "nombreSustancia2"
+                  },
+                  {
+                    "id": "inicioSustancia2",
+                    "label": "",
+                    "placeholder": "Inicio",
+                    "type": "textarea",
+                    "name": "inicioSustancia2"
+                  },
+                  {
+                    "id": "hastaSustancia2",
+                    "label": "",
+                    "placeholder": "Hasta",
+                    "type": "textarea",
+                    "name": "hastaSustancia2"
+                  },
+                  {
+                    "id": "observacionesSustancia2",
+                    "label": "",
+                    "placeholder": "Observaciones",
+                    "type": "textarea",
+                    "name": "observacionesSustancia2"
+                  }
+                ]
+              },
+              {
+                "id": "sustancia3",
+                "label": "Sustancia 3",
+                "type": "checkbox",
+                "name": "sustancia3",
+                "toggleFields": [
+                  {
+                    "id": "nombreSustancia3",
+                    "label": "",
+                    "placeholder": "Nombre Sustancia",
+                    "type": "textarea",
+                    "name": "nombreSustancia3"
+                  },
+                  {
+                    "id": "inicioSustancia3",
+                    "label": "",
+                    "placeholder": "Inicio",
+                    "type": "textarea",
+                    "name": "inicioSustancia3"
+                  },
+                  {
+                    "id": "hastaSustancia3",
+                    "label": "",
+                    "placeholder": "Hasta",
+                    "type": "textarea",
+                    "name": "hastaSustancia3"
+                  },
+                  {
+                    "id": "observacionesSustancia3",
+                    "label": "",
+                    "placeholder": "Observaciones",
+                    "type": "textarea",
+                    "name": "observacionesSustancia3"
+                  }
+                ]
+              },
+              {
+                "id": "sustancia4",
+                "label": "Sustancia 4",
+                "type": "checkbox",
+                "name": "sustancia4",
+                "toggleFields": [
+                  {
+                    "id": "nombreSustancia4",
+                    "label": "",
+                    "placeholder": "Nombre Sustancia",
+                    "type": "textarea",
+                    "name": "nombreSustancia4"
+                  },
+                  {
+                    "id": "inicioSustancia4",
+                    "label": "",
+                    "placeholder": "Inicio",
+                    "type": "textarea",
+                    "name": "inicioSustancia4"
+                  },
+                  {
+                    "id": "hastaSustancia4",
+                    "label": "",
+                    "placeholder": "Hasta",
+                    "type": "textarea",
+                    "name": "hastaSustancia4"
+                  },
+                  {
+                    "id": "observacionesSustancia4",
+                    "label": "",
+                    "placeholder": "Observaciones",
+                    "type": "textarea",
+                    "name": "observacionesSustancia4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Tratamientos anteriores",
+            "fields": [
+              {
+                "id": "tratamientosAnteriores",
+                "label": "",
+                "placeholder": "Tratamientos Suministrados con Ocasión de una Posible Falla en la Atención",
+                "type": "textarea",
+                "name": "tratamientosAnteriores"
+              }
+            ]
+          }
+        ], 
+        "card3": [
+          {
+            "title": "Observaciones",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,888 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen",
+        "card": [
+          {
+            "title": "Signos y sintomas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "asintomatico",
+                "label": "Asintomático",
+                "type": "checkbox",
+                "name": "asintomatico",
+                "class": "col-4"
+              },
+              {
+                "id": "disminucionVisualCerca",
+                "label": "Disminución visual de cerca",
+                "type": "checkbox",
+                "name": "disminucionVisualCerca",
+                "class": "col-4"
+              },
+              {
+                "id": "disminucionVisualLejos",
+                "label": "Disminución visual de lejos",
+                "type": "checkbox",
+                "name": "disminucionVisualLejos",
+                "class": "col-4"
+              },
+              {
+                "id": "ardorOcular",
+                "label": "Ardor ocular",
+                "type": "checkbox",
+                "name": "ardorOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "lagrimeo",
+                "label": "Lagrimeo",
+                "type": "checkbox",
+                "name": "lagrimeo",
+                "class": "col-4"
+              },
+              {
+                "id": "cansancioOcular",
+                "label": "Cansancio ocular",
+                "type": "checkbox",
+                "name": "cansancioOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "irritacion",
+                "label": "Irritación",
+                "type": "checkbox",
+                "name": "irritacion",
+                "class": "col-4"
+              },
+              {
+                "id": "fotofobia",
+                "label": "Fotofobia",
+                "type": "checkbox",
+                "name": "fotofobia",
+                "class": "col-4"
+              },
+              {
+                "id": "pruritoOcular",
+                "label": "Prurito ocular",
+                "type": "checkbox",
+                "name": "pruritoOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "saltoRenglon",
+                "label": "Salto de renglón",
+                "type": "checkbox",
+                "name": "saltoRenglon",
+                "class": "col-4"
+              },
+              {
+                "id": "cefaleas",
+                "label": "Cefaleas",
+                "type": "checkbox",
+                "name": "cefaleas",
+                "class": "col-4"
+              },
+              {
+                "id": "resequedadOcular",
+                "label": "Resequedad ocular",
+                "type": "checkbox",
+                "name": "resequedadOcular",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Agudeza visual OD",
+            "fields": [
+              {
+                "id": "ccVLOD",
+                "label": "CC VL",
+                "type": "textarea",
+                "name": "ccVLOD"
+              },
+              {
+                "id": "ccVPOD",
+                "label": "CC VP",
+                "type": "textarea",
+                "name": "ccVPOD"
+              },
+              {
+                "id": "scVLOD",
+                "label": "SC VL",
+                "type": "textarea",
+                "name": "scVLOD"
+              },
+              {
+                "id": "scVPOD",
+                "label": "SC VP",
+                "type": "textarea",
+                "name": "scVPOD"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Agudeza visual OI",
+            "fields": [
+              {
+                "id": "ccVLOI",
+                "label": "CC VL",
+                "type": "textarea",
+                "name": "ccVLOI"
+              },
+              {
+                "id": "ccVPOI",
+                "label": "CC VP",
+                "type": "textarea",
+                "name": "ccVPOI"
+              },
+              {
+                "id": "scVLOI",
+                "label": "SC VL",
+                "type": "textarea",
+                "name": "scVLOI"
+              },
+              {
+                "id": "scVPOI",
+                "label": "SC VP",
+                "type": "textarea",
+                "name": "scVPOI"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Lensometría OD",
+            "fields": [
+              {
+                "id": "esfOD",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOD"
+              },
+              {
+                "id": "cilOD",
+                "label": "CIL",
+                "type": "textarea",
+                "name": "cilOD"
+              },
+              {
+                "id": "ejeOD",
+                "label": "EJE",
+                "type": "textarea",
+                "name": "ejeOD"
+              },
+              {
+                "id": "addOD",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOD"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Lensometría OI",
+            "fields": [
+              {
+                "id": "esfOI",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOI"
+              },
+              {
+                "id": "cilOI",
+                "label": "CIL",
+                "type": "textarea",
+                "name": "cilOI"
+              },
+              {
+                "id": "ejeOI",
+                "label": "EJE",
+                "type": "textarea",
+                "name": "ejeOI"
+              },
+              {
+                "id": "addOI",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOI"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Examen Externo OD",
+            "fields": [
+              {
+                "id": "examenExternoSelectOD",
+                "label": "",
+                "type": "select",
+                "name": "examenExternoSelectOD",
+                "options": [
+                  {
+                    "value": "segmentoAnterior",
+                    "text": "Segmento anterior"
+                  },
+                  {
+                    "value": "hiperemiaConjuntival",
+                    "text": "Hiperemia Conjuntival"
+                  },
+                  {
+                    "value": "pterigioN",
+                    "text": "PterigioN"
+                  },
+                  {
+                    "value": "pterigioT",
+                    "text": "PterigioT"
+                  },
+                  {
+                    "value": "pinguicula",
+                    "text": "Pinguécuela"
+                  },
+                  {
+                    "value": "nebus",
+                    "text": "Nebus"
+                  },
+                  {
+                    "value": "blefaritis",
+                    "text": "Blefaritis"
+                  },
+                  {
+                    "value": "blefaritisSeborreica",
+                    "text": "Blefaritis Seborreica"
+                  },
+                  {
+                    "value": "secrecion",
+                    "text": "Secreción"
+                  },
+                  {
+                    "value": "leucomaCorneal",
+                    "text": "Leucoma Corneal"
+                  },
+                  {
+                    "value": "ptosisPalpebral",
+                    "text": "Ptosis Palpebral"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Examen Externo OI",
+            "fields": [
+              {
+                "id": "examenExternoSelectOI",
+                "label": "",
+                "type": "select",
+                "name": "examenExternoSelectOI",
+                "options": [
+                  {
+                    "value": "segmentoAnterior",
+                    "text": "Segmento anterior"
+                  },
+                  {
+                    "value": "hiperemiaConjuntival",
+                    "text": "Hiperemia Conjuntival"
+                  },
+                  {
+                    "value": "pterigioN",
+                    "text": "PterigioN"
+                  },
+                  {
+                    "value": "pterigioT",
+                    "text": "PterigioT"
+                  },
+                  {
+                    "value": "pinguicula",
+                    "text": "Pinguécuela"
+                  },
+                  {
+                    "value": "nebus",
+                    "text": "Nebus"
+                  },
+                  {
+                    "value": "blefaritis",
+                    "text": "Blefaritis"
+                  },
+                  {
+                    "value": "blefaritisSeborreica",
+                    "text": "Blefaritis Seborreica"
+                  },
+                  {
+                    "value": "secrecion",
+                    "text": "Secreción"
+                  },
+                  {
+                    "value": "leucomaCorneal",
+                    "text": "Leucoma Corneal"
+                  },
+                  {
+                    "value": "ptosisPalpebral",
+                    "text": "Ptosis Palpebral"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Motilidad Ocular",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "vl",
+                "label": "VL",
+                "type": "textarea",
+                "name": "vl",
+                "class": "col-6"
+              },
+              {
+                "id": "vp",
+                "label": "VP",
+                "type": "textarea",
+                "name": "vp",
+                "class": "col-6"
+              },
+              {
+                "id": "hishberg",
+                "label": "HISHBERG",
+                "type": "textarea",
+                "name": "hishberg",
+                "class": "col-6"
+              },
+              {
+                "id": "ducciones",
+                "label": "Ducciones",
+                "type": "textarea",
+                "name": "ducciones",
+                "class": "col-6"
+              },
+              {
+                "id": "versiones",
+                "label": "Versiones",
+                "type": "textarea",
+                "name": "versiones",
+                "class": "col-6"
+              },
+              {
+                "id": "ppc",
+                "label": "PPC",
+                "type": "textarea",
+                "name": "ppc",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Test ocupacionales",
+        "card": [
+          {
+            "title": "OD",
+            "fields": [
+              {
+                "id": "visionCromaticaOD",
+                "label": "Visión Cromática",
+                "type": "select",
+                "name": "visionCromaticaOD",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "discromatopsia",
+                    "text": "Discromatopsia"
+                  },
+                  {
+                    "value": "cegueraAlColor",
+                    "text": "Ceguera al color"
+                  }
+                ]
+              },
+              {
+                "id": "visionProfundidadOD",
+                "label": "Visión de Profundidad",
+                "type": "textarea",
+                "name": "visionProfundidadOD"
+              },
+              {
+                "id": "camVisualConfrontacionOD",
+                "label": "Cam Visual Confrontación",
+                "type": "textarea",
+                "name": "camVisualConfrontacionOD"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "OI",
+            "fields": [
+              {
+                "id": "visionCromaticaOI",
+                "label": "Visión Cromática",
+                "type": "select",
+                "name": "visionCromaticaOI",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "discromatopsia",
+                    "text": "Discromatopsia"
+                  },
+                  {
+                    "value": "cegueraAlColor",
+                    "text": "Ceguera al color"
+                  }
+                ]
+              },
+              {
+                "id": "visionProfundidadOI",
+                "label": "Visión de Profundidad",
+                "type": "textarea",
+                "name": "visionProfundidadOI"
+              },
+              {
+                "id": "camVisualConfrontacionOI",
+                "label": "Cam Visual Confrontación",
+                "type": "textarea",
+                "name": "camVisualConfrontacionOI"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Interpretación OD",
+            "fields": [
+              {
+                "id": "noCorreccionOpticaODCheck",
+                "label": "No Requiere Corrección Óptica",
+                "type": "checkbox",
+                "name": "noCorreccionOpticaODCheck",
+                "toggleFields": [
+                  {
+                    "id": "noCorreccionOpticaODInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "noCorreccionOpticaODInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoAdecuadamenteCorregidoODCheck",
+                "label": "Defecto Refractivo Adecuadamente Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoAdecuadamenteCorregidoODCheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoAdecuadamenteCorregidoODInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoAdecuadamenteCorregidoODInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoInadecuadamenteCorregidoODCheck",
+                "label": "Defecto Refractivo Inadecuadamente Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoInadecuadamenteCorregidoODCheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoInadecuadamenteCorregidoODInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoInadecuadamenteCorregidoODInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoNoCorregidoODCheck",
+                "label": "Defecto Refractivo No Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoNoCorregidoODCheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoNoCorregidoODInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoNoCorregidoODInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Interpretación OI",
+            "fields": [
+              {
+                "id": "noCorreccionOpticaOICheck",
+                "label": "No Requiere Corrección Óptica",
+                "type": "checkbox",
+                "name": "noCorreccionOpticaOICheck",
+                "toggleFields": [
+                  {
+                    "id": "noCorreccionOpticaOIInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "noCorreccionOpticaOIInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoAdecuadamenteCorregidoOICheck",
+                "label": "Defecto Refractivo Adecuadamente Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoAdecuadamenteCorregidoOICheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoAdecuadamenteCorregidoOIInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoAdecuadamenteCorregidoOIInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoInadecuadamenteCorregidoOICheck",
+                "label": "Defecto Refractivo Inadecuadamente Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoInadecuadamenteCorregidoOICheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoInadecuadamenteCorregidoOIInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoInadecuadamenteCorregidoOIInfo"
+                  }
+                ]
+              },
+              {
+                "id": "defectoRefractivoNoCorregidoOICheck",
+                "label": "Defecto Refractivo No Corregido",
+                "type": "checkbox",
+                "name": "defectoRefractivoNoCorregidoOICheck",
+                "toggleFields": [
+                  {
+                    "id": "defectoRefractivoNoCorregidoOIInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "defectoRefractivoNoCorregidoOIInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Impresión Diagnóstica OD",
+            "fields": [
+              {
+                "id": "emetropiaCheckOD",
+                "label": "Emetropía",
+                "type": "checkbox",
+                "name": "emetropiaCheckOD",
+                "toggleFields": [
+                  {
+                    "id": "emetropiaInfoOD",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "emetropiaInfoOD"
+                  }
+                ]
+              },
+              {
+                "id": "ametropiaCheckOD",
+                "label": "Ametropía",
+                "type": "checkbox",
+                "name": "ametropiaCheckOD",
+                "toggleFields": [
+                  {
+                    "id": "ametropiaInfoOD",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ametropiaInfoOD"
+                  }
+                ]
+              },
+              {
+                "id": "disminucionVisualCheckOD",
+                "label": "Disminución Visual",
+                "type": "checkbox",
+                "name": "disminucionVisualCheckOD",
+                "toggleFields": [
+                  {
+                    "id": "disminucionVisualInfoOD",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "disminucionVisualInfoOD"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Impresión Diagnóstica OI",
+            "fields": [
+              {
+                "id": "emetropiaCheckOI",
+                "label": "Emetropía",
+                "type": "checkbox",
+                "name": "emetropiaCheckOI",
+                "toggleFields": [
+                  {
+                    "id": "emetropiaInfoOI",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "emetropiaInfoOI"
+                  }
+                ]
+              },
+              {
+                "id": "ametropiaCheckOI",
+                "label": "Ametropía",
+                "type": "checkbox",
+                "name": "ametropiaCheckOI",
+                "toggleFields": [
+                  {
+                    "id": "ametropiaInfoOI",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ametropiaInfoOI"
+                  }
+                ]
+              },
+              {
+                "id": "disminucionVisualCheckOI",
+                "label": "Disminución Visual",
+                "type": "checkbox",
+                "name": "disminucionVisualCheckOI",
+                "toggleFields": [
+                  {
+                    "id": "disminucionVisualInfoOI",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "disminucionVisualInfoOI"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Otros",
+            "fields": [
+              {
+                "id": "otros",
+                "label": "",
+                "type": "textarea",
+                "name": "otros"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

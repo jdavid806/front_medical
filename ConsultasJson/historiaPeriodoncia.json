@@ -1,0 +1,440 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Diagnósticos",
+        "card": [
+          {
+            "title": "ASA",
+            "fields": [
+              {
+                "id": "asa",
+                "label": "",
+                "type": "textarea",
+                "name": "asa"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Sistémicos",
+            "fields": [
+              {
+                "id": "sistemicos",
+                "label": "",
+                "type": "textarea",
+                "name": "sistemicos"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Facial Esquelético",
+            "fields": [
+              {
+                "id": "facialEsqueletico",
+                "label": "",
+                "type": "textarea",
+                "name": "facialEsqueletico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Estomatológico",
+            "fields": [
+              {
+                "id": "estomatologico",
+                "label": "",
+                "type": "textarea",
+                "name": "estomatologico"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Endodónticos",
+            "fields": [
+              {
+                "id": "endodonticos",
+                "label": "",
+                "type": "textarea",
+                "name": "endodonticos"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Periodontal",
+            "fields": [
+              {
+                "id": "periodontal",
+                "label": "",
+                "type": "textarea",
+                "name": "periodontal"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "ATM",
+            "fields": [
+              {
+                "id": "atm",
+                "label": "",
+                "type": "textarea",
+                "name": "atm"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Funcional",
+            "fields": [
+              {
+                "id": "funcional",
+                "label": "",
+                "type": "textarea",
+                "name": "funcional"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Pronóstico",
+        "card": [
+          {
+            "title": "Individual",
+            "fields": [
+              {
+                "id": "individual",
+                "label": "",
+                "type": "textarea",
+                "name": "individual"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "General",
+            "fields": [
+              {
+                "id": "general",
+                "label": "",
+                "type": "textarea",
+                "name": "general"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Fase Sistémica",
+            "fields": [
+              {
+                "id": "faseSistemica",
+                "label": "",
+                "type": "textarea",
+                "name": "faseSistemica"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Fase de Urgencia",
+            "fields": [
+              {
+                "id": "faseUrgencia",
+                "label": "",
+                "type": "textarea",
+                "name": "faseUrgencia"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Fase Higiénica",
+            "fields": [
+              {
+                "id": "faseHigienica",
+                "label": "",
+                "type": "textarea",
+                "name": "faseHigienica"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Ambientación Dental",
+            "fields": [
+              {
+                "id": "ambientacionDental",
+                "label": "",
+                "type": "textarea",
+                "name": "ambientacionDental"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Ambientación Periodontal",
+            "fields": [
+              {
+                "id": "ambientacionPeriodontal",
+                "label": "",
+                "type": "textarea",
+                "name": "ambientacionPeriodontal"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Fase Revaluativa",
+            "fields": [
+              {
+                "id": "faseRevaluativa",
+                "label": "",
+                "type": "textarea",
+                "name": "faseRevaluativa"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Fase Correctiva Inicial",
+            "fields": [
+              {
+                "id": "faseCorrectivaInicial",
+                "label": "",
+                "type": "textarea",
+                "name": "faseCorrectivaInicial"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Fase Correctiva Final",
+            "fields": [
+              {
+                "id": "faseCorrectivaFinal",
+                "label": "",
+                "type": "textarea",
+                "name": "faseCorrectivaFinal"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Fase de mantenimiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "faseMantenimiento",
+                "label": "",
+                "type": "textarea",
+                "name": "faseMantenimiento"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Imágenes",
+        "card": [
+          {
+            "title": "Cargar imágenes",
+            "fields": [
+              {
+                "id": "imagenes",
+                "label": "",
+                "type": "file",
+                "name": "imagenes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

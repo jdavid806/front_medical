@@ -1,0 +1,2821 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Revisión",
+        "card": [
+          {
+            "title": "Problemas gastrointestinales",
+            "class": "col-12",
+            "fields": []
+          }
+        ],
+        "card2": [
+          {
+            "title": "Deglucion",
+            "fields": [
+              {
+                "id": "deglucionCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "deglucionCheck",
+                "toggleFields": [
+                  {
+                    "id": "deglucionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "deglucionText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Diarrea",
+            "fields": [
+              {
+                "id": "diarreaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "diarreaCheck",
+                "toggleFields": [
+                  {
+                    "id": "diarreaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "diarreaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Estreñimiento",
+            "fields": [
+              {
+                "id": "estrenimientoCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "estrenimientoCheck",
+                "toggleFields": [
+                  {
+                    "id": "estrenimientoText",
+                    "label": "",
+                    "type": "checkbox",
+                    "name": "estrenimientoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Flatulencia",
+            "fields": [
+              {
+                "id": "flatuenciaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "flatuenciaCheck",
+                "toggleFields": [
+                  {
+                    "id": "flatuenciaText",
+                    "label": "",
+                    "type": "checkbox",
+                    "name": "flatuenciaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Masticacion",
+            "fields": [
+              {
+                "id": "masticacionCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "masticacionCheck",
+                "toggleFields": [
+                  {
+                    "id": "masticacionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "masticacionText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Reflujo Gastrointestinal",
+            "fields": [
+              {
+                "id": "reflujoGastroinstentinalCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "reflujoGastroinstentinalCheck",
+                "toggleFields": [
+                  {
+                    "id": "reflujoGastroinstentinalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "reflujoGastroinstentinalText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Vomito",
+            "fields": [
+              {
+                "id": "vomitoCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "vomitoCheck",
+                "toggleFields": [
+                  {
+                    "id": "vomitoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "vomitoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Otro",
+            "fields": [
+              {
+                "id": "problemaGastrointestinalOtroCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "problemaGastrointestinalOtroCheck",
+                "toggleFields": [
+                  {
+                    "id": "problemaGastrointestinalOtroText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "problemaGastrointestinalOtroText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Bioquímicos/Hemográmas",
+            "class": "col-12",
+            "fields": []
+          }
+        ],
+        "card11": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "parametrosBioquimicos",
+                "label": "¿Trae parametros bioquímicos?",
+                "type": "checkbox",
+                "name": "parametrosBioquimicos",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "parametrosBioquimicosInfo",
+                    "type": "date",
+                    "name": "parametrosBioquimicosInfo",
+                    "label": "Fecha"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "hb",
+                "label": "Hb",
+                "type": "textarea",
+                "name": "hb",
+                "class": "col-6"
+              },
+              {
+                "id": "htcto",
+                "label": "Htcto",
+                "type": "textarea",
+                "name": "htcto",
+                "class": "col-6"
+              },
+              {
+                "id": "gBlancos",
+                "label": "G. Blancos",
+                "type": "textarea",
+                "name": "gBlancos",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "Perfil Lipídico",
+            "fields": [
+              {
+                "id": "perfilLipidicoCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "perfilLipidicoCheck",
+                "toggleFields": [
+                  {
+                    "id": "colTotal",
+                    "label": "Col total",
+                    "type": "textarea",
+                    "name": "colTotal"
+                  },
+                  {
+                    "id": "tg",
+                    "label": "TG",
+                    "type": "textarea",
+                    "name": "tg"
+                  },
+                  {
+                    "id": "colLDL",
+                    "label": "Col LDL",
+                    "type": "textarea",
+                    "name": "colLDL"
+                  },
+                  {
+                    "id": "colHDL",
+                    "label": "Col HDL",
+                    "type": "textarea",
+                    "name": "colHDL"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Glucemia",
+            "fields": [
+              {
+                "id": "glucemiaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "glucemiaCheck",
+                "toggleFields": [
+                  {
+                    "id": "ayunas",
+                    "label": "Ayunas",
+                    "type": "textarea",
+                    "name": "ayunas"
+                  },
+                  {
+                    "id": "precargaCurva",
+                    "label": "Pre Carga (Curva)",
+                    "type": "textarea",
+                    "name": "precargaCurva"
+                  },
+                  {
+                    "id": "post",
+                    "label": "Post",
+                    "type": "textarea",
+                    "name": "post"
+                  },
+                  {
+                    "id": "a1c",
+                    "label": "A1C",
+                    "type": "textarea",
+                    "name": "a1c"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Función tiroidea",
+            "fields": [
+              {
+                "id": "funcionTiroideaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "funcionTiroideaCheck",
+                "toggleFields": [
+                  {
+                    "id": "tsh",
+                    "label": "TSH",
+                    "type": "textarea",
+                    "name": "tsh"
+                  },
+                  {
+                    "id": "t3",
+                    "label": "T3",
+                    "type": "textarea",
+                    "name": "t3"
+                  },
+                  {
+                    "id": "t4",
+                    "label": "T4",
+                    "type": "textarea",
+                    "name": "t4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card16": [
+          {
+            "title": "Insulina",
+            "fields": [
+              {
+                "id": "insulinaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "insulinaCheck",
+                "toggleFields": [
+                  {
+                    "id": "ayunas",
+                    "label": "Ayunas",
+                    "type": "textarea",
+                    "name": "ayunas"
+                  },
+                  {
+                    "id": "pre",
+                    "label": "Pre",
+                    "type": "textarea",
+                    "name": "pre"
+                  },
+                  {
+                    "id": "post",
+                    "label": "Post",
+                    "type": "textarea",
+                    "name": "post"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card17": [
+          {
+            "title": "Perfil Hepático",
+            "fields": [
+              {
+                "id": "perfilHepaticoCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "perfilHepaticoCheck",
+                "toggleFields": [
+                  {
+                    "id": "ast",
+                    "label": "AST",
+                    "type": "textarea",
+                    "name": "ast"
+                  },
+                  {
+                    "id": "alt",
+                    "label": "ALT",
+                    "type": "textarea",
+                    "name": "alt"
+                  },
+                  {
+                    "id": "tgo",
+                    "label": "TGO",
+                    "type": "textarea",
+                    "name": "tgo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card18": [
+          {
+            "title": "Perfil Vitaminas",
+            "fields": [
+              {
+                "id": "perfilVitaminasCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "perfilVitaminasCheck",
+                "toggleFields": [
+                  {
+                    "id": "calcio",
+                    "label": "Calcio",
+                    "type": "textarea",
+                    "name": "calcio"
+                  },
+                  {
+                    "id": "vitaminaD",
+                    "label": "Vitamina D",
+                    "type": "textarea",
+                    "name": "vitaminaD"
+                  },
+                  {
+                    "id": "vitaminaB12",
+                    "label": "Vitamina B12",
+                    "type": "textarea",
+                    "name": "vitaminaB12"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card19": [
+          {
+            "title": "Perfil Gestante",
+            "fields": [
+              {
+                "id": "perfilGestanteCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "perfilGestanteCheck",
+                "toggleFields": [
+                  {
+                    "id": "toxop",
+                    "label": "Toxop",
+                    "type": "textarea",
+                    "name": "toxop"
+                  },
+                  {
+                    "id": "igG",
+                    "label": "IgG",
+                    "type": "textarea",
+                    "name": "igG"
+                  },
+                  {
+                    "id": "igG",
+                    "label": "IgM",
+                    "type": "textarea",
+                    "name": "igG"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card20": [
+          {
+            "title": "Ácido Úrico",
+            "fields": [
+              {
+                "id": "acidoUricoCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "acidoUricoCheck",
+                "toggleFields": [
+                  {
+                    "id": "acidoUricoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "acidoUricoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card21": [
+          {
+            "title": "Otros",
+            "fields": [
+              {
+                "id": "otrosHemogramasCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "otrosHemogramasCheck",
+                "toggleFields": [
+                  {
+                    "id": "otrosHemogramasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "otrosHemogramasText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card22": [
+          {
+            "title": "Observaciones",
+            "fields": [
+              {
+                "id": "observacionesCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "observacionesCheck",
+                "toggleFields": [
+                  {
+                    "id": "observacionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "observacionesText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Estilo de vida",
+        "card": [
+          {
+            "title": "Sueño",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horasSueno",
+                "label": "Horas de Sueño/Día",
+                "type": "textarea",
+                "name": "horasSueno",
+                "class": "col-6"
+              },
+              {
+                "id": "calidad",
+                "label": "Calidad",
+                "type": "textarea",
+                "name": "calidad",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Actividad Fisica",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horasActividadFisica",
+                "label": "Horas/Semana",
+                "type": "textarea",
+                "name": "horasActividadFisica",
+                "class": "col-6"
+              },
+              {
+                "id": "tipoActividadFisica",
+                "label": "Tipo de Actividad/Ejercicio",
+                "type": "textarea",
+                "name": "tipoActividadFisica",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Estrés",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estres",
+                "label": "",
+                "type": "select",
+                "name": "estres",
+                "options": [
+                  {
+                    "value": "alto",
+                    "text": "Alto"
+                  },
+                  {
+                    "value": "moderado",
+                    "text": "Moderado"
+                  },
+                  {
+                    "value": "bajo",
+                    "text": "Bajo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Vicios",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "alcoholCheck",
+                "label": "¿Consume alcohol?",
+                "type": "checkbox",
+                "name": "alcoholCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "alcoholText",
+                    "name": "alcoholText",
+                    "label": "Cantidad"
+                  },
+                  {
+                    "type": "select",
+                    "id": "frecuenciaAlcohol",
+                    "name": "frecuenciaAlcohol",
+                    "label": "Frecuencia",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "cigarrilloCheck",
+                "label": "Cigarrillo",
+                "type": "checkbox",
+                "name": "cigarrilloCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cigarrilloText",
+                    "name": "cigarrilloText",
+                    "label": "Cantidad"
+                  },
+                  {
+                    "type": "select",
+                    "id": "frecuenciaCigarrillo",
+                    "name": "frecuenciaCigarrillo",
+                    "label": "Frecuencia",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Fuerza",
+            "fields": [
+              {
+                "id": "fuerzaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "fuerzaCheck",
+                "toggleFields": [
+                  {
+                    "id": "fuerzaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "fuerzaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Dinamometro",
+            "fields": [
+              {
+                "id": "dinamometroCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "dinamometroCheck",
+                "toggleFields": [
+                  {
+                    "id": "dinamometroText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dinamometroText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Masa muscular",
+            "fields": [
+              {
+                "id": "masaMuscularCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "masaMuscularCheck",
+                "toggleFields": [
+                  {
+                    "id": "masaMucularText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "masaMucularText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Composición Corporal",
+            "fields": [
+              {
+                "id": "composiciónCorporalCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "composiciónCorporalCheck",
+                "toggleFields": [
+                  {
+                    "id": "composiciónCorporalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "composiciónCorporalText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Rendimiento Muscular",
+            "fields": [
+              {
+                "id": "rendimientoMuscularCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "rendimientoMuscularCheck",
+                "toggleFields": [
+                  {
+                    "id": "rendimientoMuscularText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "rendimientoMuscularText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Velocidad",
+            "fields": [
+              {
+                "id": "velocidadCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "velocidadCheck",
+                "toggleFields": [
+                  {
+                    "id": "velocidadText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "velocidadText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Marcha",
+            "fields": [
+              {
+                "id": "marchaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "marchaCheck",
+                "toggleFields": [
+                  {
+                    "id": "marchaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "marchaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Equilibrio",
+            "fields": [
+              {
+                "id": "equilibrioCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "equilibrioCheck",
+                "toggleFields": [
+                  {
+                    "id": "equilibrioText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "equilibrioText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "Silla",
+            "fields": [
+              {
+                "id": "sillaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "sillaCheck",
+                "toggleFields": [
+                  {
+                    "id": "sillaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "sillaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Anamnesis",
+        "card": [
+          {
+            "title": "Alergias alimentarias",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "alergiasAlimentariasCheck",
+                "label": "¿Tiene alergias alimentarias?",
+                "type": "checkbox",
+                "name": "alergiasAlimentariasCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "alergiasAlimentariasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "alergiasAlimentariasText",
+                    "placeholder": "¿Cuáles?"
+                  }
+                ]
+              },
+              {
+                "id": "gastritis",
+                "label": "Gastritis",
+                "type": "checkbox",
+                "name": "gastritis",
+                "class": "col-4"
+              },
+              {
+                "id": "reflujo",
+                "label": "Reflujo",
+                "type": "checkbox",
+                "name": "reflujo",
+                "class": "col-4"
+              },
+              {
+                "id": "colonIrritable",
+                "label": "Colon irritable",
+                "type": "checkbox",
+                "name": "colonIrritable",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Hábito intestinal",
+            "fields": [
+              {
+                "id": "habitoIntestinal",
+                "label": "",
+                "type": "select",
+                "name": "habitoIntestinal",
+                "options": [
+                  {
+                    "value": "adecuado",
+                    "text": "Adecuado"
+                  },
+                  {
+                    "value": "estreñido",
+                    "text": "Estreñido"
+                  },
+                  {
+                    "value": "diarrea",
+                    "text": "Diarrea"
+                  },
+                  {
+                    "value": "gastritis",
+                    "text": "Gastritis"
+                  },
+                  {
+                    "value": "reflujo",
+                    "text": "Reflujo"
+                  },
+                  {
+                    "value": "colonIrritable",
+                    "text": "Colon irritable"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Bristol",
+            "fields": [
+              {
+                "id": "bristol",
+                "label": "",
+                "type": "select",
+                "name": "bristol",
+                "options": [
+                  {
+                    "value": "tipo1",
+                    "text": " Tipo 1: Trozos duros separados, como nueces o excrementos de oveja, que pasan con dificultad."
+                  },
+                  {
+                    "value": "tipo2",
+                    "text": " Tipo 2: Como una salchicha compuesta de fragmentos."
+                  },
+                  {
+                    "value": "tipo3",
+                    "text": " Tipo 3: Con forma de morcilla con grietas en la superficie."
+                  },
+                  {
+                    "value": "tipo4",
+                    "text": " Tipo 4: Como una salchicha; o serpiente, lisa y blanda."
+                  },
+                  {
+                    "value": "tipo5",
+                    "text": "Tipo 5: Trozos de masa pastosa con bordes definidos, que son defecados fácilmente."
+                  },
+                  {
+                    "value": "tipo6",
+                    "text": "Tipo 6: Fragmentos blandos y esponjosos con bordes irregulares y consistencia pastosa."
+                  },
+                  {
+                    "value": "tipo7",
+                    "text": "Tipo 7: Acuosa, sin pedazos sólidos, totalmente líquida."
+                  }
+                ]
+              },
+              {
+                "id": "bristolImg",
+                "name": "bristolImg",
+                "type": "image",
+                "src": "./images/bristol.png",
+                "alt": "Imagen escala Hamilton Norwood",
+                "label": ""
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Conducta alimentaria",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "atranconesSobreingestaCheck",
+                "label": "¿Presenta Atracones o Sobreingestas?",
+                "type": "checkbox",
+                "name": "atranconesSobreingestaCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "restriccionesAlimentarias",
+                    "type": "textarea",
+                    "name": "restriccionesAlimentarias",
+                    "label": "Restricciones alimentarias",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "alimentosTemor",
+                    "type": "textarea",
+                    "name": "alimentosTemor",
+                    "label": "Alimentos que generan temor",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "intolerancias",
+                    "type": "textarea",
+                    "name": "intolerancias",
+                    "label": "Intolerancias",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "rechazos",
+                    "type": "textarea",
+                    "name": "rechazos",
+                    "label": "Rechazos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "preferencias",
+                    "type": "textarea",
+                    "name": "preferencias",
+                    "label": "Preferencias",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "consumoSuplementos",
+                    "type": "textarea",
+                    "name": "consumoSuplementos",
+                    "label": "Consumo de suplementos",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Frecuencia de consumo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "bebidasAzucaradasCheck",
+                "label": "Bebidas azucaradas",
+                "type": "checkbox",
+                "name": "bebidasAzucaradasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "bebidasAzucaradasSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "bebidasAzucaradasSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "productosPanaderiaCheck",
+                "label": "Productos de panadería",
+                "type": "checkbox",
+                "name": "productosPanaderiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "productosPanaderiaSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "productosPanaderiaSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dulcesPostresCheck",
+                "label": "Dulces y postres",
+                "type": "checkbox",
+                "name": "dulcesPostresCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dulcesPostresSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dulcesPostresSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "comidasRapidasCheck",
+                "label": "Comidas Rápidas",
+                "type": "checkbox",
+                "name": "comidasRapidasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "comidasRapidasSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "comidasRapidasSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "fritosCheck",
+                "label": "Fritos",
+                "type": "checkbox",
+                "name": "fritosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fritosSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "fritosSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ensaladasCheck",
+                "label": "Ensaladas",
+                "type": "checkbox",
+                "name": "ensaladasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ensaladasSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "ensaladasSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "frutasCheck",
+                "label": "Frutas",
+                "type": "checkbox",
+                "name": "frutasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "frutasSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "frutasSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "granosCheck",
+                "label": "Granos",
+                "type": "checkbox",
+                "name": "granosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "granosSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "granosSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "embutidosCheck",
+                "label": "Embutidos",
+                "type": "checkbox",
+                "name": "embutidosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "embutidosSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "embutidosSelect",
+                    "options": [
+                      {
+                        "value": "diario",
+                        "text": "Diario"
+                      },
+                      {
+                        "value": "semanal",
+                        "text": "Semanal"
+                      },
+                      {
+                        "value": "dosPorSemana",
+                        "text": "2 veces por Semana"
+                      },
+                      {
+                        "value": "tresPorSemana",
+                        "text": "3 veces por Semana"
+                      },
+                      {
+                        "value": "cuatroPorSemana",
+                        "text": "4 veces por Semana"
+                      },
+                      {
+                        "value": "cincoPorSemana",
+                        "text": "5 veces por Semana"
+                      },
+                      {
+                        "value": "quincenal",
+                        "text": "Quincenal"
+                      },
+                      {
+                        "value": "mensual",
+                        "text": "Mensual"
+                      },
+                      {
+                        "value": "raraVez",
+                        "text": "Rara vez"
+                      },
+                      {
+                        "value": "nunca",
+                        "text": "Nunca"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Consumo habitual",
+        "card": [
+          {
+            "title": "Desayuno",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaDesayuno",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaDesayuno",
+                "class": "col-6"
+              },
+              {
+                "id": "lugarDesayuno",
+                "label": "Lugar",
+                "type": "text",
+                "name": "lugarDesayuno",
+                "class": "col-6"
+              },
+              {
+                "id": "desayuno1Check",
+                "label": "Opción 1",
+                "type": "checkbox",
+                "name": "desayuno1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "desayuno1AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "desayuno1AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno1Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "desayuno1Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno1Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "desayuno1Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "desayuno2Check",
+                "label": "Opción 2",
+                "type": "checkbox",
+                "name": "desayuno2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "desayuno2AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "desayuno2AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno2Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "desayuno2Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno2Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "desayuno2Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "desayuno3Check",
+                "label": "Opción 3",
+                "type": "checkbox",
+                "name": "desayuno3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "desayuno3AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "desayuno3AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno3Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "desayuno3Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno3Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "desayuno3Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "desayuno4Check",
+                "label": "Opción 4",
+                "type": "checkbox",
+                "name": "desayuno4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "desayuno4AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "desayuno4AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno4Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "desayuno4Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "desayuno4Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "desayuno4Ic",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Media mañana",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaMediaManana",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaMediaManana",
+                "class": "col-6"
+              },
+              {
+                "id": "lugarMediaManana",
+                "label": "Lugar",
+                "type": "text",
+                "name": "lugarMediaManana",
+                "class": "col-6"
+              },
+              {
+                "id": "mediaManana1Check",
+                "label": "Opción 1",
+                "type": "checkbox",
+                "name": "mediaManana1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaManana1AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaManana1AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana1Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaManana1Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana1Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaManana1Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaManana2Check",
+                "label": "Opción 2",
+                "type": "checkbox",
+                "name": "mediaManana2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaManana2AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaManana2AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana2Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaManana2Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana2Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaManana2Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaManana3Check",
+                "label": "Opción 3",
+                "type": "checkbox",
+                "name": "mediaManana3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaManana3AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaManana3AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana3Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaManana3Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana3Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaManana3Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaManana4Check",
+                "label": "Opción 4",
+                "type": "checkbox",
+                "name": "mediaManana4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaManana4AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaManana4AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana4Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaManana4Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaManana4Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaManana4Ic",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Almuerzo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaAlmuerzo",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaAlmuerzo",
+                "class": "col-6"
+              },
+              {
+                "id": "lugarAlmuerzo",
+                "label": "Lugar",
+                "type": "text",
+                "name": "lugarAlmuerzo",
+                "class": "col-6"
+              },
+              {
+                "id": "almuerzo1Check",
+                "label": "Opción 1",
+                "type": "checkbox",
+                "name": "almuerzo1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "almuerzo1AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "almuerzo1AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo1Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "almuerzo1Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo1Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "almuerzo1Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "almuerzo2Check",
+                "label": "Opción 2",
+                "type": "checkbox",
+                "name": "almuerzo2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "almuerzo2AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "almuerzo2AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo2Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "almuerzo2Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo2Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "almuerzo2Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "almuerzo3Check",
+                "label": "Opción 3",
+                "type": "checkbox",
+                "name": "almuerzo3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "almuerzo3AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "almuerzo3AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo3Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "almuerzo3Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo3Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "almuerzo3Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "almuerzo4Check",
+                "label": "Opción 4",
+                "type": "checkbox",
+                "name": "almuerzo4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "almuerzo4AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "almuerzo4AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo4Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "almuerzo4Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "almuerzo4Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "almuerzo4Ic",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Media tarde",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaMediaTarde",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaMediaTarde",
+                "class": "col-6"
+              },
+              {
+                "id": "lugarMediaTarde",
+                "label": "Lugar",
+                "type": "text",
+                "name": "lugarMediaTarde",
+                "class": "col-6"
+              },
+              {
+                "id": "mediaTarde1Check",
+                "label": "Opción 1",
+                "type": "checkbox",
+                "name": "mediaTarde1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaTarde1AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaTarde1AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde1Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaTarde1Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde1Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaTarde1Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaTarde2Check",
+                "label": "Opción 2",
+                "type": "checkbox",
+                "name": "mediaTarde2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaTarde2AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaTarde2AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde2Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaTarde2Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde2Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaTarde2Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaTarde3Check",
+                "label": "Opción 3",
+                "type": "checkbox",
+                "name": "mediaTarde3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaTarde3AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaTarde3AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde3Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "mediaTarde3Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde3Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaTarde3Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "mediaTarde4Check",
+                "label": "Opción 4",
+                "type": "checkbox",
+                "name": "mediaTarde4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "mediaTarde4AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "mediaTarde4AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "MediaTarde4Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "MediaTarde4Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "mediaTarde4Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "mediaTarde4Ic",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Cena",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaCena",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaCena",
+                "class": "col-6"
+              },
+              {
+                "id": "lugarCena",
+                "label": "Lugar",
+                "type": "text",
+                "name": "lugarCena",
+                "class": "col-6"
+              },
+              {
+                "id": "cena1Check",
+                "label": "Opción 1",
+                "type": "checkbox",
+                "name": "cena1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "cena1AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "cena1AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena1Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "cena1Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena1Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "cena1Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "cena2Check",
+                "label": "Opción 2",
+                "type": "checkbox",
+                "name": "cena2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "cena2AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "cena2AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena2Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "cena2Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena2Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "cena2Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "cena3Check",
+                "label": "Opción 3",
+                "type": "checkbox",
+                "name": "cena3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "cena3AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "cena3AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena3Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "cena3Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena3Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "cena3Ic",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "cena4Check",
+                "label": "Opción 4",
+                "type": "checkbox",
+                "name": "cena4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "cena4AlimentoPreparacion",
+                    "label": "Alimento/Preparación",
+                    "type": "textarea",
+                    "name": "cena4AlimentoPreparacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena4Cantidad",
+                    "label": "Cantidad",
+                    "type": "textarea",
+                    "name": "cena4Cantidad",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "cena4Ic",
+                    "label": "# Ic",
+                    "type": "textarea",
+                    "name": "cena4Ic",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Consumo Fin de semana",
+            "fields": [
+              {
+                "id": "consumoFinSemana",
+                "label": "",
+                "type": "select",
+                "name": "consumoFinSemana",
+                "options": [
+                  {
+                    "value": "aumenta",
+                    "text": "Aumenta"
+                  },
+                  {
+                    "value": "disminuye",
+                    "text": "Disminuye"
+                  },
+                  {
+                    "value": "igual",
+                    "text": "Come igual"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Antropometría",
+        "card": [
+          {
+            "title": "Tipo de seguimiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoSeguimiento",
+                "label": "",
+                "type": "select",
+                "name": "tipoSeguimiento",
+                "options": [
+                  {
+                    "value": "primeraVez",
+                    "text": "Primera vez"
+                  },
+                  {
+                    "value": "control1",
+                    "text": "Control 1"
+                  },
+                  {
+                    "value": "control2",
+                    "text": "Control 2"
+                  },
+                  {
+                    "value": "control3",
+                    "text": "Control 3"
+                  },
+                  {
+                    "value": "control4",
+                    "text": "Control 4"
+                  },
+                  {
+                    "value": "control5",
+                    "text": "Control 5"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Peso y talla",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "pesoActual",
+                "label": "Peso actual [Kg]",
+                "type": "number",
+                "name": "pesoActual",
+                "class": "col-6"
+              },
+              {
+                "id": "pesoUsual",
+                "label": "Peso usual [Kg]",
+                "type": "number",
+                "name": "pesoUsual",
+                "class": "col-6"
+              },
+              {
+                "id": "pesoMaximo",
+                "label": "Peso máximo [Kg]",
+                "type": "number",
+                "name": "pesoMaximo",
+                "class": "col-6"
+              },
+              {
+                "id": "pesoMinimo",
+                "label": "Peso Mínimo [Kg]",
+                "type": "number",
+                "name": "pesoMinimo",
+                "class": "col-6"
+              },
+              {
+                "id": "talla",
+                "label": "Talla [cm]",
+                "type": "number",
+                "name": "talla",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesPesoTalla",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesPesoTalla",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Perímetros (cm)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cuello",
+                "label": "Cuello",
+                "type": "number",
+                "name": "cuello",
+                "class": "col-6"
+              },
+              {
+                "id": "pechoTorax",
+                "label": "Pecho/Tórax",
+                "type": "number",
+                "name": "pechoTorax",
+                "class": "col-6"
+              },
+              {
+                "id": "brazoRelajado",
+                "label": "Brazo Relajado",
+                "type": "number",
+                "name": "brazoRelajado",
+                "class": "col-6"
+              },
+              {
+                "id": "brazoContraido",
+                "label": "Brazo Contraído",
+                "type": "number",
+                "name": "brazoContraido",
+                "class": "col-6"
+              },
+              {
+                "id": "antebrazo",
+                "label": "Antebrazo",
+                "type": "number",
+                "name": "antebrazo",
+                "class": "col-6"
+              },
+              {
+                "id": "muneca",
+                "label": "Muñeca",
+                "type": "number",
+                "name": "muneca",
+                "class": "col-6"
+              },
+              {
+                "id": "cintura",
+                "label": "Cintura",
+                "type": "number",
+                "name": "cintura",
+                "class": "col-6"
+              },
+              {
+                "id": "abdomen",
+                "label": "Abdomen",
+                "type": "number",
+                "name": "abdomen",
+                "class": "col-6"
+              },
+              {
+                "id": "cadera",
+                "label": "Cadera",
+                "type": "number",
+                "name": "cadera",
+                "class": "col-6"
+              },
+              {
+                "id": "muslo",
+                "label": "Muslo",
+                "type": "number",
+                "name": "muslo",
+                "class": "col-6"
+              },
+              {
+                "id": "pantorrilla",
+                "label": "Pantorrilla",
+                "type": "number",
+                "name": "pantorrilla",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesPerimetros",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesPerimetros",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Pliegues Cutáneos (mm)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "biceps",
+                "label": "Bíceps",
+                "type": "number",
+                "name": "biceps",
+                "class": "col-6"
+              },
+              {
+                "id": "triceps",
+                "label": "Tríceps",
+                "type": "number",
+                "name": "triceps",
+                "class": "col-6"
+              },
+              {
+                "id": "subescapular",
+                "label": "Subescapular",
+                "type": "number",
+                "name": "subescapular",
+                "class": "col-6"
+              },
+              {
+                "id": "crestaIliaca",
+                "label": "Cresta Ilíaca",
+                "type": "number",
+                "name": "crestaIliaca",
+                "class": "col-6"
+              },
+              {
+                "id": "supraespinal",
+                "label": "Supraespinal",
+                "type": "number",
+                "name": "supraespinal",
+                "class": "col-6"
+              },
+              {
+                "id": "abdominal",
+                "label": "Abdominal",
+                "type": "number",
+                "name": "abdominal",
+                "class": "col-6"
+              },
+              {
+                "id": "muslo",
+                "label": "Muslo",
+                "type": "number",
+                "name": "muslo",
+                "class": "col-6"
+              },
+              {
+                "id": "piernaMedia",
+                "label": "Pierna Media",
+                "type": "number",
+                "name": "piernaMedia",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesPlieguesCutaneos",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesPlieguesCutaneos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Diagnóstico Nutricional",
+            "fields": [
+              {
+                "id": "diagnosticoNutricional",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoNutricional"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Objetivo",
+            "fields": [
+              {
+                "id": "objetivoNutricional",
+                "label": "",
+                "type": "textarea",
+                "name": "objetivoNutricional"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "¿Qué está dispuesto a cambiar?",
+            "fields": [
+              {
+                "id": "disposicionCambiar",
+                "label": "",
+                "type": "textarea",
+                "name": "disposicionCambiar"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Concepto y plan",
+            "fields": [
+              {
+                "id": "conceptoPlan",
+                "label": "",
+                "type": "textarea",
+                "name": "conceptoPlan"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

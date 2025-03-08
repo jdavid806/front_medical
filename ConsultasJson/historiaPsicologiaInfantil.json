@@ -1,0 +1,551 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Anamnesis",
+        "card": [
+          {
+            "title": "Periodo prenatal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "embarazo",
+                "label": "Embarazo",
+                "type": "textarea",
+                "name": "embarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "condicionesAmbientales",
+                "label": "Condiciones Ambientales",
+                "type": "textarea",
+                "name": "condicionesAmbientales",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Período Perinatal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "parto",
+                "label": "Parto",
+                "type": "textarea",
+                "name": "parto",
+                "class": "col-12"
+              },
+              {
+                "id": "caracteristicasCheck",
+                "label": "Características",
+                "type": "checkbox",
+                "name": "caracteristicasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "peso",
+                    "label": "Peso",
+                    "type": "textarea",
+                    "name": "peso"
+                  },
+                  {
+                    "id": "talla",
+                    "label": "Talla",
+                    "type": "textarea",
+                    "name": "talla"
+                  },
+                  {
+                    "id": "coloracion",
+                    "label": "Coloración",
+                    "type": "textarea",
+                    "name": "coloracion"
+                  }
+                ]
+              },
+              {
+                "id": "requerimientosCheck",
+                "label": "Requerimientos",
+                "type": "checkbox",
+                "name": "requerimientosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "instrumentos",
+                    "label": "Instrumentos",
+                    "type": "textarea",
+                    "name": "instrumentos"
+                  },
+                  {
+                    "id": "incubadora",
+                    "label": "Incubadora",
+                    "type": "textarea",
+                    "name": "incubadora"
+                  },
+                  {
+                    "id": "hospitalizacion",
+                    "label": "Hospitalización",
+                    "type": "textarea",
+                    "name": "hospitalizacion"
+                  },
+                  {
+                    "id": "uci",
+                    "label": "UCI",
+                    "type": "textarea",
+                    "name": "uci"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Áreas",
+        "card": [
+          {
+            "title": "Familiar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoFamilia",
+                "label": "Tipo de familia",
+                "type": "select",
+                "name": "tipoFamilia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "nuclear",
+                    "text": "Nuclear"
+                  },
+                  {
+                    "value": "extensa",
+                    "text": "Extensa"
+                  },
+                  {
+                    "value": "reconstruida",
+                    "text": "Reconstruida"
+                  },
+                  {
+                    "value": "mixta",
+                    "text": "Mixta"
+                  }
+                ]
+              },
+              {
+                "id": "cicloVital",
+                "label": "Ciclo vital",
+                "type": "select",
+                "name": "cicloVital",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "hijosPequenos",
+                    "text": "Hijos pequeños"
+                  },
+                  {
+                    "value": "hijosEscolares",
+                    "text": "Hijos escolares"
+                  },
+                  {
+                    "value": "hijosAdolescentes",
+                    "text": "Hijos adolescentes"
+                  },
+                  {
+                    "value": "nidoVacío",
+                    "text": "Nido vacío"
+                  }
+                ]
+              },
+              {
+                "id": "estiloParental",
+                "label": "Estilo parental",
+                "type": "select",
+                "name": "estiloParental",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "sobreprotector",
+                    "text": "Sobreprotector"
+                  },
+                  {
+                    "value": "permisivo",
+                    "text": "Permisivo"
+                  },
+                  {
+                    "value": "autoritario",
+                    "text": "Autoritario"
+                  },
+                  {
+                    "value": "democratico",
+                    "text": "Democrático"
+                  }
+                ]
+              },
+              {
+                "id": "descripcionFamiliar",
+                "label": "Descripción familiar",
+                "type": "textarea",
+                "name": "descripcionFamiliar",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Escolar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "gradoEscolarActual",
+                "label": "Grado Escolar Actual",
+                "type": "textarea",
+                "name": "gradoEscolarActual",
+                "class": "col-6"
+              },
+              {
+                "id": "desempenoAcademico",
+                "label": "Desempeño Académico",
+                "type": "textarea",
+                "name": "desempenoAcademico",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConProfesores",
+                "label": "Relación con Profesores",
+                "type": "textarea",
+                "name": "relacionConProfesores",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConPares",
+                "label": "Relación con Pares",
+                "type": "textarea",
+                "name": "relacionConPares",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionInstitucionEducativa",
+                "label": "Descripción de la Institución Educativa",
+                "type": "textarea",
+                "name": "descripcionInstitucionEducativa",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Social",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "relacionesDeApego",
+                "label": "Relaciones de Apego",
+                "type": "textarea",
+                "name": "relacionesDeApego",
+                "class": "col-6"
+              },
+              {
+                "id": "juego",
+                "label": "Juego",
+                "type": "textarea",
+                "name": "juego",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionFigurasAutoridad",
+                "label": "Relación Figuras de Autoridad",
+                "type": "textarea",
+                "name": "relacionFigurasAutoridad",
+                "class": "col-6"
+              },
+              {
+                "id": "actividadMotora",
+                "label": "Actividad Motora",
+                "type": "textarea",
+                "name": "actividadMotora",
+                "class": "col-6"
+              },
+              {
+                "id": "distractibilidad",
+                "label": "Distractibilidad (Atención y Concentración)",
+                "type": "textarea",
+                "name": "distractibilidad",
+                "class": "col-6"
+              },
+              {
+                "id": "regularidad",
+                "label": "Regularidad (Sueño, Alimentación)",
+                "type": "textarea",
+                "name": "regularidad",
+                "class": "col-6"
+              },
+              {
+                "id": "sensibilidadAEstímulos",
+                "label": "Sensibilidad a Estímulos",
+                "type": "textarea",
+                "name": "sensibilidadAEstímulos",
+                "class": "col-6"
+              },
+              {
+                "id": "adaptabilidadCambios",
+                "label": "Adaptabilidad a los Cambios",
+                "type": "textarea",
+                "name": "adaptabilidadCambios",
+                "class": "col-6"
+              },
+              {
+                "id": "persistencia",
+                "label": "Persistencia",
+                "type": "textarea",
+                "name": "persistencia",
+                "class": "col-6"
+              },
+              {
+                "id": "compatibilidadTemporalPadreHijo",
+                "label": "Compatibilidad Temporalmente entre Padre y Niño (a)",
+                "type": "textarea",
+                "name": "compatibilidadTemporalPadreHijo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Diagnóstico",
+            "fields": [
+              {
+                "id": "diagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnostico"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Objetivo del tratamiento",
+            "fields": [
+              {
+                "id": "objetivoTatamiento",
+                "label": "",
+                "type": "textarea",
+                "name": "objetivoTatamiento"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Intervención y Remisión",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intensidadIntervencionCheck",
+                "label": "Intensidad de intervención",
+                "type": "checkbox",
+                "name": "intensidadIntervencionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "intensidadIntervencionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "intensidadIntervencionText"
+                  }
+                ]
+              },
+              {
+                "id": "remisionInterconsultaCheck",
+                "label": "Remisión e interconsulta",
+                "type": "checkbox",
+                "name": "remisionInterconsultaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "remisionInterconsultaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "remisionInterconsultaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

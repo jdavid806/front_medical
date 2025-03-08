@@ -1,0 +1,775 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Entrevista inicial",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "formaInicio",
+                "class": "col-6",
+                "label": "Forma de inicio",
+                "type": "textarea",
+                "name": "formaInicio"
+              },
+              {
+                "id": "curso",
+                "class": "col-6",
+                "label": "Curso",
+                "type": "textarea",
+                "name": "curso"
+              },
+              {
+                "id": "sintomasIniciales",
+                "class": "col-6",
+                "label": "Síntomas iniciales",
+                "type": "textarea",
+                "name": "sintomasIniciales"
+              },
+              {
+                "id": "relatoGeneral",
+                "class": "col-6",
+                "label": "Relato general",
+                "type": "textarea",
+                "name": "relatoGeneral"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "funcionesBiologicasCheck",
+                "class": "col-6",
+                "label": "Funciones Biológicas",
+                "type": "checkbox",
+                "name": "funcionesBiologicasCheck",
+                "toggleFields": [
+                  {
+                    "id": "funcionesBiologicasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "funcionesBiologicasText"
+                  }
+                ]
+              },
+              {
+                "id": "apetitoCheck",
+                "class": "col-6",
+                "label": "Apetito",
+                "type": "checkbox",
+                "name": "apetitoCheck",
+                "toggleFields": [
+                  {
+                    "id": "apetitoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "apetitoText"
+                  }
+                ]
+              },
+              {
+                "id": "sedCheck",
+                "class": "col-6",
+                "label": "Sed",
+                "type": "checkbox",
+                "name": "sedCheck",
+                "toggleFields": [
+                  {
+                    "id": "sedText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "sedText"
+                  }
+                ]
+              },
+              {
+                "id": "suenoCheck",
+                "class": "col-6",
+                "label": "Sueño",
+                "type": "checkbox",
+                "name": "suenoCheck",
+                "toggleFields": [
+                  {
+                    "id": "suenoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "suenoText"
+                  }
+                ]
+              },
+              {
+                "id": "orinaCheck",
+                "class": "col-6",
+                "label": "Orina",
+                "type": "checkbox",
+                "name": "orinaCheck",
+                "toggleFields": [
+                  {
+                    "id": "orinaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "orinaText"
+                  }
+                ]
+              },
+              {
+                "id": "deposicionesCheck",
+                "class": "col-6",
+                "label": "Deposiciones",
+                "type": "checkbox",
+                "name": "deposicionesCheck",
+                "toggleFields": [
+                  {
+                    "id": "deposicionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "deposicionesText"
+                  }
+                ]
+              },
+              {
+                "id": "variacionPesoCheck",
+                "class": "col-6",
+                "label": "Variación de peso",
+                "type": "checkbox",
+                "name": "variacionPesoCheck",
+                "toggleFields": [
+                  {
+                    "id": "variacionPesoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "variacionPesoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Historia Familiar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "padreCheck",
+                "class": "col-6",
+                "label": "Padre",
+                "type": "checkbox",
+                "name": "padreCheck",
+                "toggleFields": [
+                  {
+                    "id": "padreText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "padreText"
+                  }
+                ]
+              },
+              {
+                "id": "madreCheck",
+                "class": "col-6",
+                "label": "Madre",
+                "type": "checkbox",
+                "name": "madreCheck",
+                "toggleFields": [
+                  {
+                    "id": "madreText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "madreText"
+                  }
+                ]
+              },
+              {
+                "id": "hermanosCheck",
+                "class": "col-6",
+                "label": "Hermanos",
+                "type": "checkbox",
+                "name": "hermanosCheck",
+                "toggleFields": [
+                  {
+                    "id": "hermanosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "hermanosText"
+                  }
+                ]
+              },
+              {
+                "id": "sobrinosCheck",
+                "class": "col-6",
+                "label": "Sobrinos",
+                "type": "checkbox",
+                "name": "sobrinosCheck",
+                "toggleFields": [
+                  {
+                    "id": "sobrinosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "sobrinosText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen general",
+        "card": [
+          {
+            "title": "Personalidad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "inteligenciaCheck",
+                "class": "col-6",
+                "label": "Inteligencia",
+                "type": "checkbox",
+                "name": "inteligenciaCheck",
+                "toggleFields": [
+                  {
+                    "id": "inteligenciaTExt",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "inteligenciaTExt"
+                  }
+                ]
+              },
+              {
+                "id": "satisfaccionesCheck",
+                "class": "col-6",
+                "label": "Satisfacciones",
+                "type": "checkbox",
+                "name": "satisfaccionesCheck",
+                "toggleFields": [
+                  {
+                    "id": "satisfaccionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "satisfaccionesText"
+                  }
+                ]
+              },
+              {
+                "id": "habilidadesEspecialesCheck",
+                "class": "col-6",
+                "label": "Habilidades Especiales",
+                "type": "checkbox",
+                "name": "habilidadesEspecialesCheck",
+                "toggleFields": [
+                  {
+                    "id": "habilidadesEspecialesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "habilidadesEspecialesText"
+                  }
+                ]
+              },
+              {
+                "id": "habitosEmpleoTiempoCheck",
+                "class": "col-6",
+                "label": "Hábitos y Empleo del Tiempo",
+                "type": "checkbox",
+                "name": "habitosEmpleoTiempoCheck",
+                "toggleFields": [
+                  {
+                    "id": "habitosEmpleoTiempoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "habitosEmpleoTiempoText"
+                  }
+                ]
+              },
+              {
+                "id": "estadoAnimoHabitualCheck",
+                "class": "col-6",
+                "label": "Estado de Ánimo Habitual",
+                "type": "checkbox",
+                "name": "estadoAnimoHabitualCheck",
+                "toggleFields": [
+                  {
+                    "id": "estadoAnimoHabitualText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "estadoAnimoHabitualText"
+                  }
+                ]
+              },
+              {
+                "id": "rasgosDominantesCheck",
+                "class": "col-6",
+                "label": "Rasgos Dominantes",
+                "type": "checkbox",
+                "name": "rasgosDominantesCheck",
+                "toggleFields": [
+                  {
+                    "id": "rasgosDominantestext",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "rasgosDominantestext"
+                  }
+                ]
+              },
+              {
+                "id": "relacionesConOtrasPersonasCheck",
+                "class": "col-6",
+                "label": "Relaciones con Otras Personas",
+                "type": "checkbox",
+                "name": "relacionesConOtrasPersonasCheck",
+                "toggleFields": [
+                  {
+                    "id": "relacionesConOtrasPersonasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "relacionesConOtrasPersonasText"
+                  }
+                ]
+              },
+              {
+                "id": "objetivosAspiracionesCheck",
+                "class": "col-6",
+                "label": "Objetivos y Aspiraciones",
+                "type": "checkbox",
+                "name": "objetivosAspiracionesCheck",
+                "toggleFields": [
+                  {
+                    "id": "objetivosAspiracionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "objetivosAspiracionesText"
+                  }
+                ]
+              },
+              {
+                "id": "idealesCheck",
+                "class": "col-6",
+                "label": "Ideales",
+                "type": "checkbox",
+                "name": "idealesCheck",
+                "toggleFields": [
+                  {
+                    "id": "idealesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "idealesText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Conducta",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "porteCheck",
+                "label": "Porte",
+                "type": "checkbox",
+                "name": "porteCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "porteText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "porteText"
+                  }
+                ]
+              },
+              {
+                "id": "comportamientoCheck",
+                "label": "Comportamiento",
+                "type": "checkbox",
+                "name": "comportamientoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "comportamientoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "comportamientoText"
+                  }
+                ]
+              },
+              {
+                "id": "actitudCheck",
+                "label": "Actitud",
+                "type": "checkbox",
+                "name": "actitudCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "actitudText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "actitudText"
+                  }
+                ]
+              },
+              {
+                "id": "concienciaCheck",
+                "label": "Conciencia",
+                "type": "checkbox",
+                "name": "concienciaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "concienciaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "concienciaText"
+                  }
+                ]
+              },
+              {
+                "id": "atencionCheck",
+                "label": "Atención",
+                "type": "checkbox",
+                "name": "atencionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "atencionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "atencionText"
+                  }
+                ]
+              },
+              {
+                "id": "orientacionCheck",
+                "label": "Orientación",
+                "type": "checkbox",
+                "name": "orientacionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "orientacionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "orientacionText"
+                  }
+                ]
+              },
+              {
+                "id": "lenguajeCheck",
+                "label": "Lenguaje",
+                "type": "checkbox",
+                "name": "lenguajeCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "lenguajeText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "lenguajeText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Datos adicionales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "educacionCheck",
+                "label": "Educación",
+                "type": "checkbox",
+                "name": "educacionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "educacionInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "educacionInfo"
+                  }
+                ]
+              },
+              {
+                "id": "trabajoCheck",
+                "label": "Trabajo",
+                "type": "checkbox",
+                "name": "trabajoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "trabajoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "trabajoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "vidaSexualCheck",
+                "label": "Vida Sexual",
+                "type": "checkbox",
+                "name": "vidaSexualCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "vidaSexualInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "vidaSexualInfo"
+                  }
+                ]
+              },
+              {
+                "id": "habitosInteresesCheck",
+                "label": "Hábitos e Intereses",
+                "type": "checkbox",
+                "name": "habitosInteresesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "habitosInteresesInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "habitosInteresesInfo"
+                  }
+                ]
+              },
+              {
+                "id": "actitudFamiliaCheck",
+                "label": "Actitud con la Familia",
+                "type": "checkbox",
+                "name": "actitudFamiliaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "actitudFamiliaInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "actitudFamiliaInfo"
+                  }
+                ]
+              },
+              {
+                "id": "suenosCheck",
+                "label": "Sueños",
+                "type": "checkbox",
+                "name": "suenosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "suenosInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "suenosInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4":[
+          {
+            "title": "Evaluación",
+            "class": "col-12",
+            "fields":[
+              {
+                "id": "evaluacion",
+                "label": "",
+                "type": "textarea",
+                "name": "evaluacion"
+              }
+            ]
+          }
+        ],
+        "card5":[
+          {
+            "title": "Tratamiento",
+            "class": "col-12",
+            "fields":[
+              {
+                "id": "tratamiento",
+                "label": "",
+                "type": "textarea",
+                "name": "tratamiento"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

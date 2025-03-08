@@ -1,0 +1,532 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen clinico",
+        "card": [
+          {
+            "title": "Simetría Facial",
+            "fields": [
+              {
+                "id": "simetriaFacial",
+                "label": "",
+                "type": "textarea",
+                "name": "simetriaFacial"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Musculatura",
+            "fields": [
+              {
+                "id": "musculatura",
+                "label": "",
+                "type": "textarea",
+                "name": "musculatura"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "ATM",
+            "fields": [
+              {
+                "id": "atm",
+                "label": "",
+                "type": "textarea",
+                "name": "atm"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Apertura/Cierre",
+            "fields": [
+              {
+                "id": "aperturaCierre",
+                "label": "",
+                "type": "textarea",
+                "name": "aperturaCierre"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Sonrisa",
+            "fields": [
+              {
+                "id": "sonrisa",
+                "label": "",
+                "type": "textarea",
+                "name": "sonrisa"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Arcada Maxilar",
+            "fields": [
+              {
+                "id": "arcadaMaxilar",
+                "label": "",
+                "type": "textarea",
+                "name": "arcadaMaxilar"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Arcada Mandíbula",
+            "fields": [
+              {
+                "id": "arcadaMandibula",
+                "label": "",
+                "type": "textarea",
+                "name": "arcadaMandibula"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Mordida",
+            "fields": [
+              {
+                "id": "mordida",
+                "label": "",
+                "type": "textarea",
+                "name": "mordida"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Alteraciones",
+        "card": [
+          {
+            "title": "Alteraciones estomatologicas",
+            "fields": [
+              {
+                "id": "alteracionesEstomatologicas",
+                "label": "",
+                "type": "textarea",
+                "name": "alteracionesEstomatologicas"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Alteraciones periodontales",
+            "fields": [
+              {
+                "id": "alteracionesPeriodontales",
+                "label": "",
+                "type": "textarea",
+                "name": "alteracionesPeriodontales"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Alteraciones pulpares",
+            "fields": [
+              {
+                "id": "alteracionesPulpares",
+                "label": "",
+                "type": "textarea",
+                "name": "alteracionesPulpares"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "ATM-Oclusión",
+            "fields": [
+              {
+                "id": "atmOclusion",
+                "label": "",
+                "type": "textarea",
+                "name": "atmOclusion"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Overjet",
+            "fields": [
+              {
+                "id": "overjet",
+                "label": "",
+                "type": "textarea",
+                "name": "overjet"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Perfil",
+            "fields": [
+              {
+                "id": "perfil",
+                "label": "",
+                "type": "textarea",
+                "name": "perfil"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Overbite",
+            "fields": [
+              {
+                "id": "overbite",
+                "label": "",
+                "type": "textarea",
+                "name": "overbite"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Otras alteraciones",
+            "fields": [
+              {
+                "id": "otrasAlteraciones",
+                "label": "",
+                "type": "textarea",
+                "name": "otrasAlteraciones"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Relacion molar",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "relacionMolarDerecha",
+                "label": "Der",
+                "type": "text",
+                "name": "relacionMolarDerecha"
+              },
+              {
+                "id": "relacionMolarIzquierda",
+                "label": "Izq",
+                "type": "text",
+                "name": "relacionMolarIzquierda"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Relacion canina",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "relacionCaninaDerecha",
+                "label": "Der",
+                "type": "text",
+                "name": "relacionCaninaDerecha"
+              },
+              {
+                "id": "relacionCaninaIzquierda",
+                "label": "Izq",
+                "type": "text",
+                "name": "relacionCaninaIzquierda"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Linea media",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "lineaMediaSuperior",
+                "label": "Superior",
+                "type": "text",
+                "name": "lineaMediaSuperior"
+              },
+              {
+                "id": "lineaMediaInferior",
+                "label": "Inferior",
+                "type": "text",
+                "name": "lineaMediaInferior"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Hábitos",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "enjuageBucal",
+                "label": "Enjuage bucal",
+                "type": "checkbox",
+                "name": "enjuageBucal",
+                "class": "col-4"
+              },
+              {
+                "id": "fuma",
+                "label": "Fuma",
+                "type": "checkbox",
+                "name": "fuma",
+                "class": "col-4"
+              },
+              {
+                "id": "sedaDental",
+                "label": "Seda dental",
+                "type": "checkbox",
+                "name": "sedaDental",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Habitos orales nocivos",
+            "fields": [
+              {
+                "id": "habitosOralesNocivos",
+                "label": "",
+                "type": "textarea",
+                "name": "habitosOralesNocivos"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Regularidad del cepillado",
+            "fields": [
+              {
+                "id": "regularidadCepillado",
+                "label": "",
+                "type": "textarea",
+                "name": "regularidadCepillado"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Hábitos orales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "habitosOrales",
+                "label": "",
+                "type": "textarea",
+                "name": "habitosOrales"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Imágenes",
+        "card": [
+          {
+            "title": "Cargar imágenes",
+            "fields": [
+              {
+                "id": "imagenes",
+                "label": "",
+                "type": "file",
+                "name": "imagenes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,584 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintomas"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Procedimiento",
+        "card": [
+          {
+            "title": "Clasificación de Ritides Facial",
+            "fields": [
+              {
+                "id": "ritidesFacial",
+                "label": "",
+                "type": "select",
+                "name": "ritidesFacial",
+                "options": [
+                  {
+                    "value": "clase1",
+                    "text": "Clase 1: Elastosis leve, con pequeños cambios de textura y aparición de líneas discretamente acentuadas sobre la piel."
+                  },
+                  {
+                    "value": "clase2",
+                    "text": "Clase 2: Elastosis moderada, con pápulas de elastosis que se distinguen de la piel normal por su color amarillento y traslúcido bajo luz directa y discreta discromía."
+                  },
+                  {
+                    "value": "clase3",
+                    "text": "Clase 3: Elastosis severa, elastosis multipapular y concluyente con piel pálida y amarilla, además de aparición de arrugas profundas romboidales."
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Fitzpatrick",
+            "fields": [
+              {
+                "id": "fitzpatrick",
+                "label": "",
+                "type": "select",
+                "name": "fitzpatrick",
+                "options": [
+                  {
+                    "value": "1",
+                    "text": "I"
+                  },
+                  {
+                    "value": "2",
+                    "text": "II"
+                  },
+                  {
+                    "value": "3",
+                    "text": "III"
+                  },
+                  {
+                    "value": "4",
+                    "text": "IV"
+                  },
+                  {
+                    "value": "5",
+                    "text": "V"
+                  },
+                  {
+                    "value": "6",
+                    "text": "VI"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Piel",
+            "fields": [
+              {
+                "id": "tipoPiel",
+                "class": "col-12",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoPiel",
+                "options": [
+                  {
+                    "value": "seca",
+                    "text": "Seca"
+                  },
+                  {
+                    "value": "grasa",
+                    "text": "Grasa"
+                  },
+                  {
+                    "value": "mixta",
+                    "text": "Mixta"
+                  },
+                  {
+                    "value": "conacne",
+                    "text": "Con acné"
+                  },
+                  {
+                    "value": "sensible",
+                    "text": "Sensible"
+                  }
+                ]
+              },
+              {
+                "id": "textura",
+                "class": "col-12",
+                "label": "Textura",
+                "type": "select",
+                "name": "textura",
+                "options": [
+                  {
+                    "value": "lisa",
+                    "text": "Lisa"
+                  },
+                  {
+                    "value": "aspera",
+                    "text": "Aspera"
+                  },
+                  {
+                    "value": "fina",
+                    "text": "Fina"
+                  },
+                  {
+                    "value": "gruesa",
+                    "text": "Gruesa"
+                  },
+                  {
+                    "value": "rugosa",
+                    "text": "Rugosa"
+                  }
+                ]
+              },
+              {
+                "id": "hidratacion",
+                "class": "col-12",
+                "label": "Hidratación",
+                "type": "select",
+                "name": "hidratacion",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "hidratada",
+                    "text": "Hidratada"
+                  },
+                  {
+                    "value": "deshidratada",
+                    "text": "Deshidratada"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Acné",
+            "fields": [
+              {
+                "id": "lesionPredominante",
+                "class": "col-12",
+                "label": "Según lesión predominante",
+                "type": "select",
+                "name": "lesionPredominante",
+                "options": [
+                  {
+                    "value": "comedonico",
+                    "text": "Comedónico"
+                  },
+                  {
+                    "value": "papuloPustuloso",
+                    "text": "Pápulo-pustuloso"
+                  },
+                  {
+                    "value": "noduloQuistico",
+                    "text": "Nódulo Quisitico"
+                  }
+                ]
+              },
+              {
+                "id": "gradoSeveridad",
+                "class": "col-12",
+                "label": "Según grado de severidad",
+                "type": "select",
+                "name": "gradoSeveridad",
+                "options": [
+                  {
+                    "value": "leve",
+                    "text": "Leve < 20"
+                  },
+                  {
+                    "value": "moderado",
+                    "text": "Moderado 20 - 50"
+                  },
+                  {
+                    "value": "severo",
+                    "text": "Severo > 50"
+                  }
+                ]
+              },
+              {
+                "id": "formasEspeciales",
+                "class": "col-12",
+                "label": "Formas especiales",
+                "type": "select",
+                "name": "formasEspeciales",
+                "options": [
+                  {
+                    "value": "fulminans",
+                    "text": "Fulminans"
+                  },
+                  {
+                    "value": "conglobata",
+                    "text": "Conglobata"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Otros hallazgos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "otrosHallazgos",
+                "label": "",
+                "type": "textarea",
+                "name": "otrosHallazgos"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tomaAntibioticos",
+                "class": "col-4",
+                "label": "Está tomando antibióticos",
+                "type": "checkbox",
+                "name": "tomaAntibioticos"
+              },
+              {
+                "id": "tomaVitaminasAB",
+                "class": "col-4",
+                "label": "Toma vitaminas A-B",
+                "type": "checkbox",
+                "name": "tomaVitaminasAB"
+              },
+              {
+                "id": "tomaRobacutam",
+                "class": "col-4",
+                "label": "Toma Robacutam",
+                "type": "checkbox",
+                "name": "tomaRobacutam"
+              },
+              {
+                "id": "tomaAminoglucosidos",
+                "class": "col-4",
+                "label": "Toma Aminoglucósidos",
+                "type": "checkbox",
+                "name": "tomaAminoglucosidos"
+              },
+              {
+                "id": "fuma",
+                "class": "col-4",
+                "label": "Fuma",
+                "type": "checkbox",
+                "name": "fuma"
+              },
+              {
+                "id": "pielBronceada",
+                "class": "col-4",
+                "label": "Tiene piel bronceada",
+                "type": "checkbox",
+                "name": "pielBronceada"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Antecedentes Adicionales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "antecedentesAdicionales",
+                "label": "",
+                "type": "textarea",
+                "name": "antecedentesAdicionales"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

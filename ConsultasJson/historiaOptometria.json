@@ -1,0 +1,1189 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen",
+        "card": [
+          {
+            "title": "Signos y sintomas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "asintomatico",
+                "label": "Asintomático",
+                "type": "checkbox",
+                "name": "asintomatico",
+                "class": "col-4"
+              },
+              {
+                "id": "disminucionVisualCerca",
+                "label": "Disminución visual de cerca",
+                "type": "checkbox",
+                "name": "disminucionVisualCerca",
+                "class": "col-4"
+              },
+              {
+                "id": "disminucionVisualLejos",
+                "label": "Disminución visual de lejos",
+                "type": "checkbox",
+                "name": "disminucionVisualLejos",
+                "class": "col-4"
+              },
+              {
+                "id": "ardorOcular",
+                "label": "Ardor ocular",
+                "type": "checkbox",
+                "name": "ardorOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "lagrimeo",
+                "label": "Lagrimeo",
+                "type": "checkbox",
+                "name": "lagrimeo",
+                "class": "col-4"
+              },
+              {
+                "id": "cansancioOcular",
+                "label": "Cansancio ocular",
+                "type": "checkbox",
+                "name": "cansancioOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "irritacion",
+                "label": "Irritación",
+                "type": "checkbox",
+                "name": "irritacion",
+                "class": "col-4"
+              },
+              {
+                "id": "fotofobia",
+                "label": "Fotofobia",
+                "type": "checkbox",
+                "name": "fotofobia",
+                "class": "col-4"
+              },
+              {
+                "id": "pruritoOcular",
+                "label": "Prurito ocular",
+                "type": "checkbox",
+                "name": "pruritoOcular",
+                "class": "col-4"
+              },
+              {
+                "id": "saltoRenglon",
+                "label": "Salto de renglón",
+                "type": "checkbox",
+                "name": "saltoRenglon",
+                "class": "col-4"
+              },
+              {
+                "id": "cefaleas",
+                "label": "Cefaleas",
+                "type": "checkbox",
+                "name": "cefaleas",
+                "class": "col-4"
+              },
+              {
+                "id": "resequedadOcular",
+                "label": "Resequedad ocular",
+                "type": "checkbox",
+                "name": "resequedadOcular",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Agudeza visual OD",
+            "fields": [
+              {
+                "id": "ccVLOD",
+                "label": "CC VL",
+                "type": "textarea",
+                "name": "ccVLOD"
+              },
+              {
+                "id": "ccVPOD",
+                "label": "CC VP",
+                "type": "textarea",
+                "name": "ccVPOD"
+              },
+              {
+                "id": "scVLOD",
+                "label": "SC VL",
+                "type": "textarea",
+                "name": "scVLOD"
+              },
+              {
+                "id": "scVPOD",
+                "label": "SC VP",
+                "type": "textarea",
+                "name": "scVPOD"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Agudeza visual OI",
+            "fields": [
+              {
+                "id": "ccVLOI",
+                "label": "CC VL",
+                "type": "textarea",
+                "name": "ccVLOI"
+              },
+              {
+                "id": "ccVPOI",
+                "label": "CC VP",
+                "type": "textarea",
+                "name": "ccVPOI"
+              },
+              {
+                "id": "scVLOI",
+                "label": "SC VL",
+                "type": "textarea",
+                "name": "scVLOI"
+              },
+              {
+                "id": "scVPOI",
+                "label": "SC VP",
+                "type": "textarea",
+                "name": "scVPOI"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Lensometría OD",
+            "fields": [
+              {
+                "id": "esfOD",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOD"
+              },
+              {
+                "id": "cilOD",
+                "label": "CIL",
+                "type": "textarea",
+                "name": "cilOD"
+              },
+              {
+                "id": "ejeOD",
+                "label": "EJE",
+                "type": "textarea",
+                "name": "ejeOD"
+              },
+              {
+                "id": "addOD",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOD"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Lensometría OI",
+            "fields": [
+              {
+                "id": "esfOI",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOI"
+              },
+              {
+                "id": "cilOI",
+                "label": "CIL",
+                "type": "textarea",
+                "name": "cilOI"
+              },
+              {
+                "id": "ejeOI",
+                "label": "EJE",
+                "type": "textarea",
+                "name": "ejeOI"
+              },
+              {
+                "id": "addOI",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOI"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Examen Externo OD",
+            "fields": [
+              {
+                "id": "examenExternoSelectOD",
+                "label": "",
+                "type": "select",
+                "name": "examenExternoSelectOD",
+                "options": [
+                  {
+                    "value": "segmentoAnterior",
+                    "text": "Segmento anterior"
+                  },
+                  {
+                    "value": "hiperemiaConjuntival",
+                    "text": "Hiperemia Conjuntival"
+                  },
+                  {
+                    "value": "pterigioN",
+                    "text": "PterigioN"
+                  },
+                  {
+                    "value": "pterigioT",
+                    "text": "PterigioT"
+                  },
+                  {
+                    "value": "pinguicula",
+                    "text": "Pinguécuela"
+                  },
+                  {
+                    "value": "nebus",
+                    "text": "Nebus"
+                  },
+                  {
+                    "value": "blefaritis",
+                    "text": "Blefaritis"
+                  },
+                  {
+                    "value": "blefaritisSeborreica",
+                    "text": "Blefaritis Seborreica"
+                  },
+                  {
+                    "value": "secrecion",
+                    "text": "Secreción"
+                  },
+                  {
+                    "value": "leucomaCorneal",
+                    "text": "Leucoma Corneal"
+                  },
+                  {
+                    "value": "ptosisPalpebral",
+                    "text": "Ptosis Palpebral"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Examen Externo OI",
+            "fields": [
+              {
+                "id": "examenExternoSelectOI",
+                "label": "",
+                "type": "select",
+                "name": "examenExternoSelectOI",
+                "options": [
+                  {
+                    "value": "segmentoAnterior",
+                    "text": "Segmento anterior"
+                  },
+                  {
+                    "value": "hiperemiaConjuntival",
+                    "text": "Hiperemia Conjuntival"
+                  },
+                  {
+                    "value": "pterigioN",
+                    "text": "PterigioN"
+                  },
+                  {
+                    "value": "pterigioT",
+                    "text": "PterigioT"
+                  },
+                  {
+                    "value": "pinguicula",
+                    "text": "Pinguécuela"
+                  },
+                  {
+                    "value": "nebus",
+                    "text": "Nebus"
+                  },
+                  {
+                    "value": "blefaritis",
+                    "text": "Blefaritis"
+                  },
+                  {
+                    "value": "blefaritisSeborreica",
+                    "text": "Blefaritis Seborreica"
+                  },
+                  {
+                    "value": "secrecion",
+                    "text": "Secreción"
+                  },
+                  {
+                    "value": "leucomaCorneal",
+                    "text": "Leucoma Corneal"
+                  },
+                  {
+                    "value": "ptosisPalpebral",
+                    "text": "Ptosis Palpebral"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Motricidad Ocular OD",
+            "fields": [
+              {
+                "id": "rlOD",
+                "label": "RL",
+                "type": "textarea",
+                "name": "rlOD"
+              },
+              {
+                "id": "rmOD",
+                "label": "RM",
+                "type": "textarea",
+                "name": "rmOD"
+              },
+              {
+                "id": "rsOD",
+                "label": "RS",
+                "type": "textarea",
+                "name": "rsOD"
+              },
+              {
+                "id": "riOD",
+                "label": "RI",
+                "type": "textarea",
+                "name": "riOD"
+              },
+              {
+                "id": "osOD",
+                "label": "OS",
+                "type": "textarea",
+                "name": "osOD"
+              },
+              {
+                "id": "oiOD",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oiOD"
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Motricidad Ocular OI",
+            "fields": [
+              {
+                "id": "rlOI",
+                "label": "RL",
+                "type": "textarea",
+                "name": "rlOI"
+              },
+              {
+                "id": "rmOI",
+                "label": "RM",
+                "type": "textarea",
+                "name": "rmOI"
+              },
+              {
+                "id": "rsOI",
+                "label": "RS",
+                "type": "textarea",
+                "name": "rsOI"
+              },
+              {
+                "id": "riOI",
+                "label": "RI",
+                "type": "textarea",
+                "name": "riOI"
+              },
+              {
+                "id": "osOI",
+                "label": "OS",
+                "type": "textarea",
+                "name": "osOI"
+              },
+              {
+                "id": "oiOI",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oiOI"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Queratometría",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Ducciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesCheck",
+                "label": "Observaciones",
+                "type": "checkbox",
+                "name": "observacionesCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "observacionesInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "observacionesInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "PPC",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "CT",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Kappa",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Hishber",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card16": [
+          {
+            "title": "FR",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "fr",
+                "label": "",
+                "type": "textarea",
+                "name": "fr"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Revisión",
+        "card": [
+          {
+            "title": "Visión de Profundidad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Campimetría por Confrontación",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Lagrimal: OSDI",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Shirmer",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Retinoscopia ESF",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Retinoscopia CYL",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Retinoscopia AX",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Retinoscopia Test de color",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "od",
+                "label": "OD",
+                "type": "textarea",
+                "name": "od",
+                "class": "col-6"
+              },
+              {
+                "id": "oi",
+                "label": "OI",
+                "type": "textarea",
+                "name": "oi",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "RX final OD",
+            "fields": [
+              {
+                "id": "esfOD",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOD"
+              },
+              {
+                "id": "cylOD",
+                "label": "CYL",
+                "type": "textarea",
+                "name": "cylOD"
+              },
+              {
+                "id": "axOD",
+                "label": "AX",
+                "type": "textarea",
+                "name": "axOD"
+              },
+              {
+                "id": "addOD",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOD"
+              },
+              {
+                "id": "avlOD",
+                "label": "AVL",
+                "type": "textarea",
+                "name": "avlOD"
+              },
+              {
+                "id": "avpOD",
+                "label": "AVP",
+                "type": "textarea",
+                "name": "avpOD"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "RX final OI",
+            "fields": [
+              {
+                "id": "esfOI",
+                "label": "ESF",
+                "type": "textarea",
+                "name": "esfOI"
+              },
+              {
+                "id": "cylOI",
+                "label": "CYL",
+                "type": "textarea",
+                "name": "cylOI"
+              },
+              {
+                "id": "axOI",
+                "label": "AX",
+                "type": "textarea",
+                "name": "axOI"
+              },
+              {
+                "id": "addOI",
+                "label": "ADD",
+                "type": "textarea",
+                "name": "addOI"
+              },
+              {
+                "id": "avlOI",
+                "label": "AVL",
+                "type": "textarea",
+                "name": "avlOI"
+              },
+              {
+                "id": "avpOI",
+                "label": "AVP",
+                "type": "textarea",
+                "name": "avpOI"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Lente",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipo",
+                "label": "Tipo",
+                "type": "textarea",
+                "name": "tipo",
+                "class": "col-6"
+              },
+              {
+                "id": "uso",
+                "label": "Uso",
+                "type": "textarea",
+                "name": "uso",
+                "class": "col-6"
+              },
+              {
+                "id": "observaciones",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observaciones",
+                "class": "col-6"
+              },
+              {
+                "id": "anguloPantoscopico",
+                "label": "Ángulo Pantoscópico",
+                "type": "textarea",
+                "name": "anguloPantoscopico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Montura",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "pd",
+                "label": "PD",
+                "type": "textarea",
+                "name": "pd",
+                "class": "col-6"
+              },
+              {
+                "id": "dnpOd",
+                "label": "DNP - OD",
+                "type": "textarea",
+                "name": "dnpOd",
+                "class": "col-6"
+              },
+              {
+                "id": "tipoMontura1",
+                "label": "Tipo de Montura",
+                "type": "textarea",
+                "name": "tipoMontura1",
+                "class": "col-6"
+              },
+              {
+                "id": "pdPd2",
+                "label": "PD - PD2",
+                "type": "textarea",
+                "name": "pdPd2",
+                "class": "col-6"
+              },
+              {
+                "id": "dnpV",
+                "label": "DNP - V",
+                "type": "textarea",
+                "name": "dnpV",
+                "class": "col-6"
+              },
+              {
+                "id": "tipoMontura2",
+                "label": "Tipo de Montura",
+                "type": "textarea",
+                "name": "tipoMontura2",
+                "class": "col-6"
+              },
+              {
+                "id": "obleaAlturaOd",
+                "label": "Oblea o Altura OD",
+                "type": "textarea",
+                "name": "obleaAlturaOd",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionOd",
+                "label": "Descripción",
+                "type": "textarea",
+                "name": "descripcionOd",
+                "class": "col-6"
+              },
+              {
+                "id": "obleaAlturaOi",
+                "label": "Oblea o Altura OI",
+                "type": "textarea",
+                "name": "obleaAlturaOi",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionOi",
+                "label": "Descripción",
+                "type": "textarea",
+                "name": "descripcionOi",
+                "class": "col-6"
+              },
+              {
+                "id": "color",
+                "label": "Color",
+                "type": "textarea",
+                "name": "color",
+                "class": "col-6"
+              },
+              {
+                "id": "tamano",
+                "label": "Tamaño",
+                "type": "textarea",
+                "name": "tamano",
+                "class": "col-6"
+              },
+              {
+                "id": "dv",
+                "label": "DV",
+                "type": "textarea",
+                "name": "dv",
+                "class": "col-6"
+              },
+              {
+                "id": "dh",
+                "label": "DH",
+                "type": "textarea",
+                "name": "dh",
+                "class": "col-6"
+              },
+              {
+                "id": "dd",
+                "label": "DD",
+                "type": "textarea",
+                "name": "dd",
+                "class": "col-6"
+              },
+              {
+                "id": "marca",
+                "label": "Marca",
+                "type": "textarea",
+                "name": "marca",
+                "class": "col-6"
+              },
+              {
+                "id": "codigo",
+                "label": "Código",
+                "type": "textarea",
+                "name": "codigo",
+                "class": "col-6"
+              },
+              {
+                "id": "observaciones",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observaciones",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

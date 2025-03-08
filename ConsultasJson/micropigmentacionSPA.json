@@ -1,0 +1,300 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Procedimiento",
+            "fields": [
+              {
+                "id": "procedimiento",
+                "label": "Selecciona el procedimiento",
+                "type": "select",
+                "name": "procedimiento",
+                "options": [
+                  {
+                    "value": "microblading",
+                    "text": "Microblading"
+                  },
+                  {
+                    "value": "shading",
+                    "text": "Shading"
+                  },
+                  {
+                    "value": "microshading",
+                    "text": "Microshading"
+                  },
+                  {
+                    "value": "microLabios",
+                    "text": "Micro Labios"
+                  },
+                  {
+                    "value": "areola",
+                    "text": "Areola"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Tratamientos Anteriores",
+            "fields": [
+              {
+                "id": "tratamientosAnteriores",
+                "label": "¿Has tenido tratamientos anteriores?",
+                "type": "checkbox",
+                "name": "tratamientosAnteriores",
+                "toggleFields": [
+                  {
+                    "id": "cualesTratamientos",
+                    "label": "¿Cuáles?",
+                    "type": "textarea",
+                    "name": "cualesTratamientos"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Pigmento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "marcaPigmento",
+                "label": "Marca",
+                "type": "textarea",
+                "name": "marcaPigmento",
+                "class": "col-6"
+              },
+              {
+                "id": "colorPigmento",
+                "label": "Color",
+                "type": "textarea",
+                "name": "colorPigmento",
+                "class": "col-6"
+              },
+              {
+                "id": "notaPigmento",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notaPigmento",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fotos",
+        "card": [
+          {
+            "title": "Antes",
+            "fields": [
+              {
+                "id": "fotoAntes",
+                "label": "",
+                "type": "file",
+                "name": "fotoAntes"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Durante",
+            "fields": [
+              {
+                "id": "fotoDurante",
+                "label": "",
+                "type": "file",
+                "name": "fotoDurante"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Después",
+            "fields": [
+              {
+                "id": "fotoDespues",
+                "label": "",
+                "type": "file",
+                "name": "fotoDespues"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

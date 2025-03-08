@@ -1,0 +1,1504 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Diagnostico articular",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dolorRostro",
+                "label": "Dolor en rostro",
+                "type": "checkbox",
+                "name": "dolorRostro",
+                "class": "col-4"
+              },
+              {
+                "id": "dolorCuello",
+                "label": "Dolor en cuello",
+                "type": "checkbox",
+                "name": "dolorCuello",
+                "class": "col-4"
+              },
+              {
+                "id": "dolorCabeza",
+                "label": "Dolor en cabeza",
+                "type": "checkbox",
+                "name": "dolorCabeza",
+                "class": "col-4"
+              },
+              {
+                "id": "historiaTrauma",
+                "label": "Historia de Trauma",
+                "type": "checkbox",
+                "name": "historiaTrauma",
+                "class": "col-4"
+              },
+              {
+                "id": "tratamientoPrevio",
+                "label": "Tratamiento previo",
+                "type": "checkbox",
+                "name": "tratamientoPrevio",
+                "class": "col-4"
+              },
+              {
+                "id": "tensionEmocional",
+                "label": "Tensión emocional",
+                "type": "checkbox",
+                "name": "tensionEmocional",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "eventosTraumaticos",
+                "label": "Eventos traumaticos",
+                "type": "textarea",
+                "name": "eventosTraumaticos",
+                "class": "col-4"
+              },
+              {
+                "id": "habitosParafunciones",
+                "label": "Hábitos/Parafunciones",
+                "type": "textarea",
+                "name": "habitosParafunciones",
+                "class": "col-4"
+              },
+              {
+                "id": "ruidos",
+                "label": "Ruidos",
+                "type": "textarea",
+                "name": "ruidos",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Musculatura Craneocervical Derecho",
+            "fields": [
+              {
+                "id": "temporalAnteriorDerecho",
+                "label": "Temporal Anterior",
+                "type": "select",
+                "name": "temporalAnteriorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "temporalMedioDerecho",
+                "label": "Temporal Medio",
+                "type": "select",
+                "name": "temporalMedioDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "temporalPosteriorDerecho",
+                "label": "Temporal Posterior",
+                "type": "select",
+                "name": "temporalPosteriorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "maseteroSuperficialDerecho",
+                "label": "Masetero Superficial",
+                "type": "select",
+                "name": "maseteroSuperficialDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "maseteroProfundoDerecho",
+                "label": "Masetero Profundo",
+                "type": "select",
+                "name": "maseteroProfundoDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "tendonTemporalDerecho",
+                "label": "Tendón del Temporal",
+                "type": "select",
+                "name": "tendonTemporalDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "pterigoideoDerecho",
+                "label": "Pterigoideo Externo",
+                "type": "select",
+                "name": "pterigoideoDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "esternocleidomastoideoDerecho",
+                "label": "Esternocleidomastoideo",
+                "type": "select",
+                "name": "esternocleidomastoideoDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "suboccipitalDerecho",
+                "label": "Suboccipital",
+                "type": "select",
+                "name": "suboccipitalDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Musculatura Craneocervical Izquierdo",
+            "fields": [
+              {
+                "id": "temporalAnteriorIzquierdo",
+                "label": "Temporal Anterior",
+                "type": "select",
+                "name": "temporalAnteriorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "temporalMedioIzquierdo",
+                "label": "Temporal Medio",
+                "type": "select",
+                "name": "temporalMedioIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "temporalPosteriorIzquierdo",
+                "label": "Temporal Posterior",
+                "type": "select",
+                "name": "temporalPosteriorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "maseteroSuperficialIzquierdo",
+                "label": "Masetero Superficial",
+                "type": "select",
+                "name": "maseteroSuperficialIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "maseteroProfundoIzquierdo",
+                "label": "Masetero Profundo",
+                "type": "select",
+                "name": "maseteroProfundoIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "tendonTemporalIzquierdo",
+                "label": "Tendón del Temporal",
+                "type": "select",
+                "name": "tendonTemporalIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "pterigoideoIzquierdo",
+                "label": "Pterigoideo Externo",
+                "type": "select",
+                "name": "pterigoideoIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "esternocleidomastoideoIzquierdo",
+                "label": "Esternocleidomastoideo",
+                "type": "select",
+                "name": "esternocleidomastoideoIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "suboccipitalIzquierdo",
+                "label": "Suboccipital",
+                "type": "select",
+                "name": "suboccipitalIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "ATM Derecho",
+            "fields": [
+              {
+                "id": "sinovialAnteroinferiorDerecho",
+                "label": "Sinovial Anteroinferior",
+                "type": "select",
+                "name": "sinovialAnteroinferiorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialAnterosuperiorDerecho",
+                "label": "Sinovial Anterosuperior",
+                "type": "select",
+                "name": "sinovialAnterosuperiorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoColateralDerecho",
+                "label": "Ligamento Colateral Externo",
+                "type": "select",
+                "name": "ligamentoColateralDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoTemporomandibularDerecho",
+                "label": "Ligamento Temporomandibular",
+                "type": "select",
+                "name": "ligamentoTemporomandibularDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialPosteroinferiorDerecho",
+                "label": "Sinovial Posteroinferior",
+                "type": "select",
+                "name": "sinovialPosteroinferiorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialPosterosuperiorDerecho",
+                "label": "Sinovial Postero Superior",
+                "type": "select",
+                "name": "sinovialPosterosuperiorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoPosteriorDerecho",
+                "label": "Ligamento Posterior",
+                "type": "select",
+                "name": "ligamentoPosteriorDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "zonaRetrodiscalDerecho",
+                "label": "Zona Retrodiscal",
+                "type": "select",
+                "name": "zonaRetrodiscalDerecho",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "ATM Izquierdo",
+            "fields": [
+              {
+                "id": "sinovialAnteroinferiorIzquierdo",
+                "label": "Sinovial Anteroinferior",
+                "type": "select",
+                "name": "sinovialAnteroinferiorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialAnterosuperiorIzquierdo",
+                "label": "Sinovial Anterosuperior",
+                "type": "select",
+                "name": "sinovialAnterosuperiorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoColateralIzquierdo",
+                "label": "Ligamento Colateral Externo",
+                "type": "select",
+                "name": "ligamentoColateralIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoTemporomandibularIzquierdo",
+                "label": "Ligamento Temporomandibular",
+                "type": "select",
+                "name": "ligamentoTemporomandibularIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialPosteroinferiorIzquierdo",
+                "label": "Sinovial Posteroinferior",
+                "type": "select",
+                "name": "sinovialPosteroinferiorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "sinovialPosterosuperiorIzquierdo",
+                "label": "Sinovial Postero Superior",
+                "type": "select",
+                "name": "sinovialPosterosuperiorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoPosteriorIzquierdo",
+                "label": "Ligamento Posterior",
+                "type": "select",
+                "name": "ligamentoPosteriorIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              },
+              {
+                "id": "zonaRetrodiscalIzquierdo",
+                "label": "Zona Retrodiscal",
+                "type": "select",
+                "name": "zonaRetrodiscalIzquierdo",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "sensibilidad",
+                    "text": "Sensibilidad"
+                  },
+                  {
+                    "value": "dolor",
+                    "text": "Dolor"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Diagnostico respiratorio",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "restriccionNasal",
+                "label": "Restricción Nasal",
+                "type": "checkbox",
+                "name": "restriccionNasal",
+                "class": "col-4"
+              },
+              {
+                "id": "ronquido",
+                "label": "Ronquido",
+                "type": "checkbox",
+                "name": "ronquido",
+                "class": "col-4"
+              },
+              {
+                "id": "signosAOS",
+                "label": "Signos de AOS",
+                "type": "checkbox",
+                "name": "signosAOS",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observacionesDiagnosticoRespiratorio",
+                "label": "",
+                "type": "textarea",
+                "name": "observacionesDiagnosticoRespiratorio"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Antecedentes ortodonticos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "historiaPreviaTratamientoCheck",
+                "label": "Historia previa de tratamiento ortodóntico",
+                "type": "checkbox",
+                "name": "historiaPreviaTratamientoCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "historiaPreviaTratamientoText",
+                    "label": "",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "historiaPreviaTratamientoText"
+                  }
+                ]
+              },
+              {
+                "id": "maloclusionesTipoHereditarioCheck",
+                "label": "Maloclusión de tipo hereditario",
+                "type": "checkbox",
+                "name": "maloclusionesTipoHereditarioCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "maloclusionesTipoHereditarioText",
+                    "label": "",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "maloclusionesTipoHereditarioText"
+                  }
+                ]
+              },
+              {
+                "id": "cronologiaErupcionCheck",
+                "label": "Cronología de erupción",
+                "type": "checkbox",
+                "name": "cronologiaErupcionCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "cronologiaErupcionText",
+                    "label": "",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "cronologiaErupcionText"
+                  }
+                ]
+              },
+              {
+                "id": "presenciaParaFuncionesCheck",
+                "label": "Presencia de para funciones",
+                "type": "checkbox",
+                "name": "presenciaParaFuncionesCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "presenciaParaFuncionesText",
+                    "label": "",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "presenciaParaFuncionesText"
+                  }
+                ]
+              },
+              {
+                "id": "roncopatiaCheck",
+                "label": "Roncopatía",
+                "type": "checkbox",
+                "name": "roncopatiaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "apneaDelSuenoCheck",
+                "label": "Apnea del sueño",
+                "type": "checkbox",
+                "name": "apneaDelSuenoCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "usaCPAPCheck",
+                "label": "¿Usa CPAP?",
+                "type": "checkbox",
+                "name": "usaCPAPCheck",
+                "class": "col-4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen clinco",
+        "card": [
+          {
+            "title": "EXAMEN DE DENTICIÓN",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "numeroPiezasDentarias",
+                "label": "Número de piezas dentarias",
+                "type": "textarea",
+                "name": "numeroPiezasDentarias",
+                "class": "col-6"
+              },
+              {
+                "id": "tamanoForma",
+                "label": "Tamaño y forma",
+                "type": "textarea",
+                "name": "tamanoForma",
+                "class": "col-6"
+              },
+              {
+                "id": "posiciones",
+                "label": "Posiciones",
+                "type": "textarea",
+                "name": "posiciones",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionInteroclusales",
+                "label": "Relación interoclusales",
+                "type": "textarea",
+                "name": "relacionInteroclusales",
+                "class": "col-6"
+              },
+              {
+                "id": "cariesHipoplasiasDentarias",
+                "label": "Caries e hipoplasias dentarias",
+                "type": "textarea",
+                "name": "cariesHipoplasiasDentarias",
+                "class": "col-6"
+              },
+              {
+                "id": "malformacionesCoronarias",
+                "label": "Malformaciones coronarias",
+                "type": "textarea",
+                "name": "malformacionesCoronarias",
+                "class": "col-6"
+              },
+              {
+                "id": "facetasDesgaste",
+                "label": "Facetas de desgaste",
+                "type": "textarea",
+                "name": "facetasDesgaste",
+                "class": "col-6"
+              },
+              {
+                "id": "movilidadDientesPrimarios",
+                "label": "Movilidad de dientes primarios",
+                "type": "textarea",
+                "name": "movilidadDientesPrimarios",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "EXAMEN FUNCIONAL",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoRespiracion",
+                "label": "Tipo de respiración",
+                "type": "textarea",
+                "name": "tipoRespiracion",
+                "class": "col-6"
+              },
+              {
+                "id": "deglucion",
+                "label": "Deglución",
+                "type": "textarea",
+                "name": "deglucion",
+                "class": "col-6"
+              },
+              {
+                "id": "fonacion",
+                "label": "Fonación",
+                "type": "textarea",
+                "name": "fonacion",
+                "class": "col-6"
+              },
+              {
+                "id": "presenciaAusenciaHabitos",
+                "label": "Presencia/ausencia de hábitos",
+                "type": "textarea",
+                "name": "presenciaAusenciaHabitos",
+                "class": "col-6"
+              },
+              {
+                "id": "presenciaAusenciaContactosPrematuros",
+                "label": "Presencia/ausencia de contactos prematuros en oclusión",
+                "type": "textarea",
+                "name": "presenciaAusenciaContactosPrematuros",
+                "class": "col-6"
+              },
+              {
+                "id": "presenciaAusenciaDesviaciones",
+                "label": "Presencia/ausencia de desviaciones en movimientos de apertura y cierre",
+                "type": "textarea",
+                "name": "presenciaAusenciaDesviaciones",
+                "class": "col-6"
+              },
+              {
+                "id": "tonoMuscular",
+                "label": "Tono muscular del paciente",
+                "type": "textarea",
+                "name": "tonoMuscular",
+                "class": "col-6"
+              },
+              {
+                "id": "ruidosArticulares",
+                "label": "Ruidos articulares en los movimientos de apertura y cierre",
+                "type": "textarea",
+                "name": "ruidosArticulares",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "EXAMEN VISUAL DE PROPORCIONES FACIALES",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "frenteCheck",
+                "label": "Frente",
+                "type": "checkbox",
+                "name": "frenteCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "craneo",
+                    "label": "Craneo",
+                    "type": "select",
+                    "name": "craneo",
+                    "class": "col-4",
+                    "options": [
+                      {
+                        "value": "dolicocefalico",
+                        "text": "Dolicocefálico"
+                      },
+                      {
+                        "value": "mesocefalico",
+                        "text": "Mesocefálico"
+                      },
+                      {
+                        "value": "braquicefalico",
+                        "text": "Braquicefálico"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "cara",
+                    "label": "Cara",
+                    "type": "select",
+                    "name": "cara",
+                    "class": "col-4",
+                    "options": [
+                      {
+                        "value": "leptoprosopo",
+                        "text": "Leptoprosopo"
+                      },
+                      {
+                        "value": "mesoprosopo",
+                        "text": "Mesoprosopo"
+                      },
+                      {
+                        "value": "europrosopo",
+                        "text": "Europrosopo"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "simetria",
+                    "label": "Simetria",
+                    "type": "select",
+                    "name": "simetria",
+                    "class": "col-4",
+                    "options": [
+                      {
+                        "value": "simetrico",
+                        "text": "Simétrico"
+                      },
+                      {
+                        "value": "asimetrico",
+                        "text": "Asimétrico"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "perfilCheck",
+                "label": "Perfil",
+                "type": "checkbox",
+                "name": "perfilCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "tipoPerfil",
+                    "label": "Tipo perfil",
+                    "type": "select",
+                    "name": "tipoPerfil",
+                    "class": "col-6",
+                    "options": [
+                      {
+                        "value": "concavo",
+                        "text": "Cóncavo"
+                      },
+                      {
+                        "value": "recto",
+                        "text": "Recto"
+                      },
+                      {
+                        "value": "convexo",
+                        "text": "Convexo"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "armoniaLabial",
+                    "label": "Armonía labial",
+                    "type": "select",
+                    "name": "armoniaLabial",
+                    "class": "col-6",
+                    "options": [
+                      {
+                        "value": "transversal",
+                        "text": "Transversal"
+                      },
+                      {
+                        "value": "vertical",
+                        "text": "Vertical"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "planoEsteticoRicketts",
+                    "label": "Plano Estético de Ricketts",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "planoEsteticoRicketts",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoSonrisa",
+                    "label": "Tipo de sonrisa",
+                    "placeholder": "",
+                    "type": "textarea",
+                    "name": "tipoSonrisa",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "ANÁLISIS RADIOGRÁFICO",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "radiografiaPanoramica",
+                "label": "Radiografía panorámica",
+                "type": "textarea",
+                "name": "radiografiaPanoramica",
+                "class": "col-4"
+              },
+              {
+                "id": "carpograma",
+                "label": "Carpograma",
+                "type": "textarea",
+                "name": "carpograma",
+                "class": "col-4"
+              },
+              {
+                "id": "radiografiaPerfil",
+                "label": "Radiografía de perfil",
+                "type": "textarea",
+                "name": "radiografiaPerfil",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "PLAN DE TRATAMIENTO Y DESCRIPCIÓN",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "descripcionTratamiento",
+                "label": "Descripción del tratamiento",
+                "type": "textarea",
+                "name": "descripcionTratamiento",
+                "class": "col-12"
+              },
+              {
+                "id": "conExtraccionesCheck",
+                "label": "Con extracciones",
+                "type": "checkbox",
+                "name": "conExtraccionesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "conExtraccionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "conExtraccionesText"
+                  }
+                ]
+              },
+              {
+                "id": "sinExtraccionesCheck",
+                "label": "Sin extracciones",
+                "type": "checkbox",
+                "name": "sinExtraccionesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "sinExtraccionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "sinExtraccionesText"
+                  }
+                ]
+              },
+              {
+                "id": "tiempoTratamientoCheck",
+                "label": "Tiempo de tratamiento",
+                "type": "checkbox",
+                "name": "tiempoTratamientoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tiempoTratamientoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "tiempoTratamientoText"
+                  }
+                ]
+              },
+              {
+                "id": "remisionTerapiaMiofuncionalCheck",
+                "label": "Remisión a terapia miofuncional",
+                "type": "checkbox",
+                "name": "remisionTerapiaMiofuncionalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "remisionTerapiaMiofuncionalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "remisionTerapiaMiofuncionalText"
+                  }
+                ]
+              },
+              {
+                "id": "interConsultasSolicitadasCheck",
+                "label": "Inter consultas solicitadas",
+                "type": "checkbox",
+                "name": "interConsultasSolicitadasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "interConsultasSolicitadasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "interConsultasSolicitadasText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Imágenes",
+        "card": [
+          {
+            "title": "Cargar imágenes",
+            "fields":[
+              {
+                "id": "imagenes",
+                "label": "",
+                "type": "file",
+                "name": "imagenes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

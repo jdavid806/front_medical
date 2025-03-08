@@ -1,0 +1,737 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Consulta",
+        "card": [
+          {
+            "title": "Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ultimaMenstruacion",
+                "label": "Última Menstruación",
+                "type": "textarea",
+                "name": "ultimaMenstruacion",
+                "class": "col-6"
+              },
+              {
+                "id": "probableParto",
+                "label": "Fecha probable de parto",
+                "type": "checkbox",
+                "name": "probableParto",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "probableParto",
+                    "label": "",
+                    "type": "date",
+                    "name": "probableParto"
+                  }
+                ]
+              },
+              {
+                "id": "dudas",
+                "label": "Dudas",
+                "type": "textarea",
+                "name": "dudas",
+                "class": "col-6"
+              },
+              {
+                "id": "internacionEmbarazo",
+                "label": "Internación Embarazo",
+                "type": "textarea",
+                "name": "internacionEmbarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "vacunaAntitetanica",
+                "label": "Vacuna Antitetánica",
+                "type": "select",
+                "name": "vacunaAntitetanica",
+                "class": "col-12",
+                "options": [
+                  {
+                    "value": "1",
+                    "text": "1°"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2°/R"
+                  }
+                ]
+              },
+              {
+                "id": "mesEmbarazo",
+                "label": "Mes embarazo",
+                "type": "textarea",
+                "name": "mesEmbarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "diasEmbarazo",
+                "label": "Dias",
+                "type": "textarea",
+                "name": "diasEmbarazo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Embarazos Anteriores",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "embarazosAnteriores",
+                "label": "¿Ha tenido embarazos anteriores?",
+                "type": "checkbox",
+                "name": "embarazosAnteriores",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "gestaciones",
+                    "label": "Gestaciones",
+                    "type": "textarea",
+                    "name": "gestaciones",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "abortos",
+                    "label": "Abortos",
+                    "type": "textarea",
+                    "name": "abortos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "partos",
+                    "label": "Partos",
+                    "type": "textarea",
+                    "name": "partos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "ningunoMasDe3Partos",
+                    "label": "Ninguno o Más de 3 Partos",
+                    "type": "textarea",
+                    "name": "ningunoMasDe3Partos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "vaginales",
+                    "label": "Vaginales",
+                    "type": "textarea",
+                    "name": "vaginales",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "cesareas",
+                    "label": "Cesáreas",
+                    "type": "textarea",
+                    "name": "cesareas",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "nacVivos",
+                    "label": "Nac. vivos",
+                    "type": "textarea",
+                    "name": "nacVivos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "nacMuertos",
+                    "label": "Nac. muertos",
+                    "type": "textarea",
+                    "name": "nacMuertos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "viven",
+                    "label": "Viven",
+                    "type": "textarea",
+                    "name": "viven",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mueren",
+                    "label": "Mueren",
+                    "type": "textarea",
+                    "name": "mueren",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "muerenDespues1Semana",
+                    "label": "Mueren Después 1ra semana",
+                    "type": "textarea",
+                    "name": "muerenDespues1Semana",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "reciénNacidoMenos2500g",
+                    "label": "Algún Recién Nacido en peso menos de 2500 g",
+                    "type": "textarea",
+                    "name": "reciénNacidoMenos2500g",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "fechaTerminacionEmbarazo",
+                    "label": "Fecha Terminación anterior embarazo",
+                    "type": "date",
+                    "name": "fechaTerminacionEmbarazo",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "pa",
+                    "label": "P.A",
+                    "type": "textarea",
+                    "name": "pa",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "peso",
+                    "label": "Peso",
+                    "type": "textarea",
+                    "name": "peso",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "edema",
+                    "label": "Edema",
+                    "type": "textarea",
+                    "name": "edema",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "varices",
+                    "label": "Várices",
+                    "type": "textarea",
+                    "name": "varices",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "presentacion",
+                    "label": "Presentación",
+                    "type": "textarea",
+                    "name": "presentacion",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tonosFetales",
+                    "label": "Tonos Fetales",
+                    "type": "textarea",
+                    "name": "tonosFetales",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "au",
+                    "label": "Au",
+                    "type": "textarea",
+                    "name": "au",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "cefalea",
+                    "label": "Cefalea",
+                    "type": "textarea",
+                    "name": "cefalea",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "semanas",
+                    "label": "Semanas",
+                    "type": "textarea",
+                    "name": "semanas",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "medico",
+                    "label": "Médico",
+                    "type": "textarea",
+                    "name": "medico",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resultados Laboratorios",
+        "card": [
+          {
+            "title": "Hemoglobina",
+            "fields": [
+              {
+                "id": "hemoglobinaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "hemoglobinaCheck",
+                "toggleFields": [
+                  {
+                    "id": "hemoglobinaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "hemoglobinaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Tipaje",
+            "fields": [
+              {
+                "id": "tipajeCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "tipajeCheck",
+                "toggleFields": [
+                  {
+                    "id": "tipajetext",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "tipajetext"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Rh",
+            "fields": [
+              {
+                "id": "rhCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "rhCheck",
+                "toggleFields": [
+                  {
+                    "id": "rhText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "rhText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Orina",
+            "fields": [
+              {
+                "id": "orinaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "orinaCheck",
+                "toggleFields": [
+                  {
+                    "id": "orinaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "orinaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Vdrl",
+            "fields": [
+              {
+                "id": "vdrlCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "vdrlCheck",
+                "toggleFields": [
+                  {
+                    "id": "vdrlText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "vdrlText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Glicemia",
+            "fields": [
+              {
+                "id": "glicemiaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "glicemiaCheck",
+                "toggleFields": [
+                  {
+                    "id": "glicemiaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "glicemiaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Alfafetoproteína",
+            "fields": [
+              {
+                "id": "alfafetoproteinaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "alfafetoproteinaCheck",
+                "toggleFields": [
+                  {
+                    "id": "alfafetoproteinaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "alfafetoproteinaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Citomegalovirus",
+            "fields": [
+              {
+                "id": "citomegalovirusCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "citomegalovirusCheck",
+                "toggleFields": [
+                  {
+                    "id": "citomegalovirusText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "citomegalovirusText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "U.S.G.",
+            "fields": [
+              {
+                "id": "usgCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "usgCheck",
+                "toggleFields": [
+                  {
+                    "id": "usgText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "usgText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Combs R.B.N.S",
+            "fields": [
+              {
+                "id": "combsRbnsCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "combsRbnsCheck",
+                "toggleFields": [
+                  {
+                    "id": "combsRbnsText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "combsRbnsText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Miscelaneos",
+            "fields": [
+              {
+                "id": "miscelaneosCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "miscelaneosCheck",
+                "toggleFields": [
+                  {
+                    "id": "miscelaneosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "miscelaneosText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Pap",
+            "fields": [
+              {
+                "id": "papCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "papCheck",
+                "toggleFields": [
+                  {
+                    "id": "papText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "papText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "Tóxoplasmosis",
+            "fields": [
+              {
+                "id": "toxoplasmosisCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "toxoplasmosisCheck",
+                "toggleFields": [
+                  {
+                    "id": "toxoplasmosisText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "toxoplasmosisText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Rubéola",
+            "fields": [
+              {
+                "id": "rubeolaCheck",
+                "label": "",
+                "type": "checkbox",
+                "name": "rubeolaCheck",
+                "toggleFields": [
+                  {
+                    "id": "rubeolaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "rubeolaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

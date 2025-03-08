@@ -1,0 +1,405 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Ingreso",
+        "card1": [
+          {
+            "title": "Servicio",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "servicio",
+                "label": "",
+                "type": "textarea",
+                "name": "servicio"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Ingreso",
+            "fields": [
+              {
+                "id": "servicioIngreso",
+                "label": "Servicio de ingreso",
+                "type": "textarea",
+                "name": "servicioIngreso"
+              },
+              {
+                "id": "fechaIngreso",
+                "label": "Fecha",
+                "type": "date",
+                "name": "fechaIngreso"
+              },
+              {
+                "id": "horaIngreso",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaIngreso"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Egreso",
+            "fields": [
+              {
+                "id": "servicioEgreso",
+                "label": "Servicio de egreso",
+                "type": "textarea",
+                "name": "servicioEgreso"
+              },
+              {
+                "id": "fechaEgreso",
+                "label": "Fecha",
+                "type": "date",
+                "name": "fechaEgreso"
+              },
+              {
+                "id": "horaEgreso",
+                "label": "Hora",
+                "type": "time",
+                "name": "horaEgreso"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Exámen psicológico",
+            "fields": [
+              {
+                "id": "examenPsicologico",
+                "label": "",
+                "type": "textarea",
+                "name": "examenPsicologico"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Diagnóstico",
+            "fields": [
+              {
+                "id": "diagnosticoIngreso",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoIngreso"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Evolución/Egreso",
+        "card": [
+          {
+            "title": "Evolución",
+            "fields": [
+              {
+                "id": "evolucionInfo",
+                "label": "",
+                "placeholder": "Cambios en el estado del paciente (Complicaciones, accidentes o eventos adversos)",
+                "type": "textarea",
+                "name": "evolucionInfo"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Condición de salida",
+            "fields": [
+              {
+                "id": "condicionSalida",
+                "label": "",
+                "type": "textarea",
+                "name": "condicionSalida"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

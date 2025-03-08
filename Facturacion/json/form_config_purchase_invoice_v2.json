@@ -1,0 +1,255 @@
+{
+  "tabs": [
+    {
+      "id": "basic_information",
+      "label": "Información básica",
+      "type": "form",
+      "className": "row",
+      "groups": [
+        {
+          "className": "col-md-6",
+          "fields": [
+            {
+              "id": "type",
+              "type": "select",
+              "label": "Tipo de compra",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "FC - 1 Compra #1"
+                },
+                {
+                  "value": "2",
+                  "label": "FC - 2 Compra #2"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "suppliers",
+              "type": "select",
+              "label": "Proveedores",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Javier Antonio Moreno"
+                },
+                {
+                  "value": "2",
+                  "label": "Jefferson Zambrano Ruiz"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "contact",
+              "type": "select",
+              "label": "Contacto",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Contacto 1"
+                },
+                {
+                  "value": "2",
+                  "label": "Contacto 2"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "cost_center",
+              "type": "select",
+              "label": "Centro de costo",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Administración"
+                },
+                {
+                  "value": "2",
+                  "label": "Productopolis"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            }
+          ]
+        },
+        {
+          "className": "col-md-6",
+          "fields": [
+            {
+              "id": "date_elaboration",
+              "type": "date",
+              "label": "Fecha de elaboración",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            },
+            {
+              "id": "number_auth",
+              "type": "text",
+              "label": "No. Autorización",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            },
+            {
+              "id": "number_invoice_supplier",
+              "type": "text",
+              "label": "Numero de factura de proveedor",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invoice_information",
+      "label": "Información de facturación",
+      "type": "table",
+      "className": "col-12 row",
+      "dataList": "{\"valueNames\":[\"patient\",\"date\",\"procedure\",\"number_auth\",\"quantity\",\"value_unit\",\"value_full\"],\"page\":5,\"pagination\":true}",
+      "fields": [
+        {
+          "id": "patient",
+          "type": "select",
+          "label": "Paciente",
+          "options": [
+            {
+              "value": "1",
+              "label": "Javier Antonio Moreno"
+            },
+            {
+              "value": "2",
+              "label": "Jefferson Zambrano Ruiz"
+            },
+            {
+              "value": "3",
+              "label": "Javier Jose"
+            }
+          ],
+          "inputClassName": "form-select",
+          "className": "align-middle ps-3",
+          "required": true
+        },
+        {
+          "id": "date",
+          "type": "date",
+          "label": "Fecha",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "procedures",
+          "type": "select",
+          "label": "procedimientos",
+          "options": [
+            {
+              "value": "1",
+              "label": "Procedimento #1"
+            },
+            {
+              "value": "2",
+              "label": "Procedimento #2"
+            }
+          ],
+          "className": "mb-3",
+          "inputClassName": "form-select",
+          "required": true
+        },
+        {
+          "id": "number_auth",
+          "type": "select",
+          "label": "No. Autorización",
+          "options": [
+            {
+              "value": "1",
+              "label": "35243234234"
+            },
+            {
+              "value": "2",
+              "label": "12435453454"
+            }
+          ],
+          "className": "mb-3",
+          "inputClassName": "form-select",
+          "required": true
+        },
+        {
+          "id": "value_unit",
+          "type": "number",
+          "label": "Valor Unitario",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "value_full",
+          "type": "number",
+          "label": "Valor Total",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "payment_methods",
+      "label": "Métodos de pago",
+      "type": "table",
+      "className": "col-12 row",
+      "fields": [
+        {
+          "id": "payment_method",
+          "type": "select",
+          "label": "Seleccione medio de pago",
+          "options": [
+            {
+              "value": "1",
+              "label": "Nequi"
+            },
+            {
+              "value": "2",
+              "label": "Efectivo"
+            },
+            {
+              "value": "3",
+              "label": "Banco Caja Social"
+            }
+          ],
+          "inputClassName": "form-select",
+          "className": "align-middle ps-3",
+          "required": true
+        },
+        {
+          "id": "number_authorization",
+          "type": "text",
+          "label": "Número de autorización",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "value",
+          "type": "text",
+          "label": "Valor Total",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

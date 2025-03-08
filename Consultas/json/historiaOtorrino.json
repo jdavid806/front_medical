@@ -1,0 +1,137 @@
+    {
+        "form1": {
+            "steps": [
+                {
+                    "step": 1,
+                    "fields": [
+                        {
+                            "id": "motivoConsulta",
+                            "label": "",
+                            "type": "textarea",
+                            "name": "motivoConsulta_nariz"
+                          },
+                          {
+                            "id": "obstruccion",
+                            "label": "",
+                            "type": "select",
+                            "name": "obstruccion[]",
+                            "options": [
+                              {
+                                "value": "FND",
+                                "text": "FND"
+                              },
+                              {
+                                "value": "FNI ",
+                                "text": "FNI"
+                              },
+                              {
+                                "value": "Ambas",
+                                "text": "Ambas"
+                              },
+                              {
+                                "value": "Alterna ",
+                                "text": "Alterna"
+                              }
+                            ]
+                          },
+                          {
+                            "id": "obstruccion_intensa",
+                            "label": "",
+                            "type": "select-multiple",
+                            "name": "obstruccion_intensa[]",
+                            "options": [
+                              {
+                                "value": "Derecha ",
+                                "text": "Derecha"
+                              },
+                              {
+                                "value": "Izquierda ",
+                                "text": "Izquierda"
+                              },
+                              {
+                                "value": "Ambas",
+                                "text": "Ambas"
+                              }
+                            ]
+                          },
+                          {
+                            "id": "estornudos",
+                            "label": "",
+                            "type": "select-multiple",
+                            "name": "estornudos[]",
+                            "options": [
+                              {
+                                "value": "Frecuentes ",
+                                "text": "Frecuentes"
+                              },
+                              {
+                                "value": "Intermitentes",
+                                "text": "Intermitentes"
+                              },
+                              {
+                                "value": "Raros",
+                                "text": "Raros"
+                              }
+                            ]
+                          },
+                          {
+                            "id": "secreccion_nasal",
+                            "label": "",
+                            "type": "select-multiple",
+                            "name": "secreccion_nasal[]",
+                            "options": [
+                              {
+                                "value": "Derecha",
+                                "text": "Derecha"
+                              },
+                              {
+                                "value": "Izquierda",
+                                "text": "Izquierda"
+                              },
+                              {
+                                "value": "Ambas",
+                                "text": "Ambas"
+                              },
+                              {
+                                "value": "Cristalina",
+                                "text": "Cristalina"
+                              },
+                              {
+                                "value": "Mucosa",
+                                "text": "Mucosa"
+                              },
+                              {
+                                "value": "Purulenta",
+                                "text": "Purulenta"
+                              },
+                              {
+                                "value": "Con Sangre ",
+                                "text": "Con Sangre"
+                              },
+                              {
+                                "value": "Secreción Retronasal",
+                                "text": "Secreción Retronasal"
+                              },
+                              {
+                                "value": "Tos",
+                                "text": "Tos"
+                              }
+                            ]
+                          }
+                    ]
+                },
+                {
+                    "step": 2,
+                    "fields": [
+                        
+                    ]
+                },
+                {
+                    "step": 3,
+                    "fields": [
+                        
+                    ]
+                }
+            ]
+        }
+    }

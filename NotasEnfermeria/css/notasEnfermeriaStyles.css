@@ -1,0 +1,242 @@
+.note-sidebar .accordion-item {
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  padding: 10px;
+}
+
+.note-sidebar .accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background-color: #e2e2e2;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.note-sidebar .accordion-body {
+  display: none;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.note-sidebar .accordion-item.active .accordion-body {
+  display: block;
+}
+
+.note-sidebar .accordion-header:hover {
+  background-color: #dcdcdc;
+}
+
+.note-sidebar .accordion-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.note-sidebar .accordion-actions button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.note-sidebar .accordion-actions button:hover {
+  color: #333;
+}
+
+.note-sidebar .accordion-actions .edit-button:hover {
+  color: #4caf50;
+  /* Verde para editar */
+}
+
+.note-sidebar .accordion-actions .delete-button:hover {
+  color: #f44336;
+  /* Rojo para eliminar */
+}
+
+/* Estilos para el sidebar y sus componentes */
+.note-sidebar {
+  position: fixed;
+  top: 150px;
+  right: -100%;
+  width: 300px;
+  height: 100%;
+  background-color: #f7f7f7;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.note-sidebar.active {
+  right: 0;
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #af9f9f;
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.note-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.close-button:hover {
+  transform: scale(1.2);
+}
+
+/* Estilo del contenido de las notas */
+.note-content {
+  margin-bottom: 20px;
+}
+
+.note-sidebar .note-content textarea {
+  width: 100%;
+  height: 120px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: none;
+  color: #333;
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.save-button:hover {
+  background-color: #45a049;
+}
+
+/* Estilo para el botón flotante */
+.floating-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.floating-button {
+  font-size: 2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.button-label {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.menu-container {
+  position: fixed;
+  top: 150px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.menu-options {
+  display: none;
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.menu-options.active {
+  display: block;
+}
+
+.option-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 50px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.option-menu:last-child {
+  margin-bottom: 0;
+}
+
+span {
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.menu-option-button {
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.menu-option-button:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.1);
+}

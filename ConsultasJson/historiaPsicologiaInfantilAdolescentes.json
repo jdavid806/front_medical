@@ -1,0 +1,239 @@
+{
+    "form1": {
+        "steps": [
+            {
+                "step": 1,
+                "fields": [
+                    {
+                        "id": "motivo_consulta",
+                        "label": "Motivo de Consulta",
+                        "type": "textarea",
+                        "name": "motivo_consulta"
+                    },
+                    {
+                        "id": "descripcion_problematica",
+                        "label": "Descripción de la Problemática",
+                        "type": "textarea",
+                        "name": "descripcion_problematica"
+                    },
+                    {
+                        "id": "primarios",
+                        "label": "Primarios",
+                        "type": "textarea",
+                        "name": "primarios"
+                    },
+                    {
+                        "id": "secundarios",
+                        "label": "Secundarios",
+                        "type": "textarea",
+                        "name": "secundarios"
+                    },
+                    {
+                        "id": "ciclos_sueños",
+                        "label": "Ciclos de Sueños",
+                        "type": "textarea",
+                        "name": "ciclos_sueños"
+                    },
+                    {
+                        "id": "ciclos_alimentacion",
+                        "label": "Ciclos de Alimentación",
+                        "type": "textarea",
+                        "name": "ciclos_alimentacion"
+                    },
+                    {
+                        "id": "pensamientos_abstracto",
+                        "label": "Pensamientos Abstracto",
+                        "type": "textarea",
+                        "name": "pensamientos_abstracto"
+                    },
+                    {
+                        "id": "procesamiento_informacion",
+                        "label": "Procesamiento de la Información",
+                        "type": "textarea",
+                        "name": "procesamiento_informacion"
+                    },
+                    {
+                        "id": "razonamiento_moral",
+                        "label": "Razonamiento Moral",
+                        "type": "textarea",
+                        "name": "razonamiento_moral"
+                    },
+                    {
+                        "id": "factores_riesgo",
+                        "label": "Factores de Riesgo",
+                        "type": "textarea",
+                        "name": "factores_riesgo"
+                    },
+                    {
+                        "id": "historial_consumo",
+                        "label": "Historial de Consumo",
+                        "type": "textarea",
+                        "name": "historial_consumo"
+                    },
+                    {
+                        "id": "factores_mantenedores",
+                        "label": "Factores de Mantenedores",
+                        "type": "textarea",
+                        "name": "factores_mantenedores"
+                    },
+                    {
+                        "id": "tipo_familia",
+                        "label": "Tipo de Familia",
+                        "type": "select",
+                        "name": "tipo_familia",
+                        "options": [
+                            {
+                                "value": "nuclear",
+                                "text": "Nuclear"
+                            },
+                            {
+                                "value": "extensa",
+                                "text": "Extensa"
+                            },
+                            {
+                                "value": "reconstruida",
+                                "text": "Reconstruida"
+                            },
+                            {
+                                "value": "mixta",
+                                "text": "Mixta"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "relacion_padres",
+                        "label": "Relación con Padres",
+                        "type": "textarea",
+                        "name": "relacion_padres"
+                    },
+                    {
+                        "id": "relacion_hermanos",
+                        "label": "Relación con Hermanos",
+                        "type": "textarea",
+                        "name": "Relación con Hermanos"
+                    },
+                    {
+                        "id": "relaciones_apego",
+                        "label": "Relaciones de Apego",
+                        "type": "textarea",
+                        "name": "relaciones_apego"
+                    },
+                    {
+                        "id": "amistades_pareja",
+                        "label": "Amistades/Pareja",
+                        "type": "textarea",
+                        "name": "amistades_pareja"
+                    },
+                    {
+                        "id": "relacion_figuras_autoridad",
+                        "label": "Relación Figuras de Autoridad",
+                        "type": "textarea",
+                        "name": "relacion_figuras_autoridad"
+                    },
+                    {
+                        "id": "relacion_figuras_autoridad",
+                        "label": "Relación Figuras de Autoridad",
+                        "type": "textarea",
+                        "name": "relacion_figuras_autoridad"
+                    },
+                    {
+                        "id": "identidad",
+                        "label": "Identidad",
+                        "type": "text",
+                        "name": "identidad"
+                    },
+                    {
+                        "id": "autoconcepto",
+                        "label": "Autoconcepto",
+                        "type": "text",
+                        "name": "autoconcepto"
+                    },
+                    {
+                        "id": "orientacion_sexual",
+                        "label": "Orientación Sexual",
+                        "type": "text",
+                        "name": "orientacion_sexual"
+                    },
+                    {
+                        "id": "socializacion",
+                        "label": "Socialización",
+                        "type": "text",
+                        "name": "socializacion"
+                    },
+                    {
+                        "id": "regulacion_emocional",
+                        "label": "Regulación Emocional",
+                        "type": "text",
+                        "name": "regulacion_emocional"
+                    },
+                    {
+                        "id": "individuacion",
+                        "label": "Individuación",
+                        "type": "text",
+                        "name": "individuacion"
+                    },
+                    {
+                        "id": "compatibilidad",
+                        "label": "Compatibilidad",
+                        "type": "textarea",
+                        "name": "compatibilidad"
+                    },
+                    {
+                        "id": "impresion_diagnostica",
+                        "label": "Impresión Diagnóstica",
+                        "type": "textarea",
+                        "name": "impresion_diagnostica"
+                    },
+                    {
+                        "id": "objetivos_tratamiento",
+                        "label": "Objetivos de Tratamiento",
+                        "type": "textarea",
+                        "name": "objetivos_tratamiento"
+                    },
+                    {
+                        "id": "intensidad_intervencion",
+                        "label": "Intensidad de Intervención",
+                        "type": "textarea",
+                        "name": "intensidad_intervencion"
+                    },
+                    {
+                        "id": "remision_interconsulta",
+                        "label": "Remisión o Interconsulta",
+                        "type": "textarea",
+                        "name": "remision_interconsulta"
+                    },
+
+                    {
+                        "id": "nombre_profesional_tratante",
+                        "label": "Nombre del Profesional Tratante",
+                        "type": "text",
+                        "name": "nombre_profesional_tratante"
+                    },
+                    {
+                        "id": "profesion_titulos",
+                        "label": "Profesión y Títulos",
+                        "type": "text",
+                        "name": "profesion_titulos"
+                    },
+                    {
+                        "id": "nro_tarjeta_profesional",
+                        "label": "Nro Tarjeta Profesional",
+                        "type": "text",
+                        "name": "nro_tarjeta_profesional"
+                    },
+                    {
+                        "id": "datos_contacto",
+                        "label": "Datos de Contacto",
+                        "type": "text",
+                        "name": "datos_contacto"
+                    }
+
+
+
+                    
+                    
+                ]
+            }
+        ]
+    }
+}

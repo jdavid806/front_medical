@@ -1,0 +1,710 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ant. Oftalmológicos",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "disminucionVision",
+                "label": "Disminución de la visión",
+                "type": "select",
+                "name": "disminucionVision",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "estrabismo",
+                "label": "Estrabismo",
+                "type": "select",
+                "name": "estrabismo",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "glaucoma",
+                "label": "Glaucoma",
+                "type": "select",
+                "name": "glaucoma",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "amblyopia",
+                "label": "Amblyopia",
+                "type": "select",
+                "name": "amblyopia",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "usaLentes",
+                "label": "Usa lentes",
+                "type": "select",
+                "name": "usaLentes",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "fumador",
+                "label": "Fumador",
+                "type": "select",
+                "name": "fumador",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "otrosInfo",
+                "label": "Otros",
+                "type": "textarea",
+                "name": "otrosInfo",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen fisico",
+        "card": [
+          {
+            "title": "Manifestaciones sensitivas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dolorCheck",
+                "label": "Dolor",
+                "type": "checkbox",
+                "name": "dolorCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "ubicacionDolor",
+                    "label": "Ubicación",
+                    "type": "select",
+                    "name": "ubicacionDolor",
+                    "class": "col-6",
+                    "options": [
+                      { "value": "periocular", "text": "Periocular" },
+                      { "value": "ocular", "text": "Ocular" },
+                      { "value": "retrobulbar", "text": "Retrobulbar" }
+                    ]
+                  },
+                  {
+                    "id": "profundidadDolor",
+                    "label": "Profundidad",
+                    "type": "select",
+                    "name": "profundidadDolor",
+                    "class": "col-6",
+                    "options": [
+                      { "value": "superficial", "text": "Superficial" },
+                      { "value": "profundo", "text": "Profundo" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ardorCheck",
+                "label": "Ardor",
+                "type": "checkbox",
+                "name": "ardorCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "escocerCheck",
+                "label": "Escocer",
+                "type": "checkbox",
+                "name": "escocerCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "sensacionCuerpoExtrañoCheck",
+                "label": "Sensación de cuerpo extraño",
+                "type": "checkbox",
+                "name": "sensacionCuerpoExtrañoCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "lagrimeoCheck",
+                "label": "Lagrimeo",
+                "type": "checkbox",
+                "name": "lagrimeoCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "fotofobiaCheck",
+                "label": "Fotofobia",
+                "type": "checkbox",
+                "name": "fotofobiaCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "deslumbramientoCheck",
+                "label": "Deslumbramiento",
+                "type": "checkbox",
+                "name": "deslumbramientoCheck",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc",
+                "readonly": true
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia",
+                "readonly": true
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "number"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Exploración general",
+            "fields": [
+              {
+                "id": "estadoConcienciaSelect",
+                "label": "Estado de Conciencia",
+                "type": "select",
+                "name": "estadoConcienciaSelect",
+                "options": [
+                  {
+                    "value": "consciente",
+                    "text": "Consciente"
+                  },
+                  {
+                    "value": "inconsciente",
+                    "text": "Inconsciente"
+                  }
+                ]
+              },
+              {
+                "id": "hidratacionSelect",
+                "label": "Hidratación",
+                "type": "select",
+                "name": "hidratacionSelect",
+                "options": [
+                  {
+                    "value": "hidratado",
+                    "text": "Hidratado"
+                  },
+                  {
+                    "value": "deshidratado",
+                    "text": "Deshidratado"
+                  }
+                ]
+              },
+              {
+                "id": "coloracionSelect",
+                "label": "Coloración",
+                "type": "select",
+                "name": "coloracionSelect",
+                "options": [
+                  {
+                    "value": "adecuado",
+                    "text": "Adecuado"
+                  },
+                  {
+                    "value": "palidez",
+                    "text": "Palidez"
+                  }
+                ]
+              },
+              {
+                "id": "marchaSelect",
+                "label": "Marcha",
+                "type": "select",
+                "name": "marchaSelect",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "ingresaSelect",
+                "label": "Ingresa",
+                "type": "select",
+                "name": "ingresaSelect",
+                "options": [
+                  {
+                    "value": "solo",
+                    "text": "Solo"
+                  },
+                  {
+                    "value": "acompañado",
+                    "text": "Acompañado"
+                  }
+                ]
+              },
+              {
+                "id": "otrosExploracionGeneral",
+                "label": "Otros",
+                "type": "textarea",
+                "name": "otrosExploracionGeneral"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Exploración regional",
+            "fields": [
+              {
+                "id": "cabelloSelect",
+                "label": "Cabello",
+                "type": "select",
+                "name": "cabelloSelect",
+                "options": [
+                  {
+                    "value": "bienImplantado",
+                    "text": "Bien implantado"
+                  },
+                  {
+                    "value": "alopecia",
+                    "text": "Alopecia"
+                  }
+                ]
+              },
+              {
+                "id": "pupilasSelect",
+                "label": "Pupilas",
+                "type": "select",
+                "name": "pupilasSelect",
+                "options": [
+                  {
+                    "value": "isocoricas",
+                    "text": "Isocóricas"
+                  },
+                  {
+                    "value": "anisocoricas",
+                    "text": "Anisocóricas"
+                  }
+                ]
+              },
+              {
+                "id": "faringeSelect",
+                "label": "Faringe",
+                "type": "select",
+                "name": "faringeSelect",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "hiperemia",
+                    "text": "Hiperemia"
+                  },
+                  {
+                    "value": "exudadoPurulento",
+                    "text": "Exudado purulento"
+                  }
+                ]
+              },
+              {
+                "id": "amigdalasSelect",
+                "label": "Amígdalas",
+                "type": "select",
+                "name": "amigdalasSelect",
+                "options": [
+                  {
+                    "value": "normales",
+                    "text": "Normales"
+                  },
+                  {
+                    "value": "hipertroficas",
+                    "text": "Hipertróficas"
+                  },
+                  {
+                    "value": "exudadoPurulento",
+                    "text": "Exudado purulento"
+                  }
+                ]
+              },
+              {
+                "id": "narizSelect",
+                "label": "Nariz",
+                "type": "select",
+                "name": "narizSelect",
+                "options": [
+                  {
+                    "value": "fosasPermeables",
+                    "text": "Fosas permeables"
+                  },
+                  {
+                    "value": "obstruidas",
+                    "text": "Obstruidas"
+                  },
+                  {
+                    "value": "alteradas",
+                    "text": "Alteradas"
+                  }
+                ]
+              },
+              {
+                "id": "otrosExploracionRegional",
+                "label": "Otros",
+                "type": "textarea",
+                "name": "otrosExploracionRegional"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Exploración ocular",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ojoDerechoSegmentoAnterior",
+                "label": "Ojo derecho segmento anterior",
+                "type": "textarea",
+                "name": "ojoDerechoSegmentoAnterior",
+                "class": "col-6"
+              },
+              {
+                "id": "ojoIzquierdoSegmentoAnterior",
+                "label": "Ojo izquierdo segmento anterior",
+                "type": "textarea",
+                "name": "ojoIzquierdoSegmentoAnterior",
+                "class": "col-6"
+              },
+              {
+                "id": "fondoOjoDerecho",
+                "label": "Fondo de ojo derecho",
+                "type": "textarea",
+                "name": "fondoOjoDerecho",
+                "class": "col-6"
+              },
+              {
+                "id": "fondoOjoIzquierdo",
+                "label": "Fondo de ojo izquierdo",
+                "type": "textarea",
+                "name": "fondoOjoIzquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "otrosExploracionOcularCheck",
+                "label": "Otros",
+                "type": "checkbox",
+                "name": "otrosExploracionOcularCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "otrosExploracionOcularInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "otrosExploracionOcularInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

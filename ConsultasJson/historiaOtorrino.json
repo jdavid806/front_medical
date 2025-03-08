@@ -1,0 +1,2874 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card8": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Nariz",
+        "card": [
+          {
+            "title": "Síntomas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "obstruccionNasalCheck",
+                "label": "Obstrucción Nasal",
+                "type": "checkbox",
+                "name": "obstruccionNasalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "obstruccionNasalSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "obstruccionNasalSelect",
+                    "options": [
+                      {
+                        "value": "FND",
+                        "text": "FND"
+                      },
+                      {
+                        "value": "FNI",
+                        "text": "FNI"
+                      },
+                      {
+                        "value": "Ambas",
+                        "text": "Ambas"
+                      },
+                      {
+                        "value": "Alternas",
+                        "text": "Alternas"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "obstruccionMasIntensaCheck",
+                "label": "Obstrucción Más Intensa",
+                "type": "checkbox",
+                "name": "obstruccionMasIntensaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "obstruccionMasIntensaSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "obstruccionMasIntensaSelect",
+                    "options": [
+                      {
+                        "value": "derecha",
+                        "text": "Derecha"
+                      },
+                      {
+                        "value": "izquierda",
+                        "text": "Izquierda"
+                      },
+                      {
+                        "value": "ambas",
+                        "text": "Ambas"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "estornudosCheck",
+                "label": "Estornudos",
+                "type": "checkbox",
+                "name": "estornudosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "estornudosSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "estornudosSelect",
+                    "options": [
+                      {
+                        "value": "frecuentes",
+                        "text": "Frecuentes"
+                      },
+                      {
+                        "value": "intermitentes",
+                        "text": "Intermitentes"
+                      },
+                      {
+                        "value": "raros",
+                        "text": "Raros"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "secrecionNasalCheck",
+                "label": "Secreción Nasal",
+                "type": "checkbox",
+                "name": "secrecionNasalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "secrecionNasalSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "secrecionNasalSelect",
+                    "options": [
+                      {
+                        "value": "derecha",
+                        "text": "Derecha"
+                      },
+                      {
+                        "value": "izquierda",
+                        "text": "Izquierda"
+                      },
+                      {
+                        "value": "ambas",
+                        "text": "Ambas"
+                      },
+                      {
+                        "value": "mucosa",
+                        "text": "Mucosa"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "secrecionNasalTipoSelect",
+                    "label": "Tipo de Secreción",
+                    "type": "select",
+                    "name": "secrecionNasalTipoSelect",
+                    "class": "col-6",
+                    "options": [
+                      {
+                        "value": "cristalina",
+                        "text": "Cristalina"
+                      },
+                      {
+                        "value": "mucosa",
+                        "text": "Mucosa"
+                      },
+                      {
+                        "value": "purpulenta",
+                        "text": "Purulenta"
+                      },
+                      {
+                        "value": "conSangre",
+                        "text": "Con Sangre"
+                      },
+                      {
+                        "value": "retronasal",
+                        "text": "Secreción Retronasales"
+                      },
+                      {
+                        "value": "tos",
+                        "text": "Tos"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "pruritoCheck",
+                "label": "Prurito",
+                "type": "checkbox",
+                "name": "pruritoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "pruritoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "pruritoSelect",
+                    "options": [
+                      {
+                        "value": "nasal",
+                        "text": "Nasal"
+                      },
+                      {
+                        "value": "ocular",
+                        "text": "Ocular"
+                      },
+                      {
+                        "value": "carraspeo",
+                        "text": "Carraspeo"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "epistaxisCheck",
+                "label": "Epistaxis",
+                "type": "checkbox",
+                "name": "epistaxisCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "epistaxisSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "epistaxisSelect",
+                    "options": [
+                      {
+                        "value": "anterior",
+                        "text": "Anterior"
+                      },
+                      {
+                        "value": "posterior",
+                        "text": "Posterior"
+                      },
+                      {
+                        "value": "FND",
+                        "text": "FND"
+                      },
+                      {
+                        "value": "FNI",
+                        "text": "FNI"
+                      },
+                      {
+                        "value": "leve",
+                        "text": "Leve"
+                      },
+                      {
+                        "value": "moderada",
+                        "text": "Moderada"
+                      },
+                      {
+                        "value": "grave",
+                        "text": "Grave"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "olfatoCheck",
+                "label": "Olfato",
+                "type": "checkbox",
+                "name": "olfatoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "olfatoSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "olfatoSelect",
+                    "options": [
+                      {
+                        "value": "hiposmia",
+                        "text": "Hiposmia"
+                      },
+                      {
+                        "value": "anosmia",
+                        "text": "Anosmia"
+                      },
+                      {
+                        "value": "parosmia",
+                        "text": "Parosmia"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "cefaleaCheck",
+                "label": "Cefalea",
+                "type": "checkbox",
+                "name": "cefaleaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "cefaleaSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "cefaleaSelect",
+                    "options": [
+                      {
+                        "value": "hemicranea",
+                        "text": "Hemicránea"
+                      },
+                      {
+                        "value": "holocraneal",
+                        "text": "Holocraneal"
+                      },
+                      {
+                        "value": "frontoFacial",
+                        "text": "Fronto-Facial"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Inspección",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "simetriaFacialCheck",
+                "label": "Simetría Facial",
+                "type": "checkbox",
+                "name": "simetriaFacialCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "columelaColganteCheck",
+                "label": "Columela colgante",
+                "type": "checkbox",
+                "name": "columelaColganteCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "piramideNasalSelect",
+                "label": "Pirámide Nasal",
+                "type": "select",
+                "name": "piramideNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "recta",
+                    "text": "Recta"
+                  },
+                  {
+                    "value": "laterorriniaDerecha",
+                    "text": "Laterorrinia Derecha"
+                  },
+                  {
+                    "value": "izquierda",
+                    "text": "Izquierda"
+                  }
+                ]
+              },
+              {
+                "id": "dorsoNasalSelect",
+                "label": "Dorso Nasal",
+                "type": "select",
+                "name": "dorsoNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "cifosisOsea",
+                    "text": "Cifosis Osea"
+                  },
+                  {
+                    "value": "cartilaginosa",
+                    "text": "Cartilaginosa"
+                  }
+                ]
+              },
+              {
+                "id": "puntaNasalSelect",
+                "label": "Punta Nasal",
+                "type": "select",
+                "name": "puntaNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "globulosa",
+                    "text": "Globulosa"
+                  },
+                  {
+                    "value": "bienDefinida",
+                    "text": "Bien Definida"
+                  },
+                  {
+                    "value": "cuadrada",
+                    "text": "Cuadrada"
+                  },
+                  {
+                    "value": "buenaProyeccion",
+                    "text": "Buena Proyección"
+                  },
+                  {
+                    "value": "hiperProyectada",
+                    "text": "Hiper-Proyectada"
+                  },
+                  {
+                    "value": "hipoProyectada",
+                    "text": "Hipo-Proyectada"
+                  }
+                ]
+              },
+              {
+                "id": "anguloNasoLabialSelect",
+                "label": "Ángulo Naso-Labial",
+                "type": "select",
+                "name": "anguloNasoLabialSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "recto",
+                    "text": "Recto"
+                  },
+                  {
+                    "value": "abierto",
+                    "text": "Abierto"
+                  },
+                  {
+                    "value": "cerrado",
+                    "text": "Cerrado"
+                  }
+                ]
+              },
+              {
+                "id": "anguloFrontoNasalSelect",
+                "label": "Ángulo Fronto-Nasal",
+                "type": "select",
+                "name": "anguloFrontoNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "adecuado",
+                    "text": "Adecuado"
+                  },
+                  {
+                    "value": "cerrado",
+                    "text": "Cerrado"
+                  },
+                  {
+                    "value": "pielNormal",
+                    "text": "Piel Normal"
+                  },
+                  {
+                    "value": "pielFina",
+                    "text": "Piel Fina"
+                  },
+                  {
+                    "value": "pielGruesa",
+                    "text": "Piel Gruesa"
+                  }
+                ]
+              },
+
+              {
+                "id": "relacionColumelaPuntaText",
+                "label": "Relación Columela – Punta",
+                "type": "textarea",
+                "name": "relacionColumelaPuntaText",
+                "class": "col-12"
+              },
+              {
+                "id": "puntosParanasalesDolorososSelect",
+                "label": "Puntos Paranasales Dolorosos",
+                "type": "select",
+                "name": "puntosParanasalesDolorososSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "ciliares",
+                    "text": "Ciliares"
+                  },
+                  {
+                    "value": "maxilares",
+                    "text": "Maxilares"
+                  },
+                  {
+                    "value": "etmoidales",
+                    "text": "Etmoidales"
+                  }
+                ]
+              },
+              {
+                "id": "baseNasalSelect",
+                "label": "Base Nasal",
+                "type": "select",
+                "name": "baseNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "simetrica",
+                    "text": "Simétrica"
+                  },
+                  {
+                    "value": "asimetrica",
+                    "text": "Asimétrica"
+                  },
+                  {
+                    "value": "narinasRedondeadas",
+                    "text": "Narinas Redondeadas"
+                  },
+                  {
+                    "value": "narinasPiriformes",
+                    "text": "Narinas Piriformes"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Rinoscopia Anterior",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "septumNasalSelect",
+                "label": "Séptum Nasal",
+                "type": "select",
+                "name": "septumNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "recto",
+                    "text": "Recto"
+                  },
+                  {
+                    "value": "desviado",
+                    "text": "Desviado"
+                  },
+                  {
+                    "value": "delfelxionEnC",
+                    "text": "Deflexión en *C*"
+                  },
+                  {
+                    "value": "sinuoso",
+                    "text": "Sinuoso"
+                  },
+                  {
+                    "value": "fnd",
+                    "text": "FND"
+                  },
+                  {
+                    "value": "fni",
+                    "text": "FNI"
+                  },
+                  {
+                    "value": "septoCaudal",
+                    "text": "Septo-Caudal"
+                  }
+                ]
+              },
+              {
+                "id": "mucosaNasalSelect",
+                "label": "Mucosa Nasal",
+                "type": "select",
+                "name": "mucosaNasalSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "rosada",
+                    "text": "Rosada"
+                  },
+                  {
+                    "value": "palida",
+                    "text": "Pálida"
+                  },
+                  {
+                    "value": "rojoViola",
+                    "text": "Rojo-Violácea"
+                  }
+                ]
+              },
+              {
+                "id": "cornetesNasalesSelect",
+                "label": "Cornetes Nasales",
+                "type": "select",
+                "name": "cornetesNasalesSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "hipertrofiaDerecha",
+                    "text": "Hipertrofia Derecha"
+                  },
+                  {
+                    "value": "hipertrofiaIzquierda",
+                    "text": "Hipertrofia Izquierda"
+                  },
+                  {
+                    "value": "atrofia",
+                    "text": "Atrofia"
+                  }
+                ]
+              },
+              {
+                "id": "corneteMedioBullosoSelect",
+                "label": "Cornete Medio Bulloso",
+                "type": "select",
+                "name": "corneteMedioBullosoSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "derecho",
+                    "text": "Derecho"
+                  },
+                  {
+                    "value": "izquierdo",
+                    "text": "Izquierdo"
+                  }
+                ]
+              },
+              {
+                "id": "observacionesRinoscopiaAnterior",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesRinoscopiaAnterior",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Desórdenes de sueño",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "apneasSuenoCheck",
+                "label": "Apneas de Sueño",
+                "type": "checkbox",
+                "name": "apneasSuenoCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "apneasVividasCheck",
+                "label": "Apneas vividas",
+                "type": "checkbox",
+                "name": "apneasVividasCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "respiracionOralCheck",
+                "label": "Respiración Oral",
+                "type": "checkbox",
+                "name": "respiracionOralCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "roncaNocheCheck",
+                "label": "Ronca en la Noche",
+                "type": "checkbox",
+                "name": "roncaNocheCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "movimientoAlDormirCheck",
+                "label": "Se Mueve Mucho al Dormir",
+                "type": "checkbox",
+                "name": "movimientoAlDormirCheck",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evaluación del Sueño",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "posicionParaDormir",
+                "label": "Posición para Dormir",
+                "type": "textarea",
+                "name": "posicionParaDormir",
+                "class": "col-6"
+              },
+              {
+                "id": "cCuello",
+                "label": "C. Cuello",
+                "type": "textarea",
+                "name": "cCuello",
+                "class": "col-6"
+              },
+              {
+                "id": "cAbdominal",
+                "label": "C. Abdominal",
+                "type": "textarea",
+                "name": "cAbdominal",
+                "class": "col-6"
+              },
+              {
+                "id": "epworth",
+                "label": "Epworth",
+                "type": "textarea",
+                "name": "epworth",
+                "class": "col-6"
+              },
+              {
+                "id": "stopBang",
+                "label": "Stop-Bang",
+                "type": "textarea",
+                "name": "stopBang",
+                "class": "col-6"
+              },
+              {
+                "id": "interrogatorio",
+                "label": "Interrogatorio",
+                "type": "textarea",
+                "name": "interrogatorio",
+                "class": "col-6"
+              },
+              {
+                "id": "movilidad",
+                "label": "Movilidad",
+                "type": "textarea",
+                "name": "movilidad",
+                "class": "col-6"
+              },
+              {
+                "id": "insomnio",
+                "label": "Insomnio",
+                "type": "textarea",
+                "name": "insomnio",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Evaluación Orofaringea",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "lenguaCheck",
+                "label": "Lengua",
+                "type": "checkbox",
+                "name": "lenguaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "freidmanTonguePositionText",
+                    "label": "Friedman Tongue Position (F.T.P.)",
+                    "type": "textarea",
+                    "name": "freidmanTonguePositionText"
+                  }
+                ]
+              },
+              {
+                "id": "pangRotembergCheck",
+                "label": "Pang Rotemberg",
+                "type": "checkbox",
+                "name": "pangRotembergCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "pangRotembergSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "pangRotembergSelect",
+                    "options": [
+                      {
+                        "value": "imitaRonquido",
+                        "text": "Imita Ronquido"
+                      },
+                      {
+                        "value": "noImitaRonquido",
+                        "text": "No Imita Ronquido"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "paladarCheck",
+                "label": "Paladar",
+                "type": "checkbox",
+                "name": "paladarCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "mallampatiModificadoText",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificadoText"
+                  }
+                ]
+              },
+              {
+                "id": "amigdalasCheck",
+                "label": "Amígdalas",
+                "type": "checkbox",
+                "name": "amigdalasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "hipertrofiaGradoText",
+                    "label": "Hipertrofia Grado",
+                    "type": "textarea",
+                    "name": "hipertrofiaGradoText"
+                  }
+                ]
+              },
+              {
+                "id": "narizCheck",
+                "label": "Nariz",
+                "type": "checkbox",
+                "name": "narizCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "desviacionSeptalIzqText",
+                    "label": "Desviación Septal Izquierdo",
+                    "type": "textarea",
+                    "name": "desviacionSeptalIzqText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "desviacionSeptalDerText",
+                    "label": "Desviación Septal Derecho",
+                    "type": "textarea",
+                    "name": "desviacionSeptalDerText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "colapsoValvularIzqText",
+                    "label": "Colapso Valvular Izquierdo",
+                    "type": "textarea",
+                    "name": "colapsoValvularIzqText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "colapsoValvularDerText",
+                    "label": "Colapso Valvular Derecho",
+                    "type": "textarea",
+                    "name": "colapsoValvularDerText",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "bocaOrofaringeCheck",
+                "label": "Boca y Orofaringe",
+                "type": "checkbox",
+                "name": "bocaOrofaringeCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "lenguaText",
+                    "label": "Lengua",
+                    "type": "textarea",
+                    "name": "lenguaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "paladarOseoText",
+                    "label": "Paladar Óseo",
+                    "type": "textarea",
+                    "name": "paladarOseoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "paladarBlandoText",
+                    "label": "Paladar Blando",
+                    "type": "textarea",
+                    "name": "paladarBlandoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "uvulaText",
+                    "label": "Úvula",
+                    "type": "textarea",
+                    "name": "uvulaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "baseText",
+                    "label": "Base",
+                    "type": "textarea",
+                    "name": "baseText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "largoText",
+                    "label": "Largo",
+                    "type": "textarea",
+                    "name": "largoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "distanciaIntermolarText",
+                    "label": "Distancia Intermolar",
+                    "type": "textarea",
+                    "name": "distanciaIntermolarText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "distanciaPuntoText",
+                    "label": "Distancia Punto",
+                    "type": "textarea",
+                    "name": "distanciaPuntoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "palatoFaringeoText",
+                    "label": "Palato-Faríngeo (PASS)",
+                    "type": "textarea",
+                    "name": "palatoFaringeoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "gapInterpaltoFaringeoText",
+                    "label": "Gap Interpalto Faríngeo",
+                    "type": "textarea",
+                    "name": "gapInterpaltoFaringeoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "perfilCaraText",
+                    "label": "Perfil Cara",
+                    "type": "textarea",
+                    "name": "perfilCaraText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "clasificacionAngleText",
+                    "label": "Clasificación (Angle)",
+                    "type": "textarea",
+                    "name": "clasificacionAngleText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "articulacionTemporoMandibularText",
+                    "label": "Articulación Temporo-Mandibular",
+                    "type": "textarea",
+                    "name": "articulacionTemporoMandibularText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "aperturaBucalText",
+                    "label": "Apertura Bucal",
+                    "type": "textarea",
+                    "name": "aperturaBucalText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "nasoendoscopiaText",
+                    "label": "Nasoendoscopia",
+                    "type": "textarea",
+                    "name": "nasoendoscopiaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "lugarObstruccionText",
+                    "label": "Lugar de Obstrucción",
+                    "type": "textarea",
+                    "name": "lugarObstruccionText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoCierreAlRoncarText",
+                    "label": "Tipo de Cierre al Roncar",
+                    "type": "textarea",
+                    "name": "tipoCierreAlRoncarText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoCierrePorcText",
+                    "label": "Tipo Cierre %",
+                    "type": "textarea",
+                    "name": "tipoCierrePorcText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "rinofaringeText",
+                    "label": "Rinofaringe %",
+                    "type": "textarea",
+                    "name": "rinofaringeText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "orofaringeText",
+                    "label": "Orofaringe %",
+                    "type": "textarea",
+                    "name": "orofaringeText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "baseLenguaText",
+                    "label": "Base de Lengua %",
+                    "type": "textarea",
+                    "name": "baseLenguaText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "epiglotisText",
+                    "label": "Epiglotis %",
+                    "type": "textarea",
+                    "name": "epiglotisText",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Maniobra: Mejora Apertura",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "protrusionLingualCheck",
+                "label": "Protrusión Lingual",
+                "type": "checkbox",
+                "name": "protrusionLingualCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "protrusionMandibularCheck",
+                "label": "Protrusión Mandibular",
+                "type": "checkbox",
+                "name": "protrusionMandibularCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "amigdalasLingualesSelect",
+                "label": "Amígdalas Linguales: (L.T.H. Friedman)",
+                "type": "select",
+                "name": "amigdalasLingualesSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "grado0",
+                    "text": "Grado 0"
+                  },
+                  {
+                    "value": "grado1",
+                    "text": "Grado 1"
+                  },
+                  {
+                    "value": "grado2",
+                    "text": "Grado 2"
+                  },
+                  {
+                    "value": "grado3",
+                    "text": "Grado 3"
+                  },
+                  {
+                    "value": "grado4",
+                    "text": "Grado 4"
+                  }
+                ]
+              },
+              {
+                "id": "epiglotisText",
+                "label": "Epiglotis %",
+                "type": "textarea",
+                "name": "epiglotisText",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Pronóstico: Escala de Friedman",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estadioFaseText",
+                "label": "Estadio o Fase",
+                "type": "textarea",
+                "name": "estadioFaseText",
+                "class": "col-12"
+              },
+              {
+                "id": "estadioFase1Check",
+                "label": "Estadio o Fase 1",
+                "type": "checkbox",
+                "name": "estadioFase1Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estadioFase1Text",
+                    "label": "Estadio o Fase",
+                    "type": "textarea",
+                    "name": "estadioFase1Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mallampatiModificado1Text",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificado1Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "amigdalas1Text",
+                    "label": "Amígdalas",
+                    "type": "textarea",
+                    "name": "amigdalas1Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "imc1Text",
+                    "label": "IMC",
+                    "type": "textarea",
+                    "name": "imc1Text",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "estadioFase2Check",
+                "label": "Estadio o Fase 2",
+                "type": "checkbox",
+                "name": "estadioFase2Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estadioFase2Text",
+                    "label": "Estadio o Fase",
+                    "type": "textarea",
+                    "name": "estadioFase2Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mallampatiModificado2Text",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificado2Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "amigdalas2Text",
+                    "label": "Amígdalas",
+                    "type": "textarea",
+                    "name": "amigdalas2Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "imc2Text",
+                    "label": "IMC",
+                    "type": "textarea",
+                    "name": "imc2Text",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "estadioFase3Check",
+                "label": "Estadio o Fase 3",
+                "type": "checkbox",
+                "name": "estadioFase3Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estadioFase3Text",
+                    "label": "Estadio o Fase",
+                    "type": "textarea",
+                    "name": "estadioFase3Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mallampatiModificado3Text",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificado3Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "amigdalas3Text",
+                    "label": "Amígdalas",
+                    "type": "textarea",
+                    "name": "amigdalas3Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "imc3Text",
+                    "label": "IMC",
+                    "type": "textarea",
+                    "name": "imc3Text",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "estadioFase4Check",
+                "label": "Estadio o Fase 4",
+                "type": "checkbox",
+                "name": "estadioFase4Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estadioFase4Text",
+                    "label": "Estadio o Fase",
+                    "type": "textarea",
+                    "name": "estadioFase4Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mallampatiModificado4Text",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificado4Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "amigdalas4Text",
+                    "label": "Amígdalas",
+                    "type": "textarea",
+                    "name": "amigdalas4Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "imc4Text",
+                    "label": "IMC",
+                    "type": "textarea",
+                    "name": "imc4Text",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "estadioFase5Check",
+                "label": "Estadio o Fase 5",
+                "type": "checkbox",
+                "name": "estadioFase5Check",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "estadioFase5Text",
+                    "label": "Estadio o Fase",
+                    "type": "textarea",
+                    "name": "estadioFase5Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "mallampatiModificado5Text",
+                    "label": "Mallampati Modificado",
+                    "type": "textarea",
+                    "name": "mallampatiModificado5Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "amigdalas5Text",
+                    "label": "Amígdalas",
+                    "type": "textarea",
+                    "name": "amigdalas5Text",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "imc5Text",
+                    "label": "IMC",
+                    "type": "textarea",
+                    "name": "imc5Text",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Estudio de Sueño",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "registro1Check",
+                "label": "Registro 1",
+                "type": "checkbox",
+                "name": "registro1Check",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fechaRegistro4",
+                    "label": "Fecha",
+                    "type": "date",
+                    "name": "fechaRegistro4"
+                  },
+                  {
+                    "id": "descripcionRegistro1",
+                    "label": "Descripción",
+                    "type": "textarea",
+                    "name": "descripcionRegistro1"
+                  }
+                ]
+              },
+              {
+                "id": "registro2Check",
+                "label": "Registro 2",
+                "type": "checkbox",
+                "name": "registro2Check",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fechaRegistro4",
+                    "label": "Fecha",
+                    "type": "date",
+                    "name": "fechaRegistro4"
+                  },
+                  {
+                    "id": "descripcionRegistro2",
+                    "label": "Descripción",
+                    "type": "textarea",
+                    "name": "descripcionRegistro2"
+                  }
+                ]
+              },
+              {
+                "id": "registro3Check",
+                "label": "Registro 3",
+                "type": "checkbox",
+                "name": "registro3Check",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fechaRegistro4",
+                    "label": "Fecha",
+                    "type": "date",
+                    "name": "fechaRegistro4"
+                  },
+                  {
+                    "id": "descripcionRegistro3",
+                    "label": "Descripción",
+                    "type": "textarea",
+                    "name": "descripcionRegistro3"
+                  }
+                ]
+              },
+              {
+                "id": "registro4Check",
+                "label": "Registro 4",
+                "type": "checkbox",
+                "name": "registro4Check",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fechaRegistro4",
+                    "label": "Fecha",
+                    "type": "date",
+                    "name": "fechaRegistro4"
+                  },
+                  {
+                    "id": "descripcionRegistro4",
+                    "label": "Descripción",
+                    "type": "textarea",
+                    "name": "descripcionRegistro4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Adaptación",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "adaptacionText",
+                "label": "",
+                "type": "textarea",
+                "name": "adaptacionText"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Hipótesis Diagnóstica",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ronquidoSimpleCheck",
+                "label": "Ronquido Simple",
+                "type": "checkbox",
+                "name": "ronquidoSimpleCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ronquidoSimpleText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ronquidoSimpleText"
+                  }
+                ]
+              },
+              {
+                "id": "bajaProbabilidadCheck",
+                "label": "Baja Probabilidad [SAHOS]",
+                "type": "checkbox",
+                "name": "bajaProbabilidadCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "bajaProbabilidadText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "bajaProbabilidadText"
+                  }
+                ]
+              },
+              {
+                "id": "altaProbabilidadCheck",
+                "label": "Alta Probabilidad [SAHOS]",
+                "type": "checkbox",
+                "name": "altaProbabilidadCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "altaProbabilidadText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "altaProbabilidadText"
+                  }
+                ]
+              },
+              {
+                "id": "otraPatologiaCheck",
+                "label": "Otra Patología",
+                "type": "checkbox",
+                "name": "otraPatologiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "otraPatologiaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "otraPatologiaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Resultado de Estudios",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ahiCheck",
+                "label": "AHI",
+                "type": "checkbox",
+                "name": "ahiCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ahiText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ahiText"
+                  }
+                ]
+              },
+              {
+                "id": "irCheck",
+                "label": "IR",
+                "type": "checkbox",
+                "name": "irCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "irText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "irText"
+                  }
+                ]
+              },
+              {
+                "id": "idoCheck",
+                "label": "IDO",
+                "type": "checkbox",
+                "name": "idoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "idoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "idoText"
+                  }
+                ]
+              },
+              {
+                "id": "saturacionCheck",
+                "label": "Saturación",
+                "type": "checkbox",
+                "name": "saturacionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "saturacionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "saturacionText"
+                  }
+                ]
+              },
+              {
+                "id": "ronquidosCheck",
+                "label": "Ronquidos",
+                "type": "checkbox",
+                "name": "ronquidosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ronquidosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ronquidosText"
+                  }
+                ]
+              },
+              {
+                "id": "comentariosCheck",
+                "label": "Comentarios",
+                "type": "checkbox",
+                "name": "comentariosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "comentariosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "comentariosText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Oido",
+        "card": [
+          {
+            "title": "Examen Oído",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoCheck",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoCheck",
+                "class": "col-6",
+                "options": [
+                  { "value": "oidoIzquierdo", "text": "Oído izquierdo" },
+                  { "value": "oidoDerecho", "text": "Oído derecho" },
+                  { "value": "ambos", "text": "Ambos" },
+                  { "value": "otalgia", "text": "Otalgia" },
+                  { "value": "pabellon", "text": "Pabellón" },
+                  { "value": "retroauricular", "text": "Retroauricular" },
+                  { "value": "hipoacusia", "text": "Hipoacusia" },
+                  { "value": "tinnitus", "text": "Tinnitus" },
+                  {
+                    "value": "sensacionLiquido",
+                    "text": "Sensación de líquido"
+                  },
+                  { "value": "picor", "text": "Picor" },
+                  { "value": "usaHisopo", "text": "Usa hisopo" },
+                  { "value": "otrosObjetos", "text": "Otros objetos" },
+                  { "value": "secrecion", "text": "Secreción" },
+                  { "value": "cristalina", "text": "Cristalina" },
+                  { "value": "purpulenta", "text": "Purulenta" },
+                  { "value": "fetida", "text": "Fétida" },
+                  { "value": "sangre", "text": "Sangre" },
+                  { "value": "traumaOido", "text": "Trauma de oído" }
+                ]
+              },
+              {
+                "id": "microscopiaSelect",
+                "label": "Microscopía",
+                "type": "select",
+                "name": "microscopiaSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "cajaTimPanoHumeda",
+                    "text": "Caja tímpano húmeda"
+                  },
+                  { "value": "seca", "text": "Seca" },
+                  { "value": "edemaMucosa", "text": "Edema de mucosa" },
+                  { "value": "colesteatoma", "text": "Colesteatoma" },
+                  { "value": "granuloma", "text": "Granuloma" },
+                  { "value": "neotimpano", "text": "Neotímpano" }
+                ]
+              },
+              {
+                "id": "audiometriaSelect",
+                "label": "Audiometría",
+                "type": "select",
+                "name": "audiometriaSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "hipoLeve", "text": "Hip. Leve" },
+                  { "value": "hipoModerada", "text": "Hip. Moderada" },
+                  { "value": "hipoGrave", "text": "Hip. Grave" },
+                  { "value": "restosAuditivos", "text": "Restos auditivos" },
+                  { "value": "cofosis", "text": "Cofosis" },
+                  { "value": "conduccion", "text": "Conducción" },
+                  { "value": "sensorial", "text": "Sensorial" },
+                  { "value": "mixta", "text": "Mixta" }
+                ]
+              },
+              {
+                "id": "timpanogramaSelect",
+                "label": "Timpanograma",
+                "type": "select",
+                "name": "timpanogramaSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "tipoA", "text": "Tipo A" },
+                  { "value": "A1", "text": "A1" },
+                  { "value": "tipoB", "text": "Tipo B" },
+                  { "value": "tipoC", "text": "Tipo C" },
+                  {
+                    "value": "funcionTrompaEustaquio",
+                    "text": "Función trompa de Eustaquio (Si funciona / No funciona)"
+                  }
+                ]
+              },
+              {
+                "id": "traumaOidoCheck",
+                "label": "Trauma de Oído",
+                "type": "checkbox",
+                "name": "traumaOidoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "traumaOidoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "traumaOidoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "reflejoEstapedialIpsiCheck",
+                "label": "Reflejo Estapedial Ipsi",
+                "type": "checkbox",
+                "name": "reflejoEstapedialIpsiCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "reflejoEstapedialIpsiInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "reflejoEstapedialIpsiInfo"
+                  }
+                ]
+              },
+              {
+                "id": "audiometriaVocalSelect",
+                "label": "Audiometría Vocal",
+                "type": "select",
+                "name": "audiometriaVocalSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  {
+                    "value": "comprension100",
+                    "text": "Comprensión 100% prolongada"
+                  },
+                  {
+                    "value": "comprensionMenos100",
+                    "text": "Comprensión <100"
+                  },
+                  { "value": "reclutamiento", "text": "Reclutamiento" }
+                ]
+              },
+              {
+                "id": "petcSelect",
+                "label": "PETC",
+                "type": "select",
+                "name": "petcSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "acortada", "text": "Acortada" },
+                  { "value": "prolongada", "text": "Prolongada" }
+                ]
+              },
+              {
+                "id": "seguimientoOndaVSelect",
+                "label": "Seguimiento Onda V",
+                "type": "select",
+                "name": "seguimientoOndaVSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "hLeve", "text": "H. Leve" },
+                  { "value": "moderada", "text": "Moderada" },
+                  { "value": "grave", "text": "Grave" }
+                ]
+              },
+              {
+                "id": "otoemisionesAcusticasSelect",
+                "label": "Otoemisiones Acústicas",
+                "type": "select",
+                "name": "otoemisionesAcusticasSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "responde", "text": "Responde" },
+                  { "value": "noResponde", "text": "No responde" },
+                  {
+                    "value": "nistagmusEspontaneo",
+                    "text": "Nistagmus espontáneo"
+                  },
+                  { "value": "derecha", "text": "Derecha" },
+                  { "value": "izquierda", "text": "Izquierda" },
+                  { "value": "vertical", "text": "Vertical" }
+                ]
+              },
+              {
+                "id": "indiceNarizSelect",
+                "label": "Índice Nariz",
+                "type": "select",
+                "name": "indiceNarizSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "anormal", "text": "Anormal" }
+                ]
+              },
+              {
+                "id": "seguimientoManoCheck",
+                "label": "Seguimiento de Mano",
+                "type": "checkbox",
+                "name": "seguimientoManoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "seguimientoManoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "seguimientoManoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "piernaSelect",
+                "label": "Pierna",
+                "type": "select",
+                "name": "piernaSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "noPuede", "text": "No puede" }
+                ]
+              },
+              {
+                "id": "rombergSelect",
+                "label": "Romberg",
+                "type": "select",
+                "name": "rombergSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "inestable", "text": "Inestable" },
+                  { "value": "noPuede", "text": "No puede" }
+                ]
+              },
+              {
+                "id": "rombergSensibleSelect",
+                "label": "Romberg Sensible",
+                "type": "select",
+                "name": "rombergSensibleSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "inestable", "text": "Inestable" },
+                  { "value": "noPuede", "text": "No puede" }
+                ]
+              },
+              {
+                "id": "marchaSelect",
+                "label": "Marcha",
+                "type": "select",
+                "name": "marchaSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "giraDerecha", "text": "Gira a la derecha" },
+                  { "value": "giraIzquierda", "text": "Gira a la izquierda" },
+                  { "value": "noPuede", "text": "No puede" }
+                ]
+              }
+            ]
+          }
+        ],
+
+        "card2": [
+          {
+            "title": "Giro Brusco Cabeza",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "nistagmusDerechoCheck",
+                "label": "Nistagmus Derecho",
+                "type": "checkbox",
+                "name": "nistagmusDerechoCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "nistagmusIzquierdoCheck",
+                "label": "Nistagmus Izquierdo",
+                "type": "checkbox",
+                "name": "nistagmusIzquierdoCheck",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+
+        "card3": [
+          {
+            "title": "Maniobras de Provocación",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "barbacoaCheck",
+                "label": "Barbacoa",
+                "type": "checkbox",
+                "name": "barbacoaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "barbacoaSelect",
+                    "label": "Lado",
+                    "type": "select",
+                    "name": "barbacoaSelect",
+                    "options": [
+                      { "value": "derecho", "text": "Derecho" },
+                      { "value": "izquierdo", "text": "Izquierdo" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "nistagmusProvocacionCheck",
+                "label": "Nistagmus Provocación",
+                "type": "checkbox",
+                "name": "nistagmusProvocacionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "nistagmusProvocacionSelect",
+                    "label": "Lado",
+                    "type": "select",
+                    "name": "nistagmusProvocacionSelect",
+                    "options": [
+                      { "value": "derecho", "text": "Derecho" },
+                      { "value": "izquierdo", "text": "Izquierdo" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "notas",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notas",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Faringe/Laringe",
+        "card": [
+          {
+            "title": "Faringe",
+            "class": "col-12",
+            "fields": []
+          }
+        ],
+        "card2": [
+          {
+            "title": "Síntomas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dolorCheck",
+                "label": "Dolor",
+                "type": "checkbox",
+                "name": "dolorCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "sensCExtrañoCheck",
+                "label": "Sens C. Extraño",
+                "type": "checkbox",
+                "name": "sensCExtrañoCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "odinofagiaCheck",
+                "label": "Odinofagia",
+                "type": "checkbox",
+                "name": "odinofagiaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "disfagiaCheck",
+                "label": "Disfagia",
+                "type": "checkbox",
+                "name": "disfagiaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "carraspeoCheck",
+                "label": "Carraspeo",
+                "type": "checkbox",
+                "name": "carraspeoCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "flemaCheck",
+                "label": "Flema",
+                "type": "checkbox",
+                "name": "flemaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "fiebreCheck",
+                "label": "Fiebre",
+                "type": "checkbox",
+                "name": "fiebreCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "asteniaCheck",
+                "label": "Astenia",
+                "type": "checkbox",
+                "name": "asteniaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "anorexiaCheck",
+                "label": "Anorexia",
+                "type": "checkbox",
+                "name": "anorexiaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "mialgiasCheck",
+                "label": "Mialgias",
+                "type": "checkbox",
+                "name": "mialgiasCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "artralgiasCheck",
+                "label": "Artralgias",
+                "type": "checkbox",
+                "name": "artralgiasCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "disneaCheck",
+                "label": "Disnea",
+                "type": "checkbox",
+                "name": "disneaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "disfoniaCheck",
+                "label": "Disfonía",
+                "type": "checkbox",
+                "name": "disfoniaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "rinolaliaCheck",
+                "label": "Rinolalia",
+                "type": "checkbox",
+                "name": "rinolaliaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "cefaleaCheck",
+                "label": "Cefalea",
+                "type": "checkbox",
+                "name": "cefaleaCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "decaimientoCheck",
+                "label": "Decaimiento",
+                "type": "checkbox",
+                "name": "decaimientoCheck",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Examen Físico",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "aftasCheck",
+                "label": "Aftas",
+                "type": "checkbox",
+                "name": "aftasCheck",
+                "class": "col-3"
+              },
+              {
+                "id": "lesHerpeticasCheck",
+                "label": "Les. Herpéticas",
+                "type": "checkbox",
+                "name": "lesHerpeticasCheck",
+                "class": "col-3"
+              },
+              {
+                "id": "hiperemiaCheck",
+                "label": "Hiperemia",
+                "type": "checkbox",
+                "name": "hiperemiaCheck",
+                "class": "col-3"
+              },
+              {
+                "id": "lesNecronicasCheck",
+                "label": "Les. Necróticas",
+                "type": "checkbox",
+                "name": "lesNecronicasCheck",
+                "class": "col-3"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Pilares Anteriores-Folículos Linf",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "violaceosCheck",
+                "label": "Violáceos",
+                "type": "checkbox",
+                "name": "violaceosCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "lesionesPapilomatosasCheck",
+                "label": "Lesiones Papilomatosas",
+                "type": "checkbox",
+                "name": "lesionesPapilomatosasCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "tumoracionExofiticaCheck",
+                "label": "Tumoración Exofítica",
+                "type": "checkbox",
+                "name": "tumoracionExofiticaCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "ulceradaCheck",
+                "label": "Ulcerada",
+                "type": "checkbox",
+                "name": "ulceradaCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "sangradoCheck",
+                "label": "Sangrado",
+                "type": "checkbox",
+                "name": "sangradoCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "sangradoSelect",
+                    "label": "Ubicación",
+                    "type": "select",
+                    "name": "sangradoSelect",
+                    "class": "col-6",
+                    "options": [
+                      { "value": "retronasal", "text": "Retronasal" },
+                      { "value": "hipofaringe", "text": "Hipofaringe" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "uvulaSelect",
+                "label": "Úvula",
+                "type": "select",
+                "name": "uvulaSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "elongada", "text": "Elongada" },
+                  { "value": "faciesAdenoidea", "text": "Facies Adenoidea" },
+                  { "value": "respiracionBucal", "text": "Respiración Bucal" }
+                ]
+              },
+              {
+                "id": "amigdalasSelect",
+                "label": "Amígdalas",
+                "type": "select",
+                "name": "amigdalasSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "grado1", "text": "Grado 1" },
+                  { "value": "grado2", "text": "Grado 2" },
+                  { "value": "grado3", "text": "Grado 3" },
+                  { "value": "grado4", "text": "Grado 4" }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Naso-Faringo-Laringoscopia",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "rinofaringeSelect",
+                "label": "Rinofaringe",
+                "type": "select",
+                "name": "rinofaringeSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "adenoide", "text": "Adenoide" },
+                  { "value": "tumor", "text": "Tumor" },
+                  {
+                    "value": "rodete_tubárico_normal",
+                    "text": "Rodete Tubárico Normal"
+                  },
+                  { "value": "edema", "text": "Edema" },
+                  { "value": "D", "text": "D" },
+                  { "value": "I", "text": "I" }
+                ]
+              },
+              {
+                "id": "orofaringeSelect",
+                "label": "Orofaringe",
+                "type": "select",
+                "name": "orofaringeSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  {
+                    "value": "hipertrofia_amigdala",
+                    "text": "Hipertrofia Amígdalas"
+                  },
+                  {
+                    "value": "foliculos_linfoides_hiperplasicos",
+                    "text": "Folículos Linfoides Hiperplásicos"
+                  },
+                  { "value": "mucosidad", "text": "Mucosidad" }
+                ]
+              },
+              {
+                "id": "hipofaringeSelect",
+                "label": "Hipofaringe",
+                "type": "select",
+                "name": "hipofaringeSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  {
+                    "value": "hipertrofia_am_lingual",
+                    "text": "Hipertrofia Amígdalas Linguales"
+                  }
+                ]
+              },
+              {
+                "id": "epiglotisSelect",
+                "label": "Epiglotis",
+                "type": "select",
+                "name": "epiglotisSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "larga", "text": "Larga" },
+                  { "value": "omega", "text": "Omega" },
+                  { "value": "colapsa", "text": "Colapsa" }
+                ]
+              },
+              {
+                "id": "notasFaringe",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notasFaringe",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Laringe",
+            "class": "col-12",
+            "fields": []
+          }
+        ],
+        "card7": [
+          {
+            "title": "Síntomas Vocales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoSelect",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "disfonia", "text": "Disfonía" },
+                  { "value": "doloralhablar", "text": "Dolor al Hablar" },
+                  { "value": "fatigavoz", "text": "Fatiga de la Voz" },
+                  { "value": "vozespastica", "text": "Voz Espástica" },
+                  { "value": "vozbitonal", "text": "Voz Bitonal" },
+                  { "value": "tos", "text": "Tos" },
+                  { "value": "hemoptisis", "text": "Hemoptisis" },
+                  {
+                    "value": "espasmoslaringeos",
+                    "text": "Espasmos Laríngeos"
+                  },
+                  {
+                    "value": "cuerpextraño",
+                    "text": "Sensación Cuerpo Extraño"
+                  },
+                  {
+                    "value": "flemascarraspeo",
+                    "text": "Flemas y Carraspeo Frecuente"
+                  },
+                  { "value": "sequedad", "text": "Sequedad" },
+                  { "value": "estridor", "text": "Estridor" }
+                ]
+              }
+            ]
+          }
+        ],
+
+        "card8": [
+          {
+            "title": "Laringoscopia Indirecta",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "congestionSelect",
+                "label": "Congestión",
+                "type": "select",
+                "name": "congestionSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "hipofaringe", "text": "Hipofaringe" },
+                  { "value": "epiglotis", "text": "Epiglotis" },
+                  { "value": "aritenoides", "text": "Aritenoides" },
+                  { "value": "interaritenoideos", "text": "Interaritenoideos" },
+                  { "value": "bventriculares", "text": "B. Ventriculares" },
+                  { "value": "pvocales", "text": "P. Vocales" }
+                ]
+              },
+              {
+                "id": "edemaPlieguesVocalesSelect",
+                "label": "Edema de Pliegues Vocales",
+                "type": "select",
+                "name": "edemaPlieguesVocalesSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "plvocalderecho", "text": "Pl. Vocal Derecho" },
+                  { "value": "plvocalizquierdo", "text": "Pl. Vocal Izquierdo" }
+                ]
+              },
+              {
+                "id": "lesionesSubmucosasSelect",
+                "label": "Lesiones Submucosas",
+                "type": "select",
+                "name": "lesionesSubmucosasSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "polipo", "text": "Pólipo" },
+                  { "value": "nodulos", "text": "Nódulos" },
+                  { "value": "sulcusvocalis", "text": "Sulcus Vocalis" },
+                  { "value": "granuloma", "text": "Granuloma" },
+                  { "value": "quistemucoso", "text": "Quiste Mucoso" },
+                  { "value": "otros", "text": "Otros" }
+                ]
+              },
+              {
+                "id": "lesionesMucosasSelect",
+                "label": "Lesiones Mucosas",
+                "type": "select",
+                "name": "lesionesMucosasSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "papilomas", "text": "Papilomas" },
+                  { "value": "leucoplasia", "text": "Leucoplasia" }
+                ]
+              },
+              {
+                "id": "cancerSelect",
+                "label": "Cáncer",
+                "type": "select",
+                "name": "cancerSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "insitu", "text": "In-Situ" },
+                  { "value": "glotisderecho", "text": "Glotis Derecho" },
+                  { "value": "glotizizquierdo", "text": "Glotis Izquierdo" },
+                  { "value": "comisura", "text": "Comisura" },
+                  { "value": "supraglotis", "text": "Supra-Glotis" },
+                  { "value": "subglotis", "text": "Sub-Glotis" },
+                  { "value": "total", "text": "Total" }
+                ]
+              },
+              {
+                "id": "paralisisSelect",
+                "label": "Parálisis",
+                "type": "select",
+                "name": "paralisisSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "cvderecho", "text": "C.V. Derecho" },
+                  { "value": "cvizquierdo", "text": "C.V. Izquierdo" },
+                  { "value": "ambas", "text": "Ambas" },
+                  { "value": "adduccion", "text": "Aducción" },
+                  { "value": "abduccion", "text": "Abducción" },
+                  { "value": "disarmoniavocal", "text": "Disarmonía Vocal" }
+                ]
+              },
+              {
+                "id": "cierrePlieguesVocalesSelect",
+                "label": "Cierre de Pliegues Vocales",
+                "type": "select",
+                "name": "cierrePlieguesVocalesSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "irregular", "text": "Irregular" },
+                  { "value": "parentesis", "text": "Paréntesis" },
+                  { "value": "incompletoant", "text": "Incompleto Ant" },
+                  { "value": "incompletopost", "text": "Incompleto Post" },
+                  { "value": "relojdearena", "text": "Reloj de Arena" },
+                  { "value": "total", "text": "Total" }
+                ]
+              },
+              {
+                "id": "subglotisSelect",
+                "label": "Subglotis",
+                "type": "select",
+                "name": "subglotisSelect",
+                "class": "col-6",
+                "options": [
+                  { "value": "edema", "text": "Edema" },
+                  { "value": "neoplasia", "text": "Neoplasia" },
+                  { "value": "estenosis", "text": "Estenosis" }
+                ]
+              },
+              {
+                "id": "notasTextarea",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notasTextarea",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Revisión",
+        "card": [
+          {
+            "title": "Glándulas Salivales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoSelect",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoSelect",
+                "class": "col-4",
+                "options": [
+                  { "value": "derecha", "text": "Derecha" },
+                  { "value": "izquierda", "text": "Izquierda" },
+                  { "value": "ambas", "text": "Ambas" },
+                  { "value": "parotida", "text": "Parótida" },
+                  { "value": "submaxilar", "text": "Submaxilar" },
+                  { "value": "sublingual", "text": "Sublingual" },
+                  { "value": "agrandamiento", "text": "Agrandamiento" },
+                  { "value": "bultos", "text": "Bultos" },
+                  { "value": "duro", "text": "Duro" },
+                  { "value": "irregular", "text": "Irregular" },
+                  { "value": "redondeado", "text": "Redondeado" },
+                  { "value": "movil", "text": "Móvil" },
+                  { "value": "doloroso", "text": "Doloroso" },
+                  { "value": "sequedadbucal", "text": "Sequedad Bucal" },
+                  {
+                    "value": "eliminacioncalcificaciones",
+                    "text": "Eliminación Calcificaciones"
+                  },
+                  {
+                    "value": "eliminacioncalculos",
+                    "text": "Eliminación de Cálculos"
+                  },
+                  {
+                    "value": "inflamacionstenon",
+                    "text": "Inflamación de Stenon"
+                  },
+                  { "value": "wharton", "text": "Wharton" },
+                  { "value": "bartholin", "text": "Bartholin" }
+                ]
+              },
+              {
+                "id": "sialoTomografiaSelect",
+                "label": "Sialo-Tomografía",
+                "type": "select",
+                "name": "sialoTomografiaSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "calculoRadiopacoUnico",
+                    "text": "Cálculo Radiopaco Único"
+                  },
+                  {
+                    "value": "calculosMultiples",
+                    "text": "Cálculos Múltiples"
+                  },
+                  {
+                    "value": "calculosIntraGlandular",
+                    "text": "Cálculos Intra-Glandular"
+                  },
+                  {
+                    "value": "calculoRadiolucido",
+                    "text": "Cálculo Radiolúcido"
+                  },
+                  { "value": "aumentoDeTamaño", "text": "Aumento de Tamaño" },
+                  { "value": "noduloSimple", "text": "Nódulo Simple" },
+                  { "value": "multinodular", "text": "Multinodular" }
+                ]
+              },
+              {
+                "id": "ecografiaSelect",
+                "label": "Ecografía",
+                "type": "select",
+                "name": "ecografiaSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "tumoracionQuistica",
+                    "text": "Tumoración Quística"
+                  },
+                  { "value": "tumoracionSolida", "text": "Tumoración Sólida" },
+                  {
+                    "value": "resonanciaMagneticaGlándulaSalival",
+                    "text": "Resonancia Magnética de Glándula Salival"
+                  }
+                ]
+              },
+              {
+                "id": "notasGlandulasSalivales",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notasGlandulasSalivales",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Vía lagrimal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoSelect",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoSelect",
+                "class": "col-4",
+                "options": [
+                  { "value": "derecha", "text": "Derecha" },
+                  { "value": "izquierda", "text": "Izquierda" },
+                  { "value": "ambos", "text": "Ambos" }
+                ]
+              },
+              {
+                "id": "secrecionSelect",
+                "label": "Secreción",
+                "type": "select",
+                "name": "secrecionSelect",
+                "class": "col-4",
+                "options": [
+                  { "value": "mucosa", "text": "Mucosa" },
+                  { "value": "purulenta", "text": "Purulenta" }
+                ]
+              },
+              {
+                "id": "obstruccionSelect",
+                "label": "Obstrucción",
+                "type": "select",
+                "name": "obstruccionSelect",
+                "class": "col-4",
+                "options": [
+                  { "value": "total", "text": "Total" },
+                  { "value": "parcial", "text": "Parcial" }
+                ]
+              },
+              {
+                "id": "notasViaLagrimal",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notasViaLagrimal",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Cuello",
+            "fields": [
+              {
+                "id": "tipoSelect",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoSelect",
+                "options": [
+                  {
+                    "value": "adenopatiaDolorosa",
+                    "text": "Adenopatía Dolorosa"
+                  },
+                  {
+                    "value": "adenopatiaUnica",
+                    "text": "Adenopatía Única"
+                  },
+                  {
+                    "value": "adenopatiaMultiple",
+                    "text": "Adenopatía Múltiple"
+                  },
+                  {
+                    "value": "cadenaCervicalAnterior",
+                    "text": "Cadena Cervical Anterior"
+                  },
+                  {
+                    "value": "cadenaCervicalPosterior",
+                    "text": "Cadena Cervical Posterior"
+                  },
+                  { "value": "otrasRegiones", "text": "Otras Regiones" },
+                  {
+                    "value": "nodulosTiroideos",
+                    "text": "Nódulos Tiroideos"
+                  },
+                  { "value": "bocio", "text": "Bocio" },
+                  { "value": "miositis", "text": "Miositis" },
+                  { "value": "arteritis", "text": "Arteritis" },
+                  {
+                    "value": "dolorCervicalPosterior",
+                    "text": "Dolor Cervical Posterior"
+                  },
+                  {
+                    "value": "contracturaMuscular",
+                    "text": "Contractura Muscular"
+                  },
+                  { "value": "dolorDeNuca", "text": "Dolor de Nuca" },
+                  {
+                    "value": "cefaelasPosteriores",
+                    "text": "Cefaleas Posteriores"
+                  },
+                  { "value": "mareo", "text": "Mareo" }
+                ]
+              },
+              {
+                "id": "notasTextArea",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notasTextArea"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Esquemas",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "Subir archivo",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

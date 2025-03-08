@@ -1,0 +1,644 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Entrevista inicial",
+        "card": [
+          {
+            "title": "Padecimiento Actual",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "fechaModoAparicion",
+                "label": "Fecha y modo de aparición",
+                "type": "textarea",
+                "name": "fechaModoAparicion",
+                "class": "col-6"
+              },
+              {
+                "id": "causaOcausasAparentes",
+                "label": "Causa o causas aparentes",
+                "type": "textarea",
+                "name": "causaOcausasAparentes",
+                "class": "col-6"
+              },
+              {
+                "id": "evaluacion",
+                "label": "Evaluación",
+                "type": "textarea",
+                "name": "evaluacion",
+                "class": "col-6"
+              },
+              {
+                "id": "tratamientosPrevios",
+                "label": "Tratamientos previos",
+                "type": "textarea",
+                "name": "tratamientosPrevios",
+                "class": "col-6"
+              },
+              {
+                "id": "otrasDermatosisPrevias",
+                "label": "Otras dermatosis previas",
+                "type": "textarea",
+                "name": "otrasDermatosisPrevias",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Hábitos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "bebida",
+                "label": "Bebida",
+                "type": "checkbox",
+                "name": "bebida",
+                "class": "col-4"
+              },
+              {
+                "id": "fuma",
+                "label": "Fuma",
+                "type": "checkbox",
+                "name": "fuma",
+                "class": "col-4"
+              },
+              {
+                "id": "psiquismo",
+                "label": "Psiquismo",
+                "type": "checkbox",
+                "name": "psiquismo",
+                "class": "col-4"
+              },
+              {
+                "id": "deporte",
+                "label": "Deporte",
+                "type": "checkbox",
+                "name": "deporte",
+                "class": "col-4"
+              },
+              {
+                "id": "sol",
+                "label": "Sol",
+                "type": "checkbox",
+                "name": "sol",
+                "class": "col-4"
+              },
+              {
+                "id": "dieta",
+                "label": "Dieta",
+                "type": "checkbox",
+                "name": "dieta",
+                "class": "col-4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exploración Dermatológica",
+        "card": [
+          {
+            "title": "Exploración Dermatológica",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipo",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "localizada",
+                    "text": "Localizada"
+                  },
+                  {
+                    "value": "generalizada",
+                    "text": "Generalizada"
+                  }
+                ]
+              },
+              {
+                "id": "segmentoAfectado",
+                "label": "Segmento Afectado",
+                "type": "select",
+                "name": "segmentoAfectado",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "cara",
+                    "text": "Cara"
+                  },
+                  {
+                    "value": "torax",
+                    "text": "Tórax"
+                  },
+                  {
+                    "value": "brazos",
+                    "text": "Brazos"
+                  },
+                  {
+                    "value": "tronco",
+                    "text": "Tronco"
+                  },
+                  {
+                    "value": "cabezaCuello",
+                    "text": "Cabeza (cuello)"
+                  }
+                ]
+              },
+              {
+                "id": "descripcionTipo",
+                "label": "Descripción tipo",
+                "type": "textarea",
+                "name": "descripcionTipo",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionSegmentoAfectado",
+                "label": "Descripción segmento afectado",
+                "type": "textarea",
+                "name": "descripcionSegmentoAfectado",
+                "class": "col-6"
+              },
+              {
+                "id": "regionAfectada",
+                "label": "Región Afectada",
+                "type": "select",
+                "name": "regionAfectada",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "expuesta",
+                    "text": "Expuesta"
+                  },
+                  {
+                    "value": "cubierta",
+                    "text": "Cubierta"
+                  }
+                ]
+              },
+              {
+                "id": "simetria",
+                "label": "Simetría",
+                "type": "select",
+                "name": "simetria",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "simetrica",
+                    "text": "Simétrica"
+                  },
+                  {
+                    "value": "asimetrica",
+                    "text": "Asimétrica"
+                  }
+                ]
+              },
+              {
+                "id": "descripcionRegionAfectada",
+                "label": "Descripción Región Afectada",
+                "type": "textarea",
+                "name": "descripcionRegionAfectada",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionSimetria",
+                "label": "Descripción Simetría",
+                "type": "textarea",
+                "name": "descripcionSimetria",
+                "class": "col-6"
+              },
+              {
+                "id": "localizacionEspecial",
+                "label": "Localización Especial",
+                "type": "select",
+                "name": "localizacionEspecial",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "cuello",
+                    "text": "Cuello"
+                  },
+                  {
+                    "value": "palma",
+                    "text": "Palma"
+                  },
+                  {
+                    "value": "plantas",
+                    "text": "Plantas"
+                  },
+                  {
+                    "value": "genitales",
+                    "text": "Genitales"
+                  }
+                ]
+              },
+              {
+                "id": "inputHiddenED",
+                "label": "",
+                "type": "hidden",
+                "name": "inputHiddenED",
+                "class": "col-6"
+              },
+              {
+                "id": "descripcionLocalizacionEspecial",
+                "label": "Descripción",
+                "type": "textarea",
+                "name": "descripcionLocalizacionEspecial",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "monomorfico",
+                "label": "Monomórfico / Polimórfico",
+                "type": "select",
+                "name": "monomorfico",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "monomorfico",
+                    "text": "Monomórfico"
+                  },
+                  {
+                    "value": "polimorfico",
+                    "text": "Polimórfico"
+                  }
+                ]
+              },
+              {
+                "id": "inputHidden",
+                "label": "",
+                "type": "hidden",
+                "name": "inputHidden",
+                "class": "col-6"
+              },
+              {
+                "id": "caracteristicasMonomorfico",
+                "label": "Características Monomórfico / Polimórfico",
+                "type": "textarea",
+                "name": "caracteristicasMonomorfico",
+                "class": "col-6"
+              },
+              {
+                "id": "lesiones",
+                "label": "Lesiones",
+                "type": "checkbox",
+                "name": "lesiones",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasLesiones",
+                    "label": "Características Lesiones",
+                    "type": "textarea",
+                    "name": "caracteristicasLesiones",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tamano",
+                    "label": "Tamaño",
+                    "type": "textarea",
+                    "name": "tamano",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "modoAgrupacion",
+                "label": "Modo Agrupación",
+                "type": "checkbox",
+                "name": "modoAgrupacion",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasModoAgrupacion",
+                    "label": "Características Modo Agrupación",
+                    "type": "textarea",
+                    "name": "caracteristicasModoAgrupacion",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "limitesBordes",
+                    "label": "Limites o Bordes",
+                    "type": "textarea",
+                    "name": "limitesBordes",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "color",
+                    "label": "Color",
+                    "type": "textarea",
+                    "name": "color",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "otraEnfermedadConocida",
+                "label": "Otra Enfermedad Conocida",
+                "type": "checkbox",
+                "name": "otraEnfermedadConocida",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tipoEnfermedad",
+                    "label": "Tipo de Enfermedad",
+                    "type": "select",
+                    "name": "tipoEnfermedad",
+                    "options": [
+                      {
+                        "value": "aguda",
+                        "text": "Aguda"
+                      },
+                      {
+                        "value": "cronica",
+                        "text": "Crónica"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "caracteristicasOtraEnfermedad",
+                    "label": "Características",
+                    "type": "textarea",
+                    "name": "caracteristicasOtraEnfermedad"
+                  }
+                ]
+              },
+              {
+                "id": "lesionesPrimarias",
+                "label": "Lesiones Primarias",
+                "type": "checkbox",
+                "name": "lesionesPrimarias",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasLesionesPrimarias",
+                    "label": "Características Lesiones Primarias",
+                    "type": "select",
+                    "name": "caracteristicasLesionesPrimarias",
+                    "options": [
+                      {
+                        "value": "comezon",
+                        "text": "Comezón"
+                      },
+                      {
+                        "value": "ardor",
+                        "text": "Ardor"
+                      },
+                      {
+                        "value": "prurito",
+                        "text": "Prurito"
+                      },
+                      {
+                        "value": "calor",
+                        "text": "Calor"
+                      },
+                      {
+                        "value": "otros",
+                        "text": "Otros"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "caracteristicasLesionesPrimariasTexto",
+                    "label": "Características Lesiones Primarias",
+                    "type": "textarea",
+                    "name": "caracteristicasLesionesPrimariasTexto"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Lesiones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "lesionesPrimarias",
+                "label": "Lesiones Primarias",
+                "type": "checkbox",
+                "name": "lesionesPrimarias",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasLesionesPrimarias",
+                    "label": "Características Lesiones Primarias",
+                    "type": "textarea",
+                    "name": "caracteristicasLesionesPrimarias"
+                  }
+                ]
+              },
+              {
+                "id": "lesionesSecundarias",
+                "label": "Lesiones Secundarias",
+                "type": "checkbox",
+                "name": "lesionesSecundarias",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasLesionesSecundarias",
+                    "label": "Características Lesiones Secundarias",
+                    "type": "textarea",
+                    "name": "caracteristicasLesionesSecundarias"
+                  }
+                ]
+              },
+
+              {
+                "id": "otrasLesiones",
+                "label": "Otras Lesiones",
+                "type": "checkbox",
+                "name": "otrasLesiones",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "caracteristicasOtrasLesiones",
+                    "label": "Características Otras Lesiones",
+                    "type": "textarea",
+                    "name": "caracteristicasOtrasLesiones"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

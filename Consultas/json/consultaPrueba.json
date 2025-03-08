@@ -1,0 +1,343 @@
+{
+    "formId": "formNuevoPaciente",
+    "steps": [
+        {
+            "step": 1,
+            "title": "Motivos de Consulta y Observaciones",
+            "fields": [
+                {
+                    "type": "textarea",
+                    "id": "motivoConsulta",
+                    "name": "motivoConsulta",
+                    "label": "Motivo de la Consulta",
+                    "required": true,
+                    "validation": "Por favor, ingrese el motivo de consulta."
+                },
+                {
+                    "type": "textarea",
+                    "id": "observacionesConsulta",
+                    "name": "observacionesConsulta",
+                    "label": "Observaciones"
+                }
+            ]
+        },
+        {
+            "step": 2,
+            "title": "Signos Vitales y Medidas Antropométricas",
+            "subsections": [
+                {
+                    "title": "Signos Vitales",
+                    "fields": [
+                        {
+                            "type": "number",
+                            "id": "temperatura",
+                            "name": "temperatura",
+                            "label": "Temperatura corporal",
+                            "required": true,
+                            "validation": "Ingrese la temperatura."
+                        },
+                        {
+                            "type": "number",
+                            "id": "saturacion",
+                            "name": "saturacion",
+                            "label": "Saturación de oxígeno",
+                            "required": true,
+                            "validation": "Ingrese la saturación."
+                        },
+                        {
+                            "type": "number",
+                            "id": "frecuenciaCardiaca",
+                            "name": "frecuenciaCardiaca",
+                            "label": "Frecuencia Cardiaca",
+                            "required": true,
+                            "validation": "Ingrese la frecuencia cardiaca."
+                        },
+                        {
+                            "type": "number",
+                            "id": "frecuenciaRespiratoria",
+                            "name": "frecuenciaRespiratoria",
+                            "label": "Frecuencia Respiratoria",
+                            "required": true,
+                            "validation": "Ingrese la frecuencia respiratoria."
+                        }
+                    ]
+                },
+                {
+                    "title": "Presión Arterial",
+                    "fields": [
+                        {
+                            "type": "number",
+                            "id": "PAsistolica",
+                            "name": "PAsistolica",
+                            "label": "Sistólica",
+                            "required": true,
+                            "validation": "Ingrese la presión sistólica."
+                        },
+                        {
+                            "type": "number",
+                            "id": "PADiastolica",
+                            "name": "PADiastolica",
+                            "label": "Diastólica",
+                            "required": true,
+                            "validation": "Ingrese la presión diastólica."
+                        },
+                        {
+                            "type": "number",
+                            "id": "TAMedia",
+                            "name": "TAMedia",
+                            "label": "Tensión Arterial Media",
+                            "required": true,
+                            "validation": "Ingrese la tensión arterial media."
+                        }
+                    ]
+                },
+                {
+                    "title": "Medidas Antropométricas",
+                    "fields": [
+                        {
+                            "type": "number",
+                            "id": "pesoCorporal",
+                            "name": "pesoCorporal",
+                            "label": "Peso Corporal (KG)",
+                            "required": true,
+                            "validation": "Ingrese el peso corporal."
+                        },
+                        {
+                            "type": "number",
+                            "id": "altura",
+                            "name": "altura",
+                            "label": "Altura (CM)",
+                            "required": true,
+                            "validation": "Ingrese la altura."
+                        },
+                        {
+                            "type": "text",
+                            "id": "imc",
+                            "name": "imc",
+                            "label": "IMC",
+                            "readonly": true
+                        },
+                        {
+                            "type": "number",
+                            "id": "composicionCorporal",
+                            "name": "composicionCorporal",
+                            "label": "Composición Corporal",
+                            "readonly": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "step": 3,
+            "title": "Examen Físico",
+            "sections": [
+                {
+                    "id": "examenFisicoCabeza",
+                    "label": "Cabeza",
+                    "fields": [
+                        {
+                            "type": "select",
+                            "id": "examenFisicoEstadoCabeza",
+                            "name": "examenFisicoEstadoCabeza",
+                            "label": "Estado",
+                            "options": [
+                                "Normal",
+                                "Anormal"
+                            ],
+                            "hidden": false,
+                            "container": "hallazgosCabeza"
+                        },
+                        {
+                            "type": "textarea",
+                            "id": "examenFisicoCabeza",
+                            "name": "examenFisicoCabeza",
+                            "label": "Hallazgos",
+                            "value": "No Aplica",
+                            "hidden": false,
+                            "container": "hallazgosCabeza"
+                        }
+                    ]
+                },
+                {
+                    "id": "examenFisicoCuello",
+                    "label": "Cuello",
+                    "fields": [
+                        {
+                            "type": "checkbox",
+                            "id": "examenFisicoCuelloCheck",
+                            "name": "examenFisicoCuelloCheck",
+                            "label": "Cuello",
+                            "onchange": "setupToggleSwitch('examenFisicoCuelloCheck', ['hallazgosCuello'])"
+                        },
+                        {
+                            "type": "select",
+                            "id": "examenFisicoEstadoCuello",
+                            "name": "examenFisicoEstadoCuello",
+                            "label": "Estado",
+                            "options": [
+                                "Normal",
+                                "Anormal"
+                            ],
+                            "hidden": true,
+                            "container": "hallazgosCuello"
+                        },
+                        {
+                            "type": "textarea",
+                            "id": "examenFisicoCuello",
+                            "name": "examenFisicoCuello",
+                            "label": "Hallazgos",
+                            "value": "No Aplica",
+                            "hidden": true,
+                            "container": "hallazgosCuello"
+                        }
+                    ]
+                },
+                {
+                    "id": "examenFisicoTronco",
+                    "label": "Tronco",
+                    "fields": [
+                        {
+                            "type": "checkbox",
+                            "id": "examenFisicoTroncoCheck",
+                            "name": "examenFisicoTroncoCheck",
+                            "label": "Tronco",
+                            "onchange": "setupToggleSwitch('examenFisicoTroncoCheck', ['hallazgosTronco'])"
+                        },
+                        {
+                            "type": "select",
+                            "id": "examenFisicoEstadoTronco",
+                            "name": "examenFisicoEstadoTronco",
+                            "label": "Estado",
+                            "options": [
+                                "Normal",
+                                "Anormal"
+                            ],
+                            "hidden": true,
+                            "container": "hallazgosTronco"
+                        },
+                        {
+                            "type": "textarea",
+                            "id": "examenFisicoTronco",
+                            "name": "examenFisicoTronco",
+                            "label": "Hallazgos",
+                            "value": "No Aplica",
+                            "hidden": true,
+                            "container": "hallazgosTronco"
+                        }
+                    ]
+                },
+                {
+                    "id": "examenFisicoESuperiores",
+                    "label": "Extremidades Superiores",
+                    "fields": [
+                        {
+                            "type": "checkbox",
+                            "id": "examenFisicoESuperioresCheck",
+                            "name": "examenFisicoESuperioresCheck",
+                            "label": "Extremidades Superiores",
+                            "onchange": "setupToggleSwitch('examenFisicoESuperioresCheck', ['hallazgosESuperiores'])"
+                        },
+                        {
+                            "type": "select",
+                            "id": "examenFisicoEstadoESuperiores",
+                            "name": "examenFisicoEstadoESuperiores",
+                            "label": "Estado",
+                            "options": [
+                                "Normal",
+                                "Anormal"
+                            ],
+                            "hidden": true,
+                            "container": "hallazgosESuperiores"
+                        },
+                        {
+                            "type": "textarea",
+                            "id": "examenFisicoESuperiores",
+                            "name": "examenFisicoESuperiores",
+                            "label": "Hallazgos",
+                            "value": "No Aplica",
+                            "hidden": true,
+                            "container": "hallazgosESuperiores"
+                        }
+                    ]
+                },
+                {
+                    "id": "examenFisicoEInferiores",
+                    "label": "Extremidades Inferiores",
+                    "fields": [
+                        {
+                            "type": "checkbox",
+                            "id": "examenFisicoEInferioresCheck",
+                            "name": "examenFisicoEInferioresCheck",
+                            "label": "Extremidades Inferiores",
+                            "onchange": "setupToggleSwitch('examenFisicoEInferioresCheck', ['hallazgosEInferiores'])"
+                        },
+                        {
+                            "type": "select",
+                            "id": "examenFisicoEstadoEInferiores",
+                            "name": "examenFisicoEstadoEInferiores",
+                            "label": "Estado",
+                            "options": [
+                                "Normal",
+                                "Anormal"
+                            ],
+                            "hidden": true,
+                            "container": "hallazgosEInferiores"
+                        },
+                        {
+                            "type": "textarea",
+                            "id": "examenFisicoEInferiores",
+                            "name": "examenFisicoEInferiores",
+                            "label": "Hallazgos",
+                            "value": "No Aplica",
+                            "hidden": true,
+                            "container": "hallazgosEInferiores"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "step": 4,
+            "title": "Exámenes Clínicos, Incapacidades y Recetas",
+            "fields": [
+                {
+                    "type": "select",
+                    "id": "examenesImageneologia",
+                    "name": "examenesImageneologia",
+                    "label": "Examen de Imageneología",
+                    "options": [
+                        "Arteriografía",
+                        "Rayos X simple",
+                        "Rayos X Contrastado",
+                        "Otro"
+                    ]
+                },
+                {
+                    "type": "select",
+                    "id": "examenesLaboratorio",
+                    "name": "examenesLaboratorio",
+                    "label": "Examen de laboratorio",
+                    "options": [
+                        "Hematología",
+                        "Coombs Directo",
+                        "Coombs Indirecto",
+                        "Otro"
+                    ]
+                }
+            ]
+        },
+        {
+            "step": 5,
+            "title": "Paraclínicos",
+            "fields": [
+                {
+                    "type": "button",
+                    "id": "agregarParaclinico",
+                    "name": "agregarParaclinico",
+                    "label": "Agregar Paraclínico"
+                }
+            ]
+        }
+    ]
+}

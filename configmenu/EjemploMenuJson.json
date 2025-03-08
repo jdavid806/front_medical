@@ -1,0 +1,26 @@
+{
+  "1": {
+    "id": "2",
+    "name": "Inicio",
+    "icon": "fas fa-warehouse",
+    "isActive": true,
+    "submenus": {}
+  },
+  "2": {
+    "id": "1",
+    "name": "Perfil",
+    "icon": "fa-solid fa-person",
+    "isActive": true,
+    "submenus": {
+      "1": { "id": "3", "name": "Submenu Configurar", "active": false },
+      "2": { "id": "4", "name": "Config Menu 2", "active": false }
+    }
+  },
+  "3": {
+    "id": "5",
+    "name": "Alertas Globales",
+    "icon": "fas fa-info",
+    "isActive": false,
+    "submenus": {}
+  }
+}

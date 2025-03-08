@@ -1,0 +1,279 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen mental",
+        "card": [
+          {
+            "title": "Cognición",
+            "fields": [
+              {
+                "id": "funcionesMentales",
+                "label": "Funciones Mentales",
+                "type": "textarea",
+                "name": "funcionesMentales"
+              },
+              {
+                "id": "funcionesEjecutivas",
+                "label": "Funciones Ejecutivas",
+                "type": "textarea",
+                "name": "funcionesEjecutivas"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Afecto",
+            "fields": [
+              {
+                "id": "aspectoVolitivoIniciativa",
+                "label": "Aspecto Volitivo e Iniciativa",
+                "type": "textarea",
+                "name": "aspectoVolitivoIniciativa"
+              },
+              {
+                "id": "tonoEmocional",
+                "label": "Tono Emocional",
+                "type": "textarea",
+                "name": "tonoEmocional"
+              },
+              {
+                "id": "regulacionEmocional",
+                "label": "Regulación Emocional",
+                "type": "textarea",
+                "name": "regulacionEmocional"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Comportamiento",
+            "fields": [
+              {
+                "id": "actividadMotora",
+                "label": "Actividad Motora",
+                "type": "textarea",
+                "name": "actividadMotora"
+              },
+              {
+                "id": "impulsividad",
+                "label": "Impulsividad",
+                "type": "textarea",
+                "name": "impulsividad"
+              },
+              {
+                "id": "autonomia",
+                "label": "Autonomía",
+                "type": "textarea",
+                "name": "autonomia"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Personalidad",
+            "fields": [
+              {
+                "id": "aperturaExperiencia",
+                "label": "Apertura a la Experiencia",
+                "type": "textarea",
+                "name": "aperturaExperiencia"
+              },
+              {
+                "id": "responsabilidad",
+                "label": "Responsabilidad",
+                "type": "textarea",
+                "name": "responsabilidad"
+              },
+              {
+                "id": "extroversion",
+                "label": "Extroversión",
+                "type": "textarea",
+                "name": "extroversion"
+              },
+              {
+                "id": "amabilidad",
+                "label": "Amabilidad",
+                "type": "textarea",
+                "name": "amabilidad"
+              },
+              {
+                "id": "estabilidadEmocional",
+                "label": "Estabilidad Emocional",
+                "type": "textarea",
+                "name": "estabilidadEmocional"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card9": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card16": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,926 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Anamnesis",
+        "card": [
+          {
+            "title": "Funciones Biológicas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "apetito",
+                "label": "Apetito",
+                "type": "textarea",
+                "name": "apetito",
+                "class": "col-6"
+              },
+              {
+                "id": "sed",
+                "label": "Sed",
+                "type": "textarea",
+                "name": "sed",
+                "class": "col-6"
+              },
+              {
+                "id": "sudor",
+                "label": "Sudor",
+                "type": "textarea",
+                "name": "sudor",
+                "class": "col-6"
+              },
+              {
+                "id": "sueno",
+                "label": "Sueño",
+                "type": "textarea",
+                "name": "sueno",
+                "class": "col-6"
+              },
+              {
+                "id": "orina",
+                "label": "Orina",
+                "type": "textarea",
+                "name": "orina",
+                "class": "col-6"
+              },
+              {
+                "id": "deposiciones",
+                "label": "Deposiciones",
+                "type": "textarea",
+                "name": "deposiciones",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Hábitos Nocivos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "teCheck",
+                "label": "Te",
+                "type": "checkbox",
+                "name": "teCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "teInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "teInfo"
+                  }
+                ]
+              },
+              {
+                "id": "cafeCheck",
+                "label": "Café",
+                "type": "checkbox",
+                "name": "cafeCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "cafeInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "cafeInfo"
+                  }
+                ]
+              },
+              {
+                "id": "alcoholCheck",
+                "label": "Alcohol",
+                "type": "checkbox",
+                "name": "alcoholCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "alcoholInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "alcoholInfo"
+                  }
+                ]
+              },
+              {
+                "id": "tabacoCheck",
+                "label": "Tabaco",
+                "type": "checkbox",
+                "name": "tabacoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tabacoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "tabacoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "drogasCheck",
+                "label": "Drogas",
+                "type": "checkbox",
+                "name": "drogasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "drogasInfo",
+                    "label": "Información sobre el consumo de Drogas",
+                    "type": "textarea",
+                    "name": "drogasInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card8": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc",
+                "readonly": true
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia",
+                "readonly": true
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ],
+        "card": [
+          {
+            "title": "Aspecto General",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estado",
+                "label": "Estado",
+                "type": "textarea",
+                "name": "estado",
+                "class": "col-6"
+              },
+              {
+                "id": "piel",
+                "label": "Piel",
+                "type": "textarea",
+                "name": "piel",
+                "class": "col-6"
+              },
+              {
+                "id": "sistemaPiloso",
+                "label": "Sistema Piloso",
+                "type": "textarea",
+                "name": "sistemaPiloso",
+                "class": "col-6"
+              },
+              {
+                "id": "unas",
+                "label": "Uñas",
+                "type": "textarea",
+                "name": "unas",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen Aparatos/Sistemas",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ojosCheck",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "ojosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ojosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ojosText"
+                  }
+                ]
+              },
+              {
+                "id": "pupilasCheck",
+                "label": "Pupilas",
+                "type": "checkbox",
+                "name": "pupilasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "pupilasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "pupilasText"
+                  }
+                ]
+              },
+              {
+                "id": "conjuntivasCheck",
+                "label": "Conjuntivas",
+                "type": "checkbox",
+                "name": "conjuntivasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "conjuntivasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "conjuntivasText"
+                  }
+                ]
+              },
+              {
+                "id": "parpadosCheck",
+                "label": "Párpados",
+                "type": "checkbox",
+                "name": "parpadosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "parpadosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "parpadosText"
+                  }
+                ]
+              },
+              {
+                "id": "mucosasCheck",
+                "label": "Mucosas",
+                "type": "checkbox",
+                "name": "mucosasCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "mucosasText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "mucosasText"
+                  }
+                ]
+              },
+              {
+                "id": "lenguaCheck",
+                "label": "Lengua",
+                "type": "checkbox",
+                "name": "lenguaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "lenguaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "lenguaText"
+                  }
+                ]
+              },
+              {
+                "id": "dientesCheck",
+                "label": "Dientes",
+                "type": "checkbox",
+                "name": "dientesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dientesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dientesText"
+                  }
+                ]
+              },
+              {
+                "id": "orofaringeCheck",
+                "label": "Orofaringe",
+                "type": "checkbox",
+                "name": "orofaringeCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "orofaringeText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "orofaringeText"
+                  }
+                ]
+              },
+              {
+                "id": "oidosCheck",
+                "label": "Oídos",
+                "type": "checkbox",
+                "name": "oidosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "oidosText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "oidosText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Tórax",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "aparatoRespiratorioCheck",
+                "label": "Aparato Respiratorio",
+                "type": "checkbox",
+                "name": "aparatoRespiratorioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionRespiratorio",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionRespiratorio"
+                  },
+                  {
+                    "id": "auscultacionRespiratorio",
+                    "label": "Auscultación",
+                    "type": "textarea",
+                    "name": "auscultacionRespiratorio"
+                  },
+                  {
+                    "id": "palpacionRespiratorio",
+                    "label": "Palpación",
+                    "type": "textarea",
+                    "name": "palpacionRespiratorio"
+                  },
+                  {
+                    "id": "perfusionRespiratorio",
+                    "label": "Percusión",
+                    "type": "textarea",
+                    "name": "perfusionRespiratorio"
+                  }
+                ]
+              },
+            
+              {
+                "id": "abdomenCheck",
+                "label": "Abdomen",
+                "type": "checkbox",
+                "name": "abdomenCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionAbdomen",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionAbdomen"
+                  },
+                  {
+                    "id": "auscultacionAbdomen",
+                    "label": "Auscultación",
+                    "type": "textarea",
+                    "name": "auscultacionAbdomen"
+                  },
+                  {
+                    "id": "palpacionAbdomen",
+                    "label": "Palpación",
+                    "type": "textarea",
+                    "name": "palpacionAbdomen"
+                  },
+                  {
+                    "id": "perfusionAbdomen",
+                    "label": "Percusión",
+                    "type": "textarea",
+                    "name": "perfusionAbdomen"
+                  }
+                ]
+              },
+              {
+                "id": "aparatoCardiovascularCheck",
+                "label": "Aparato Cardiovascular",
+                "type": "checkbox",
+                "name": "aparatoCardiovascularCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionCardiovascular",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionCardiovascular"
+                  },
+                  {
+                    "id": "auscultacionCardiovascular",
+                    "label": "Auscultación",
+                    "type": "textarea",
+                    "name": "auscultacionCardiovascular"
+                  },
+                  {
+                    "id": "pulsoCardiovascular",
+                    "label": "Pulso",
+                    "type": "textarea",
+                    "name": "pulsoCardiovascular"
+                  }
+                ]
+              },
+              {
+                "id": "genitourinarioCheck",
+                "label": "Genitourinario",
+                "type": "checkbox",
+                "name": "genitourinarioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionGenitourinario",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionGenitourinario"
+                  },
+                  {
+                    "id": "palpacionGenitourinario",
+                    "label": "Palpación",
+                    "type": "textarea",
+                    "name": "palpacionGenitourinario"
+                  },
+                  {
+                    "id": "punioPercusionLumbar",
+                    "label": "Puño de Percusión Lumbar",
+                    "type": "textarea",
+                    "name": "punioPercusionLumbar"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Aparato Locomotor",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "extremidadesSuperioresCheck",
+                "label": "Extremidades Superiores",
+                "type": "checkbox",
+                "name": "extremidadesSuperioresCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionExtremidadesSuperiores",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionExtremidadesSuperiores"
+                  },
+                  {
+                    "id": "palpacionExtremidadesSuperiores",
+                    "label": "Palpación",
+                    "type": "textarea",
+                    "name": "palpacionExtremidadesSuperiores"
+                  },
+                  {
+                    "id": "movimientosExtremidadesSuperiores",
+                    "label": "Movimientos",
+                    "type": "textarea",
+                    "name": "movimientosExtremidadesSuperiores"
+                  }
+                ]
+              },
+              {
+                "id": "extremidadesInferioresCheck",
+                "label": "Extremidades Inferiores",
+                "type": "checkbox",
+                "name": "extremidadesInferioresCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inspeccionExtremidadesInferiores",
+                    "label": "Inspección",
+                    "type": "textarea",
+                    "name": "inspeccionExtremidadesInferiores"
+                  },
+                  {
+                    "id": "palpacionExtremidadesInferiores",
+                    "label": "Palpación",
+                    "type": "textarea",
+                    "name": "palpacionExtremidadesInferiores"
+                  },
+                  {
+                    "id": "movimientosExtremidadesInferiores",
+                    "label": "Movimientos",
+                    "type": "textarea",
+                    "name": "movimientosExtremidadesInferiores"
+                  }
+                ]
+              },
+              {
+                "id": "neurologicoCheck",
+                "label": "Neurológico",
+                "type": "checkbox",
+                "name": "neurologicoCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "aperturaPalpebral",
+                    "label": "Apertura Palpebral",
+                    "type": "textarea",
+                    "name": "aperturaPalpebral",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "respuestaVerbal",
+                    "label": "Respuesta Verbal",
+                    "type": "textarea",
+                    "name": "respuestaVerbal",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "respuestaMotora",
+                    "label": "Respuesta Motora",
+                    "type": "textarea",
+                    "name": "respuestaMotora",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "glasgow",
+                    "label": "Glasgow",
+                    "type": "textarea",
+                    "name": "glasgow",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Diagnósticos Sindrómicos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "impotenciaFuncionalCheck",
+                "label": "Síndrome de Impotencia Funcional",
+                "type": "checkbox",
+                "name": "impotenciaFuncionalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "impotenciaFuncionalInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "impotenciaFuncionalInfo"
+                  }
+                ]
+              },
+              {
+                "id": "edematosoCheck",
+                "label": "Síndrome Edematoso",
+                "type": "checkbox",
+                "name": "edematosoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "edematosoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "edematosoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "anemicoCheck",
+                "label": "Síndrome Anémico",
+                "type": "checkbox",
+                "name": "anemicoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "anemicoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "anemicoInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Diagnóstico Etiológico",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "anemiaNormociticaNormocromicaCheck",
+                "label": "Anemia Normocítica Normocrómica",
+                "type": "checkbox",
+                "name": "anemiaNormociticaNormocromicaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "anemiaNormociticaNormocromicaInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "anemiaNormociticaNormocromicaInfo"
+                  }
+                ]
+              },
+              {
+                "id": "hipocalcemiaCheck",
+                "label": "Hipocalcemia",
+                "type": "checkbox",
+                "name": "hipocalcemiaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "hipocalcemiaInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "hipocalcemiaInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

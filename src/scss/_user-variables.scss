@@ -1,0 +1,98 @@
+//
+//
+// user-variables.scss
+//
+// Place your own variable overrides here, these will override any Bootstrap and theme variables.
+
+// Colores personalizados
+$primary-color: #bbd5e7; // Color principal (ejemplo: azul)
+$secondary-color: #2ECC71; // Color secundario (ejemplo: verde)
+$danger-color: #E74C3C; // Color para botones de peligro (ejemplo: rojo)
+$warning-color: #F39C12; // Color de advertencia (ejemplo: naranja)
+$info-color: #2980B9; // Color informativo (ejemplo: azul oscuro)
+$light-color: #ECF0F1; // Color claro (ejemplo: gris claro)
+$dark-color: #2C3E50; // Color oscuro (ejemplo: gris oscuro)
+// Aplicar el color a los botones
+.btn-primary {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  color: #fff;
+}
+.btn-secondary {
+  background-color: $secondary-color;
+  border-color: $secondary-color;
+  color: #fff;
+}
+.btn-danger {
+  background-color: $danger-color;
+  border-color: $danger-color;
+  color: #fff;
+}
+.btn-warning {
+  background-color: $warning-color;
+  border-color: $warning-color;
+  color: #fff;
+}
+.btn-info {
+  background-color: $info-color;
+  border-color: $info-color;
+  color: #fff;
+}
+// Fuentes personalizadas
+$font-family-base: 'Roboto', sans-serif; // Fuente principal para texto
+$font-family-heading: 'Montserrat', sans-serif; // Fuente para encabezados
+// Tamaños de encabezados personalizados
+$h1-font-size: 3rem; // Tamaño H1
+$h2-font-size: 2.5rem; // Tamaño H2
+$h3-font-size: 2rem; // Tamaño H3
+$h4-font-size: 1.75rem; // Tamaño H4
+$h5-font-size: 1.5rem; // Tamaño H5
+$h6-font-size: 1.25rem; // Tamaño H6
+// Aplicar las fuentes y tamaños a los encabezados
+h1, .h1 {
+  font-family: $font-family-heading;
+  font-size: $h1-font-size;
+}
+h2, .h2 {
+  font-family: $font-family-heading;
+  font-size: $h2-font-size;
+}
+h3, .h3 {
+  font-family: $font-family-heading;
+  font-size: $h3-font-size;
+}
+h4, .h4 {
+  font-family: $font-family-heading;
+  font-size: $h4-font-size;
+}
+h5, .h5 {
+  font-family: $font-family-heading;
+  font-size: $h5-font-size;
+}
+h6, .h6 {
+  font-family: $font-family-heading;
+  font-size: $h6-font-size;
+}
+// Espaciado
+$padding-base: 1.5rem;
+$margin-base: 1rem;
+// Bordes personalizados
+$border-radius-base: 0.25rem; // Bordes redondeados para botones
+// Aplicar el borde a los botones
+.btn {
+  border-radius: $border-radius-base;
+  padding: $padding-base;
+  margin: $margin-base;
+}
+// Otros estilos generales
+body {
+  font-family: $font-family-base;
+  color: $dark-color;
+}
+
+
+
+
+
+
+

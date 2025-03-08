@@ -1,0 +1,571 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen mental",
+        "card":[
+          {
+            "title": "Problematica",
+            "class": "col-12",
+            "fields":[
+              {
+                "id": "descripciónProblematica",
+                "label": "",
+                "type": "textarea",
+                "name": "descripciónProblematica"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Cognición",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "funcionesMentales",
+                "label": "Funciones Mentales",
+                "type": "textarea",
+                "name": "funcionesMentales",
+                "class": "col-6"
+              },
+              {
+                "id": "funcionesEjecutivas",
+                "label": "Funciones Ejecutivas",
+                "type": "textarea",
+                "name": "funcionesEjecutivas",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Afecto",
+            "fields": [
+              {
+                "id": "aspectoVolitivoIniciativa",
+                "label": "Aspecto Volitivo e Iniciativa",
+                "type": "textarea",
+                "name": "aspectoVolitivoIniciativa"
+              },
+              {
+                "id": "tonoEmocional",
+                "label": "Tono Emocional",
+                "type": "textarea",
+                "name": "tonoEmocional"
+              },
+              {
+                "id": "regulacionEmocional",
+                "label": "Regulación Emocional",
+                "type": "textarea",
+                "name": "regulacionEmocional"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Comportamiento",
+            "fields": [
+              {
+                "id": "actividadMotora",
+                "label": "Actividad Motora",
+                "type": "textarea",
+                "name": "actividadMotora"
+              },
+              {
+                "id": "impulsividad",
+                "label": "Impulsividad",
+                "type": "textarea",
+                "name": "impulsividad"
+              },
+              {
+                "id": "autonomia",
+                "label": "Autonomía",
+                "type": "textarea",
+                "name": "autonomia"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Personalidad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "aperturaExperiencia",
+                "label": "Apertura a la Experiencia",
+                "type": "textarea",
+                "name": "aperturaExperiencia",
+                "class": "col-6"
+              },
+              {
+                "id": "responsabilidad",
+                "label": "Responsabilidad",
+                "type": "textarea",
+                "name": "responsabilidad",
+                "class": "col-6"
+              },
+              {
+                "id": "extroversion",
+                "label": "Extroversión",
+                "type": "textarea",
+                "name": "extroversion",
+                "class": "col-6"
+              },
+              {
+                "id": "amabilidad",
+                "label": "Amabilidad",
+                "type": "textarea",
+                "name": "amabilidad",
+                "class": "col-6"
+              },
+              {
+                "id": "estabilidadEmocional",
+                "label": "Estabilidad Emocional",
+                "type": "textarea",
+                "name": "estabilidadEmocional",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Áreas",
+        "card": [
+          {
+            "title": "Familiar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoFamilia",
+                "label": "Tipo de familia",
+                "type": "select",
+                "name": "tipoFamilia",
+                "class": "col-12",
+                "options": [
+                  {
+                    "value": "nuclear",
+                    "text": "Nuclear"
+                  },
+                  {
+                    "value": "extensa",
+                    "text": "Extensa"
+                  },
+                  {
+                    "value": "reconstruida",
+                    "text": "Reconstruida"
+                  },
+                  {
+                    "value": "mixta",
+                    "text": "Mixta"
+                  }
+                ]
+              },
+              {
+                "id": "relacionConPareja",
+                "label": "Relación con Pareja",
+                "type": "textarea",
+                "name": "relacionConPareja",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConHijos",
+                "label": "Relación con Hijos",
+                "type": "textarea",
+                "name": "relacionConHijos",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConOtrosMiembros",
+                "label": "Relación con Otros Miembros",
+                "type": "textarea",
+                "name": "relacionConOtrosMiembros",
+                "class": "col-6"
+              },
+              {
+                "id": "comunicacion",
+                "label": "Comunicación",
+                "type": "textarea",
+                "name": "comunicacion",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Laboral",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cargoActual",
+                "label": "Cargo Actual",
+                "type": "textarea",
+                "name": "cargoActual",
+                "class": "col-6"
+              },
+              {
+                "id": "desempenoLaboral",
+                "label": "Desempeño Laboral",
+                "type": "textarea",
+                "name": "desempenoLaboral",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConCompaneros",
+                "label": "Relación con Compañeros",
+                "type": "textarea",
+                "name": "relacionConCompaneros",
+                "class": "col-6"
+              },
+              {
+                "id": "relacionConJefes",
+                "label": "Relación con Jefes",
+                "type": "textarea",
+                "name": "relacionConJefes",
+                "class": "col-6"
+              },
+              {
+                "id": "crecimientoPromocion",
+                "label": "Crecimiento y Promoción",
+                "type": "textarea",
+                "name": "crecimientoPromocion",
+                "class": "col-6"
+              },
+              {
+                "id": "participacionSocial",
+                "label": "Participación Social",
+                "type": "textarea",
+                "name": "participacionSocial",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Social",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "actividadesTiempoLibre",
+                "label": "Actividades de Tiempo Libre",
+                "type": "textarea",
+                "name": "actividadesTiempoLibre",
+                "class": "col-6"
+              },
+              {
+                "id": "proyeccionFuturo",
+                "label": "Proyección a Futuro",
+                "type": "textarea",
+                "name": "proyeccionFuturo",
+                "class": "col-6"
+              },
+              {
+                "id": "personales",
+                "label": "Personales",
+                "type": "textarea",
+                "name": "personales",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Recursos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "recursosAfrontamientoCheck",
+                "label": "Recursos de Afrontamiento",
+                "type": "checkbox",
+                "name": "recursosAfrontamientoCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "familiaresText",
+                    "label": "Familiares",
+                    "type": "textarea",
+                    "name": "familiaresText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "deSuEntornoText",
+                    "label": "De su Entorno",
+                    "type": "textarea",
+                    "name": "deSuEntornoText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "socializacionText",
+                    "label": "Socialización",
+                    "type": "textarea",
+                    "name": "socializacionText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "regulacionEmocionalText",
+                    "label": "Regulación Emocional",
+                    "type": "textarea",
+                    "name": "regulacionEmocionalText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "individuacionText",
+                    "label": "Individuación",
+                    "type": "textarea",
+                    "name": "individuacionText",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "calidadVidaSaludText",
+                    "label": "Calidad de Vida Salud",
+                    "type": "textarea",
+                    "name": "calidadVidaSaludText",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Diagnóstico",
+            "fields": [
+              {
+                "id": "diagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnostico"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Objetivo del tratamiento",
+            "fields": [
+              {
+                "id": "objetivoTatamiento",
+                "label": "",
+                "type": "textarea",
+                "name": "objetivoTatamiento"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Intervención y Remisión",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intensidadIntervencionCheck",
+                "label": "Intensidad de intervención",
+                "type": "checkbox",
+                "name": "intensidadIntervencionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "intensidadIntervencionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "intensidadIntervencionText"
+                  }
+                ]
+              },
+              {
+                "id": "remisionInterconsultaCheck",
+                "label": "Remisión e interconsulta",
+                "type": "checkbox",
+                "name": "remisionInterconsultaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "remisionInterconsultaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "remisionInterconsultaText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

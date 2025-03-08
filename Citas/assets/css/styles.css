@@ -1,0 +1,91 @@
+.board {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+}
+
+.column-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.column-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.column {
+  width: 250px;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 20em;
+}
+
+.task {
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.task strong {
+  display: block;
+}
+
+.task p {
+  margin: 5px 0;
+}
+
+.view-patient-btn {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  display: block;
+}
+
+.view-patient-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos por estado */
+.column[data-status="Pendientes"] .task {
+  background-color: #d3d3d3;
+}
+
+.column[data-status="En espera"] .task {
+  background-color: #add8e6;
+}
+
+.column[data-status="En consulta"] .task {
+  background-color: #90ee90;
+}
+
+.column[data-status="Consulta finalizada"] .task {
+  background-color: #32cd32;
+}
+
+.column[data-status="Pre admisión"] .task {
+  background-color: rgb(220, 94, 153);
+}
+
+/* Tema oscuro */
+html[data-bs-theme="dark"] .task {
+  color: #000;
+}

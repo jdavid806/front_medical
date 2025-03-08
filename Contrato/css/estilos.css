@@ -1,0 +1,42 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #F6F6F6;
+}
+
+.card {
+    width: 100%;
+    max-width: 600px;
+    /* Limitar el ancho máximo de la tarjeta */
+}
+
+.step-card {
+    margin-bottom: 20px;
+    /* Espacio entre tarjetas */
+    display: none;
+    /* Ocultar todas las secciones por defecto */
+}
+
+ /*ALUSIVOS A LOS COLORES DE MONAROS*/
+ .text-primary{
+    color: #132030 !important;
+  }
+  
+  .text-primary{
+    color: #132030 !important;
+  }
+  
+  .active{
+    color: #132030 !important;
+  }
+  
+  .btn-primary{
+    background-color: #132030 !important;
+  }
+
+  .btn-info{
+    background-color: #274161 !important;
+  }

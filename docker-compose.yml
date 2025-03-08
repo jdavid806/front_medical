@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  php_apache:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./ventaspet:/var/www/html/ventaspet
+
+    restart: always

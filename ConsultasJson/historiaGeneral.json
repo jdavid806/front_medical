@@ -1,0 +1,584 @@
+{
+    "form1": {
+        "steps": [
+            {
+                "step": 1,
+                "fields": [
+                    {
+                        "id": "motivo_consulta",
+                        "label": "Motivo de la consulta",
+                        "type": "text",
+                        "name": "motivo_consulta"
+                    },
+                    {
+                        "id": "tiempo_sintomas",
+                        "label": "Tiempo de Sintomas",
+                        "type": "text",
+                        "name": "tiempo_sintomas"
+                    },
+                    {
+                        "id": "toma_medicamento",
+                        "label": "Toma algun medicamento",
+                        "type": "checkbox",
+                        "name": "toma_medicamento",
+                        "checked": false
+                    },
+                    {
+                        "id": "notas",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "notas"
+                    },
+                    {
+                        "id": "status",
+                        "label": "TRATAMIENTO ANTI-ENVEJECIMIENTO",
+                        "type": "select",
+                        "name": "envejecimiento",
+                        "options": [
+                            {
+                                "value": "Seleccione",
+                                "text": "Seleccione "
+                            },
+                            {
+                                "value": "Toxina Botulinica",
+                                "text": "Toxina Botulínica"
+                            },
+                            {
+                                "value": "Rellenos de &aacutecido Hialur&oacutenico",
+                                "text": "Rellenos de Ácido Hialurónico"
+                            },
+                            {
+                                "value": "Rellenos de &aacutecido Polil&aacutecidoctico",
+                                "text": "Rellenos de Ácidoiláctico"
+                            },
+                            {
+                                "value": "Rellenos de Hidroxiapatita C&aacutelcica",
+                                "text": "Rellenos de  Hidroxiapatita Cálcica"
+                            },
+                            {
+                                "value": "Hilos Tensores PDO",
+                                "text": "Hilos Tensores PDO"
+                            },
+                            {
+                                "value": "Laser ENERJET",
+                                "text": "Láser ENERJET"
+                            },
+                            {
+                                "value": "L&aacuteser PLEXR",
+                                "text": "Láser PLEXR"
+                            },
+                            {
+                                "value": "Mesoterapia facial",
+                                "text": "Mesoterapia facial"
+                            },
+                            {
+                                "value": "Mesoterapia corporal",
+                                "text": "Mesoterapia corporal"
+                            },
+                            {
+                                "value": "Micropigmentaci&oacuten",
+                                "text": "Micropigmentación"
+                            },
+                            {
+                                "value": "Peeling",
+                                "text": "Peeling"
+                            },
+                            {
+                                "value": "Hiperhidrosis",
+                                "text": "Hiperhidrosis"
+                            },
+                            {
+                                "value": "Bruxismo",
+                                "text": "Bruxismo"
+                            },
+                            {
+                                "value": "L&aacuteser IPL",
+                                "text": "Láser IPL"
+                            },
+                            {
+                                "value": "L&aacuteser CO2",
+                                "text": "Láser CO2"
+                            },
+                            {
+                                "value": "Skinbooster",
+                                "text": "Skinbooster"
+                            },
+                            {
+                                "value": "Factores de crecimiento",
+                                "text": "Factores de crecimiento"
+                            },
+                            {
+                                "value": "Mesoterapia Capilar",
+                                "text": "Mesoterapia Capilar"
+                            },
+                            {
+                                "value": "Medicina Antiaging",
+                                "text": "Medicina Antiaging"
+                            },
+                            {
+                                "value": "Varices",
+                                "text": "Varices"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "cie10",
+                        "label": "DIAGNÓSTICO CIE10",
+                        "type": "select-one",
+                        "name": "cie10D1",
+                        "options": [
+                            {
+                                "value": "",
+                                "text": "Seleccione"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "descripcion",
+                        "label": "Motivo de la consulta:",
+                        "type": "textarea",
+                        "name": "motivoConsulta"
+                    },
+                    {
+                        "id": "enfermedadActual",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "enfermedadActual"
+                    }
+                ]
+            },
+            {
+                "step": 2,
+                "fields": [
+                    {
+                        "id": "tos",
+                        "label": "Tos",
+                        "type": "select",
+                        "name": "tos",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "vomito",
+                        "label": "Vómito",
+                        "type": "select",
+                        "name": "vomito",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "dolorAbdominal",
+                        "label": "Dolor Abdominal",
+                        "type": "select",
+                        "name": "dolorAbdominal",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "sangreEnHeces",
+                        "label": "Sangre en heces/defecar",
+                        "type": "select",
+                        "name": "sangreEnHeces",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "hipoestesias",
+                        "label": "Hipoestesias",
+                        "type": "select",
+                        "name": "hipoestesias",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "rinorrea",
+                        "label": "Rinorrea",
+                        "type": "select",
+                        "name": "rinorrea",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "diarrea",
+                        "label": "Diarrea",
+                        "type": "select",
+                        "name": "diarrea",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "disnea",
+                        "label": "Disnea",
+                        "type": "select",
+                        "name": "disnea",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "hematuria",
+                        "label": "Hematuria",
+                        "type": "select",
+                        "name": "hematuria",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "cefalea",
+                        "label": "Cefalea",
+                        "type": "select",
+                        "name": "cefalea",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "disuria",
+                        "label": "Disuria",
+                        "type": "select",
+                        "name": "disuria",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "otalgia",
+                        "label": "Otalgia",
+                        "type": "select",
+                        "name": "otalgia",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "dolorExtremidades",
+                        "label": "Dolor en las extremidades",
+                        "type": "select",
+                        "name": "dolorExtremidades",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "mareo",
+                        "label": "Mareo",
+                        "type": "select",
+                        "name": "mareo",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "dolorGarganta",
+                        "label": "Dolor de Garganta",
+                        "type": "select",
+                        "name": "dolorGarganta",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "perdidaPeso",
+                        "label": "Pérdida de Peso",
+                        "type": "select",
+                        "name": "perdidaPeso",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    },
+                    {
+                        "id": "parestesias",
+                        "label": "Parestesias",
+                        "type": "select",
+                        "name": "parestesias",
+                        "options": [
+                            "Sí",
+                            "No"
+                        ]
+                    }
+                ]
+            },
+            {
+                "step": 3,
+                "fields": [
+                    {
+                        "id": "antecedentes",
+                        "label": "Antecedentes",
+                        "type": "checkbox",
+                        "name": "antecedentes",
+                        "options": [
+                            {
+                                "value": "cicatrizQueloide",
+                                "text": "Cicatriz Queloide"
+                            },
+                            {
+                                "value": "diabetes",
+                                "text": "Diabetes"
+                            },
+                            {
+                                "value": "epilepsia",
+                                "text": "Epilepsia"
+                            },
+                            {
+                                "value": "herpes",
+                                "text": "Herpes"
+                            },
+                            {
+                                "value": "cancer",
+                                "text": "Cáncer"
+                            },
+                            {
+                                "value": "enfermedadesCardiacas",
+                                "text": "Enfermedades Cardíacas"
+                            },
+                            {
+                                "value": "alergias",
+                                "text": "Alergías"
+                            },
+                            {
+                                "value": "usaEsteroides",
+                                "text": "Usa Esteroides"
+                            },
+                            {
+                                "value": "usoLentesContacto",
+                                "text": "Uso de lentes de contacto"
+                            },
+                            {
+                                "value": "embarazo",
+                                "text": "Embarazo"
+                            },
+                            {
+                                "value": "enfermedadesAutoinmunes",
+                                "text": "Enfermedades Autoinmunes"
+                            },
+                            {
+                                "value": "actividadFisica",
+                                "text": "Actividad Física"
+                            },
+                            {
+                                "value": "usoIsotetrinoina",
+                                "text": "Uso de Isotetrinoina"
+                            },
+                            {
+                                "value": "cicatrizAtrofica",
+                                "text": "Cicatriz Atrófica"
+                            },
+                            {
+                                "value": "cirugias",
+                                "text": "Cirugías"
+                            },
+                            {
+                                "value": "procedimientosEsteticos",
+                                "text": "Procedimientos estéticos"
+                            },
+                            {
+                                "value": "procedimientoDental",
+                                "text": "Procedimiento dental"
+                            },
+                            {
+                                "value": "anestesia",
+                                "text": "Anestesía"
+                            },
+                            {
+                                "value": "trastornosTiroideos",
+                                "text": "Trastornos Tiroideos"
+                            },
+                            {
+                                "value": "rosacea",
+                                "text": "Rosácea"
+                            },
+                            {
+                                "value": "acne",
+                                "text": "Acné"
+                            },
+                            {
+                                "value": "dermatitis",
+                                "text": "Dermatitis"
+                            },
+                            {
+                                "value": "les",
+                                "text": "LES"
+                            },
+                            {
+                                "value": "artritisReumatoidea",
+                                "text": "Artritis Reumatoidea"
+                            },
+                            {
+                                "value": "vasculitis",
+                                "text": "Vasculitis"
+                            },
+                            {
+                                "value": "enfermedadHepatica",
+                                "text": "Enfermedad hepática"
+                            },
+                            {
+                                "value": "trastornosCoagulacion",
+                                "text": "Trastornos de la Coagulación"
+                            },
+                            {
+                                "value": "miopatia",
+                                "text": "Miopatía"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "motivoConsulta",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "AntecedentesPersonales"
+                    },
+                    {
+                        "id": "motivoConsulta",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "AntecedentesFamiliar"
+                    },
+                    {
+                        "id": "peso4",
+                        "label": "Notas",
+                        "type": "number",
+                        "name": "peso"
+                    },
+                    {
+                        "id": "altura4",
+                        "label": "Notas",
+                        "type": "number",
+                        "name": "altura"
+                    },
+                    {
+                        "id": "imc4",
+                        "label": "Notas",
+                        "type": "number",
+                        "name": "imc"
+                    },
+                    {
+                        "id": "composicionCorporal4",
+                        "label": "Notas",
+                        "type": "text",
+                        "name": "composicionCorporal"
+                    },
+                    {
+                        "id": "procedimiento",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "procedimiento"
+                    },
+                    {
+                        "id": "planAtencion",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "planAtencion"
+                    },
+                    {
+                        "id": "nota",
+                        "label": "Notas",
+                        "type": "textarea",
+                        "name": "nota"
+                    },
+                    {
+                        "id": "",
+                        "label": "Notas",
+                        "type": "hidden",
+                        "name": ""
+                    },
+                    {
+                        "id": "imagen1",
+                        "label": "Notas",
+                        "type": "file",
+                        "name": "imagen1"
+                    },
+                    {
+                        "id": "",
+                        "label": "Notas",
+                        "type": "hidden",
+                        "name": ""
+                    },
+                    {
+                        "id": "imagen2",
+                        "label": "Notas",
+                        "type": "file",
+                        "name": "imagen2"
+                    },
+                    {
+                        "id": "",
+                        "label": "Notas",
+                        "type": "hidden",
+                        "name": ""
+                    },
+                    {
+                        "id": "imagen3",
+                        "label": "Notas",
+                        "type": "file",
+                        "name": "imagen3"
+                    },
+                    {
+                        "id": "abono",
+                        "label": "Información de facturación",
+                        "type": "number",
+                        "name": "pagoAbono"
+                    },
+                    {
+                        "id": "observaciones",
+                        "label": "Observaciones",
+                        "type": "textarea",
+                        "name": "observaciones"
+                    },
+                    {
+                        "id": "diagnostico_sugerido",
+                        "label": "Diagnostico Sugerido",
+                        "type": "textarea",
+                        "name": "diagnostico_sugerido"
+                    },
+                    {
+                        "id": "justificacion_diagnostico",
+                        "label": "Justificación del diagnostico",
+                        "type": "textarea",
+                        "name": "justificacion_diagnostico"
+                    },
+                    {
+                        "id": "examenes",
+                        "label": "Examenes",
+                        "type": "textarea",
+                        "name": "examenes"
+                    },
+                    {
+                        "id": "incapacidad",
+                        "label": "Incapacidad",
+                        "type": "textarea",
+                        "name": "incapacidad"
+                    },
+                    {
+                        "id": "recomendaciones",
+                        "label": "Recomendaciones",
+                        "type": "textarea",
+                        "name": "recomendaciones"
+                    }
+                ]
+            }
+        ]
+    }
+}

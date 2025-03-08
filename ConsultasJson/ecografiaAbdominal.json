@@ -1,0 +1,830 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Hígado",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "morfologia",
+                "label": "Morfología",
+                "type": "select",
+                "name": "morfologia",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "bordes",
+                "label": "Bordes",
+                "type": "select",
+                "name": "bordes",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalMorfologia",
+                "label": "Valor Normal Morfología",
+                "type": "textarea",
+                "name": "valorNormalMorfologia",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalBordes",
+                "label": "Valor Normal Bordes",
+                "type": "textarea",
+                "name": "valorNormalBordes",
+                "class": "col-6"
+              },
+              {
+                "id": "dimensiones",
+                "label": "Dimensiones",
+                "type": "select",
+                "name": "dimensiones",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "ecogenicidad",
+                "label": "Ecogenicidad",
+                "type": "select",
+                "name": "ecogenicidad",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalDimensiones",
+                "label": "Valor Normal Dimensiones",
+                "type": "textarea",
+                "name": "valorNormalDimensiones",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalEcogenicidad",
+                "label": "Valor Normal Ecogenicidad",
+                "type": "textarea",
+                "name": "valorNormalEcogenicidad",
+                "class": "col-6"
+              },
+              {
+                "id": "imagenExpansiva",
+                "label": "Imagen Expansiva",
+                "type": "select",
+                "name": "imagenExpansiva",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "coledoco",
+                "label": "Colédoco",
+                "type": "select",
+                "name": "coledoco",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalImagenExpansiva",
+                "label": "Valor Normal Imagen Expansiva",
+                "type": "textarea",
+                "name": "valorNormalImagenExpansiva",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalColedoco",
+                "label": "Valor Normal Coledoco",
+                "type": "textarea",
+                "name": "valorNormalColedoco",
+                "class": "col-6"
+              },
+              {
+                "id": "venaPorta",
+                "label": "Vena Porta",
+                "type": "select",
+                "name": "venaPorta",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "inputhidden",
+                "label": "",
+                "type": "hidden",
+                "name": "inputhidden",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalVenaPorta",
+                "label": "Valor Normal Vena Porta",
+                "type": "textarea",
+                "name": "valorNormalVenaPorta",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesHigado",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesHigado",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Vesícula Biliar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "forma",
+                "label": "Forma",
+                "type": "select",
+                "name": "forma",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "paredes",
+                "label": "Paredes",
+                "type": "select",
+                "name": "paredes",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalForma",
+                "label": "Valor Normal Forma",
+                "type": "textarea",
+                "name": "valorNormalForma",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalParedes",
+                "label": "Valor Normal Paredes",
+                "type": "textarea",
+                "name": "valorNormalParedes",
+                "class": "col-6"
+              },
+              {
+                "id": "tamano",
+                "label": "Tamaño",
+                "type": "select",
+                "name": "tamano",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "barroBiliar",
+                "label": "Barro Biliar",
+                "type": "select",
+                "name": "barroBiliar",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalTamano",
+                "label": "Valor Normal tamaño",
+                "type": "textarea",
+                "name": "valorNormalTamano",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalBarroBiliar",
+                "label": "Valor Normal barro boliar",
+                "type": "textarea",
+                "name": "valorNormalBarroBiliar",
+                "class": "col-6"
+              },
+              {
+                "id": "imagenExpansiva",
+                "label": "Imagen Expansiva",
+                "type": "select",
+                "name": "imagenExpansiva",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "inputHidden",
+                "label": "",
+                "type": "hidden",
+                "name": "inputHidden",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalImagenExpansiva",
+                "label": "Valor Normal",
+                "type": "textarea",
+                "name": "valorNormalImagenExpansiva",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesVesiculaBiliar",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesVesiculaBiliar",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Páncreas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "forma",
+                "label": "Forma",
+                "type": "select",
+                "name": "forma",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "ecogenicidad",
+                "label": "Ecogenicidad",
+                "type": "select",
+                "name": "ecogenicidad",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalForma",
+                "label": "Valor Normal Forma",
+                "type": "textarea",
+                "name": "valorNormalForma",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalEcogenicidad",
+                "label": "Valor Normal Ecogenicidad",
+                "type": "textarea",
+                "name": "valorNormalEcogenicidad",
+                "class": "col-6"
+              },
+              {
+                "id": "cabeza",
+                "label": "Cabeza",
+                "type": "select",
+                "name": "cabeza",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "cuerpo",
+                "label": "Cuerpo",
+                "type": "select",
+                "name": "cuerpo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalCabeza",
+                "label": "Valor Normal Cabeza",
+                "type": "textarea",
+                "name": "valorNormalCabeza",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalCuerpo",
+                "label": "Valor Normal Cuerpo",
+                "type": "textarea",
+                "name": "valorNormalCuerpo",
+                "class": "col-6"
+              },
+              {
+                "id": "cola",
+                "label": "Cola",
+                "type": "select",
+                "name": "cola",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "wirsung",
+                "label": "Wirsung",
+                "type": "select",
+                "name": "wirsung",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "valorNormalCola",
+                "label": "Valor Normal Cola",
+                "type": "textarea",
+                "name": "valorNormalCola",
+                "class": "col-6"
+              },
+              {
+                "id": "valorNormalWirsung",
+                "label": "Valor Normal Wirsung",
+                "type": "textarea",
+                "name": "valorNormalWirsung",
+                "class": "col-6"
+              },
+              {
+                "id": "observacionesPancreas",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observacionesPancreas",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Bazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "morfologia",
+                "label": "Morfología",
+                "type": "textarea",
+                "name": "morfologia",
+                "class": "col-6"
+              },
+              {
+                "id": "ecogenicidad",
+                "label": "Ecogenicidad",
+                "type": "textarea",
+                "name": "ecogenicidad",
+                "class": "col-6"
+              },
+              {
+                "id": "movilidad",
+                "label": "Movilidad",
+                "type": "textarea",
+                "name": "movilidad",
+                "class": "col-6"
+              },
+              {
+                "id": "tamano",
+                "label": "Tamaño",
+                "placeholder": "(V.N < 130mm)",
+                "type": "textarea",
+                "name": "tamano",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Aorta, Cava y Porta",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "calibre",
+                "label": "Calibre",
+                "type": "select",
+                "name": "calibre",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "flujo",
+                "label": "Flujo",
+                "type": "select",
+                "name": "flujo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "anormal",
+                    "text": "Anormal"
+                  }
+                ]
+              },
+              {
+                "id": "paredGastrica",
+                "label": "Pared Gástrica",
+                "type": "textarea",
+                "name": "paredGastrica",
+                "class": "col-6"
+              },
+              {
+                "id": "liquidoLibre",
+                "label": "Líquido Libre",
+                "type": "textarea",
+                "name": "liquidoLibre",
+                "class": "col-6"
+              },
+              {
+                "id": "conclusionInforme",
+                "label": "Conclusión del Informe",
+                "type": "textarea",
+                "name": "conclusionInforme",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

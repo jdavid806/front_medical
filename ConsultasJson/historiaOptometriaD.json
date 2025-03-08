@@ -1,0 +1,829 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ant. Oftalmológicos",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "disminucionVision",
+                "label": "Disminución de la visión",
+                "type": "select",
+                "name": "disminucionVision",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "estrabismo",
+                "label": "Estrabismo",
+                "type": "select",
+                "name": "estrabismo",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "glaucoma",
+                "label": "Glaucoma",
+                "type": "select",
+                "name": "glaucoma",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "amblyopia",
+                "label": "Amblyopia",
+                "type": "select",
+                "name": "amblyopia",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "usaLentes",
+                "label": "Usa lentes",
+                "type": "select",
+                "name": "usaLentes",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "fumador",
+                "label": "Fumador",
+                "type": "select",
+                "name": "fumador",
+                "class": "col-6",
+                "options": [
+                  { "value": "si", "text": "Sí" },
+                  { "value": "no", "text": "No" },
+                  { "value": "noNiega", "text": "No niega" }
+                ]
+              },
+              {
+                "id": "otrosInfo",
+                "label": "Otros",
+                "type": "textarea",
+                "name": "otrosInfo",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen Físico",
+        "card": [
+          {
+            "title": "Agudeza visual Ojo derecho",
+            "fields": [
+              {
+                "id": "sinCorreccionOjoDerechoCheck",
+                "label": "Sin corrección",
+                "type": "checkbox",
+                "name": "sinCorreccionOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "sinCorreccionOjoDerechoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "sinCorreccionOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "conCorreccionOjoDerechoCheck",
+                "label": "Con corrección",
+                "type": "checkbox",
+                "name": "conCorreccionOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "conCorreccionOjoDerecho",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "conCorreccionOjoDerecho"
+                  }
+                ]
+              },
+              {
+                "id": "hallazgoAgudezaVisualOjoDerecho",
+                "label": "Hallazgo",
+                "type": "textarea",
+                "name": "hallazgoAgudezaVisualOjoDerecho"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Agudeza visual Ojo izquierdo",
+            "fields": [
+              {
+                "id": "sinCorreccionOjoIzquierdoCheck",
+                "label": "Sin corrección",
+                "type": "checkbox",
+                "name": "sinCorreccionOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "sinCorreccionOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "sinCorreccionOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "conCorreccionOjoIzquierdoCheck",
+                "label": "Con corrección",
+                "type": "checkbox",
+                "name": "conCorreccionOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "conCorreccionOjoIzquierdo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "conCorreccionOjoIzquierdo"
+                  }
+                ]
+              },
+              {
+                "id": "hallazgoAgudezaVisualOjoIzquierdo",
+                "label": "Hallazgo",
+                "type": "textarea",
+                "name": "hallazgoAgudezaVisualOjoIzquierdo"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Queratometría Ojo derecho",
+            "fields": [
+              {
+                "id": "queratometriaOjoDerechoCheck",
+                "label": "Queratometría",
+                "type": "checkbox",
+                "name": "queratometriaOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "queratometriaOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "queratometriaOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "esferaOjoDerechoCheck",
+                "label": "Esfera",
+                "type": "checkbox",
+                "name": "esferaOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "esferaOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "esferaOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "cilindroOjoDerechoCheck",
+                "label": "Cilindro",
+                "type": "checkbox",
+                "name": "cilindroOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "cilindroOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "cilindroOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "ejeOjoDerechoCheck",
+                "label": "Eje",
+                "type": "checkbox",
+                "name": "ejeOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "ejeOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ejeOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "addOjoDerechoCheck",
+                "label": "ADD",
+                "type": "checkbox",
+                "name": "addOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "addOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "addOjoDerechoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "dnpOjoDerechoCheck",
+                "label": "DNP",
+                "type": "checkbox",
+                "name": "dnpOjoDerechoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dnpOjoDerechoInfo",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dnpOjoDerechoInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Queratometría Ojo izquierdo",
+            "fields": [
+              {
+                "id": "queratomiaOjoIzquierdoCheck",
+                "label": "Queratometría",
+                "type": "checkbox",
+                "name": "queratomiaOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "queratomiaOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "queratomiaOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "esferaOjoIzquierdoCheck",
+                "label": "Esfera",
+                "type": "checkbox",
+                "name": "esferaOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "esferaOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "esferaOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "cilindroOjoIzquierdoCheck",
+                "label": "Cilindro",
+                "type": "checkbox",
+                "name": "cilindroOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "cilindroOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "cilindroOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "ejeOjoIzquierdoCheck",
+                "label": "Eje",
+                "type": "checkbox",
+                "name": "ejeOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "ejeOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "ejeOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "addOjoIzquierdoCheck",
+                "label": "ADD",
+                "type": "checkbox",
+                "name": "addOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "addOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "addOjoIzquierdoInfo"
+                  }
+                ]
+              },
+              {
+                "id": "dnpOjoIzquierdoCheck",
+                "label": "DNP",
+                "type": "checkbox",
+                "name": "dnpOjoIzquierdoCheck",
+                "toggleFields": [
+                  {
+                    "id": "dnpOjoIzquierdoInfo",
+                    "label": "Valor",
+                    "type": "textarea",
+                    "name": "dnpOjoIzquierdoInfo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "EMETROPE",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "emetropeSelect",
+                "label": "",
+                "type": "select",
+                "name": "emetropeSelect",
+                "options": [
+                  {
+                    "value": "oidoDerecho",
+                    "text": "Oído derecho"
+                  },
+                  {
+                    "value": "oidoIzquierdo",
+                    "text": "Oído izquierdo"
+                  },
+                  {
+                    "value": "ambosOidos",
+                    "text": "Ambos oídos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "MIOPIA",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "miopiaSelect",
+                "label": "",
+                "type": "select",
+                "name": "miopiaSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "PRESBICIA",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "presbiciaSelect",
+                "label": "",
+                "type": "select",
+                "name": "presbiciaSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "HIPERMETROPIA",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "hipermetropiaSelect",
+                "label": "",
+                "type": "select",
+                "name": "hipermetropiaSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "ASTIGMATISMO",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "astigmatismoSelect",
+                "label": "",
+                "type": "select",
+                "name": "astigmatismoSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "LAGRIMEO",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "lagrimeoSelect",
+                "label": "",
+                "type": "select",
+                "name": "lagrimeoSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "CATARATA",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "catarataSelect",
+                "label": "",
+                "type": "select",
+                "name": "catarataSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "PTERIGION",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "pterigionSelect",
+                "label": "",
+                "type": "select",
+                "name": "pterigionSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "GLAUCOMA",
+            "class": "col-4",
+            "fields": [
+              {
+                "id": "glaucomaSelect",
+                "label": "",
+                "type": "select",
+                "name": "glaucomaSelect",
+                "options": [
+                  {
+                    "value": "ojoDerecho",
+                    "text": "Ojo derecho"
+                  },
+                  {
+                    "value": "ojoIzquierdo",
+                    "text": "Ojo izquierdo"
+                  },
+                  {
+                    "value": "ambosOjos",
+                    "text": "Ambos ojos"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Otros",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "otros",
+                "label": "",
+                "type": "textarea",
+                "name": "otros"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

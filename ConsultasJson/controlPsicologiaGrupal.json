@@ -1,0 +1,251 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Seguimiento/Asistencia",
+        "card": [
+          {
+            "title": "Objetivo",
+            "fields": [
+              {
+                "id": "objetivo",
+                "label": "",
+                "type": "textarea",
+                "name": "objetivo"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Desarrollo de la sesión",
+            "fields": [
+              {
+                "id": "desarrolloSesion",
+                "label": "",
+                "type": "textarea",
+                "name": "desarrolloSesion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Participación",
+            "fields": [
+              {
+                "id": "participacion",
+                "label": "",
+                "type": "textarea",
+                "name": "participacion"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Expresión de sentimientos y emociones",
+            "fields": [
+              {
+                "id": "expresionSentimientosEmociones",
+                "label": "",
+                "type": "textarea",
+                "name": "expresionSentimientosEmociones"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Reflexiones y compromisos",
+            "fields": [
+              {
+                "id": "reflexionesCompromisos",
+                "label": "",
+                "type": "textarea",
+                "name": "reflexionesCompromisos"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Conclusiones",
+            "fields": [
+              {
+                "id": "conclusiones",
+                "label": "",
+                "type": "textarea",
+                "name": "conclusiones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

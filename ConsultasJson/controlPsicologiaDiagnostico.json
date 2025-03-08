@@ -1,0 +1,617 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Diagnóstico",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "etapaCambioCheck",
+                "label": "Etapa de Cambio Actual",
+                "type": "checkbox",
+                "name": "etapaCambioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "etapaCambioText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "etapaCambioText"
+                  }
+                ]
+              },
+              {
+                "id": "agresionCheck",
+                "label": "¿Sufre o ha sufrido algún tipo de agresión?",
+                "type": "checkbox",
+                "name": "agresionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "agresionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "agresionText"
+                  }
+                ]
+              },
+              {
+                "id": "ideacionSuicidaCheck",
+                "label": "Ideación e Intento Suicida",
+                "type": "checkbox",
+                "name": "ideacionSuicidaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ideacionSuicidaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "ideacionSuicidaText"
+                  }
+                ]
+              },
+              {
+                "id": "actitudesVidaCheck",
+                "label": "Actitudes ante la Vida",
+                "type": "checkbox",
+                "name": "actitudesVidaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "actitudesVidaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "actitudesVidaText"
+                  }
+                ]
+              },
+              {
+                "id": "autovaloracionPersonalCheck",
+                "label": "Autovaloración Personal",
+                "type": "checkbox",
+                "name": "autovaloracionPersonalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "autovaloracionPersonalText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "autovaloracionPersonalText"
+                  }
+                ]
+              },
+              {
+                "id": "expresionEmocionesCheck",
+                "label": "Expresión de Emociones",
+                "type": "checkbox",
+                "name": "expresionEmocionesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "expresionEmocionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "expresionEmocionesText"
+                  }
+                ]
+              },
+              {
+                "id": "satisfaccionProblemasSexualesCheck",
+                "label": "Satisfacción y Problemas Sexuales",
+                "type": "checkbox",
+                "name": "satisfaccionProblemasSexualesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "satisfaccionProblemasSexualesText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "satisfaccionProblemasSexualesText"
+                  }
+                ]
+              },
+              {
+                "id": "redDeApoyoCheck",
+                "label": "Red de Apoyo",
+                "type": "checkbox",
+                "name": "redDeApoyoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "redDeApoyoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "redDeApoyoText"
+                  }
+                ]
+              },
+              {
+                "id": "areaEscolarLaboralCheck",
+                "label": "Área Escolar/Laboral",
+                "type": "checkbox",
+                "name": "areaEscolarLaboralCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "areaEscolarLaboralText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "areaEscolarLaboralText"
+                  }
+                ]
+              },
+              {
+                "id": "areaSocialFamiliarCheck",
+                "label": "Área Social/Familiar",
+                "type": "checkbox",
+                "name": "areaSocialFamiliarCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "areaSocialFamiliarText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "areaSocialFamiliarText"
+                  }
+                ]
+              },
+              {
+                "id": "estadoActualDeConsumoCheck",
+                "label": "Estado Actual de Consumo",
+                "type": "checkbox",
+                "name": "estadoActualDeConsumoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "estadoActualDeConsumoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "estadoActualDeConsumoText"
+                  }
+                ]
+              },
+              {
+                "id": "dineroParaConsumirCheck",
+                "label": "Dinero para Consumir",
+                "type": "checkbox",
+                "name": "dineroParaConsumirCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dineroParaConsumirText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dineroParaConsumirText"
+                  }
+                ]
+              },
+              {
+                "id": "sustanciasDeConsumoCheck",
+                "label": "Sustancias de Consumo",
+                "type": "checkbox",
+                "name": "sustanciasDeConsumoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "sustanciasDeConsumoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "sustanciasDeConsumoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Eventos ligados al consumo",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "deseoCompulsionCheck",
+                "label": "Deseo intenso o compulsión de consumir la sustancia",
+                "type": "checkbox",
+                "name": "deseoCompulsionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "deseoCompulsionText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "deseoCompulsionText"
+                  }
+                ]
+              },
+              {
+                "id": "dificultadesControlCheck",
+                "label": "Dificultades para controlar la conducta de consumir en términos de su inicio terminación o niveles de consumo",
+                "type": "checkbox",
+                "name": "dificultadesControlCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dificultadesControlText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "dificultadesControlText"
+                  }
+                ]
+              },
+              {
+                "id": "condicionFisiologicaCheck",
+                "label": "Condición fisiológica de privación/abstinencia",
+                "type": "checkbox",
+                "name": "condicionFisiologicaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "condicionFisiologicaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "condicionFisiologicaText"
+                  }
+                ]
+              },
+              {
+                "id": "envidenciaToleranciaCheck",
+                "label": "Evidencia de tolerancia",
+                "type": "checkbox",
+                "name": "envidenciaToleranciaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "evidenciaToleranciaText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "evidenciaToleranciaText"
+                  }
+                ]
+              },
+              {
+                "id": "abandonoProgresivoCheck",
+                "label": "Abandono progresivo de alternativas esparcimiento u otros intereses",
+                "type": "checkbox",
+                "name": "abandonoProgresivoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "abandonoProgresivoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "abandonoProgresivoText"
+                  }
+                ]
+              },
+              {
+                "id": "persistenciaConsumoCheck",
+                "label": "Persistencia en el consumo a pesar de tener evidencias claras de consecuencias nocivas. claras de consecuencias nocivas",
+                "type": "checkbox",
+                "name": "persistenciaConsumoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "persistenciaConsumoText",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "persistenciaConsumoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Historial tratamiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "historialTratamientoCheck",
+                "label": "¿Tiene Historial de Tratamiento?",
+                "type": "checkbox",
+                "name": "historialTratamientoCheck",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "historialTratamientoLugar",
+                    "label": "Lugar",
+                    "type": "textarea",
+                    "name": "historialTratamientoLugar",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "historialTratamientoDuracion",
+                    "label": "Duración del Proceso",
+                    "type": "textarea",
+                    "name": "historialTratamientoDuracion",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "historialTratamientoMotivoSalida",
+                    "label": "Motivo de Salida",
+                    "type": "textarea",
+                    "name": "historialTratamientoMotivoSalida",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "historialTratamientoFactoresRecida",
+                    "label": "Factores de Recaída",
+                    "type": "textarea",
+                    "name": "historialTratamientoFactoresRecida",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "historialTratamientoConductasDelictivas",
+                    "label": "Conductas Delictivas",
+                    "type": "textarea",
+                    "name": "historialTratamientoConductasDelictivas",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "historialTratamientoAntecedentesJudiciales",
+                    "label": "Antecedentes Judiciales",
+                    "type": "textarea",
+                    "name": "historialTratamientoAntecedentesJudiciales",
+                    "class": "col-6"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen mental",
+        "card": [
+          {
+            "title": "Estado de Conciencia",
+            "fields": [
+              {
+                "id": "estadoConciencia",
+                "label": "",
+                "type": "textarea",
+                "name": "estadoConciencia"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Comportamiento",
+            "fields": [
+              {
+                "id": "comportamiento",
+                "label": "",
+                "type": "textarea",
+                "name": "comportamiento"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Lenguaje",
+            "fields": [
+              {
+                "id": "lenguaje",
+                "label": "",
+                "type": "textarea",
+                "name": "lenguaje"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Pensamiento",
+            "fields": [
+              {
+                "id": "pensamiento",
+                "label": "",
+                "type": "textarea",
+                "name": "pensamiento"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Diagnóstico Inicial",
+            "fields": [
+              {
+                "id": "diagnosticoInicial",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoInicial"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Responsable",
+            "fields": [
+              {
+                "id": "responsable",
+                "label": "",
+                "type": "textarea",
+                "name": "responsable"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

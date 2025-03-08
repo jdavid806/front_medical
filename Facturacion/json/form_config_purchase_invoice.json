@@ -1,0 +1,266 @@
+{
+  "tabs": [
+    {
+      "id": "basic_information hol",
+      "label": "Información básica",
+      "type": "form",
+      "className": "row",
+      "groups": [
+        {
+          "className": "col-md-6",
+          "fields": [
+            {
+              "id": "type",
+              "type": "select",
+              "label": "Tipo de compra",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "FC - 1 Compra #1"
+                },
+                {
+                  "value": "2",
+                  "label": "FC - 2 Compra #2"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "suppliers",
+              "type": "select",
+              "label": "Proveedores",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Javier Antonio Moreno"
+                },
+                {
+                  "value": "2",
+                  "label": "Jefferson Zambrano Ruiz"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "contact",
+              "type": "select",
+              "label": "Contacto",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Contacto 1"
+                },
+                {
+                  "value": "2",
+                  "label": "Contacto 2"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            },
+            {
+              "id": "cost_center",
+              "type": "select",
+              "label": "Centro de costo",
+              "options": [
+                {
+                  "value": "1",
+                  "label": "Administración"
+                },
+                {
+                  "value": "2",
+                  "label": "Productopolis"
+                }
+              ],
+              "className": "mb-3",
+              "inputClassName": "form-select",
+              "required": true
+            }
+          ]
+        },
+        {
+          "className": "col-md-6",
+          "fields": [
+            {
+              "id": "date_elaboration",
+              "type": "date",
+              "label": "Fecha de elaboración",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            },
+            {
+              "id": "number_auth",
+              "type": "number",
+              "label": "No. Autorización",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            },
+            {
+              "id": "number_invoice_supplier",
+              "type": "number",
+              "label": "Numero de factura de proveedor",
+              "format": "date",
+              "className": "mb-3",
+              "inputClassName": "form-control",
+              "required": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invoice_information",
+      "label": "Información de facturación",
+      "type": "table",
+      "className": "col-12 row",
+      "dataList": "{\"valueNames\":[\"patient\",\"date\",\"procedure\",\"number_auth\",\"quantity\",\"value_unit\",\"value_full\"],\"page\":5,\"pagination\":true}",
+      "fields": [
+        {
+          "id": "type",
+          "type": "select",
+          "label": "Tipo de compra",
+          "options": [
+            {
+              "value": "1",
+              "label": "FC - 1 Compra #1"
+            },
+            {
+              "value": "2",
+              "label": "FC - 2 Compra #2"
+            }
+          ],
+          "className": "mb-3",
+          "inputClassName": "form-select",
+          "required": true
+        },
+        {
+          "id": "product",
+          "type": "select",
+          "label": "Producto",
+          "options": [
+            {
+              "value": "1",
+              "label": "Producto #1"
+            },
+            {
+              "value": "2",
+              "label": "Producto #2"
+            }
+          ],
+          "className": "mb-3",
+          "inputClassName": "form-select",
+          "required": true
+        },
+        {
+          "id": "description",
+          "type": "text",
+          "label": "Descripcion",
+          "inputClassName": "form-control",
+          "className": "form-control",
+          "required": true
+        },
+        {
+          "id": "quantity",
+          "type": "number",
+          "label": "Cantidad",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "value_unit",
+          "type": "number",
+          "label": "Valor Unitario",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "discount",
+          "type": "number",
+          "label": "Descuento",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "tax",
+          "type": "number",
+          "label": "Impuesto Cargo",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "tax_retention",
+          "type": "number",
+          "label": "Impuesto Retención",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "value_full",
+          "type": "number",
+          "label": "Valor Total",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "payment_methods",
+      "label": "Métodos de pago",
+      "type": "table",
+      "className": "col-12 row",
+      "fields": [
+        {
+          "id": "payment_method",
+          "type": "select",
+          "label": "Seleccione medio de pago",
+          "options": [
+            {
+              "value": "1",
+              "label": "Nequi"
+            },
+            {
+              "value": "2",
+              "label": "Efectivo"
+            },
+            {
+              "value": "3",
+              "label": "Banco Caja Social"
+            }
+          ],
+          "inputClassName": "form-select",
+          "className": "align-middle ps-3",
+          "required": true
+        },
+        {
+          "id": "number_authorization",
+          "type": "number",
+          "label": "Número de autorización",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        },
+        {
+          "id": "value",
+          "type": "number",
+          "label": "Valor Total",
+          "inputClassName": "form-control",
+          "className": "align-middle",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

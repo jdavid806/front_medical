@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On 
+RewriteBase /FE/NominaA/
+
+# Vista de ofertas laborales 
+RewriteRule ^ofertas/(.+)$ Web/index.php?idUser=$1 
+
+# Vista de Portal de Empleados 
+RewriteRule ^trabajadores/(.+)$ Empleados/index.php?idUser=$1 

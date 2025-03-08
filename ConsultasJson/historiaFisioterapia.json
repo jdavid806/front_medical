@@ -1,0 +1,2120 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fase I",
+        "card": [
+          {
+            "title": "Actitud postural",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "actitudPosturalSelect",
+                "label": "Actitud",
+                "type": "select",
+                "name": "actitudPosturalSelect",
+                "class": "col-12",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "actitudPosturalDetalles",
+                "label": "Detalles",
+                "type": "textarea",
+                "name": "actitudPosturalDetalles",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Piel",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "colorSelect",
+                "label": "Color",
+                "type": "select",
+                "name": "colorSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "erimatosa",
+                    "text": "Erimatosa"
+                  }
+                ]
+              },
+              {
+                "id": "estadoSelect",
+                "label": "Estado",
+                "type": "select",
+                "name": "estadoSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "seca",
+                    "text": "Seca"
+                  }
+                ]
+              },
+              {
+                "id": "edemaSelect",
+                "label": "Edema",
+                "type": "select",
+                "name": "edemaSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "ninguno",
+                    "text": "Ninguno"
+                  },
+                  {
+                    "value": "leve",
+                    "text": "Leve"
+                  }
+                ]
+              },
+              {
+                "id": "tumefaccionCheck",
+                "label": "Tumefacción",
+                "type": "checkbox",
+                "name": "tumefaccionCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "escarasCheck",
+                "label": "Escaras",
+                "type": "checkbox",
+                "name": "escarasCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "heridasCheck",
+                "label": "Heridas",
+                "type": "checkbox",
+                "name": "heridasCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "cicatrizSelect",
+                "label": "Cicatriz",
+                "type": "select",
+                "name": "cicatrizSelect",
+                "class": "col-12",
+                "options": [
+                  {
+                    "value": "ninguna",
+                    "text": "Ninguna"
+                  },
+                  {
+                    "value": "adherida",
+                    "text": "Adherida"
+                  },
+                  {
+                    "value": "buenEstado",
+                    "text": "Buen Estado"
+                  },
+                  {
+                    "value": "queloide",
+                    "text": "Queloide"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Dolor",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intensidadSelect",
+                "label": "Intensidad",
+                "type": "select",
+                "name": "intensidadSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "1",
+                    "text": "1"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3"
+                  },
+                  {
+                    "value": "4",
+                    "text": "4"
+                  },
+                  {
+                    "value": "5",
+                    "text": "5"
+                  },
+                  {
+                    "value": "6",
+                    "text": "6"
+                  },
+                  {
+                    "value": "7",
+                    "text": "7"
+                  },
+                  {
+                    "value": "8",
+                    "text": "8"
+                  },
+                  {
+                    "value": "9",
+                    "text": "9"
+                  },
+                  {
+                    "value": "10",
+                    "text": "10"
+                  }
+                ]
+              },
+              {
+                "id": "presenteEnSelect",
+                "label": "Presente en",
+                "type": "select",
+                "name": "presenteEnSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "palpacion",
+                    "text": "Palpación"
+                  },
+                  {
+                    "value": "movilizacion",
+                    "text": "Movilización"
+                  },
+                  {
+                    "value": "referido",
+                    "text": "Referido"
+                  }
+                ]
+              },
+              {
+                "id": "duranteSelect",
+                "label": "Durante",
+                "type": "select",
+                "name": "duranteSelect",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "reposo",
+                    "text": "Reposo"
+                  },
+                  {
+                    "value": "actividad",
+                    "text": "Actividad"
+                  },
+                  {
+                    "value": "despuesDeActividad",
+                    "text": "Después de Actividad"
+                  }
+                ]
+              },
+              {
+                "id": "zonaDeDolor",
+                "label": "Zona de Dolor",
+                "type": "textarea",
+                "name": "zonaDeDolor",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Sensibilidad Superficial",
+            "fields": [
+              {
+                "id": "sensibilidadSuperficialSelect",
+                "label": "",
+                "type": "select",
+                "name": "sensibilidadSuperficialSelect",
+                "options": [
+                  {
+                    "value": "conservada",
+                    "text": "Conservada"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "sensibilidadSuperficialDetalles",
+                "label": "Detalles",
+                "type": "textarea",
+                "name": "sensibilidadSuperficialDetalles"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Sensibilidad Profunda",
+            "fields": [
+              {
+                "id": "sensibilidadProfundaSelect",
+                "label": "",
+                "type": "select",
+                "name": "sensibilidadProfundaSelect",
+                "options": [
+                  {
+                    "value": "conservada",
+                    "text": "Conservada"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "sensibilidadProfundaDetalles",
+                "label": "Detalles",
+                "type": "textarea",
+                "name": "sensibilidadProfundaDetalles"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Estado Articular",
+            "fields": [
+              {
+                "id": "estadoArticularSelect",
+                "label": "Estado",
+                "type": "select",
+                "name": "estadoArticularSelect",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "rigidez",
+                    "text": "Rigidez"
+                  },
+                  {
+                    "value": "hipoMovilidad",
+                    "text": "Hipo Movilidad"
+                  },
+                  {
+                    "value": "hiperMovilidad",
+                    "text": "Hiper Movilidad"
+                  }
+                ]
+              },
+              {
+                "id": "estadoArticularDetalles",
+                "label": "Detalles",
+                "type": "textarea",
+                "name": "estadoArticularDetalles"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Amplitud Articular",
+            "fields": [
+              {
+                "id": "amplitudArticularSelect",
+                "label": "Amplitud",
+                "type": "select",
+                "name": "amplitudArticularSelect",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "amplitudArticularDetalles",
+                "label": "Detalles",
+                "type": "textarea",
+                "name": "amplitudArticularDetalles"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fase II",
+        "card": [
+          {
+            "title": "Evaluación neuromuscular",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tonoSelect",
+                "label": "Tono",
+                "type": "select",
+                "name": "tonoSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "hipotonico",
+                    "text": "Hipotónico"
+                  },
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "hipertonico",
+                    "text": "Hipertónico"
+                  }
+                ]
+              },
+              {
+                "id": "trofismoSelect",
+                "label": "Trofismo",
+                "type": "select",
+                "name": "trofismoSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "hipotrofia",
+                    "text": "Hipotrofia"
+                  },
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "hipertrofia",
+                    "text": "Hipertrofia"
+                  }
+                ]
+              },
+              {
+                "id": "tonoDetalles",
+                "label": "Detalles tono",
+                "type": "textarea",
+                "name": "tonoDetalles",
+                "class": "col-6"
+              },
+              {
+                "id": "trofismoDetalles",
+                "label": "Detalles Trofismo",
+                "type": "textarea",
+                "name": "trofismoDetalles",
+                "class": "col-6"
+              },
+              {
+                "id": "elasticidadSelect",
+                "label": "Elasticidad",
+                "type": "select",
+                "name": "elasticidadSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "contracturado",
+                    "text": "Contracturado"
+                  },
+                  {
+                    "value": "acortado",
+                    "text": "Acortado"
+                  }
+                ]
+              },
+              {
+                "id": "fuerzaSelect",
+                "label": "Fuerza",
+                "type": "select",
+                "name": "fuerzaSelect",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "normal",
+                    "text": "Normal"
+                  },
+                  {
+                    "value": "alterada",
+                    "text": "Alterada"
+                  }
+                ]
+              },
+              {
+                "id": "elasticidadDetalles",
+                "label": "Detalles elasticidad",
+                "type": "textarea",
+                "name": "elasticidadDetalles",
+                "class": "col-6"
+              },
+              {
+                "id": "fuerzaDetalles",
+                "label": "Detalles fuerza",
+                "type": "textarea",
+                "name": "fuerzaDetalles",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evaluación muscular 1 fecha",
+            "fields": [
+              {
+                "id": "mSupIzquierdaF1",
+                "label": "M. sup izquierda",
+                "type": "number",
+                "name": "mSupIzquierdaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "mSupDerechaF1",
+                "label": "M. sup derecha",
+                "type": "number",
+                "name": "mSupDerechaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "mInfIzquierdaF1",
+                "label": "M. inf izquierda",
+                "type": "number",
+                "name": "mInfIzquierdaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "mInfDerechaF1",
+                "label": "M. inf derecha",
+                "type": "number",
+                "name": "mInfDerechaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "troncoIzquierdaF1",
+                "label": "Tronco izquierda",
+                "type": "number",
+                "name": "troncoIzquierdaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "troncoDerechaF1",
+                "label": "Tronco derecha",
+                "type": "number",
+                "name": "troncoDerechaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "cuelloIzquierdaF1",
+                "label": "Cuello izquierda",
+                "type": "number",
+                "name": "cuelloIzquierdaF1",
+                "class": "col-6"
+              },
+              {
+                "id": "cuelloDerechaF1",
+                "label": "Cuello derecha",
+                "type": "number",
+                "name": "cuelloDerechaF1",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Evaluación muscular 2 fecha",
+            "fields": [
+              {
+                "id": "mSupIzquierdaF2",
+                "label": "M. sup izquierda",
+                "type": "number",
+                "name": "mSupIzquierdaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "mSupDerechaF2",
+                "label": "M. sup derecha",
+                "type": "number",
+                "name": "mSupDerechaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "mInfIzquierdaF2",
+                "label": "M. inf izquierda",
+                "type": "number",
+                "name": "mInfIzquierdaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "mInfDerechaF2",
+                "label": "M. inf derecha",
+                "type": "number",
+                "name": "mInfDerechaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "troncoIzquierdaF2",
+                "label": "Tronco izquierda",
+                "type": "number",
+                "name": "troncoIzquierdaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "troncoDerechaF2",
+                "label": "Tronco derecha",
+                "type": "number",
+                "name": "troncoDerechaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "cuelloIzquierdaF2",
+                "label": "Cuello izquierda",
+                "type": "number",
+                "name": "cuelloIzquierdaF2",
+                "class": "col-6"
+              },
+              {
+                "id": "cuelloDerechaF2",
+                "label": "Cuello derecha",
+                "type": "number",
+                "name": "cuelloDerechaF2",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Hombro Derecho",
+            "fields": [
+              {
+                "id": "flexion1Derecho",
+                "label": "Flexión 0° - 180° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecho",
+                "label": "Flexión 0° - 180° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecho",
+                "label": "Extensión 0° - 50°-60° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecho",
+                "label": "Extensión 0° - 50°-60° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion1Derecho",
+                "label": "Abducción 0° - 180° Fecha 1",
+                "type": "number",
+                "name": "abduccion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion2Derecho",
+                "label": "Abducción 0° - 180° Fecha 2",
+                "type": "number",
+                "name": "abduccion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "addHoriz1Derecho",
+                "label": "Add Horiz. 0° - 120° Fecha 1",
+                "type": "number",
+                "name": "addHoriz1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "addHoriz2Derecho",
+                "label": "Add Horiz. 0° - 120° Fecha 2",
+                "type": "number",
+                "name": "addHoriz2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt1Derecho",
+                "label": "Rot Int. 0° - 70° Fecha 1",
+                "type": "number",
+                "name": "rotInt1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt2Derecho",
+                "label": "Rot Int. 0° - 70° Fecha 2",
+                "type": "number",
+                "name": "rotInt2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt1Derecho",
+                "label": "Rot. Ext. 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "rotExt1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt2Derecho",
+                "label": "Rot. Ext. 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "rotExt2Derecho",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Hombro Izquierdo",
+            "fields": [
+              {
+                "id": "flexion1Izquierdo",
+                "label": "Flexión 0° - 180° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierdo",
+                "label": "Flexión 0° - 180° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierdo",
+                "label": "Extensión 0° - 50°-60° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierdo",
+                "label": "Extensión 0° - 50°-60° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion1Izquierdo",
+                "label": "Abducción 0° - 180° Fecha 1",
+                "type": "number",
+                "name": "abduccion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion2Izquierdo",
+                "label": "Abducción 0° - 180° Fecha 2",
+                "type": "number",
+                "name": "abduccion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "addHoriz1Izquierdo",
+                "label": "Add Horiz. 0° - 120° Fecha 1",
+                "type": "number",
+                "name": "addHoriz1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "addHoriz2Izquierdo",
+                "label": "Add Horiz. 0° - 120° Fecha 2",
+                "type": "number",
+                "name": "addHoriz2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt1Izquierdo",
+                "label": "Rot Int. 0° - 70° Fecha 1",
+                "type": "number",
+                "name": "rotInt1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt2Izquierdo",
+                "label": "Rot Int. 0° - 70° Fecha 2",
+                "type": "number",
+                "name": "rotInt2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt1Izquierdo",
+                "label": "Rot. Ext. 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "rotExt1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt2Izquierdo",
+                "label": "Rot. Ext. 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "rotExt2Izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Codo y antebrazo derecho",
+            "fields": [
+              {
+                "id": "flexion1Derecho",
+                "label": "Flexión 0° - 145° 150° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecho",
+                "label": "Flexión 0° - 145° 150° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecho",
+                "label": "Extensión 145° - 0° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecho",
+                "label": "Extensión 145° - 0° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "pronacion1Derecho",
+                "label": "Pronación 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "pronacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "pronacion2Derecho",
+                "label": "Pronación 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "pronacion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "supinacion1Derecho",
+                "label": "Supinación 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "supinacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "supinacion2Derecho",
+                "label": "Supinación 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "supinacion2Derecho",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Codo y antebrazo izquierdo",
+            "fields": [
+              {
+                "id": "flexion1Izquierdo",
+                "label": "Flexión 0° - 145° 150° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierdo",
+                "label": "Flexión 0° - 145° 150° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierdo",
+                "label": "Extensión 145° - 0° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierdo",
+                "label": "Extensión 145° - 0° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "pronacion1Izquierdo",
+                "label": "Pronación 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "pronacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "pronacion2Izquierdo",
+                "label": "Pronación 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "pronacion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "supinacion1Izquierdo",
+                "label": "Supinación 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "supinacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "supinacion2Izquierdo",
+                "label": "Supinación 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "supinacion2Izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Muñeca derecha",
+            "fields": [
+              {
+                "id": "flexion1Derecha",
+                "label": "Flexión 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecha",
+                "label": "Flexión 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecha",
+                "label": "Extensión 0° - 70° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecha",
+                "label": "Extensión 0° - 70° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "desvRad1Derecha",
+                "label": "Desv. Rad. 0° - 25° 30° Fecha 1",
+                "type": "number",
+                "name": "desvRad1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "desvRad2Derecha",
+                "label": "Desv. Rad. 0° - 25° 30° Fecha 2",
+                "type": "number",
+                "name": "desvRad2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "desvCub1Derecha",
+                "label": "Desv. Cub. 0° - 30° Fecha 1",
+                "type": "number",
+                "name": "desvCub1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "desvCub2Derecha",
+                "label": "Desv. Cub. 0° - 30° Fecha 2",
+                "type": "number",
+                "name": "desvCub2Derecha",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Muñeca izquierda",
+            "fields": [
+              {
+                "id": "flexion1Izquierda",
+                "label": "Flexión 0° - 90° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierda",
+                "label": "Flexión 0° - 90° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierda",
+                "label": "Extensión 0° - 70° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierda",
+                "label": "Extensión 0° - 70° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "desvRad1Izquierda",
+                "label": "Desv. Rad. 0° - 25° 30° Fecha 1",
+                "type": "number",
+                "name": "desvRad1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "desvRad2Izquierda",
+                "label": "Desv. Rad. 0° - 25° 30° Fecha 2",
+                "type": "number",
+                "name": "desvRad2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "desvCub1Izquierda",
+                "label": "Desv. Cub. 0° - 30° Fecha 1",
+                "type": "number",
+                "name": "desvCub1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "desvCub2Izquierda",
+                "label": "Desv. Cub. 0° - 30° Fecha 2",
+                "type": "number",
+                "name": "desvCub2Izquierda",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "1 Dedo de la Mano Derecha",
+            "fields": [
+              {
+                "id": "flexIf1Derecha",
+                "label": "Flex If 0° - 80° Fecha 1",
+                "type": "number",
+                "name": "flexIf1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexIf2Derecha",
+                "label": "Flex If 0° - 80° Fecha 2",
+                "type": "number",
+                "name": "flexIf2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexMcf1Derecha",
+                "label": "Flex Mcf 0° - 50° Fecha 1",
+                "type": "number",
+                "name": "flexMcf1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexMcf2Derecha",
+                "label": "Flex Mcf 0° - 50° Fecha 2",
+                "type": "number",
+                "name": "flexMcf2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "abd1Derecha",
+                "label": "Abd 0° - 60° Fecha 1",
+                "type": "number",
+                "name": "abd1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "abd2Derecha",
+                "label": "Abd 0° - 60° Fecha 2",
+                "type": "number",
+                "name": "abd2Derecha",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "1 Dedo de la Mano Izquierda",
+            "fields": [
+              {
+                "id": "flexIf1Izquierda",
+                "label": "Flex If 0° - 80° Fecha 1",
+                "type": "number",
+                "name": "flexIf1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexIf2Izquierda",
+                "label": "Flex If 0° - 80° Fecha 2",
+                "type": "number",
+                "name": "flexIf2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexMcf1Izquierda",
+                "label": "Flex Mcf 0° - 50° Fecha 1",
+                "type": "number",
+                "name": "flexMcf1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexMcf2Izquierda",
+                "label": "Flex Mcf 0° - 50° Fecha 2",
+                "type": "number",
+                "name": "flexMcf2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "abd1Izquierda",
+                "label": "Abd 0° - 60° Fecha 1",
+                "type": "number",
+                "name": "abd1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "abd2Izquierda",
+                "label": "Abd 0° - 60° Fecha 2",
+                "type": "number",
+                "name": "abd2Izquierda",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Cadera derecha",
+            "fields": [
+              {
+                "id": "flexCRodillaFlex1Derecha",
+                "label": "Flex C/ Rodilla Flex 0° - 125° Fecha 1",
+                "type": "number",
+                "name": "flexCRodillaFlex1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexCRodillaFlex2Derecha",
+                "label": "Flex C/ Rodilla Flex 0° - 125° Fecha 2",
+                "type": "number",
+                "name": "flexCRodillaFlex2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaExt1Derecha",
+                "label": "Ext con Rodilla Ext 0° - 15º Fecha 1",
+                "type": "number",
+                "name": "extConRodillaExt1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaExt2Derecha",
+                "label": "Ext con Rodilla Ext 0° - 15º Fecha 2",
+                "type": "number",
+                "name": "extConRodillaExt2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaFlex1Derecha",
+                "label": "Ext con Rodilla Flex 0° - 10º Fecha 1",
+                "type": "number",
+                "name": "extConRodillaFlex1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaFlex2Derecha",
+                "label": "Ext con Rodilla Flex 0° - 10º Fecha 2",
+                "type": "number",
+                "name": "extConRodillaFlex2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion1Derecha",
+                "label": "Abducción 0°-45° Fecha 1",
+                "type": "number",
+                "name": "abduccion1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion2Derecha",
+                "label": "Abducción 0°-45° Fecha 2",
+                "type": "number",
+                "name": "abduccion2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "adduccion1Derecha",
+                "label": "Adducción 0°-20°-30° Fecha 1",
+                "type": "number",
+                "name": "adduccion1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "adduccion2Derecha",
+                "label": "Adducción 0°-20°-30° Fecha 2",
+                "type": "number",
+                "name": "adduccion2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt1Derecha",
+                "label": "Rot. Int. 0°-30°-45° Fecha 1",
+                "type": "number",
+                "name": "rotInt1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt2Derecha",
+                "label": "Rot. Int. 0°-30°-45° Fecha 2",
+                "type": "number",
+                "name": "rotInt2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt1Derecha",
+                "label": "Rot. Ext. 0°-30°-45° Fecha 1",
+                "type": "number",
+                "name": "rotExt1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt2Derecha",
+                "label": "Rot. Ext. 0°-30°-45° Fecha 2",
+                "type": "number",
+                "name": "rotExt2Derecha",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card13": [
+          {
+            "title": "Cadera izquierda",
+            "fields": [
+              {
+                "id": "flexCRodillaFlex1Izquierda",
+                "label": "Flex C/ Rodilla Flex 0° - 125° Fecha 1",
+                "type": "number",
+                "name": "flexCRodillaFlex1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexCRodillaFlex2Izquierda",
+                "label": "Flex C/ Rodilla Flex 0° - 125° Fecha 2",
+                "type": "number",
+                "name": "flexCRodillaFlex2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaExt1Izquierda",
+                "label": "Ext con Rodilla Ext 0° - 15º Fecha 1",
+                "type": "number",
+                "name": "extConRodillaExt1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaExt2Izquierda",
+                "label": "Ext con Rodilla Ext 0° - 15º Fecha 2",
+                "type": "number",
+                "name": "extConRodillaExt2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaFlex1Izquierda",
+                "label": "Ext con Rodilla Flex 0° - 10º Fecha 1",
+                "type": "number",
+                "name": "extConRodillaFlex1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extConRodillaFlex2Izquierda",
+                "label": "Ext con Rodilla Flex 0° - 10º Fecha 2",
+                "type": "number",
+                "name": "extConRodillaFlex2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion1Izquierda",
+                "label": "Abducción 0°-45° Fecha 1",
+                "type": "number",
+                "name": "abduccion1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "abduccion2Izquierda",
+                "label": "Abducción 0°-45° Fecha 2",
+                "type": "number",
+                "name": "abduccion2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "adduccion1Izquierda",
+                "label": "Adducción 0°-20°-30° Fecha 1",
+                "type": "number",
+                "name": "adduccion1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "adduccion2Izquierda",
+                "label": "Adducción 0°-20°-30° Fecha 2",
+                "type": "number",
+                "name": "adduccion2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt1Izquierda",
+                "label": "Rot. Int. 0°-30°-45° Fecha 1",
+                "type": "number",
+                "name": "rotInt1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "rotInt2Izquierda",
+                "label": "Rot. Int. 0°-30°-45° Fecha 2",
+                "type": "number",
+                "name": "rotInt2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt1Izquierda",
+                "label": "Rot. Ext. 0°-30°-45° Fecha 1",
+                "type": "number",
+                "name": "rotExt1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "rotExt2Izquierda",
+                "label": "Rot. Ext. 0°-30°-45° Fecha 2",
+                "type": "number",
+                "name": "rotExt2Izquierda",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Rodilla derecha",
+            "fields": [
+              {
+                "id": "flexion1Derecha",
+                "label": "Flexión 0°-140° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecha",
+                "label": "Flexión 0°-140° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecha",
+                "label": "Extensión 140°-0° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecha",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecha",
+                "label": "Extensión 140°-0° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecha",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Rodilla izquierda",
+            "fields": [
+              {
+                "id": "flexion1Izquierda",
+                "label": "Flexión 0°-140° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierda",
+                "label": "Flexión 0°-140° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierda",
+                "label": "Extensión 140°-0° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierda",
+                "label": "Extensión 140°-0° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierda",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card16": [
+          {
+            "title": "Tobillo y pie derecho",
+            "fields": [
+              {
+                "id": "dorsiflexion1Derecho",
+                "label": "Dorsiflexión 0°-20° Fecha 1",
+                "type": "number",
+                "name": "dorsiflexion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "dorsiflexion2Derecho",
+                "label": "Dorsiflexión 0°-20° Fecha 2",
+                "type": "number",
+                "name": "dorsiflexion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexPlantar1Derecho",
+                "label": "Flex Plantar 0°-45° Fecha 1",
+                "type": "number",
+                "name": "flexPlantar1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexPlantar2Derecho",
+                "label": "Flex Plantar 0°-45° Fecha 2",
+                "type": "number",
+                "name": "flexPlantar2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "inversion1Derecho",
+                "label": "Inversión 0°-30° Fecha 1",
+                "type": "number",
+                "name": "inversion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "inversion2Derecho",
+                "label": "Inversión 0°-30° Fecha 2",
+                "type": "number",
+                "name": "inversion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "eversion1Derecho",
+                "label": "Eversión 0°-25° Fecha 1",
+                "type": "number",
+                "name": "eversion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "eversion2Derecho",
+                "label": "Eversión 0°-25° Fecha 2",
+                "type": "number",
+                "name": "eversion2Derecho",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card17": [
+          {
+            "title": "Tobillo y pie izquierdo",
+            "fields": [
+              {
+                "id": "dorsiflexion1Izquierdo",
+                "label": "Dorsiflexión 0°-20° Fecha 1",
+                "type": "number",
+                "name": "dorsiflexion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "dorsiflexion2Izquierdo",
+                "label": "Dorsiflexión 0°-20° Fecha 2",
+                "type": "number",
+                "name": "dorsiflexion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexPlantar1Izquierdo",
+                "label": "Flex Plantar 0°-45° Fecha 1",
+                "type": "number",
+                "name": "flexPlantar1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexPlantar2Izquierdo",
+                "label": "Flex Plantar 0°-45° Fecha 2",
+                "type": "number",
+                "name": "flexPlantar2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "inversion1Izquierdo",
+                "label": "Inversión 0°-30° Fecha 1",
+                "type": "number",
+                "name": "inversion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "inversion2Izquierdo",
+                "label": "Inversión 0°-30° Fecha 2",
+                "type": "number",
+                "name": "inversion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "eversion1Izquierdo",
+                "label": "Eversión 0°-25° Fecha 1",
+                "type": "number",
+                "name": "eversion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "eversion2Izquierdo",
+                "label": "Eversión 0°-25° Fecha 2",
+                "type": "number",
+                "name": "eversion2Izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card18": [
+          {
+            "title": "Columna Cervical Derecho",
+            "fields": [
+              {
+                "id": "flexion1Derecho",
+                "label": "Flexión 0°-45° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecho",
+                "label": "Flexión 0°-45° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecho",
+                "label": "Extensión 0°-45° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecho",
+                "label": "Extensión 0°-45° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion1Derecho",
+                "label": "Lateralización 0°-45-60° Fecha 1",
+                "type": "number",
+                "name": "lateralizacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion2Derecho",
+                "label": "Lateralización 0°-45-60° Fecha 2",
+                "type": "number",
+                "name": "lateralizacion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion1Derecho",
+                "label": "Rotación 0°-60-70° Fecha 1",
+                "type": "number",
+                "name": "rotacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion2Derecho",
+                "label": "Rotación 0°-60-70° Fecha 2",
+                "type": "number",
+                "name": "rotacion2Derecho",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card19": [
+          {
+            "title": "Columna Cervical Izquierdo",
+            "fields": [
+              {
+                "id": "flexion1Izquierdo",
+                "label": "Flexión 0°-45° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierdo",
+                "label": "Flexión 0°-45° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierdo",
+                "label": "Extensión 0°-45° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierdo",
+                "label": "Extensión 0°-45° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion1Izquierdo",
+                "label": "Lateralización 0°-45-60° Fecha 1",
+                "type": "number",
+                "name": "lateralizacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion2Izquierdo",
+                "label": "Lateralización 0°-45-60° Fecha 2",
+                "type": "number",
+                "name": "lateralizacion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion1Izquierdo",
+                "label": "Rotación 0°-60-70° Fecha 1",
+                "type": "number",
+                "name": "rotacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion2Izquierdo",
+                "label": "Rotación 0°-60-70° Fecha 2",
+                "type": "number",
+                "name": "rotacion2Izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card20": [
+          {
+            "title": "Tronco derecho",
+            "fields": [
+              {
+                "id": "flexion1Derecho",
+                "label": "Flexión 0°-80° Fecha 1",
+                "type": "number",
+                "name": "flexion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Derecho",
+                "label": "Flexión 0°-80° Fecha 2",
+                "type": "number",
+                "name": "flexion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Derecho",
+                "label": "Extensión 0°-30° Fecha 1",
+                "type": "number",
+                "name": "extension1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Derecho",
+                "label": "Extensión 0°-30° Fecha 2",
+                "type": "number",
+                "name": "extension2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion1Derecho",
+                "label": "Lateralización 0°-20° Fecha 1",
+                "type": "number",
+                "name": "lateralizacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion2Derecho",
+                "label": "Lateralización 0°-20° Fecha 2",
+                "type": "number",
+                "name": "lateralizacion2Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion1Derecho",
+                "label": "Rotación 0°-45° Fecha 1",
+                "type": "number",
+                "name": "rotacion1Derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion2Derecho",
+                "label": "Rotación 0°-45° Fecha 2",
+                "type": "number",
+                "name": "rotacion2Derecho",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card21": [
+          {
+            "title": "Tronco izquierdo",
+            "fields": [
+              {
+                "id": "flexion1Izquierdo",
+                "label": "Flexión 0°-80° Fecha 1",
+                "type": "number",
+                "name": "flexion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "flexion2Izquierdo",
+                "label": "Flexión 0°-80° Fecha 2",
+                "type": "number",
+                "name": "flexion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension1Izquierdo",
+                "label": "Extensión 0°-30° Fecha 1",
+                "type": "number",
+                "name": "extension1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "extension2Izquierdo",
+                "label": "Extensión 0°-30° Fecha 2",
+                "type": "number",
+                "name": "extension2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion1Izquierdo",
+                "label": "Lateralización 0°-20° Fecha 1",
+                "type": "number",
+                "name": "lateralizacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "lateralizacion2Izquierdo",
+                "label": "Lateralización 0°-20° Fecha 2",
+                "type": "number",
+                "name": "lateralizacion2Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion1Izquierdo",
+                "label": "Rotación 0°-45° Fecha 1",
+                "type": "number",
+                "name": "rotacion1Izquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "rotacion2Izquierdo",
+                "label": "Rotación 0°-45° Fecha 2",
+                "type": "number",
+                "name": "rotacion2Izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fase III",
+        "card": [
+          {
+            "title": "Marcha y equilibrio (Tinetti)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Traslados (Neuromotricidad)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dcsDcp",
+                "label": "Dcs-Dcp",
+                "type": "checkbox",
+                "name": "dcsDcp",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionDcsDcp",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionDcsDcp"
+                  }
+                ]
+              },
+              {
+                "id": "4ptosRod",
+                "label": "4ptos-Rod",
+                "type": "checkbox",
+                "name": "4ptosRod",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcion4ptosRod",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcion4ptosRod"
+                  }
+                ]
+              },
+              {
+                "id": "dcpDcl",
+                "label": "Dcp-Dcl",
+                "type": "checkbox",
+                "name": "dcpDcl",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionDcpDcl",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionDcpDcl"
+                  }
+                ]
+              },
+              {
+                "id": "rodMarat",
+                "label": "Rod-Marat",
+                "type": "checkbox",
+                "name": "rodMarat",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionRodMarat",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionRodMarat"
+                  }
+                ]
+              },
+              {
+                "id": "dcsSdt",
+                "label": "Dcs-Sdt",
+                "type": "checkbox",
+                "name": "dcsSdt",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionDcsSdt",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionDcsSdt"
+                  }
+                ]
+              },
+              {
+                "id": "maratBip",
+                "label": "Marat-Bip",
+                "type": "checkbox",
+                "name": "maratBip",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionMaratBip",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionMaratBip"
+                  }
+                ]
+              },
+              {
+                "id": "dcp4ptos",
+                "label": "Dcp-4ptos",
+                "type": "checkbox",
+                "name": "dcp4ptos",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionDcp4ptos",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionDcp4ptos"
+                  }
+                ]
+              },
+              {
+                "id": "sdtBip",
+                "label": "Sdt-Bip",
+                "type": "checkbox",
+                "name": "sdtBip",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionSdtBip",
+                    "label": "",
+                    "type": "textarea",
+                    "name": "descripcionSdtBip"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+.timeline {
+  list-style: none;
+  padding: 0;
+  position: relative;
+}
+
+.timeline-item {
+  margin: 20px 0;
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline-item h5 {
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+.timeline-item p {
+  margin: 0;
+}
+
+.calendar {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.month {
+  background: #0d6efd;
+  color: #fff;
+  padding: 15px;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays div {
+  background: #f1f1f1;
+  padding: 10px 0;
+  font-weight: bold;
+}
+
+.days div {
+  padding: 15px;
+  border: 1px solid #ddd;
+  min-height: 80px;
+  position: relative;
+}
+
+.event {
+  background: #198754;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  display: inline-block;
+  margin-top: 10px;
+}

@@ -1,0 +1,422 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Procedimiento quirúrgico",
+        "card": [
+          {
+            "title": "Horas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaInicio",
+                "label": "Hora de inicio",
+                "type": "time",
+                "name": "horaInicio",
+                "class": "col-4"
+              },
+              {
+                "id": "horaFinalizacion",
+                "label": "Hora de finalización",
+                "type": "time",
+                "name": "horaFinalizacion",
+                "class": "col-4"
+              },
+              {
+                "id": "sala",
+                "label": "# Sala",
+                "type": "number",
+                "name": "sala",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Personal médico",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cirujano",
+                "label": "Cirujano",
+                "type": "textarea",
+                "name": "cirujano",
+                "class": "col-6"
+              },
+              {
+                "id": "ayudante",
+                "label": "Ayudante",
+                "type": "textarea",
+                "name": "ayudante",
+                "class": "col-6"
+              },
+              {
+                "id": "anestesiologo",
+                "label": "Anestesiólogo",
+                "type": "textarea",
+                "name": "anestesiologo",
+                "class": "col-6"
+              },
+              {
+                "id": "tipoAnestesia",
+                "label": "Tipo de Anestesia",
+                "type": "textarea",
+                "name": "tipoAnestesia",
+                "class": "col-6"
+              },
+              {
+                "id": "instrumentador",
+                "label": "Instrumentador",
+                "type": "textarea",
+                "name": "instrumentador",
+                "class": "col-6"
+              },
+              {
+                "id": "circulante",
+                "label": "Circulante",
+                "type": "textarea",
+                "name": "circulante",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Descripción del procedimiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "descripcionProcedimiento",
+                "label": "",
+                "type": "textarea",
+                "name": "descripcionProcedimiento"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Diagnóstico Pre-Quirúrgico",
+            "fields": [
+              {
+                "id": "diagnosticoPreQuirurgico",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoPreQuirurgico"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Diagnóstico Post-Quirúrgico",
+            "fields": [
+              {
+                "id": "diagnosticoPostQuirurgico",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoPostQuirurgico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Detalles Quirúrgicos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "hallazgosIntraoperatoriosCheck",
+                "label": "Hallazgos Intraoperatorios",
+                "type": "checkbox",
+                "name": "hallazgosIntraoperatoriosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "hallazgosIntraoperatoriosText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "hallazgosIntraoperatoriosText"
+                  }
+                ]
+              },
+              {
+                "id": "descripcionQuirurgicaCheck",
+                "label": "Descripción Quirúrgica",
+                "type": "checkbox",
+                "name": "descripcionQuirurgicaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "descripcionQuirurgicaText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "descripcionQuirurgicaText"
+                  }
+                ]
+              },
+              {
+                "id": "sangradoEstimadoCheck",
+                "label": "Sangrado estimado",
+                "type": "checkbox",
+                "name": "sangradoEstimadoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "sangradoEstimadoText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "sangradoEstimadoText"
+                  }
+                ]
+              },
+              {
+                "id": "complicacionesCheck",
+                "label": "Complicaciones",
+                "type": "checkbox",
+                "name": "complicacionesCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "complicacionesText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "complicacionesText"
+                  }
+                ]
+              },
+              {
+                "id": "recuentoMaterialCheck",
+                "label": "Recuento de Material",
+                "type": "checkbox",
+                "name": "recuentoMaterialCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "recuentoMaterialText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "recuentoMaterialText"
+                  }
+                ]
+              },
+              {
+                "id": "tejidoCheck",
+                "label": "Tejido",
+                "type": "checkbox",
+                "name": "tejidoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tejidoText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "tejidoText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Plan de manejo final",
+            "fields": [
+              {
+                "id": "planManejoFinal",
+                "label": "",
+                "type": "textarea",
+                "name": "planManejoFinal"
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Observaciones",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

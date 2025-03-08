@@ -1,0 +1,655 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen Físico",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cabezaCheck",
+                "label": "Cabeza",
+                "type": "checkbox",
+                "name": "cabezaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cabezaText",
+                    "name": "cabezaText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "ojosCheck",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "ojosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "ojosText",
+                    "name": "ojosText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "oidosCheck",
+                "label": "Oídos",
+                "type": "checkbox",
+                "name": "oidosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "oidosText",
+                    "name": "oidosText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "narizCheck",
+                "label": "Nariz",
+                "type": "checkbox",
+                "name": "narizCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "narizText",
+                    "name": "narizText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "bocaFaringeCheck",
+                "label": "Boca y Faringe",
+                "type": "checkbox",
+                "name": "bocaFaringeCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "bocaFaringeText",
+                    "name": "bocaFaringeText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "cuelloCheck",
+                "label": "Cuello",
+                "type": "checkbox",
+                "name": "cuelloCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cuelloText",
+                    "name": "cuelloText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "pielCheck",
+                "label": "Piel",
+                "type": "checkbox",
+                "name": "pielCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "pielText",
+                    "name": "pielText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "sistemaNeurologicoCheck",
+                "label": "Sistema Neurológico",
+                "type": "checkbox",
+                "name": "sistemaNeurologicoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "sistemaNeurologicoText",
+                    "name": "sistemaNeurologicoText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "extremidadesSuperioresCheck",
+                "label": "Extremidades Superiores",
+                "type": "checkbox",
+                "name": "extremidadesSuperioresCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "extremidadesSuperioresText",
+                    "name": "extremidadesSuperioresText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "extremidadesInferioresCheck",
+                "label": "Extremidades Inferiores",
+                "type": "checkbox",
+                "name": "extremidadesInferioresCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "extremidadesInferioresText",
+                    "name": "extremidadesInferioresText",
+                    "label": ""
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observacionesExamenFisico",
+                "label": "",
+                "type": "textarea",
+                "name": "observacionesExamenFisico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "examenFisicoResumenIA",
+                "label": "",
+                "type": "textarea",
+                "name": "examenFisicoResumenIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Revisión",
+        "card": [
+          {
+            "title": "Escala de Tanner Niño",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estadoTannerMasculino",
+                "label": "",
+                "type": "select",
+                "name": "estadoTannerMasculino",
+                "options": [
+                  {
+                    "value": "estado1",
+                    "text": "Estado 1: Sin vello púbico, Testículos y Pene infantil."
+                  },
+                  {
+                    "value": "estado2",
+                    "text": "Estado 2: Aumento del escroto y testículos, piel del escroto enrojecida y arrugada, pene infantil vello púbico escaso en la base del pene."
+                  },
+                  {
+                    "value": "estado3",
+                    "text": "Estado 3: Alargamiento y engrosamiento del pene. Aumento de testículos y escroto. Vello sobre pubis rizado, grueso y oscuro."
+                  },
+                  {
+                    "value": "estado4",
+                    "text": "Estado 4: Ensanchamiento del pene y del glande, aumento de testículos, aumento y oscurecimiento del escroto. Vello púbico adulto que no cubre los muslos."
+                  },
+                  {
+                    "value": "estado5",
+                    "text": "Estado 5: Genitales Adultos. Vello adulto que se extiende a zona medial de muslos."
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Escala de Tanner Niña",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estadoTannerFemenino",
+                "label": "",
+                "type": "select",
+                "name": "estadoTannerFemenino",
+                "options": [
+                  {
+                    "value": "estado1",
+                    "text": "Estado 1: Pecho infantil, no vello púbico."
+                  },
+                  {
+                    "value": "estado2",
+                    "text": "Estado 2: Botón mamario, vello púbico no rizado escaso, en labios mayores."
+                  },
+                  {
+                    "value": "estado3",
+                    "text": "Estado 3: Aumento y elevación de pecho y areola. Vello rizado, basto y oscuro sobre pubis."
+                  },
+                  {
+                    "value": "estado4",
+                    "text": "Estado 4: Areola y pezón sobreelevado sobre mama. Vello púbico tipo adulto no sobre muslos."
+                  },
+                  {
+                    "value": "estado5",
+                    "text": "Estado 5: Pecho Adulto, areola no sobreelevada. Vello adulto zona medial muslo."
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Órganos de los Sentidos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ojosCheck",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "ojosCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "ojosText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "ojosText"
+                  }
+                ]
+              },
+              {
+                "id": "oidosCheck",
+                "label": "Oídos",
+                "type": "checkbox",
+                "name": "oidosCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "oidosText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "oidosText"
+                  }
+                ]
+              },
+              {
+                "id": "lenguaSaboresCheck",
+                "label": "Lengua / Sabores",
+                "type": "checkbox",
+                "name": "lenguaSaboresCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "lenguaSaboresText",
+                    "label": "",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "lenguaSaboresText"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Síntomas Generales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "deseos",
+                "label": "Deseos",
+                "type": "textarea",
+                "name": "deseos",
+                "class": "col-6"
+              },
+              {
+                "id": "sed",
+                "label": "Sed",
+                "type": "textarea",
+                "name": "sed",
+                "class": "col-6"
+              },
+              {
+                "id": "transpiracion",
+                "label": "Transpiración",
+                "type": "textarea",
+                "name": "transpiracion",
+                "class": "col-6"
+              },
+              {
+                "id": "aversiones",
+                "label": "Aversiones",
+                "type": "textarea",
+                "name": "aversiones",
+                "class": "col-6"
+              },
+              {
+                "id": "calorVital",
+                "label": "Calor Vital",
+                "type": "textarea",
+                "name": "calorVital",
+                "class": "col-6"
+              },
+              {
+                "id": "suenos",
+                "label": "Sueños",
+                "type": "textarea",
+                "name": "suenos",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

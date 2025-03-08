@@ -1,0 +1,482 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card8": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc",
+                "readonly": true
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia",
+                "readonly": true
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion",
+                "max": 100
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "number"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examen Físico",
+        "card12": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "examenFisicoCabezaCheck",
+                "label": "Cabeza",
+                "type": "checkbox",
+                "name": "examenFisicoCabezaCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoCabezaCheckInfo",
+                    "name": "examenFisicoCabezaCheckInfo",
+                    "label": "",
+                    "placeholder": "Cabeza."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoOjosCheck",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "examenFisicoOjosCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoOjosCheckInfo",
+                    "name": "examenFisicoOjosCheckInfo",
+                    "label": "",
+                    "placeholder": "Ojos."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoOidosCheck",
+                "label": "Oídos",
+                "type": "checkbox",
+                "name": "examenFisicoOidosCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoOidosCheckInfo",
+                    "name": "examenFisicoOidosCheckInfo",
+                    "label": "",
+                    "placeholder": "Oídos."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoNarizCheck",
+                "label": "Nariz",
+                "type": "checkbox",
+                "name": "examenFisicoNarizCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoNarizCheckInfo",
+                    "name": "examenFisicoNarizCheckInfo",
+                    "label": "",
+                    "placeholder": "Nariz."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoBocaYFaringeCheck",
+                "label": "Boca y Faringe",
+                "type": "checkbox",
+                "name": "examenFisicoBocaYFaringeCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoBocaYFaringeCheckInfo",
+                    "name": "examenFisicoBocaYFaringeCheckInfo",
+                    "label": "",
+                    "placeholder": "Boca y Faringe."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "examenFisicoCuelloCheck",
+                "label": "Cuello",
+                "type": "checkbox",
+                "name": "examenFisicoCuelloCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoCuelloCheckInfo",
+                    "name": "examenFisicoCuelloCheckInfo",
+                    "label": "",
+                    "placeholder": "Cuello."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoPielCheck",
+                "label": "Piel",
+                "type": "checkbox",
+                "name": "examenFisicoPielCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoPielCheckInfo",
+                    "name": "examenFisicoPielCheckInfo",
+                    "label": "",
+                    "placeholder": "Piel."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoSistemaNeurologicoCheck",
+                "label": "Sistema Neurológico",
+                "type": "checkbox",
+                "name": "examenFisicoSistemaNeurologicoCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoSistemaNeurologicoCheckInfo",
+                    "name": "examenFisicoSistemaNeurologicoCheckInfo",
+                    "label": "",
+                    "placeholder": "Sistema Neurológico."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoExtremidadesSuperioresCheck",
+                "label": "Extremidades Superiores",
+                "type": "checkbox",
+                "name": "examenFisicoExtremidadesSuperioresCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoExtremidadesSuperioresCheckInfo",
+                    "name": "examenFisicoExtremidadesSuperioresCheckInfo",
+                    "label": "",
+                    "placeholder": "Extremidades Superiores."
+                  }
+                ]
+              },
+              {
+                "id": "examenFisicoExtremidadesInferioresCheck",
+                "label": "Extremidades Inferiores",
+                "type": "checkbox",
+                "name": "examenFisicoExtremidadesInferioresCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "examenFisicoExtremidadesInferioresCheckInfo",
+                    "name": "examenFisicoExtremidadesInferioresCheckInfo",
+                    "label": "",
+                    "placeholder": "Extremidades Inferiores."
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observacionesExamenFisico",
+                "label": "",
+                "type": "textarea",
+                "name": "observacionesExamenFisico"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "examenFisicoResumenIA",
+                "label": "",
+                "type": "textarea",
+                "name": "examenFisicoResumenIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card9": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card12": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card15": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card16": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

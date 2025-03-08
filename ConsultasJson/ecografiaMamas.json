@@ -1,0 +1,1033 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Posición",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "posicion",
+                "label": "Posición",
+                "type": "select",
+                "name": "posicion",
+                "options": [
+                  {
+                    "value": "frontal",
+                    "text": "Frontal"
+                  },
+                  {
+                    "value": "lateral",
+                    "text": "Lateral"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Mama Derecha",
+            "fields": [
+              {
+                "id": "pielDerecha",
+                "label": "Piel",
+                "type": "textarea",
+                "name": "pielDerecha"
+              },
+              {
+                "id": "grasaDerecha",
+                "label": "Grasa",
+                "type": "select",
+                "name": "grasaDerecha",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "tejidoGlandularDerecha",
+                "label": "Tejido Glandular",
+                "type": "select",
+                "name": "tejidoGlandularDerecha",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "tejidoConectivoSostenDerecha",
+                "label": "Tejido Conectivo de Sostén",
+                "type": "textarea",
+                "name": "tejidoConectivoSostenDerecha"
+              },
+              {
+                "id": "conductosMamariosDerecha",
+                "label": "Conductos Mamarios",
+                "type": "textarea",
+                "name": "conductosMamariosDerecha"
+              },
+              {
+                "id": "pezonDerecha",
+                "label": "Pezón",
+                "type": "select",
+                "name": "pezonDerecha",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentosCooperDerecha",
+                "label": "Ligamentos de Cooper",
+                "type": "textarea",
+                "name": "ligamentosCooperDerecha"
+              },
+              {
+                "id": "costillasDerecha",
+                "label": "Costillas",
+                "type": "select",
+                "name": "costillasDerecha",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "intervalosRegularesDerecha",
+                "label": "Se Observan a Intervalos Regulares en el Corte",
+                "type": "textarea",
+                "name": "intervalosRegularesDerecha"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Mama Izquierda",
+            "fields": [
+              {
+                "id": "pielIzquierda",
+                "label": "Piel",
+                "type": "textarea",
+                "name": "pielIzquierda"
+              },
+              {
+                "id": "grasaIzquierda",
+                "label": "Grasa",
+                "type": "select",
+                "name": "grasaIzquierda",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "tejidoGlandularIzquierda",
+                "label": "Tejido Glandular",
+                "type": "select",
+                "name": "tejidoGlandularIzquierda",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "tejidoConectivoSostenIzquierda",
+                "label": "Tejido Conectivo de Sostén",
+                "type": "textarea",
+                "name": "tejidoConectivoSostenIzquierda"
+              },
+              {
+                "id": "conductosMamariosIzquierda",
+                "label": "Conductos Mamarios",
+                "type": "textarea",
+                "name": "conductosMamariosIzquierda"
+              },
+              {
+                "id": "pezonIzquierda",
+                "label": "Pezón",
+                "type": "select",
+                "name": "pezonIzquierda",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "ligamentosCooperIzquierda",
+                "label": "Ligamentos de Cooper",
+                "type": "textarea",
+                "name": "ligamentosCooperIzquierda"
+              },
+              {
+                "id": "costillasDerecha",
+                "label": "Costillas",
+                "type": "select",
+                "name": "costillasDerecha",
+                "options": [
+                  {
+                    "value": "hipoecogenico",
+                    "text": "Hipoecogénico"
+                  },
+                  {
+                    "value": "hiperecogenico",
+                    "text": "Hiperecogénico"
+                  }
+                ]
+              },
+              {
+                "id": "intervalosRegularesIzquierda",
+                "label": "Se Observan a Intervalos Regulares en el Corte",
+                "type": "textarea",
+                "name": "intervalosRegularesIzquierda"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Masas Derecha",
+            "fields": [
+              {
+                "id": "masaPresenteDerechaCheck",
+                "label": "Presente",
+                "type": "checkbox",
+                "name": "masaPresenteDerechaCheck",
+                "toggleFields": [
+                  {
+                    "id": "formaMasaDerecha",
+                    "label": "Forma",
+                    "type": "select",
+                    "name": "formaMasaDerecha",
+                    "options": [
+                      {
+                        "value": "ovalada",
+                        "text": "Ovalada"
+                      },
+                      {
+                        "value": "redondeada",
+                        "text": "Redondeada"
+                      },
+                      {
+                        "value": "irregular",
+                        "text": "Irregular"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "orientacionDerecha",
+                    "label": "Orientación",
+                    "type": "select",
+                    "name": "orientacionDerecha",
+                    "options": [
+                      {
+                        "value": "paralela",
+                        "text": "Paralela"
+                      },
+                      {
+                        "value": "antiparalela",
+                        "text": "Antiparalela"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "margenesDerecha",
+                    "label": "Márgenes",
+                    "type": "select",
+                    "name": "margenesDerecha",
+                    "options": [
+                      {
+                        "value": "circunscritos",
+                        "text": "Circunscritos"
+                      },
+                      {
+                        "value": "noCircunscritos",
+                        "text": "No Circunscritos"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "periferiaDerecha",
+                    "label": "Perifería",
+                    "type": "select",
+                    "name": "periferiaDerecha",
+                    "options": [
+                      {
+                        "value": "interfazAbrupta",
+                        "text": "Interfaz Abrupta"
+                      },
+                      {
+                        "value": "haloEcogenico",
+                        "text": "Halo Ecogénico"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "ecogenicidadDerecha",
+                    "label": "Ecogenicidad",
+                    "type": "select",
+                    "name": "ecogenicidadDerecha",
+                    "options": [
+                      {
+                        "value": "anecogenico",
+                        "text": "Anecogénico"
+                      },
+                      {
+                        "value": "hipoecogenico",
+                        "text": "Hipoecogénico"
+                      },
+                      {
+                        "value": "isoecogenico",
+                        "text": "Isoecogénico"
+                      },
+                      {
+                        "value": "hiperecogenico",
+                        "text": "Hiperecogénico"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "caracteristicasUltrasonograficasPosterioresDerecha",
+                    "label": "Características Ultrasonográficas Posteriores",
+                    "type": "select",
+                    "name": "caracteristicasUltrasonograficasPosterioresDerecha",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "noPresente",
+                        "text": "No Presente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "tejidoAdyacenteDerecha",
+                    "label": "Tejido Adyacente",
+                    "type": "textarea",
+                    "name": "tejidoAdyacenteDerecha"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Masas Izquierda",
+            "fields": [
+              {
+                "id": "masaPresenteIzquierdaCheck",
+                "label": "Presente",
+                "type": "checkbox",
+                "name": "masaPresenteIzquierdaCheck",
+                "toggleFields": [
+                  {
+                    "id": "formaMasaIzquierda",
+                    "label": "Forma",
+                    "type": "select",
+                    "name": "formaMasaIzquierda",
+                    "options": [
+                      {
+                        "value": "ovalada",
+                        "text": "Ovalada"
+                      },
+                      {
+                        "value": "redondeada",
+                        "text": "Redondeada"
+                      },
+                      {
+                        "value": "irregular",
+                        "text": "Irregular"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "orientacionIzquierda",
+                    "label": "Orientación",
+                    "type": "select",
+                    "name": "orientacionIzquierda",
+                    "options": [
+                      {
+                        "value": "paralela",
+                        "text": "Paralela"
+                      },
+                      {
+                        "value": "antiparalela",
+                        "text": "Antiparalela"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "margenesIzquierda",
+                    "label": "Márgenes",
+                    "type": "select",
+                    "name": "margenesIzquierda",
+                    "options": [
+                      {
+                        "value": "circunscritos",
+                        "text": "Circunscritos"
+                      },
+                      {
+                        "value": "noCircunscritos",
+                        "text": "No Circunscritos"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "periferiaIzquierda",
+                    "label": "Perifería",
+                    "type": "select",
+                    "name": "periferiaIzquierda",
+                    "options": [
+                      {
+                        "value": "interfazAbrupta",
+                        "text": "Interfaz Abrupta"
+                      },
+                      {
+                        "value": "haloEcogenico",
+                        "text": "Halo Ecogénico"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "ecogenicidadIzquierda",
+                    "label": "Ecogenicidad",
+                    "type": "select",
+                    "name": "ecogenicidadIzquierda",
+                    "options": [
+                      {
+                        "value": "anecogenico",
+                        "text": "Anecogénico"
+                      },
+                      {
+                        "value": "hipoecogenico",
+                        "text": "Hipoecogénico"
+                      },
+                      {
+                        "value": "isoecogenico",
+                        "text": "Isoecogénico"
+                      },
+                      {
+                        "value": "hiperecogenico",
+                        "text": "Hiperecogénico"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "caracteristicasUltrasonograficasPosterioresIzquierda",
+                    "label": "Características Ultrasonográficas Posteriores",
+                    "type": "select",
+                    "name": "caracteristicasUltrasonograficasPosterioresIzquierda",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "noPresente",
+                        "text": "No Presente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "tejidoAdyacenteIzquierda",
+                    "label": "Tejido Adyacente",
+                    "type": "textarea",
+                    "name": "tejidoAdyacenteIzquierda"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Calcificaciones Derecha",
+            "fields": [
+              {
+                "id": "CalcificacionesPresenteDerechaCheck",
+                "label": "Presente",
+                "type": "checkbox",
+                "name": "CalcificacionesPresenteDerechaCheck",
+                "toggleFields": [
+                  {
+                    "id": "macrocalcificacionesDerecha",
+                    "label": "Macrocalcificaciones",
+                    "type": "select",
+                    "name": "macrocalcificacionesDerecha",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "microcalcificacionesFueraMasaDerecha",
+                    "label": "Microcalcificaciones por fuera de la masa",
+                    "type": "select",
+                    "name": "microcalcificacionesFueraMasaDerecha",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "microcalcificacionesDentroMasaDerecha",
+                    "label": "Microcalcificaciones por dentro de la masa",
+                    "type": "select",
+                    "name": "microcalcificacionesDentroMasaDerecha",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Calcificaciones Izquierda",
+            "fields": [
+              {
+                "id": "calcificacionesPresenteIzquierdaCheck",
+                "label": "Presente",
+                "type": "checkbox",
+                "name": "calcificacionesPresenteIzquierdaCheck",
+                "toggleFields": [
+                  {
+                    "id": "macrocalcificacionesIzquierda",
+                    "label": "Macrocalcificaciones",
+                    "type": "select",
+                    "name": "macrocalcificacionesIzquierda",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "microcalcificacionesFueraMasaIzquierda",
+                    "label": "Microcalcificaciones por fuera de la masa",
+                    "type": "select",
+                    "name": "microcalcificacionesFueraMasaIzquierda",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "microcalcificacionesDentroMasaIzquierda",
+                    "label": "Microcalcificaciones por dentro de la masa",
+                    "type": "select",
+                    "name": "microcalcificacionesDentroMasaIzquierda",
+                    "options": [
+                      {
+                        "value": "presente",
+                        "text": "Presente"
+                      },
+                      {
+                        "value": "ausente",
+                        "text": "Ausente"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card8": [
+          {
+            "title": "Casos Especiales Derecha",
+            "fields": [
+              {
+                "id": "casosEspecialesDerechaCheck",
+                "label": "¿Tiene casos especiales?",
+                "type": "checkbox",
+                "name": "casosEspecialesDerechaCheck",
+                "toggleFields": [
+                  {
+                    "id": "microQuistesComplicadosDerecha",
+                    "label": "Micro Quistes Complicados",
+                    "type": "textarea",
+                    "name": "microQuistesComplicadosDerecha"
+                  },
+                  {
+                    "id": "quistesComplicadosDerecha",
+                    "label": "Quistes Complicados",
+                    "type": "textarea",
+                    "name": "quistesComplicadosDerecha"
+                  },
+                  {
+                    "id": "masaEnPielDerecha",
+                    "label": "Masa en Piel",
+                    "type": "textarea",
+                    "name": "masaEnPielDerecha"
+                  },
+                  {
+                    "id": "cuerpoExtrañoDerecha",
+                    "label": "Cuerpo Extraño",
+                    "type": "textarea",
+                    "name": "cuerpoExtrañoDerecha"
+                  },
+                  {
+                    "id": "adenopatiaIntramamariaDerecha",
+                    "label": "Adenopatía Intramamaria",
+                    "type": "textarea",
+                    "name": "adenopatiaIntramamariaDerecha"
+                  },
+                  {
+                    "id": "adenopatiaAxilarDerecha",
+                    "label": "Adenopatía Axilar",
+                    "type": "textarea",
+                    "name": "adenopatiaAxilarDerecha"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card9": [
+          {
+            "title": "Casos Especiales Izquierda",
+            "fields": [
+              {
+                "id": "casosEspecialesIzquierdaCheck",
+                "label": "¿Tiene casos especiales?",
+                "type": "checkbox",
+                "name": "casosEspecialesIzquierdaCheck",
+                "toggleFields": [
+                  {
+                    "id": "microQuistesComplicadosIzquierda",
+                    "label": "Micro Quistes Complicados",
+                    "type": "textarea",
+                    "name": "microQuistesComplicadosIzquierda"
+                  },
+                  {
+                    "id": "quistesComplicadosIzquierda",
+                    "label": "Quistes Complicados",
+                    "type": "textarea",
+                    "name": "quistesComplicadosIzquierda"
+                  },
+                  {
+                    "id": "masaEnPielIzquierda",
+                    "label": "Masa en Piel",
+                    "type": "textarea",
+                    "name": "masaEnPielIzquierda"
+                  },
+                  {
+                    "id": "cuerpoExtrañoIzquierda",
+                    "label": "Cuerpo Extraño",
+                    "type": "textarea",
+                    "name": "cuerpoExtrañoIzquierda"
+                  },
+                  {
+                    "id": "adenopatiaIntramamariaIzquierda",
+                    "label": "Adenopatía Intramamaria",
+                    "type": "textarea",
+                    "name": "adenopatiaIntramamariaIzquierda"
+                  },
+                  {
+                    "id": "adenopatiaAxilarIzquierda",
+                    "label": "Adenopatía Axilar",
+                    "type": "textarea",
+                    "name": "adenopatiaAxilarIzquierda"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card10": [
+          {
+            "title": "Vascularización Derecha",
+            "fields": [
+              {
+                "id": "noPresenteNoEvaluadaDerecha",
+                "label": "No presente / No Evaluada",
+                "type": "select",
+                "name": "noPresenteNoEvaluadaDerecha",
+                "options": [
+                  {
+                    "value": "noPresente",
+                    "text": "No presente"
+                  },
+                  {
+                    "value": "noEvaluada",
+                    "text": "No evaluada"
+                  }
+                ]
+              },
+              {
+                "id": "presenteDentroLesionDerecha",
+                "label": "Presente dentro de la lesión",
+                "type": "checkbox",
+                "name": "presenteDentroLesionDerecha"
+              },
+              {
+                "id": "presenteAdyacenteLesionDerecha",
+                "label": "Presente adyacente de la lesión",
+                "type": "checkbox",
+                "name": "presenteAdyacenteLesionDerecha"
+              },
+              {
+                "id": "presenteEnTejidoAdyacenteDerecha",
+                "label": "Presente en tejido adyacente",
+                "type": "checkbox",
+                "name": "presenteEnTejidoAdyacenteDerecha"
+              }
+            ]
+          }
+        ],
+        "card11": [
+          {
+            "title": "Vascularización Izquierda",
+            "fields": [
+              {
+                "id": "noPresenteNoEvaluadaIzquierda",
+                "label": "No presente / No Evaluada",
+                "type": "select",
+                "name": "noPresenteNoEvaluadaIzquierda",
+                "options": [
+                  {
+                    "value": "noPresente",
+                    "text": "No presente"
+                  },
+                  {
+                    "value": "noEvaluada",
+                    "text": "No evaluada"
+                  }
+                ]
+              },
+              {
+                "id": "presenteDentroLesionIzquierda",
+                "label": "Presente dentro de la lesión",
+                "type": "checkbox",
+                "name": "presenteDentroLesionIzquierda"
+              },
+              {
+                "id": "presenteAdyacenteLesionIzquierda",
+                "label": "Presente adyacente de la lesión",
+                "type": "checkbox",
+                "name": "presenteAdyacenteLesionIzquierda"
+              },
+              {
+                "id": "presenteEnTejidoAdyacenteIzquierda",
+                "label": "Presente en tejido adyacente",
+                "type": "checkbox",
+                "name": "presenteEnTejidoAdyacenteIzquierda"
+              }
+            ]
+          }
+        ],
+        "card14": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

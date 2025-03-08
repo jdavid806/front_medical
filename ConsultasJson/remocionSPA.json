@@ -1,0 +1,364 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Depilación",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cejas",
+                "label": "Cejas",
+                "type": "checkbox",
+                "name": "cejas",
+                "class": "col-4"
+              },
+              {
+                "id": "labios",
+                "label": "Labios",
+                "type": "checkbox",
+                "name": "labios",
+                "class": "col-4"
+              },
+              {
+                "id": "ojos",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "ojos",
+                "class": "col-4"
+              },
+              {
+                "id": "otraArea",
+                "label": "Otra área",
+                "type": "checkbox",
+                "name": "otraArea",
+                "class": "col-4"
+              },
+              {
+                "id": "eliminacionLaser",
+                "label": "Eliminación Láser",
+                "type": "checkbox",
+                "name": "eliminacionLaser",
+                "class": "col-4"
+              },
+              {
+                "id": "eliminacionQuimica",
+                "label": "Eliminación Química",
+                "type": "checkbox",
+                "name": "eliminacionQuimica",
+                "class": "col-4"
+              },
+              {
+                "id": "pigmentacion",
+                "label": "Pigmentación",
+                "type": "checkbox",
+                "name": "pigmentacion",
+                "class": "col-4"
+              },
+              {
+                "id": "terapiaAcne",
+                "label": "Terapia de Acne",
+                "type": "checkbox",
+                "name": "terapiaAcne",
+                "class": "col-4"
+              },
+              {
+                "id": "terapiaVacular",
+                "label": "Terapia Vascular",
+                "type": "checkbox",
+                "name": "terapiaVacular",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Vello",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoVello",
+                "label": "Tipo",
+                "type": "select",
+                "name": "tipoVello",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "grueso",
+                    "text": "Grueso"
+                  },
+                  {
+                    "value": "delgado",
+                    "text": "Delgado"
+                  },
+                  {
+                    "value": "mediano",
+                    "text": "Mediano"
+                  }
+                ]
+              },
+              {
+                "id": "densidadVello",
+                "label": "Densidad",
+                "type": "select",
+                "name": "densidadVello",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "alta",
+                    "text": "Alta"
+                  },
+                  {
+                    "value": "media",
+                    "text": "Media"
+                  }
+                ]
+              },
+              {
+                "id": "colorVello",
+                "label": "Color",
+                "type": "textarea",
+                "name": "colorVello"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Procedimiento",
+            "fields": [
+              {
+                "id": "procedimiento",
+                "label": "",
+                "type": "textarea",
+                "name": "procedimiento"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Notas",
+            "fields": [
+              {
+                "id": "notas",
+                "label": "",
+                "type": "textarea",
+                "name": "notas"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fotos",
+        "card": [
+          {
+            "title": "Antes",
+            "fields": [
+              {
+                "id": "fotoAntes",
+                "label": "",
+                "type": "file",
+                "name": "fotoAntes"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Durante",
+            "fields": [
+              {
+                "id": "fotoDurante",
+                "label": "",
+                "type": "file",
+                "name": "fotoDurante"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Después",
+            "fields": [
+              {
+                "id": "fotoDespues",
+                "label": "",
+                "type": "file",
+                "name": "fotoDespues"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

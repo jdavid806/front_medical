@@ -1,0 +1,575 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "TRATAMIENTO ANTI-ENVEJECIMIENTO",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tratamientoSelect",
+                "label": "",
+                "type": "select",
+                "name": "tratamientoSelect",
+                "options": [
+                  {
+                    "value": "toxinaBotulinica",
+                    "text": "Toxina Botulínica"
+                  },
+                  {
+                    "value": "rellenosAcidoHialuronico",
+                    "text": "Rellenos de Ácido  Hialurónico"
+                  },
+                  {
+                    "value": "rellenosAcidoPolilactico",
+                    "text": "Rellenos de Ácido Poliláctico"
+                  },
+                  {
+                    "value": "rellenosHidroxiapatitaCalcica",
+                    "text": "Rellenos de Hidroxiapatita Cálcica"
+                  },
+                  {
+                    "value": "hilosTensoresPDO",
+                    "text": "Hilos Tensores PDO"
+                  },
+                  {
+                    "value": "laserENERJET",
+                    "text": "Láser ENERJET"
+                  },
+                  {
+                    "value": "laserPLEXR",
+                    "text": "Láser PLEXR"
+                  },
+                  {
+                    "value": "mesoterapiaFacial",
+                    "text": "Mesoterapia facial"
+                  },
+                  {
+                    "value": "mesoterapiaCorporal",
+                    "text": "Mesoterapia corporal"
+                  },
+                  {
+                    "value": "micropigmentacion",
+                    "text": "Micropigmentación"
+                  },
+                  {
+                    "value": "peeling",
+                    "text": "Peeling"
+                  },
+                  {
+                    "value": "hiperhidrosis",
+                    "text": "Hiperhidrosis"
+                  },
+                  {
+                    "value": "bruxismo",
+                    "text": "Bruxismo"
+                  },
+                  {
+                    "value": "laserIPL",
+                    "text": "Láser IPL"
+                  },
+                  {
+                    "value": "laserCO2",
+                    "text": "Láser CO2"
+                  },
+                  {
+                    "value": "skinbooster",
+                    "text": "Skinbooster"
+                  },
+                  {
+                    "value": "factoresCrecimiento",
+                    "text": "Factores de crecimiento"
+                  },
+                  {
+                    "value": "mesoterapiaCapilar",
+                    "text": "Mesoterapia Capilar"
+                  },
+                  {
+                    "value": "medicinaAntiaging",
+                    "text": "Medicina Antiaging"
+                  },
+                  {
+                    "value": "varices",
+                    "text": "Varices"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Trazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "trazo",
+                "label": "Trazo",
+                "type": "fileS",
+                "name": "trazo",
+                "class": "col-12"
+              },
+              {
+                "id": "notas",
+                "label": "Notas",
+                "type": "textarea",
+                "name": "notas",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Sintomas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tos",
+                "class": "col-3",
+                "label": "Tos",
+                "type": "checkbox",
+                "name": "tos"
+              },
+              {
+                "id": "vomito",
+                "class": "col-3",
+                "label": "Vómito",
+                "type": "checkbox",
+                "name": "vomito"
+              },
+              {
+                "id": "dolorAbdominal",
+                "class": "col-3",
+                "label": "Dolor Abdominal",
+                "type": "checkbox",
+                "name": "dolorAbdominal"
+              },
+              {
+                "id": "sangreEnHeces",
+                "class": "col-3",
+                "label": "Sangre en heces/defecar",
+                "type": "checkbox",
+                "name": "sangreEnHeces"
+              },
+              {
+                "id": "hipoestesias",
+                "class": "col-3",
+                "label": "Hipoestesias",
+                "type": "checkbox",
+                "name": "hipoestesias"
+              },
+              {
+                "id": "rinorrea",
+                "class": "col-3",
+                "label": "Rinorrea",
+                "type": "checkbox",
+                "name": "rinorrea"
+              },
+              {
+                "id": "diarrea",
+                "class": "col-3",
+                "label": "Diarrea",
+                "type": "checkbox",
+                "name": "diarrea"
+              },
+              {
+                "id": "disnea",
+                "class": "col-3",
+                "label": "Disnea",
+                "type": "checkbox",
+                "name": "disnea"
+              },
+              {
+                "id": "hematuria",
+                "class": "col-3",
+                "label": "Hematuria",
+                "type": "checkbox",
+                "name": "hematuria"
+              },
+              {
+                "id": "cefalea",
+                "class": "col-3",
+                "label": "Cefalea",
+                "type": "checkbox",
+                "name": "cefalea"
+              },
+              {
+                "id": "disuria",
+                "class": "col-3",
+                "label": "Disuria",
+                "type": "checkbox",
+                "name": "disuria"
+              },
+              {
+                "id": "otalgia",
+                "class": "col-3",
+                "label": "Otalgia",
+                "type": "checkbox",
+                "name": "otalgia"
+              },
+              {
+                "id": "dolorExtremidades",
+                "class": "col-3",
+                "label": "Dolor en las extremidades",
+                "type": "checkbox",
+                "name": "dolorExtremidades"
+              },
+              {
+                "id": "mareo",
+                "class": "col-3",
+                "label": "Mareo",
+                "type": "checkbox",
+                "name": "mareo"
+              },
+              {
+                "id": "dolorGarganta",
+                "class": "col-3",
+                "label": "Dolor de Garganta",
+                "type": "checkbox",
+                "name": "dolorGarganta"
+              },
+              {
+                "id": "perdidaPeso",
+                "class": "col-3",
+                "label": "Pérdida de Peso",
+                "type": "checkbox",
+                "name": "perdidaPeso"
+              },
+              {
+                "id": "parestesias",
+                "class": "col-3",
+                "label": "Parestesias",
+                "type": "checkbox",
+                "name": "parestesias"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fotos",
+        "card": [
+          {
+            "title": "Antes",
+            "fields": [
+              {
+                "id": "imagen1",
+                "label": "",
+                "type": "file",
+                "name": "imagen1"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Durante",
+            "fields": [
+              {
+                "id": "imagen2",
+                "label": "",
+                "type": "file",
+                "name": "imagen2"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Después",
+            "fields": [
+              {
+                "id": "imagen3",
+                "label": "",
+                "type": "file",
+                "name": "imagen3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

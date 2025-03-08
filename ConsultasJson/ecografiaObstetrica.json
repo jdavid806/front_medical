@@ -1,0 +1,523 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Exploración Fetal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "feto",
+                "label": "Feto",
+                "type": "select",
+                "name": "feto",
+                "class": "col-6",
+                "options": [
+                  { "value": "unico", "text": "Único" },
+                  { "value": "multiple", "text": "Múltiple" }
+                ]
+              },
+              {
+                "id": "situacion",
+                "label": "Situación",
+                "type": "select",
+                "name": "situacion",
+                "class": "col-6",
+                "options": [
+                  { "value": "longitudinal", "text": "Longitudinal" },
+                  { "value": "transverso", "text": "Transverso" }
+                ]
+              },
+              {
+                "id": "presentacion",
+                "label": "Presentación",
+                "type": "select",
+                "name": "presentacion",
+                "class": "col-6",
+                "options": [
+                  { "value": "cefalica", "text": "Cefálica" },
+                  { "value": "podalica", "text": "Podálica" }
+                ]
+              },
+              {
+                "id": "posicion",
+                "label": "Posición",
+                "type": "select",
+                "name": "posicion",
+                "class": "col-6",
+                "options": [
+                  { "value": "izquierda", "text": "Izquierda" },
+                  { "value": "derecha", "text": "Derecha" }
+                ]
+              },
+              {
+                "id": "dorso",
+                "label": "Dorso",
+                "type": "select",
+                "name": "dorso",
+                "class": "col-6",
+                "options": [
+                  { "value": "lateral", "text": "Lateral" },
+                  { "value": "anterior", "text": "Anterior" },
+                  { "value": "posterior", "text": "Posterior" }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Biometría",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "LCN",
+                "label": "LCN (mm)",
+                "type": "textarea",
+                "name": "LCN",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasLCN",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasLCN",
+                "class": "col-6"
+              },
+              {
+                "id": "DBP",
+                "label": "DBP (mm)",
+                "type": "textarea",
+                "name": "DBP",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasDBP",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasDBP",
+                "class": "col-6"
+              },
+              {
+                "id": "AC",
+                "label": "AC (mm)",
+                "type": "textarea",
+                "name": "AC",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasAC",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasAC",
+                "class": "col-6"
+              },
+              {
+                "id": "SG",
+                "label": "SG (mm)",
+                "type": "textarea",
+                "name": "SG",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasSG",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasSG",
+                "class": "col-6"
+              },
+              {
+                "id": "HC",
+                "label": "HC (mm)",
+                "type": "textarea",
+                "name": "HC",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasHC",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasHC",
+                "class": "col-6"
+              },
+              {
+                "id": "LF",
+                "label": "LF (mm)",
+                "type": "textarea",
+                "name": "LF",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasLF",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasLF",
+                "class": "col-6"
+              },
+              {
+                "id": "VV",
+                "label": "VV (mm)",
+                "type": "textarea",
+                "name": "VV",
+                "class": "col-6"
+              },
+              {
+                "id": "semanasVV",
+                "label": "Semanas",
+                "type": "textarea",
+                "name": "semanasVV",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Biometría Fetal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ponderadoFetal",
+                "label": "Ponderado Fetal (+/- 10 % gr)",
+                "type": "textarea",
+                "name": "ponderadoFetal",
+                "class": "col-6"
+              },
+              {
+                "id": "percentil",
+                "label": "Percentil",
+                "type": "textarea",
+                "name": "percentil",
+                "class": "col-6"
+              },
+              {
+                "id": "espesor",
+                "label": "Espesor (mm)",
+                "type": "textarea",
+                "name": "espesor",
+                "class": "col-6"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca (x min)",
+                "type": "textarea",
+                "name": "frecuenciaCardiaca",
+                "class": "col-6"
+              },
+              {
+                "id": "liquidoAmniotico",
+                "label": "Líquido Amniótico ILA (cm)",
+                "type": "textarea",
+                "name": "liquidoAmniotico",
+                "class": "col-12"
+              },
+              {
+                "id": "circularCordónCheck",
+                "label": "Circular de cordón",
+                "type": "checkbox",
+                "name": "circularCordónCheck",
+                "class": "col-4"
+              },
+              {
+                "id": "placenta",
+                "label": "Placenta",
+                "type": "select",
+                "name": "placenta",
+                "class": "col-4",
+                "options": [
+                  { "value": "anterior", "text": "Anterior" },
+                  { "value": "posterior", "text": "Posterior" },
+                  { "value": "previa", "text": "Previa" }
+                ]
+              },
+              {
+                "id": "malformacionesFetalesCheck",
+                "label": "Malformaciones Fetales",
+                "type": "checkbox",
+                "name": "malformacionesFetalesCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "sexo",
+                    "label": "Sexo",
+                    "type": "select",
+                    "name": "sexo",
+                    "options": [
+                      { "value": "masculino", "text": "Masculino" },
+                      { "value": "femenino", "text": "Femenino" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "grado",
+                "label": "Grado",
+                "type": "select",
+                "name": "grado",
+                "class": "col-6",
+                "options": [
+                  { "value": "I", "text": "I" },
+                  { "value": "II", "text": "II" },
+                  { "value": "III", "text": "III" }
+                ]
+              },
+              {
+                "id": "fechaProbableParto",
+                "label": "Fecha probable de parto",
+                "type": "date",
+                "name": "fechaProbableParto",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Conclusiones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "conclusiones",
+                "label": "",
+                "type": "textarea",
+                "name": "conclusiones"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

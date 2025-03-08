@@ -1,0 +1,7 @@
+# <IfModule mod_rewrite.c>
+# RewriteEngine On 
+# RewriteBase /FE/Contrato/
+
+# RewriteRule ^verContrato/(.+)$ index.php?idContrato=$1 
+# RewriteRule ^verContrato2/(.+)$ index2.php?json=$1 
+# # RewriteRule ^verProducto$ verProducto.php

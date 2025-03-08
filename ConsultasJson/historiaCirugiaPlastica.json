@@ -1,0 +1,866 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Trazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "trazo",
+                "label": "",
+                "type": "fileS",
+                "name": "trazo"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tratamientoAntiEnvejecimiento",
+                "label": "Tratamiento Anti-envejecimiento",
+                "type": "select",
+                "name": "tratamientoAntiEnvejecimiento",
+                "class": "col-6",
+                "options": [
+                  { "value": "botox", "text": "Bótox" },
+                  {
+                    "value": "rellenosAcidoHialuronico",
+                    "text": "Rellenos de Ácido Hialurónico"
+                  },
+                  {
+                    "value": "rellenosAcidoPolilactico",
+                    "text": "Rellenos de Ácido Poliláctico"
+                  },
+                  {
+                    "value": "rellenosHidroxiapatitaCalcica",
+                    "text": "Rellenos de Hidroxiapatita Cálcica"
+                  },
+                  { "value": "hilosTensoresPDO", "text": "Hilos Tensores PDO" },
+                  { "value": "laserENERJET", "text": "Láser ENERJET" },
+                  { "value": "laserPLEXR", "text": "Láser PLEXR" },
+                  {
+                    "value": "mesoterapiaFacial",
+                    "text": "Mesoterapia facial"
+                  },
+                  {
+                    "value": "mesoterapiaCorporal",
+                    "text": "Mesoterapia corporal"
+                  },
+                  { "value": "micropigmentacion", "text": "Micropigmentación" },
+                  { "value": "peeling", "text": "Peeling" },
+                  { "value": "hiperhidrosis", "text": "Hiperhidrosis" },
+                  { "value": "bruxismo", "text": "Bruxismo" },
+                  { "value": "laserIPL", "text": "Láser IPL" },
+                  { "value": "laserCO2", "text": "Láser CO2" },
+                  { "value": "hairfiller", "text": "Hairfiller" },
+                  {
+                    "value": "factoresCrecimiento",
+                    "text": "Factores de crecimiento"
+                  },
+                  { "value": "intralipoterapia", "text": "Intralipoterapia" },
+                  {
+                    "value": "medicinaAntiaging",
+                    "text": "Medicina Antiaging"
+                  },
+                  { "value": "varices", "text": "Varices" }
+                ]
+              },
+              {
+                "id": "cirugias",
+                "label": "Cirugías",
+                "type": "select",
+                "name": "cirugias",
+                "class": "col-6",
+                "options": [
+                  { "value": "cirugiasFaciales", "text": "Cirugías Faciales" },
+                  { "value": "cirugiaMano", "text": "Cirugía de Mano" },
+                  {
+                    "value": "cirugiasCorporales",
+                    "text": "Cirugías Corporales"
+                  },
+                  { "value": "quemaduras", "text": "Quemaduras" },
+                  {
+                    "value": "malformacionesCongenitas",
+                    "text": "Malformaciones Congénitas"
+                  },
+                  {
+                    "value": "procedimientosNoQuirurgicos",
+                    "text": "Procedimientos No Quirúrgicos"
+                  },
+                  {
+                    "value": "otrasCirugiasReconstructivas",
+                    "text": "Otras Cirugías Reconstructivas"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Revisión por sistemas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "fiebre",
+                "label": "Fiebre",
+                "type": "checkbox",
+                "name": "fiebre",
+                "class": "col-4"
+              },
+              {
+                "id": "tos",
+                "label": "Tos",
+                "type": "checkbox",
+                "name": "tos",
+                "class": "col-4"
+              },
+              {
+                "id": "rinorrea",
+                "label": "Rinorrea",
+                "type": "checkbox",
+                "name": "rinorrea",
+                "class": "col-4"
+              },
+              {
+                "id": "cefalea",
+                "label": "Cefalea",
+                "type": "checkbox",
+                "name": "cefalea",
+                "class": "col-4"
+              },
+              {
+                "id": "mareo",
+                "label": "Mareo",
+                "type": "checkbox",
+                "name": "mareo",
+                "class": "col-4"
+              },
+              {
+                "id": "vomito",
+                "label": "Vómito",
+                "type": "checkbox",
+                "name": "vomito",
+                "class": "col-4"
+              },
+              {
+                "id": "diarrea",
+                "label": "Diarrea",
+                "type": "checkbox",
+                "name": "diarrea",
+                "class": "col-4"
+              },
+              {
+                "id": "disuria",
+                "label": "Disuria",
+                "type": "checkbox",
+                "name": "disuria",
+                "class": "col-4"
+              },
+              {
+                "id": "dolorGarganta",
+                "label": "Dolor de Garganta",
+                "type": "checkbox",
+                "name": "dolorGarganta",
+                "class": "col-4"
+              },
+              {
+                "id": "dolorAbdominal",
+                "label": "Dolor Abdominal",
+                "type": "checkbox",
+                "name": "dolorAbdominal",
+                "class": "col-4"
+              },
+              {
+                "id": "disnea",
+                "label": "Disnea",
+                "type": "checkbox",
+                "name": "disnea",
+                "class": "col-4"
+              },
+              {
+                "id": "otalgia",
+                "label": "Otalgia",
+                "type": "checkbox",
+                "name": "otalgia",
+                "class": "col-4"
+              },
+              {
+                "id": "perdidaPeso",
+                "label": "Pérdida de Peso",
+                "type": "checkbox",
+                "name": "perdidaPeso",
+                "class": "col-4"
+              },
+              {
+                "id": "sangreHeces",
+                "label": "Sangre en heces/defecar",
+                "type": "checkbox",
+                "name": "sangreHeces",
+                "class": "col-4"
+              },
+              {
+                "id": "hematuria",
+                "label": "Hematuria",
+                "type": "checkbox",
+                "name": "hematuria",
+                "class": "col-4"
+              },
+              {
+                "id": "dolorExtremidades",
+                "label": "Dolor en las extremidades",
+                "type": "checkbox",
+                "name": "dolorExtremidades",
+                "class": "col-4"
+              },
+              {
+                "id": "parestesias",
+                "label": "Parestesias",
+                "type": "checkbox",
+                "name": "parestesias",
+                "class": "col-4"
+              },
+              {
+                "id": "hipoestesias",
+                "label": "Hipoestesias",
+                "type": "checkbox",
+                "name": "hipoestesias",
+                "class": "col-4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Evaluación",
+        "card": [
+          {
+            "title": "Piel",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "color",
+                "label": "Color",
+                "type": "select",
+                "name": "color",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "palida", "text": "Pálida" },
+                  { "value": "rojiza", "text": "Rojiza" }
+                ]
+              },
+              {
+                "id": "tacto",
+                "label": "Tacto",
+                "type": "select",
+                "name": "tacto",
+                "class": "col-6",
+                "options": [
+                  { "value": "lisaFina", "text": "Lisa y Fina" },
+                  { "value": "gruesaRugosa", "text": "Gruesa y Rugosa" },
+                  { "value": "mixta", "text": "Mixta" }
+                ]
+              },
+              {
+                "id": "cutis",
+                "label": "Cutis",
+                "type": "select",
+                "name": "cutis",
+                "class": "col-6",
+                "options": [
+                  { "value": "seco", "text": "Seco" },
+                  { "value": "graso", "text": "Graso" },
+                  { "value": "mixto", "text": "Mixto" }
+                ]
+              },
+              {
+                "id": "orificiosPilosebaceos",
+                "label": "Orificios Pilosebáceos",
+                "type": "select",
+                "name": "orificiosPilosebaceos",
+                "class": "col-6",
+                "options": [
+                  { "value": "postulas", "Text": "Postulas" },
+                  { "value": "menifiestos", "Text": "Menifiestos" },
+                  { "value": "milium", "Text": "Milium" },
+                  { "value": "pocosObservables", "Text": "Pocos observables" },
+                  { "value": "comedones", "Text": "Comedones" }
+                ]
+              },
+              {
+                "id": "arrugas",
+                "label": "Arrugas",
+                "type": "select",
+                "name": "arrugas",
+                "class": "col-6",
+                "options": [
+                  { "value": "pilosebaceos", "text": "Pilosebáceos" },
+                  { "value": "patasDeGallo", "text": "Patas de Gallo" },
+                  { "value": "plieguesFrente", "text": "Pliegues Frente" },
+                  { "value": "plieguesCuello", "text": "Pliegues Cuello" }
+                ]
+              },
+              {
+                "id": "arrugasRadialesPeriapicales",
+                "label": "Arrugas Radiales Periapicales",
+                "type": "select",
+                "name": "arrugasRadialesPeriapicales",
+                "class": "col-6",
+                "options": [
+                  { "value": "dentaduraBuena", "text": "Dentadura buena" },
+                  { "value": "mala", "text": "Mala" },
+                  { "value": "regular", "text": "Regular" },
+                  { "value": "protesis", "text": "Prótesis" }
+                ]
+              },
+              {
+                "id": "observaciones",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observaciones",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Rostro",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "piel",
+                "label": "Piel",
+                "type": "select",
+                "name": "piel",
+                "class": "col-6",
+                "options": [
+                  { "value": "lisa", "text": "Lisa" },
+                  { "value": "aspera", "text": "Aspera" },
+                  { "value": "fina", "text": "Fina" },
+                  { "value": "gruesa", "text": "Gruesa" },
+                  { "value": "rugosa", "text": "Rugosa" }
+                ]
+              },
+              {
+                "id": "lesiones",
+                "label": "Lesiones",
+                "type": "select",
+                "name": "lesiones",
+                "class": "col-6",
+                "options": [
+                  { "value": "noEncontradas", "text": "No encontradas" },
+                  { "value": "regulares", "text": "Regulares" },
+                  { "value": "generales", "text": "Generales" },
+                  { "value": "intensas", "text": "Intensas" }
+                ]
+              },
+              {
+                "id": "estadoCutaneo",
+                "label": "Estado Cutáneo",
+                "type": "select",
+                "name": "estadoCutaneo",
+                "class": "col-6",
+                "options": [
+                  { "value": "normal", "text": "Normal" },
+                  { "value": "sensible", "text": "Sensible" },
+                  { "value": "deshidratada", "text": "Deshidratar" },
+                  { "value": "seborreica", "text": "Seborreica" }
+                ]
+              },
+              {
+                "id": "biotipoCutaneo",
+                "label": "Biotipo Cutáneo",
+                "type": "select",
+                "name": "biotipoCutaneo",
+                "class": "col-6",
+                "options": [
+                  { "value": "lipidica", "text": "Lipídica" },
+                  { "value": "mixta", "text": "Mixta" },
+                  { "value": "eudermica", "text": "Eudérmica" },
+                  { "value": "alipica", "text": "Alípica" }
+                ]
+              },
+              {
+                "id": "sobreElAcne",
+                "label": "Sobre el Acné",
+                "type": "select",
+                "name": "sobreElAcne",
+                "class": "col-6",
+                "options": [
+                  { "value": "grau1", "text": "Grau 1" },
+                  { "value": "grau2", "text": "Grau 2" },
+                  { "value": "grau3", "text": "Grau 3" },
+                  { "value": "grau4", "text": "Grau 4" }
+                ]
+              },
+              {
+                "id": "fototico",
+                "label": "Fototipo",
+                "type": "select",
+                "name": "fototico",
+                "class": "col-6",
+                "options": [
+                  { "value": "1", "text": "1" },
+                  { "value": "2", "text": "2" },
+                  { "value": "3", "text": "3" },
+                  { "value": "4", "text": "4" },
+                  { "value": "5", "text": "5" }
+                ]
+              },
+              {
+                "id": "peso",
+                "label": "Peso",
+                "type": "textarea",
+                "class": "col-6",
+                "name": "peso"
+              },
+              {
+                "id": "observaciones",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observaciones",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Corporal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "busto",
+                "label": "Busto",
+                "type": "textarea",
+                "name": "busto",
+                "class": "col-6"
+              },
+              {
+                "id": "abdomen",
+                "label": "Abdomen",
+                "type": "textarea",
+                "name": "abdomen",
+                "class": "col-6"
+              },
+              {
+                "id": "brazoIzquierdo",
+                "label": "Brazo izquierdo",
+                "type": "textarea",
+                "name": "brazoIzquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "brazoDerecho",
+                "label": "Brazo derecho",
+                "type": "textarea",
+                "name": "brazoDerecho",
+                "class": "col-6"
+              },
+              {
+                "id": "cintura",
+                "label": "Cintura",
+                "type": "textarea",
+                "name": "cintura",
+                "class": "col-6"
+              },
+              {
+                "id": "cadera",
+                "label": "Cadera",
+                "type": "textarea",
+                "name": "cadera",
+                "class": "col-6"
+              },
+              {
+                "id": "pantalonesCorto",
+                "label": "Pantalones Corto",
+                "type": "textarea",
+                "name": "pantalonesCorto",
+                "class": "col-6"
+              },
+              {
+                "id": "musloIzquierdo",
+                "label": "Muslo Izquierdo",
+                "type": "textarea",
+                "name": "musloIzquierdo",
+                "class": "col-6"
+              },
+              {
+                "id": "musloDerecho",
+                "label": "Muslo derecho",
+                "type": "textarea",
+                "name": "musloDerecho",
+                "class": "col-6"
+              },
+              {
+                "id": "pantorrillaIzquierda",
+                "label": "Pantorrilla Izquierda",
+                "type": "textarea",
+                "name": "pantorrillaIzquierda",
+                "class": "col-6"
+              },
+              {
+                "id": "pantorrillaDerecha",
+                "label": "Pantorrilla Derecha",
+                "type": "textarea",
+                "name": "pantorrillaDerecha",
+                "class": "col-6"
+              },
+              {
+                "id": "altura",
+                "label": "Altura",
+                "type": "textarea",
+                "name": "altura",
+                "class": "col-6"
+              },
+              {
+                "id": "observaciones",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "observaciones",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Pecho Derecho",
+            "fields": [
+              {
+                "id": "ADerecho",
+                "label": "A",
+                "type": "textarea",
+                "name": "ADerecho"
+              },
+              {
+                "id": "BDerecho",
+                "label": "B",
+                "type": "textarea",
+                "name": "BDerecho"
+              },
+              {
+                "id": "CDerecho",
+                "label": "C",
+                "type": "textarea",
+                "name": "CDerecho"
+              },
+              {
+                "id": "DDerecho",
+                "label": "D",
+                "type": "textarea",
+                "name": "DDerecho"
+              },
+              {
+                "id": "EDerecho",
+                "label": "E",
+                "type": "textarea",
+                "name": "EDerecho"
+              },
+              {
+                "id": "CapDerecho",
+                "label": "Cap",
+                "type": "textarea",
+                "name": "CapDerecho"
+              },
+              {
+                "id": "PtsDerecho",
+                "label": "Pts",
+                "type": "textarea",
+                "name": "PtsDerecho"
+              },
+              {
+                "id": "PtiDerecho",
+                "label": "Pti",
+                "type": "textarea",
+                "name": "PtiDerecho"
+              },
+              {
+                "id": "ObservacionesPechoDerecho",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "ObservacionesPechoDerecho"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Pecho Izquierdo",
+            "fields": [
+              {
+                "id": "AIzquierdo",
+                "label": "A",
+                "type": "textarea",
+                "name": "AIzquierdo"
+              },
+              {
+                "id": "BIzquierdo",
+                "label": "B",
+                "type": "textarea",
+                "name": "BIzquierdo"
+              },
+              {
+                "id": "CIzquierdo",
+                "label": "C",
+                "type": "textarea",
+                "name": "CIzquierdo"
+              },
+              {
+                "id": "DIzquierdo",
+                "label": "D",
+                "type": "textarea",
+                "name": "DIzquierdo"
+              },
+              {
+                "id": "EIzquierdo",
+                "label": "E",
+                "type": "textarea",
+                "name": "EIzquierdo"
+              },
+              {
+                "id": "CapIzquierdo",
+                "label": "Cap",
+                "type": "textarea",
+                "name": "CapIzquierdo"
+              },
+              {
+                "id": "PtsIzquierdo",
+                "label": "Pts",
+                "type": "textarea",
+                "name": "PtsIzquierdo"
+              },
+              {
+                "id": "PtiIzquierdo",
+                "label": "Pti",
+                "type": "textarea",
+                "name": "PtiIzquierdo"
+              },
+              {
+                "id": "ObservacionesPechoIzquierdo",
+                "label": "Observaciones",
+                "type": "textarea",
+                "name": "ObservacionesPechoIzquierdo"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fotos",
+        "card": [
+          {
+            "title": "Antes",
+            "fields": [
+              {
+                "id": "fotoAntes",
+                "label": "",
+                "type": "file",
+                "name": "fotoAntes"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Durante",
+            "fields": [
+              {
+                "id": "fotoDurante",
+                "label": "",
+                "type": "file",
+                "name": "fotoDurante"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Después",
+            "fields": [
+              {
+                "id": "fotoDespues",
+                "label": "",
+                "type": "file",
+                "name": "fotoDespues"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

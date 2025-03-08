@@ -1,0 +1,7 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /FE/TimeTracking/
+
+# Permitir cualquier carácter en la URL y pasarlo como parámetro
+RewriteRule ^(.*)$ index.php?i=$1 [L,QSA]
+</IfModule>

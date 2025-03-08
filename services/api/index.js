@@ -1,0 +1,128 @@
+// services/index.js
+import BaseApiService from './classes/baseApiService.js'
+import OneToManyService from './classes/oneToManyService.js';
+import ManyToManyService from './classes/manyToManyService.js';
+import ManyToManyPolymorphicService from './classes/manyToManyPolymorphicService.js';
+import AuthService from './classes/authService.js';
+import { UserSpecialtyService } from './classes/userSpecialtyService.js';
+import { UserMockService } from './classes/userMockService.js';
+import { PatientMockService } from './classes/patientMockService.js';
+import { PatientService } from './classes/patientService.js';
+import { MenuService } from './classes/menuService.js';
+import { PermissionService } from './classes/permissionService.js';
+import { AdmissionService } from './classes/admissionService.js';
+import AppointmentService from './classes/appointmentService.js';
+import { CountrySeervice } from './classes/countryService.js';
+import { CityService } from './classes/cityService.js';
+import { ProductService } from './classes/productService.js';
+import { UserAvailabilityService } from './classes/userAvailabilityService.js';
+import { TemplateService } from './classes/templateService.js';
+import { CupsService } from './classes/cupsService.js';
+import { ExamenTypeService } from './classes/examenTypeService.js';
+import InventoryService from './classes/inventoryServices.js';
+import EstimateService from './classes/estimateService.js';
+import { PrescriptionService } from './classes/prescriptionService.js';
+import { TicketService } from './classes/ticketService.js';
+import FarmaciaService from './classes/farmaciaService.js';
+import { EvolutionNotesService } from './classes/evolutionNotesService.js';
+import { RemissionService } from './classes/remissionService.js';
+import { PaymentMethodService } from './classes/paymentMethodService.js';
+import { ClinicalRecordTypeService } from './classes/clinicalRecordTypeService.js';
+import { SuppliesService } from './classes/suppliesService.js';
+import DepartmentService from './classes/departmentService.js';
+
+export const authService = new AuthService('api/auth');
+
+///////////// MEDICAL /////////////
+
+// Para recursos API estándar
+export const examCategoryService = new BaseApiService('medical', 'exam-categories');
+export const examTypeService = new BaseApiService('medical', 'exam-types');
+export const examOrderService = new BaseApiService('medical', 'exam-orders');
+export const examOrderStateService = new BaseApiService('medical', 'exam-order-states');
+export const examPackageService = new BaseApiService('exam-packages');
+export const examResultService = new BaseApiService('medical', 'exam-results');
+
+export const patientService = new PatientService('medical', 'patients');
+export const patientMockService = new PatientMockService('patients');
+
+export const userService = new BaseApiService('medical', 'users');
+export const userSpecialtyService = new UserSpecialtyService('medical', 'user-specialties');
+
+// Para recursos anidados
+export const admissionService = new AdmissionService('medical', 'admissions');
+export const appointmentService = new AppointmentService('medical', 'patients', 'appointments');
+export const appointmentTypeService = new BaseApiService('medical', 'appointment-types');
+export const branchService = new BaseApiService('medical', 'branches');
+
+export const clinicalRecordService = new OneToManyService('medical', 'patients', 'clinical-records');
+export const patientAdmissionService = new OneToManyService('patients', 'admissions');
+export const patientDisabilityService = new OneToManyService('medical', 'patients', 'disabilities');
+export const patientNursingNoteService = new OneToManyService('medical', 'patients', 'nursing-notes');
+export const patientVaccineApplicationService = new OneToManyService('patients', 'vaccine-applications');
+export const patientClinicalRecordsService = new OneToManyService('patients', 'clinical-records');
+export const userAvailabilityService = new UserAvailabilityService('medical', 'users', 'availabilities');
+
+// Para grupos especiales
+export const groupVaccinesService = new ManyToManyService('group-vaccines');
+export const userRolePermissionService = new ManyToManyService('user-role-permissions');
+export const userRoleMenusService = new ManyToManyService('user-role-menus');
+export const userSpecialtyMenusService = new ManyToManyService('user-specialty-menus');
+export const examPackageItemsService = new ManyToManyPolymorphicService('exam-package-items');
+
+export const menuService = new MenuService('');
+export const permissionService = new PermissionService('');
+export const ticketService = new TicketService('medical', 'tickets');
+export const moduleService = new BaseApiService('medical', 'modules');
+
+/* Countries */
+
+export const countryService = new CountrySeervice('medical', 'countries');
+
+/* Departments */
+
+export const departmentService = new DepartmentService('medical', 'countries', 'departments');
+
+/* Cities */
+
+export const cityService = new CityService('medical', 'departments', 'cities');
+
+/* Products */
+
+export const productService = new ProductService('medical', 'products-services');
+
+export const templateService = new ProductService('medical', 'template-create');
+
+
+/* Cups */
+
+export const cupsService = new CupsService('medical', 'cups');
+
+/* ExamenType */
+
+export const examenTypeService = new ExamenTypeService('medical', 'exam-types');
+
+/* Inventario */
+
+export const inventoryService = new InventoryService('medical', 'products-all');
+
+/* Presupuestoss */
+export const estimatesService = new EstimateService('medical');
+
+/* evolution notes */
+
+export const evolutionNotesService = new EvolutionNotesService('medical');
+
+/* Remissions */
+
+export const remissionService = new RemissionService('medical');
+
+/* Prescripciones */
+export const prescriptionService = new PrescriptionService('medical', 'recipes');
+
+export const paymentMethodService = new PaymentMethodService('medical', 'payment-methods');
+export const clinicalRecordTypeService = new ClinicalRecordTypeService('medical');
+
+/* Entrega de Medicamentos e Insumos */
+export const suppliesService = new SuppliesService('api/v1/admin');
+export const farmaciaService = new FarmaciaService('medical');

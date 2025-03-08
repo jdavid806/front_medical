@@ -1,0 +1,511 @@
+{
+    "form1": {
+        "steps": [
+            {
+                "step": 1,
+                "fields": [
+                    {
+                        "id": "peso",
+                        "label": "Peso Corporal [Kg]",
+                        "type": "number",
+                        "name": "peso",
+                        "min": 0
+                    },
+                    {
+                        "id": "altura",
+                        "label": "Altura [cm]",
+                        "type": "number",
+                        "name": "altura",
+                        "min": 0
+                    },
+                    {
+                        "id": "imc",
+                        "label": "Índice de Masa Corporal (IMC)",
+                        "type": "number",
+                        "name": "imc",
+                        "min": 0,
+                        "readonly": true
+                    },
+                    {
+                        "id": "perimetroCefalico",
+                        "label": "Perímetro Cefálico [cm]",
+                        "type": "number",
+                        "name": "perimetroCefalico",
+                        "min": 0
+                    },
+                    {
+                        "id": "frecuenciaRespiratoria",
+                        "label": "Frecuencia Respiratoria [rpm]",
+                        "type": "number",
+                        "name": "frecuenciaRespiratoria",
+                        "min": 0
+                    },
+                    {
+                        "id": "frecuenciaCardiaca",
+                        "label": "Frecuencia Cardíaca [lpm]",
+                        "type": "number",
+                        "name": "frecuenciaCardiaca",
+                        "min": 0
+                    },
+                    {
+                        "id": "presionArterialSistolica",
+                        "label": "Presión Arterial Sistólica [mmHg]",
+                        "type": "number",
+                        "name": "presionArterialSistolica",
+                        "min": 0
+                    },
+                    {
+                        "id": "presionArterialDiastolica",
+                        "label": "Presión Arterial Diastólica [mmHg]",
+                        "type": "number",
+                        "name": "presionArterialDiastolica",
+                        "min": 0
+                    },
+                    {
+                        "id": "tensionArterialMedia",
+                        "label": "Tensión Arterial Media [mmHg]",
+                        "type": "number",
+                        "name": "tensionArterialMedia",
+                        "min": 0,
+                        "readonly": true
+                    },
+                    {
+                        "id": "temperatura",
+                        "label": "Temperatura Corporal [°C]",
+                        "type": "number",
+                        "name": "temperatura",
+                        "min": 0
+                    },
+                    {
+                        "id": "saturacion",
+                        "label": "Saturación de Oxígeno [%]",
+                        "type": "number",
+                        "name": "saturacion",
+                        "min": 0,
+                        "max": 100
+                    },
+                    {
+                        "id": "porcentajeGrasaCorporal",
+                        "label": "Porcentaje de Grasa Corporal [%]",
+                        "type": "number",
+                        "name": "porcentajeGrasaCorporal",
+                        "min": 0,
+                        "max": 100
+                    },
+                    {
+                        "id": "circunferenciaAbdominal",
+                        "label": "Circunferencia Abdominal [cm]",
+                        "type": "number",
+                        "name": "circunferenciaAbdominal",
+                        "min": 0
+                    },
+                    {
+                        "id": "circunferenciaCintura",
+                        "label": "Circunferencia de Cintura [cm]",
+                        "type": "number",
+                        "name": "circunferenciaCintura",
+                        "min": 0
+                    }
+                ]
+            },
+            {
+                "step": 2,
+                "fields": [
+                    {
+                        "id": "examenFisicoCabezaCheck",
+                        "label": "Cabeza",
+                        "type": "checkbox",
+                        "name": "examenFisicoCabeza",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoCabeza",
+                                "name": "examenFisicoEstadoCabeza",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoCabezaHallazgos",
+                                "name": "examenFisicoCabezaHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Cabeza simétrica, sin deformidades."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoOjosCheck",
+                        "label": "Ojos",
+                        "type": "checkbox",
+                        "name": "examenFisicoOjos",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoOjos",
+                                "name": "examenFisicoEstadoOjos",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoOjosHallazgos",
+                                "name": "examenFisicoOjosHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Pupilas isocóricas y reactivas a la luz."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoOidosCheck",
+                        "label": "Oídos",
+                        "type": "checkbox",
+                        "name": "examenFisicoOidos",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoOidos",
+                                "name": "examenFisicoEstadoOidos",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoOidosHallazgos",
+                                "name": "examenFisicoOidosHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Sin secreción ni dolor a la palpación."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoNarizCheck",
+                        "label": "Nariz",
+                        "type": "checkbox",
+                        "name": "examenFisicoNariz",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoNariz",
+                                "name": "examenFisicoEstadoNariz",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoNarizHallazgos",
+                                "name": "examenFisicoNarizHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Sin obstrucción nasal."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoBocaYFaringeCheck",
+                        "label": "Boca y Faringe",
+                        "type": "checkbox",
+                        "name": "examenFisicoBocaYFaringe",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoBocaYFaringe",
+                                "name": "examenFisicoEstadoBocaYFaringe",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoBocaYFaringeHallazgos",
+                                "name": "examenFisicoBocaYFaringeHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Mucosas orales húmedas, sin lesiones."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoCuelloCheck",
+                        "label": "Cuello",
+                        "type": "checkbox",
+                        "name": "examenFisicoCuello",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoCuello",
+                                "name": "examenFisicoEstadoCuello",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoCuelloHallazgos",
+                                "name": "examenFisicoCuelloHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Simétrico, sin adenopatías palpables ni masas. Pulsos carotídeos presentes y sin soplos."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoToraxCheck",
+                        "label": "Tórax",
+                        "type": "checkbox",
+                        "name": "examenFisicoTorax",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoTorax",
+                                "name": "examenFisicoEstadoTorax",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoToraxHallazgos",
+                                "name": "examenFisicoToraxHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Tórax simétrico, sin retracción intercostal."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoCorazonCheck",
+                        "label": "Corazón",
+                        "type": "checkbox",
+                        "name": "examenFisicoCorazon",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoCorazon",
+                                "name": "examenFisicoEstadoCorazon",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoCorazonHallazgos",
+                                "name": "examenFisicoCorazonHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Ruidos cardiacos normales, sin soplos."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoAbdomenCheck",
+                        "label": "Abdomen",
+                        "type": "checkbox",
+                        "name": "examenFisicoAbdomen",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoAbdomen",
+                                "name": "examenFisicoEstadoAbdomen",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoAbdomenHallazgos",
+                                "name": "examenFisicoAbdomenHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Abdomen blando, no doloroso a la palpación."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoColumnaCheck",
+                        "label": "Columna",
+                        "type": "checkbox",
+                        "name": "examenFisicoColumna",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoColumna",
+                                "name": "examenFisicoEstadoColumna",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoColumnaHallazgos",
+                                "name": "examenFisicoColumnaHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Columna recta, sin deformidades."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoExtremidadesSuperioresCheck",
+                        "label": "Extremidades Superiores",
+                        "type": "checkbox",
+                        "name": "examenFisicoExtremidadesSuperiores",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoExtremidadesSuperiores",
+                                "name": "examenFisicoEstadoExtremidadesSuperiores",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoExtremidadesSuperioresHallazgos",
+                                "name": "examenFisicoExtremidadesSuperioresHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Sin edema ni deformidades."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoExtremidadesInferioresCheck",
+                        "label": "Extremidades Inferiores",
+                        "type": "checkbox",
+                        "name": "examenFisicoExtremidadesInferiores",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoExtremidadesInferiores",
+                                "name": "examenFisicoEstadoExtremidadesInferiores",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoExtremidadesInferioresHallazgos",
+                                "name": "examenFisicoExtremidadesInferioresHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Sin edema ni deformidades."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoPielCheck",
+                        "label": "Piel",
+                        "type": "checkbox",
+                        "name": "examenFisicoPiel",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoPiel",
+                                "name": "examenFisicoEstadoPiel",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoPielHallazgos",
+                                "name": "examenFisicoPielHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Piel intacta, sin lesiones."
+                            }
+                        ]
+                    },
+                    {
+                        "id": "examenFisicoSistemaNeurologicoCheck",
+                        "label": "Sistema Neurológico",
+                        "type": "checkbox",
+                        "name": "examenFisicoSistemaNeurologico",
+                        "toggleFields": [
+                            {
+                                "type": "select",
+                                "id": "examenFisicoEstadoSistemaNeurologico",
+                                "name": "examenFisicoEstadoSistemaNeurologico",
+                                "options": [
+                                    "Normal",
+                                    "Anormal"
+                                ],
+                                "label": "Estado"
+                            },
+                            {
+                                "type": "textarea",
+                                "id": "examenFisicoSistemaNeurologicoHallazgos",
+                                "name": "examenFisicoSistemaNeurologicoHallazgos",
+                                "label": "Hallazgos",
+                                "placeholder": "Reflejos normales, sin alteraciones motoras ni sensitivas."
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "step": 3,
+                "fields": [
+                    {
+                        "id": "sed",
+                        "label": "Sed",
+                        "type": "text",
+                        "name": "sed"
+                    },
+                    {
+                        "id": "transpiracion",
+                        "label": "Transpiración",
+                        "type": "text",
+                        "name": "transpiracion"
+                    },
+                    {
+                        "id": "aversiones",
+                        "label": "Aversiones",
+                        "type": "text",
+                        "name": "aversiones"
+                    },
+                    {
+                        "id": "calor_vital",
+                        "label": "Calor Vital",
+                        "type": "select",
+                        "name": "calor_vital",
+                        "options": [
+                            {
+                                "value": "alto",
+                                "text": "Alto"
+                            },
+                            {
+                                "value": "medio",
+                                "text": "Medio"
+                            },
+                            {
+                                "value": "bajo",
+                                "text": "Bajo"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

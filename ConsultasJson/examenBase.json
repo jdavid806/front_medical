@@ -1,0 +1,22 @@
+{
+    "form1": {
+        "tabs": [
+            {
+                "tab": "Información básica",
+                "card": [
+                    {
+                        "title": "Motivo del examen",
+                        "fields": [
+                            {
+                                "id": "motivoExamen",
+                                "label": "Motivo",
+                                "type": "textarea",
+                                "name": "motivoExamen"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

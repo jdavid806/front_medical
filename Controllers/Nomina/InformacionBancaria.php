@@ -1,0 +1,70 @@
+<?php 
+class InformacionBancariaController {
+    private $model;
+
+    public function __construct($db) {
+        $this->model = new InformacionBancariaModel($db);
+    }
+
+    public function index() {
+        $respuesta = $this->model->obtener();
+        return $respuesta;
+    }
+
+    public function obtenerMax() {
+        $respuesta = $this->model->obtenerPersonalizado("max(id) as id", "");
+        // $respuesta = $respuesta == null || $respuesta == false ? [] : $respuesta["id"];
+        return $respuesta;
+    }
+
+    public function getFecha() {
+        return date("Y-m-d");
+    }
+
+    public function obtenerPorId($id) {
+        $respuesta = $this->model->obtenerPorId($id);
+        return $respuesta;
+    }
+
+    public function obtenerPorCondicion($condition) {
+        $respuesta = $this->model->obtenerPorCondicion($condition);
+        $respuesta = $respuesta == null || $respuesta == false ? [] : $respuesta;
+
+        return $respuesta;
+    }
+    
+    public function obtenerPorTrabajador($idTrabajador) {
+        $respuesta = $this->model->obtenerPorCondicion(" AND idTrabajador=" . $idTrabajador );
+        $respuesta = $respuesta == null || $respuesta == false ? [] : $respuesta[0];
+        return $respuesta;
+    }
+
+    public function crear($data) {
+        $data = escaparArray($data);
+        $respuesta = $this->model->crear($data);
+        return [
+            "status" => $respuesta["status"] ,
+            "message" => $respuesta["query"] . " " . $respuesta["error"]
+        ];
+    }
+
+    public function editar($id, $data) {
+        $data = escaparArray($data);
+        $respuesta = $this->model->actualizar($id, $data);
+        return [
+            "status" => $respuesta["status"],
+            "message" => $respuesta["query"] . " " . $respuesta["error"]
+        ];
+    }
+
+    public function eliminar($id) {
+        $respuesta = $this->model->eliminar($id);
+        return [
+            "status" => $respuesta["status"],
+            "message" => $respuesta["query"] . " " . $respuesta["error"]
+        ];
+    }
+}
+
+
+?>

@@ -1,0 +1,1214 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen clinico",
+        "card": [
+          {
+            "title": "Entevista inicial",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "estadoSalud",
+                "label": "¿Se encuentra usted en buen estado de Salud?",
+                "type": "checkbox",
+                "name": "estadoSalud",
+                "class": "col-6"
+              },
+              {
+                "id": "tratamientoActual",
+                "label": "¿Está usted recibiendo tratamiento médico actualmente?",
+                "type": "checkbox",
+                "name": "tratamientoActual",
+                "class": "col-6"
+              },
+              {
+                "id": "tratamientoDentalPrevioCheck",
+                "label": "¿Ha tenido tratamiento dental previo?",
+                "type": "checkbox",
+                "name": "tratamientoDentalPrevioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tratamientoDentalPrevioText",
+                    "label": "¿Cuál? ¿Hace cuánto?",
+                    "type": "textarea",
+                    "name": "tratamientoDentalPrevioText"
+                  }
+                ]
+              },
+              {
+                "id": "tratamientoEndodonticoPrevioCheck",
+                "label": "¿Ha tenido tratamiento Endodóntico previo?",
+                "type": "checkbox",
+                "name": "tratamientoEndodonticoPrevioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tratamientoEndodonticoPrevioText",
+                    "label": "¿Cuál? ¿Hace cuánto?",
+                    "type": "textarea",
+                    "name": "tratamientoEndodonticoPrevioText"
+                  }
+                ]
+              },
+              {
+                "id": "traumaDentalCheck",
+                "label": "¿Ha tenido Trauma dental?",
+                "type": "checkbox",
+                "name": "traumaDentalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "traumaDentalText",
+                    "label": "¿Cuál? ¿Hace cuánto?",
+                    "type": "textarea",
+                    "name": "traumaDentalText"
+                  }
+                ]
+              },
+              {
+                "id": "historiaDolorCheck",
+                "label": "¿Ha tenido Historia de Dolor?",
+                "type": "checkbox",
+                "name": "historiaDolorCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "historiaDolorSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "historiaDolorSelect",
+                    "options": [
+                      {
+                        "value": "frio",
+                        "text": "Frio"
+                      },
+                      {
+                        "value": "calor",
+                        "text": "Calor"
+                      },
+                      {
+                        "value": "masticacion",
+                        "text": "Masticación"
+                      },
+                      {
+                        "value": "dias",
+                        "text": "Dias"
+                      },
+                      {
+                        "value": "semanas",
+                        "text": "Semanas"
+                      },
+                      {
+                        "value": "meses",
+                        "text": "Meses"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "coronaAnatomicaCheck",
+                "label": "Corona Anatómica",
+                "type": "checkbox",
+                "name": "coronaAnatomicaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "coronaAnatomicaSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "coronaAnatomicaSelect",
+                    "options": [
+                      {
+                        "value": "caries",
+                        "text": "Caries"
+                      },
+                      {
+                        "value": "restauracion",
+                        "text": "Restauración"
+                      },
+                      {
+                        "value": "bruxismo",
+                        "text": "Bruxismo"
+                      },
+                      {
+                        "value": "fractura",
+                        "text": "Fractura"
+                      },
+                      {
+                        "value": "fracturaexposicionPulpar",
+                        "text": "Fracturas y exposición Pulpar"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "inflamacionPresenteCheck",
+                "label": "Inflamación presente",
+                "type": "checkbox",
+                "name": "inflamacionPresenteCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "inflamacionPresenteSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "inflamacionPresenteSelect",
+                    "options": [
+                      {
+                        "value": "enciaVestibular",
+                        "text": "En encía vestibular"
+                      },
+                      {
+                        "value": "enciaLingualPalatina",
+                        "text": "En encía Lingual/Palatina"
+                      },
+                      {
+                        "value": "inflamacionFacial",
+                        "text": "Facial"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "fistulaCheck",
+                "label": "Fistula",
+                "type": "checkbox",
+                "name": "fistulaCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fistulaSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "fistulaSelect",
+                    "options": [
+                      {
+                        "value": "vest",
+                        "text": "Vest."
+                      },
+                      {
+                        "value": "lingPal",
+                        "text": "Lin./Pal."
+                      },
+                      {
+                        "value": "extraoral",
+                        "text": "Extraoral"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dolorPresenteCheck",
+                "label": "Dolor presente",
+                "type": "checkbox",
+                "name": "dolorPresenteCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorPresenteSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dolorPresenteSelect",
+                    "options": [
+                      {
+                        "value": "espontaneo",
+                        "text": "Espontáneo"
+                      },
+                      {
+                        "value": "provocado",
+                        "text": "Provocado"
+                      },
+                      {
+                        "value": "frio",
+                        "text": "Frio"
+                      },
+                      {
+                        "value": "calor",
+                        "text": "Calor"
+                      },
+                      {
+                        "value": "extraoral",
+                        "text": "Extraoral"
+                      },
+                      {
+                        "value": "masticacion",
+                        "text": "Masticación"
+                      },
+                      {
+                        "value": "nocturno",
+                        "text": "Nocturno"
+                      },
+                      {
+                        "value": "aire",
+                        "text": "Aire"
+                      },
+                      {
+                        "value": "dulce",
+                        "text": "Dulce"
+                      },
+                      {
+                        "value": "acido",
+                        "text": "Ácido"
+                      },
+                      {
+                        "value": "irradiado",
+                        "text": "Irradiado"
+                      },
+                      {
+                        "value": "difuso",
+                        "text": "Difuso"
+                      },
+                      {
+                        "value": "punzante",
+                        "text": "Punzante"
+                      },
+                      {
+                        "value": "continuo",
+                        "text": "Continuo"
+                      },
+                      {
+                        "value": "intermitente",
+                        "text": "Intermitente"
+                      },
+                      {
+                        "value": "esporadico",
+                        "text": "Esporádico"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "gingivitis",
+                "label": "Gingivitis",
+                "type": "checkbox",
+                "name": "gingivitis",
+                "class": "col-6"
+              },
+              {
+                "id": "sarro",
+                "label": "Sarro",
+                "type": "checkbox",
+                "name": "sarro",
+                "class": "col-6"
+              },
+              {
+                "id": "dolorPercusionCheck",
+                "label": "Dolor a la percusión",
+                "type": "checkbox",
+                "name": "dolorPercusionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorPercusionSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dolorPercusionSelect",
+                    "options": [
+                      {
+                        "value": "horizontal",
+                        "text": "Horizontal"
+                      },
+                      {
+                        "value": "vertical",
+                        "text": "Vertical"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "dolorPalpacionCheck",
+                "label": "Dolor a la palpación",
+                "type": "checkbox",
+                "name": "dolorPalpacionCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dolorPalpacionSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "dolorPalpacionSelect",
+                    "options": [
+                      {
+                        "value": "vestibular",
+                        "text": "Vestibular"
+                      },
+                      {
+                        "value": "lingualPalatino",
+                        "text": "Lingual/Palatino"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "bolsasCheck",
+                "label": "Bolsas",
+                "type": "checkbox",
+                "name": "bolsasCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "movilidadCheck",
+                "label": "Movilidad",
+                "type": "checkbox",
+                "name": "movilidadCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "movilidadSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "movilidadSelect",
+                    "options": [
+                      {
+                        "value": "normal",
+                        "text": "Normal"
+                      },
+                      {
+                        "value": "gradoI",
+                        "text": "Grado I"
+                      },
+                      {
+                        "value": "gradoII",
+                        "text": "Grado II"
+                      },
+                      {
+                        "value": "gradoIII",
+                        "text": "Grado III"
+                      },
+                      {
+                        "value": "gradoIV",
+                        "text": "Grado IV"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "duracion",
+                "label": "Duración",
+                "type": "select",
+                "name": "duracion",
+                "options": [
+                  {
+                    "value": "corta",
+                    "text": "Corta"
+                  },
+                  {
+                    "value": "mediama",
+                    "text": "Mediama"
+                  },
+                  {
+                    "value": "larga",
+                    "text": "Larga"
+                  }
+                ]
+              },
+              {
+                "id": "intensidad",
+                "label": "Intensidad",
+                "type": "select",
+                "name": "intensidad",
+                "options": [
+                  {
+                    "value": "leve",
+                    "text": "Leve 0 - 3"
+                  },
+                  {
+                    "value": "moderada",
+                    "text": "Moderada 4 - 7"
+                  },
+                  {
+                    "value": "severa",
+                    "text": "Severa 7 - 10"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "duracion",
+                "label": "Duración",
+                "type": "select",
+                "name": "duracion",
+                "options": [
+                  {
+                    "value": "corta",
+                    "text": "Corta"
+                  },
+                  {
+                    "value": "mediama",
+                    "text": "Mediama"
+                  },
+                  {
+                    "value": "larga",
+                    "text": "Larga"
+                  }
+                ]
+              },
+              {
+                "id": "intensidad",
+                "label": "Intensidad",
+                "type": "select",
+                "name": "intensidad",
+                "options": [
+                  {
+                    "value": "leve",
+                    "text": "Leve 0 - 3"
+                  },
+                  {
+                    "value": "moderada",
+                    "text": "Moderada 4 - 7"
+                  },
+                  {
+                    "value": "severa",
+                    "text": "Severa 7 - 10"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen radiográfico",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "camaraPulpar",
+                "label": "Cámara Pulpar",
+                "type": "select",
+                "name": "camaraPulpar",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "abierta",
+                    "text": "Abierta"
+                  },
+                  {
+                    "value": "cerrada",
+                    "text": "Cerrada"
+                  },
+                  {
+                    "value": "amplia",
+                    "text": "Amplia"
+                  },
+                  {
+                    "value": "estrecha",
+                    "text": "Estrecha"
+                  },
+                  {
+                    "value": "calculosPulpares",
+                    "text": "Cálculos Pulpares"
+                  }
+                ]
+              },
+              {
+                "id": "conductos",
+                "label": "Conducto(s)",
+                "type": "select",
+                "name": "conductos",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "conductoUnico",
+                    "text": "Único"
+                  },
+                  {
+                    "value": "dosContuctos",
+                    "text": "2 Conductos"
+                  },
+                  {
+                    "value": "tresConductos",
+                    "text": "3 Conductos"
+                  },
+                  {
+                    "value": "amplio",
+                    "text": "Amplio"
+                  },
+                  {
+                    "value": "estrecho",
+                    "text": "Estrecho"
+                  },
+                  {
+                    "value": "recto",
+                    "text": "Recto"
+                  },
+                  {
+                    "value": "curvo",
+                    "text": "Curvo"
+                  },
+                  {
+                    "value": "tratadoAnteriormente",
+                    "text": "Tratado anteriormente"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "lesionFurca",
+                "label": "Lesión en Furca",
+                "type": "checkbox",
+                "name": "lesionFurca",
+                "class": "col-6"
+              },
+              {
+                "id": "lesionAplica",
+                "label": "Lesión Aplica",
+                "type": "checkbox",
+                "name": "lesionAplica",
+                "class": "col-6"
+              },
+              {
+                "id": "lesionLateral",
+                "label": "Lesión Lateral",
+                "type": "checkbox",
+                "name": "lesionLateral",
+                "class": "col-6"
+              },
+              {
+                "id": "lesionEndoPerio",
+                "label": "Lesión ENDO-PERIO",
+                "type": "checkbox",
+                "name": "lesionEndoPerio",
+                "class": "col-6"
+              },
+              {
+                "id": "fracturaRadicularCheck",
+                "label": "Fractura radicular",
+                "type": "checkbox",
+                "name": "fracturaRadicularCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "fracturaRadicularSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "fracturaRadicularSelect",
+                    "options": [
+                      {
+                        "value": "vertical",
+                        "text": "Vertical"
+                      },
+                      {
+                        "value": "horizontal",
+                        "text": "Horizontal"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "raicesEnanas",
+                "label": "Raices enanas",
+                "type": "checkbox",
+                "name": "raicesEnanas",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "clasificacionCheck",
+                "label": "Clasificación",
+                "type": "checkbox",
+                "name": "clasificacionCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "clasificacionSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "clasificacionSelect",
+                    "options": [
+                      {
+                        "value": "total",
+                        "text": "Total"
+                      },
+                      {
+                        "value": "parcial",
+                        "text": "Parcial"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ligamentoPeriodontalCheck",
+                "label": "Ligamento Periodontal",
+                "type": "checkbox",
+                "name": "ligamentoPeriodontalCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "ligamentoPeriodontalSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "ligamentoPeriodontalSelect",
+                    "options": [
+                      {
+                        "value": "normal",
+                        "text": "Normal"
+                      },
+                      {
+                        "value": "ensanchado",
+                        "text": "Ensanchado"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "reabsorcionCheck",
+                "label": "Reabsorción",
+                "type": "checkbox",
+                "name": "reabsorcionCheck",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "reabsorcionSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "reabsorcionSelect",
+                    "options": [
+                      {
+                        "value": "interna",
+                        "text": "Interna"
+                      },
+                      {
+                        "value": "externa",
+                        "text": "Externa"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoPulparPresuncion",
+                "label": "Diagnóstico Pulpar Presunción",
+                "type": "select",
+                "name": "diagnosticoPulparPresuncion",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "pulpitisReversible",
+                    "text": "Pulpits Reversible"
+                  },
+                  {
+                    "value": "pulpitisIrreversibleAsintomatica",
+                    "text": "Pulpitis Irreversible Asintomática"
+                  },
+                  {
+                    "value": "pulpitisIrreversibleSintomatica",
+                    "text": "Pulpitis Irreversible Sintomática"
+                  },
+                  {
+                    "value": "previamenteTratado",
+                    "text": "Previamente Tratado"
+                  },
+                  {
+                    "value": "polipoPulpar",
+                    "text": "Pólipo Pulpar"
+                  },
+                  {
+                    "value": "pulpaNecrotica",
+                    "text": "Pulpa Necrótica"
+                  }
+                ]
+              },
+              {
+                "id": "diagnosticoPeriapical",
+                "label": "Diagnóstico Periapical",
+                "type": "select",
+                "name": "diagnosticoPeriapical",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "sinDatosPatologicos",
+                    "text": "Sin datos patológicos"
+                  },
+                  {
+                    "value": "periodontitisAplicalAgudaSintomatica",
+                    "text": "Periodontitis Aplical Aguna (Sintomática)"
+                  },
+                  {
+                    "value": "periodontitisAplicalCronicaAsintomatica",
+                    "text": "Periodontitis Aplical Crónica (Asintomática)"
+                  },
+                  {
+                    "value": "abscesoAplicalAgudo",
+                    "text": "Absceso Aplical Agudo (Sin fistula)"
+                  },
+                  {
+                    "value": "abscesoAplicalCronico",
+                    "text": "Absceso Aplical Crónico (Con fistula)"
+                  },
+                  {
+                    "value": "abscesoFenix",
+                    "text": "Absceso Fénix"
+                  },
+                  {
+                    "value": "celulitisFacialOdontogena",
+                    "text": "Celulitis Facial Odontógena"
+                  },
+                  {
+                    "value": "quisteGranuloma",
+                    "text": "Quiste/Granuloma"
+                  },
+                  {
+                    "value": "osteitisCondensante",
+                    "text": "Osteítis Condensante"
+                  }
+                ]
+              },
+              {
+                "id": "otro",
+                "label": "Otro",
+                "type": "textarea",
+                "name": "otro",
+                "class": "col-12"
+              },
+              {
+                "id": "diagnosticoDefinitivo",
+                "label": "Diagnostico definitivo",
+                "type": "select",
+                "name": "diagnosticoDefinitivo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "pulpitisIreversible",
+                    "text": "Pulpitis Irreversible"
+                  },
+                  {
+                    "value": "pulpaNecrotico",
+                    "text": "Pulpa Necrótico"
+                  }
+                ]
+              },
+              {
+                "id": "tratamientoIndicado",
+                "label": "Tratamiento Indicado",
+                "type": "select",
+                "name": "tratamientoIndicado",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "biopulpectomia",
+                    "text": "Biopulpectomia"
+                  },
+                  {
+                    "value": "necropulpectomia",
+                    "text": "Necropulpectomia"
+                  },
+                  {
+                    "value": "retratamiento",
+                    "text": "Retratamiento"
+                  },
+                  {
+                    "value": "blanqueamiento",
+                    "text": "Blanqueamiento"
+                  },
+                  {
+                    "value": "apicectomia",
+                    "text": "Apicectomía"
+                  },
+                  {
+                    "value": "hemiseccion",
+                    "text": "Hemisección"
+                  },
+                  {
+                    "value": "radicectomia",
+                    "text": "Radicectomía"
+                  },
+                  {
+                    "value": "extraccion",
+                    "text": "Extracción"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Accidentes Operatorios",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "accidentesOperatoriosCheck",
+                "label": "¿Ha tenido accidentes operatorios?",
+                "type": "checkbox",
+                "name": "accidentesOperatoriosCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "accidentesOperatoriosSelect",
+                    "label": "",
+                    "type": "select",
+                    "name": "accidentesOperatoriosSelect",
+                    "options": [
+                      {
+                        "value": "accesoAdecuado",
+                        "text": "Acceso Inadecuado"
+                      },
+                      {
+                        "value": "perforacionCamara",
+                        "text": "Perforación en Cámara"
+                      },
+                      {
+                        "value": "sobreInstrumentacion",
+                        "text": "Sobre-Instrumentación"
+                      },
+                      {
+                        "value": "subObturacion",
+                        "text": "Sub-Obturación"
+                      },
+                      {
+                        "value": "fracturaVertical",
+                        "text": "Fractura Vertical"
+                      },
+                      {
+                        "value": "perforacionConducto",
+                        "text": "Perforación en Conducto"
+                      },
+                      {
+                        "value": "subInstrumentacion",
+                        "text": "Sub-Instrumentación"
+                      },
+                      {
+                        "value": "obsturacionInadecuada",
+                        "text": "Obturación Inadecuada"
+                      },
+                      {
+                        "value": "transportacion",
+                        "text": "Transportación"
+                      },
+                      {
+                        "value": "instrumentoFracturado",
+                        "text": "Instrumento Fracturado"
+                      },
+                      {
+                        "value": "sobreObsturacion",
+                        "text": "Sobre-Obturación"
+                      },
+                      {
+                        "value": "fracturaCoronaria",
+                        "text": "Fractura Coronaria"
+                      },
+                      {
+                        "value": "extraccionHipoclorito",
+                        "text": "Extracción de Hipoclorito"
+                      },
+                      {
+                        "value": "sinDominioTecnica",
+                        "text": "Sin Dominio de Técnica"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "otroAccidente",
+                    "label": "Otro",
+                    "type": "textarea",
+                    "name": "otroAccidente"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Restauración Post-Endodótica Indicada",
+            "fields": [
+              {
+                "id": "restauracionPostEndodoticaIndicada",
+                "label": "",
+                "type": "select",
+                "name": "restauracionPostEndodoticaIndicada",
+                "options": [
+                  {
+                    "value": "poste",
+                    "text": "Poste"
+                  },
+                  {
+                    "value": "amalgamaRecina",
+                    "text": "Amalgama/Recina"
+                  },
+                  {
+                    "value": "corona",
+                    "text": "Corona"
+                  }
+                ]
+              },
+              {
+                "id": "otraRestauracion",
+                "label": "Otra",
+                "type": "textarea",
+                "name": "otraRestauracion",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Pronóstico",
+            "fields": [
+              {
+                "id": "pronostico",
+                "label": "",
+                "type": "select",
+                "name": "pronostico",
+                "options": [
+                  {
+                    "value": "favorable",
+                    "text": "Favorable"
+                  },
+                  {
+                    "value": "desfavorable",
+                    "text": "Desfavorable"
+                  },
+                  {
+                    "value": "reservado",
+                    "text": "Reservado"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Imágenes",
+        "card": [
+          {
+            "title": "Cargar imágenes",
+            "fields": [
+              {
+                "id": "imagenes",
+                "label": "",
+                "type": "file",
+                "name": "imagenes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

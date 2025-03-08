@@ -1,0 +1,48 @@
+[
+  {
+    "section": "Depilación",
+    "fields": [
+      {
+        "id": "depilacion",
+        "label": "Depilación",
+        "options": [
+          { "value": "completa", "text": "Completa" },
+          { "value": "bikini", "text": "Bikini" },
+          { "value": "axilas", "text": "Axilas" },
+          { "value": "p/c", "text": "P/C" },
+          { "value": "m/p", "text": "M/P" }
+        ]
+      },
+      {
+        "id": "tipoVello",
+        "label": "Tipos de vello",
+        "options": [
+          { "value": "grueso", "text": "Grueso" },
+          { "value": "delgado", "text": "Delgado" },
+          { "value": "mediano", "text": "Mediano" }
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Información Personal",
+    "fields": [
+      {
+        "id": "antibioticos",
+        "label": "¿Está Tomando Antibióticos?",
+        "options": [
+          { "value": "0", "text": "No" },
+          { "value": "1", "text": "Sí" }
+        ]
+      },
+      {
+        "id": "fuma",
+        "label": "¿Fuma?",
+        "options": [
+          { "value": "0", "text": "No" },
+          { "value": "1", "text": "Sí" }
+        ]
+      }
+    ]
+  }
+]

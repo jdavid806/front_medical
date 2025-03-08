@@ -1,0 +1,343 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tratamiento",
+        "card": [
+          {
+            "title": "Procedimiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "procedimiento",
+                "label": "Selecciona el procedimiento",
+                "type": "select",
+                "name": "procedimiento",
+                "options": [
+                  {
+                    "value": "extensionPestanas",
+                    "text": "Extensión de pestañas"
+                  },
+                  {
+                    "value": "liftingPestanas",
+                    "text": "Lifting de pestañas"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Información Adicional",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "ladoDuerme",
+                "label": "¿De qué lado duerme?",
+                "type": "select",
+                "name": "ladoDuerme",
+                "options": [
+                  {
+                    "value": "izquierdo",
+                    "text": "Izquierdo"
+                  },
+                  {
+                    "value": "derecho",
+                    "text": "Derecho"
+                  }
+                ]
+              },
+              {
+                "id": "realizaDeportes",
+                "label": "¿Realiza deportes?",
+                "type": "checkbox",
+                "name": "realizaDeportes",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "frecuenciaDeportes",
+                    "label": "¿Con qué frecuencia?",
+                    "type": "textarea",
+                    "placeholder": "",
+                    "name": "frecuenciaDeportes"
+                  }
+                ]
+              },
+              {
+                "id": "embarazoLactancia",
+                "label": "¿Estás embarazada o dando de lactar?",
+                "type": "checkbox",
+                "name": "embarazoLactancia",
+                "class": "col-6"
+              },
+              {
+                "id": "trabajaEnCalor",
+                "label": "¿Trabaja en área de calor?",
+                "type": "checkbox",
+                "name": "trabajaEnCalor",
+                "class": "col-6"
+              },
+              {
+                "id": "intervencionOcular",
+                "label": "¿Te has sometido a una intervención médica en el ocular?",
+                "type": "checkbox",
+                "name": "intervencionOcular",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Pestañas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "curvaturaPestanas",
+                "label": "Curvatura de Pestañas/Goma",
+                "type": "textarea",
+                "name": "curvaturaPestanas",
+                "class": "col-6"
+              },
+              {
+                "id": "tamanoPestanas",
+                "label": "Tamaño",
+                "type": "textarea",
+                "name": "tamanoPestanas",
+                "class": "col-6"
+              },
+              {
+                "id": "grosorPestanas",
+                "label": "Grosor",
+                "type": "textarea",
+                "name": "grosorPestanas",
+                "class": "col-6"
+              },
+              {
+                "id": "disenoRealizado",
+                "label": "Diseño Realizado",
+                "type": "textarea",
+                "name": "disenoRealizado",
+                "class": "col-6"
+              },
+              {
+                "id": "notaPestanas",
+                "label": "Nota",
+                "type": "textarea",
+                "name": "notaPestanas",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fotos",
+        "card": [
+          {
+            "title": "Antes",
+            "fields": [
+              {
+                "id": "fotoAntes",
+                "label": "",
+                "type": "file",
+                "name": "fotoAntes"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Durante",
+            "fields": [
+              {
+                "id": "fotoDurante",
+                "label": "",
+                "type": "file",
+                "name": "fotoDurante"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Después",
+            "fields": [
+              {
+                "id": "fotoDespues",
+                "label": "",
+                "type": "file",
+                "name": "fotoDespues"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

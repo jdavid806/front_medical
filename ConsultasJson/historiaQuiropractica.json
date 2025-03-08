@@ -1,0 +1,569 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Entrevista inicial",
+        "card": [
+          {
+            "title": "Razones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "razonPrincipal",
+                "label": "Razón principal",
+                "type": "textarea",
+                "name": "razonPrincipal",
+                "class": "col-6"
+              },
+              {
+                "id": "razonSecundaria",
+                "label": "Razón secundaria",
+                "type": "textarea",
+                "name": "razonSecundaria",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Malestar principal",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "localizacionMalestar",
+                "label": "Localización del Malestar",
+                "type": "textarea",
+                "name": "localizacionMalestar",
+                "class": "col-6"
+              },
+              {
+                "id": "comoCuandoComienzaMalestar",
+                "label": "¿Cómo y Cuándo Comienza el Malestar?",
+                "type": "textarea",
+                "name": "comoCuandoComienzaMalestar",
+                "class": "col-6"
+              },
+              {
+                "id": "calidadDolorQueja",
+                "label": "Calidad del Dolor/Queja",
+                "type": "select",
+                "name": "calidadDolorQueja",
+                "class": "col-12",
+                "options": [
+                  { "value": "debil", "text": "Débil" },
+                  { "value": "doloroso", "text": "Doloroso" },
+                  { "value": "punsante", "text": "Pulsante" },
+                  { "value": "disparado", "text": "Disparado" },
+                  { "value": "quemante", "text": "Quemante" },
+                  { "value": "palpitante", "text": "Palpitante" },
+                  { "value": "profundo", "text": "Profundo" },
+                  { "value": "molesto", "text": "Molesto" }
+                ]
+              },
+              {
+                "id": "quejaIrradiada",
+                "label": "La Queja/Dolor se Irradia o Viaja a Otra Area de su Cuerpo?",
+                "type": "checkbox",
+                "name": "quejaIrradiada",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "areaIrradiada",
+                    "label": "¿Cuál área?",
+                    "type": "textarea",
+                    "name": "areaIrradiada"
+                  }
+                ]
+              },
+              {
+                "id": "entumecimiento",
+                "label": "Entumecimiento",
+                "type": "checkbox",
+                "name": "entumecimiento",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "dondeEntumecimiento",
+                    "label": "¿Dónde?",
+                    "type": "textarea",
+                    "name": "dondeEntumecimiento"
+                  }
+                ]
+              },
+              {
+                "id": "algoAgravaMalestar",
+                "label": "¿Algo Agrava el Malestar?",
+                "type": "checkbox",
+                "name": "algoAgravaMalestar",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "detallesAgravaMalestar",
+                    "label": "Detalles",
+                    "type": "textarea",
+                    "name": "detallesAgravaMalestar"
+                  }
+                ]
+              },
+              {
+                "id": "gradoIntensidadDolor",
+                "label": "Grado de Intensidad Dolor",
+                "type": "select",
+                "name": "gradoIntensidadDolor",
+                "class": "col-6",
+                "options": [
+                  { "value": "1", "text": "1" },
+                  { "value": "2", "text": "2" },
+                  { "value": "3", "text": "3" },
+                  { "value": "4", "text": "4" },
+                  { "value": "5", "text": "5" },
+                  { "value": "6", "text": "6" },
+                  { "value": "7", "text": "7" },
+                  { "value": "8", "text": "8" },
+                  { "value": "9", "text": "9" },
+                  { "value": "10", "text": "10" }
+                ]
+              },
+              {
+                "id": "inputhidden",
+                "label": "",
+                "type": "hidden",
+                "name": "inputhidden",
+                "class": "col-6"
+              },
+              {
+                "id": "frecuenciaYDuracionDolor",
+                "label": "¿Con qué Frecuencia Siente el Dolor? ¿Cuánto Duró la Última vez que Ocurrió?",
+                "type": "textarea",
+                "name": "frecuenciaYDuracionDolor",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Intervenciones previas",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intervencionesPrevias",
+                "label": "¿Ha tenido intervenciones previas?",
+                "type": "checkbox",
+                "name": "intervencionesPrevias",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "descripcionIntervencionesPrevias",
+                    "label": "Descripción",
+                    "type": "textarea",
+                    "name": "descripcionIntervencionesPrevias"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Evaluación funcional",
+        "card": [
+          {
+            "title": "Evaluación",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intensidadDolor",
+                "label": "Intensidad de Dolor",
+                "type": "select",
+                "name": "intensidadDolor",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Ningún dolor" },
+                  { "value": "1", "text": "1 - Dolor ligero" },
+                  { "value": "2", "text": "2 - Dolor moderado" },
+                  { "value": "3", "text": "3 - Dolor severo" },
+                  { "value": "4", "text": "4 - Peor dolor posible" }
+                ]
+              },
+              {
+                "id": "sueno",
+                "label": "Sueño",
+                "type": "select",
+                "name": "sueno",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Sueño perfecto" },
+                  { "value": "1", "text": "1 - Disturbios ligeros" },
+                  { "value": "2", "text": "2 - Disturbio moderado" },
+                  { "value": "3", "text": "3 - Gran disturbio" },
+                  { "value": "4", "text": "4 - Sueño totalmente disturbado" }
+                ]
+              },
+              {
+                "id": "cuidadosPersonales",
+                "label": "Cuidados personales",
+                "type": "select",
+                "name": "cuidadosPersonales",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "0",
+                    "text": "0 - Ningún dolor, ninguna restricción"
+                  },
+                  {
+                    "value": "1",
+                    "text": "1 - Dolor ligero ninguna restricción"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2 - Dolor moderado en grandes recorridos"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3 - Dolor moderado en recorridos cortos"
+                  },
+                  {
+                    "value": "4",
+                    "text": "4 - Dolor severo en recorridos cortos"
+                  }
+                ]
+              },
+              {
+                "id": "desplazamiento",
+                "label": "Desplazamiento",
+                "type": "select",
+                "name": "desplazamiento",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "0",
+                    "text": "0 - Ningún dolor en grandes recorridos"
+                  },
+                  {
+                    "value": "1",
+                    "text": "1 - Dolor ligero en grandes recorridos"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2 - Dolor moderado en grandes recorridos"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3 - Dolor moderado en recorridos cortos"
+                  },
+                  {
+                    "value": "4",
+                    "text": "4 - Dolor severo en recorridos cortos"
+                  }
+                ]
+              },
+              {
+                "id": "trabajo",
+                "label": "Trabajo",
+                "type": "select",
+                "name": "trabajo",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Usual + Extra" },
+                  { "value": "1", "text": "1 - Usual - Ningún Extra" },
+                  { "value": "2", "text": "2 - 50% del usual" },
+                  { "value": "3", "text": "3 - 25% del usual" },
+                  { "value": "4", "text": "4 - No puede trabajar" }
+                ]
+              },
+              {
+                "id": "recreacion",
+                "label": "Recreación",
+                "type": "select",
+                "name": "recreacion",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Todas las actividades" },
+                  { "value": "1", "text": "1 - Muchas actividades" },
+                  { "value": "2", "text": "2 - Algunas actividades" },
+                  { "value": "3", "text": "3 - Pocas actividades" },
+                  { "value": "4", "text": "4 - Ninguna actividad" }
+                ]
+              },
+              {
+                "id": "frecuenciaDolor",
+                "label": "Frecuencia del Dolor",
+                "type": "select",
+                "name": "frecuenciaDolor",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Ningún dolor" },
+                  { "value": "1", "text": "1 - Ocasional (25%)" },
+                  { "value": "2", "text": "2 - Intermitente (50%)" },
+                  { "value": "3", "text": "3 - Frecuente (75%)" },
+                  { "value": "4", "text": "4 - Constante (100%)" }
+                ]
+              },
+              {
+                "id": "levantamiento",
+                "label": "Levantamiento",
+                "type": "select",
+                "name": "levantamiento",
+                "class": "col-6",
+                "options": [
+                  { "value": "0", "text": "0 - Ningún dolor con gran peso" },
+                  {
+                    "value": "1",
+                    "text": "1 - Dolor incrementado con gran peso"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2 - Dolor incrementado con peso moderado"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3 - Dolor incrementado con peso ligero"
+                  },
+                  {
+                    "value": "4",
+                    "text": "4 - Dolor incrementado con cualquier peso"
+                  }
+                ]
+              },
+              {
+                "id": "caminata",
+                "label": "Caminata",
+                "type": "select",
+                "name": "caminata",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "0",
+                    "text": "0 - Ningún dolor con cualquier distancia"
+                  },
+                  {
+                    "value": "1",
+                    "text": "1 - Incrementa el dolor después de una milla"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2 - Incrementa el dolor después de media milla"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3 - Dolor incrementado después de 1/4 de milla"
+                  },
+                  {
+                    "value": "4",
+                    "text": "4 - Dolor incrementado en cualquier distancia"
+                  }
+                ]
+              },
+              {
+                "id": "actitudPie",
+                "label": "Actitud de Pie",
+                "type": "select",
+                "name": "actitudPie",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "0",
+                    "text": "0 - Ningún dolor en cualquier momento"
+                  },
+                  {
+                    "value": "1",
+                    "text": "1 - Dolor incrementado después de unas horas"
+                  },
+                  {
+                    "value": "2",
+                    "text": "2 - Dolor incrementado después de una hora"
+                  },
+                  {
+                    "value": "3",
+                    "text": "3 - Dolor incrementado después de 1/2 hora"
+                  },
+                  { "value": "4", "text": "4 - Inmediato incremento del dolor" }
+                ]
+              },
+              {
+                "id": "total",
+                "label": "Total",
+                "type": "textarea",
+                "name": "total",
+                "class": "col-6"
+              },
+              {
+                "id": "indiceEvaluacionFuncional",
+                "label": "Índice de evaluación funcional",
+                "type": "textarea",
+                "name": "indiceEvaluacionFuncional",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,785 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ecografía",
+        "card": [
+          {
+            "title": "Resultados",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resultadoSelect",
+                "label": "PVH",
+                "type": "select",
+                "name": "resultadoSelect",
+                "options": [
+                  {
+                    "value": "negativo",
+                    "text": "Negativo"
+                  },
+                  {
+                    "value": "positivo",
+                    "text": "Positivo"
+                  }
+                ]
+              },
+              {
+                "id": "citologiaLabel",
+                "label": "Citología",
+                "type": "label",
+                "name": "citologiaLabel",
+                "class": "col-12"
+              },
+              {
+                "id": "ascUsCheck",
+                "label": "ASC-US",
+                "type": "checkbox",
+                "name": "ascUsCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "lieBgCheck",
+                "label": "LIE BG",
+                "type": "checkbox",
+                "name": "lieBgCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "lieAgCheck",
+                "label": "LIE AG",
+                "type": "checkbox",
+                "name": "lieAgCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "carcinomaCheck",
+                "label": "Carcinoma",
+                "type": "checkbox",
+                "name": "carcinomaCheck",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Inspección Visual con Ácido Acético (IVAA)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resultadoIVAA",
+                "label": "Resultado",
+                "type": "select",
+                "name": "resultadoIVAA",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "negativo",
+                    "text": "Negativo"
+                  },
+                  {
+                    "value": "positivo",
+                    "text": "Positivo"
+                  }
+                ]
+              },
+              {
+                "id": "acetoTipo",
+                "label": "Tipo de Aceto",
+                "type": "select",
+                "name": "acetoTipo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "acetoBlancoRapido",
+                    "text": "Aceto Blanco Rápido (< 15 seg)"
+                  },
+                  {
+                    "value": "acetoBlandoDuradero",
+                    "text": "Aceto Blando Duradero (> 120 seg)"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Tipos de Zona de Transformación",
+            "fields": [
+              {
+                "id": "zonaTransformacion",
+                "label": "",
+                "type": "select",
+                "name": "zonaTransformacion",
+                "options": [
+                  {
+                    "value": "IUECCompletamenteVisible",
+                    "text": "I UEC Completamente Visible"
+                  },
+                  {
+                    "value": "IIUECParcialmenteVisible",
+                    "text": "II UEC Parcialmente Visible"
+                  },
+                  {
+                    "value": "IIIUECNoVisible",
+                    "text": "III UEC No Visible"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Test de SHILLER",
+            "fields": [
+              {
+                "id": "resultadoShiller",
+                "label": "",
+                "type": "select",
+                "name": "resultadoShiller",
+                "options": [
+                  {
+                    "value": "negativo",
+                    "text": "Negativo"
+                  },
+                  {
+                    "value": "positivo",
+                    "text": "Positivo"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Cérvix",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "biopsiaCheck",
+                "label": "Biopsia",
+                "type": "checkbox",
+                "name": "biopsiaCheck",
+                "class": "col-6"
+              },
+              {
+                "id": "curetajeCheck",
+                "label": "Curetaje",
+                "type": "checkbox",
+                "name": "curetajeCheck",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Tamaño de la Lesión",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "numeroCuadrantes",
+                "label": "Número de Cuadrantes",
+                "type": "textarea",
+                "name": "numeroCuadrantes",
+                "class": "col-6"
+              },
+              {
+                "id": "porcentajeCervix",
+                "label": "Porcentaje de Cérvix",
+                "type": "textarea",
+                "name": "porcentajeCervix",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Hallazgos",
+        "card": [
+          {
+            "title": "Normales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "epitelioEscamosoOriginal",
+                "label": "Epitelio Escamoso Original",
+                "type": "select",
+                "name": "epitelioEscamosoOriginal",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "maduro",
+                    "text": "Maduro"
+                  },
+                  {
+                    "value": "atrofico",
+                    "text": "Atrófico"
+                  }
+                ]
+              },
+              {
+                "id": "epitelioColumnar",
+                "label": "Epitelio Columnar",
+                "type": "select",
+                "name": "epitelioColumnar",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "ectopico",
+                    "text": "Ectópico"
+                  },
+                  {
+                    "value": "ectropion",
+                    "text": "Ectropión"
+                  }
+                ]
+              },
+              {
+                "id": "epitelioEscamosoMetaplasico",
+                "label": "Epitelio Escamoso Metaplásico",
+                "type": "checkbox",
+                "name": "epitelioEscamosoMetaplasico",
+                "class": "col-4"
+              },
+              {
+                "id": "criptasAbiertas",
+                "label": "Criptas Abiertas",
+                "type": "checkbox",
+                "name": "criptasAbiertas",
+                "class": "col-4"
+              },
+              {
+                "id": "deciduosisEmbarazo",
+                "label": "Deciduosis del Embarazo",
+                "type": "checkbox",
+                "name": "deciduosisEmbarazo",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Anormales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "epitelioAcetoBlancoDelgado",
+                "label": "Epitelio Aceto Blanco Delgado",
+                "type": "checkbox",
+                "name": "epitelioAcetoBlancoDelgado",
+                "class": "col-4"
+              },
+              {
+                "id": "bordeIrregular",
+                "label": "Borde Irregular",
+                "type": "checkbox",
+                "name": "bordeIrregular",
+                "class": "col-4"
+              },
+              {
+                "id": "mosaicoFino",
+                "label": "Mosaico Fino",
+                "type": "checkbox",
+                "name": "mosaicoFino",
+                "class": "col-4"
+              },
+              {
+                "id": "punteadoFino",
+                "label": "Punteado Fino",
+                "type": "checkbox",
+                "name": "punteadoFino",
+                "class": "col-4"
+              },
+              {
+                "id": "leucoplasia",
+                "label": "Leucoplasia",
+                "type": "checkbox",
+                "name": "leucoplasia",
+                "class": "col-4"
+              },
+              {
+                "id": "erosion",
+                "label": "Erosión",
+                "type": "checkbox",
+                "name": "erosion",
+                "class": "col-4"
+              },
+              {
+                "id": "shiller",
+                "label": "Shiller",
+                "type": "checkbox",
+                "name": "shiller",
+                "class": "col-4"
+              },
+              {
+                "id": "epitelioAcetoBlancoGrueso",
+                "label": "Epitelio Aceto Blanco Grueso",
+                "type": "checkbox",
+                "name": "epitelioAcetoBlancoGrueso",
+                "class": "col-4"
+              },
+              {
+                "id": "menor15Segundos",
+                "label": "Menor a 15 Segundos",
+                "type": "checkbox",
+                "name": "menor15Segundos",
+                "class": "col-4"
+              },
+              {
+                "id": "mas120Segundos",
+                "label": "Más de 120 Segundos",
+                "type": "checkbox",
+                "name": "mas120Segundos",
+                "class": "col-4"
+              },
+              {
+                "id": "mosaicoGrueso",
+                "label": "Mosaico Grueso",
+                "type": "checkbox",
+                "name": "mosaicoGrueso",
+                "class": "col-4"
+              },
+              {
+                "id": "punteadoGrueso",
+                "label": "Punteado Grueso",
+                "type": "checkbox",
+                "name": "punteadoGrueso",
+                "class": "col-4"
+              },
+              {
+                "id": "signoLimiteBordeInterno",
+                "label": "Signo del Limite del Borde Interno",
+                "type": "checkbox",
+                "name": "signoLimiteBordeInterno",
+                "class": "col-4"
+              },
+              {
+                "id": "signoCresta",
+                "label": "Signo de la Cresta",
+                "type": "checkbox",
+                "name": "signoCresta",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Signos de Invasión",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "vasosAtipicos",
+                "label": "Vasos Atípicos",
+                "type": "checkbox",
+                "name": "vasosAtipicos",
+                "class": "col-4"
+              },
+              {
+                "id": "superficieIrregular",
+                "label": "Superficie Irregular",
+                "type": "checkbox",
+                "name": "superficieIrregular",
+                "class": "col-4"
+              },
+              {
+                "id": "necrosis",
+                "label": "Necrosis",
+                "type": "checkbox",
+                "name": "necrosis",
+                "class": "col-4"
+              },
+              {
+                "id": "tumor",
+                "label": "Tumor",
+                "type": "checkbox",
+                "name": "tumor",
+                "class": "col-4"
+              },
+              {
+                "id": "vasosFragiles",
+                "label": "Vasos Frágiles",
+                "type": "checkbox",
+                "name": "vasosFragiles",
+                "class": "col-4"
+              },
+              {
+                "id": "lesionExofitica",
+                "label": "Lesión Exofítica",
+                "type": "checkbox",
+                "name": "lesionExofitica",
+                "class": "col-4"
+              },
+              {
+                "id": "ulceracion",
+                "label": "Ulceración",
+                "type": "checkbox",
+                "name": "ulceracion",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Resultados de Biopsia",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "negativo",
+                "label": "Negativo",
+                "type": "checkbox",
+                "name": "negativo",
+                "class": "col-6"
+              },
+              {
+                "id": "nicI",
+                "label": "NIC I",
+                "type": "checkbox",
+                "name": "nicI",
+                "class": "col-6"
+              },
+              {
+                "id": "nicII",
+                "label": "NIC II",
+                "type": "checkbox",
+                "name": "nicII",
+                "class": "col-6"
+              },
+              {
+                "id": "nicIII",
+                "label": "NIC III",
+                "type": "checkbox",
+                "name": "nicIII",
+                "class": "col-6"
+              },
+              {
+                "id": "cis",
+                "label": "CIS",
+                "type": "checkbox",
+                "name": "cis",
+                "class": "col-6"
+              },
+              {
+                "id": "caInvasor",
+                "label": "CA Invasor",
+                "type": "checkbox",
+                "name": "caInvasor",
+                "class": "col-6"
+              },
+              {
+                "id": "adenosis",
+                "label": "Adenosis",
+                "type": "checkbox",
+                "name": "adenosis",
+                "class": "col-6"
+              },
+              {
+                "id": "adenoCAInvasor",
+                "label": "Adeno CA Invasor",
+                "type": "checkbox",
+                "name": "adenoCAInvasor",
+                "class": "col-6"
+              },
+              {
+                "id": "otros",
+                "label": "Otros",
+                "type": "checkbox",
+                "name": "otros",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Tratamiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "crioterapia",
+                "label": "Crioterapia",
+                "type": "checkbox",
+                "name": "crioterapia",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "fechaCrioterapia",
+                    "label": "Fecha",
+                    "type": "date",
+                    "name": "fechaCrioterapia"
+                  }
+                ]
+              },
+              {
+                "id": "escision",
+                "label": "Escisión",
+                "type": "select",
+                "name": "escision",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "tipoI",
+                    "text": "Tipo I - Reseca completamente la ectocervix"
+                  },
+                  {
+                    "value": "tipoII",
+                    "text": "Tipo II - Reseca la zona de transformación y una pequeña cantidad de epitelio endocervical"
+                  },
+                  {
+                    "value": "tipoIII",
+                    "text": "Tipo III - Reseca endocervical"
+                  }
+                ]
+              },
+              {
+                "id": "fechaEscision",
+                "label": "Fecha",
+                "type": "date",
+                "name": "fechaEscision",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Ciclos de Embarazo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "utero",
+                "label": "Útero",
+                "type": "textarea",
+                "name": "utero",
+                "class": "col-6"
+              },
+              {
+                "id": "endometrio",
+                "label": "Endometrio",
+                "type": "textarea",
+                "name": "endometrio",
+                "class": "col-6"
+              },
+              {
+                "id": "sacoGestacional",
+                "label": "Saco Gestacional",
+                "type": "textarea",
+                "name": "sacoGestacional",
+                "class": "col-6"
+              },
+              {
+                "id": "embrión",
+                "label": "Embrión",
+                "type": "textarea",
+                "name": "embrión",
+                "class": "col-6"
+              },
+              {
+                "id": "hallazgos",
+                "label": "Hallazgos",
+                "type": "textarea",
+                "name": "hallazgos",
+                "class": "col-6"
+              },
+              {
+                "id": "diagnostico",
+                "label": "Diagnóstico",
+                "type": "textarea",
+                "name": "diagnostico",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Archivos",
+        "card": [
+          {
+            "title": "Cargar archivos",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

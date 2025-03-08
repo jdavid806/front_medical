@@ -1,0 +1,388 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resuemnIA",
+                "label": "",
+                "type": "textarea",
+                "name": "resuemnIA"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Procedimiento",
+        "card": [
+          {
+            "title": "Escala Hamilton-Norwood",
+            "fields": [
+              {
+                "id": "escalaHamiltonNorwood",
+                "label": "",
+                "type": "select",
+                "name": "escalaHamiltonNorwood",
+                "options": [
+                  {
+                    "value": "tipo1",
+                    "text": "Tipo I: Retroceso del pelo inapreciable o escaso por la parte frontal."
+                  },
+                  {
+                    "value": "tipo2",
+                    "text": "Tipo II: Caída del cabello por la zona temporal. Se dibujan las entradas."
+                  },
+                  {
+                    "value": "tipo3",
+                    "text": "Tipo III: Pérdida de cabello especialmente por la zona de la coronilla."
+                  },
+                  {
+                    "value": "tipo4",
+                    "text": "Tipo IV: Se amplía la zona sin pelo en la coronilla. Una banda de pelo separa nítidamente las dos zonas calvas."
+                  },
+                  {
+                    "value": "tipo5",
+                    "text": "Tipo V: Las zonas de la coronilla y de la frente están separadas solamente por una región estrecha. Vista desde arriba, la zona que aún conserva pelo dibuja la forma de una herradura."
+                  },
+                  {
+                    "value": "tipo6",
+                    "text": "Tipo VI: Las zonas sin pelo anterior y posterior se juntan, y se produce un ensanchamiento de la zona afectada."
+                  },
+                  {
+                    "value": "tipo7",
+                    "text": "Tipo VII: En este estado solamente queda una porción estrecha del pelo original, que se extiende sobre las orejas y se junta en la nuca."
+                  }
+                ]
+              },
+              {
+                "id": "escalaHamiltonNorwoodImg",
+                "name": "escalaHamiltonNorwoodImg",
+                "type": "image",
+                "src": "./images/escalaHamiltonNorwood.png",
+                "alt": "Imagen escala Hamilton Norwood",
+                "label": ""
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Escala Ludwig",
+            "fields": [
+              {
+                "id": "escalaLudwig",
+                "label": "",
+                "type": "select",
+                "name": "escalaLudwig",
+                "options": [
+                  {
+                    "value": "grado1",
+                    "text": "GRADO 1: Inicio de pérdida de densidad en la región central, asociada a cierta debilidad y fragilidad capilar."
+                  },
+                  {
+                    "value": "grado2",
+                    "text": "GRADO 2: La densidad ha ido disminuyendo por toda la parte superior, apreciándose cada vez más el cuero cabelludo en la línea del peinado. El pelo suele crecer menos y de menor calidad, cada vez más fino."
+                  },
+                  {
+                    "value": "grado3",
+                    "text": "GRADO 3: Ya se ha instaurado una pérdida importante de cabello, con muy poca densidad en la zona central de un modo extenso desde la línea anterior frontal hasta la coronilla inclusive. En esta fase el cabello es muy fino y escaso."
+                  }
+                ]
+              },
+              {
+                "id": "escalaLudwigImg",
+                "name": "escalaLudwigImg",
+                "type": "image",
+                "src": "./images/escalaLudwig.png",
+                "alt": "Imagen escala Hamilton Norwood",
+                "label": ""
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Otros hallazgos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "otrosHallazgos",
+                "label": "",
+                "type": "textarea",
+                "name": "otrosHallazgos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resumen IA",
+        "card": [
+          {
+            "title": "Recomendaciones",
+            "fields": [
+              {
+                "id": "recomendaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "recomendaciones"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Analisis medico",
+            "fields": [
+              {
+                "id": "analisisMedico",
+                "label": "",
+                "type": "textarea",
+                "name": "analisisMedico"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Incapacidad",
+            "fields": [
+              {
+                "id": "incapacidad",
+                "label": "",
+                "type": "textarea",
+                "name": "incapacidad"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Examenes",
+            "fields": [
+              {
+                "id": "examenes",
+                "label": "",
+                "type": "textarea",
+                "name": "examenes"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Justificación del diagnostico",
+            "fields": [
+              {
+                "id": "justificacionDiagnostico",
+                "label": "",
+                "type": "textarea",
+                "name": "justificacionDiagnostico"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Receta",
+            "fields": [
+              {
+                "id": "receta",
+                "label": "",
+                "type": "textarea",
+                "name": "receta"
+              }
+            ]
+          }
+        ],
+        "card7": [
+          {
+            "title": "Resumen IA",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoSugerido",
+                "label": "",
+                "type": "textarea",
+                "name": "diagnosticoSugerido"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
