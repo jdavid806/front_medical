@@ -3,7 +3,7 @@ services:
   php_apache:
     build: .
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - .:/var/www/html/ventasPet  # Mapea el directorio actual al directorio raíz de Apache
     restart: always
