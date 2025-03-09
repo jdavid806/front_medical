@@ -1,10 +1,9 @@
-version: '3.8'
+version: "3.8"
 services:
   php_apache:
     build: .
     ports:
       - "8080:80"
     volumes:
-      - ./ventaspet:/var/www/html/ventaspet
-
+      - .:/var/www/html/ventasPet  # Mapea el directorio actual al directorio raíz de Apache
     restart: always
