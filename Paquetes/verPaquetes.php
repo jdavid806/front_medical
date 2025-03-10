@@ -389,15 +389,7 @@ include "../header.php";
         if (paquete) {
             console.log("Editando paquete:", paquete);
 
-            // Asignar los datos del paquete a los campos del modal
-            // Esto dependerá de la estructura de tu modal, pero aquí hay un ejemplo
-            // document.getElementById('modalNombrePaquete').value = paquete.nombre;
-            // Asigna otros campos según sea necesario
-
-            // Mostrar el modal utilizando Bootstrap o la biblioteca que estés usando
             $('#modalEditarPaquete').modal('show');
-            // Si no estás usando Bootstrap, puedes usar algo como:
-            // document.getElementById('modalEditarPaquete').style.display = 'block';
         }
     }
 

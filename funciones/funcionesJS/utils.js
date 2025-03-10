@@ -30,6 +30,20 @@ async function obtenerDatosPorTabla(tabla) {
   }
 }
 
+async function obtenerDatos(apiUrl) {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error("Error en la solicitud");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Hubo un problema con la solicitud:", error);
+    return null;
+  }
+}
+
 async function guardarDatos(url, datos) {
   try {
     const respuesta = await fetch(url, {
@@ -40,9 +54,9 @@ async function guardarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
-    }
+    // if (!respuesta.ok) {
+    //   throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
+    // }
 
     const resultado = await respuesta.json();
 

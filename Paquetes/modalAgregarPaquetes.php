@@ -1205,6 +1205,7 @@
     document.getElementById('finishStep').addEventListener('click', function() {
         // Recuperar datosPaquete del sessionStorage
         const datosPaquete = JSON.parse(sessionStorage.getItem('datosPaquete')) || {};
+        event.preventDefault();
 
         // Obtener todos los inputs de cantidad de medicamentos
         const inputsCantidadMeds = document.querySelectorAll('.input-cantidad-medicamento');

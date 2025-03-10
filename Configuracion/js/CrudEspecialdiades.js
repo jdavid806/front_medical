@@ -13,7 +13,7 @@ async function cargarEspecilialidades() {
 
     tablaEntidades.innerHTML = "";
 
-    // console.log(result);
+    console.log(result);
     // Nota si no soy yo el que lo arregla
     // primero descomenta result para ver que trae ya que aveces varias
     // y toca colocarle el .data y aveces solo es result ┐(￣ヮ￣)┌ ᕕ( ᐛ )ᕗ

@@ -41,13 +41,13 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
             <h3 className="fw-bold mb-3"><i className="fa-solid fa-map-marker-alt fa-lg"></i> Información de residencia</h3>
             <div className="row">
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Pais:</span> {patient.country.name}</p>
+                    <p><span className="fw-bold">Pais:</span> {patient.country_id}</p>
                 </div>
                 <div className="col-md-6">
                     <p><span className="fw-bold">Departamento o provincia:</span> {patient.department_id}</p>
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Ciudad:</span> {patient.city.name}</p>
+                    <p><span className="fw-bold">Ciudad:</span> {patient.city_id}</p>
                 </div>
                 <div className="col-md-6">
                     <p><span className="fw-bold">Dirección:</span> {patient.address}</p>

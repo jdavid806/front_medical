@@ -1,6 +1,3 @@
-<?php
-include "../data/mocks.php";
-?>
 <div class="modal fade" id="modalCrearDocumento" tabindex="-1" aria-labelledby="modalCrearDocumentoLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -12,16 +9,14 @@ include "../data/mocks.php";
       <form id="formCrearIncapacidad">
         <div class="modal-body">
           <div class="mb-3">
-            <label for="template" class="form-label">Plantilla</label>
-            <select class="form-select" id="template">
-              <option value="">Seleccione un Nombre</option>
-              <option value="Consentimiento_Informado">Consentimiento Informado</option>
-              <option value="Acta_de_salida">Acta de salida</option>
+            <label for="template-plantilla" class="form-label">Plantilla</label>
+            <select class="form-select" onclick="" id="template-plantilla">
+              <option value="" onlyread>Seleccione una plantilla</option>
             </select>
           </div>
           <div class="mb-3">
             <label for="texto" class="form-label">Documento informado</label>
-            <textarea class="form-control" id="texto" name="texto" rows="8"></textarea>
+            <div class="rich-text-react" id="info-plantilla"></div>
           </div>
         </div>
         <div class="modal-footer">
@@ -34,26 +29,10 @@ include "../data/mocks.php";
 </div>
 
 <script>
-  const templates = <?php echo $jsonTemplates; ?>;
-  document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("template").addEventListener("change", function() {
-      let seleccion = this.value;
-      document.getElementById("texto").value = templates[seleccion] || "";
-    });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarPlantillas();
+    handleGenerarConsentimientosForm();
   });
 
-  function editarConsentimiento(id) {
-    $("#modalCrearDocumentoLabel").html(`Editar Consentimiento`);
-    console.log('Editar consentimiento con ID:', id, "data_consentimiento_" + id);
-
-    const data = JSON.parse(
-      document.getElementById("data_consentimiento_" + id).value
-    );
-
-    console.log(data);
-    $("#template").val(data.plantilla);
-    $("#texto").val(templates[data.plantilla]);
-
-    $("#modalCrearDocumento").modal('show');
-  }
 </script>

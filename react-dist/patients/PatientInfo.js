@@ -53,7 +53,7 @@ export const PatientInfo = ({
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Pais:"), " ", patient.country.name)), /*#__PURE__*/React.createElement("div", {
+  }, "Pais:"), " ", patient.country_id)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
@@ -61,7 +61,7 @@ export const PatientInfo = ({
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Ciudad:"), " ", patient.city.name)), /*#__PURE__*/React.createElement("div", {
+  }, "Ciudad:"), " ", patient.city_id)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"

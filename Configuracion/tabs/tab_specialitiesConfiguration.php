@@ -21,7 +21,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // cargarEspecilialidades();
+    cargarEspecilialidades();
   });
 
 </script>

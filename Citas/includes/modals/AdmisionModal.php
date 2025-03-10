@@ -1006,23 +1006,31 @@ include '../modals/NewCompanionModal.php';
     function syncPaymentTables() {
         const paymentsTableBody = document.getElementById('paymentsTableBody');
         const summaryPaymentsTableBody = document.getElementById('summaryPaymentsTableBody');
+        const rows = paymentsTableBody.getElementsByTagName('tr');
         summaryPaymentsTableBody.innerHTML = ''; // Limpiar tabla resumen
 
-        paymentsTableBody.querySelectorAll('tr').forEach((row, index) => {
+        console.log("rows:", rows);
+
+        Array.from(rows).forEach((row, index) => {
+            console.log(row);
             const cells = row.querySelectorAll('td');
+            console.log(cells);
 
-            // Verificar que los índices sean correctos:
-            const paymentMethod = cells[1].textContent; // Columna 2: Método
-            const paymentAmount = cells[2].textContent; // Columna 3: Monto
+            if (cells.length) {
+                // Verificar que los índices sean correctos:
+                const paymentMethod = cells[1].textContent; // Columna 2: Método
+                const paymentAmount = cells[2].textContent; // Columna 3: Monto
 
-            // Crear fila en la tabla de resumen
-            const summaryRow = document.createElement('tr');
-            summaryRow.innerHTML = `
-            <td class="small">${index + 1}</td>
-            <td class="small">${paymentMethod}</td>
-            <td class="text-end small">${paymentAmount}</td>
-        `;
-            summaryPaymentsTableBody.appendChild(summaryRow);
+                // Crear fila en la tabla de resumen
+                const summaryRow = document.createElement('tr');
+                summaryRow.innerHTML = `
+                <td class="small">${index + 1}</td>
+                <td class="small">${paymentMethod}</td>
+                <td class="text-end small">${paymentAmount}</td>
+            `;
+                summaryPaymentsTableBody.appendChild(summaryRow);
+            }
+
         });
     }
 
@@ -1200,21 +1208,29 @@ include '../modals/NewCompanionModal.php';
             const amount = parseFloat(amountInput);
             const entitySwitch = document.getElementById('entitySwitch');
             const pending = document.getElementById('pending');
-            const buttonStep = document.getElementById('buttonStep');
+            const buttonStep = document.getElementById('next_step');
             const sumAmount = document.getElementById('totalSum');
+            const sumAmountPayment = document.getElementById('totalSumAmount');
 
-            console.log(sumAmount.textContent);
+            setTimeout(() => {
+                let sumAmountValue = parseFloat(sumAmount.textContent).toFixed(0);
+                let sumAmountPaymentValue = parseFloat(sumAmountPayment.textContent).toFixed(0);
+                pending.value = Math.abs(sumAmountValue - sumAmountPaymentValue);
 
-            const sumAmountValue = parseFloat(sumAmount.textContent.replace(/[^\d.-]/g, '').slice(0, -2));
+                if (pending.value == 0) {
+                    buttonStep.disabled = false;
+                }
 
-            console.log("Suma de monto", sumAmountValue, amount);
+            }, 1000);
 
-            if (entitySwitch.checked) {
-                pending.value = Math.abs(amount - 100);
+            // pending.value = Math.abs(sumAmountValue - amount);
 
-            } else {
-                pending.value = Math.abs(amount - 500);
-            }
+            // if (entitySwitch.checked) {
+            //     pending.value = Math.abs(amount - 100);
+
+            // } else {
+            //     pending.value = Math.abs(amount - 500);
+            // }
 
 
 
@@ -1266,7 +1282,6 @@ include '../modals/NewCompanionModal.php';
     function addRowToPaymentTable(values, tableBodyId) {
         const tableBody = document.getElementById(tableBodyId);
         const rowCount = tableBody.rows.length + 1;
-        console.log(values);
 
         // Convertir valores
         switch (values[0]) {
@@ -1302,6 +1317,7 @@ include '../modals/NewCompanionModal.php';
         // Agregar solo a la tabla principal
         tableBody.appendChild(row);
         updateTotalAmount();
+        syncPaymentTables();
     }
 
 
@@ -1446,7 +1462,6 @@ include '../modals/NewCompanionModal.php';
     async function getPaymentMethods() {
         try {
             const response = await paymentMethodService.getPaymentMethods(); // ya retorna JSON
-            console.log("Metodos de pago", response);
 
             if (response) {
                 populatePaymentMethods(response);
@@ -1569,7 +1584,6 @@ include '../modals/NewCompanionModal.php';
             // Llamar al servicio para obtener los datos de la admisión
             const admission = await admissionService.getAdmissionById(citaId);
             globalAdmission = admission;
-            console.log(admission);
 
             const subsidiary = document.getElementById('subsidiary');
             subsidiary.value = admission.patient.social_security.eps;
@@ -1777,19 +1791,14 @@ include '../modals/NewCompanionModal.php';
         const rows = tableBody.getElementsByTagName('tr');
         let sum = 0;
 
-        console.log(tableBody);
-        console.log(rows);
-
         for (let row of rows) {
             if (row.cells.length) {
                 const totalCell = row.cells[4]; // Columna "Total" (índice 4)
                 const totalText = totalCell.textContent.replace(' COP', '').trim();
-                const totalValue = totalText || 0;
-                console.log(totalValue);
+                const totalValue = parseFloat(totalText.split(".").join("")) || 0;
                 sum += totalValue;
             }
         }
-
         document.getElementById('totalSum').textContent = sum.toFixed(2)
     }
 
@@ -1798,15 +1807,11 @@ include '../modals/NewCompanionModal.php';
         const rows = tableBody.getElementsByTagName('tr');
         let sum = 0;
 
-        console.log(tableBody);
-        console.log(rows);
-
         for (let row of rows) {
             if (row.cells.length) {
                 const totalCell = row.cells[2];
                 const totalText = totalCell.textContent.replace(' COP', '').trim();
                 const totalValue = parseFloat(totalText.split(".").join("")) || 0;
-                console.log(totalValue);
                 sum += totalValue;
             }
         }

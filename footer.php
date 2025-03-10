@@ -1035,6 +1035,10 @@ M. Castro c:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+<!-- Crud Consetimintos -->
+<script src="Documentos/js/CrudConsentimientos.js"></script>
+<script src="Documentos/js/UtilsConsentimientos.js"></script>
+
 <!--
 hasta aca construyo
 M. Castro c:

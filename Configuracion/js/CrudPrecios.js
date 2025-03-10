@@ -68,7 +68,14 @@ async function updateProduct(id, productData) {
   cargarContenido();
 }
 
-function editarProducto(id, name, barcode, attentionType, salePrice, copago) {
+function editarProducto(
+  id,
+  name,
+  barcode,
+  attentionType,
+  salePrice,
+  copago
+) {
   document.getElementById("name").value = name;
   document.getElementById("curp").value = barcode;
   document.getElementById("attention_type").value = attentionType;
@@ -88,48 +95,10 @@ function editarProducto(id, name, barcode, attentionType, salePrice, copago) {
 }
 
 async function createProduct(product) {
-  try {
-    const respuesta = await fetch(
-      "http://dev.medicalsoft.ai/api/v1/admin/products",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(product),
-      }
-    );
-
-    // if (!respuesta.ok) {
-    //   throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
-    // }
-
-    console.log(respuesta);
-    
-
-    const resultado = await respuesta.json();
-
-    Swal.fire({
-      icon: "success",
-      title: "¡Guardado exitosamente!",
-      text: "Los datos se han guardado correctamente.",
-      timer: 2000,
-      showConfirmButton: false,
-    }).then(() => {
-      location.reload();
-    });
-    return resultado;
-  } catch (error) {
-    console.error("Error al guardar los datos:", error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Error al guardar",
-      text: "Hubo un problema al guardar los datos.",
-      confirmButtonText: "Aceptar",
-    });
-
-    return null;
-  }
-  cargarContenido();
+  guardarDatos(
+    "http://dev.medicalsoft.ai/api/v1/admin/products",
+    product
+  );
+  cargarContenido()
 }
+

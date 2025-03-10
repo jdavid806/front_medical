@@ -163,7 +163,7 @@ include '../data/consts.php';
             barcode: document.getElementById("curp").value,
             attention_type: document.getElementById("attention_type").value,
             sale_price: document.getElementById("sale_price").value,
-            copaiment: document.getElementById("copago").value,
+            copayment: document.getElementById("copago").value,
         };
         
         // impuesto: document.getElementById("taxProduct_type").value,

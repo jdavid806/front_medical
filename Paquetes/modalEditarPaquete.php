@@ -22,7 +22,7 @@
                 </div>
 
                 <!-- Contenido de los pasos -->
-                <form id="formNuevoPaquete" class="needs-validation" novalidate>
+                <form id="formEditarPaquete" class="needs-validation" novalidate>
                     <div class="wizard-content">
 
                         <div class="wizard-step active" data-step="1">
@@ -41,21 +41,21 @@
                                 <div class="col-6">
                                     <div class="input-group">
                                         <div class="form-floating">
-                                            <select class="form-select" name="CupsCie" id="CupsCie" required>
+                                            <select class="form-select" name="CupsCieEditar" id="CupsCieEditar" required>
                                                 <option value="" disabled selected>Seleccione</option>
-                                                <option value="cie11">CIE-11</option>
-                                                <option value="cups">CUPS</option>
+                                                <option value="cie11Editar">CIE-11</option>
+                                                <option value="cupsEditar">CUPS</option>
                                             </select>
-                                            <label for="seleccionarIncluidos" class="form-label">Relacionar a</label>
+                                            <label for="CupsCieEditar" class="form-label">Relacionar a</label>
                                             <div class="invalid-feedback">Por favor seleccione lo que desea incluir al paquete.</div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-6 mt-3" id="divCie" style="display: none;">
+                                <div class="col-6 mt-3" id="divCieEditar" style="display: none;">
                                     <div class="input-group">
                                         <div class="form-floating">
-                                            <select class="form-select" name="selectCie" id="selectCie">
+                                            <select class="form-select" name="selectCieEditar" id="selectCieEditar">
                                                 <option value="" disabled selected>Seleccione</option>
                                                 <!-- Los options se generan desde el script -->
                                             </select>
@@ -65,10 +65,10 @@
                                     </div>
                                 </div>
 
-                                <div class="col-6 mt-3" id="divCups" style="display: none;">
+                                <div class="col-6 mt-3" id="divCupsEditar" style="display: none;">
                                     <div class="input-group">
                                         <div class="form-floating">
-                                            <select class="form-select" name="selectCups" id="selectCups">
+                                            <select class="form-select" name="selectCupsEditar" id="selectCupsEditar">
                                                 <option value="" disabled selected>Seleccione</option>
                                                 <!-- Los options se generan desde el script -->
                                             </select>
@@ -83,52 +83,52 @@
                                         <div class="row">
                                             <div class="col-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkMedicamentos" type="checkbox" />
-                                                    <label class="form-check-label" for="checkMedicamentos">Medicamentos</label>
+                                                    <input class="form-check-input" id="checkMedicamentosEditar" type="checkbox" />
+                                                    <label class="form-check-label" for="checkMedicamentosEditar">Medicamentos</label>
                                                 </div>
                                             </div>
                                             <div class="col-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkExamenes" type="checkbox" />
-                                                    <label class="form-check-label" for="checkExamenes">Exámenes</label>
+                                                    <input class="form-check-input" id="checkExamenesEditar" type="checkbox" />
+                                                    <label class="form-check-label" for="checkExamenesEditar">Exámenes</label>
                                                 </div>
                                             </div>
                                             <div class="col-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkVacunas" type="checkbox" />
-                                                    <label class="form-check-label" for="checkVacunas">Vacunas</label>
+                                                    <input class="form-check-input" id="checkVacunasEditar" type="checkbox" />
+                                                    <label class="form-check-label" for="checkVacunasEditar">Vacunas</label>
                                                 </div>
                                             </div>
                                             <div class="col-3">
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkInsumos" type="checkbox" />
-                                                    <label class="form-check-label" for="checkInsumos">Insumos</label>
+                                                    <input class="form-check-input" id="checkInsumosEditar" type="checkbox" />
+                                                    <label class="form-check-label" for="checkInsumosEditar">Insumos</label>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div id="divSelects" style="display: none;">
+                                <div id="divSelectsEditar" style="display: none;">
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <div class="" id="divSelectMedicamentos" style="display: none;">
-                                                <select class="form-select" id="selectMedicamentos">
+                                            <div class="" id="divSelectMedicamentosEditar" style="display: none;">
+                                                <select class="form-select" id="selectMedicamentosEditar">
                                                     <!-- <option value="" disabled>Seleccione los medicamentos</option> -->
                                                 </select>
                                             </div>
-                                            <div class="mt-3" id="divSelectExamenes" style="display: none;">
-                                                <select class="form-select" id="selectExamenes">
+                                            <div class="mt-3" id="divSelectExamenesEditar" style="display: none;">
+                                                <select class="form-select" id="selectExamenesEditar">
                                                     <!-- <option value="" selected disabled>Seleccione los exámenes</option> -->
                                                 </select>
                                             </div>
-                                            <div class="mt-3" id="divSelectVacunas" style="display: none;">
-                                                <select class="form-select" id="selectVacunas">
+                                            <div class="mt-3" id="divSelectVacunasEditar" style="display: none;">
+                                                <select class="form-select" id="selectVacunasEditar">
                                                     <!-- <option value="" selected disabled>Seleccione las vacunas</option> -->
                                                 </select>
                                             </div>
-                                            <div class="mt-3" id="divSelecInsumos" style="display: none;">
-                                                <select class="form-select" id="selectInsumos">
+                                            <div class="mt-3" id="divSelecInsumosEditar" style="display: none;">
+                                                <select class="form-select" id="selectInsumosEditar">
                                                     <!-- <option value="" selected disabled>Seleccione los insumos</option> -->
                                                 </select>
                                             </div>
@@ -158,7 +158,7 @@
                 <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
                 <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
                 <button class="btn btn-secondary d-none" id="finishStep" type="submit"
-                    form="formNuevoPaquete">Finalizar</button>
+                    form="formEditarPaquete">Finalizar</button>
             </div>
         </div>
     </div>
@@ -545,27 +545,27 @@
     ];
 
     document.addEventListener('DOMContentLoaded', function() {
-        const selectCupsCie = document.getElementById('CupsCie');
-        const divCie = document.getElementById('divCie');
-        const divCups = document.getElementById('divCups');
-        const selectCie = document.getElementById('selectCie');
-        const selectCups = document.getElementById('selectCups');
+        const selectCupsCieEditar = document.getElementById('CupsCieEditar');
+        const divCieEditar = document.getElementById('divCieEditar');
+        const divCupsEditar = document.getElementById('divCupsEditar');
+        const selectCieEditar = document.getElementById('selectCieEditar');
+        const selectCupsEditar = document.getElementById('selectCupsEditar');
         const nextStep = document.getElementById('nextStep');
 
-        selectCupsCie.addEventListener('change', function() {
-            divCie.style.display = 'none';
-            divCups.style.display = 'none';
+        selectCupsCieEditar.addEventListener('change', function() {
+            divCieEditar.style.display = 'none';
+            divCupsEditar.style.display = 'none';
 
-            if (this.value === 'cie11') {
-                divCie.style.display = 'block';
-                selectCie.required = true;
-                selectCups.required = false;
-                selectCups.value = "";
-            } else if (this.value === 'cups') {
-                divCups.style.display = 'block';
-                selectCups.required = true;
-                selectCie.required = false;
-                selectCie.value = "";
+            if (this.value === 'cie11Editar') {
+                divCieEditar.style.display = 'block';
+                selectCieEditar.required = true;
+                selectCupsEditar.required = false;
+                selectCupsEditar.value = "";
+            } else if (this.value === 'cupsEditar') {
+                divCupsEditar.style.display = 'block';
+                selectCupsEditar.required = true;
+                selectCieEditar.required = false;
+                selectCieEditar.value = "";
             }
         });
 
@@ -574,21 +574,21 @@
         document.getElementById('nextStep').addEventListener('click', function() {
             // Capturo los valores de los campos individuales
             const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
-            const cupsCie = document.getElementById('CupsCie').value;
-            const selectCie = document.getElementById('selectCie').value;
-            const selectCups = document.getElementById('selectCups').value;
+            const cupsCie = document.getElementById('CupsCieEditar').value;
+            const selectCieEditar = document.getElementById('selectCieEditar').value;
+            const selectCupsEditar = document.getElementById('selectCupsEditar').value;
 
             // Capturo los valores de los selects múltiples
-            const medicamentosSeleccionados = obtenerSeleccionados('selectMedicamentos');
-            const examenesSeleccionados = obtenerSeleccionados('selectExamenes');
-            const vacunasSeleccionadas = obtenerSeleccionados('selectVacunas');
-            const insumosSeleccionados = obtenerSeleccionados('selectInsumos');
+            const medicamentosSeleccionados = obtenerSeleccionados('selectMedicamentosEditar');
+            const examenesSeleccionados = obtenerSeleccionados('selectExamenesEditar');
+            const vacunasSeleccionadas = obtenerSeleccionados('selectVacunasEditar');
+            const insumosSeleccionados = obtenerSeleccionados('selectInsumosEditar');
 
             const datosPaquete = {
                 nombrePaquete,
                 cupsCie,
-                selectCie,
-                selectCups,
+                selectCieEditar,
+                selectCupsEditar,
                 medicamentos: medicamentosSeleccionados,
                 examenes: examenesSeleccionados,
                 vacunas: vacunasSeleccionadas,
@@ -599,8 +599,8 @@
             mostrarElementosSeleccionados(
                 nombrePaquete,
                 cupsCie,
-                selectCie,
-                selectCups,
+                selectCieEditar,
+                selectCupsEditar,
                 medicamentosSeleccionados,
                 examenesSeleccionados,
                 vacunasSeleccionadas,
@@ -641,8 +641,8 @@
         function mostrarElementosSeleccionados(
             nombrePaquete,
             cupsCie,
-            selectCie,
-            selectCups,
+            selectCieEditar,
+            selectCupsEditar,
             medicamentos,
             examenes,
             vacunas,
@@ -656,68 +656,70 @@
         }
 
 
-        cargarCups();
-        cargarCie();
-        cargarMedicamentos(medicamentos);
-        cargarExamenes(examenes);
-        cargarVacunas(vacunas);
-        cargarInsumos(insumos);
-        controlarVisibilidadSelectores();
-        configurarSelectMedicamentosMultiple();
-        configurarSelectExamenesMultiple();
-        configurarSelectVacunasMultiple();
-        configurarSelectInsumosMultiple();
+        cargarCupsEditar();
+        cargarCieEditar();
+        cargarMedicamentosEditar(medicamentos);
+        cargarExamenesEditar(examenes);
+        cargarVacunasEditar(vacunas);
+        cargarInsumosEditar(insumos);
+        controlarVisibilidadSelectoresEditar();
+        configurarSelectMedicamentosMultipleEditar();
+        configurarSelectExamenesMultipleEditar();
+        configurarSelectVacunasMultipleEditar();
+        configurarSelectInsumosMultipleEditar();
 
 
-        document.getElementById('checkMedicamentos').addEventListener('change', controlarVisibilidadSelectores);
-        document.getElementById('checkExamenes').addEventListener('change', controlarVisibilidadSelectores);
-        document.getElementById('checkVacunas').addEventListener('change', controlarVisibilidadSelectores);
-        document.getElementById('checkInsumos').addEventListener('change', controlarVisibilidadSelectores);
+        document.getElementById('checkMedicamentosEditar').addEventListener('change', controlarVisibilidadSelectoresEditar);
+        document.getElementById('checkExamenesEditar').addEventListener('change', controlarVisibilidadSelectoresEditar);
+        document.getElementById('checkVacunasEditar').addEventListener('change', controlarVisibilidadSelectoresEditar);
+        document.getElementById('checkInsumosEditar').addEventListener('change', controlarVisibilidadSelectoresEditar);
     });
 
 
-    function cargarCups() {
+    function cargarCupsEditar() {
         procedimientos.forEach(procedimiento => {
             const optionCups = document.createElement('option');
+            const selectCupsEditar = document.getElementById('selectCupsEditar');
             optionCups.value = procedimiento.codigo;
             optionCups.textContent = procedimiento.codigo + " - " + procedimiento.nombre;
-            selectCups.appendChild(optionCups);
+            selectCupsEditar.appendChild(optionCups);
         })
     }
 
-    function cargarCie() {
+    function cargarCieEditar() {
         diagnosticos.forEach(diagnostico => {
             const optionCie = document.createElement('option');
+            const selectCieEditar = document.getElementById('selectCieEditar');
             optionCie.value = diagnostico.codigo;
             optionCie.textContent = diagnostico.codigo + " - " + diagnostico.nombre;
-            selectCie.appendChild(optionCie);
+            selectCieEditar.appendChild(optionCie);
         })
     }
 
-    const checkMedicamentos = document.getElementById('checkMedicamentos');
-    const checkExamenes = document.getElementById('checkExamenes');
-    const checkVacunas = document.getElementById('checkVacunas');
-    const checkInsumos = document.getElementById('checkInsumos');
+    const checkMedicamentosEditar = document.getElementById('checkMedicamentosEditar');
+    const checkExamenesEditar = document.getElementById('checkExamenesEditar');
+    const checkVacunasEditar = document.getElementById('checkVacunasEditar');
+    const checkInsumosEditar = document.getElementById('checkInsumosEditar');
 
-    function controlarVisibilidadSelectores() {
+    function controlarVisibilidadSelectoresEditar() {
         // Obtenemos el elemento contenedor principal
-        const divSelects = document.getElementById('divSelects');
+        const divSelectsEditar = document.getElementById('divSelectsEditar');
 
         // Obtenemos los estados de los switches
-        const estadoMedicamentos = document.getElementById('checkMedicamentos').checked;
-        const estadoExamenes = document.getElementById('checkExamenes').checked;
-        const estadoVacunas = document.getElementById('checkVacunas').checked;
-        const estadoInsumos = document.getElementById('checkInsumos').checked;
+        const estadoMedicamentos = document.getElementById('checkMedicamentosEditar').checked;
+        const estadoExamenes = document.getElementById('checkExamenesEditar').checked;
+        const estadoVacunas = document.getElementById('checkVacunasEditar').checked;
+        const estadoInsumos = document.getElementById('checkInsumosEditar').checked;
 
         // Obtenemos los divs que contienen los selectores
-        const divMedicamentos = document.getElementById('divSelectMedicamentos');
-        const divExamenes = document.getElementById('divSelectExamenes');
-        const divVacunas = document.getElementById('divSelectVacunas');
-        const divInsumos = document.getElementById('divSelecInsumos');
+        const divMedicamentos = document.getElementById('divSelectMedicamentosEditar');
+        const divExamenes = document.getElementById('divSelectExamenesEditar');
+        const divVacunas = document.getElementById('divSelectVacunasEditar');
+        const divInsumos = document.getElementById('divSelecInsumosEditar');
 
         // Verificamos si al menos un switch está activado para mostrar u ocultar el card principal
         const alMenosUnoActivado = estadoMedicamentos || estadoExamenes || estadoVacunas || estadoInsumos;
-        divSelects.style.display = alMenosUnoActivado ? 'block' : 'none';
+        divSelectsEditar.style.display = alMenosUnoActivado ? 'block' : 'none';
 
         // Controlamos la visibilidad de cada div según el estado de su switch correspondiente
         divMedicamentos.style.display = estadoMedicamentos ? 'block' : 'none';
@@ -730,12 +732,12 @@
     /**
      * Función para cargar los medicamentos en el select
      */
-    function cargarMedicamentos() {
+    function cargarMedicamentosEditar() {
         // Obtenemos la referencia al select
-        const selectMedicamentos = document.getElementById('selectMedicamentos');
+        const selectMedicamentosEditar = document.getElementById('selectMedicamentosEditar');
 
         // Limpiamos todas las opciones existentes
-        selectMedicamentos.innerHTML = '';
+        selectMedicamentosEditar.innerHTML = '';
 
         // Creamos la opción placeholder
         const placeholderOption = document.createElement('option');
@@ -745,7 +747,7 @@
         placeholderOption.selected = true;
 
         // Añadimos el placeholder como primera opción
-        selectMedicamentos.appendChild(placeholderOption);
+        selectMedicamentosEditar.appendChild(placeholderOption);
 
         // Recorremos el array de medicamentos y creamos las opciones
         medicamentos.forEach(medicamento => {
@@ -758,17 +760,17 @@
             optionMeds.textContent = `${medicamento.nombre} - ${medicamento.concentracion} (${medicamento.presentacion})`;
 
             // Añadimos la opción al select
-            selectMedicamentos.appendChild(optionMeds);
+            selectMedicamentosEditar.appendChild(optionMeds);
         });
     }
 
     /**
      * Función para cargar los examenes en el select
      */
-    function cargarExamenes() {
-        const selectExamenes = document.getElementById('selectExamenes');
+    function cargarExamenesEditar() {
+        const selectExamenesEditar = document.getElementById('selectExamenesEditar');
 
-        selectExamenes.innerHTML = '';
+        selectExamenesEditar.innerHTML = '';
 
         const placeholderOptionExs = document.createElement('option');
         placeholderOptionExs.value = "";
@@ -776,7 +778,7 @@
         placeholderOptionExs.disabled = true;
         placeholderOptionExs.selected = true;
 
-        selectExamenes.appendChild(placeholderOptionExs);
+        selectExamenesEditar.appendChild(placeholderOptionExs);
 
         examenes.forEach(examen => {
             const optionExs = document.createElement('option');
@@ -785,17 +787,17 @@
 
             optionExs.textContent = examen;
 
-            selectExamenes.appendChild(optionExs);
+            selectExamenesEditar.appendChild(optionExs);
         });
     }
 
     /**
      * Función para cargar las vacunas en el select
      */
-    function cargarVacunas() {
-        const selectVacunas = document.getElementById('selectVacunas');
+    function cargarVacunasEditar() {
+        const selectVacunasEditar = document.getElementById('selectVacunasEditar');
 
-        selectVacunas.innerHTML = '';
+        selectVacunasEditar.innerHTML = '';
 
         const placeholderOptionVac = document.createElement('option');
         placeholderOptionVac.value = "";
@@ -803,7 +805,7 @@
         placeholderOptionVac.disabled = true;
         placeholderOptionVac.selected = true;
 
-        selectVacunas.appendChild(placeholderOptionVac);
+        selectVacunasEditar.appendChild(placeholderOptionVac);
 
         vacunas.forEach(vacuna => {
             const optionVac = document.createElement('option');
@@ -812,17 +814,17 @@
 
             optionVac.textContent = vacuna;
 
-            selectVacunas.appendChild(optionVac);
+            selectVacunasEditar.appendChild(optionVac);
         });
     }
 
     /**
      * Función para cargar los insumos en el select
      */
-    function cargarInsumos() {
-        const selectInsumos = document.getElementById('selectInsumos');
+    function cargarInsumosEditar() {
+        const selectInsumosEditar = document.getElementById('selectInsumosEditar');
 
-        selectInsumos.innerHTML = '';
+        selectInsumosEditar.innerHTML = '';
 
         const placeholderOptionIns = document.createElement('option');
         placeholderOptionIns.value = "";
@@ -830,7 +832,7 @@
         placeholderOptionIns.disabled = true;
         placeholderOptionIns.selected = true;
 
-        selectInsumos.appendChild(placeholderOptionIns);
+        selectInsumosEditar.appendChild(placeholderOptionIns);
 
         insumos.forEach(insumo => {
             const optionIns = document.createElement('option');
@@ -839,59 +841,59 @@
 
             optionIns.textContent = insumo.insumo;
 
-            selectInsumos.appendChild(optionIns);
+            selectInsumosEditar.appendChild(optionIns);
         });
     }
 
-    function configurarSelectMedicamentosMultiple() {
+    function configurarSelectMedicamentosMultipleEditar() {
         // Obtenemos la referencia al select
-        const selectMedicamentos = document.getElementById('selectMedicamentos');
+        const selectMedicamentosEditar = document.getElementById('selectMedicamentosEditar');
 
         // Añadimos el atributo multiple
-        selectMedicamentos.setAttribute('multiple', 'multiple');
+        selectMedicamentosEditar.setAttribute('multiple', 'multiple');
 
         // Si estás usando alguna biblioteca como Choices.js
         if (typeof Choices !== 'undefined') {
-            const choices = new Choices(selectMedicamentos, {
+            const choices = new Choices(selectMedicamentosEditar, {
                 removeItemButton: true,
                 placeholder: true
             });
         }
     }
 
-    function configurarSelectExamenesMultiple() {
-        const selectExamenes = document.getElementById('selectExamenes');
+    function configurarSelectExamenesMultipleEditar() {
+        const selectExamenesEditar = document.getElementById('selectExamenesEditar');
 
-        selectExamenes.setAttribute('multiple', 'multiple');
+        selectExamenesEditar.setAttribute('multiple', 'multiple');
 
         if (typeof Choices !== 'undefined') {
-            const choices = new Choices(selectExamenes, {
+            const choices = new Choices(selectExamenesEditar, {
                 removeItemButton: true,
                 placeholder: true
             });
         }
     }
 
-    function configurarSelectVacunasMultiple() {
-        const selectVacunas = document.getElementById('selectVacunas');
+    function configurarSelectVacunasMultipleEditar() {
+        const selectVacunasEditar = document.getElementById('selectVacunasEditar');
 
-        selectVacunas.setAttribute('multiple', 'multiple');
+        selectVacunasEditar.setAttribute('multiple', 'multiple');
 
         if (typeof Choices !== 'undefined') {
-            const choices = new Choices(selectVacunas, {
+            const choices = new Choices(selectVacunasEditar, {
                 removeItemButton: true,
                 placeholder: true
             });
         }
     }
 
-    function configurarSelectInsumosMultiple() {
-        const selectInsumos = document.getElementById('selectInsumos');
+    function configurarSelectInsumosMultipleEditar() {
+        const selectInsumosEditar = document.getElementById('selectInsumosEditar');
 
-        selectInsumos.setAttribute('multiple', 'multiple');
+        selectInsumosEditar.setAttribute('multiple', 'multiple');
 
         if (typeof Choices !== 'undefined') {
-            const choices = new Choices(selectInsumos, {
+            const choices = new Choices(selectInsumosEditar, {
                 removeItemButton: true,
                 placeholder: true
             });
@@ -909,7 +911,7 @@
             divCantidadMedicamentos.style.display = "none";
             divCantidadVacunas.style.display = "none";
             divCantidadInsumos.style.display = "none";
-            return; 
+            return;
         }
 
         // Medicamentos
@@ -1011,8 +1013,8 @@
             inputCantidad.type = "number";
             inputCantidad.min = "1";
             inputCantidad.dataset.medicamento = medicamento;
-            inputCantidad.id = inputIdMed; 
-            inputCantidad.className = "input-cantidad-medicamento"; 
+            inputCantidad.id = inputIdMed;
+            inputCantidad.className = "input-cantidad-medicamento";
             inputCantidad.style.width = "100px";
             inputCantidad.style.padding = "5px";
             inputCantidad.style.textAlign = "center";
@@ -1203,6 +1205,7 @@
     document.getElementById('finishStep').addEventListener('click', function() {
         // Recuperar datosPaquete del sessionStorage
         const datosPaquete = JSON.parse(sessionStorage.getItem('datosPaquete')) || {};
+        event.preventDefault();
 
         // Obtener todos los inputs de cantidad de medicamentos
         const inputsCantidadMeds = document.querySelectorAll('.input-cantidad-medicamento');
@@ -1235,10 +1238,10 @@
         let relacionPaquete = '';
         if (datosPaquete.cupsCie === 'cie11') {
             relacionPaquete = `<strong>Relacionado a:</strong> CIE-11<br>
-                         <strong>CIE-11:</strong> ${datosPaquete.selectCie || 'No especificado'}`;
+                         <strong>CIE-11:</strong> ${datosPaquete.selectCieEditar || 'No especificado'}`;
         } else if (datosPaquete.cupsCie === 'cups') {
             relacionPaquete = `<strong>Relacionado a:</strong> CUPS<br>
-                         <strong>CUPS:</strong> ${datosPaquete.selectCups || 'No especificado'}`;
+                         <strong>CUPS:</strong> ${datosPaquete.selectCupsEditar || 'No especificado'}`;
         } else {
             relacionPaquete = 'Relación no especificada';
         }
@@ -1340,7 +1343,7 @@
             confirmButtonColor: '#4CAF50'
         }).then((result) => {
             if (result.isConfirmed) {
-               
+
                 console.log('Proceso finalizado');
                 window.location.reload();
             }
@@ -1351,5 +1354,5 @@
         console.log('Medicamentos con cantidades:', medicamentosConCantidad);
         console.log('Vacunas con cantidades:', vacunasConCantidad);
         console.log('Insumos con cantidades:', insumosConCantidad);
-    }); 
+    });
 </script>

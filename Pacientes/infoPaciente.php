@@ -199,8 +199,8 @@ include "../Consultas/modalInfoPacientes.php";
 
 
         document.getElementById("address").textContent = paciente.address || "No disponible";
-        document.getElementById("city").textContent = paciente.city.name || "No especificada";
-        document.getElementById("country").textContent = paciente.country.name || "No especificado";
+        document.getElementById("city").textContent = paciente.city_id || "No especificada";
+        document.getElementById("country").textContent = paciente.country_id || "No especificado";
 
         // Información adicional
         document.getElementById("relevant-habits").textContent = paciente.relevant_habits || "No especificado";

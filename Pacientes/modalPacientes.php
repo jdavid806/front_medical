@@ -662,6 +662,11 @@ require "./modals/editPartnerModal.php";
   import {
     getJWTPayload
   } from "./services/utilidades.js";
+  import {
+    countriesSelect,
+    departmentsSelect,
+    citiesSelect
+  } from "./services/selects.js";
   // Declaración de funciones
   const updateWizard = () => {
     // Actualizar los pasos visuales
@@ -834,17 +839,6 @@ require "./modals/editPartnerModal.php";
     }
   }
 
-  async function getCountries() {
-    try {
-      const data = await countryService.getAll();
-      console.log('Paises', data);
-
-      populateCountrySelect(data.data);
-    } catch (error) {
-      console.error('Error al obtener los países:', error);
-    }
-  }
-
   async function getDepartments(countryId) {
     try {
       const data = await departmentService.ofParent(countryId);
@@ -944,20 +938,29 @@ require "./modals/editPartnerModal.php";
     handleModalNavigation();
     handleImageUpload();
     // Llama a la función para obtener y cargar los países
-    getCountries();
-    getEntities();
+    countriesSelect(document.getElementById('country_id'), (selectedOption) => {
+      console.log('Pais seleccionado:', selectedOption);
+      const selectedCountryId = selectedOption.customProperties.id;
 
-    document.getElementById('country_id').addEventListener('change', function() {
-      const selectedCountryId = this.selectedOptions[0].dataset.id;
-      console.log('Pais seleccionado:', selectedCountryId);
-      getDepartments(selectedCountryId);
+      departmentsSelect(
+        document.getElementById('department_id'),
+        selectedCountryId,
+        (selectedDepartment) => {
+          console.log('Departamento seleccionado:', selectedDepartment);
+          const selectedDepartmentId = selectedDepartment.customProperties.id;
+
+          citiesSelect(
+            document.getElementById('city_id'),
+            selectedDepartmentId,
+            (selectedCity) => {
+              console.log('Ciudad seleccionada:', selectedCity);
+            }
+          );
+        }
+      );
     });
 
-    document.getElementById('department_id').addEventListener('change', function() {
-      const selectedDepartmentId = this.selectedOptions[0].dataset.id;
-      console.log('Departamento seleccionado:', selectedDepartmentId);
-      getCities(selectedDepartmentId);
-    })
+    getEntities();
 
     const payloadDecoded = getJWTPayload();
     console.log(payloadDecoded);
