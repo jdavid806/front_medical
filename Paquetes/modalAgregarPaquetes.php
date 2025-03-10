@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nuevo Medicamento</h5>
+                <h5 class="modal-title">Nuevo Paquete</h5>
                 <button class="btn btn-close p-1" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -158,7 +158,7 @@
                 <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
                 <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
                 <button class="btn btn-secondary d-none" id="finishStep" type="submit"
-                    form="formNuevoMedicamento">Finalizar</button>
+                    form="formNuevoPaquete">Finalizar</button>
             </div>
         </div>
     </div>

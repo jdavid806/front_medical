@@ -388,9 +388,16 @@ include "../header.php";
         const paquete = paquetes.find(p => p.nombre === nombrePaquete);
         if (paquete) {
             console.log("Editando paquete:", paquete);
-            // Aquí puedes implementar la lógica para mostrar un modal de edición
-            // o redirigir a una página de edición, etc.
-            alert(`Editando paquete: ${nombrePaquete}`);
+
+            // Asignar los datos del paquete a los campos del modal
+            // Esto dependerá de la estructura de tu modal, pero aquí hay un ejemplo
+            // document.getElementById('modalNombrePaquete').value = paquete.nombre;
+            // Asigna otros campos según sea necesario
+
+            // Mostrar el modal utilizando Bootstrap o la biblioteca que estés usando
+            $('#modalEditarPaquete').modal('show');
+            // Si no estás usando Bootstrap, puedes usar algo como:
+            // document.getElementById('modalEditarPaquete').style.display = 'block';
         }
     }
 

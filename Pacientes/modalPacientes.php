@@ -257,7 +257,7 @@ require "./modals/editPartnerModal.php";
                         <div class="col-sm-6">
                           <div class="mb-1">
                             <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="text" class="form-control" id="email" name="patient[email]" placeholder="Correo Electronico" required>
+                            <input type="text" class="form-control" id="email" name="patient[email]" placeholder="Correo Electronico">
                             <div class="invalid-feedback">El campo es obligatorio.</div>
                           </div>
                         </div>
@@ -529,8 +529,8 @@ require "./modals/editPartnerModal.php";
                   <div class="row g-3 mb-3">
                     <div class="col-sm-6" id="div_eps">
                       <div class="mb-2 mb-sm-0">
-                        <label for="eps" class="form-label">Entidad prestadora de salud (eps)</label>
-                        <select class="form-select" id="eps" name="social_security[eps]" required>
+                        <label for="eps" class="form-label" id="label_eps">Entidad prestadora de salud (eps)</label>
+                        <select class="form-select" id="eps" name="social_security[entity_id]" required>
                           <option selected disabled value="">Seleccione</option>
                         </select>
                         <div class="invalid-feedback">El campo es obligatorio</div>
@@ -870,6 +870,28 @@ require "./modals/editPartnerModal.php";
   function populateCountrySelect(countries) {
     const countrySelect = document.getElementById('country_id');
     console.log('Paises', countries);
+    countries = countries.filter(country => [
+      "AR",
+      "BO",
+      "BR",
+      "CL",
+      "CO",
+      "CR",
+      "CU",
+      "DO",
+      "EC",
+      "SV",
+      "GT",
+      "HN",
+      "MX",
+      "NI",
+      "PA",
+      "PY",
+      "PE",
+      "PR",
+      "UY",
+      "VE"
+    ].includes(country.iso2));
 
     countries.forEach(country => {
       const option = document.createElement('option');
@@ -938,11 +960,12 @@ require "./modals/editPartnerModal.php";
     console.log(payloadDecoded);
     const userId = payloadDecoded.id || payloadDecoded.user_id || payloadDecoded.sub;
     console.log("User ID:", userId);
-    const user = await userService.get(userId);
-    user.country = {
-      country_code: "AR"
-    }
-    if (user.country.country_code !== "CO") {
+    // const user = await userService.get(userId);
+    // user.country = {
+    //   country_code: "AR"
+    // }
+    if (true || user.country.country_code !== "CO") {
+      document.getElementById('label_eps').textContent = 'Aseguradora';
       console.log('ocultando campos de colombia');
       document.getElementById('div_eps').classList.add('col-12');
       document.getElementById('div_eps').classList.remove('col-sm-6');
@@ -950,7 +973,7 @@ require "./modals/editPartnerModal.php";
       document.getElementById('div_afp').classList.remove('col-md-6');
       document.getElementById('div_arl').style.display = 'none';
     }
-    console.log("User:", user);
+    // console.log("User:", user);
   });
 </script>
 
