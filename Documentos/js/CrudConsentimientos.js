@@ -12,20 +12,80 @@ async function cargarPConsentimientos() {
     tablaConsentimientos.innerHTML = "";
 
     for (const producto of result.data) {
-      // const row = document.createElement("tr");
-      // row.innerHTML = `
-      //   <td>${producto.title}</td>
-      //   <td>
-      //       <button class="btn btn-primary btn-sm" onclick="editarConsentimiento(${producto.id}, '${producto.title}', '${producto.template}')" data-bs-toggle="modal" data-bs-target="#crearPlantilla">
-      //           <i class="fa-solid fa-pen"></i>
-      //       </button>
-      //       <button class="btn btn-danger btn-sm" onclick="eliminarConsentimiento(${producto.id})">
-      //           <i class="fa-solid fa-trash"></i>
-      //       </button>
-      //   </td>
-      // `;
+      const fecha = new Date(producto.created_at).toLocaleDateString("es-CO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
 
-      // tablaConsentimientos.appendChild(row);
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td>${fecha}</td>
+      <td>${producto.title}</td>
+      <td class="text-end align-middle">
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i data-feather="settings"></i> Acciones
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="#" onclick="editarPConsentimiento(${producto.id},${producto.title},${producto.description})">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-solid fa-pen" style="width: 20px;"></i>
+                  <span>Editar</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="eliminarPConsentimiento(${producto.id})">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-solid fa-trash" style="width: 20px;"></i>
+                  <span>Eliminar</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="imprimirConsentimiento(${producto.id})">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-solid fa-print" style="width: 20px;"></i>
+                  <span>Imprimir</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" id="generate_consent_pdf" onclick="descargarConsentimiento(${producto.id})">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-solid fa-download" style="width: 20px;"></i>
+                  <span>Descargar</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="dropdown-header">Compartir</li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="compartirConsentimiento(${producto.id})">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-brands fa-whatsapp" style="width: 20px;"></i>
+                  <span>Compartir por Whatsapp</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <div class="d-flex gap-2 align-items-center">
+                  <i class="fa-solid fa-envelope" style="width: 20px;"></i>
+                  <span>Compartir por Correo</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </td>
+    `;
+
+      tablaConsentimientos.appendChild(row);
     }
   } catch (error) {
     console.error("Hubo un problema con la solicitud:", error);
@@ -50,7 +110,29 @@ async function createPConsentimiento(consentimiento) {
   );
 }
 
-// function editarConsentimiento(id, title, template) {
+async function imprimirConsentimiento(id) {
+  console.log("impirmiendo" + id);
+  let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
+  let consentimeinto = await obtenerDatos(url);
+  console.log(consentimeinto);
+  // crearDocumento(incapacidad, "Impresion", "Incapacidad", "Completa", "Incapacidad Médica");
+}
+
+async function descargarConsentimiento(id) {
+  let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
+  let consentimeinto = await obtenerDatos(url);
+  console.log(consentimeinto);
+  // crearDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", "Incapacidad Médica");
+}
+
+async function compartirConsentimiento(id) {
+  let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
+  let consentimeinto = await obtenerDatos(url);
+  console.log(consentimeinto);
+  // enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", incapacidad.patient_id, incapacidad.user_id, "Incapacidad_Médica.pdf");
+}
+
+// function editarPConsentimiento(id, title, template) {
 
 //   const editorContainer = document.querySelector(
 //     `#contenido-plantilla .ql-editor`

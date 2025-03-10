@@ -31,6 +31,7 @@
 <script>
 
   document.addEventListener("DOMContentLoaded", function () {
+    cargarPConsentimientos();
     cargarPlantillas();
     handleGenerarConsentimientosForm();
   });

@@ -7,6 +7,9 @@ async function generarFormato(objecto, nombreObjecto) {
     case "Incapacidad":
       formatoAImprimir = await generarFormatoIncapacidad(objecto);
       break;
+    case "Consentimiento":
+      formatoAImprimir = await generarFormatoConsentimiento(objecto);
+      break;
 
     default:
       break;
@@ -48,4 +51,35 @@ async function generarFormatoIncapacidad(incapacidad) {
     contenido,
     doctor: datosDoctor,
   };
+}
+
+async function generarFormatoConsentimiento(consentimeinto) {
+  let contenido = `
+  <div class="container p-3 border rounded shadow-sm">
+    <h3 class="text-primary text-center">Consentimiento Informado</h3>
+    <hr>
+
+    <div class="mb-3">
+      <p>
+        Declaro haber sido informado/a de manera clara y comprensible sobre el procedimiento a realizar, sus riesgos y beneficios. 
+        Autorizo voluntariamente la realización del mismo.
+      </p>
+    </div>
+  </div>
+  `;
+  // let datosPaciente = await consultarDatosPaciente(
+  //   incapacidad.patient_id,
+  //   formatearFechaQuitarHora(incapacidad.created_at)
+  // );
+  // let datosEmpresa = await consultarDatosEmpresaPorDoctorId(
+  //   incapacidad.user_id
+  // );
+  // let datosDoctor = await consultarDatosDoctor(incapacidad.user_id);
+
+  // return {
+  //   consultorio: datosEmpresa,
+  //   paciente: datosPaciente,
+  //   contenido,
+  //   doctor: datosDoctor,
+  // };
 }
