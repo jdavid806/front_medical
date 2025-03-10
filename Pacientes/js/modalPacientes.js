@@ -7,7 +7,7 @@ let companionsTemp = [];
 document.getElementById('finishStep').addEventListener('click', function () {
     const form = document.getElementById('formNuevoPaciente');
     const formData = new FormData(form);
-    
+
     const data = {
         companions: [],
         social_security: {},
@@ -42,17 +42,6 @@ document.getElementById('finishStep').addEventListener('click', function () {
         is_active: companion.is_active === "true" || companion.is_active === true, // Asegurar booleano
         relationship: companion.relationship
     }));
-
-    // Convertir ciertos valores a números si existen
-    if (data.patient.country_id) {
-        data.patient.country_id = parseInt(data.patient.country_id, 10);
-    }
-    if (data.patient.department_id) {
-        data.patient.department_id = parseInt(data.patient.department_id, 10);
-    }
-    if (data.patient.city_id) {
-        data.patient.city_id = parseInt(data.patient.city_id, 10);
-    }
 
     console.log("Datos a enviar:", data);
 

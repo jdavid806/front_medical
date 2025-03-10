@@ -140,7 +140,7 @@ include '../data/consts.php';
         let precio = document.getElementById("entity_price").value;
         let impuesto = document.getElementById("tax_type").value;
         let retencion = document.getElementById("retention_type").value;
-    
+
         preciosEntidades.push({ entidad, precio, impuesto, retencion });
         let tabla = document.getElementById("tablaPreciosEntidades");
         let fila = `<tr><td>${entidad}</td><td>${precio}</td><td>${impuesto}</td><td>${retencion}</td>
@@ -164,10 +164,10 @@ include '../data/consts.php';
             attention_type: document.getElementById("attention_type").value,
             sale_price: document.getElementById("sale_price").value,
             copaiment: document.getElementById("copago").value,
-            impuesto: document.getElementById("taxProduct_type").value,
-            entities: preciosEntidades
         };
-
+        
+        // impuesto: document.getElementById("taxProduct_type").value,
+        // entities: preciosEntidades
         // Validación básica
         /* if (!productData.name || !productData.product_type_id) {
             alert('Nombre y tipo son campos obligatorios');
@@ -177,9 +177,9 @@ include '../data/consts.php';
         try {
             console.log('Creando producto:', productData);
             if (productId) {
-                await updateProduct(productId, productData);
+                updateProduct(productId, productData);
             } else {
-                await createProduct(productData);
+                createProduct(productData);
             }
 
             // Limpiar formulario y cerrar modal

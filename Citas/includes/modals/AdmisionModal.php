@@ -246,8 +246,7 @@ include '../modals/NewCompanionModal.php';
                                                 <div class="col-sm-6">
                                                     <div class="mb-2">
                                                         <label class="form-label text-body" for="emailPatient">Correo electrónico*</label>
-                                                        <input class="form-control" type="emailPatient" name="emailPatient" placeholder="Correo electronico" id="email" required="required">
-                                                        <div class="invalid-feedback">El campo es requerido.</div>
+                                                        <input class="form-control" type="emailPatient" name="emailPatient" placeholder="Correo electronico" id="email">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1785,15 +1784,13 @@ include '../modals/NewCompanionModal.php';
             if (row.cells.length) {
                 const totalCell = row.cells[4]; // Columna "Total" (índice 4)
                 const totalText = totalCell.textContent.replace(' COP', '').trim();
-                const totalValue = parseFloat(totalText) || 0;
+                const totalValue = totalText || 0;
+                console.log(totalValue);
                 sum += totalValue;
             }
         }
 
-        document.getElementById('totalSum').textContent = Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP'
-        }).format(`${sum.toFixed(2)}`);
+        document.getElementById('totalSum').textContent = sum.toFixed(2)
     }
 
     function updateTotalAmount() {
