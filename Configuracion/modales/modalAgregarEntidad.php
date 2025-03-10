@@ -13,33 +13,41 @@
               <input class="form-control" id="nombre-entidad" type="text" required>
               <div class="invalid-feedback">Debe llenar el nombre de la Entidad</div>
             </div>
-            <?php if ($pais == "CO"): ?>
-              <div class="mb-3 col-md-4">
-                <label class="form-label" for="nit-entidad">NIT</label>
-                <input class="form-control" id="nit-entidad" type="number" required>
-                <div class="invalid-feedback">Debe ingresar un NIT válido</div>
-              </div>
-              <div class="mb-3 col-md-4">
-                <label class="form-label" for="dv-entidad">DV</label>
-                <input class="form-control" id="dv-entidad" type="number" required>
-                <div class="invalid-feedback">Debe ingresar el DV</div>
-              </div>
-            <?php else: ?>
-              <div class="mb-3 col-md-4">
-                <label class="form-label" for="numeroIdentificacion-entidad">Número de Identificación</label>
-                <input class="form-control" id="numeroIdentificacion-entidad" type="number" required>
-                <div class="invalid-feedback">Debe ingresar un número de identificación válido</div>
-              </div>
-              <div class="mb-3 col-md-4">
-                <label class="form-label" for="tipoIdentificacion-entidad">Tipo de Identificación</label>
-                <select class="form-control" id="tipoIdentificacion-entidad" required>
-                  <option value="CC">Cédula de Ciudadanía</option>
-                  <option value="CE">Cédula de Extranjería</option>
-                  <option value="NIT">NIT</option>
-                </select>
-                <div class="invalid-feedback">Debe seleccionar un tipo de identificación</div>
-              </div>
-            <?php endif; ?>
+            <?php /*
+       esto es para colombia asi solos e ve en codigo y no en consola c:
+       att alguien con sueño hambre y pereza, osea que putas nunca estuvo listo el proyecto
+       y me toco trabajar sabado y domigo :C
+       antes agredezcan que no le he agregado un bucle sin fin pero estoy a nada de hacerlo
+       además pvto windows no quiere dokerisar el proyecto
+
+       !!!! MUERTE A WINDOWS Y SU PENDEJADA DE NO QUERER FUNCIONAR !!!!
+
+       ya con eso me desahogue gracias por leerme c:
+    <div class="mb-3 col-md-4">
+      <label class="form-label" for="nit-entidad">NIT</label>
+      <input class="form-control" id="nit-entidad" type="number" required>
+      <div class="invalid-feedback">Debe ingresar un NIT válido</div>
+    </div>
+    <div class="mb-3 col-md-4">
+      <label class="form-label" for="dv-entidad">DV</label>
+      <input class="form-control" id="dv-entidad" type="number" required>
+      <div class="invalid-feedback">Debe ingresar el DV</div>
+    </div>
+  */ ?>
+            <div class="mb-3 col-md-4">
+              <label class="form-label" for="numeroIdentificacion-entidad">Número de Identificación</label>
+              <input class="form-control" id="numeroIdentificacion-entidad" type="number" required>
+              <div class="invalid-feedback">Debe ingresar un número de identificación válido</div>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label class="form-label" for="tipoIdentificacion-entidad">Tipo de Identificación</label>
+              <select class="form-control" id="tipoIdentificacion-entidad" required>
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="NIT">NIT</option>
+              </select>
+              <div class="invalid-feedback">Debe seleccionar un tipo de identificación</div>
+            </div>
             <div class="mb-3 col-md-4">
               <label class="form-label" for="email-entidad">Email</label>
               <input class="form-control" id="email-entidad" type="email" required>
@@ -56,10 +64,10 @@
             <div class="mb-3 col-md-4">
               <label class="form-label" for="ciudad-entidad">Ciudad</label>
               <select class="form-control" id="ciudad-entidad">
-                <option value="Republica Dominicana">Republica Dominicana</option>
-                <option value="Bogotá">Bogotá</option>
-                <option value="Medellín">Medellín</option>
-                <option value="Cali">Cali</option>
+                <option value="1">Republica Dominicana</option>
+                <option value="2">Bogotá</option>
+                <option value="3">Medellín</option>
+                <option value="4">Cali</option>
               </select>
             </div>
           </div>
@@ -74,70 +82,57 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarEntidad").addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    // Obtener valores del formulario
-    const nombre = document.getElementById("nombre-entidad").value;
-    const email = document.getElementById("email-entidad").value;
-    const telefono = document.getElementById("telefono-entidad").value || "N/A";
-    const ciudad = document.getElementById("ciudad-entidad").value;
+  function handleEntidadesForm() {
 
-    let identificacion = "N/A";
-    if (document.getElementById("nit-entidad")) {
-      identificacion = document.getElementById("nit-entidad").value + "-" + document.getElementById("dv-entidad").value;
-    } else if (document.getElementById("numeroIdentificacion-entidad")) {
-      identificacion = document.getElementById("numeroIdentificacion-entidad").value;
+    const form = document.getElementById('formAgregarEntidad');
+
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
     }
 
-    // Generar ID único
-    const id = entidadesArray.length > 0 ? entidadesArray[entidadesArray.length - 1].id + 1 : 1;
+    form.addEventListener('submit', async (e) => {
 
-    // Crear entidad y guardarla en el array
-    const entidad = { id, nombre, identificacion, email, telefono, ciudad };
-    entidadesArray.push(entidad);
-    guardarEntidades(); // Guardar en localStorage
+      e.preventDefault();
 
-    // Agregar a la tabla
-    agregarFilaTabla(entidad);
-  
-    // Resetear formulario y cerrar modal
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearEntidad"));
-    modal.hide();
-  });
+      const productId = document.getElementById('entity_id')?.value;
+      const productData = {
+        name: document.getElementById("nombre-entidad").value,
+        document_type: document.getElementById("tipoIdentificacion-entidad").value,
+        document_number: document.getElementById("numeroIdentificacion-entidad").value,
+        email: document.getElementById("email-entidad").value,
+        address: document.getElementById("direccion-entidad").value,
+        phone: document.getElementById("telefono-entidad").value,
+        city_id: document.getElementById("ciudad-entidad").value,
+      };
+      
 
-  // Agregar fila a la tabla
-  function agregarFilaTabla(entidad) {
-    const tablaEntidades = document.getElementById("tablaEntidades");
-    const row = document.createElement("tr");
-    row.setAttribute("data-id", entidad.id);
-    row.innerHTML = `
-    <td>${entidad.id}</td>
-    <td>${entidad.nombre}</td>
-    <td>${entidad.identificacion}</td>
-    <td>${entidad.email}</td>
-    <td>${entidad.telefono}</td>
-    <td>${entidad.ciudad}</td>
-    <td>
-      <button class="btn btn-danger btn-sm" onclick="eliminarFila(${entidad.id})">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </td>
-  `;
-    tablaEntidades.appendChild(row);
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateEntidad(productId, productData);
+        } else {
+          createEntidad(productData);
+        }
+
+        // Limpiar formulario y cerrar modal
+        form.reset();
+        $('#crearPlantilla').modal('hide');
+        cargarConsentimientos();
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
   }
 
-  // Cargar datos en la tabla al iniciar
-  window.addEventListener("load", () => {
-    entidadesArray.forEach(agregarFilaTabla);
+  document.addEventListener("DOMContentLoaded", function () {
+    handleEntidadesForm();
   });
-
-  // Eliminar entidad
-  function eliminarFila(id) {
-    entidadesArray = entidadesArray.filter(entidad => entidad.id !== id);
-    guardarEntidades();
-    document.querySelector(`tr[data-id="${id}"]`).remove();
-  }
 
 </script>

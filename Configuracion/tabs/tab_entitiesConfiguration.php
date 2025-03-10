@@ -11,7 +11,6 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>#</th>
             <th>Nombre</th>
             <th>NIT / ID</th>
             <th>Email</th>
@@ -21,12 +20,16 @@
           </tr>
         </thead>
         <tbody id="tablaEntidades">
-          <script>
-            console.log(entidadesArray);
-          </script>
           <!-- Filas dinámicas -->
         </tbody>
       </table>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarEntidades();
+  });
+
+</script>
