@@ -66,7 +66,7 @@ include "../header.php";
 
   <?php
   include './modalIncapacidad.php'
-    ?>
+  ?>
 
   <template id="templateIncapacidad">
     <tr>
@@ -230,6 +230,8 @@ include "../header.php";
     renderIncapacidades(incapacidades);
 
     function renderIncapacidades(incapacidades) {
+      console.log('Incapacidades:', incapacidades);
+
       table.innerHTML = "";
       incapacidades.forEach(incapacidad => {
         const clone = template.content.cloneNode(true);
@@ -264,11 +266,13 @@ include "../header.php";
   </script>
 
   <script>
-    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function () {
+    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function() {
       $("#modalCrearIncapacidadLabel").html(`Crear Incapacidad`);
 
       document.getElementById("formCrearIncapacidad").reset();
-      checkRecurrencia(document.getElementById('recurrencia'))
+      if (document.getElementById('recurrencia')) {
+        checkRecurrencia(document.getElementById('recurrencia'))
+      }
     })
   </script>
 

@@ -17,7 +17,7 @@ $consentimientos = [
     'doctor' => 'Diana Maria Fernandez',
     'motivo' => 'Estudio clínico',
     'detalles' =>
-    'Consentimiento para biopsia',
+      'Consentimiento para biopsia',
     'plantilla' => 'Acta_de_salida'
   ],
   [
@@ -26,7 +26,7 @@ $consentimientos = [
     'doctor' => 'Carlos Ruiz',
     'motivo' => 'Tratamiento dental',
     'detalles' =>
-    'Consentimiento para endodoncia',
+      'Consentimiento para endodoncia',
     'plantilla' => 'Consentimiento_Informado'
   ],
   [
@@ -35,7 +35,7 @@ $consentimientos = [
     'doctor' => 'Ana Maria García',
     'motivo' => 'Revisión dermatológica',
     'detalles' =>
-    'Consentimiento para tratamiento de manchas en la piel',
+      'Consentimiento para tratamiento de manchas en la piel',
     'plantilla' => 'Acta_de_salida'
   ],
   [
@@ -44,7 +44,7 @@ $consentimientos = [
     'doctor' => 'Pedro Sánchez',
     'motivo' => 'Estudio de resonancia',
     'detalles' =>
-    'Consentimiento para resonancia magnética',
+      'Consentimiento para resonancia magnética',
     'plantilla' => 'Consentimiento_Informado'
   ],
 ];
@@ -102,13 +102,13 @@ $consentimientos = [
             <th class="text-end">Acciones</th>
           </tr>
         </thead>
-        <tbody class="list">
-          <?php foreach ($consentimientos as $consentimiento) {
+        <tbody class="list" id="tablaPlantillasC">
+          <!-- <?php foreach ($consentimientos as $consentimiento) {
 
             $datosJson = json_encode($consentimiento);
-          ?>
+            ?>
             <tr>
-              <input type="hidden" id="data_consentimiento_<?= $consentimiento['consentimientoId'] ?>" value="<?= htmlspecialchars($datosJson, ENT_QUOTES)  ?>">
+              <input type="hidden" id="data_consentimiento_<?= $consentimiento['consentimientoId'] ?>" value="<?= htmlspecialchars($datosJson, ENT_QUOTES) ?>">
               <td class="fecha align-middle"><?= $consentimiento['fecha'] ?></td>
               <td class="doctor align-middle"><?= $consentimiento['doctor'] ?></td>
               <td class="motivo align-middle"><?= $consentimiento['motivo'] ?></td>
@@ -176,7 +176,7 @@ $consentimientos = [
               </td>
 
             </tr>
-          <?php } ?>
+          <?php } ?> -->
         </tbody>
       </table>
     </div>
@@ -212,7 +212,7 @@ include "./modalDocumento.php";
     });
   }
 
-  document.getElementById("generate_consent_pdf").addEventListener("click", function() {
+  document.getElementById("generate_consent_pdf").addEventListener("click", function () {
     fetch('./Configuracion/GeneratePDFConsent.php')
       .then((response) => {
         if (!response.ok) {

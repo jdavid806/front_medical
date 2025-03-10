@@ -5,7 +5,9 @@ export const usePatient = (patientId: string) => {
     const [patient, setPatient] = useState<any>(null);
 
     const fetchPatient = async () => {
-        const patient = await patientService.get(patientId);
+        const urlPatientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id');
+        const finalPatientId = patientId || urlPatientId;
+        const patient = await patientService.get(finalPatientId);
         setPatient(patient);
     };
 

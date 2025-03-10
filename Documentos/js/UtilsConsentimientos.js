@@ -17,49 +17,32 @@ async function cargarPlantillas() {
     const option = document.createElement("option");
     option.value = producto.id;
     option.textContent = producto.title;
+    option.dataset.title = producto.title; // Agregar el título como data-attribute
     selectPlantillas.appendChild(option);
   }
 
   selectPlantillas.onchange = function () {
-    const selectedId = this.value;
+    const selectedOption = this.selectedOptions[0]; // Obtener la opción seleccionada
+    const selectedId = selectedOption.value;
+    const selectedTitle = selectedOption.dataset.title; // Obtener el título desde data-title
     const selectedPlantilla = Plantillas.data.find((p) => p.id == selectedId);
     const patientId = new URLSearchParams(window.location.search).get(
       "patient_id"
     );
 
-    let texto = `Estimado(a) [[NOMBRE_PACIENTE]],
+    let texto = selectedPlantilla.template;
 
-Su cita médica ha sido agendada exitosamente. A continuación, le proporcionamos los detalles:
+    reemplazarVariables(patientId, texto).then((consentimiento) => {
+      if (selectedPlantilla) {
+        const editorContainer = document.querySelector(
+          `#info-plantilla .ql-editor`
+        );
+        editorContainer.innerHTML = consentimiento;
 
-- Nombre del paciente: [[NOMBRE_PACIENTE]]
-- Documento de identidad: [[DOCUMENTO]]
-- Edad: [[EDAD]]
-- Fecha de nacimiento: [[FECHANACIMIENTO]]
-- Teléfono de contacto: [[TELEFONO]]
-- Correo electrónico: [[CORREOELECTRONICO]]
-- Ciudad: [[CIUDAD]]
-- Fecha de la cita: [[FECHAACTUAL]]
-
-El doctor encargado de su consulta será el/la [[NOMBRE_DOCTOR]].
-
-Por favor, asegúrese de llegar al menos 15 minutos antes de la hora programada.
-
-Atentamente,  
-Clínica Ejemplo`;
-
-    let consentimiento = reemplazarVariables(
-      patientId,
-      texto
-    );
-
-    console.log(consentimiento);
-
-    // if (selectedPlantilla) {
-    //   const editorContainer = document.querySelector(
-    //     `#info-plantilla .ql-editor`
-    //   );
-    //   editorContainer.innerHTML = consentimiento;
-    // }
+        // Almacenar el título en un atributo del select
+        selectPlantillas.dataset.selectedTitle = selectedTitle;
+      }
+    });
   };
 }
 
@@ -79,40 +62,51 @@ function handleGenerarConsentimientosForm() {
     );
 
     let template = editorContainer.innerHTML;
+    const patientId = new URLSearchParams(window.location.search).get(
+      "patient_id"
+    );
 
-    const productId = document.getElementById("consent_id")?.value;
+    const productId = document.getElementById("consentP_id")?.value;
+    const selectPlantillas = document.getElementById("template-plantilla");
+    const plantillaTitle = selectPlantillas.dataset.selectedTitle;
+
     const productData = {
-      title: document.getElementById("template-plantilla").value,
-      template,
+      // template_type_id: selectPlantillas.value,
+      template_type_id: 1, // por el momento lo quemamos igual tampoco lo necesitamos
+      title: plantillaTitle,
+      description: template,
+      data: ["variable 1, variable 2"], // por el momento lo quemamos igual tampoco lo necesitamos
+      tenant_id: "0", // por el momento lo quemamos igual tampoco lo necesitamos
+      patient_id: patientId,
     };
 
     console.log(productData);
 
     // Validación básica
-    if (!productData.title || !productData.template) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al guardar",
-        text: "La plantilla y su Contenido es obligatorio.",
-        confirmButtonText: "Aceptar",
-      });
-      return;
-    }
-
-    // try {
-    //   if (productId) {
-    //     updateConsentimiento(productId, productData);
-    //   } else {
-    //     createConsentimiento(productData);
-    //   }
-
-    //   // Limpiar formulario y cerrar modal
-    //   form.reset();
-    //   $('#crearPlantilla').modal('hide');
-    //   cargarConsentimientos();
-    // } catch (error) {
-    //   alert('Error al crear el producto: ' + error.message);
+    // if (!plantillaTitle || !productData.template) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Error al guardar",
+    //     text: "La plantilla y su Contenido es obligatorio.",
+    //     confirmButtonText: "Aceptar",
+    //   });
+    //   return;
     // }
+
+    try {
+      if (productId) {
+        updatePConsentimiento(productId, productData);
+      } else {
+        createPConsentimiento(productData);
+      }
+
+      // Limpiar formulario y cerrar modal
+      form.reset();
+      $("#modalCrearDocumento").modal("hide");
+      cargarConsentimientos();
+    } catch (error) {
+      alert("Error al crear el producto: " + error.message);
+    }
   });
 }
 
@@ -131,7 +125,10 @@ async function reemplazarVariables(id, template) {
     .replace(/\[\[DOCUMENTO\]\]/g, datos.document_number || "")
     .replace(/\[\[NOMBRE_DOCTOR\]\]/g, datos.nombreDoctor || "")
     .replace(/\[\[EDAD\]\]/g, calcularEdad(datos.date_of_birth) || "")
-    .replace(/\[\[FECHAACTUAL\]\]/g, new Date() || "")
+    .replace(
+      /\[\[FECHAACTUAL\]\]/g,
+      new Date().toLocaleDateString("es-CO") || ""
+    )
     .replace(/\[\[FECHANACIMIENTO\]\]/g, datos.date_of_birth || "")
     .replace(/\[\[TELEFONO\]\]/g, datos.whatsapp || "")
     .replace(/\[\[CORREOELECTRONICO\]\]/g, datos.email || "")

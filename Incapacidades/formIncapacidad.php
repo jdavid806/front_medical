@@ -1,24 +1,24 @@
 <form id="formCrearIncapacidad" class="was-validated">
     <div class="mb-3">
         <div class="row">
-            <div class="col-6">
-                <label for="desde" class="form-label">Desde</label>
-                <input type="date" class="form-control" id="desde" name="start_date">
-            </div>
+            <input type="hidden" id="desde" name="start_date" value="">
+            <script>
+                document.getElementById("desde").value = new Date().toISOString().split('T')[0];
+            </script>
             <div class="col-6">
                 <label for="dias" class="form-label">Días de Incapacidad</label>
                 <input type="number" class="form-control" id="dias" name="dias" min="1" required>
             </div>
+            <div class="col-6">
+                <label for="hasta" class="form-label">Hasta</label>
+                <input type="date" class="form-control" id="hasta" name="end_date" readonly>
+            </div>
         </div>
     </div>
-    <div class="mb-3">
-        <label for="hasta" class="form-label">Hasta</label>
-        <input type="date" class="form-control" id="hasta" name="end_date" readonly>
-    </div>
-    <div class="form-check form-switch">
+    <!-- <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="recurrencia">
         <label class="form-check-label" for="recurrencia">Recurrencia</label>
-    </div>
+    </div> -->
     <div id="contenedorRecurrencia" class="d-none card">
         <div class="card-body">
             <div class="mb-3">
@@ -58,14 +58,17 @@
         document.getElementById('desde').value = new Date().value = hoy;
     });
 
-    document.getElementById('recurrencia').addEventListener('change', function() {
-        console.log('change recurrencia:', this.checked);
-        checkRecurrencia(this)
-    })
+    // document.getElementById('recurrencia').addEventListener('change', function() {
+    //     console.log('change recurrencia:', this.checked);
+    //     checkRecurrencia(this)
+    // })
 
     document.getElementById('dias').addEventListener('input', function() {
         const fechaDesde = document.getElementById('desde').value;
         const dias = parseInt(this.value);
+
+        console.log(fechaDesde, dias);
+
 
         if (fechaDesde && dias > 0) {
             const fechaInicial = new Date(fechaDesde);
