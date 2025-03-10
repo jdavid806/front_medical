@@ -2,6 +2,13 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { PrescriptionFormProps } from '../interfaces/PrescriptionInterfaces';
 import { Medicine } from '../../models/models';
 
+export interface PrescriptionFormInputs {
+    patient_id: number;
+    user_id: number;
+    is_active: boolean;
+    medicines: Medicine[];
+}
+
 const medicationGroups = [
     {
         id: 'grupo1',
@@ -54,18 +61,18 @@ const initialMedicine: Medicine = {
     showTimeField: false
 };
 
-const PrescriptionForm: React.FC<PrescriptionFormProps> = forwardRef(({ formId, handleSubmit }, ref) => {
+const PrescriptionForm: React.FC<PrescriptionFormProps> = forwardRef(({ formId, initialData }, ref) => {
     const [useGroup, setUseGroup] = useState(false);
     const [selectedGroupId, setSelectedGroupId] = useState('');
     const [formData, setFormData] = useState<Medicine[]>([initialMedicine]);
     const [addedMedications, setAddedMedications] = useState<Medicine[]>([]);
     const [editIndex, setEditIndex] = useState<number | null>(null);
-    const [showToast, setShowToast] = useState(false);
     const [manualEntry, setManualEntry] = useState(false);
 
     useImperativeHandle(ref, () => ({
-        getFormData: () => addedMedications,
-        validate: () => { /* ... */ }
+        getFormData: () => {
+            return addedMedications
+        }
     }));
 
     const handleGroupToggle = () => {
@@ -132,11 +139,10 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = forwardRef(({ formId, 
         setAddedMedications(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleFormSubmit = (medications: Medicine[]) => {
-        handleSubmit(medications);
-        setShowToast(true);
-        // Aquí puedes añadir la lógica para cerrar el modal si es necesario
-    };
+    useEffect(() => {
+        console.log('Initial data:', initialData);
+        setAddedMedications(initialData?.medicines || []);
+    }, [initialData]);
 
     return (
         <>
@@ -478,12 +484,6 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = forwardRef(({ formId, 
                         ))}
                     </div>
                 )}
-
-                <div className="col-12 text-end">
-                    <button type="button" className="btn btn-primary" onClick={() => handleFormSubmit(addedMedications)}>
-                        {useGroup ? 'Guardar todos los medicamentos' : 'Guardar'}
-                    </button>
-                </div>
             </form>
         </>
     );

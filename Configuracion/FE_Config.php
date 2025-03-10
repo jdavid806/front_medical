@@ -216,4 +216,5 @@ include "./modales/modalAgregarRoles.php";
 include "./ModalUserRole.php";
 include "./modales/modalAgregarPlantillaConsentimiento.php";
 include "./ModalPrice.php";
+include "./modales/modalConfigEntidad.php";
 ?>

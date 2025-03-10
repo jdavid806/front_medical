@@ -44,8 +44,8 @@ include "../header.php";
 
     <div class="row mt-4">
 
-      <table class="table table-sm tableDataTableSearch">
-        <thead>
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
           <tr>
             <th class="sort" data-sort="fecha">Fecha</th>
             <th class="sort" data-sort="motivo">titulo</th>

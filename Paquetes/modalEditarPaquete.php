@@ -31,8 +31,8 @@
                                 <div class="col-6">
                                     <div class="input-group">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="nombrePaquete" required name="nombrePaquete">
-                                            <label for="nombrePaquete" class="form-label">Nombre del paquete</label>
+                                            <input type="text" class="form-control" id="nombrePaqueteEditar" required name="nombrePaqueteEditar">
+                                            <label for="nombrePaqueteEditar" class="form-label">Nombre del paquete</label>
                                             <div class="invalid-feedback">Por favor ingrese el nombre del paquete.</div>
                                         </div>
                                     </div>
@@ -72,7 +72,7 @@
                                                 <option value="" disabled selected>Seleccione</option>
                                                 <!-- Los options se generan desde el script -->
                                             </select>
-                                            <label for="seleccionarIncluidos" class="form-label">CUPS</label>
+                                            <label for="selectCupsEditar" class="form-label">CUPS</label>
                                             <div class="invalid-feedback">Por favor seleccione un procedimiento.</div>
                                         </div>
                                     </div>
@@ -114,7 +114,7 @@
                                         <div class="form-floating">
                                             <div class="" id="divSelectMedicamentosEditar" style="display: none;">
                                                 <select class="form-select" id="selectMedicamentosEditar">
-                                                    <!-- <option value="" disabled>Seleccione los medicamentos</option> -->
+                                                    <!-- <option value="" disabled>Seleccione los medicamentosE</option> -->
                                                 </select>
                                             </div>
                                             <div class="mt-3" id="divSelectExamenesEditar" style="display: none;">
@@ -124,12 +124,12 @@
                                             </div>
                                             <div class="mt-3" id="divSelectVacunasEditar" style="display: none;">
                                                 <select class="form-select" id="selectVacunasEditar">
-                                                    <!-- <option value="" selected disabled>Seleccione las vacunas</option> -->
+                                                    <!-- <option value="" selected disabled>Seleccione las vacunasE</option> -->
                                                 </select>
                                             </div>
                                             <div class="mt-3" id="divSelecInsumosEditar" style="display: none;">
                                                 <select class="form-select" id="selectInsumosEditar">
-                                                    <!-- <option value="" selected disabled>Seleccione los insumos</option> -->
+                                                    <!-- <option value="" selected disabled>Seleccione los insumosE</option> -->
                                                 </select>
                                             </div>
                                         </div>
@@ -140,13 +140,13 @@
                         </div>
                         <div class="wizard-step" data-step="2">
 
-                            <div id="divCantidadMedicamentos" style="display: none;">
+                            <div id="divCantidadMedicamentosEditar" style="display: none;">
                             </div>
 
-                            <div id="divCantidadVacunas" style="display: none;">
+                            <div id="divCantidadVacunasEditar" style="display: none;">
                             </div>
 
-                            <div id="divCantidadInsumos" style="display: none;">
+                            <div id="divCantidadInsumosEditar" style="display: none;">
                             </div>
 
                         </div>
@@ -155,10 +155,10 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
-                <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
-                <button class="btn btn-secondary d-none" id="finishStep" type="submit"
-                    form="formEditarPaquete">Finalizar</button>
+                <button class="btn btn-secondary" id="prevStepEditar" type="button" disabled>Anterior</button>
+                <button class="btn btn-primary" id="nextStepEditar" type="button">Siguiente</button>
+                <button class="btn btn-secondary d-none" id="finishStepEditar" type="submit"
+                    form="formEditarPaquete">Actualizar</button>
             </div>
         </div>
     </div>
@@ -213,44 +213,44 @@
 </style>
 
 <script>
-    let currentStep = 1;
+    let currentStepEditar = 1;
 
-    const updateWizard = () => {
+    const updateWizardEditar = () => {
         // Actualizar los pasos visuales
         document.querySelectorAll('.step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepEditar);
         });
 
         // Mostrar el contenido correspondiente
         document.querySelectorAll('.wizard-step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepEditar);
         });
 
         // Controlar los botones
-        document.getElementById('prevStep').disabled = currentStep === 1;
-        document.getElementById('nextStep').classList.toggle('d-none', currentStep === 2);
-        document.getElementById('finishStep').classList.toggle('d-none', currentStep !== 2);
+        document.getElementById('prevStepEditar').disabled = currentStepEditar === 1;
+        document.getElementById('nextStepEditar').classList.toggle('d-none', currentStepEditar === 2);
+        document.getElementById('finishStepEditar').classList.toggle('d-none', currentStepEditar !== 2);
     };
 
-    document.getElementById('nextStep').addEventListener('click', () => {
-        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+    document.getElementById('nextStepEditar').addEventListener('click', () => {
+        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStepEditar}"]`);
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
-            currentStep++;
-            updateWizard();
+            currentStepEditar++;
+            updateWizardEditar();
         }
     });
 
-    document.getElementById('prevStep').addEventListener('click', () => {
-        currentStep--;
-        updateWizard();
+    document.getElementById('prevStepEditar').addEventListener('click', () => {
+        currentStepEditar--;
+        updateWizardEditar();
     });
 
-    updateWizard();
+    updateWizardEditar();
 
-    const medicamentos = [{
+    const medicamentosE = [{
             nombre: "Paracetamol",
             presentacion: "Tabletas",
             concentracion: "500 mg",
@@ -312,7 +312,7 @@
         }
     ];
 
-    const procedimientos = [{
+    const procedimientosE = [{
             codigo: "001010",
             nombre: "Consulta general"
         },
@@ -354,7 +354,7 @@
         }
     ];
 
-    const diagnosticos = [{
+    const diagnosticosE = [{
             codigo: "1A00",
             nombre: "COVID-19, enfermedad por coronavirus"
         },
@@ -396,7 +396,7 @@
         }
     ];
 
-    const examenes = [
+    const examenesE = [
         "Análisis de sangre",
         "Radiografía de tórax",
         "Ultrasonido abdominal",
@@ -409,7 +409,7 @@
         "Análisis de orina"
     ];
 
-    const vacunas = [
+    const vacunasE = [
         "Vacuna contra la influenza",
         "Vacuna contra el tétanos",
         "Vacuna contra el sarampión",
@@ -422,7 +422,7 @@
         "Vacuna contra la difteria"
     ];
 
-    const insumos = [{
+    const insumosE = [{
             procedimiento: "Consulta general",
             insumo: "Termómetro"
         },
@@ -550,7 +550,7 @@
         const divCupsEditar = document.getElementById('divCupsEditar');
         const selectCieEditar = document.getElementById('selectCieEditar');
         const selectCupsEditar = document.getElementById('selectCupsEditar');
-        const nextStep = document.getElementById('nextStep');
+        const nextStepEditar = document.getElementById('nextStepEditar');
 
         selectCupsCieEditar.addEventListener('change', function() {
             divCieEditar.style.display = 'none';
@@ -571,97 +571,97 @@
 
 
         // Función para manejar el evento click del botón guardar
-        document.getElementById('nextStep').addEventListener('click', function() {
+        document.getElementById('nextStepEditar').addEventListener('click', function() {
             // Capturo los valores de los campos individuales
-            const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
-            const cupsCie = document.getElementById('CupsCieEditar').value;
+            const nombrePaqueteEditar = document.getElementById('nombrePaqueteEditar').value.trim();
+            const cupsCieEditar = document.getElementById('CupsCieEditar').value;
             const selectCieEditar = document.getElementById('selectCieEditar').value;
             const selectCupsEditar = document.getElementById('selectCupsEditar').value;
 
             // Capturo los valores de los selects múltiples
-            const medicamentosSeleccionados = obtenerSeleccionados('selectMedicamentosEditar');
-            const examenesSeleccionados = obtenerSeleccionados('selectExamenesEditar');
-            const vacunasSeleccionadas = obtenerSeleccionados('selectVacunasEditar');
-            const insumosSeleccionados = obtenerSeleccionados('selectInsumosEditar');
+            const medicamentosSeleccionadosE = obtenerSeleccionadosE('selectMedicamentosEditar');
+            const examenesSeleccionadosE = obtenerSeleccionadosE('selectExamenesEditar');
+            const vacunasSeleccionadasE = obtenerSeleccionadosE('selectVacunasEditar');
+            const insumosSeleccionadosE = obtenerSeleccionadosE('selectInsumosEditar');
 
-            const datosPaquete = {
-                nombrePaquete,
-                cupsCie,
+            const datosPaqueteE = {
+                nombrePaqueteEditar,
+                cupsCieEditar,
                 selectCieEditar,
                 selectCupsEditar,
-                medicamentos: medicamentosSeleccionados,
-                examenes: examenesSeleccionados,
-                vacunas: vacunasSeleccionadas,
-                insumos: insumosSeleccionados
+                medicamentosE: medicamentosSeleccionadosE,
+                examenesE: examenesSeleccionadosE,
+                vacunasE: vacunasSeleccionadasE,
+                insumosE: insumosSeleccionadosE
             };
 
-            // Mostrar todos los elementos seleccionados
-            mostrarElementosSeleccionados(
-                nombrePaquete,
-                cupsCie,
+            // Mostrar todos los elementos seleccionadosE
+            mostrarElementosSeleccionadosE(
+                nombrePaqueteEditar,
+                cupsCieEditar,
                 selectCieEditar,
                 selectCupsEditar,
-                medicamentosSeleccionados,
-                examenesSeleccionados,
-                vacunasSeleccionadas,
-                insumosSeleccionados,
-                datosPaquete
+                medicamentosSeleccionadosE,
+                examenesSeleccionadosE,
+                vacunasSeleccionadasE,
+                insumosSeleccionadosE,
+                datosPaqueteE
             );
 
-            sessionStorage.setItem('datosPaquete', JSON.stringify(datosPaquete));
+            sessionStorage.setItem('datosPaqueteE', JSON.stringify(datosPaqueteE));
         });
 
 
 
         /**
-         * Función para obtener los valores seleccionados de un select múltiple
-         * @param {string} selectId - El ID del elemento select
-         * @return {Array} - Array con los valores seleccionados
+         * Función para obtener los valores seleccionadosE de un select múltiple
+         * @param {string} selectIdE - El ID del elemento select
+         * @return {Array} - Array con los valores seleccionadosE
          */
-        function obtenerSeleccionados(selectId) {
-            const select = document.getElementById(selectId);
+        function obtenerSeleccionadosE(selectIdE) {
+            const select = document.getElementById(selectIdE);
 
             // Si el select no existe, devolver array vacío
             if (!select) return [];
 
             // Obtener todas las opciones seleccionadas
-            const seleccionados = [];
+            const seleccionadosE = [];
             for (let i = 0; i < select.options.length; i++) {
                 if (select.options[i].selected && select.options[i].value !== "") {
-                    seleccionados.push(select.options[i].value);
+                    seleccionadosE.push(select.options[i].value);
                 }
             }
 
-            return seleccionados;
+            return seleccionadosE;
         }
 
         /**
-         * Función para mostrar todos los elementos seleccionados
+         * Función para mostrar todos los elementos seleccionadosE
          */
-        function mostrarElementosSeleccionados(
-            nombrePaquete,
-            cupsCie,
+        function mostrarElementosSeleccionadosE(
+            nombrePaqueteEditar,
+            cupsCieEditar,
             selectCieEditar,
             selectCupsEditar,
-            medicamentos,
-            examenes,
-            vacunas,
-            insumos,
-            datosPaquete
+            medicamentosE,
+            examenesE,
+            vacunasE,
+            insumosE,
+            datosPaqueteE
         ) {
 
-            console.log("Datos del paquete:", datosPaquete);
-            validarDatosPaquete(datosPaquete);
-            mostrarMedicamentos(medicamentos);
+            console.log("Datos del paquete:", datosPaqueteE);
+            validarDatosPaqueteE(datosPaqueteE);
+            mostrarMedicamentosE(medicamentosE);
         }
 
 
         cargarCupsEditar();
         cargarCieEditar();
-        cargarMedicamentosEditar(medicamentos);
-        cargarExamenesEditar(examenes);
-        cargarVacunasEditar(vacunas);
-        cargarInsumosEditar(insumos);
+        cargarMedicamentosEditar(medicamentosE);
+        cargarExamenesEditar(examenesE);
+        cargarVacunasEditar(vacunasE);
+        cargarInsumosEditar(insumosE);
         controlarVisibilidadSelectoresEditar();
         configurarSelectMedicamentosMultipleEditar();
         configurarSelectExamenesMultipleEditar();
@@ -677,22 +677,22 @@
 
 
     function cargarCupsEditar() {
-        procedimientos.forEach(procedimiento => {
-            const optionCups = document.createElement('option');
+        procedimientosE.forEach(procedimientoE => {
+            const optionCupsE = document.createElement('option');
             const selectCupsEditar = document.getElementById('selectCupsEditar');
-            optionCups.value = procedimiento.codigo;
-            optionCups.textContent = procedimiento.codigo + " - " + procedimiento.nombre;
-            selectCupsEditar.appendChild(optionCups);
+            optionCupsE.value = procedimientoE.codigo;
+            optionCupsE.textContent = procedimientoE.codigo + " - " + procedimientoE.nombre;
+            selectCupsEditar.appendChild(optionCupsE);
         })
     }
 
     function cargarCieEditar() {
-        diagnosticos.forEach(diagnostico => {
-            const optionCie = document.createElement('option');
+        diagnosticosE.forEach(diagnosticoE => {
+            const optionCieE = document.createElement('option');
             const selectCieEditar = document.getElementById('selectCieEditar');
-            optionCie.value = diagnostico.codigo;
-            optionCie.textContent = diagnostico.codigo + " - " + diagnostico.nombre;
-            selectCieEditar.appendChild(optionCie);
+            optionCieE.value = diagnosticoE.codigo;
+            optionCieE.textContent = diagnosticoE.codigo + " - " + diagnosticoE.nombre;
+            selectCieEditar.appendChild(optionCieE);
         })
     }
 
@@ -706,31 +706,31 @@
         const divSelectsEditar = document.getElementById('divSelectsEditar');
 
         // Obtenemos los estados de los switches
-        const estadoMedicamentos = document.getElementById('checkMedicamentosEditar').checked;
-        const estadoExamenes = document.getElementById('checkExamenesEditar').checked;
-        const estadoVacunas = document.getElementById('checkVacunasEditar').checked;
-        const estadoInsumos = document.getElementById('checkInsumosEditar').checked;
+        const estadoMedicamentosE = document.getElementById('checkMedicamentosEditar').checked;
+        const estadoExamenesE = document.getElementById('checkExamenesEditar').checked;
+        const estadoVacunasE = document.getElementById('checkVacunasEditar').checked;
+        const estadoInsumosE = document.getElementById('checkInsumosEditar').checked;
 
         // Obtenemos los divs que contienen los selectores
-        const divMedicamentos = document.getElementById('divSelectMedicamentosEditar');
-        const divExamenes = document.getElementById('divSelectExamenesEditar');
-        const divVacunas = document.getElementById('divSelectVacunasEditar');
-        const divInsumos = document.getElementById('divSelecInsumosEditar');
+        const divMedicamentosE = document.getElementById('divSelectMedicamentosEditar');
+        const divExamenesE = document.getElementById('divSelectExamenesEditar');
+        const divVacunasE = document.getElementById('divSelectVacunasEditar');
+        const divInsumosE = document.getElementById('divSelecInsumosEditar');
 
         // Verificamos si al menos un switch está activado para mostrar u ocultar el card principal
-        const alMenosUnoActivado = estadoMedicamentos || estadoExamenes || estadoVacunas || estadoInsumos;
-        divSelectsEditar.style.display = alMenosUnoActivado ? 'block' : 'none';
+        const alMenosUnoActivadoE = estadoMedicamentosE || estadoExamenesE || estadoVacunasE || estadoInsumosE;
+        divSelectsEditar.style.display = alMenosUnoActivadoE ? 'block' : 'none';
 
         // Controlamos la visibilidad de cada div según el estado de su switch correspondiente
-        divMedicamentos.style.display = estadoMedicamentos ? 'block' : 'none';
-        divExamenes.style.display = estadoExamenes ? 'block' : 'none';
-        divVacunas.style.display = estadoVacunas ? 'block' : 'none';
-        divInsumos.style.display = estadoInsumos ? 'block' : 'none';
+        divMedicamentosE.style.display = estadoMedicamentosE ? 'block' : 'none';
+        divExamenesE.style.display = estadoExamenesE ? 'block' : 'none';
+        divVacunasE.style.display = estadoVacunasE ? 'block' : 'none';
+        divInsumosE.style.display = estadoInsumosE ? 'block' : 'none';
 
     }
 
     /**
-     * Función para cargar los medicamentos en el select
+     * Función para cargar los medicamentosE en el select
      */
     function cargarMedicamentosEditar() {
         // Obtenemos la referencia al select
@@ -742,22 +742,22 @@
         // Creamos la opción placeholder
         const placeholderOption = document.createElement('option');
         placeholderOption.value = "";
-        placeholderOption.textContent = "Seleccione los medicamentos";
+        placeholderOption.textContent = "Seleccione los medicamentosE";
         placeholderOption.disabled = true;
         placeholderOption.selected = true;
 
         // Añadimos el placeholder como primera opción
         selectMedicamentosEditar.appendChild(placeholderOption);
 
-        // Recorremos el array de medicamentos y creamos las opciones
-        medicamentos.forEach(medicamento => {
+        // Recorremos el array de medicamentosE y creamos las opciones
+        medicamentosE.forEach(medicamentoE => {
             const optionMeds = document.createElement('option');
 
             // Usamos el nombre como value
-            optionMeds.value = medicamento.nombre;
+            optionMeds.value = medicamentoE.nombre;
 
             // Mostramos información adicional en el texto visible
-            optionMeds.textContent = `${medicamento.nombre} - ${medicamento.concentracion} (${medicamento.presentacion})`;
+            optionMeds.textContent = `${medicamentoE.nombre} - ${medicamentoE.concentracion} (${medicamentoE.presentacion})`;
 
             // Añadimos la opción al select
             selectMedicamentosEditar.appendChild(optionMeds);
@@ -765,7 +765,7 @@
     }
 
     /**
-     * Función para cargar los examenes en el select
+     * Función para cargar los examenesE en el select
      */
     function cargarExamenesEditar() {
         const selectExamenesEditar = document.getElementById('selectExamenesEditar');
@@ -780,7 +780,7 @@
 
         selectExamenesEditar.appendChild(placeholderOptionExs);
 
-        examenes.forEach(examen => {
+        examenesE.forEach(examen => {
             const optionExs = document.createElement('option');
 
             optionExs.value = examen;
@@ -792,7 +792,7 @@
     }
 
     /**
-     * Función para cargar las vacunas en el select
+     * Función para cargar las vacunasE en el select
      */
     function cargarVacunasEditar() {
         const selectVacunasEditar = document.getElementById('selectVacunasEditar');
@@ -807,19 +807,19 @@
 
         selectVacunasEditar.appendChild(placeholderOptionVac);
 
-        vacunas.forEach(vacuna => {
+        vacunasE.forEach(vacunaE => {
             const optionVac = document.createElement('option');
 
-            optionVac.value = vacuna;
+            optionVac.value = vacunaE;
 
-            optionVac.textContent = vacuna;
+            optionVac.textContent = vacunaE;
 
             selectVacunasEditar.appendChild(optionVac);
         });
     }
 
     /**
-     * Función para cargar los insumos en el select
+     * Función para cargar los insumosE en el select
      */
     function cargarInsumosEditar() {
         const selectInsumosEditar = document.getElementById('selectInsumosEditar');
@@ -834,7 +834,7 @@
 
         selectInsumosEditar.appendChild(placeholderOptionIns);
 
-        insumos.forEach(insumo => {
+        insumosE.forEach(insumo => {
             const optionIns = document.createElement('option');
 
             optionIns.value = insumo.insumo;
@@ -900,71 +900,71 @@
         }
     }
 
-    const divCantidadMedicamentos = document.getElementById('divCantidadMedicamentos');
-    const divCantidadVacunas = document.getElementById('divCantidadVacunas');
-    const divCantidadInsumos = document.getElementById('divCantidadInsumos');
+    const divCantidadMedicamentosEditar = document.getElementById('divCantidadMedicamentosEditar');
+    const divCantidadVacunasEditar = document.getElementById('divCantidadVacunasEditar');
+    const divCantidadInsumosEditar = document.getElementById('divCantidadInsumosEditar');
 
-    function validarDatosPaquete(datosPaquete) {
-        // Verificar que datosPaquete no sea null o undefined
-        if (!datosPaquete) {
-            // Si no existe el objeto datosPaquete, ocultar todos los divs
-            divCantidadMedicamentos.style.display = "none";
-            divCantidadVacunas.style.display = "none";
-            divCantidadInsumos.style.display = "none";
+    function validarDatosPaqueteE(datosPaqueteE) {
+        // Verificar que datosPaqueteE no sea null o undefined
+        if (!datosPaqueteE) {
+            // Si no existe el objeto datosPaqueteE, ocultar todos los divs
+            divCantidadMedicamentosEditar.style.display = "none";
+            divCantidadVacunasEditar.style.display = "none";
+            divCantidadInsumosEditar.style.display = "none";
             return;
         }
 
         // Medicamentos
-        if (datosPaquete.medicamentos && datosPaquete.medicamentos.length > 0) {
-            divCantidadMedicamentos.style.display = "block";
-            mostrarMedicamentos(datosPaquete.medicamentos);
+        if (datosPaqueteE.medicamentosE && datosPaqueteE.medicamentosE.length > 0) {
+            divCantidadMedicamentosEditar.style.display = "block";
+            mostrarMedicamentosE(datosPaqueteE.medicamentosE);
         } else {
-            divCantidadMedicamentos.style.display = "none";
+            divCantidadMedicamentosEditar.style.display = "none";
         }
 
         // Vacunas
-        if (datosPaquete.vacunas && datosPaquete.vacunas.length > 0) {
-            divCantidadVacunas.style.display = "block";
-            mostrarVacunas(datosPaquete.vacunas);
+        if (datosPaqueteE.vacunasE && datosPaqueteE.vacunasE.length > 0) {
+            divCantidadVacunasEditar.style.display = "block";
+            mostrarVacunasE(datosPaqueteE.vacunasE);
         } else {
-            divCantidadVacunas.style.display = "none";
+            divCantidadVacunasEditar.style.display = "none";
         }
 
         // Insumos
-        if (datosPaquete.insumos && datosPaquete.insumos.length > 0) {
-            divCantidadInsumos.style.display = "block";
-            mostrarInsumos(datosPaquete.insumos);
+        if (datosPaqueteE.insumosE && datosPaqueteE.insumosE.length > 0) {
+            divCantidadInsumosEditar.style.display = "block";
+            mostrarInsumosE(datosPaqueteE.insumosE);
         } else {
-            divCantidadInsumos.style.display = "none";
+            divCantidadInsumosEditar.style.display = "none";
         }
     }
 
 
-    // Función auxiliar para mostrar los medicamentos
-    function mostrarMedicamentos(medicamentos) {
+    // Función auxiliar para mostrar los medicamentosE
+    function mostrarMedicamentosE(medicamentosE) {
         // Limpiar el contenido previo del div
-        divCantidadMedicamentos.innerHTML = "";
+        divCantidadMedicamentosEditar.innerHTML = "";
 
         // Agregar estilos para centrar el contenido
-        divCantidadMedicamentos.style.textAlign = "center";
+        divCantidadMedicamentosEditar.style.textAlign = "center";
 
         // Crear título para la tabla
-        const tituloMedicamentos = document.createElement("h4");
-        tituloMedicamentos.textContent = "Ingrese la cantidad para cada medicamento";
-        divCantidadMedicamentos.appendChild(tituloMedicamentos);
+        const tituloMedicamentosE = document.createElement("h4");
+        tituloMedicamentosE.textContent = "Ingrese la cantidad para cada medicamentoE";
+        divCantidadMedicamentosEditar.appendChild(tituloMedicamentosE);
 
         // Crear tabla
-        const tablaMedicamentos = document.createElement("table");
-        tablaMedicamentos.style.width = "80%";
-        tablaMedicamentos.style.margin = "0 auto";
-        tablaMedicamentos.style.borderCollapse = "collapse";
-        tablaMedicamentos.style.marginTop = "15px";
+        const tablaMedicamentosE = document.createElement("table");
+        tablaMedicamentosE.style.width = "80%";
+        tablaMedicamentosE.style.margin = "0 auto";
+        tablaMedicamentosE.style.borderCollapse = "collapse";
+        tablaMedicamentosE.style.marginTop = "15px";
 
-        // Crear encabezado de la tablaMedicamentos
+        // Crear encabezado de la tablaMedicamentosE
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
 
-        // Encabezado para nombre del medicamento
+        // Encabezado para nombre del medicamentoE
         const thNombre = document.createElement("th");
         thNombre.textContent = "Medicamento";
         thNombre.style.padding = "10px";
@@ -984,21 +984,21 @@
         headerRow.appendChild(thNombre);
         headerRow.appendChild(thCantidad);
         thead.appendChild(headerRow);
-        tablaMedicamentos.appendChild(thead);
+        tablaMedicamentosE.appendChild(thead);
 
-        // Crear cuerpo de la tablaMedicamentos
+        // Crear cuerpo de la tablaMedicamentosE
         const tbody = document.createElement("tbody");
 
-        // Agregar cada medicamento como una fila
-        for (const medicamento of medicamentos) {
+        // Agregar cada medicamentoE como una fila
+        for (const medicamentoE of medicamentosE) {
             const row = document.createElement("tr");
             row.style.borderBottom = "1px solid #ddd";
 
-            const inputIdMed = 'cantidad_medicamento_' + medicamento.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const inputIdMedE = 'cantidad_medicamento_' + medicamentoE.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
-            // Celda para el nombre del medicamento
+            // Celda para el nombre del medicamentoE
             const tdNombre = document.createElement("td");
-            tdNombre.textContent = medicamento || "Medicamento sin nombre";
+            tdNombre.textContent = medicamentoE || "Medicamento sin nombre";
             tdNombre.style.padding = "10px";
             tdNombre.style.textAlign = "left";
             tdNombre.style.width = "75%";
@@ -1012,9 +1012,9 @@
             const inputCantidad = document.createElement("input");
             inputCantidad.type = "number";
             inputCantidad.min = "1";
-            inputCantidad.dataset.medicamento = medicamento;
-            inputCantidad.id = inputIdMed;
-            inputCantidad.className = "input-cantidad-medicamento";
+            inputCantidad.dataset.medicamentoE = medicamentoE;
+            inputCantidad.id = inputIdMedE;
+            inputCantidad.className = "input-cantidad-medicamentoE";
             inputCantidad.style.width = "100px";
             inputCantidad.style.padding = "5px";
             inputCantidad.style.textAlign = "center";
@@ -1028,33 +1028,33 @@
             row.appendChild(tdNombre);
             row.appendChild(tdCantidad);
 
-            // Agregar fila al cuerpo de la tablaMedicamentos
+            // Agregar fila al cuerpo de la tablaMedicamentosE
             tbody.appendChild(row);
         }
 
-        // Agregar cuerpo a la tablaMedicamentos
-        tablaMedicamentos.appendChild(tbody);
+        // Agregar cuerpo a la tablaMedicamentosE
+        tablaMedicamentosE.appendChild(tbody);
 
-        // Agregar la tablaMedicamentos al div
-        divCantidadMedicamentos.appendChild(tablaMedicamentos);
+        // Agregar la tablaMedicamentosE al div
+        divCantidadMedicamentosEditar.appendChild(tablaMedicamentosE);
     }
 
 
-    function mostrarVacunas(vacunas) {
-        divCantidadVacunas.innerHTML = "";
+    function mostrarVacunasE(vacunasE) {
+        divCantidadVacunasEditar.innerHTML = "";
 
-        divCantidadVacunas.style.textAlign = "center";
+        divCantidadVacunasEditar.style.textAlign = "center";
 
-        const tituloVacunas = document.createElement("h4");
-        tituloVacunas.textContent = "Ingrese la cantidad para cada vacuna";
-        tituloVacunas.className = "mt-3";
-        divCantidadVacunas.appendChild(tituloVacunas);
+        const tituloVacunasE = document.createElement("h4");
+        tituloVacunasE.textContent = "Ingrese la cantidad para cada vacunaE";
+        tituloVacunasE.className = "mt-3";
+        divCantidadVacunasEditar.appendChild(tituloVacunasE);
 
-        const tablaVacunas = document.createElement("table");
-        tablaVacunas.style.width = "80%";
-        tablaVacunas.style.margin = "0 auto";
-        tablaVacunas.style.borderCollapse = "collapse";
-        tablaVacunas.style.marginTop = "15px";
+        const tablaVacunasE = document.createElement("table");
+        tablaVacunasE.style.width = "80%";
+        tablaVacunasE.style.margin = "0 auto";
+        tablaVacunasE.style.borderCollapse = "collapse";
+        tablaVacunasE.style.marginTop = "15px";
 
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
@@ -1076,18 +1076,18 @@
         headerRow.appendChild(thNombre);
         headerRow.appendChild(thCantidad);
         thead.appendChild(headerRow);
-        tablaVacunas.appendChild(thead);
+        tablaVacunasE.appendChild(thead);
 
         const tbody = document.createElement("tbody");
 
-        for (const vacuna of vacunas) {
+        for (const vacunaE of vacunasE) {
             const row = document.createElement("tr");
             row.style.borderBottom = "1px solid #ddd";
 
-            const inputIdVac = 'cantidad_vacuna_' + vacuna.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const inputIdVacE = 'cantidad_vacuna_' + vacunaE.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
             const tdNombre = document.createElement("td");
-            tdNombre.textContent = vacuna || "Vacuna sin nombre";
+            tdNombre.textContent = vacunaE || "Vacuna sin nombre";
             tdNombre.style.padding = "10px";
             tdNombre.style.textAlign = "left";
             tdNombre.style.width = "75%"
@@ -1099,9 +1099,9 @@
             const inputCantidad = document.createElement("input");
             inputCantidad.type = "number";
             inputCantidad.min = "1";
-            inputCantidad.dataset.vacuna = vacuna;
-            inputCantidad.id = inputIdVac;
-            inputCantidad.className = "input-cantidad-vacuna";
+            inputCantidad.dataset.vacunaE = vacunaE;
+            inputCantidad.id = inputIdVacE;
+            inputCantidad.className = "input-cantidad-vacunaE";
             inputCantidad.style.width = "100px";
             inputCantidad.style.padding = "5px";
             inputCantidad.style.textAlign = "center";
@@ -1116,26 +1116,26 @@
             tbody.appendChild(row);
         }
 
-        tablaVacunas.appendChild(tbody);
+        tablaVacunasE.appendChild(tbody);
 
-        divCantidadVacunas.appendChild(tablaVacunas);
+        divCantidadVacunasEditar.appendChild(tablaVacunasE);
     }
 
-    function mostrarInsumos(insumos) {
-        divCantidadInsumos.innerHTML = "";
+    function mostrarInsumosE(insumosE) {
+        divCantidadInsumosEditar.innerHTML = "";
 
-        divCantidadInsumos.style.textAlign = "center";
+        divCantidadInsumosEditar.style.textAlign = "center";
 
-        const tituloInsumos = document.createElement("h4");
-        tituloInsumos.textContent = "Ingrese la cantidad para cada insumo";
-        tituloInsumos.className = "mt-3";
-        divCantidadInsumos.appendChild(tituloInsumos);
+        const tituloInsumosE = document.createElement("h4");
+        tituloInsumosE.textContent = "Ingrese la cantidad para cada insumo";
+        tituloInsumosE.className = "mt-3";
+        divCantidadInsumosEditar.appendChild(tituloInsumosE);
 
-        const tablaInsumos = document.createElement("table");
-        tablaInsumos.style.width = "80%";
-        tablaInsumos.style.margin = "0 auto";
-        tablaInsumos.style.borderCollapse = "collapse";
-        tablaInsumos.style.marginTop = "15px";
+        const tablaInsumosE = document.createElement("table");
+        tablaInsumosE.style.width = "80%";
+        tablaInsumosE.style.margin = "0 auto";
+        tablaInsumosE.style.borderCollapse = "collapse";
+        tablaInsumosE.style.marginTop = "15px";
 
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
@@ -1157,18 +1157,18 @@
         headerRow.appendChild(thNombre);
         headerRow.appendChild(thCantidad);
         thead.appendChild(headerRow);
-        tablaInsumos.appendChild(thead);
+        tablaInsumosE.appendChild(thead);
 
         const tbody = document.createElement("tbody");
 
-        for (const insumo of insumos) {
+        for (const insumoE of insumosE) {
             const row = document.createElement("tr");
             row.style.borderBottom = "1px solid #ddd";
 
-            const inputIdIns = 'cantidad_insumo_' + insumo.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            const inputIdInsE = 'cantidad_insumo_' + insumoE.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
             const tdNombre = document.createElement("td");
-            tdNombre.textContent = insumo || "Insumo sin nombre";
+            tdNombre.textContent = insumoE || "Insumo sin nombre";
             tdNombre.style.padding = "10px";
             tdNombre.style.textAlign = "left";
             tdNombre.style.width = "75%";
@@ -1180,9 +1180,9 @@
             const inputCantidad = document.createElement("input");
             inputCantidad.type = "number";
             inputCantidad.min = "1";
-            inputCantidad.dataset.insumo = insumo;
-            inputCantidad.id = inputIdIns;
-            inputCantidad.className = "input-cantidad-insumo";
+            inputCantidad.dataset.insumoE = insumoE;
+            inputCantidad.id = inputIdInsE;
+            inputCantidad.className = "input-cantidad-insumoE";
             inputCantidad.style.width = "100px";
             inputCantidad.style.padding = "5px";
             inputCantidad.style.textAlign = "center";
@@ -1197,149 +1197,149 @@
             tbody.appendChild(row);
         }
 
-        tablaInsumos.appendChild(tbody);
+        tablaInsumosE.appendChild(tbody);
 
-        divCantidadInsumos.appendChild(tablaInsumos);
+        divCantidadInsumosEditar.appendChild(tablaInsumosE);
     }
 
-    document.getElementById('finishStep').addEventListener('click', function() {
-        // Recuperar datosPaquete del sessionStorage
-        const datosPaquete = JSON.parse(sessionStorage.getItem('datosPaquete')) || {};
+    document.getElementById('finishStepEditar').addEventListener('click', function() {
+        // Recuperar datosPaqueteE del sessionStorage
+        const datosPaqueteE = JSON.parse(sessionStorage.getItem('datosPaqueteE')) || {};
         event.preventDefault();
 
-        // Obtener todos los inputs de cantidad de medicamentos
-        const inputsCantidadMeds = document.querySelectorAll('.input-cantidad-medicamento');
-        const inputsCantidadVacs = document.querySelectorAll('.input-cantidad-vacuna');
-        const inputsCantidadIns = document.querySelectorAll('.input-cantidad-insumo');
+        // Obtener todos los inputs de cantidad de medicamentosE
+        const inputsCantidadMedsE = document.querySelectorAll('.input-cantidad-medicamentoE');
+        const inputsCantidadVacsE = document.querySelectorAll('.input-cantidad-vacunaE');
+        const inputsCantidadInsE = document.querySelectorAll('.input-cantidad-insumoE');
 
         // Crear objetos para las cantidades
-        const medicamentosConCantidad = {};
-        const vacunasConCantidad = {};
-        const insumosConCantidad = {};
+        const medicamentosConCantidadE = {};
+        const vacunasConCantidadE = {};
+        const insumosConCantidadE = {};
 
-        inputsCantidadMeds.forEach(input => {
-            const nombreMedicamento = input.dataset.medicamento;
-            const cantidadMedicamentos = parseInt(input.value) || 0;
-            medicamentosConCantidad[nombreMedicamento] = cantidadMedicamentos;
+        inputsCantidadMedsE.forEach(input => {
+            const nombreMedicamentoE = input.dataset.medicamentoE;
+            const cantidadMedicamentosE = parseInt(input.value) || 0;
+            medicamentosConCantidadE[nombreMedicamentoE] = cantidadMedicamentosE;
         });
 
-        inputsCantidadVacs.forEach(input => {
-            const nombreVacuna = input.dataset.vacuna;
-            const cantidadVacunas = parseInt(input.value) || 0;
-            vacunasConCantidad[nombreVacuna] = cantidadVacunas;
+        inputsCantidadVacsE.forEach(input => {
+            const nombreVacunaE = input.dataset.vacunaE;
+            const cantidadVacunasE = parseInt(input.value) || 0;
+            vacunasConCantidadE[nombreVacunaE] = cantidadVacunasE;
         });
 
-        inputsCantidadIns.forEach(input => {
-            const nombreInsumo = input.dataset.insumo;
-            const cantidadInsumos = parseInt(input.value) || 0;
-            insumosConCantidad[nombreInsumo] = cantidadInsumos;
+        inputsCantidadInsE.forEach(input => {
+            const nombreInsumoE = input.dataset.insumoE;
+            const cantidadInsumosE = parseInt(input.value) || 0;
+            insumosConCantidadE[nombreInsumoE] = cantidadInsumosE;
         });
 
-        let relacionPaquete = '';
-        if (datosPaquete.cupsCie === 'cie11') {
-            relacionPaquete = `<strong>Relacionado a:</strong> CIE-11<br>
-                         <strong>CIE-11:</strong> ${datosPaquete.selectCieEditar || 'No especificado'}`;
-        } else if (datosPaquete.cupsCie === 'cups') {
-            relacionPaquete = `<strong>Relacionado a:</strong> CUPS<br>
-                         <strong>CUPS:</strong> ${datosPaquete.selectCupsEditar || 'No especificado'}`;
+        let relacionPaqueteE = '';
+        if (datosPaqueteE.cupsCieEditar === 'cie11Editar') {
+            relacionPaqueteE = `<strong>Relacionado a:</strong> CIE-11<br>
+                         <strong>CIE-11:</strong> ${datosPaqueteE.selectCieEditar || 'No especificado'}`;
+        } else if (datosPaqueteE.cupsCieEditar === 'cupsEditar') {
+            relacionPaqueteE = `<strong>Relacionado a:</strong> CUPS<br>
+                         <strong>CUPS:</strong> ${datosPaqueteE.selectCupsEditar || 'No especificado'}`;
         } else {
-            relacionPaquete = 'Relación no especificada';
+            relacionPaqueteE = 'Relación no especificada';
         }
 
         // Crear el contenido HTML para el resumen
-        let contenidoResumen = `
+        let contenidoResumenE = `
         <div style="text-align: left; padding: 10px;">
             <h3 style="margin-bottom: 15px;">Resumen del Paquete</h3>
             
             <div style="margin-bottom: 15px;">
-                <strong>Nombre:</strong> ${datosPaquete.nombrePaquete || 'No especificado'}<br>
-                ${relacionPaquete}
+                <strong>Nombre:</strong> ${datosPaqueteE.nombrePaqueteEditar || 'No especificado'}<br>
+                ${relacionPaqueteE}
             </div>
     `;
 
-        // Agregar medicamentos si existen
-        if (datosPaquete.medicamentos && datosPaquete.medicamentos.length > 0) {
-            contenidoResumen += `
+        // Agregar medicamentosE si existen
+        if (datosPaqueteE.medicamentosE && datosPaqueteE.medicamentosE.length > 0) {
+            contenidoResumenE += `
             <div style="margin-bottom: 15px;">
                 <strong>Medicamentos:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
         `;
 
-            datosPaquete.medicamentos.forEach(med => {
-                const cantidad = medicamentosConCantidad[med] || 0;
-                contenidoResumen += `<li>${med} - Cantidad: ${cantidad}</li>`;
+            datosPaqueteE.medicamentosE.forEach(med => {
+                const cantidad = medicamentosConCantidadE[med] || 0;
+                contenidoResumenE += `<li>${med} - Cantidad: ${cantidad}</li>`;
             });
 
-            contenidoResumen += `
+            contenidoResumenE += `
                 </ul>
             </div>
         `;
         }
 
         // Agregar exámenes si existen
-        if (datosPaquete.examenes && datosPaquete.examenes.length > 0) {
-            contenidoResumen += `
+        if (datosPaqueteE.examenesE && datosPaqueteE.examenesE.length > 0) {
+            contenidoResumenE += `
             <div style="margin-bottom: 15px;">
                 <strong>Exámenes:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
         `;
 
-            datosPaquete.examenes.forEach(exam => {
-                contenidoResumen += `<li>${exam}</li>`;
+            datosPaqueteE.examenesE.forEach(exam => {
+                contenidoResumenE += `<li>${exam}</li>`;
             });
 
-            contenidoResumen += `
+            contenidoResumenE += `
                 </ul>
             </div>
         `;
         }
 
-        // Agregar vacunas si existen
-        if (datosPaquete.vacunas && datosPaquete.vacunas.length > 0) {
-            contenidoResumen += `
+        // Agregar vacunasE si existen
+        if (datosPaqueteE.vacunasE && datosPaqueteE.vacunasE.length > 0) {
+            contenidoResumenE += `
             <div style="margin-bottom: 15px;">
                 <strong>Vacunas:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
         `;
 
-            datosPaquete.vacunas.forEach(vac => {
-                const cantidad = vacunasConCantidad[vac] || 0;
-                contenidoResumen += `<li>${vac} - Cantidad: ${cantidad}</li>`;
+            datosPaqueteE.vacunasE.forEach(vac => {
+                const cantidad = vacunasConCantidadE[vac] || 0;
+                contenidoResumenE += `<li>${vac} - Cantidad: ${cantidad}</li>`;
             });
 
-            contenidoResumen += `
+            contenidoResumenE += `
                 </ul>
             </div>
         `;
         }
 
-        // Agregar insumos si existen
-        if (datosPaquete.insumos && datosPaquete.insumos.length > 0) {
-            contenidoResumen += `
+        // Agregar insumosE si existen
+        if (datosPaqueteE.insumosE && datosPaqueteE.insumosE.length > 0) {
+            contenidoResumenE += `
             <div style="margin-bottom: 15px;">
                 <strong>Insumos:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
         `;
 
-            datosPaquete.insumos.forEach(ins => {
-                const cantidad = insumosConCantidad[ins] || 0;
-                contenidoResumen += `<li>${ins} - Cantidad: ${cantidad}</li>`;
+            datosPaqueteE.insumosE.forEach(ins => {
+                const cantidad = insumosConCantidadE[ins] || 0;
+                contenidoResumenE += `<li>${ins} - Cantidad: ${cantidad}</li>`;
             });
 
-            contenidoResumen += `
+            contenidoResumenE += `
                 </ul>
             </div>
         `;
         }
 
-        contenidoResumen += `</div>`;
+        contenidoResumenE += `</div>`;
 
         Swal.fire({
-            title: 'Paquete Creado',
-            html: contenidoResumen,
+            title: 'Paquete Actualizado',
+            html: contenidoResumenE,
             icon: 'success',
             width: '600px',
-            confirmButtonText: 'Finalizar',
+            confirmButtonText: 'Actualizar',
             confirmButtonColor: '#4CAF50'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -1350,9 +1350,9 @@
         });
 
         // Mostrar ambos objetos
-        console.log('Datos del paquete:', datosPaquete);
-        console.log('Medicamentos con cantidades:', medicamentosConCantidad);
-        console.log('Vacunas con cantidades:', vacunasConCantidad);
-        console.log('Insumos con cantidades:', insumosConCantidad);
+        console.log('Datos del paquete:', datosPaqueteE);
+        console.log('Medicamentos con cantidades:', medicamentosConCantidadE);
+        console.log('Vacunas con cantidades:', vacunasConCantidadE);
+        console.log('Insumos con cantidades:', insumosConCantidadE);
     });
 </script>

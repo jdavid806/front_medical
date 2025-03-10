@@ -56,14 +56,11 @@ async function generarFormatoIncapacidad(incapacidad) {
 async function generarFormatoConsentimiento(consentimeinto) {
   let contenido = `
   <div class="container p-3 border rounded shadow-sm">
-    <h3 class="text-primary text-center">Consentimiento Informado</h3>
+    <h3 class="text-primary text-center">${consentimeinto.title}</h3>
     <hr>
 
     <div class="mb-3">
-      <p>
-        Declaro haber sido informado/a de manera clara y comprensible sobre el procedimiento a realizar, sus riesgos y beneficios. 
-        Autorizo voluntariamente la realización del mismo.
-      </p>
+      ${consentimeinto.description}
     </div>
   </div>
   `;

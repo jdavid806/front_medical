@@ -182,14 +182,9 @@ export interface UserTableItem {
 }
 
 export interface PrescriptionTableItem {
-    doctor: {
-        first_name: string,
-        last_name: string
-    },
-    patient: {
-        first_name: string,
-        last_name: string
-    },
+    id: string,
+    doctor: string,
+    patient: string,
     created_at: string
 }
 
@@ -228,11 +223,15 @@ export interface UserRoleDto {
 
 
 export interface PrescriptionDto {
-    patient_id: number
-    user_id: number
-    is_active: boolean
-    created_at: string
-    medicines: Medicine[]
+    id: string;
+    patient_id: string;
+    user_id: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    patient: Patient;
+    prescriber: UserDto;
+    recipe_items: Medicine[];
 }
 
 export interface Medicine {

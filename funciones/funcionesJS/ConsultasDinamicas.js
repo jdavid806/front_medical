@@ -19,18 +19,26 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
+  let url = `http://dev.medicalsoft.ai/medical/entities/${data.social_security.entity_id}`;
+  let entidad = await obtenerDatos(url);
+
+  console.log(entidad);
+  
+
+  let nombrEntidad = entidad.data.name;
+
   return {
     datos_basicos: {
       nombre: unirTextos(nombre),
       documento: data.document_type + "-" + data.document_number,
       edad: calcularEdad(data.date_of_birth),
-      telefono: data.country.phone_code + data.whatsapp,
+      telefono: data.whatsapp,
       correo: data.email,
     },
     datos_generales: {
       direccion: data.address,
       genero: traducirGenero(data.gender),
-      eps: data.social_security.eps,
+      entidad: nombrEntidad,
       "tipo afiliado": data.social_security.affiliate_type,
       fecha_consulta: fechaConsulta,
     },
@@ -50,7 +58,7 @@ async function consultarDatosEnvioPaciente(pacienteId) {
   return {
     nombre: unirTextos(nombre),
     documento: data.document_type + "-" + data.document_number,
-    telefono: data.country.phone_code + data.whatsapp,
+    telefono: "57"+ data.whatsapp,
   };
 }
 

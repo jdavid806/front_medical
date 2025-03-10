@@ -244,3 +244,14 @@ function copiarTexto(id) {
       console.error("Error al copiar el texto: ", err);
     });
 }
+
+async function getCountryInfo(value) {
+  let url = "http://dev.medicalsoft.ai/medical/countries";
+  let paises = await obtenerDatos(url);
+
+  for (const pais of paises.data) {
+    if (value.toLowerCase() === pais.name.toLowerCase()) {
+      return pais.phonecode;
+    }
+  }
+}

@@ -7,12 +7,8 @@ export const useAllPrescriptions = () => {
       const {
         data: prescriptionData
       } = await prescriptionService.getPrescriptions();
-      const prescriptionItems = prescriptionData.map(prescription => ({
-        doctor: `${prescription.prescriber.first_name} ${prescription.prescriber.last_name}`,
-        patient: `${prescription.patient.first_name} ${prescription.patient.last_name}`,
-        created_at: prescription.created_at
-      }));
-      setPrescriptions(prescriptionItems);
+      const finalData = prescriptionData.filter(recipe => recipe.is_active);
+      setPrescriptions(finalData);
     } catch (error) {
       console.error('Error fetching prescriptions:', error);
     }

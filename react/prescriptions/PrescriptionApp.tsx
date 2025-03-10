@@ -1,25 +1,68 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PrescriptionTable from '../prescriptions/components/PrescriptionTable';
 import PrescriptionModal from './components/PrescriptionModal';
+import { Medicine, PrescriptionDto } from '../models/models';
+import { useAllPrescriptions } from './hooks/useAllPrescriptions';
+import { usePrescriptionCreate } from './hooks/usePrescriptionCreate';
 import { usePrescription } from './hooks/usePrescription';
-import { Medicine } from '../models/models';
+import { usePrescriptionDelete } from './hooks/usePrescriptionDelete';
+import { usePrescriptionUpdate } from './hooks/usePrescriptionUpdate';
+import { PrescriptionFormInputs } from './components/PrescriptionForm';
+import { getJWTPayload } from '../../services/utilidades';
+import { userService } from '../../services/api';
 
 
 export const PrescriptionApp = () => {
-    const { createPrescription} = usePrescription();
-    const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
-    const handleSubmit = (data: any)  => {
+    const { createPrescription } = usePrescriptionCreate();
+    const { updatePrescription } = usePrescriptionUpdate();
+    const { prescriptions, fetchPrescriptions } = useAllPrescriptions();
+    const { deletePrescription } = usePrescriptionDelete();
+    const { prescription, setPrescription, fetchPrescription } = usePrescription();
 
-        createPrescription(data as unknown as Medicine);
+    const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
+    const [initialData, setInitialData] = useState<PrescriptionFormInputs | undefined>(undefined)
+
+    const handleSubmit = async (data: any) => {
+        if (prescription) {
+            await updatePrescription(prescription.id, data)
+        } else {
+            await createPrescription(data)
+        }
+        fetchPrescriptions()
+        setShowPrescriptionModal(false)
     };
 
-    const handleOpenPrescriptionModal = () => {
+    const handleTableEdit = (id: string) => {
+        fetchPrescription(id);
+        setShowPrescriptionModal(true);
+    };
+
+    const handleTableDelete = async (id: string) => {
+        const confirmed = await deletePrescription(id)
+        if (confirmed) fetchPrescriptions()
+    }
+
+    const handleOnCreate = () => {
+        setInitialData(undefined)
+        setPrescription(null)
         setShowPrescriptionModal(true)
     }
 
     const handleHidePrescriptionModal = () => {
         setShowPrescriptionModal(false)
     }
+
+    useEffect(() => {
+        console.log('Prescription: ', prescription)
+        if (!prescription) return
+
+        setInitialData({
+            patient_id: +((new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? "0"),
+            medicines: prescription.recipe_items,
+            user_id: 1,
+            is_active: true
+        })
+    }, [prescription])
 
     return (
         <>
@@ -29,16 +72,22 @@ export const PrescriptionApp = () => {
                     <div className="">
                         <a
                             className="btn btn-primary"
-                            onClick={handleOpenPrescriptionModal}>Nueva Receta
+                            onClick={handleOnCreate}>Nueva Receta
                         </a>
                     </div>
                 </div>
             </div>
-            <PrescriptionTable></PrescriptionTable>
+            <PrescriptionTable
+                prescriptions={prescriptions}
+                onEditItem={handleTableEdit}
+                onDeleteItem={handleTableDelete}
+            ></PrescriptionTable>
             <PrescriptionModal
+                title={prescription ? 'Editar exámen' : 'Crear exámen'}
                 show={showPrescriptionModal}
                 handleSubmit={handleSubmit}
                 onHide={handleHidePrescriptionModal}
+                initialData={initialData}
             ></PrescriptionModal>
         </>
     )

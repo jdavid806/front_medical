@@ -687,7 +687,7 @@ include '../modals/NewCompanionModal.php';
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-4 small"><strong>Dirección:</strong></div>
-                                                        <div class="col-8 text-body-secondary small">-</div>
+                                                        <div class="col-8 text-body-secondary small" data-field="address">-</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-lg-6">
@@ -752,23 +752,23 @@ include '../modals/NewCompanionModal.php';
                                                     <tbody>
                                                         <tr>
                                                             <td class="small fw-bold">Subtotal:</td>
-                                                            <td class="text-end small"></td>
+                                                            <td class="text-end small" data-field="subtotal"></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="small fw-bold">Total a Pagar:</td>
-                                                            <td class="text-end small fw-bold"></td>
+                                                            <td class="text-end small fw-bold" data-field="total"></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="small fw-bold">Pagado:</td>
-                                                            <td class="text-end small"></td>
+                                                            <td class="text-end small" data-field="paid"></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="small fw-bold text-danger">Saldo:</td>
-                                                            <td class="text-end small text-danger"></td>
+                                                            <td class="text-end small text-danger" data-field="balance"></td>
                                                         </tr>
                                                         <tr>
                                                             <td class="small fw-bold">Total Factura:</td>
-                                                            <td class="text-end small fw-bold"></td>
+                                                            <td class="text-end small fw-bold" data-field="total_invoice"></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -814,27 +814,27 @@ include '../modals/NewCompanionModal.php';
                             <div class="tab-pane" role="tabpanel" aria-labelledby="bootstrap-wizard-tab4" id="bootstrap-wizard-tab4">
                                 <div class="row flex-center pb-8 pt-4 gx-3 gy-4">
                                     <div class="col-12 col-sm-auto">
-                                        <div class="text-center text-sm-start">
+                                        <div class="d-flex flex-column justify-content-center">
                                             <h5 class="mb-3">Felicidades!</h5>
                                             <p class="text-body-emphasis fs-9">La admisión medica a sido completada exitosamente </p>
 
-                                            <div class="btn-group me-1">
-                                                <div class="btn-group me-1">
+                                            <div class="btn-group me-1 justify-content-center">
+                                                <!-- <div class="btn-group me-1">
                                                     <button class="btn dropdown-toggle mb-1 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Obtener factura</button>
                                                     <div class="dropdown-menu">
 
                                                         <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Descargar</a>
                                                         <a class="dropdown-item" href="#"> <i class="fas fa-print me-2"></i> Imprimir</a>
                                                     </div>
-                                                </div>
-                                                <div class="btn-group me-1">
+                                                </div> -->
+                                                <!-- <div class="btn-group me-1">
                                                     <button class="btn dropdown-toggle mb-1 btn-secondary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Enviar factura</button>
                                                     <div class="dropdown-menu">
 
                                                         <a class="dropdown-item" href="#"><i class="fab fa-whatsapp me-2"></i> Vía whatsApp</a>
                                                         <a class="dropdown-item" href="#"><i class="far fa-envelope me-2"></i> Vía correo electrónico</a>
                                                     </div>
-                                                </div>
+                                                </div> -->
                                                 <div class="btn-group me-1">
                                                     <button class="btn dropdown-toggle mb-1 btn-success" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finalizar factura</button>
                                                     <div class="dropdown-menu">
@@ -853,7 +853,7 @@ include '../modals/NewCompanionModal.php';
                     </div>
                     <!-- Footer -->
                     <div class="card-footer border-top-0" data-wizard-footer="data-wizard-footer">
-                        <div class="d-flex pager wizard list-inline mb-0"><button class="d-none btn btn-link ps-0" type="button" data-wizard-prev-btn="data-wizard-prev-btn"><svg class="svg-inline--fa fa-chevron-left me-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;">
+                        <div class="d-flex pager wizard list-inline mb-0"><button class="d-none btn btn-link ps-0" id="back_step" type="button" data-wizard-prev-btn="data-wizard-prev-btn"><svg class="svg-inline--fa fa-chevron-left me-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;">
                                     <g transform="translate(160 256)">
                                         <g transform="translate(0, 0)  scale(0.8125, 0.8125)  rotate(0 0 0)">
                                             <path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" transform="translate(-160 -256)"></path>
@@ -994,9 +994,9 @@ include '../modals/NewCompanionModal.php';
             <td class="align-middle small">${index + 1}</td>
             <td class="align-middle small">${productName}</td>
             <td class="align-middle small text-end">${productQuantity}</td>
-            <td class="align-middle small text-end">${productPrice} COP</td>
-            <td class="align-middle small text-end">0 COP</td>
-            <td class="align-middle small text-end">${subtotal} COP</td>
+            <td class="align-middle small text-end">${productPrice} </td>
+            <td class="align-middle small text-end">0 </td>
+            <td class="align-middle small text-end">${subtotal} </td>
             <td class="border-0"></td>
         `;
 
@@ -1013,12 +1013,8 @@ include '../modals/NewCompanionModal.php';
         const rows = paymentsTableBody.getElementsByTagName('tr');
         summaryPaymentsTableBody.innerHTML = ''; // Limpiar tabla resumen
 
-        console.log("rows:", rows);
-
         Array.from(rows).forEach((row, index) => {
-            console.log(row);
             const cells = row.querySelectorAll('td');
-            console.log(cells);
 
             if (cells.length) {
                 // Verificar que los índices sean correctos:
@@ -1036,10 +1032,6 @@ include '../modals/NewCompanionModal.php';
             }
 
         });
-    }
-
-    function nextStep() {
-        console.log("nextStep");
     }
 
 
@@ -1222,7 +1214,7 @@ include '../modals/NewCompanionModal.php';
             setTimeout(() => {
                 let sumAmountValue = parseFloat(sumAmount.textContent).toFixed(0);
                 let sumAmountPaymentValue = parseFloat(sumAmountPayment.textContent).toFixed(0);
-                pending.value = Math.abs(sumAmountValue - sumAmountPaymentValue);
+                pending.value = sumAmountValue - sumAmountPaymentValue;
 
                 if (pending.value == 0) {
                     buttonStep.disabled = false;
@@ -1436,12 +1428,11 @@ include '../modals/NewCompanionModal.php';
             clone.querySelector('#fecha-consulta').textContent = consulta.appointment_date;
             clone.querySelector('#hora-consulta').textContent = consulta.appointment_time;
             clone.querySelector('#profesional').textContent = `${consulta.user_availability.user.first_name} ${consulta.user_availability.user.last_name}`;
-            clone.querySelector('#entidad').textContent = consulta.patient.social_security.eps;
+            clone.querySelector('#entidad').textContent = consulta.patient.social_security.entity.name;
 
 
             clone.querySelector('#generar-admision').href = `generar_admision?id_cita=${consulta.id}`;
             list.appendChild(clone);
-
 
         });
     }
@@ -1449,7 +1440,7 @@ include '../modals/NewCompanionModal.php';
     async function getProducts() {
         try {
             const response = await productService.getAllProducts(); // ya retorna JSON
-
+            console.log(response);
             let products;
             if (response.data && Array.isArray(response.data)) {
                 products = response.data; // Estructura correcta
@@ -1469,7 +1460,6 @@ include '../modals/NewCompanionModal.php';
     async function getPaymentMethods() {
         try {
             const response = await paymentMethodService.getPaymentMethods(); // ya retorna JSON
-
             if (response) {
                 populatePaymentMethods(response);
             } else {
@@ -1498,6 +1488,7 @@ include '../modals/NewCompanionModal.php';
     const productDataMap = {};
 
     function populateProductSelect(products) {
+        const entitySwitch = document.getElementById('entitySwitch');
         const productSelect = document.getElementById('services');
         if (Array.isArray(products)) {
             products.forEach(product => {
@@ -1506,13 +1497,17 @@ include '../modals/NewCompanionModal.php';
                     const option = document.createElement('option');
                     option.value = product.id;
                     option.textContent = attributes.name;
-                    option.setAttribute('data-price', attributes.sale_price);
+                    if (entitySwitch.checked) {
+                        option.setAttribute('data-price', attributes.copayment);
+                    } else {
+                        option.setAttribute('data-price', attributes.sale_price);
+                    }
                     productSelect.appendChild(option);
 
                     // Almacena los datos del producto en el objeto productDataMap
                     productDataMap[product.id] = {
                         name: attributes.name,
-                        price: attributes.sale_price,
+                        price: entitySwitch.checked ? attributes.copayment : attributes.sale_price,
                         taxes: product.taxes // Suponiendo que 'taxes' está en el objeto product
                     };
                 } else {
@@ -1577,7 +1572,7 @@ include '../modals/NewCompanionModal.php';
             productInput.value = product.name || 'Producto sin nombre'; // Asignar un valor predeterminado si el nombre es null
 
             // Asignar el precio del producto al campo de entrada
-            productPrice.value = product.price_entity || 0; // Asignar un valor predeterminado si el precio es null
+            productPrice.value = product.copayment || 0; // Asignar un valor predeterminado si el precio es null
 
         } else {
             console.error('No se pudo encontrar el campo de entrada o la información del producto.');
@@ -1593,7 +1588,7 @@ include '../modals/NewCompanionModal.php';
             globalAdmission = admission;
 
             const subsidiary = document.getElementById('subsidiary');
-            subsidiary.value = admission.patient.social_security.eps;
+            subsidiary.value = admission.patient.social_security.entity.name;
 
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
@@ -1645,7 +1640,7 @@ include '../modals/NewCompanionModal.php';
                 });
 
                 /* Información de la entidad */
-                setElementValue('input[name="entity"]', admission.patient.social_security.eps);
+                setElementValue('input[name="entity"]', admission.patient.social_security.entity.name);
 
                 /* Etiquetas */
                 const typeScheme = document.getElementById('typeScheme');
@@ -1678,7 +1673,8 @@ include '../modals/NewCompanionModal.php';
                 /* Mostrar información del paciente en otras partes del DOM */
                 setElementValue('.row .col-8.text-body-secondary[data-field="fullName"]', `${admission.patient.first_name} ${admission.patient.last_name}`);
                 setElementValue('.row .col-8.text-body-secondary[data-field="document"]', admission.patient.document_number);
-                setElementValue('.row .col-8.text-body-secondary[data-field="city"]', admission.patient.city.name);
+                setElementValue('.row .col-8.text-body-secondary[data-field="city"]', admission.patient.city_id);
+                setElementValue('.row .col-8.text-body-secondary[data-field="address"]', admission.patient.address);
 
             } else {
                 console.error('La respuesta de la API no contiene los datos esperados');
@@ -1753,14 +1749,15 @@ include '../modals/NewCompanionModal.php';
             <td></td>
         `;
         } else {
-            const priceProduct = new Intl.NumberFormat('es-CO').format(product.sale_price);
-            const totalPrice = new Intl.NumberFormat('es-CO').format(product.sale_price);
+            let validationPriceProduct = entitySwitch.checked ? product.copayment : product.sale_price;
+            const priceProduct = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
+            const totalPrice = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
             productRow.innerHTML = `
-            <td class="small">${entitySwitch.checked ? priceProduct - 400 : priceProduct || 'Producto sin nombre'}</td>
-            <td class="small">${ entitySwitch.checked ? product.sale_price - 400 : product.sale_price || 'N/A'}</td>
+            <td class="small">${entitySwitch.checked ? priceProduct : priceProduct || 'Producto sin nombre'}</td>
+            <td class="small">${ entitySwitch.checked ? product.copayment : product.sale_price || 'N/A'}</td>
             <td class="small">1</td>
             <td class="small">${product.taxes || '0'}</td>
-            <td class="small">${ entitySwitch.checked ? totalPrice - 400 : totalPrice || 'N/A'}</td>
+            <td class="small">${ entitySwitch.checked ? totalPrice : totalPrice || 'N/A'}</td>
             <td class="small"><i class="far fa-trash-alt text-danger" onclick="removeRow(this)"></i></td>
             <td></td>
         `;
@@ -1829,13 +1826,35 @@ include '../modals/NewCompanionModal.php';
     document.getElementById('next_step').addEventListener('click', function() {
         const activeStep = document.querySelector('.nav-link.active'); // Selecciona el paso activo
 
-        console.log(activeStep.dataset.wizardStep);
+        if (activeStep) {
+            switch (activeStep.dataset.wizardStep) {
+                case "1":
+                    this.disabled = true; // Deshabilita el botón
+                    break;
+                case "2":
+                    generateInvoice();
+                    break;
 
-        if (activeStep && activeStep.dataset.wizardStep === "1") {
-            console.log("Estás en el paso 2. Deshabilitando el botón...");
-            this.disabled = true; // Deshabilita el botón
+                default:
+                    break;
+            }
         }
+
     });
+
+    document.getElementById('back_step').addEventListener('click', function() {
+        document.getElementById('next_step').disabled = false;
+    })
+
+    function generateInvoice() {
+        const totalAmount = document.getElementById('totalSumAmount').textContent
+        const total = document.getElementById('totalSum').textContent
+        document.querySelector('td[data-field="subtotal"]').innerText = total;
+        document.querySelector('td[data-field="total"]').innerText = total;
+        document.querySelector('td[data-field="paid"]').innerText = totalAmount;
+        document.querySelector('td[data-field="balance"]').innerText = total - totalAmount;
+        document.querySelector('td[data-field="total_invoice"]').innerText = total;
+    }
 </script>
 
 <style>

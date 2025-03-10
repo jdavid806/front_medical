@@ -1,23 +1,43 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ConfigColumns } from 'datatables.net-bs5';
-import { useAllPrescriptions } from '../hooks/useAllPrescriptions.js';
-import { UserTableActions } from '../../users/UserTableActions.js';
-import { PrescriptionDto } from '../../models/models.js';
+import { PrescriptionDto, PrescriptionTableItem } from '../../models/models.js';
 import CustomDataTable from '../../components/CustomDataTable.js';
+import { TableBasicActions } from '../../components/TableBasicActions.js';
 
-const PrescriptionTable = () => {
-    const { prescriptions } = useAllPrescriptions();
+interface PrescriptionTableProps {
+    prescriptions: PrescriptionDto[]
+    onEditItem: (id: string) => void
+    onDeleteItem: (id: string) => void
+}
+
+const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ prescriptions, onEditItem, onDeleteItem }) => {
+
+    const [tablePrescriotions, setTablePrescriptions] = React.useState<PrescriptionTableItem[]>([])
+
+    useEffect(() => {
+        const mappedPrescriptions: PrescriptionTableItem[] = prescriptions
+            .sort((a, b) => parseInt(b.id, 10) - parseInt(a.id, 10))
+            .map(prescription => ({
+                id: prescription.id,
+                doctor: `${prescription.prescriber.first_name} ${prescription.prescriber.last_name}`,
+                patient: `${prescription.patient.first_name} ${prescription.patient.last_name}`,
+                created_at: new Intl.DateTimeFormat('es-AR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(prescription.created_at))
+            }));
+        setTablePrescriptions(mappedPrescriptions)
+    }, [prescriptions])
 
     const columns: ConfigColumns[] = [
         { data: 'doctor' },
-        { data: 'patient' }, // Este campo ahora debería ser una cadena con el nombre completo
         { data: 'created_at' },
         { orderable: false, searchable: false }
     ];
 
     const slots = {
-        3: (cell, data: PrescriptionDto) => (
-            <UserTableActions></UserTableActions>
+        2: (cell, data: PrescriptionTableItem) => (
+            <TableBasicActions
+                onEdit={() => onEditItem(data.id)}
+                onDelete={() => onDeleteItem(data.id)}>
+            </TableBasicActions>
         )
     }
 
@@ -26,14 +46,13 @@ const PrescriptionTable = () => {
             <div className="card mb-3">
                 <div className="card-body">
                     <CustomDataTable
-                        data={prescriptions}
+                        data={tablePrescriotions}
                         slots={slots}
                         columns={columns}
                     >
                         <thead>
                             <tr>
                                 <th className="border-top custom-th">Doctor</th>
-                                <th className="border-top custom-th">Paciente</th>
                                 <th className="border-top custom-th">Fecha de creación</th>
                                 <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
                             </tr>

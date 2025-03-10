@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 const medicationGroups = [{
   id: 'grupo1',
   name: 'Grupo Analgésicos',
@@ -40,17 +40,21 @@ const initialMedicine = {
   showQuantity: false,
   showTimeField: false
 };
-const PrescriptionForm = ({
+const PrescriptionForm = /*#__PURE__*/forwardRef(({
   formId,
-  handleSubmit
-}) => {
+  initialData
+}, ref) => {
   const [useGroup, setUseGroup] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState('');
   const [formData, setFormData] = useState([initialMedicine]);
   const [addedMedications, setAddedMedications] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [showToast, setShowToast] = useState(false);
   const [manualEntry, setManualEntry] = useState(false);
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return addedMedications;
+    }
+  }));
   const handleGroupToggle = () => {
     setUseGroup(!useGroup);
     setSelectedGroupId('');
@@ -105,11 +109,10 @@ const PrescriptionForm = ({
   const handleDeleteMedication = index => {
     setAddedMedications(prev => prev.filter((_, i) => i !== index));
   };
-  const handleFormSubmit = medications => {
-    handleSubmit(medications);
-    setShowToast(true);
-    // Aquí puedes añadir la lógica para cerrar el modal si es necesario
-  };
+  useEffect(() => {
+    console.log('Initial data:', initialData);
+    setAddedMedications(initialData?.medicines || []);
+  }, [initialData]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
     id: formId,
     className: "row g-3"
@@ -447,12 +450,6 @@ const PrescriptionForm = ({
     onClick: () => handleDeleteMedication(index)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
-  }), " Eliminar"))))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 text-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: "btn btn-primary",
-    onClick: () => handleFormSubmit(addedMedications)
-  }, useGroup ? 'Guardar todos los medicamentos' : 'Guardar'))));
-};
+  }), " Eliminar")))))));
+});
 export default PrescriptionForm;

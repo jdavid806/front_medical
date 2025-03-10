@@ -9,9 +9,14 @@
         <thead class="table-dark">
           <tr>
             <th>Nombre</th>
+            <th></th>
           </tr>
         </thead>
-        <tbody id="tablaRetenciones">
+        <tbody id="tablaEspecialidades">
+          <!-- <th>Especialidad Prueba</th>
+          <th><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#vincularEspecialidades">
+              <i class="fa-solid fa-gears"></i>
+            </button></th> -->
           <!-- Filas dinámicas -->
         </tbody>
       </table>

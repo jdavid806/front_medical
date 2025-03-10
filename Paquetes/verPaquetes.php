@@ -68,7 +68,7 @@ include "../header.php";
                         cantidad: 20
                     }
                 ],
-                procedimientos: ["951101 - Consulta general"],
+                procedimientos: ["001010 - Consulta general"],
                 diagnosticos: [],
                 examenes: ["Análisis de orina", "Hemograma"],
                 vacunas: [{
@@ -192,7 +192,7 @@ include "../header.php";
                         cantidad: 15
                     }
                 ],
-                procedimientos: ["933901 - Vacunación"],
+                procedimientos: ["001050 - Biopsia tumoral"],
                 diagnosticos: [],
                 examenes: ["Hemograma", "Análisis de sangre"],
                 vacunas: [{
@@ -232,7 +232,7 @@ include "../header.php";
                         cantidad: 20
                     }
                 ],
-                procedimientos: ["932101 - Control de glucemia"],
+                procedimientos: ["001090 - Mastografía"],
                 diagnosticos: [],
                 examenes: ["Hemoglobina glicosilada", "Función renal", "Perfil lipídico"],
                 vacunas: [{
@@ -384,14 +384,29 @@ include "../header.php";
 
     // Función para editar un paquete
     function editarPaquete(nombrePaquete) {
-        // Encuentra el paquete en el array de datos
-        const paquete = paquetes.find(p => p.nombre === nombrePaquete);
-        if (paquete) {
-            console.log("Editando paquete:", paquete);
-
-            $('#modalEditarPaquete').modal('show');
+    // Encuentra el paquete en el array de datos
+    const paquete = paquetes.find(p => p.nombre === nombrePaquete);
+    if (paquete) {
+        console.log("Editando paquete:", paquete);
+        document.getElementById('nombrePaqueteEditar').value = paquete.nombre;
+        document.getElementById('selectCupsCieEditar').value = paquete.detalles.relacion;
+        if (paquete.detalles.relacion === "cie11") {
+            document.getElementById('divCieEditar').style.display = "block";
+            document.getElementById('divCupsEditar').style.display = "none";
+            document.getElementById('selectCieEditar').value + paquete.detalles.diagnosticos;
         }
+        if (paquete.detalles.relacion === "cups") {
+            document.getElementById('divCupsEditar').style.display = "block";
+            document.getElementById('divCieEditar').style.display = "none";
+            document.getElementById('selectCupsEditar').value + paquete.detalles.procedimientos;
+        }
+
+        // Almacenar el paquete completo en un atributo de datos del modal
+        document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paquete);
+
+        $('#modalEditarPaquetePrueba').modal('show');
     }
+}
 
     // Función para eliminar un paquete
     function eliminarPaquete(nombrePaquete) {
@@ -423,5 +438,6 @@ include "../header.php";
 <?php include "../footer.php";
 // include "./modalAgregarPaquete.php";
 include "./modalAgregarPaquetes.php";
-include "./modalEditarPaquete.php";
+// include "./modalEditarPaquete.php";
+include "./editarPaquete.php";
 ?>

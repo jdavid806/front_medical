@@ -1,5 +1,10 @@
 async function cargarPConsentimientos() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/firma/templates";
+  // let ruta = "http://dev.medicalsoft.ai/api/v1/firma/templates";
+  const patient_id = new URLSearchParams(window.location.search).get(
+    "patient_id"
+  );
+
+  let ruta = `http://dev.medicalsoft.ai/api/v1/firma/templates/${patient_id}/patient`;
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -114,21 +119,39 @@ async function imprimirConsentimiento(id) {
   console.log("impirmiendo" + id);
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
-  crearDocumento(consentimeinto, "Impresion", "Consentimiento", "Completa", consentimeinto.title);
+  crearDocumento(
+    consentimeinto,
+    "Impresion",
+    "Consentimiento",
+    "Completa",
+    consentimeinto.title
+  );
 }
 
 async function descargarConsentimiento(id) {
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
-  console.log(consentimeinto);
-  // crearDocumento(consentimeinto, "Descarga", "Consentimiento", "Completa", consentimeinto.title);
+  crearDocumento(
+    consentimeinto,
+    "Descarga",
+    "Consentimiento",
+    "Completa",
+    consentimeinto.title
+  );
 }
 
 async function compartirConsentimiento(id) {
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
-  console.log(consentimeinto);
-  // enviarDocumento(consentimeinto, "Descarga", "Consentimiento", "Completa", consentimeinto.patient_id, "1", consentimeinto.title);
+  enviarDocumento(
+    consentimeinto,
+    "Descarga",
+    "Consentimiento",
+    "Completa",
+    consentimeinto.patient_id,
+    "1",
+    consentimeinto.title
+  );
 }
 
 // function editarPConsentimiento(id, title, template) {
