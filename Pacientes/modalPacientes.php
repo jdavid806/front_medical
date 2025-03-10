@@ -277,7 +277,7 @@ require "./modals/editPartnerModal.php";
                         <div class="col-sm-4">
                           <div class="mb-1">
                             <label for="ethnicity" class="form-label">Etnía</label>
-                            <select class="form-select" id="ethnicity" name="patient[ethnicity]" required>
+                            <select class="form-select" id="ethnicity" name="patient[ethnicity]">
                               <option selected disabled value="">Seleccione</option>
                               <option value="Campesino">Campesino</option>
                               <option value="Indigena">Indigena</option>
@@ -895,8 +895,9 @@ require "./modals/editPartnerModal.php";
 
     countries.forEach(country => {
       const option = document.createElement('option');
-      option.value = country.id;
+      option.value = country.name;
       option.textContent = country.name;
+      option.setAttribute('data-id', country.id);
       countrySelect.appendChild(option);
     });
   }
@@ -906,8 +907,9 @@ require "./modals/editPartnerModal.php";
     departmentSelect.innerHTML = '<option selected disabled value="">Seleccione</option>';
     departments.forEach(department => {
       const option = document.createElement('option');
-      option.value = department.id;
+      option.value = department.name;
       option.textContent = department.name;
+      option.setAttribute('data-id', department.id);
       departmentSelect.appendChild(option);
     });
   }
@@ -917,8 +919,9 @@ require "./modals/editPartnerModal.php";
     citySelect.innerHTML = '<option selected disabled value="">Seleccione</option>';
     cities.forEach(city => {
       const option = document.createElement('option');
-      option.value = city.id;
+      option.value = city.name;
       option.textContent = city.name;
+      option.setAttribute('data-id', city.id);
       citySelect.appendChild(option);
     });
   }
@@ -945,13 +948,13 @@ require "./modals/editPartnerModal.php";
     getEntities();
 
     document.getElementById('country_id').addEventListener('change', function() {
-      const selectedCountryId = this.value;
+      const selectedCountryId = this.selectedOptions[0].dataset.id;
       console.log('Pais seleccionado:', selectedCountryId);
       getDepartments(selectedCountryId);
     });
 
     document.getElementById('department_id').addEventListener('change', function() {
-      const selectedDepartmentId = this.value;
+      const selectedDepartmentId = this.selectedOptions[0].dataset.id;
       console.log('Departamento seleccionado:', selectedDepartmentId);
       getCities(selectedDepartmentId);
     })

@@ -679,6 +679,7 @@
     function cargarCups() {
         procedimientos.forEach(procedimiento => {
             const optionCups = document.createElement('option');
+            const selectCups = document.getElementById('selectCups');
             optionCups.value = procedimiento.codigo;
             optionCups.textContent = procedimiento.codigo + " - " + procedimiento.nombre;
             selectCups.appendChild(optionCups);
@@ -688,6 +689,7 @@
     function cargarCie() {
         diagnosticos.forEach(diagnostico => {
             const optionCie = document.createElement('option');
+            const selectCie = document.getElementById('selectCie');
             optionCie.value = diagnostico.codigo;
             optionCie.textContent = diagnostico.codigo + " - " + diagnostico.nombre;
             selectCie.appendChild(optionCie);
@@ -909,7 +911,7 @@
             divCantidadMedicamentos.style.display = "none";
             divCantidadVacunas.style.display = "none";
             divCantidadInsumos.style.display = "none";
-            return; 
+            return;
         }
 
         // Medicamentos
@@ -1011,8 +1013,8 @@
             inputCantidad.type = "number";
             inputCantidad.min = "1";
             inputCantidad.dataset.medicamento = medicamento;
-            inputCantidad.id = inputIdMed; 
-            inputCantidad.className = "input-cantidad-medicamento"; 
+            inputCantidad.id = inputIdMed;
+            inputCantidad.className = "input-cantidad-medicamento";
             inputCantidad.style.width = "100px";
             inputCantidad.style.padding = "5px";
             inputCantidad.style.textAlign = "center";
@@ -1340,7 +1342,7 @@
             confirmButtonColor: '#4CAF50'
         }).then((result) => {
             if (result.isConfirmed) {
-               
+
                 console.log('Proceso finalizado');
                 window.location.reload();
             }
@@ -1351,5 +1353,5 @@
         console.log('Medicamentos con cantidades:', medicamentosConCantidad);
         console.log('Vacunas con cantidades:', vacunasConCantidad);
         console.log('Insumos con cantidades:', insumosConCantidad);
-    }); 
+    });
 </script>

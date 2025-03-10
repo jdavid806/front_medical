@@ -1,8 +1,8 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Listado de Entidades</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearEntidad">
-      <i class="fa-solid fa-plus"></i> Agregar Entidad
+    <h4>Listado de Centros de Costos</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearCentroCostos">
+      <i class="fa-solid fa-plus"></i> Agregar Centro de Costos
     </button>
   </div>
 
@@ -12,14 +12,12 @@
         <thead class="table-dark">
           <tr>
             <th>Nombre</th>
-            <th>NIT / ID</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Ciudad</th>
+            <th>Código</th>
+            <th>Descripción</th>
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaEntidades">
+        <tbody id="tablaCentrosCostos">
           <!-- Filas dinámicas -->
         </tbody>
       </table>
@@ -29,7 +27,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    cargarEntidades();
+    cargarCentrosCosto();
   });
 
 </script>

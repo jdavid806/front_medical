@@ -35,6 +35,7 @@
 </div>
 
 <script>
+
   function handleCentrosCostoForm() {
 
     const form = document.getElementById('formAgregarCentroCostos');
@@ -86,4 +87,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     handleCentrosCostoForm();
   });
+
+
 </script>

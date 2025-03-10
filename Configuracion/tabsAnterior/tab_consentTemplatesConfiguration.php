@@ -1,9 +1,8 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Listado de Entidades</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearEntidad">
-      <i class="fa-solid fa-plus"></i> Agregar Entidad
-    </button>
+    <h4>Listado de Plantillas de Consentimientos</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearPlantilla">
+      <i class="fa-solid fa-plus"></i> Agregar Plantilla</button>
   </div>
 
   <div class="card">
@@ -11,15 +10,11 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>Nombre</th>
-            <th>NIT / ID</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Ciudad</th>
+            <th>Título</th>
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaEntidades">
+        <tbody id="tablaPlantillas">
           <!-- Filas dinámicas -->
         </tbody>
       </table>
@@ -29,7 +24,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    cargarEntidades();
+    cargarConsentimientos();
   });
 
 </script>

@@ -1023,6 +1023,10 @@ M. Castro c:
 <script src="Configuracion/js/CrudMetodosPago.js"></script>
 <script src="Configuracion/js/CrudCentroCostos.js"></script>
 <script src="Configuracion/js/CrudConsentimientos.js"></script>
+<script src="Configuracion/js/CrudEntidades.js"></script>
+<script src="Configuracion/js/CrudEspecialdiades.js"></script>
+<script src="Configuracion/js/CrudImpuestos.js"></script>
+<script src="Configuracion/js/CrudRecargos.js"></script>
 
 <!-- funcionex textarea -->
 <!-- <script src="apiVoz_4.0.js"></script> -->

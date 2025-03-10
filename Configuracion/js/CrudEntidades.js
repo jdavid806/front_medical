@@ -1,0 +1,86 @@
+async function cargarEntidades() {
+  console.log("cargando");
+
+  let ruta = "http://dev.medicalsoft.ai/medical/entities";
+  try {
+    const response = await fetch(ruta);
+    if (!response.ok) {
+      throw new Error("Error en la solicitud");
+    }
+    const result = await response.json();
+
+    const tablaEntidades = document.getElementById("tablaEntidades");
+
+    tablaEntidades.innerHTML = "";
+
+    for (const producto of result.data) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${producto.name}</td>
+        <td>${producto.document_number}</td>
+        <td>${producto.email}</td>
+        <td>${producto.phone}</td>
+        <td>${producto.address}</td>
+        <td>
+            <button class="btn btn-primary btn-sm" onclick="editarConsentimiento(${producto.id}, 
+            '${producto.name}', '${producto.document_number}',
+            '${producto.document_type}', '${producto.email}', 
+            '${producto.phone}', '${producto.address}')" data-bs-toggle="modal" data-bs-target="#crearEntidad">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarEntidad(${producto.id})">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </td>
+      `;
+
+      tablaEntidades.appendChild(row);
+    }
+  } catch (error) {
+    console.error("Hubo un problema con la solicitud:", error);
+  }
+}
+
+async function eliminarEntidad(id) {
+  let url = `http://dev.medicalsoft.ai/medical/entities/${id}`;
+  EliminarDatos(url);
+  cargarMetodosPago();
+}
+
+async function updateEntidad(id, entidad) {
+  let url = `http://dev.medicalsoft.ai/medical/entities/${id}`;
+  actualizarDatos(url, entidad);
+}
+
+async function createEntidad(entidad) {
+  guardarDatos("http://dev.medicalsoft.ai/medical/entities", entidad);
+}
+
+function editarConsentimiento(
+  id,
+  name,
+  document_number,
+  document_type,
+  email,
+  phone,
+  address
+) {
+  document.getElementById("nombre-entidad").value = name;
+  document.getElementById("numeroIdentificacion-entidad").value =
+    document_number;
+  document.getElementById("tipoIdentificacion-entidad").value = document_type;
+  document.getElementById("email-entidad").value = email;
+  document.getElementById("telefono-entidad").value = phone;
+  document.getElementById("direccion-entidad").value = address;
+
+  // Agregar un input oculto con el ID de la entidad
+  let hiddenInput = document.getElementById("entity_id");
+  if (!hiddenInput) {
+    hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.id = "entity_id";
+    hiddenInput.name = "entity_id";
+    document.getElementById("formAgregarEntidad").appendChild(hiddenInput);
+  }
+  hiddenInput.value = id;
+}

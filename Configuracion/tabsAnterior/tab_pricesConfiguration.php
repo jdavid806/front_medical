@@ -22,7 +22,7 @@
                 <th>Cups</th>
                 <th>Tipo de Atención</th>
                 <th>Precio Publico</th>
-                <th>Copago</th>
+                <th>Precio Entidad</th>
                 <th></th>
               </tr>
             </thead>

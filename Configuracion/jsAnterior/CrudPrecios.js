@@ -30,14 +30,14 @@ async function cargarContenido() {
         <td>${elemento.barcode}</td> 
         <td>${attentionTypeTranslated}</td>
         <td>${elemento.sale_price || "N/A"}</td>
-        <td>${elemento.copaiment || "N/A"}</td>
+        <td>${elemento.price_entity || "N/A"}</td>
         <td>
             <button class="btn btn-primary btn-sm" onclick="editarProducto(${
               producto.id
             }, '${elemento.name}', '${elemento.barcode}', '${
         elemento.attention_type
       }', '${elemento.sale_price}', '${
-        elemento.copaiment
+        elemento.price_entity
       }')" data-bs-toggle="modal" data-bs-target="#modalPrice">
                 <i class="fa-solid fa-pen"></i>
             </button>
@@ -59,13 +59,13 @@ async function cargarContenido() {
 async function eliminarPrecio(id) {
   let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
   EliminarDatos(url);
-  cargarContenido();
+  cargarContenido()
 }
 
 async function updateProduct(id, productData) {
   let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
   actualizarDatos(url, productData);
-  cargarContenido();
+  cargarContenido()
 }
 
 function editarProducto(
@@ -74,13 +74,13 @@ function editarProducto(
   barcode,
   attentionType,
   salePrice,
-  copago
+  priceEntity
 ) {
   document.getElementById("name").value = name;
   document.getElementById("curp").value = barcode;
   document.getElementById("attention_type").value = attentionType;
   document.getElementById("sale_price").value = salePrice || "";
-  document.getElementById("copago").value = copago || "";
+  document.getElementById("price_entity").value = priceEntity || "";
 
   // Agregar un input oculto con el ID del producto
   let hiddenInput = document.getElementById("product_id");

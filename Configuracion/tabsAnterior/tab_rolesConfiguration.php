@@ -1,6 +1,8 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Listado de Especialdiades</h4>
+    <h4>Listado de Roles y Permisos</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUserRole">
+      <i class="fa-solid fa-plus"></i> Agregar Rol</button>
   </div>
 
   <div class="card">
@@ -8,20 +10,16 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>Nombre</th>
+            <th>#</th>
+            <th>Nombre del Rol</th>
+            <th>Permisos</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaRetenciones">
+        <tbody id="tablaRoles">
           <!-- Filas dinámicas -->
         </tbody>
       </table>
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // cargarEspecilialidades();
-  });
-
-</script>

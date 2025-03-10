@@ -8,6 +8,7 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
+            <th>#</th>
             <th>Nombre</th>
           </tr>
         </thead>
@@ -18,10 +19,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // cargarEspecilialidades();
-  });
-
-</script>

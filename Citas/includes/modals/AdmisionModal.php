@@ -465,7 +465,7 @@ include '../modals/NewCompanionModal.php';
                                                 </div> -->
                                             </div>
 
-                                            <div class="col-sm-12 d-flex justify-content-end align-items-center">
+                                            <div style="display: none !important;" class="col-sm-12 d-flex justify-content-end align-items-center">
                                                 <div class="mb-2">
                                                     <button class="btn btn-primary" type="button" id="addService"><i class="fas fa-plus"></i> Agregar servicio</button>
                                                 </div>
@@ -1204,7 +1204,9 @@ include '../modals/NewCompanionModal.php';
             const buttonStep = document.getElementById('buttonStep');
             const sumAmount = document.getElementById('totalSum');
 
-            const sumAmountValue = parseFloat(sumAmount.textContent.replace(/[^\d.-]/g, '').split(".").join("")).toFixed(2);
+            console.log(sumAmount.textContent);
+
+            const sumAmountValue = parseFloat(sumAmount.textContent.replace(/[^\d.-]/g, '').slice(0, -2));
 
             console.log("Suma de monto", sumAmountValue, amount);
 
@@ -1445,6 +1447,7 @@ include '../modals/NewCompanionModal.php';
     async function getPaymentMethods() {
         try {
             const response = await paymentMethodService.getPaymentMethods(); // ya retorna JSON
+            console.log("Metodos de pago", response);
 
             if (response) {
                 populatePaymentMethods(response);
@@ -1567,6 +1570,7 @@ include '../modals/NewCompanionModal.php';
             // Llamar al servicio para obtener los datos de la admisión
             const admission = await admissionService.getAdmissionById(citaId);
             globalAdmission = admission;
+            console.log(admission);
 
             const subsidiary = document.getElementById('subsidiary');
             subsidiary.value = admission.patient.social_security.eps;
@@ -1588,8 +1592,8 @@ include '../modals/NewCompanionModal.php';
                 setElementValue('input[name="secondLastNamePatient"]', admission.patient.second_last_name);
                 setElementValue('input[name="dateBirthPatient"]', admission.patient.date_of_birth);
                 setElementValue('input[name="genderPatient"]', admission.patient.gender);
-                setElementValue('input[name="countryPatient"]', admission.patient.country.name);
-                setElementValue('input[name="cityPatient"]', admission.patient.city.name);
+                setElementValue('input[name="countryPatient"]', admission.patient.country_id);
+                setElementValue('input[name="cityPatient"]', admission.patient.city_id);
                 setElementValue('input[name="addressPatient"]', admission.patient.address);
                 setElementValue('input[name="emailPatient"]', admission.patient.email);
                 setElementValue('input[name="bloodTypePatient"]', admission.patient.blood_type);
