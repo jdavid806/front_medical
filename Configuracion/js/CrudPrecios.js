@@ -1,6 +1,12 @@
 async function cargarContenido() {
   let ruta = "http://dev.medicalsoft.ai/api/v1/admin/products";
 
+  // Mapeo de valores en inglés a español
+  const attentionTypeMap = {
+    PROCEDURE: "Procedimiento",
+    CONSULTATION: "Consulta",
+  };
+
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -9,15 +15,35 @@ async function cargarContenido() {
     const result = await response.json();
 
     const tablaPrecios = document.getElementById("tablaPrecios");
+
+    tablaPrecios.innerHTML = "";
+
     for (const producto of result.data) {
       let elemento = producto.attributes;
+
+      let attentionTypeTranslated =
+        attentionTypeMap[elemento.attention_type] || "Desconocido";
+
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${elemento.name}</td>
-        <td>${elemento.attention_type}</td>
+        <td>${elemento.barcode}</td> 
+        <td>${attentionTypeTranslated}</td>
         <td>${elemento.sale_price || "N/A"}</td>
-         <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id})">
+        <td>${elemento.price_entity || "N/A"}</td>
+        <td>
+            <button class="btn btn-primary btn-sm" onclick="editarProducto(${
+              producto.id
+            }, '${elemento.name}', '${elemento.barcode}', '${
+        elemento.attention_type
+      }', '${elemento.sale_price}', '${
+        elemento.price_entity
+      }')" data-bs-toggle="modal" data-bs-target="#modalPrice">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
+              producto.id
+            })">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </td>
@@ -31,42 +57,39 @@ async function cargarContenido() {
 }
 
 async function eliminarPrecio(id) {
-  try {
-    const response = await fetch(
-      `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`,
-      {
-        method: "DELETE", // Método DELETE
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
+  EliminarDatos(url);
+  cargarContenido();
+}
 
-    // Verificamos si la respuesta es exitosa (código 2xx)
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
+async function updateProduct(id, productData) {
+  let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
+  actualizarDatos(url, productData);
+  cargarContenido();
+}
 
-    const data = await response.json(); // Si el servidor devuelve una respuesta JSON
+function editarProducto(
+  id,
+  name,
+  barcode,
+  attentionType,
+  salePrice,
+  copago
+) {
+  document.getElementById("name").value = name;
+  document.getElementById("curp").value = barcode;
+  document.getElementById("attention_type").value = attentionType;
+  document.getElementById("sale_price").value = salePrice || "";
+  document.getElementById("copago").value = copago || "";
 
-    // Mostrar SweetAlert de éxito
-    Swal.fire({
-      icon: "success",
-      title: "¡Éxito!",
-      text: "El recurso se eliminó correctamente.",
-      confirmButtonText: "Aceptar",
-    });
-
-    console.log("Recurso eliminado:", data);
-  } catch (error) {
-    console.error("Error al eliminar el recurso:", error);
-
-    // Mostrar SweetAlert de error
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se pudo eliminar el recurso. Por favor, inténtalo de nuevo.",
-      confirmButtonText: "Aceptar",
-    });
+  // Agregar un input oculto con el ID del producto
+  let hiddenInput = document.getElementById("product_id");
+  if (!hiddenInput) {
+    hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.id = "product_id";
+    hiddenInput.name = "product_id";
+    document.getElementById("createProductForm").appendChild(hiddenInput);
   }
+  hiddenInput.value = id;
 }

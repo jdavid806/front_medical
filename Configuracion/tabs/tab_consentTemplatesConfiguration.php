@@ -10,7 +10,6 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>#</th>
             <th>Título</th>
             <th>Acciones</th>
           </tr>
@@ -22,3 +21,11 @@
     </div>
   </div>
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarConsentimientos();
+  });
+
+</script>

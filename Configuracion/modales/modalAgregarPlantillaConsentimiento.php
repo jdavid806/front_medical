@@ -31,32 +31,58 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarPlantilla").addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    const titulo = document.getElementById("titulo-plantilla").value;
-    const contenido = document.getElementById("contenido-plantilla").value;
+  function handleConsentimientosForm() {
 
-    const tablaPlantillas = document.getElementById("tablaPlantillas");
-    const rowCount = tablaPlantillas.rows.length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${rowCount}</td>
-        <td>${titulo}</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </td>
-    `;
+    const form = document.getElementById('formAgregarPlantilla');
 
-    tablaPlantillas.appendChild(row);
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearPlantilla"));
-    modal.hide();
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      const editorContainer = document.querySelector(
+        `#contenido-plantilla .ql-editor`
+      );
+
+      let template = editorContainer.innerHTML;
+
+      const productId = document.getElementById('consent_id')?.value;
+      const productData = {
+        tenant_id: "1",
+        title: document.getElementById("titulo-plantilla").value,
+        template,
+      };
+
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateConsentimiento(productId, productData);
+        } else {
+          createConsentimiento(productData);
+        }
+
+        // Limpiar formulario y cerrar modal
+        form.reset();
+        $('#crearPlantilla').modal('hide');
+        cargarConsentimientos();
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    handleConsentimientosForm();
   });
 
-  function eliminarFila(button) {
-    button.closest("tr").remove();
-  }
 </script>

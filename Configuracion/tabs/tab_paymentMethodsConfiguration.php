@@ -11,7 +11,6 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>#</th>
             <th>Nombre</th>
             <th>Número de Cuenta</th>
             <th>Banco / Entidad</th>
@@ -26,3 +25,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarMetodosPago();
+  });
+
+</script>

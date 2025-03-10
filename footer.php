@@ -1016,10 +1016,13 @@ M. Castro c:
 <!-- encriptar info -->
 <script src="funciones/funcionesEncrypt/encriptar.js"></script>
 
-<!-- funciones plantillas -->
+<!-- funciones Crud -->
 <script src="Configuracion/js/plantillasMensajes.js"></script>
 <script src="Configuracion/js/CrudFuncionesMensajes.js"></script>
 <script src="Configuracion/js/CrudPrecios.js"></script>
+<script src="Configuracion/js/CrudMetodosPago.js"></script>
+<script src="Configuracion/js/CrudCentroCostos.js"></script>
+<script src="Configuracion/js/CrudConsentimientos.js"></script>
 
 <!-- funcionex textarea -->
 <!-- <script src="apiVoz_4.0.js"></script> -->

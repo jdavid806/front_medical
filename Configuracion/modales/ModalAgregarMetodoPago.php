@@ -37,37 +37,60 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarMetodoPago").addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    const nombre = document.getElementById("nombre-metodo").value;
-    const cuenta = document.getElementById("numero-cuenta").value || "N/A";
-    const banco = document.getElementById("banco-metodo").value || "N/A";
-    const descripcion = document.getElementById("descripcion-metodo").value || "N/A";
+  function handleMetodsPagoForm() {
 
-    const tablaMetodos = document.getElementById("tablaMetodosPago");
-    const rowCount = tablaMetodos.rows.length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${rowCount}</td>
-        <td>${nombre}</td>
-        <td>${cuenta}</td>
-        <td>${banco}</td>
-        <td>${descripcion}</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </td>
-    `;
+    const form = document.getElementById('formAgregarMetodoPago');
 
-    tablaMetodos.appendChild(row);
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearMetodoPago"));
-    modal.hide();
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+
+      const productId = document.getElementById('method_id')?.value;
+      const productData = {
+        method: document.getElementById('nombre-metodo').value,
+        description: document.getElementById('descripcion-metodo').value,
+        accounting_account: document.getElementById('numero-cuenta').value,
+      };
+
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateMetodoPago(productId, productData);
+        } else {
+          createMetodoPago(productData);
+        }
+
+        // Limpiar formulario y cerrar modal
+        form.reset();
+        $('#crearMetodoPago').modal('hide');
+        Swal.fire({
+          icon: "success",
+          title: "¡Guardado exitosamente!",
+          text: "Los datos se han guardado correctamente.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        cargarMetodosPago();
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    handleMetodsPagoForm();
   });
 
-  function eliminarFila(button) {
-    button.closest("tr").remove();
-  }
 </script>
