@@ -79,67 +79,19 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <!-- <label>Medicamentos</label> -->
                                     <div id="tablaMedicamentosEditar"></div>
                                 </div>
                                 <div class="form-group">
-                                    <!-- <label>Medicamentos</label> -->
                                     <div id="tablaVacunasEditar"></div>
                                 </div>
+                                <div class="form-group">
+                                    <div id="tablaInsumosEditar"></div>
+                                </div>
+                                <div class="form-group">
+                                    <div id="tablaExamenesEditar"></div>
+                                </div>
 
-                                <!-- <div class="input-group mt-3">
-                                    <div class="form-floating">
-                                        <div class="row">
-                                            <div class="col-3">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkMedicamentosEditar" type="checkbox" />
-                                                    <label class="form-check-label" for="checkMedicamentosEditar">Medicamentos</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkExamenesEditar" type="checkbox" />
-                                                    <label class="form-check-label" for="checkExamenesEditar">Exámenes</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkVacunasEditar" type="checkbox" />
-                                                    <label class="form-check-label" for="checkVacunasEditar">Vacunas</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" id="checkInsumosEditar" type="checkbox" />
-                                                    <label class="form-check-label" for="checkInsumosEditar">Insumos</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
 
-                                <!-- <div id="divSelectsEditar" style="display: none;">
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <div class="" id="divSelectMedicamentosEditar" style="display: none;">
-                                                <select class="form-select" id="selectMedicamentosEditar">
-                                                </select>
-                                            </div>
-                                            <div class="mt-3" id="divSelectExamenesEditar" style="display: none;">
-                                                <select class="form-select" id="selectExamenesEditar">
-                                                </select>
-                                            </div>
-                                            <div class="mt-3" id="divSelectVacunasEditar" style="display: none;">
-                                                <select class="form-select" id="selectVacunasEditar">
-                                                </select>
-                                            </div>
-                                            <div class="mt-3" id="divSelecInsumosEditar" style="display: none;">
-                                                <select class="form-select" id="selectInsumosEditar">
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
 
                             </div>
                         </div>
@@ -375,6 +327,142 @@
         "Vacuna contra la difteria"
     ];
 
+    const insumosE = [{
+            procedimiento: "Consulta general",
+            insumo: "Termómetro"
+        },
+        {
+            procedimiento: "Consulta general",
+            insumo: "Esfigmomanómetro"
+        },
+        {
+            procedimiento: "Consulta general",
+            insumo: "Estetoscopio"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Gel para ecografía"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Transductor"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Monitor"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Electrodos"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Cable de ECG"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Monitor de ECG"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Gel para ecografía"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Transductor cardíaco"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Monitor"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Aguja de biopsia"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Guantes estériles"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Suturas"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Película radiográfica"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Delantal plomado"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Protector de tiroides"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Espátula de madera"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Hisopo"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Copa de recolección"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Colposcopio"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Ácido acético"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Luz de colposcopio"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Película radiográfica"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Compresor mamario"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Delantal plomado"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Contraste intravenoso"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Guantes estériles"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Túnel tomográfico"
+        }
+    ];
+
+    const examenesE = [
+        "Análisis de sangre",
+        "Radiografía de tórax",
+        "Ultrasonido abdominal",
+        "Electrocardiograma",
+        "Prueba de función pulmonar",
+        "Prueba de embarazo",
+        "Hemograma",
+        "Prueba de glucosa",
+        "Colesterol total",
+        "Análisis de orina"
+    ];
+
+
     document.addEventListener('DOMContentLoaded', function() {
         const selectCupsCieEditar = document.getElementById('selectCupsCieEditar');
         const selectCieEditar = document.getElementById('selectCieEditar');
@@ -502,20 +590,15 @@
         // Tabla vacunas
         const tablaVacunas = document.getElementById('tablaVacunasEditar');
 
-        // Limpiar tabla si ya tiene contenido
         tablaVacunas.innerHTML = '';
 
-        // Agregar título h4 para medicamentos
         tablaVacunas.innerHTML = '<h4 class="text-center mt-3">Vacunas</h4>';
 
-        // Verificar si existen medicamentos
         if (paquete.detalles.vacunas && paquete.detalles.vacunas.length > 0) {
-            // Crear contenedor para centrar la tabla y darle un ancho del 90%
             let contenedorTablaVacunas = document.createElement('div');
             contenedorTablaVacunas.className = 'mx-auto';
             contenedorTablaVacunas.style.width = '90%';
 
-            // Crear encabezado de la tabla
             let tablaHTMLVacunas = `
             <table class="table table-striped text-center">
                 <thead>
@@ -528,7 +611,6 @@
                 <tbody>
         `;
 
-            // Agregar cada medicamento
             paquete.detalles.vacunas.forEach((vacuna, index) => {
                 tablaHTMLVacunas += `
                 <tr>
@@ -550,37 +632,310 @@
             `;
             });
 
-            // Cerrar tabla
             tablaHTMLVacunas += `
                 </tbody>
             </table>
             <div class="mt-3 text-end"><button class="btn btn-primary" type="button" id="agregarNuevaVacuna"><i class="fa-solid fa-plus"></i> Agregar Vacuna</button></div>
         `;
 
-            // Insertar HTML en el contenedor
             contenedorTablaVacunas.innerHTML = tablaHTMLVacunas;
 
-            // Agregar el contenedor al div de vacunas
             tablaVacunas.appendChild(contenedorTablaVacunas);
         } else {
-            // Mostrar mensaje si no hay vacunas
             tablaVacunas.innerHTML += '<div class="alert alert-info mx-auto" style="width: 90%;">No hay vacunas asociados a este paquete.</div>';
         }
+
+        // Tabla insumos
+        const tablaInsumos = document.getElementById('tablaInsumosEditar');
+
+        tablaInsumos.innerHTML = '';
+
+        tablaInsumos.innerHTML = '<h4 class="text-center mt-3">Insumos</h4>';
+
+        if (paquete.detalles.insumos && paquete.detalles.insumos.length > 0) {
+            let contenedorTablaInsumos = document.createElement('div');
+            contenedorTablaInsumos.className = 'mx-auto';
+            contenedorTablaInsumos.style.width = '90%';
+
+            let tablaHTMLInsumos = `
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th style="width: 50%">Nombre</th>
+                        <th style="width: 40%">Cantidad</th>
+                        <th style="width: 10%">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+            paquete.detalles.insumos.forEach((insumo, index) => {
+                tablaHTMLInsumos += `
+                <tr>
+                    <td style="width: 50%">${insumo.nombre}</td>
+                    <td style="width: 40%">
+                        <input type="number" class="form-control form-control-sm mx-auto" 
+                               id="cantidadInsumo_${index}" 
+                               value="${insumo.cantidad}" 
+                               min="1" 
+                               style="width: 80%;"
+                               onchange="actualizarCantidadInsumo(${index}, this.value)">
+                    </td>
+                    <td style="width: 10%">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="eliminarInsumo(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            });
+
+            tablaHTMLInsumos += `
+                </tbody>
+            </table>
+            <div class="mt-3 text-end"><button class="btn btn-primary" type="button" id="agregarNuevoInsumo"><i class="fa-solid fa-plus"></i> Agregar Insumo</button></div>
+        `;
+
+            contenedorTablaInsumos.innerHTML = tablaHTMLInsumos;
+
+            tablaInsumos.appendChild(contenedorTablaInsumos);
+        } else {
+            tablaInsumos.innerHTML += '<div class="alert alert-info mx-auto" style="width: 90%;">No hay vacunas asociados a este paquete.</div>';
+        }
+
+        const tablaExamenes = document.getElementById('tablaExamenesEditar');
+
+        tablaExamenes.innerHTML = '';
+        tablaExamenes.innerHTML = '<h4 class="text-center mt-3">Exámenes</h4>';
+
+        if (paquete.detalles.examenes && paquete.detalles.examenes.length > 0) {
+            let contenedorTablaExamenes = document.createElement('div');
+            contenedorTablaExamenes.className = 'mx-auto';
+            contenedorTablaExamenes.style.width = '90%';
+
+            let tablaHTMLExamenes = `
+    <table class="table table-striped text-center">
+        <thead>
+            <tr>
+                <th style="width: 90%">Nombre</th>
+                <th style="width: 10%">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+            paquete.detalles.examenes.forEach((examen, index) => {
+                tablaHTMLExamenes += `
+        <tr>
+            <td style="width: 90%">${examen}</td>
+            <td style="width: 10%">
+                <button type="button" class="btn btn-sm btn-danger" onclick="eliminarExamen(${index})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+            });
+
+            tablaHTMLExamenes += `
+        </tbody>
+    </table>
+    <div class="mt-3 text-end"><button class="btn btn-primary" type="button" id="agregarNuevoExamen"><i class="fa-solid fa-plus"></i> Agregar Examen</button></div>
+    `;
+
+            contenedorTablaExamenes.innerHTML = tablaHTMLExamenes;
+            tablaExamenes.appendChild(contenedorTablaExamenes);
+        } else {
+            tablaExamenes.innerHTML += '<div class="alert alert-info mx-auto" style="width: 90%;">No hay exámenes asociados a este paquete.</div>';
+        }
+
+       
+
+        // Función para eliminar un examen
+        function eliminarExamen(index) {
+            const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+            const examen = paqueteActual.detalles.examenes[index];
+
+            // Confirmar eliminación
+            if (confirm(`¿Está seguro que desea eliminar el examen "${examen.nombre}"?`)) {
+                // Eliminar el examen del array
+                paqueteActual.detalles.examenes.splice(index, 1);
+
+                // Guardar el paquete actualizado
+                document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+
+                // Actualizar la tabla
+                $('#modalEditarPaquetePrueba').trigger('shown.bs.modal');
+
+                console.log(`Examen "${examen.nombre}" eliminado.`);
+            }
+        }
+
+        // Función para agregar un nuevo examen
+        function agregarNuevoExamen() {
+            // Obtener el paquete actual
+            const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+
+            // Verificar si existe la estructura de exámenes
+            if (!paqueteActual.detalles.examenes) {
+                paqueteActual.detalles.examenes = [];
+            }
+
+            // Obtener referencia a la tabla
+            const tbody = document.querySelector('#tablaExamenesEditar table tbody');
+
+            // Si no existe la tabla, crearla primero
+            if (!tbody) {
+                crearTablaExamenesVacia();
+                // Obtener la referencia nuevamente
+                const nuevoTbody = document.querySelector('#tablaExamenesEditar table tbody');
+                agregarFilaExamen(nuevoTbody, paqueteActual.detalles.examenes.length);
+            } else {
+                // Agregar una nueva fila
+                agregarFilaExamen(tbody, paqueteActual.detalles.examenes.length);
+            }
+        }
+
+    //     // Función para crear una tabla vacía de exámenes si no existe
+    //     function crearTablaExamenesVacia() {
+    //         const tablaExamenes = document.getElementById('tablaExamenesEditar');
+
+    //         // Limpiar contenido existente
+    //         tablaExamenes.innerHTML = '<h4 class="text-center mt-3">Exámenes</h4>';
+
+    //         let contenedorTabla = document.createElement('div');
+    //         contenedorTabla.className = 'mx-auto';
+    //         contenedorTabla.style.width = '90%';
+
+    //         let tablaHTML = `
+    // <table class="table table-striped text-center">
+    //     <thead>
+    //         <tr>
+    //             <th style="width: 90%">Nombre</th>
+    //             <th style="width: 10%">Acciones</th>
+    //         </tr>
+    //     </thead>
+    //     <tbody>
+    //     </tbody>
+    // </table>
+    // <div class="mt-3 text-end"><button class="btn btn-primary" type="button" id="agregarNuevoExamen"><i class="fa-solid fa-plus"></i> Agregar Examen</button></div>
+    // `;
+
+    //         contenedorTabla.innerHTML = tablaHTML;
+    //         tablaExamenes.appendChild(contenedorTabla);
+    //     }
+
+        // Función para agregar una fila con select
+        function agregarFilaExamen(tbody, index) {
+            // Crear una nueva fila
+            const nuevaFila = document.createElement('tr');
+            nuevaFila.id = `fila_examen_${index}`;
+
+            // Crear celda para el select de exámenes
+            const celdaNombre = document.createElement('td');
+            celdaNombre.style.width = '90%';
+
+            // Crear el select de exámenes
+            const selectExamen = document.createElement('select');
+            selectExamen.className = 'form-select form-select-sm';
+            selectExamen.id = `selectExamen_${index}`;
+            selectExamen.innerHTML = '<option value="">Seleccione un examen</option>';
+
+            examenesE.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex;
+                option.textContent = ex;
+                selectExamen.appendChild(option);
+            });
+
+            // Asignar evento de cambio al select
+            selectExamen.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                guardarNuevoExamen(index, selectedOption.value, selectedOption.textContent);
+            });
+
+            celdaNombre.appendChild(selectExamen);
+
+            // Crear celda para las acciones
+            const celdaAcciones = document.createElement('td');
+            celdaAcciones.style.width = '10%';
+
+            // Crear botón de eliminar
+            const botonEliminar = document.createElement('button');
+            botonEliminar.type = 'button';
+            botonEliminar.className = 'btn btn-sm btn-danger';
+            botonEliminar.innerHTML = '<i class="fas fa-trash"></i>';
+
+            // Asignar evento click al botón de eliminar
+            botonEliminar.addEventListener('click', function() {
+                eliminarNuevoExamen(index);
+            });
+
+            celdaAcciones.appendChild(botonEliminar);
+
+            // Añadir todas las celdas a la fila
+            nuevaFila.appendChild(celdaNombre);
+            nuevaFila.appendChild(celdaAcciones);
+
+            // Añadir la fila al tbody
+            tbody.appendChild(nuevaFila);
+
+            // Inicializar un examen vacío en el paquete
+            const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+            if (!paqueteActual.detalles.examenes.some(e => e.temporal && e.index === index)) {
+                paqueteActual.detalles.examenes.push({
+                    id: '',
+                    nombre: '',
+                    temporal: true,
+                    index: index
+                });
+                document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+            }
+        }
+
+        // // Función para guardar el examen seleccionado
+        // function guardarNuevoExamen(index, idExamen, nombreExamen) {
+        //     const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+
+        //     // Buscar si ya existe un examen temporal con este índice
+        //     const examenIndex = paqueteActual.detalles.examenes.findIndex(e => e.temporal && e.index === index);
+
+        //     if (examenIndex !== -1) {
+        //         // Actualizar el examen existente
+        //         paqueteActual.detalles.examenes[examenIndex].id = idExamen;
+        //         paqueteActual.detalles.examenes[examenIndex].nombre = nombreExamen;
+        //     } else {
+        //         // Agregar un nuevo examen
+        //         paqueteActual.detalles.examenes.push({
+        //             id: idExamen,
+        //             nombre: nombreExamen,
+        //             temporal: true,
+        //             index: index
+        //         });
+        //     }
+
+        //     // Guardar el paquete actualizado
+        //     document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+
+        //     console.log(`Examen "${nombreExamen}" seleccionado con id: ${idExamen}`);
+        // }
+
+       
     });
 
-    // Función para actualizar la cantidad de un medicamento
-    function actualizarCantidadMedicamento(index, nuevaCantidad) {
-        // Obtener el paquete actual
-        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+    // // Función para actualizar la cantidad de un medicamento
+    // function actualizarCantidadMedicamento(index, nuevaCantidad) {
+    //     // Obtener el paquete actual
+    //     const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
 
-        // Actualizar la cantidad del medicamento
-        paqueteActual.detalles.medicamentos[index].cantidad = parseInt(nuevaCantidad);
+    //     // Actualizar la cantidad del medicamento
+    //     paqueteActual.detalles.medicamentos[index].cantidad = parseInt(nuevaCantidad);
 
-        // Guardar el paquete actualizado
-        document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+    //     // Guardar el paquete actualizado
+    //     document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
 
-        console.log(`Cantidad del medicamento "${paqueteActual.detalles.medicamentos[index].nombre}" actualizada a: ${nuevaCantidad}`);
-    }
+    //     console.log(`Cantidad del medicamento "${paqueteActual.detalles.medicamentos[index].nombre}" actualizada a: ${nuevaCantidad}`);
+    // }
 
     // Función para eliminar un medicamento
     function eliminarMedicamento(index) {
@@ -602,18 +957,68 @@
         }
     }
 
+    function eliminarVacuna(index) {
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+        const vacuna = paqueteActual.detalles.vacunas[index];
+
+        if (confirm(`¿Está seguro que desea eliminar la vacuna "${vacuna.nombre}"?`)) {
+            paqueteActual.detalles.vacunas.splice(index, 1);
+
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+
+            $('#modalEditarPaquetePrueba').trigger('shown.bs.modal');
+
+            console.log(`Vacuna "${vacuna.nombre}" eliminada.`);
+        }
+    }
+
+    function eliminarInsumo(index) {
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+        const insumo = paqueteActual.detalles.insumos[index];
+
+        if (confirm(`¿Está seguro que desea eliminar el insumo "${insumo.nombre}"?`)) {
+            paqueteActual.detalles.insumos.splice(index, 1);
+
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+
+            $('#modalEditarPaquetePrueba').trigger('shown.bs.modal');
+
+            console.log(`Insumo "${insumo.nombre}" eliminado.`);
+        }
+    }
+
+    function eliminarExamen(index) {
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+        const examen = paqueteActual.detalles.examenes[index];
+
+        if (confirm(`¿Está seguro que desea eliminar el examen "${examen}"?`)) {
+            paqueteActual.detalles.examenes.splice(index, 1);
+
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+
+            $('#modalEditarPaquetePrueba').trigger('shown.bs.modal');
+
+            console.log(`Examen "${examen}" eliminado.`);
+        }
+    }
+
     // Primero, añade un event listener al botón de agregar medicamento
     $(document).ready(function() {
         $(document).on('click', '#agregarNuevoMedicamento', function() {
             agregarNuevoMedicamento();
         });
-    });
-
-    $(document).ready(function() {
         $(document).on('click', '#agregarNuevaVacuna', function() {
             agregarNuevaVacuna();
         });
+        $(document).on('click', '#agregarNuevoInsumo', function() {
+            agregarNuevoInsumo();
+        });
+        $(document).on('click', '#agregarNuevoExamen', function() {
+                agregarNuevoExamen();
+            });
     });
+
+
 
     // Función para agregar un nuevo medicamento
     function agregarNuevoMedicamento() {
@@ -639,27 +1044,54 @@
         }
     }
 
-    // Función para agregar un nuevo medicamento
     function agregarNuevaVacuna() {
-        // Obtener el paquete actual
         const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
 
-        // Verificar si existe la estructura de medicamentos
         if (!paqueteActual.detalles.vacunas) {
             paqueteActual.detalles.vacunas = [];
         }
 
-        // Obtener referencia a la tabla
-        const tbody = document.querySelector('#tablaVacunasEditar table tbody');
+        const tbodyVac = document.querySelector('#tablaVacunasEditar table tbody');
 
-        // Si no existe la tabla, crearla primero
-        if (!tbody) {
-            // Obtener la referencia nuevamente
-            const nuevoTbody = document.querySelector('#tablaVacunasEditar table tbody');
-            agregarFilaVacuna(nuevoTbody, paqueteActual.detalles.vacunas.length);
+        if (!tbodyVac) {
+            const nuevoTbodyVac = document.querySelector('#tablaVacunasEditar table tbody');
+            agregarFilaVacuna(nuevoTbodyVac, paqueteActual.detalles.vacunas.length);
         } else {
-            // Agregar una nueva fila
-            agregarFilaVacuna(tbody, paqueteActual.detalles.vacunas.length);
+            agregarFilaVacuna(tbodyVac, paqueteActual.detalles.vacunas.length);
+        }
+    }
+
+    function agregarNuevoInsumo() {
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+
+        if (!paqueteActual.detalles.insumos) {
+            paqueteActual.detalles.insumos = [];
+        }
+
+        const tbodyIns = document.querySelector('#tablaInsumosEditar table tbody');
+
+        if (!tbodyIns) {
+            const nuevoTbodyVac = document.querySelector('#tablaInsumosEditar table tbody');
+            agregarFilaInsumo(nuevoTbodyVac, paqueteActual.detalles.vacunas.length);
+        } else {
+            agregarFilaInsumo(tbodyIns, paqueteActual.detalles.vacunas.length);
+        }
+    }
+
+    function agregarNuevoExamen() {
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+
+        if (!paqueteActual.detalles.examenes) {
+            paqueteActual.detalles.examenes = [];
+        }
+
+        const tbodyExs = document.querySelector('#tablaExamenesEditar table tbody');
+
+        if (!tbodyExs) {
+            const nuevoTbodyExs = document.querySelector('#tablaExamenesEditar table tbody');
+            agregarFilaExamen(nuevoTbodyExs, paqueteActual.detalles.vacunas.length);
+        } else {
+            agregarFilaExamen(tbodyExs, paqueteActual.detalles.vacunas.length);
         }
     }
 
@@ -755,9 +1187,8 @@
     }
 
     function agregarFilaVacuna(tbody, index) {
-        // Crear una nueva fila
         const nuevaFilaVac = document.createElement('tr');
-        nuevaFilaVac.id = `fila_medicamento_${index}`;
+        nuevaFilaVac.id = `fila_vacuna_${index}`;
 
         const celdaNombreVac = document.createElement('td');
         celdaNombreVac.style.width = '50%';
@@ -769,12 +1200,11 @@
 
         vacunasE.forEach(vac => {
             const optionVac = document.createElement('option');
-            optionVac.value = vac.id;
+            optionVac.value = vac.nombre;
             optionVac.textContent = vac.nombre;
             selectNuevaVacuna.appendChild(optionVac);
         });
 
-        // Asignar evento de cambio al select
         selectNuevaVacuna.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             guardarNuevaVacuna(index, selectedOption.value, selectedOption.textContent);
@@ -782,11 +1212,9 @@
 
         celdaNombreVac.appendChild(selectNuevaVacuna);
 
-        // Crear celda para la cantidad
         const celdaCantidadVac = document.createElement('td');
         celdaCantidadVac.style.width = '40%';
 
-        // Crear input para la cantidad
         const inputCantidadVac = document.createElement('input');
         inputCantidadVac.type = 'number';
         inputCantidadVac.className = 'form-control form-control-sm mx-auto';
@@ -795,42 +1223,169 @@
         inputCantidadVac.min = 1;
         inputCantidadVac.style.width = '80%';
 
-        // Asignar evento de cambio al input
         inputCantidadVac.addEventListener('change', function() {
             actualizarCantidadVacunaNuevo(index, this.value);
         });
 
-        celdaCantidadVac.appendChild(inputCantidad);
+        celdaCantidadVac.appendChild(inputCantidadVac);
 
-        // Crear celda para las acciones
         const celdaAcciones = document.createElement('td');
         celdaAcciones.style.width = '10%';
 
-        // Crear botón de eliminar
         const botonEliminar = document.createElement('button');
         botonEliminar.type = 'button';
         botonEliminar.className = 'btn btn-sm btn-danger';
         botonEliminar.innerHTML = '<i class="fas fa-trash"></i>';
 
-        // Asignar evento click al botón de eliminar
         botonEliminar.addEventListener('click', function() {
             eliminarNuevaVacuna(index);
         });
 
         celdaAcciones.appendChild(botonEliminar);
 
-        // Añadir todas las celdas a la fila
-        nuevaFilaVac.appendChild(celdaNombre);
-        nuevaFilaVac.appendChild(celdaCantidad);
+        nuevaFilaVac.appendChild(celdaNombreVac);
+        nuevaFilaVac.appendChild(celdaCantidadVac);
         nuevaFilaVac.appendChild(celdaAcciones);
 
-        // Añadir la fila al tbody
-        tbody.appendChild(nuevaFila);
+        tbody.appendChild(nuevaFilaVac);
 
-        // Inicializar un medicamento vacío en el paquete
         const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
         if (!paqueteActual.detalles.vacunas.some(m => m.temporal && m.index === index)) {
             paqueteActual.detalles.vacunas.push({
+                id: '',
+                nombre: '',
+                cantidad: 1,
+                temporal: true,
+                index: index
+            });
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+        }
+    }
+
+    function agregarFilaInsumo(tbody, index) {
+        const nuevaFilaIns = document.createElement('tr');
+        nuevaFilaIns.id = `fila_insumo_${index}`;
+
+        const celdaNombreIns = document.createElement('td');
+        celdaNombreIns.style.width = '50%';
+
+        const selectNuevoInsumo = document.createElement('select');
+        selectNuevoInsumo.className = 'form-select form-select-sm';
+        selectNuevoInsumo.id = `selectInsumo_${index}`;
+        selectNuevoInsumo.innerHTML = '<option value="">Seleccione un insumo</option>';
+
+        insumosE.forEach(ins => {
+            const optionIns = document.createElement('option');
+            optionIns.value = ins.insumo;
+            optionIns.textContent = ins.insumo;
+            selectNuevoInsumo.appendChild(optionIns);
+        });
+
+        selectNuevoInsumo.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            guardarNuevoInsumo(index, selectedOption.value, selectedOption.textContent);
+        });
+
+        celdaNombreIns.appendChild(selectNuevoInsumo);
+
+        const celdaCantidadIns = document.createElement('td');
+        celdaCantidadIns.style.width = '40%';
+
+        const inputCantidadIns = document.createElement('input');
+        inputCantidadIns.type = 'number';
+        inputCantidadIns.className = 'form-control form-control-sm mx-auto';
+        inputCantidadIns.id = `cantidadInsumo_${index}`;
+        inputCantidadIns.value = 1;
+        inputCantidadIns.min = 1;
+        inputCantidadIns.style.width = '80%';
+
+        inputCantidadIns.addEventListener('change', function() {
+            actualizarCantidadInsumoNuevo(index, this.value);
+        });
+
+        celdaCantidadIns.appendChild(inputCantidadIns);
+
+        const celdaAcciones = document.createElement('td');
+        celdaAcciones.style.width = '10%';
+
+        const botonEliminar = document.createElement('button');
+        botonEliminar.type = 'button';
+        botonEliminar.className = 'btn btn-sm btn-danger';
+        botonEliminar.innerHTML = '<i class="fas fa-trash"></i>';
+
+        botonEliminar.addEventListener('click', function() {
+            eliminarNuevoInsumo(index);
+        });
+
+        celdaAcciones.appendChild(botonEliminar);
+
+        nuevaFilaIns.appendChild(celdaNombreIns);
+        nuevaFilaIns.appendChild(celdaCantidadIns);
+        nuevaFilaIns.appendChild(celdaAcciones);
+
+        tbody.appendChild(nuevaFilaIns);
+
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+        if (!paqueteActual.detalles.insumos.some(m => m.temporal && m.index === index)) {
+            paqueteActual.detalles.insumos.push({
+                id: '',
+                nombre: '',
+                cantidad: 1,
+                temporal: true,
+                index: index
+            });
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paqueteActual);
+        }
+    }
+
+    function agregarFilaExamen(tbody, index) {
+        const nuevaFilaExs = document.createElement('tr');
+        nuevaFilaExs.id = `fila_examen_${index}`;
+
+        const celdaNombreExs = document.createElement('td');
+        celdaNombreExs.style.width = '90%';
+
+        const selectNuevoExamen = document.createElement('select');
+        selectNuevoExamen.className = 'form-select form-select-sm';
+        selectNuevoExamen.id = `selectInsumo_${index}`;
+        selectNuevoExamen.innerHTML = '<option value="">Seleccione un exámen</option>';
+
+        examenesE.forEach(examen => {
+            const optionExs = document.createElement('option');
+            optionExs.value = examen;
+            optionExs.textContent = examen;
+            selectNuevoExamen.appendChild(optionExs);
+        });
+
+        selectNuevoExamen.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            guardarNuevoExamen(index, selectedOption.value, selectedOption.textContent);
+        });
+
+        celdaNombreExs.appendChild(selectNuevoExamen);
+
+        const celdaAcciones = document.createElement('td');
+        celdaAcciones.style.width = '10%';
+
+        const botonEliminar = document.createElement('button');
+        botonEliminar.type = 'button';
+        botonEliminar.className = 'btn btn-sm btn-danger';
+        botonEliminar.innerHTML = '<i class="fas fa-trash"></i>';
+
+        botonEliminar.addEventListener('click', function() {
+            eliminarNuevoExamen(index);
+        });
+
+        celdaAcciones.appendChild(botonEliminar);
+
+        nuevaFilaExs.appendChild(celdaNombreExs);
+        nuevaFilaExs.appendChild(celdaAcciones);
+
+        tbody.appendChild(nuevaFilaExs);
+
+        const paqueteActual = JSON.parse(document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual);
+        if (!paqueteActual.detalles.examenes.some(m => m.temporal && m.index === index)) {
+            paqueteActual.detalles.examenes.push({
                 id: '',
                 nombre: '',
                 cantidad: 1,

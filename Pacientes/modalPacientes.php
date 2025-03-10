@@ -1,132 +1,8 @@
 <?php
-// Array de antecedentes con id, valor y nombre
-$antecedentes = [
-  ["id" => 1, "valor" => "ASMA", "nombre" => "ASMA"],
-  ["id" => 2, "valor" => "HTA", "nombre" => "HTA"],
-  ["id" => 3, "valor" => "Diabetes", "nombre" => "Diabetes"],
-  ["id" => 4, "valor" => "Hipotiroidismo", "nombre" => "Hipotiroidismo"],
-  ["id" => 5, "valor" => "Tabaquismo", "nombre" => "Tabaquismo"],
-  ["id" => 6, "valor" => "Licor", "nombre" => "Licor"]
-];
-
-
-$typeDocuments = array(
-  'DNI' => 'DNI',
-  'RUC' => 'RUC',
-  'PASAPORTE' => 'PASAPORTE',
-  'CEDULA' => 'CEDULA',
-  'OTRO' => 'OTRO'
-);
-
-$genders = array(
-  'MASCULINO' => 'MASCULINO',
-  'FEMENINO' => 'FEMENINO',
-  'OTRO' => 'OTRO'
-);
-
-
 $countries = array(
   '1' => 'DOMINICANO',
   '2' => 'DOMINICANA',
 
-);
-
-$departments = array(
-  '1' => 'Antioquia',
-  '2' => 'Atlántico',
-  '3' => 'Bolívar',
-
-);
-
-$cities = array(
-  '1' => 'Cali',
-  '2' => 'Medellin',
-
-);
-
-
-$sellers = array(
-  'vendedor1' => 'vendedor1',
-  'vendedor2' => 'vendedor2',
-  'vendedor3' => 'vendedor3'
-);
-
-
-$entities = array(
-  'entidad1' => 'entidad1',
-  'entidad2' => 'entidad2',
-  'entidad3' => 'entidad3'
-);
-
-$deposits = array(
-  'deposito1' => 'deposito1',
-  'deposito2' => 'deposito2',
-  'deposito3' => 'deposito3'
-);
-
-$products = array(
-  'producto1' => [
-    'name' => 'producto1',
-    'price' => 1000,
-    'quantity' => 1,
-    'tax' => 10
-  ]
-);
-
-$paymentMethods = array(
-  'EFECTIVO' => 'EFECTIVO',
-  'NEQUI' => 'NEQUI',
-  'TARJETA' => 'TARJETA',
-  'OTRO' => 'OTRO'
-);
-
-
-$tax = array(
-  'name' => 'IVA',
-  'percentage' => 19
-);
-
-
-$relations = array(
-  'Padre' => 'Padre',
-  'Madre' => 'Madre',
-  'Hermano' => 'Hermano',
-  'Hermana' => 'Hermana',
-  'Tio' => 'Tio',
-  'Tia' => 'Tia',
-  'Abuelo' => 'Abuelo',
-  'Abuela' => 'Abuela',
-  'Otros' => 'Otros',
-);
-
-
-$rips = array(
-  'RIPS 1' => 'RIPS 1',
-  'RIPS 2' => 'RIPS 2',
-  'RIPS 3' => 'RIPS 3',
-);
-
-$typeConsults = array(
-  'Primera vez' => 'Primera vez',
-  'Control' => 'Control',
-  'Urgencia' => 'Urgencia',
-);
-
-
-$typeConsult = false;
-
-
-
-$purposeConsultation = array(
-  'Motivo 1' => 'Motivo 1',
-  'Motivo 2' => 'Motivo 2',
-  'Motivo 3' => 'Motivo 3',
-);
-
-$externalCause = array(
-  'Causa externa 1' => 'Causa externa 1',
-  'Causa externa 2' => 'Causa externa 2',
-  'Causa externa 3' => 'Causa externa 3',
 );
 
 require "./modals/newPartnerModal.php";
@@ -186,7 +62,7 @@ require "./modals/editPartnerModal.php";
                         <div class="col-sm-6">
                           <div class="mb-1">
                             <label for="document_number" class="form-label">Número de documento</label>
-                            <input type="number" class="form-control" min="0" id="document_number" name="patient[document_number]" placeholder="Documento" required
+                            <input type="text" class="form-control" id="document_number" name="patient[document_number]" placeholder="Documento" required
                               name="document_number">
                             <div class="invalid-feedback">Por favor agregue el número documento.</div>
                           </div>
@@ -243,7 +119,7 @@ require "./modals/editPartnerModal.php";
                             <label class="form-label" for="date_of_birth">Fecha de nacimiento</label>
                             <!-- <input class="form-control datetimepicker flatpickr-input" id="date_of_birth" name="patient[date_of_birth]" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly" required> -->
 
-                            <input type="date" name="patient[date_of_birth]" class="form-control" id="">
+                            <input type="date" name="patient[date_of_birth]" class="form-control" id="date_of_birth">
 
                           </div>
                         </div>
@@ -837,87 +713,6 @@ require "./modals/editPartnerModal.php";
     } catch (error) {
       console.error('Error al obtener las entidades:', error);
     }
-  }
-
-  async function getDepartments(countryId) {
-    try {
-      const data = await departmentService.ofParent(countryId);
-      console.log('Departamentos', data);
-
-      populateDepartmentSelect(data);
-    } catch (error) {
-      console.error('Error al obtener los departamentos:', error);
-    }
-  }
-
-  async function getCities(departmentId) {
-    try {
-      const data = await cityService.ofParent(departmentId);
-      console.log('Ciudades', data);
-
-      populateCitySelect(data);
-    } catch (error) {
-      console.error('Error al obtener las ciudades:', error);
-    }
-  }
-
-  function populateCountrySelect(countries) {
-    const countrySelect = document.getElementById('country_id');
-    console.log('Paises', countries);
-    countries = countries.filter(country => [
-      "AR",
-      "BO",
-      "BR",
-      "CL",
-      "CO",
-      "CR",
-      "CU",
-      "DO",
-      "EC",
-      "SV",
-      "GT",
-      "HN",
-      "MX",
-      "NI",
-      "PA",
-      "PY",
-      "PE",
-      "PR",
-      "UY",
-      "VE"
-    ].includes(country.iso2));
-
-    countries.forEach(country => {
-      const option = document.createElement('option');
-      option.value = country.name;
-      option.textContent = country.name;
-      option.setAttribute('data-id', country.id);
-      countrySelect.appendChild(option);
-    });
-  }
-
-  function populateDepartmentSelect(departments) {
-    const departmentSelect = document.getElementById('department_id');
-    departmentSelect.innerHTML = '<option selected disabled value="">Seleccione</option>';
-    departments.forEach(department => {
-      const option = document.createElement('option');
-      option.value = department.name;
-      option.textContent = department.name;
-      option.setAttribute('data-id', department.id);
-      departmentSelect.appendChild(option);
-    });
-  }
-
-  function populateCitySelect(cities) {
-    const citySelect = document.getElementById('city_id');
-    citySelect.innerHTML = '<option selected disabled value="">Seleccione</option>';
-    cities.forEach(city => {
-      const option = document.createElement('option');
-      option.value = city.name;
-      option.textContent = city.name;
-      option.setAttribute('data-id', city.id);
-      citySelect.appendChild(option);
-    });
   }
 
   function populateEntitySelect(entities) {

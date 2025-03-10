@@ -39,35 +39,72 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarRetencion").addEventListener("submit", function (event) {
-    event.preventDefault();
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("porcentaje-retencion");
 
-    const nombre = document.getElementById("nombre-retencion").value;
-    const porcentaje = document.getElementById("porcentaje-retencion").value;
-    const descripcion = document.getElementById("descripcion-retencion").value || "N/A";
+    input.addEventListener("input", function () {
+      if (this.value > 100) {
+        this.value = 100;
+      } else if (this.value < 0) {
+        this.value = 0;
+      }
 
-    const tablaRetenciones = document.getElementById("tablaRetenciones");
-    const rowCount = tablaRetenciones.rows.length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${rowCount}</td>
-        <td>${nombre}</td>
-        <td>${porcentaje}%</td>
-        <td>${descripcion}</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </td>
-    `;
+      if (this.value === "" || this.value > 100 || this.value < 0) {
+        this.classList.add("is-invalid");
+      } else {
+        this.classList.remove("is-invalid");
+      }
+    });
+  });
+</script>
 
-    tablaRetenciones.appendChild(row);
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearImpuestoRetencion"));
-    modal.hide();
+<script>
+
+  function handleRetencionForm() {
+
+    const form = document.getElementById('formAgregarRetencion');
+
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+
+      const productId = document.getElementById('retencion_id')?.value;
+      const productData = {
+        name: document.getElementById('nombre-retencion').value,
+        percentage: document.getElementById('porcentaje-retencion').value,
+        accountin_account: document.getElementById('cuenta-contable-retencion').value,
+        description: document.getElementById('descripcion-retencion').value,
+      };
+
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateRetencion(productId, productData);
+        } else {
+          createRetencion(productData);
+        }
+
+        form.reset();
+        $('#crearImpuestoRetencion').modal('hide');
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    handleRetencionForm();
   });
 
-  function eliminarFila(button) {
-    button.closest("tr").remove();
-  }
 </script>

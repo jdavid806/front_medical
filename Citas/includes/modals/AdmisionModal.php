@@ -1014,6 +1014,7 @@ include '../modals/NewCompanionModal.php';
         summaryPaymentsTableBody.innerHTML = ''; // Limpiar tabla resumen
 
         Array.from(rows).forEach((row, index) => {
+            console.log(rows);
             const cells = row.querySelectorAll('td');
 
             if (cells.length) {
@@ -1279,6 +1280,7 @@ include '../modals/NewCompanionModal.php';
 
     // Función para agregar métodos de pago a ambas tablas
     function addRowToPaymentTable(values, tableBodyId) {
+        console.log(values);
         const tableBody = document.getElementById(tableBodyId);
         const rowCount = tableBody.rows.length + 1;
 
@@ -1440,7 +1442,6 @@ include '../modals/NewCompanionModal.php';
     async function getProducts() {
         try {
             const response = await productService.getAllProducts(); // ya retorna JSON
-            console.log(response);
             let products;
             if (response.data && Array.isArray(response.data)) {
                 products = response.data; // Estructura correcta
@@ -1471,11 +1472,12 @@ include '../modals/NewCompanionModal.php';
     }
 
     function populatePaymentMethods(paymentMethods) {
+        console.log(paymentMethods);
         const paymentMethodSelect = document.getElementById('methodPayment');
         if (Array.isArray(paymentMethods)) {
             paymentMethods.forEach(paymentMethod => {
                 const option = document.createElement('option');
-                option.value = paymentMethod.id;
+                option.value = paymentMethod;
                 option.textContent = paymentMethod.method;
                 paymentMethodSelect.appendChild(option);
             });

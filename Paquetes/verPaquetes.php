@@ -384,29 +384,38 @@ include "../header.php";
 
     // Función para editar un paquete
     function editarPaquete(nombrePaquete) {
-    // Encuentra el paquete en el array de datos
-    const paquete = paquetes.find(p => p.nombre === nombrePaquete);
-    if (paquete) {
-        console.log("Editando paquete:", paquete);
-        document.getElementById('nombrePaqueteEditar').value = paquete.nombre;
-        document.getElementById('selectCupsCieEditar').value = paquete.detalles.relacion;
-        if (paquete.detalles.relacion === "cie11") {
-            document.getElementById('divCieEditar').style.display = "block";
-            document.getElementById('divCupsEditar').style.display = "none";
-            document.getElementById('selectCieEditar').value + paquete.detalles.diagnosticos;
-        }
-        if (paquete.detalles.relacion === "cups") {
-            document.getElementById('divCupsEditar').style.display = "block";
-            document.getElementById('divCieEditar').style.display = "none";
-            document.getElementById('selectCupsEditar').value + paquete.detalles.procedimientos;
-        }
+        // Encuentra el paquete en el array de datos
+        const paquete = paquetes.find(p => p.nombre === nombrePaquete);
+        if (paquete) {
+            console.log("Editando paquete:", paquete);
+            document.getElementById('nombrePaqueteEditar').value = paquete.nombre;
+            document.getElementById('selectCupsCieEditar').value = paquete.detalles.relacion;
+            if (paquete.detalles.relacion === "cie11") {
+                document.getElementById('divCieEditar').style.display = "block";
+                document.getElementById('divCupsEditar').style.display = "none";
+                let cie11 = paquete.detalles.diagnosticos[0];
+                let codigoCie = cie11.match(/^([^ -]+)/)[0]; 
+                document.getElementById('selectCieEditar').value = codigoCie;
+            }
+            if (paquete.detalles.relacion === "cups") {
+                document.getElementById('divCupsEditar').style.display = "block";
+                document.getElementById('divCieEditar').style.display = "none";
+                let cups = paquete.detalles.procedimientos[0];
 
-        // Almacenar el paquete completo en un atributo de datos del modal
-        document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paquete);
+                let codigoCups = cups.match(/^([^ -]+)/)[0]; 
 
-        $('#modalEditarPaquetePrueba').modal('show');
+                document.getElementById('selectCupsEditar').value = codigoCups;
+
+                // console.log(codigoCups); 
+
+            }
+
+            // Almacenar el paquete completo en un atributo de datos del modal
+            document.getElementById('modalEditarPaquetePrueba').dataset.paqueteActual = JSON.stringify(paquete);
+
+            $('#modalEditarPaquetePrueba').modal('show');
+        }
     }
-}
 
     // Función para eliminar un paquete
     function eliminarPaquete(nombrePaquete) {

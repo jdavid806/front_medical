@@ -15,7 +15,7 @@
             </div>
             <div class="mb-3 col-md-6">
               <label class="form-label" for="porcentaje-impuesto">Porcentaje (%)</label>
-              <input class="form-control" id="porcentaje-impuesto" type="number" min="0" step="0.01" required>
+              <input class="form-control" id="porcentaje-impuesto" type="number" min="0" max="100" step="0.01" required>
               <div class="invalid-feedback">Debe ingresar un porcentaje válido</div>
             </div>
             <div class="mb-3 col-md-6">
@@ -39,35 +39,72 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarImpuesto").addEventListener("submit", function (event) {
-    event.preventDefault();
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("porcentaje-impuesto");
 
-    const nombre = document.getElementById("nombre-impuesto").value;
-    const porcentaje = document.getElementById("porcentaje-impuesto").value;
-    const descripcion = document.getElementById("descripcion-impuesto").value || "N/A";
+    input.addEventListener("input", function () {
+      if (this.value > 100) {
+        this.value = 100;
+      } else if (this.value < 0) {
+        this.value = 0;
+      }
 
-    const tablaImpuestos = document.getElementById("tablaImpuestos");
-    const rowCount = tablaImpuestos.rows.length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${rowCount}</td>
-        <td>${nombre}</td>
-        <td>${porcentaje}%</td>
-        <td>${descripcion}</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </td>
-    `;
+      if (this.value === "" || this.value > 100 || this.value < 0) {
+        this.classList.add("is-invalid");
+      } else {
+        this.classList.remove("is-invalid");
+      }
+    });
+  });
+</script>
 
-    tablaImpuestos.appendChild(row);
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearImpuesto"));
-    modal.hide();
+<script>
+
+  function handleImpuestoForm() {
+
+    const form = document.getElementById('formAgregarImpuesto');
+
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+
+      const productId = document.getElementById('impuesto_id')?.value;
+      const productData = {
+        name: document.getElementById('nombre-impuesto').value,
+        percentage: document.getElementById('porcentaje-impuesto').value,
+        accountin_account: document.getElementById('cuenta-contable-impuesto').value,
+        description: document.getElementById('descripcion-impuesto').value,
+      };
+
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateImpuesto(productId, productData);
+        } else {
+          createImpuesto(productData);
+        }
+
+        form.reset();
+        $('#crearMetodoPago').modal('hide');
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    handleImpuestoForm();
   });
 
-  function eliminarFila(button) {
-    button.closest("tr").remove();
-  }
 </script>

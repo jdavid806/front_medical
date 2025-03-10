@@ -12,9 +12,9 @@ export interface Patient {
     nationality: string;
     created_at: string;
     updated_at: string;
-    country_id: number;
-    department_id: number;
-    city_id: number;
+    country_id: string;
+    department_id: string;
+    city_id: string;
     whatsapp: string;
     email: string;
     civil_status: string;
@@ -154,6 +154,7 @@ export interface Socialsecurity {
     insurer: null;
     created_at: string;
     updated_at: string;
+    entity_id: string;
 }
 
 export interface UserDto {

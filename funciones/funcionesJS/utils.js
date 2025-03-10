@@ -146,12 +146,6 @@ async function EliminarDatos(url) {
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
         Swal.fire({
           icon: "success",
           title: "¡Éxito!",

@@ -75,13 +75,6 @@
         // Limpiar formulario y cerrar modal
         form.reset();
         $('#crearMetodoPago').modal('hide');
-        Swal.fire({
-          icon: "success",
-          title: "¡Guardado exitosamente!",
-          text: "Los datos se han guardado correctamente.",
-          timer: 2000,
-          showConfirmButton: false,
-        });
         cargarMetodosPago();
       } catch (error) {
         alert('Error al crear el producto: ' + error.message);

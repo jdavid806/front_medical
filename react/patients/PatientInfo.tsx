@@ -1,5 +1,8 @@
 import React from 'react';
 import { Patient } from '../models/models';
+import { useEffect } from 'react';
+import { citiesSelect, countriesSelect, departmentsSelect } from '../../services/selects';
+import { cityService, countryService, departmentService } from '../../services/api';
 
 interface PatientInfoProps {
     patient: Patient;
@@ -8,9 +11,85 @@ interface PatientInfoProps {
 export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
     console.log(patient);
 
+    useEffect(() => {
+        const modalElement = document.getElementById('modalCrearPaciente');
+        if (!modalElement || !patient) return;
+
+        // @ts-ignore
+        const modal = new bootstrap.Modal(modalElement);
+        const fillForm = async () => {
+            console.log("Rellenando el formulario...", patient);
+
+            const form = document.getElementById('formNuevoPaciente') as HTMLFormElement;
+
+            // Datos básicos
+            (form.elements.namedItem('document_type') as HTMLSelectElement).value = patient.document_type;
+            (form.elements.namedItem('document_number') as HTMLInputElement).value = patient.document_number;
+            (form.elements.namedItem('first_name') as HTMLInputElement).value = patient.first_name;
+            (form.elements.namedItem('middle_name') as HTMLInputElement).value = patient.middle_name || '';
+            (form.elements.namedItem('last_name') as HTMLInputElement).value = patient.last_name;
+            (form.elements.namedItem('second_last_name') as HTMLInputElement).value = patient.second_last_name || '';
+            (form.elements.namedItem('gender') as HTMLSelectElement).value = patient.gender;
+            (form.elements.namedItem('date_of_birth') as HTMLInputElement).value = patient.date_of_birth;
+            (form.elements.namedItem('whatsapp') as HTMLInputElement).value = patient.whatsapp;
+            (form.elements.namedItem('email') as HTMLInputElement).value = patient.email || '';
+            (form.elements.namedItem('civil_status') as HTMLSelectElement).value = patient.civil_status;
+            (form.elements.namedItem('ethnicity') as HTMLSelectElement).value = patient.ethnicity || '';
+            (form.elements.namedItem('blood_type') as HTMLSelectElement).value = patient.blood_type;
+
+            // Datos de residencia
+
+            const countrySelect: any = document.getElementById('country_id');
+            const deptSelect: any = document.getElementById('department_id');
+            const citySelect: any = document.getElementById('city_id');
+
+            const countries = await countryService.getAll()
+            const countryId = countries.data.find((country: any) => country.name === patient.country_id).id
+
+            const departments = await departmentService.ofParent(countryId);
+            const departmentId = departments.find((department: any) => department.name === patient.department_id).id
+
+            await countriesSelect(countrySelect, async () => {
+                await departmentsSelect(
+                    deptSelect,
+                    countryId,
+                    async () => {
+                        await citiesSelect(
+                            citySelect,
+                            departmentId,
+                            () => { },
+                            patient.city_id
+                        );
+                    },
+                    patient.department_id
+                );
+            }, patient.country_id);
+
+            (form.elements.namedItem('address') as HTMLInputElement).value = patient.address;
+            (form.elements.namedItem('nationality') as HTMLSelectElement).value = patient.nationality;
+
+            if (patient.social_security) {
+                (form.elements.namedItem('eps') as HTMLSelectElement).value = patient.social_security.entity_id?.toString() || '';
+                (form.elements.namedItem('arl') as HTMLSelectElement).value = patient.social_security.arl || '';
+                (form.elements.namedItem('afp') as HTMLSelectElement).value = patient.social_security.afp || '';
+            }
+        };
+
+        modalElement.addEventListener('show.bs.modal', fillForm);
+        return () => {
+            modalElement.removeEventListener('show.bs.modal', fillForm);
+            modal.dispose();
+        };
+    }, [patient]);
+
     return (
         <>
-            <h3 className="fw-bold mb-3"><i className="fa-solid fa-users fa-lg"></i> Datos Generales</h3>
+            <div className='d-flex gap-3 justify-content-between align-items-center mb-3'>
+                <h3 className="fw-bold"><i className="fa-solid fa-users fa-lg"></i> Datos Generales</h3>
+                <button className='btn btn-primary' data-bs-toggle="modal" data-bs-target="#modalCrearPaciente">
+                    <i className="fa-solid fa-pen-to-square me-2"></i> Editar
+                </button>
+            </div>
             <div className="row">
                 <div className="col-md-6">
                     <p><span className="fw-bold">Tipo documento:</span> {patient.document_type}</p>
