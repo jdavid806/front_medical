@@ -114,22 +114,21 @@ async function imprimirConsentimiento(id) {
   console.log("impirmiendo" + id);
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
-  console.log(consentimeinto);
-  // crearDocumento(incapacidad, "Impresion", "Incapacidad", "Completa", "Incapacidad Médica");
+  crearDocumento(consentimeinto, "Impresion", "Consentimiento", "Completa", consentimeinto.title);
 }
 
 async function descargarConsentimiento(id) {
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
   console.log(consentimeinto);
-  // crearDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", "Incapacidad Médica");
+  // crearDocumento(consentimeinto, "Descarga", "Consentimiento", "Completa", consentimeinto.title);
 }
 
 async function compartirConsentimiento(id) {
   let url = `http://dev.medicalsoft.ai/api/v1/firma/templates/${id}`;
   let consentimeinto = await obtenerDatos(url);
   console.log(consentimeinto);
-  // enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", incapacidad.patient_id, incapacidad.user_id, "Incapacidad_Médica.pdf");
+  // enviarDocumento(consentimeinto, "Descarga", "Consentimiento", "Completa", consentimeinto.patient_id, "1", consentimeinto.title);
 }
 
 // function editarPConsentimiento(id, title, template) {

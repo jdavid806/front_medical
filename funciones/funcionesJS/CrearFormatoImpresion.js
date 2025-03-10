@@ -67,19 +67,17 @@ async function generarFormatoConsentimiento(consentimeinto) {
     </div>
   </div>
   `;
-  // let datosPaciente = await consultarDatosPaciente(
-  //   incapacidad.patient_id,
-  //   formatearFechaQuitarHora(incapacidad.created_at)
-  // );
-  // let datosEmpresa = await consultarDatosEmpresaPorDoctorId(
-  //   incapacidad.user_id
-  // );
-  // let datosDoctor = await consultarDatosDoctor(incapacidad.user_id);
+  let datosPaciente = await consultarDatosPaciente(
+    consentimeinto.patient_id,
+    formatearFechaQuitarHora(consentimeinto.created_at)
+  );
+  let datosEmpresa = await consultarDatosEmpresaPorDoctorId("1");
+  let datosDoctor = await consultarDatosDoctor("1");
 
-  // return {
-  //   consultorio: datosEmpresa,
-  //   paciente: datosPaciente,
-  //   contenido,
-  //   doctor: datosDoctor,
-  // };
+  return {
+    consultorio: datosEmpresa,
+    paciente: datosPaciente,
+    contenido,
+    doctor: datosDoctor,
+  };
 }
