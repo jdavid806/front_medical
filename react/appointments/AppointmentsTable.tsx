@@ -20,7 +20,7 @@ export const AppointmentsTable: React.FC = () => {
   ];
 
   const slots = {
-    7: (cell, data: AppointmentTableItem) => (
+    6: (cell, data: AppointmentTableItem) => (
       <span
         className={`badge badge-phoenix ${
           data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"

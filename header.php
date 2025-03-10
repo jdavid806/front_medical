@@ -140,6 +140,11 @@
               </div>
             </a>
           </li>
+          <li><a class="dropdown-item" href="paquetes">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="layers"></span>Paquetes
+              </div>
+            </a>
+          </li>
         </ul>
   </div>
   <ul class="navbar-nav navbar-nav-icons flex-row">

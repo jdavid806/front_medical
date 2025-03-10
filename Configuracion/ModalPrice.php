@@ -34,8 +34,7 @@ include '../data/consts.php';
                             </div>
                             <div class="col-12 col-md-6" id="cupsField">
                                 <label for="curp" class="form-label">Cups</label>
-                                <input class="form-control" id="curp" type="text" placeholder="Codigo Cups"
-                                    name="curp">
+                                <input class="form-control" id="curp" type="text" placeholder="Codigo Cups" name="curp">
                             </div>
                             <div class="col-12 col-md-6" id="typeField">
                                 <label for="attention_type" class="form-label">Tipo de atención</label>
@@ -85,7 +84,7 @@ include '../data/consts.php';
     // Función para manejar la creación de productos
     async function createProduct(productData) {
         try {
-            console.log('Creando producto:', productData);
+            // console.log('Creando producto:', productData);
             const response = await productService.storeProduct(productData);
             // console.log('Producto creado:', response);
             return response;
@@ -109,6 +108,8 @@ include '../data/consts.php';
 
             e.preventDefault();
 
+
+            const productId = document.getElementById('product_id')?.value;
             const productData = {
                 name: document.getElementById('name').value,
                 // product_type_id: document.getElementById('product_type_id').value,
@@ -127,7 +128,11 @@ include '../data/consts.php';
 
             try {
                 // console.log('Creando producto:', productData);
-                await createProduct(productData);
+                if (productId) {
+                    await updateProduct(productId, productData);
+                } else {
+                    await createProduct(productData);
+                }
 
                 // Limpiar formulario y cerrar modal
                 form.reset();
@@ -139,6 +144,7 @@ include '../data/consts.php';
                     timer: 2000,
                     showConfirmButton: false,
                 });
+                cargarContenido();
             } catch (error) {
                 alert('Error al crear el producto: ' + error.message);
             }

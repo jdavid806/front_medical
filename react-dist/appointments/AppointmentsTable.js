@@ -26,7 +26,7 @@ export const AppointmentsTable = () => {
     data: "status"
   }];
   const slots = {
-    7: (cell, data) => /*#__PURE__*/React.createElement("span", {
+    6: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix ${data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"}`
     }, data.status ? "Activo" : "Inactivo")
   };

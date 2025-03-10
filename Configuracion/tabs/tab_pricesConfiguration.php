@@ -18,9 +18,11 @@
           <table class="table table-striped table-hover">
             <thead class="table-dark">
               <tr>
-                <th>ítem</th>
-                <th width="150">Tipo de  Ítem</th>
-                <th width="200">Precio</th>
+                <th>Ítem</th>
+                <th>Cups</th>
+                <th>Tipo de Atención</th>
+                <th>Precio Publico</th>
+                <th>Precio Entidad</th>
                 <th></th>
               </tr>
             </thead>

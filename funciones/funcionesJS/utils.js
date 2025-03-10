@@ -52,8 +52,9 @@ async function guardarDatos(url, datos) {
       text: "Los datos se han guardado correctamente.",
       timer: 2000,
       showConfirmButton: false,
+    }).then(() => {
+      location.reload();
     });
-
     return resultado;
   } catch (error) {
     console.error("Error al guardar los datos:", error);
@@ -92,8 +93,9 @@ async function actualizarDatos(url, datos) {
       text: "Los datos se han actualizado correctamente.",
       timer: 2000,
       showConfirmButton: false,
+    }).then(() => {
+      location.reload();
     });
-
     return resultado;
   } catch (error) {
     console.error("Error al actualizar los datos:", error);
@@ -108,6 +110,54 @@ async function actualizarDatos(url, datos) {
 
     return null;
   }
+}
+
+async function EliminarDatos(url) {
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "No podrás revertir esta acción!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí, eliminar!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "El recurso se eliminó correctamente.",
+          confirmButtonText: "Aceptar",
+        }).then(() => {
+          location.reload();
+        });
+      } catch (error) {
+        console.error("Error al eliminar el recurso:", error);
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo eliminar el recurso. Por favor, inténtalo de nuevo.",
+          confirmButtonText: "Aceptar",
+        });
+      }
+    }
+  });
 }
 
 function unirTextos(arr) {

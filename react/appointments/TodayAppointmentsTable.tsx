@@ -4,10 +4,15 @@ import CustomDataTable from '../components/CustomDataTable';
 import { ConfigColumns } from 'datatables.net-bs5';
 import { useFetchAppointments } from './hooks/useFetchAppointments';
 import { admissionService } from '../../services/api';
+import { useEffect } from 'react';
 
 export const TodayAppointmentsTable: React.FC = () => {
 
   const { appointments } = useFetchAppointments(admissionService.getAdmisionsAll());
+
+  useEffect(() => {
+    console.log(appointments);
+  }, [appointments]);
 
   const columns: ConfigColumns[] = [
     { data: 'patientName', className: 'text-start' },

@@ -1,19 +1,3 @@
-<?php
-// Array de antecedentes con id, valor y nombre
-$vacunas = [
-    ["id" => 1, "valor" => "Hepatitis B", "nombre" => "Hepatitis B"],
-    ["id" => 2, "valor" => "DTP", "nombre" => "DTP (Difteria, Tétanos y Tos Ferina)"],
-    ["id" => 3, "valor" => "Polio", "nombre" => "Polio"],
-    ["id" => 4, "valor" => "Triple Viral", "nombre" => "Triple Viral (Sarampión, Rubeola y Parotiditis)"],
-    ["id" => 5, "valor" => "Influenza", "nombre" => "Influenza (Gripe)"],
-    ["id" => 6, "valor" => "Tétanos", "nombre" => "Tétanos"],
-    ["id" => 7, "valor" => "Neumococo", "nombre" => "Neumococo"],
-    ["id" => 8, "valor" => "Varicela", "nombre" => "Varicela"],
-    ["id" => 9, "valor" => "HPV", "nombre" => "HPV (Virus del Papiloma Humano)"]
-];
-
-?>
-
 <div class="modal fade modal-xl" id="modalAgregarPaquete" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -941,6 +925,203 @@ $vacunas = [
             });
         }
     }
+
+    // Función para manejar el evento click del botón guardar
+    document.getElementById('guardarPaqueteBtn').addEventListener('click', function() {
+        // Capturo los valores de los campos individuales
+        const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
+        const cupsCie = document.getElementById('CupsCie').value;
+        const selectCie = document.getElementById('selectCie').value;
+        const selectCups = document.getElementById('selectCups').value;
+
+        // Capturo los valores de los selects múltiples
+        const medicamentosSeleccionados = obtenerSeleccionados('selectMedicamentos');
+        const examenesSeleccionados = obtenerSeleccionados('selectExamenes');
+        const vacunasSeleccionadas = obtenerSeleccionados('selectVacunas');
+        const insumosSeleccionados = obtenerSeleccionados('selectInsumos');
+
+        // Validar el nombre del paquete (como mínimo, pues es obligatorio)
+        if (!nombrePaquete) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Debe ingresar un nombre para el paquete',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
+        }
+
+        // Datos para console.log
+        const datosPaquete = {
+            nombrePaquete,
+            cupsCie,
+            selectCie,
+            selectCups,
+            medicamentos: medicamentosSeleccionados,
+            examenes: examenesSeleccionados,
+            vacunas: vacunasSeleccionadas,
+            insumos: insumosSeleccionados
+        };
+
+        // Mostrar todos los elementos seleccionados
+        mostrarElementosSeleccionados(
+            nombrePaquete,
+            cupsCie,
+            selectCie,
+            selectCups,
+            medicamentosSeleccionados,
+            examenesSeleccionados,
+            vacunasSeleccionadas,
+            insumosSeleccionados,
+            datosPaquete
+        );
+    });
+
+    /**
+     * Función para obtener los valores seleccionados de un select múltiple
+     * @param {string} selectId - El ID del elemento select
+     * @return {Array} - Array con los valores seleccionados
+     */
+    function obtenerSeleccionados(selectId) {
+        const select = document.getElementById(selectId);
+
+        // Si el select no existe, devolver array vacío
+        if (!select) return [];
+
+        // Obtener todas las opciones seleccionadas
+        const seleccionados = [];
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].selected && select.options[i].value !== "") {
+                seleccionados.push(select.options[i].value);
+            }
+        }
+
+        return seleccionados;
+    }
+
+    /**
+     * Función para mostrar todos los elementos seleccionados usando SweetAlert
+     */
+    function mostrarElementosSeleccionados(
+        nombrePaquete,
+        cupsCie,
+        selectCie,
+        selectCups,
+        medicamentos,
+        examenes,
+        vacunas,
+        insumos,
+        datosPaquete
+    ) {
+        // Preparar el HTML para el contenido del Swal
+        let contenidoHTML = '<div class="text-center">';
+
+        // Datos básicos del paquete
+        contenidoHTML += `<h5>Nombre del paquete: <strong>${nombrePaquete}</strong></h5>`;
+
+        // Añadimos los valores de los selects individuales si tienen valor
+        if (cupsCie || selectCie || selectCups) {
+            contenidoHTML += '<div class="mb-3">';
+
+            if (cupsCie) {
+                // Verificamos si cupsCie es equivalente a "cups" o "cie"
+                let tipoCupsCie = "";
+                if (cupsCie.toLowerCase() === "cups") {
+                    tipoCupsCie = "CUPS";
+                } else if (cupsCie.toLowerCase() === "cie11") {
+                    tipoCupsCie = "CIE-11";
+                } else {
+                    tipoCupsCie = cupsCie; // Mantenemos el valor original si no coincide
+                }
+
+                contenidoHTML += `<p>Paquete asociado a: <strong>${tipoCupsCie}</strong></p>`;
+            }
+
+            if (selectCie) {
+                contenidoHTML += `<p>CIE-11: <strong>${selectCie}</strong></p>`;
+            }
+
+            if (selectCups) {
+                contenidoHTML += `<p>CUPS: <strong>${selectCups}</strong></p>`;
+            }
+
+            contenidoHTML += '</div>';
+        }
+
+        // Añadimos los medicamentos
+        if (medicamentos.length > 0) {
+            contenidoHTML += '<div class="mb-3">';
+            contenidoHTML += '<h6 class="font-weight-bold">Medicamentos:</h6>';
+            contenidoHTML += '<ul class="list-unstyled">';
+            medicamentos.forEach(med => {
+                contenidoHTML += `<li>${med}</li>`;
+            });
+            contenidoHTML += '</ul>';
+            contenidoHTML += '</div>';
+        }
+
+        // Añadimos los exámenes
+        if (examenes.length > 0) {
+            contenidoHTML += '<div class="mb-3">';
+            contenidoHTML += '<h6 class="font-weight-bold">Exámenes:</h6>';
+            contenidoHTML += '<ul class="list-unstyled">';
+            examenes.forEach(examen => {
+                contenidoHTML += `<li>${examen}</li>`;
+            });
+            contenidoHTML += '</ul>';
+            contenidoHTML += '</div>';
+        }
+
+        // Añadimos las vacunas
+        if (vacunas.length > 0) {
+            contenidoHTML += '<div class="mb-3">';
+            contenidoHTML += '<h6 class="font-weight-bold">Vacunas:</h6>';
+            contenidoHTML += '<ul class="list-unstyled">';
+            vacunas.forEach(vacuna => {
+                contenidoHTML += `<li>${vacuna}</li>`;
+            });
+            contenidoHTML += '</ul>';
+            contenidoHTML += '</div>';
+        }
+
+        // Añadimos los insumos
+        if (insumos.length > 0) {
+            contenidoHTML += '<div class="mb-3">';
+            contenidoHTML += '<h6 class="font-weight-bold">Insumos:</h6>';
+            contenidoHTML += '<ul class="list-unstyled">';
+            insumos.forEach(insumo => {
+                contenidoHTML += `<li>${insumo}</li>`;
+            });
+            contenidoHTML += '</ul>';
+            contenidoHTML += '</div>';
+        }
+
+        contenidoHTML += '</div>';
+
+        // Mostramos el resumen con SweetAlert2 con botones de aceptar y cerrar
+        Swal.fire({
+            icon: 'success',
+            title: 'Resumen del Paquete',
+            html: contenidoHTML,
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cerrar',
+            confirmButtonColor: '#132030',
+            cancelButtonColor: '#6c757d',
+            width: '600px'
+        }).then((result) => {
+            // Solo logeamos los datos si el usuario hace clic en Aceptar
+            if (result.isConfirmed) {
+                console.log("Datos del paquete:", datosPaquete);
+                // Aquí podrías añadir el código para enviar estos datos a un servidor
+
+                window.location.reload();
+            }
+            // Si el usuario hace clic en Cerrar, simplemente se cierra el modal
+            // y permanece en la misma vista
+        });
+    }
+
     // function cargarMedicamentos() {
 
     //     medicamentos.forEach(medicamento => {

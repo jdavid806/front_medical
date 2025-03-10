@@ -549,6 +549,13 @@ include '../modals/NewCompanionModal.php';
                                                         <tbody id="productsTableBody">
                                                             <tr></tr>
                                                         </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td colspan="4" class="text-end"><strong>Total General</strong></td>
+                                                                <td><strong id="totalSum">0.00</strong></td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tfoot>
                                                     </table>
                                                 </div>
                                             </div>
@@ -574,6 +581,13 @@ include '../modals/NewCompanionModal.php';
                                                                             <tbody id="paymentsTableBody">
                                                                                 <tr></tr>
                                                                             </tbody>
+                                                                            <tfoot>
+                                                                                <tr>
+                                                                                    <td colspan="4" class="text-end"><strong style="font-size: 15px;">Total monto</strong></td>
+                                                                                    <td><strong id="totalSumAmount" style="font-size: 15px;">0.00</strong></td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                            </tfoot>
                                                                         </table>
 
                                                                     </div>
@@ -847,7 +861,7 @@ include '../modals/NewCompanionModal.php';
                                         </g>
                                     </g>
                                 </svg><!-- <span class="fas fa-chevron-left me-1" data-fa-transform="shrink-3"></span> Font Awesome fontawesome.com -->Anterior</button>
-                            <div class="flex-1 text-end"><button class="btn btn-primary px-6 px-sm-6" type="submit" data-wizard-next-btn="data-wizard-next-btn">Siguiente<svg class="svg-inline--fa fa-chevron-right ms-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;">
+                            <div class="flex-1 text-end"><button class="btn btn-primary px-6 px-sm-6" type="submit" id="next_step" data-wizard-next-btn="data-wizard-next-btn">Siguiente<svg class="svg-inline--fa fa-chevron-right ms-1" data-fa-transform="shrink-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="" style="transform-origin: 0.3125em 0.5em;">
                                         <g transform="translate(160 256)">
                                             <g transform="translate(0, 0)  scale(0.8125, 0.8125)  rotate(0 0 0)">
                                                 <path fill="currentColor" d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" transform="translate(-160 -256)"></path>
@@ -1187,6 +1201,12 @@ include '../modals/NewCompanionModal.php';
             const amount = parseFloat(amountInput);
             const entitySwitch = document.getElementById('entitySwitch');
             const pending = document.getElementById('pending');
+            const buttonStep = document.getElementById('buttonStep');
+            const sumAmount = document.getElementById('totalSum');
+
+            const sumAmountValue = parseFloat(sumAmount.textContent.replace(/[^\d.-]/g, '').split(".").join("")).toFixed(2);
+
+            console.log("Suma de monto", sumAmountValue, amount);
 
             if (entitySwitch.checked) {
                 pending.value = Math.abs(amount - 100);
@@ -1194,6 +1214,8 @@ include '../modals/NewCompanionModal.php';
             } else {
                 pending.value = Math.abs(amount - 500);
             }
+
+
 
             if (methodPayment !== 'Seleccionar' && amount) {
                 const formattedAmount = new Intl.NumberFormat('es-CO').format(amount); // Formatear el monto con puntos
@@ -1209,7 +1231,6 @@ include '../modals/NewCompanionModal.php';
     }
 
     function addRowToProductTable(values, tableBodyId) {
-        console.log(values);
         const tableBody = document.getElementById(tableBodyId);
         const summaryTableBody = document.getElementById('summaryProductsTableBody'); // Nueva tabla
         const rowCount = tableBody.rows.length + 1;
@@ -1237,12 +1258,14 @@ include '../modals/NewCompanionModal.php';
         <td class="border-0"></td>
     `;
         summaryTableBody.appendChild(summaryRow);
+        updateTotal();
     }
 
     // Función para agregar métodos de pago a ambas tablas
     function addRowToPaymentTable(values, tableBodyId) {
         const tableBody = document.getElementById(tableBodyId);
         const rowCount = tableBody.rows.length + 1;
+        console.log(values);
 
         // Convertir valores
         switch (values[0]) {
@@ -1261,10 +1284,10 @@ include '../modals/NewCompanionModal.php';
         }
 
         // Formatear monto
-        values[1] = new Intl.NumberFormat('es-CO', {
-            style: 'currency',
-            currency: 'COP'
-        }).format(values[1]);
+        // values[1] = new Intl.NumberFormat('es-CO', {
+        //     style: 'currency',
+        //     currency: 'COP'
+        // }).format(values[1]);
 
         // Crear fila
         const row = document.createElement('tr');
@@ -1277,6 +1300,7 @@ include '../modals/NewCompanionModal.php';
 
         // Agregar solo a la tabla principal
         tableBody.appendChild(row);
+        updateTotalAmount();
     }
 
 
@@ -1285,7 +1309,7 @@ include '../modals/NewCompanionModal.php';
     window.removeRow = function(element) {
         const row = element.closest('tr');
         row.remove();
-
+        updateTotal();
     };
 
 
@@ -1742,6 +1766,51 @@ include '../modals/NewCompanionModal.php';
         `;
             tableBody.appendChild(newRow);
         }
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const tableBody = document.getElementById('productsTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+        let sum = 0;
+
+        console.log(tableBody);
+        console.log(rows);
+
+        for (let row of rows) {
+            if (row.cells.length) {
+                const totalCell = row.cells[4]; // Columna "Total" (índice 4)
+                const totalText = totalCell.textContent.replace(' COP', '').trim();
+                const totalValue = parseFloat(totalText) || 0;
+                sum += totalValue;
+            }
+        }
+
+        document.getElementById('totalSum').textContent = Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP'
+        }).format(`${sum.toFixed(2)}`);
+    }
+
+    function updateTotalAmount() {
+        const tableBody = document.getElementById('paymentsTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+        let sum = 0;
+
+        console.log(tableBody);
+        console.log(rows);
+
+        for (let row of rows) {
+            if (row.cells.length) {
+                const totalCell = row.cells[2];
+                const totalText = totalCell.textContent.replace(' COP', '').trim();
+                const totalValue = parseFloat(totalText.split(".").join("")) || 0;
+                console.log(totalValue);
+                sum += totalValue;
+            }
+        }
+
+        document.getElementById('totalSumAmount').textContent = `${sum.toFixed(2)}`;
     }
 </script>
 

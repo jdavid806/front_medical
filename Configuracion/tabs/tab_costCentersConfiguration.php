@@ -11,7 +11,6 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>#</th>
             <th>Nombre</th>
             <th>Código</th>
             <th>Descripción</th>
@@ -25,3 +24,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarCentrosCosto();
+  });
+
+</script>

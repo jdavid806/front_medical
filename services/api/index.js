@@ -75,6 +75,8 @@ export const permissionService = new PermissionService('');
 export const ticketService = new TicketService('medical', 'tickets');
 export const moduleService = new BaseApiService('medical', 'modules');
 
+export const entityService = new BaseApiService('medical', 'entities');
+
 /* Countries */
 
 export const countryService = new CountrySeervice('medical', 'countries');

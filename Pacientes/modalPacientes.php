@@ -532,11 +532,6 @@ require "./modals/editPartnerModal.php";
                         <label for="eps" class="form-label">Entidad prestadora de salud (eps)</label>
                         <select class="form-select" id="eps" name="social_security[eps]" required>
                           <option selected disabled value="">Seleccione</option>
-                          <option value="Sanitas">Sanitas</option>
-                          <option value="Sura">Sura</option>
-                          <option value="Compensar">Compensar</option>
-                          <option value="Nueva EPS">Nueva EPS</option>
-                          <option value="Coomeva">Coomeva</option>
                         </select>
                         <div class="invalid-feedback">El campo es obligatorio</div>
                       </div>
@@ -661,7 +656,8 @@ require "./modals/editPartnerModal.php";
     countryService,
     departmentService,
     cityService,
-    userService
+    userService,
+    entityService
   } from './services/api/index.js';
   import {
     getJWTPayload
@@ -827,12 +823,23 @@ require "./modals/editPartnerModal.php";
     });
   };
 
+  async function getEntities() {
+    try {
+      const data = await entityService.getAll();
+      console.log('Entidades', data);
+
+      populateEntitySelect(data.data);
+    } catch (error) {
+      console.error('Error al obtener las entidades:', error);
+    }
+  }
+
   async function getCountries() {
     try {
       const data = await countryService.getAll();
       console.log('Paises', data);
 
-      populateCountrySelect(data);
+      populateCountrySelect(data.data);
     } catch (error) {
       console.error('Error al obtener los países:', error);
     }
@@ -840,7 +847,7 @@ require "./modals/editPartnerModal.php";
 
   async function getDepartments(countryId) {
     try {
-      const data = await departmentService.getAll();
+      const data = await departmentService.ofParent(countryId);
       console.log('Departamentos', data);
 
       populateDepartmentSelect(data);
@@ -851,7 +858,7 @@ require "./modals/editPartnerModal.php";
 
   async function getCities(departmentId) {
     try {
-      const data = await cityService.getAll();
+      const data = await cityService.ofParent(departmentId);
       console.log('Ciudades', data);
 
       populateCitySelect(data);
@@ -894,6 +901,16 @@ require "./modals/editPartnerModal.php";
     });
   }
 
+  function populateEntitySelect(entities) {
+    const entitySelect = document.getElementById('eps');
+    entities.forEach(entity => {
+      const option = document.createElement('option');
+      option.value = entity.id;
+      option.textContent = entity.name;
+      entitySelect.appendChild(option);
+    });
+  }
+
   // Llamadas a funciones dentro de DOMContentLoaded
   document.addEventListener('DOMContentLoaded', async function() {
     // handleRegimenChange();
@@ -903,6 +920,7 @@ require "./modals/editPartnerModal.php";
     handleImageUpload();
     // Llama a la función para obtener y cargar los países
     getCountries();
+    getEntities();
 
     document.getElementById('country_id').addEventListener('change', function() {
       const selectedCountryId = this.value;

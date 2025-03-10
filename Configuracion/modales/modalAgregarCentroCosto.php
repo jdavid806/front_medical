@@ -35,35 +35,58 @@
 </div>
 
 <script>
-  document.getElementById("formAgregarCentroCostos").addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    const nombre = document.getElementById("nombre-centro").value;
-    const codigo = document.getElementById("codigo-centro").value;
-    const descripcion = document.getElementById("descripcion-centro").value || "N/A";
+  function handleCentrosCostoForm() {
 
-    const tablaCentros = document.getElementById("tablaCentrosCostos");
-    const rowCount = tablaCentros.rows.length + 1;
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>${rowCount}</td>
-        <td>${nombre}</td>
-        <td>${codigo}</td>
-        <td>${descripcion}</td>
-        <td>
-            <button class="btn btn-danger btn-sm" onclick="eliminarFila(this)">
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </td>
-    `;
+    const form = document.getElementById('formAgregarCentroCostos');
 
-    tablaCentros.appendChild(row);
-    event.target.reset();
-    const modal = bootstrap.Modal.getInstance(document.getElementById("crearCentroCostos"));
-    modal.hide();
+    if (!form) {
+      console.warn('El formulario de creación no existe en el DOM');
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      const productId = document.getElementById('centro_id')?.value;
+
+      const nombre = document.getElementById("nombre-centro").value;
+      const codigo = document.getElementById("codigo-centro").value;
+      const descripcion = document.getElementById("descripcion-centro").value || "N/A";
+
+      const productData = {
+        name: nombre,
+        code: codigo,
+        description: descripcion,
+      };
+
+      // Validación básica
+      /* if (!productData.name || !productData.product_type_id) {
+          alert('Nombre y tipo son campos obligatorios');
+          return;
+      } */
+
+      try {
+        if (productId) {
+          updateCentroCosto(productId, productData);
+        } else {
+          createCentroCosto(productData);
+        }
+
+        // Limpiar formulario y cerrar modal
+        form.reset();
+        $('#crearCentroCostos').modal('hide');
+        cargarCentrosCosto();
+      } catch (error) {
+        alert('Error al crear el producto: ' + error.message);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    handleCentrosCostoForm();
   });
 
-  function eliminarFila(button) {
-    button.closest("tr").remove();
-  }
+
 </script>

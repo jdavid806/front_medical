@@ -19,7 +19,7 @@ include "../header.php";
                         <div class="col-md-12">
                             <h2 class="mb-3">Paquetes</h2>
                             <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
-                                data-bs-target="#modalAgregarPaquete">
+                                data-bs-target="#modalAgregarPaquetes">
                                 <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo paquete
                             </button>
                         </div>
@@ -27,13 +27,13 @@ include "../header.php";
                     <div class="row">
                         <!-- Tabla de paquetes -->
                         <div class="col-lg-12">
-                            <div id="tableExample4" data-list="{&quot;valueNames&quot;:[&quot;nombre&quot;,&quot;incluidos&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
+                            <div id="tableExample4" data-list="{&quot;valueNames&quot;:[&quot;nombre&quot;,&quot;detalles&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
                                 <div class="table-responsive">
                                     <table class="table table-sm fs-9 mb-0">
                                         <thead>
                                             <tr class="bg-body-highlight">
                                                 <th class="sort border-top border-translucent ps-3" data-sort="nombre">Nombre del paquete</th>
-                                                <th class="sort border-top border-translucent" data-sort="incluidos">Incluidos</th>
+                                                <th class="sort border-top border-translucent" data-sort="detalles">Detalles</th>
                                                 <th class="sort border-top border-translucent text-end pe-3" data-sort="acciones">Acciones</th>
                                             </tr>
                                         </thead>
@@ -54,60 +54,209 @@ include "../header.php";
 </div>
 
 <script>
-    // JSON con los paquetes y sus elementos incluidos
+    // JSON con los paquetes y sus elementos detalles
     const paquetes = [{
             nombre: "Paquete Básico",
-            incluidos: {
-                medicamentos: ["Paracetamol", "Ibuprofeno"],
-                procedimientos: ["Consulta general"],
-                diagnosticos: ["A00 - Cólera", "B20 - Infección por el virus de la inmunodeficiencia humana (VIH)"],
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Paracetamol",
+                        cantidad: 10
+                    },
+                    {
+                        nombre: "Ibuprofeno",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: ["951101 - Consulta general"],
+                diagnosticos: [],
                 examenes: ["Análisis de orina", "Hemograma"],
-                vacunas: ["Vacuna contra la influenza", "Vacuna contra el tétanos"],
-                insumos: ["Termómetro", "Esfigmomanómetro", "Estetoscopio"]
+                vacunas: [{
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Vacuna contra el tétanos",
+                        cantidad: 1
+                    }
+                ],
+                insumos: [{
+                        nombre: "Termómetro",
+                        cantidad: 5
+                    },
+                    {
+                        nombre: "Esfigmomanómetro",
+                        cantidad: 3
+                    },
+                    {
+                        nombre: "Estetoscopio",
+                        cantidad: 2
+                    }
+                ]
             }
         },
         {
             nombre: "Paquete Prenatal",
-            incluidos: {
-                medicamentos: ["Ácido Fólico", "Hierro"],
-                procedimientos: ["Ecografía abdominal", "Consulta prenatal"],
-                diagnosticos: ["F32 - Episodio depresivo mayor", "A00 - Cólera"],
+            detalles: {
+                relacion: "cie11",
+                medicamentos: [{
+                        nombre: "Ácido Fólico",
+                        cantidad: 30
+                    },
+                    {
+                        nombre: "Hierro",
+                        cantidad: 25
+                    }
+                ],
+                procedimientos: [],
+                diagnosticos: ["F32 - Episodio depresivo mayor"],
                 examenes: ["Análisis de sangre", "Ecografía abdominal"],
-                vacunas: ["Vacuna contra la hepatitis B", "Vacuna contra la influenza"],
-                insumos: ["Gel para ecografía", "Transductor", "Monitor"]
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 2
+                    }
+                ],
+                insumos: [{
+                        nombre: "Gel para ecografía",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Transductor",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Monitor",
+                        cantidad: 1
+                    }
+                ]
             }
         },
         {
             nombre: "Paquete Cardiológico",
-            incluidos: {
-                medicamentos: ["Atorvastatina", "Losartán"],
-                procedimientos: ["Electrocardiograma", "Ecocardiograma"],
+            detalles: {
+                relacion: "cie11",
+                medicamentos: [{
+                        nombre: "Atorvastatina",
+                        cantidad: 15
+                    },
+                    {
+                        nombre: "Losartán",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: [],
                 diagnosticos: ["I10 - Hipertensión esencial (primaria)", "G40 - Epilepsia"],
                 examenes: ["Perfil lipídico", "Prueba de función cardíaca"],
-                vacunas: ["Vacuna contra la neumonía", "Vacuna contra la influenza"],
-                insumos: ["Electrodos", "Cable de ECG", "Monitor de ECG", "Gel para ecografía"]
+                vacunas: [{
+                        nombre: "Vacuna contra la neumonía",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 1
+                    }
+                ],
+                insumos: [{
+                        nombre: "Electrodos",
+                        cantidad: 8
+                    },
+                    {
+                        nombre: "Cable de ECG",
+                        cantidad: 6
+                    },
+                    {
+                        nombre: "Monitor de ECG",
+                        cantidad: 3
+                    },
+                    {
+                        nombre: "Gel para ecografía",
+                        cantidad: 2
+                    }
+                ]
             }
         },
         {
             nombre: "Paquete Pediátrico",
-            incluidos: {
-                medicamentos: ["Amoxicilina suspensión", "Ibuprofeno pediátrico"],
-                procedimientos: ["Control de crecimiento", "Vacunación"],
-                diagnosticos: ["Valoración del desarrollo", "D50 - Anemia por deficiencia de hierro"],
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Amoxicilina suspensión",
+                        cantidad: 12
+                    },
+                    {
+                        nombre: "Ibuprofeno pediátrico",
+                        cantidad: 15
+                    }
+                ],
+                procedimientos: ["933901 - Vacunación"],
+                diagnosticos: [],
                 examenes: ["Hemograma", "Análisis de sangre"],
-                vacunas: ["Vacuna contra la hepatitis B", "Vacuna contra la varicela"],
-                insumos: ["Termómetro", "Estetoscopio", "Jeringas"]
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la varicela",
+                        cantidad: 3
+                    }
+                ],
+                insumos: [{
+                        nombre: "Termómetro",
+                        cantidad: 6
+                    },
+                    {
+                        nombre: "Estetoscopio",
+                        cantidad: 4
+                    },
+                    {
+                        nombre: "Jeringas",
+                        cantidad: 10
+                    }
+                ]
             }
         },
         {
             nombre: "Paquete Diabetes",
-            incluidos: {
-                medicamentos: ["Metformina", "Insulina"],
-                procedimientos: ["Control de glucemia"],
-                diagnosticos: ["E11 - Diabetes mellitus tipo 2", "I10 - Hipertensión esencial (primaria)"],
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Metformina",
+                        cantidad: 25
+                    },
+                    {
+                        nombre: "Insulina",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: ["932101 - Control de glucemia"],
+                diagnosticos: [],
                 examenes: ["Hemoglobina glicosilada", "Función renal", "Perfil lipídico"],
-                vacunas: ["Vacuna contra la hepatitis B", "Vacuna contra la influenza"],
-                insumos: ["Monitores de glucosa", "Tiras reactivas", "Jeringas para insulina"]
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 3
+                    }
+                ],
+                insumos: [{
+                        nombre: "Monitores de glucosa",
+                        cantidad: 5
+                    },
+                    {
+                        nombre: "Tiras reactivas",
+                        cantidad: 10
+                    },
+                    {
+                        nombre: "Jeringas para insulina",
+                        cantidad: 7
+                    }
+                ]
             }
         }
     ];
@@ -115,36 +264,78 @@ include "../header.php";
     console.log(paquetes);
 
 
-    // Función para formatear los elementos incluidos en un texto legible
-    function formatearIncluidos(incluidos) {
+    function formatearDetalles(detalles) {
         let resultado = [];
 
-        if (incluidos.medicamentos && incluidos.medicamentos.length > 0) {
-            resultado.push(`<strong>Medicamentos:</strong> ${incluidos.medicamentos.join(', ')}`);
+        // Verificar si 'relacion' es 'cups' o 'cie11' y mostrar los detalles correspondientes
+        if (detalles.relacion === "cie11") {
+            resultado.push("<strong>Relacionado a CIE-11</strong>");
+            if (detalles.diagnosticos && detalles.diagnosticos.length > 0) {
+                resultado.push(`<strong>Diagnóstico:</strong> ${detalles.diagnosticos[0]}`);
+            } else {
+                resultado.push("<strong>Diagnóstico:</strong> No disponible.");
+            }
+        } else if (detalles.relacion === "cups") {
+            resultado.push("<strong>Relacionado a CUPS</strong>");
+            if (detalles.procedimientos && detalles.procedimientos.length > 0) {
+                resultado.push(`<strong>Procedimiento:</strong> ${detalles.procedimientos[0]}`);
+            } else {
+                resultado.push("<strong>Procedimiento:</strong> No disponible.");
+            }
         }
 
-        if (incluidos.procedimientos && incluidos.procedimientos.length > 0) {
-            resultado.push(`<strong>Procedimientos:</strong> ${incluidos.procedimientos.join(', ')}`);
+        // Mostrar los medicamentos con nombre y cantidad
+        if (detalles.medicamentos && detalles.medicamentos.length > 0) {
+            resultado.push("<strong>Medicamentos:</strong>");
+            detalles.medicamentos.forEach(medicamento => {
+                resultado.push(`${medicamento.nombre} - ${medicamento.cantidad} Unidades`);
+            });
         }
 
-        if (incluidos.diagnosticos && incluidos.diagnosticos.length > 0) {
-            resultado.push(`<strong>Diagnósticos:</strong> ${incluidos.diagnosticos.join(', ')}`);
+        // // Mostrar los procedimientos si no están relacionados con CIE-11
+        // if (detalles.procedimientos && detalles.procedimientos.length > 0 && detalles.relacion !== "cie11") {
+        //     resultado.push("<strong>Procedimientos:</strong>");
+        //     detalles.procedimientos.forEach(procedimiento => {
+        //         resultado.push(procedimiento);
+        //     });
+        // }
+
+        // // Mostrar los diagnósticos si no están relacionados con CUPS
+        // if (detalles.diagnosticos && detalles.diagnosticos.length > 0 && detalles.relacion !== "cups") {
+        //     resultado.push("<strong>Diagnósticos:</strong>");
+        //     detalles.diagnosticos.forEach(diagnostico => {
+        //         resultado.push(diagnostico);
+        //     });
+        // }
+
+        // Mostrar los exámenes
+        if (detalles.examenes && detalles.examenes.length > 0) {
+            resultado.push("<strong>Exámenes:</strong>");
+            detalles.examenes.forEach(examen => {
+                resultado.push(examen);
+            });
         }
 
-        if (incluidos.examenes && incluidos.examenes.length > 0) {
-            resultado.push(`<strong>Exámenes:</strong> ${incluidos.examenes.join(', ')}`);
+        // Mostrar las vacunas con nombre y cantidad
+        if (detalles.vacunas && detalles.vacunas.length > 0) {
+            resultado.push("<strong>Vacunas:</strong>");
+            detalles.vacunas.forEach(vacuna => {
+                resultado.push(`${vacuna.nombre} - ${vacuna.cantidad} Unidades`);
+            });
         }
 
-        if (incluidos.vacunas && incluidos.vacunas.length > 0) {
-            resultado.push(`<strong>Vacunas:</strong> ${incluidos.vacunas.join(', ')}`);
-        }
-        
-        if (incluidos.insumos && incluidos.insumos.length > 0) {
-            resultado.push(`<strong>Insumos:</strong> ${incluidos.insumos.join(', ')}`);
+        // Mostrar los insumos con nombre y cantidad
+        if (detalles.insumos && detalles.insumos.length > 0) {
+            resultado.push("<strong>Insumos:</strong>");
+            detalles.insumos.forEach(insumo => {
+                resultado.push(`${insumo.nombre} - ${insumo.cantidad} Unidades`);
+            });
         }
 
         return resultado.join('<br>');
     }
+
+
 
     // Función para generar las filas de la tabla dinámicamente
     function generarFilasTabla() {
@@ -158,7 +349,7 @@ include "../header.php";
             // Crear las celdas de la fila
             fila.innerHTML = `
             <td class="align-middle ps-3">${paquete.nombre}</td>
-            <td class="align-middle">${formatearIncluidos(paquete.incluidos)}</td>
+            <td class="align-middle">${formatearDetalles(paquete.detalles)}</td>
             <td class="align-middle text-end pe-3">
                 <button class="btn btn-sm btn-warning editar-paquete" data-nombre="${paquete.nombre}"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-sm btn-danger eliminar-paquete" data-nombre="${paquete.nombre}"><i class="fas fa-trash"></i></button>
@@ -231,5 +422,7 @@ include "../header.php";
 
 
 <?php include "../footer.php";
-include "./modalAgregarPaquete.php";
+// include "./modalAgregarPaquete.php";
+include "./modalAgregarPaquetes.php";
+include "./modalEditarPaquete.php";
 ?>
