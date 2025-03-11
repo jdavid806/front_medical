@@ -607,9 +607,9 @@
             const diasIncapacidad = document.getElementById('dias').value;
             const hastaIncapacidad = document.getElementById('hasta').value;
             const motivoIncapacidad = document.getElementById('reason').value;
-            const userRemision = document.getElementById('user');
-            const specialityRemision = document.getElementById('userSpecialty');
-            const noteRemision = document.getElementById('note');
+            const userRemision = document.getElementById('user').value;
+            const specialityRemision = document.getElementById('userSpecialty').value;
+            const noteRemision = document.getElementById('note').value;
             // console.log("dias inc:", diasIncapacidad);
             // Capturo los valores de los campos individuales
             const nombrePaquete = document.getElementById('nombrePaquete').value.trim();

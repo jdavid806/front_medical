@@ -115,8 +115,8 @@ function obtenerElementosTabla() {
     const productId = document.getElementById("speciality_id")?.value;
 
     elementos.push({
-      tipo: tipo,
-      id: id,
+      specializable_type: tipo,
+      specializable_id: id,
       specialty_id: productId,
     });
   });
@@ -140,11 +140,15 @@ function abrirModal(id) {
 
 async function updateEspecilidad(id, especialidad) {
   let url = obtenerRutaPrincipal() + `/medical/specializables/${id}`;
+
+  console.log(ulr);
+  console.log(especialidad);
+
+
   actualizarDatos(url, especialidad);
 }
 
 async function createEspecilidad(especialidad) {
   let url = obtenerRutaPrincipal() + "/medical/specializables/";
-  console.log(url);
   guardarDatos(url, especialidad);
 }

@@ -3,7 +3,9 @@ import { Dropdown } from "primereact/dropdown";
 import { clinicalRecordService, remissionService, userService, userSpecialtyService } from "../../services/api/index.js";
 import { Checkbox } from "primereact/checkbox";
 import { PrimeReactProvider } from "primereact/api";
-export const remissionsForm = () => {
+import { forwardRef } from "react";
+import { useImperativeHandle } from "react";
+export const remissionsForm = /*#__PURE__*/forwardRef(ref => {
   const [note, setNote] = useState("");
   const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
@@ -34,6 +36,17 @@ export const remissionsForm = () => {
       console.error("Error:", error);
     });
   };
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return {
+        receiver_user_id: !checked ? selectedUser : null,
+        remitter_user_id: 1,
+        clinical_record_id: selectedService,
+        receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
+        note: note
+      };
+    }
+  }));
   const fetchClinicalRecords = async () => {
     const url = new URLSearchParams(window.location.search).get("patient_id");
     const data = await clinicalRecordService.ofParent(url);
@@ -152,4 +165,4 @@ export const remissionsForm = () => {
     onChange: e => setNote(e.target.value),
     required: true
   }))));
-};
+});

@@ -8,6 +8,8 @@ import {
 } from "../../services/api";
 import { Checkbox } from "primereact/checkbox";
 import { PrimeReactProvider } from "primereact/api";
+import { forwardRef } from "react";
+import { useImperativeHandle } from "react";
 interface Remission {
   receiver_user_id: null;
   remitter_user_id: number;
@@ -16,7 +18,11 @@ interface Remission {
   note: string;
 }
 
-export const remissionsForm: React.FC = () => {
+export interface RemissionsFormProps {
+  ref?: React.RefObject<any>;
+}
+
+export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef((ref) => {
   const [note, setNote] = useState("");
   const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] =
     useState([]);
@@ -55,6 +61,18 @@ export const remissionsForm: React.FC = () => {
         console.error("Error:", error);
       });
   };
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return {
+        receiver_user_id: !checked ? selectedUser : null,
+        remitter_user_id: 1,
+        clinical_record_id: selectedService,
+        receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
+        note: note
+      }
+    }
+  }));
 
   const fetchClinicalRecords = async () => {
     const url: any = new URLSearchParams(window.location.search).get(
@@ -210,4 +228,4 @@ export const remissionsForm: React.FC = () => {
       </form>
     </PrimeReactProvider>
   );
-};
+});

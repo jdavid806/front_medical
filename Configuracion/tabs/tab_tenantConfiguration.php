@@ -220,13 +220,14 @@
             </div>
             <div class="col-md-6">
               <label class="form-label" for="correo-consultorio">Correo Electrónico</label>
-              <input class="form-control" id="correo-consultorio" type="email" placeholder="ejemplo@correo.com" required>
+              <input class="form-control" id="correo-consultorio" type="email" placeholder="ejemplo@correo.com"
+                required>
               <div class="invalid-feedback">Ingrese un correo electrónico válido.</div>
             </div>
             <div class="col-12">
               <label class="form-label" for="direccion-consultorio">Dirección</label>
-              <input class="form-control" id="direccion-consultorio" type="text" placeholder="Ej: Calle 123 #45-67, Bogotá"
-                required>
+              <input class="form-control" id="direccion-consultorio" type="text"
+                placeholder="Ej: Calle 123 #45-67, Bogotá" required>
               <div class="invalid-feedback">Ingrese una dirección válida.</div>
             </div>
             <div class="col-md-6">
@@ -378,6 +379,45 @@
     // setInterval(() => {
     //   consultarQR(user_id);
     // }, 10000);
+  });
+
+
+</script>
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Selecciona todos los formularios dentro de los tabs
+    const forms = document.querySelectorAll(".tab-pane form");
+
+    forms.forEach((form) => {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Evita el envío predeterminado
+
+        // Valida el formulario
+        if (!form.checkValidity()) {
+          event.stopPropagation();
+          form.classList.add("was-validated"); // Agrega estilos de validación de Bootstrap
+          return;
+        }
+
+        // Captura los datos del formulario
+        const formData = new FormData(form);
+        const formValues = {};
+        formData.forEach((value, key) => {
+          formValues[key] = value;
+        });
+
+        console.log("Formulario enviado:", form.id, formValues);
+
+        // Aquí puedes hacer un envío AJAX o manipular los datos como desees
+        // alert(`Formulario ${form.id} enviado con éxito!`);
+
+        // Opcional: Restablecer el formulario después del envío
+        form.reset();
+        form.classList.remove("was-validated");
+      });
+    });
   });
 
 

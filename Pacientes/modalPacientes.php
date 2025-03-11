@@ -754,14 +754,7 @@ require "./modals/editPartnerModal.php";
 
     getEntities();
 
-    // const payloadDecoded = getJWTPayload();
-    // console.log(payloadDecoded);
-    // const userId = payloadDecoded.id || payloadDecoded.user_id || payloadDecoded.sub;
-    // console.log("User ID:", userId);
-    // const user = await userService.get(userId);
-    // user.country = {
-    //   country_code: "AR"
-    // }
+  
     if (true) {
       document.getElementById('label_eps').textContent = 'Aseguradora';
       console.log('ocultando campos de colombia');
