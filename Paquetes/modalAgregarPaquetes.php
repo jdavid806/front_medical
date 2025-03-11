@@ -52,6 +52,8 @@
                                     </div>
                                 </div>
 
+                                
+
                                 <div class="col-6 mt-3" id="divCie" style="display: none;">
                                     <div class="input-group">
                                         <div class="form-floating">
@@ -605,6 +607,9 @@
             const diasIncapacidad = document.getElementById('dias').value;
             const hastaIncapacidad = document.getElementById('hasta').value;
             const motivoIncapacidad = document.getElementById('reason').value;
+            const userRemision = document.getElementById('user');
+            const specialityRemision = document.getElementById('userSpecialty');
+            const noteRemision = document.getElementById('note');
             // console.log("dias inc:", diasIncapacidad);
             // Capturo los valores de los campos individuales
             const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
@@ -629,7 +634,10 @@
                 insumos: insumosSeleccionados,
                 diasIncapacidad: diasIncapacidad,
                 hastaIncapacidad: hastaIncapacidad,
-                motivoIncapacidad: motivoIncapacidad
+                motivoIncapacidad: motivoIncapacidad,
+                usuarioRemision: userRemision,
+                especialidadRemision: specialityRemision,
+                notaRemision: noteRemision
             };
 
             // Mostrar todos los elementos seleccionados
@@ -761,6 +769,10 @@
         const divInsumos = document.getElementById('divSelecInsumos');
         const divIncapacidad = document.getElementById('divIncapacidad');
         const divRemision = document.getElementById('divRemision');
+        if (estadoRemision) {
+            const notaRemision = document.getElementById('note');
+            notaRemision.required = false;
+        }
 
         // Verificamos si al menos un switch está activado para mostrar u ocultar el card principal
         const alMenosUnoActivado = estadoMedicamentos || estadoExamenes || estadoVacunas || estadoInsumos || estadoIncapacidad || estadoRemision;
@@ -775,10 +787,7 @@
         divInsumos.style.display = estadoInsumos ? 'block' : 'none';
         divIncapacidad.style.display = estadoIncapacidad ? 'block' : 'none';
         divRemision.style.display = estadoRemision ? 'block' : 'none';
-        if (estadoRemision) {
-            const notaRemision = document.getElementById('note');
-            notaRemision.required = false;
-        }
+        
     }
 
     /**

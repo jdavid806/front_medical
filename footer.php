@@ -1027,6 +1027,7 @@ M. Castro c:
 <script src="Configuracion/js/CrudEspecialdiades.js"></script>
 <script src="Configuracion/js/CrudImpuestos.js"></script>
 <script src="Configuracion/js/CrudRecargos.js"></script>
+<script src="Configuracion/js/CrudTenant.js"></script>
 
 <!-- funcionex textarea -->
 <!-- <script src="apiVoz_4.0.js"></script> -->

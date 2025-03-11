@@ -371,10 +371,10 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const user_id = 1;
+    // const user_id = 1;
 
-    consultarQR(user_id);
-
+    // consultarQR(user_id);
+    cargarDatosTenant();
     // setInterval(() => {
     //   consultarQR(user_id);
     // }, 10000);

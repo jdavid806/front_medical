@@ -19,29 +19,29 @@ document.addEventListener("DOMContentLoaded", async function () {
         generateForm(formData.form1);
         // updateTimer();
 
-        document.getElementById("finalizarConsulta").addEventListener("click", function () {
-            captureFormValues(formData.form1);
-            console.log("Valores capturados:", formValues);
-            clinicalRecordService.createForParent(1, {
-                "clinical_record_type_id": 1,
-                "created_by_user_id": 1,
-                "branch_id": 1,
-                "data": formValues
-            }).then(() => AlertManager.success({
-                text: 'Se ha creado el registro exitosamente',
-                onClose: () => {
-                    window.location.reload();
-                }
-            })).catch(err => {
-                if (err.data?.errors) {
-                    AlertManager.formErrors(err.data.errors);
-                } else {
-                    AlertManager.error({
-                        text: err.message || 'Ocurrió un error inesperado'
-                    });
-                }
-            });
-        });
+        // document.getElementById("finalizarConsulta").addEventListener("click", function () {
+        //     captureFormValues(formData.form1);
+        //     console.log("Valores capturados:", formValues);
+        //     clinicalRecordService.createForParent(1, {
+        //         "clinical_record_type_id": 1,
+        //         "created_by_user_id": 1,
+        //         "branch_id": 1,
+        //         "data": formValues
+        //     }).then(() => AlertManager.success({
+        //         text: 'Se ha creado el registro exitosamente',
+        //         onClose: () => {
+        //             window.location.reload();
+        //         }
+        //     })).catch(err => {
+        //         if (err.data?.errors) {
+        //             AlertManager.formErrors(err.data.errors);
+        //         } else {
+        //             AlertManager.error({
+        //                 text: err.message || 'Ocurrió un error inesperado'
+        //             });
+        //         }
+        //     });
+        // });
     } catch (error) {
         console.error("Error cargando el JSON:", error);
     }
@@ -50,10 +50,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 function createSelect(field) {
     const div = document.createElement("div");
     // div.className = "mb-3 form-floating";
-    if(!field.class){
+    if (!field.class) {
         // div.className = "mb-3 form-floating";  
-        div.className = "col-12 mb-3";  
-    }else{
+        div.className = "col-12 mb-3";
+    } else {
         div.className = field.class;
     }
 
@@ -126,23 +126,23 @@ function createDropzone(field) {
     div.className = "dropzone dropzone-multiple p-0 dz-clickable";
     div.id = field.id;
     div.setAttribute("data-dropzone", "data-dropzone");
-    
+
     // Crear el mensaje de dropzone
     const messageDiv = document.createElement("div");
     messageDiv.className = "dz-message";
     messageDiv.setAttribute("data-dz-message", "data-dz-message");
-    
+
     // Crear la imagen del ícono
     const icon = document.createElement("img");
     icon.className = "me-2";
     icon.src = field.iconSrc || "../../../assets/img/icons/cloud-upload.svg";
     icon.width = 25;
     icon.alt = "";
-    
+
     // Agregar el ícono y el texto al mensaje
     messageDiv.appendChild(icon);
     messageDiv.appendChild(document.createTextNode(field.message || "Cargar archivos"));
-    
+
     // Crear modal de previsualización de la imagen
     const previewModal = document.createElement("div");
     previewModal.className = "modal fade";
@@ -160,27 +160,27 @@ function createDropzone(field) {
         </div>
       </div>
     `;
-    
+
     // Agregar modal al documento
     document.body.appendChild(previewModal);
-    
+
     // Agregar todos los elementos al div principal
     div.appendChild(messageDiv);
-    
+
     // Configurar Dropzone con opciones adicionales
     const dropzoneInstance = new Dropzone(div, {
-      url: field.uploadUrl || "/upload",
-      paramName: "file",
-      maxFilesize: field.maxFilesize || 10,
-      acceptedFiles: field.acceptedFiles || "image/*",
-      dictDefaultMessage: "Arrastra los archivos aquí para subirlos.",
-      dictFallbackMessage: "Tu navegador no soporta la funcionalidad de arrastrar y soltar archivos.",
-      dictInvalidFileType: "Tipo de archivo no permitido.",
-      dictFileTooBig: "El archivo es demasiado grande ({{filesize}}MB). El tamaño máximo permitido es {{maxFilesize}}MB.",
-      dictResponseError: "Error al subir el archivo.",
-      
-      // Personalizar la previsualización para agregar botones de acciones
-      previewTemplate: `
+        url: field.uploadUrl || "/upload",
+        paramName: "file",
+        maxFilesize: field.maxFilesize || 10,
+        acceptedFiles: field.acceptedFiles || "image/*",
+        dictDefaultMessage: "Arrastra los archivos aquí para subirlos.",
+        dictFallbackMessage: "Tu navegador no soporta la funcionalidad de arrastrar y soltar archivos.",
+        dictInvalidFileType: "Tipo de archivo no permitido.",
+        dictFileTooBig: "El archivo es demasiado grande ({{filesize}}MB). El tamaño máximo permitido es {{maxFilesize}}MB.",
+        dictResponseError: "Error al subir el archivo.",
+
+        // Personalizar la previsualización para agregar botones de acciones
+        previewTemplate: `
         <div class="dz-preview dz-file-preview d-flex align-items-center mb-2 position-relative">
           <div class="dz-image me-2" style="max-width: 80px; max-height: 80px;">
             <img data-dz-thumbnail class="img-fluid" />
@@ -202,60 +202,60 @@ function createDropzone(field) {
           </div>
         </div>
       `,
-      
-      // Agregar eventos personalizados
-      init: function() {
-        // Manejar la eliminación de archivos
-        this.on("removedfile", function(file) {
-          console.log("Archivo eliminado:", file.name);
-          
-          // Lógica opcional para eliminar del servidor
-          if (file.serverFileName) {
-            fetch('/delete-file', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ filename: file.serverFileName })
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Archivo eliminado del servidor:', data);
-            })
-            .catch(error => {
-              console.error('Error al eliminar el archivo:', error);
-            });
-          }
-        });
-  
-        // Configurar eventos de vista previa
-        this.on("addedfile", function(file) {
-          // Seleccionar elementos relevantes
-          const previewButton = file.previewElement.querySelector('.dz-preview-btn');
-          const detailsWrapper = file.previewElement.querySelector('.dz-details-wrapper');
-          const detailsDiv = file.previewElement.querySelector('.dz-details');
-          
-          // Configurar el evento de clic para abrir la vista previa
-          previewButton.addEventListener('click', function() {
-            // Obtener la referencia del modal y la imagen
-            const modal = document.getElementById(`${field.id}-preview-modal`);
-            const fullPreviewImg = document.getElementById(`${field.id}-full-preview`);
-            
-            // Establecer la imagen en el modal
-            fullPreviewImg.src = file.dataURL;
-            
-            // Usar Bootstrap Modal para mostrar (asume que Bootstrap JS está incluido)
-            const modalInstance = new bootstrap.Modal(modal);
-            modalInstance.show();
-          });
-        });
-      }
-    });
-    
-    return div;
-  }
 
-  function createSingleFileDropzone(field) {
+        // Agregar eventos personalizados
+        init: function () {
+            // Manejar la eliminación de archivos
+            this.on("removedfile", function (file) {
+                console.log("Archivo eliminado:", file.name);
+
+                // Lógica opcional para eliminar del servidor
+                if (file.serverFileName) {
+                    fetch('/delete-file', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ filename: file.serverFileName })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Archivo eliminado del servidor:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error al eliminar el archivo:', error);
+                        });
+                }
+            });
+
+            // Configurar eventos de vista previa
+            this.on("addedfile", function (file) {
+                // Seleccionar elementos relevantes
+                const previewButton = file.previewElement.querySelector('.dz-preview-btn');
+                const detailsWrapper = file.previewElement.querySelector('.dz-details-wrapper');
+                const detailsDiv = file.previewElement.querySelector('.dz-details');
+
+                // Configurar el evento de clic para abrir la vista previa
+                previewButton.addEventListener('click', function () {
+                    // Obtener la referencia del modal y la imagen
+                    const modal = document.getElementById(`${field.id}-preview-modal`);
+                    const fullPreviewImg = document.getElementById(`${field.id}-full-preview`);
+
+                    // Establecer la imagen en el modal
+                    fullPreviewImg.src = file.dataURL;
+
+                    // Usar Bootstrap Modal para mostrar (asume que Bootstrap JS está incluido)
+                    const modalInstance = new bootstrap.Modal(modal);
+                    modalInstance.show();
+                });
+            });
+        }
+    });
+
+    return div;
+}
+
+function createSingleFileDropzone(field) {
     // Crear el elemento div principal
     const div = document.createElement("div");
     div.className = "dropzone dropzone-single p-0 dz-clickable position-relative overflow-hidden d-flex flex-column align-items-center";
@@ -272,31 +272,31 @@ function createDropzone(field) {
     previewContainer.style.display = "flex";
     previewContainer.style.alignItems = "center";
     previewContainer.style.justifyContent = "center";
-    
+
     // Crear el mensaje de dropzone
     const messageDiv = document.createElement("div");
     messageDiv.className = "dz-message d-flex flex-column align-items-center justify-content-center text-center";
-    
+
     // Crear la imagen del ícono
     const icon = document.createElement("img");
     icon.className = "mb-2";
     icon.src = field.iconSrc || "../../../assets/img/icons/cloud-upload.svg";
     icon.width = 50;
     icon.alt = "Upload icon";
-    
+
     // Crear el texto del mensaje
     const messageText = document.createElement("span");
     messageText.textContent = field.message || "Arrastra tu archivo aquí o haz clic para seleccionar";
-    
+
     // Crear el contenedor de imagen previa
     const previewImageContainer = document.createElement("div");
     previewImageContainer.className = "dz-preview-image position-absolute w-100 h-100 d-none";
     previewImageContainer.style.top = "0";
     previewImageContainer.style.left = "0";
-    
+
     const previewImage = document.createElement("img");
     previewImage.className = "img-fluid w-100 h-100 object-fit-contain";
-    
+
     // Crear contenedor para los botones
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "mt-3 d-none d-flex gap-2 justify-content-center";
@@ -305,26 +305,26 @@ function createDropzone(field) {
     const changeImageButton = document.createElement("button");
     changeImageButton.className = "btn btn-primary btn-sm";
     changeImageButton.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Cambiar imagen';
-    
+
     // Crear botón de eliminar imagen
     const deleteImageButton = document.createElement("button");
     deleteImageButton.className = "btn btn-danger btn-sm";
     deleteImageButton.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Eliminar imagen';
-    
+
     // Agregar elementos
     messageDiv.appendChild(icon);
     messageDiv.appendChild(messageText);
-    
+
     buttonContainer.appendChild(changeImageButton);
     buttonContainer.appendChild(deleteImageButton);
-    
+
     previewImageContainer.appendChild(previewImage);
     previewContainer.appendChild(messageDiv);
     previewContainer.appendChild(previewImageContainer);
-    
+
     div.appendChild(previewContainer);
     div.appendChild(buttonContainer);
-    
+
     // Configurar Dropzone
     const dropzoneInstance = new Dropzone(div, {
         url: field.uploadUrl || "/upload",
@@ -335,16 +335,16 @@ function createDropzone(field) {
         dictDefaultMessage: "Arrastra tu archivo aquí o haz clic para seleccionar",
         dictInvalidFileType: "Tipo de archivo no permitido",
         dictFileTooBig: "El archivo es demasiado grande ({{filesize}}MB). El tamaño máximo permitido es {{maxFilesize}}MB",
-        
+
         // Desactivar previewTemplate predeterminado
         previewTemplate: '<div></div>',
-        
+
         // Configuración personalizada
         clickable: true,
         createImageThumbnails: false,
-        
+
         // Eventos personalizados
-        init: function() {
+        init: function () {
             const dropzone = this;
             const message = messageDiv;
             const previewCont = previewImageContainer;
@@ -352,53 +352,53 @@ function createDropzone(field) {
             const changeBtn = buttonContainer;
             const changeImageBtn = changeImageButton;
             const deleteImageBtn = deleteImageButton;
-            
+
             // Evento cuando se agrega un archivo
-            this.on("addedfile", function(file) {
+            this.on("addedfile", function (file) {
                 // Ocultar completamente el mensaje y los elementos de dropzone
                 message.style.display = 'none';
                 dropzoneElement.classList.remove('dz-clickable');
-                
+
                 // Mostrar imagen de previsualización
                 previewCont.classList.remove('d-none');
                 previewImage.src = URL.createObjectURL(file);
-                
+
                 // Mostrar botones de cambiar y eliminar imagen
                 changeBtn.classList.remove('d-none');
             });
-            
+
             // Evento de eliminación de archivo
-            this.on("removedfile", function() {
+            this.on("removedfile", function () {
                 // Restaurar mensaje y elementos de dropzone
                 message.style.display = 'flex';
                 dropzoneElement.classList.add('dz-clickable');
-                
+
                 // Ocultar previsualización
                 previewCont.classList.add('d-none');
                 previewImage.src = '';
-                
+
                 // Ocultar botones de cambiar y eliminar imagen
                 changeBtn.classList.add('d-none');
             });
 
             // Configurar botón de cambiar imagen
-            changeImageBtn.addEventListener('click', function() {
+            changeImageBtn.addEventListener('click', function () {
                 // Abrir diálogo de selección de archivos
                 dropzone.hiddenFileInput.click();
             });
 
             // Configurar botón de eliminar imagen
-            deleteImageBtn.addEventListener('click', function() {
+            deleteImageBtn.addEventListener('click', function () {
                 // Eliminar todos los archivos
                 dropzone.removeAllFiles(true);
             });
         }
     });
-    
+
     return div;
 }
 
-    
+
 
 function createImageField(field) {
     const div = document.createElement("div");
@@ -513,7 +513,7 @@ function createCheckboxWithSubfields(field) {
 
                 subFieldDiv.appendChild(textareaLabel);
                 subFieldDiv.appendChild(textarea);
-            } else {  
+            } else {
                 // Aquí es donde agregamos el input, tal como lo solicitaste
                 let inputFieldDiv = document.createElement("div");
                 if (subField.class) {
@@ -669,7 +669,7 @@ function generateForm(formData) {
 
                     card.fields.forEach((field) => {
                         let fieldDiv;
-                    
+
                         if (field.type === "select") {
                             fieldDiv = createSelect(field);
                         } else if (field.type === "checkbox") {
@@ -683,7 +683,7 @@ function generateForm(formData) {
                             fieldDiv = createDropzone(field);
                         } else if (field.type === "fileS") {
                             fieldDiv = createSingleFileDropzone(field);
-                        } else if (field.type === "label") {  
+                        } else if (field.type === "label") {
                             fieldDiv = document.createElement("div");
                             if (field.class) {
                                 fieldDiv.classList.add("mb-2", field.class, "mt-4");
@@ -699,9 +699,9 @@ function generateForm(formData) {
                             } else {
                                 label.style.marginLeft = "0px";
                             }
-                    
-                            fieldDiv.appendChild(label); 
-                        } else {  
+
+                            fieldDiv.appendChild(label);
+                        } else {
                             fieldDiv = document.createElement("div");
                             if (field.class) {
                                 fieldDiv.classList.add("mb-2", field.class);
@@ -714,7 +714,7 @@ function generateForm(formData) {
                             input.name = field.id;
                             input.className = "form-control";
                             if (field.readonly) input.readOnly = true;
-                    
+
                             const label = document.createElement("label");
                             label.htmlFor = field.id;
                             label.innerText = field.label;
@@ -724,14 +724,14 @@ function generateForm(formData) {
                             } else {
                                 label.style.marginLeft = "0px";
                             }
-                    
+
                             fieldDiv.appendChild(label);
                             fieldDiv.appendChild(input);
                         }
-                    
+
                         cardBody.appendChild(fieldDiv);
                     });
-                    
+
                     cardElement.appendChild(cardBody);
                     cardDiv.appendChild(cardElement);
                     cardRow.appendChild(cardDiv);
@@ -745,47 +745,47 @@ function generateForm(formData) {
 
     formContainer.appendChild(navTabs);
     formContainer.appendChild(tabContent);
-    
+
     // Agregar botones de navegación
     const navigationButtons = document.createElement("div");
     navigationButtons.className = "d-flex justify-content-end mt-4 mb-3";
-    
+
     const prevButton = document.createElement("button");
     prevButton.type = "button";
     prevButton.className = "btn btn-secondary me-2";
     prevButton.id = "prevTabButton";
-    
+
     // Agregar icono al botón Anterior
     const prevIcon = document.createElement("i");
     prevIcon.className = "fas fa-arrow-left";
     prevButton.appendChild(prevIcon);
     prevButton.innerHTML += "";
-    
+
     // Deshabilitar el botón anterior en el primer tab
     prevButton.disabled = true;
-    
+
     const nextButton = document.createElement("button");
     nextButton.type = "button";
     nextButton.className = "btn btn-primary";
     nextButton.id = "nextTabButton";
-    
+
     // Agregar icono al botón Siguiente
     nextButton.innerHTML = "";
     const nextIcon = document.createElement("i");
     nextIcon.className = "fas fa-arrow-right";
     nextButton.appendChild(nextIcon);
-    
+
     // Deshabilitar el botón siguiente en el último tab si sólo hay un tab
     nextButton.disabled = formData.tabs.length <= 1;
-    
+
     navigationButtons.appendChild(prevButton);
     navigationButtons.appendChild(nextButton);
-    
+
     formContainer.appendChild(navigationButtons);
-    
+
     // Inicializar eventos para los botones
     initTabNavigation(formData.tabs.length);
-    
+
     initTinyMCE();
 }
 
@@ -793,15 +793,15 @@ function generateForm(formData) {
 function initTabNavigation(totalTabs) {
     const prevButton = document.getElementById("prevTabButton");
     const nextButton = document.getElementById("nextTabButton");
-    
+
     prevButton.addEventListener("click", () => {
         navigateTab(-1, totalTabs);
     });
-    
+
     nextButton.addEventListener("click", () => {
         navigateTab(1, totalTabs);
     });
-    
+
     // Actualizar estado de los botones cuando cambie el tab manualmente
     const tabLinks = document.querySelectorAll('#customTabs .nav-link');
     tabLinks.forEach(link => {
@@ -817,13 +817,13 @@ function navigateTab(direction, totalTabs) {
     const tabs = Array.from(document.querySelectorAll('#customTabs .nav-link'));
     const currentIndex = tabs.indexOf(activeTab);
     const newIndex = currentIndex + direction;
-    
+
     if (newIndex >= 0 && newIndex < totalTabs) {
         // Usar Bootstrap para activar el tab
         const nextTabElement = tabs[newIndex];
         const nextTab = new bootstrap.Tab(nextTabElement);
         nextTab.show();
-        
+
         // Actualizar estado de los botones
         updateButtonsState(totalTabs);
     }
@@ -834,13 +834,13 @@ function updateButtonsState(totalTabs) {
     const activeTab = document.querySelector('#customTabs .nav-link.active');
     const tabs = Array.from(document.querySelectorAll('#customTabs .nav-link'));
     const currentIndex = tabs.indexOf(activeTab);
-    
+
     const prevButton = document.getElementById("prevTabButton");
     const nextButton = document.getElementById("nextTabButton");
-    
+
     // Deshabilitar botón anterior en el primer tab
     prevButton.disabled = currentIndex === 0;
-    
+
     // Deshabilitar botón siguiente en el último tab
     nextButton.disabled = currentIndex === totalTabs - 1;
 }
