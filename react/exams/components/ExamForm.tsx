@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useExamTypes } from '../../exams-config/hooks/useExamTypes';
+import { ExamTypeDto } from '../../models/models';
+import { forwardRef } from 'react';
+import { useImperativeHandle } from 'react';
 
 const paquetesExamenes = {
     "Paquete básico de salud": [
@@ -45,30 +48,42 @@ const paquetesExamenes = {
     ]
 };
 
-export const ExamForm = () => {
+export const ExamForm = forwardRef(({ }, ref) => {
     const [activeCard, setActiveCard] = useState(null);
-    const [selectedExam, setSelectedExam] = useState('');
+    const [selectedExamType, setSelectedExamType] = useState('');
     const [selectedPackage, setSelectedPackage] = useState('');
-    const [exams, setExams] = useState<string[]>([]);
+    const [selectedExamTypes, setSelectedExamTypes] = useState<ExamTypeDto[]>([]);
 
     const { examTypes } = useExamTypes()
 
+    useImperativeHandle(ref, () => ({
+        getFormData: () => {
+            return selectedExamTypes
+        }
+    }));
+
     const handleShowCard = (cardName) => {
         setActiveCard(cardName);
-        setSelectedExam('');
+        setSelectedExamType('');
         setSelectedPackage('');
     };
 
     const handleAddExam = () => {
-        if (!selectedExam) {
+        if (!selectedExamType) {
             alert('Por favor, seleccione un examen');
             return;
         }
 
-        if (!exams.includes(selectedExam)) {
-            setExams([...exams, selectedExam]);
+        const selectedExamObject = examTypes.find(exam => exam.id == selectedExamType);
+        console.log(examTypes, selectedExamType, selectedExamObject);
+
+        if (selectedExamObject) {
+            console.log(selectedExamObject, [...selectedExamTypes, selectedExamObject]);
+
+            setSelectedExamTypes([...selectedExamTypes, selectedExamObject]);
         }
-        setSelectedExam('');
+
+        setSelectedExamType('');
     };
 
     const handleAddPackage = () => {
@@ -78,15 +93,15 @@ export const ExamForm = () => {
         }
 
         const nuevosExamenes = paquetesExamenes[selectedPackage]
-            .filter(examen => !exams.includes(examen));
+            .filter(examen => !selectedExamTypes.includes(examen));
 
-        setExams([...exams, ...nuevosExamenes]);
+        setSelectedExamTypes([...selectedExamTypes, ...nuevosExamenes]);
         setSelectedPackage('');
     };
 
     const handleRemoveExam = (index) => {
-        const newExams = exams.filter((_, i) => i !== index);
-        setExams(newExams);
+        const newExams = selectedExamTypes.filter((_, i) => i !== index);
+        setSelectedExamTypes(newExams);
     };
 
     return (
@@ -96,8 +111,8 @@ export const ExamForm = () => {
                     <h5 className="card-title">Seleccionar por:</h5>
                     <button className="btn btn-outline-secondary me-1 mb-1"
                         onClick={() => handleShowCard('examenes')}>Exámen</button>
-                    <button className="btn btn-outline-secondary me-1 mb-1"
-                        onClick={() => handleShowCard('paquetes')}>Paquetes</button>
+                    {/* <button className="btn btn-outline-secondary me-1 mb-1"
+                        onClick={() => handleShowCard('paquetes')}>Paquetes</button> */}
                 </div>
             </div>
 
@@ -110,8 +125,9 @@ export const ExamForm = () => {
                                 <label className="form-label">Exámenes</label>
                                 <select
                                     className="form-select"
-                                    value={selectedExam}
-                                    onChange={(e) => setSelectedExam(e.target.value)}
+                                    value={selectedExamType}
+                                    onChange={(e) => setSelectedExamType(e.target.value)}
+                                    disabled={selectedExamTypes.length >= 1}
                                 >
                                     <option value="">Seleccione un examen</option>
                                     {examTypes.map(examType => (
@@ -120,7 +136,7 @@ export const ExamForm = () => {
                                 </select>
                             </div>
                             <div className="col-12 text-end">
-                                <button className="btn btn-primary" onClick={handleAddExam}>
+                                <button className="btn btn-primary" onClick={handleAddExam} disabled={selectedExamTypes.length >= 1}>
                                     <i className="fa-solid fa-plus"></i>
                                 </button>
                             </div>
@@ -157,7 +173,7 @@ export const ExamForm = () => {
                 </div>
             )}
 
-            {exams.length > 0 && (
+            {selectedExamTypes.length > 0 && (
                 <div className="card mt-3">
                     <div className="card-body">
                         <h5 className="card-title">Exámenes a realizar</h5>
@@ -170,10 +186,10 @@ export const ExamForm = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {exams.map((examen, index) => (
+                                {selectedExamTypes.map((examType, index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{examen}</td>
+                                        <td>{examType.name}</td>
                                         <td className="text-end">
                                             <button
                                                 className="btn btn-danger btn-sm"
@@ -191,4 +207,4 @@ export const ExamForm = () => {
             )}
         </div>
     );
-};
+});

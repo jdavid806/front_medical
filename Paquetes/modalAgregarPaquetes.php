@@ -52,7 +52,7 @@
                                     </div>
                                 </div>
 
-                                
+
 
                                 <div class="col-6 mt-3" id="divCie" style="display: none;">
                                     <div class="input-group">
@@ -77,6 +77,12 @@
                                             <label for="seleccionarIncluidos" class="form-label">CUPS</label>
                                             <div class="invalid-feedback">Por favor seleccione un procedimiento.</div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 mt-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" id="isCodeChecked" type="checkbox" />
+                                        <label class="form-check-label" for="isCodeChecked">Consultar por codigo</label>
                                     </div>
                                 </div>
 
@@ -582,7 +588,7 @@
         const selectCups = document.getElementById('selectCups');
         const nextStep = document.getElementById('nextStep');
         const notaRem = document.getElementById('note');
-        console.log("Nota remision",notaRem);
+        console.log("Nota remision", notaRem);
 
         selectCupsCie.addEventListener('change', function() {
             divCie.style.display = 'none';
@@ -607,9 +613,9 @@
             const diasIncapacidad = document.getElementById('dias').value;
             const hastaIncapacidad = document.getElementById('hasta').value;
             const motivoIncapacidad = document.getElementById('reason').value;
-            const userRemision = document.getElementById('user').value;
-            const specialityRemision = document.getElementById('userSpecialty').value;
-            const noteRemision = document.getElementById('note').value;
+            // const userRemision = document.getElementById('user').value;
+            // const specialityRemision = document.getElementById('userSpecialty').value;
+            // const noteRemision = document.getElementById('note').value;
             // console.log("dias inc:", diasIncapacidad);
             // Capturo los valores de los campos individuales
             const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
@@ -635,9 +641,9 @@
                 diasIncapacidad: diasIncapacidad,
                 hastaIncapacidad: hastaIncapacidad,
                 motivoIncapacidad: motivoIncapacidad,
-                usuarioRemision: userRemision,
-                especialidadRemision: specialityRemision,
-                notaRemision: noteRemision
+                // usuarioRemision: userRemision,
+                // especialidadRemision: specialityRemision,
+                // notaRemision: noteRemision
             };
 
             // Mostrar todos los elementos seleccionados
@@ -769,7 +775,7 @@
         const divInsumos = document.getElementById('divSelecInsumos');
         const divIncapacidad = document.getElementById('divIncapacidad');
         const divRemision = document.getElementById('divRemision');
-        if (estadoRemision) {
+        if (divRemision.style.display === 'none') {
             const notaRemision = document.getElementById('note');
             notaRemision.required = false;
         }
@@ -787,7 +793,7 @@
         divInsumos.style.display = estadoInsumos ? 'block' : 'none';
         divIncapacidad.style.display = estadoIncapacidad ? 'block' : 'none';
         divRemision.style.display = estadoRemision ? 'block' : 'none';
-        
+
     }
 
     /**
@@ -1393,7 +1399,7 @@
         `;
         }
 
-        // Agregar incapacidad si existen
+        // Agregar incapacidad si existe
         if (datosPaquete.diasIncapacidad && datosPaquete.diasIncapacidad.length > 0) {
             contenidoResumen += `
             <div style="margin-bottom: 15px;">
@@ -1403,6 +1409,17 @@
                 <li>Hasta: ${datosPaquete.hastaIncapacidad}</li>
                 <li>Motivo: ${datosPaquete.motivoIncapacidad}</li>
         `;
+
+            // Agregar remision si existe
+            // if (datosPaquete.diasIncapacidad && datosPaquete.diasIncapacidad.length > 0) {
+            //     contenidoResumen += `
+            //     <div style="margin-bottom: 15px;">
+            //         <strong>Incapacidad:</strong>
+            //         <ul style="margin-top: 5px; padding-left: 20px;">
+            //         <li>Dias: ${datosPaquete.diasIncapacidad}</li>
+            //         <li>Hasta: ${datosPaquete.hastaIncapacidad}</li>
+            //         <li>Motivo: ${datosPaquete.motivoIncapacidad}</li>
+            // `;
 
             // datosPaquete.insumos.forEach(ins => {
             //     const cantidad = insumosConCantidad[ins] || 0;

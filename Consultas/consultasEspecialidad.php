@@ -116,23 +116,23 @@ $tiposHistorias = [
         'historiaVisiometria' => 'Historia Visiometría',
         'historiaOptometria' => 'Historia Optometría'
     ],
-    'podologia' =>[
+    'podologia' => [
         'historiaPodologia' => 'Historia Podologia'
     ],
-    'fisioterapia' =>[
+    'fisioterapia' => [
         'historiaFisioterapia' => 'Historia Fisioterapia'
     ],
-    'quiropractica' =>[
+    'quiropractica' => [
         'historiaQuiropractica' => 'Historia Quiropráctica'
     ],
-    'airec' =>[
+    'airec' => [
         'historiaPediatriaA' => 'Historia Pediatría',
         'historiaRehabilitacionCardiacaPulmonar' => 'Historia Rehabilitación Cardiaca y Pulmonar',
         'historiaFisioterapiaA' => 'Historia Fisioterapia'
     ],
     'neumologia' => [
         'historiaNeumologia' => 'Historia Neumología',
-        
+
     ]
 ];
 
@@ -356,11 +356,18 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
     import {
         patientService
     } from "../../services/api/index.js";
+    import {
+        clinicalRecordService
+    } from './services/api/index.js';
 
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const patientPromise = patientService.get(patientId);
+    const clinicalRecordPromise = clinicalRecordService.ofParent(patientId);
 
-    const [patient] = await Promise.all([patientPromise]);
+    const [patient, clinicalRecords] = await Promise.all([patientPromise, clinicalRecordPromise]);
+
+    console.log('Paciente:', patient);
+    console.log('Historias Clínicas:', clinicalRecords);
 
     document.querySelectorAll('.patientName').forEach(element => {
         element.textContent = `${patient.first_name} ${patient.last_name}`;

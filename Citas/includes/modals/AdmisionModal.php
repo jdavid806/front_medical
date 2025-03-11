@@ -1205,32 +1205,8 @@ include '../modals/NewCompanionModal.php';
             const methodPayment = document.getElementById(methodSelectId).value;
             const amountInput = document.getElementById(amountInputId).value.replace(/\./g, ''); // Remover los puntos antes de convertir a número
             const amount = parseFloat(amountInput);
-            const entitySwitch = document.getElementById('entitySwitch');
-            const pending = document.getElementById('pending');
-            const buttonStep = document.getElementById('next_step');
-            const sumAmount = document.getElementById('totalSum');
-            const sumAmountPayment = document.getElementById('totalSumAmount');
 
-            setTimeout(() => {
-                let sumAmountValue = parseFloat(sumAmount.textContent).toFixed(0);
-                let sumAmountPaymentValue = parseFloat(sumAmountPayment.textContent).toFixed(0);
-                pending.value = sumAmountValue - sumAmountPaymentValue;
-
-                if (pending.value == 0) {
-                    buttonStep.disabled = false;
-                }
-
-            }, 1000);
-
-            // pending.value = Math.abs(sumAmountValue - amount);
-
-            // if (entitySwitch.checked) {
-            //     pending.value = Math.abs(amount - 100);
-
-            // } else {
-            //     pending.value = Math.abs(amount - 500);
-            // }
-
+            calculatedAmountToPaid();
 
 
             if (methodPayment !== 'Seleccionar' && amount) {
@@ -1244,6 +1220,26 @@ include '../modals/NewCompanionModal.php';
                 alert('Por favor, selecciona un método de pago e ingresa un monto.');
             }
         });
+    }
+
+    function calculatedAmountToPaid() {
+        const pending = document.getElementById('pending');
+        const buttonStep = document.getElementById('next_step');
+        const sumAmount = document.getElementById('totalSum');
+        const sumAmountPayment = document.getElementById('totalSumAmount');
+
+        setTimeout(() => {
+            let sumAmountValue = parseFloat(sumAmount.textContent).toFixed(0);
+            let sumAmountPaymentValue = parseFloat(sumAmountPayment.textContent).toFixed(0);
+            pending.value = sumAmountValue - sumAmountPaymentValue;
+
+            if (pending.value == 0) {
+                buttonStep.disabled = false;
+            } else {
+                buttonStep.disabled = true;
+            }
+
+        }, 1000);
     }
 
     function addRowToProductTable(values, tableBodyId) {
@@ -1328,6 +1324,7 @@ include '../modals/NewCompanionModal.php';
         const row = element.closest('tr');
         row.remove();
         updateTotal();
+        updateTotalAmount();
     };
 
 
@@ -1442,6 +1439,7 @@ include '../modals/NewCompanionModal.php';
     async function getProducts() {
         try {
             const response = await productService.getAllProducts(); // ya retorna JSON
+            console.log(response);
             let products;
             if (response.data && Array.isArray(response.data)) {
                 products = response.data; // Estructura correcta
@@ -1526,6 +1524,7 @@ include '../modals/NewCompanionModal.php';
         return productService.getProductById(productId) // 👈 Ahora retornamos la promesa
             .then(response => {
                 const product = response; // Asegúrate de que la estructura de la respuesta sea correcta
+                console.log("Prpducto en promesa", product);
                 addProductToTable(product, admission); // Agregar el producto a la tabla
                 populateProductInput(product); // Llenar el input con la información del producto
                 return product; // 👈 Retornar el producto por si se necesita en otra parte
@@ -1546,6 +1545,7 @@ include '../modals/NewCompanionModal.php';
         }
 
         try {
+            console.log("Id del producto", productId);
             const product = await getProductId(productId, admission); // 👈 Esperamos la respuesta
             addProductToTable(product, admission, isEntityActive); // Agregamos el producto con el estado del toggle
         } catch (error) {
@@ -1593,6 +1593,7 @@ include '../modals/NewCompanionModal.php';
 
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
+                console.log("Id del producto global", globalProductId);
                 getProductId(globalProductId, admission);
             }
 
@@ -1827,6 +1828,7 @@ include '../modals/NewCompanionModal.php';
         }
 
         document.getElementById('totalSumAmount').textContent = `${sum.toFixed(2)}`;
+        calculatedAmountToPaid();
     }
 
     document.getElementById('next_step').addEventListener('click', function() {

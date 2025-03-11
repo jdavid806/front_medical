@@ -5,7 +5,7 @@ import { Checkbox } from "primereact/checkbox";
 import { PrimeReactProvider } from "primereact/api";
 import { forwardRef } from "react";
 import { useImperativeHandle } from "react";
-export const remissionsForm = /*#__PURE__*/forwardRef(ref => {
+export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   const [note, setNote] = useState("");
   const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
@@ -41,7 +41,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(ref => {
       return {
         receiver_user_id: !checked ? selectedUser : null,
         remitter_user_id: 1,
-        clinical_record_id: selectedService,
+        //clinical_record_id: selectedService,
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
         note: note
       };
@@ -94,28 +94,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(ref => {
     }
   }, /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit
-  }, mappedServiceClinicalRecord.length > 0 && /*#__PURE__*/React.createElement("div", {
-    className: "form-group"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "clinicalRecords",
-    className: "form-label"
-  }, "Historias"), /*#__PURE__*/React.createElement(Dropdown, {
-    inputId: "clinicalRecords",
-    value: selectedService,
-    onChange: e => setSelectedService(e.value),
-    options: mappedServiceClinicalRecord,
-    optionLabel: "label",
-    optionValue: "value",
-    filter: true,
-    className: "w-100",
-    style: {
-      zIndex: 100000
-    },
-    panelStyle: {
-      zIndex: 100000
-    },
-    appendTo: "self"
-  })), !checked && /*#__PURE__*/React.createElement("div", {
+  }, !checked && /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "user",

@@ -65,6 +65,13 @@
                                     </div>
                                 </div>
 
+                                <div class="col-6 mt-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" id="isCodeChecked" type="checkbox" />
+                                        <label class="form-check-label" for="isCodeChecked">Consultar por codigo</label>
+                                    </div>
+                                </div>
+
                                 <!-- <div class="col-6 mt-3" id="divSeleccionarIncluir" style="display: none;">
                                     <div class="input-group">
                                         <div class="form-floating">

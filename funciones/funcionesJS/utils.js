@@ -60,28 +60,25 @@ async function guardarDatos(url, datos) {
 
     const resultado = await respuesta.json();
 
-    console.log(resultado);
-    
-
     Swal.fire({
       icon: "success",
       title: "¡Guardado exitosamente!",
       text: "Los datos se han guardado correctamente.",
       timer: 2000,
-      showConfirmButton: false,});
-    // }).then(() => {
-    //   location.reload();
-    // });
-    // return resultado;
+      showConfirmButton: false,
+    }).then(() => {
+      location.reload();
+    });
+    return resultado;
   } catch (error) {
     console.error("Error al guardar los datos:", error);
 
-    // Swal.fire({
-    //   icon: "error",
-    //   title: "Error al guardar",
-    //   text: "Hubo un problema al guardar los datos.",
-    //   confirmButtonText: "Aceptar",
-    // });
+    Swal.fire({
+      icon: "error",
+      title: "Error al guardar",
+      text: "Hubo un problema al guardar los datos.",
+      confirmButtonText: "Aceptar",
+    });
 
     return null;
   }
@@ -99,9 +96,6 @@ async function actualizarDatos(url, datos) {
 
     const resultado = await respuesta.json();
 
-    console.log(resultado);
-    
-
     // Notificación de éxito
     Swal.fire({
       icon: "success",
@@ -109,6 +103,8 @@ async function actualizarDatos(url, datos) {
       text: "Los datos se han actualizado correctamente.",
       timer: 2000,
       showConfirmButton: false,
+    }).then(() => {
+      location.reload();
     });
     return resultado;
   } catch (error) {

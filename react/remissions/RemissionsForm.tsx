@@ -22,7 +22,7 @@ export interface RemissionsFormProps {
   ref?: React.RefObject<any>;
 }
 
-export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef((ref) => {
+export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(({ }, ref) => {
   const [note, setNote] = useState("");
   const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] =
     useState([]);
@@ -67,7 +67,7 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef((ref) =>
       return {
         receiver_user_id: !checked ? selectedUser : null,
         remitter_user_id: 1,
-        clinical_record_id: selectedService,
+        //clinical_record_id: selectedService,
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
         note: note
       }
@@ -133,7 +133,7 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef((ref) =>
       }}
     >
       <form onSubmit={handleSubmit}>
-        {mappedServiceClinicalRecord.length > 0 && (
+        {/* {mappedServiceClinicalRecord.length > 0 && (
           <div className="form-group">
             <label htmlFor="clinicalRecords" className="form-label">
               Historias
@@ -156,7 +156,7 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef((ref) =>
               appendTo="self"
             />
           </div>
-        )}
+        )} */}
         {!checked && (
           <div className="form-group">
             <label htmlFor="user" className="form-label">

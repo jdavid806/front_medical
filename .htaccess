@@ -194,6 +194,7 @@ RewriteRule ^inventarioInsumos$  Inventario/inventarioInsumos.php
 
 RewriteRule ^paquetes$  Paquetes/verPaquetes.php
 
+RewriteRule ^solicitarInsumos$  Inventario/solicitudInsumos.php
 
 #Farmacioa
 RewriteRule ^caja$  Caja/caja.php

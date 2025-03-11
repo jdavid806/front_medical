@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useExamTypes } from "../../exams-config/hooks/useExamTypes.js";
+import { forwardRef } from 'react';
+import { useImperativeHandle } from 'react';
 const paquetesExamenes = {
   "Paquete básico de salud": ["Examen de sangre", "Análisis de orina", "Examen de vista", "Examen de audición"],
   "Paquete cardiovascular": ["Electrocardiograma", "Prueba de esfuerzo", "Ecocardiograma", "Examen de sangre"],
@@ -8,41 +10,49 @@ const paquetesExamenes = {
   "Paquete de diagnóstico oncológico": ["Mamografía", "Papanicolaou", "Colonoscopia", "Biopsia de piel", "Examen de próstata (PSA)"],
   "Paquete avanzado de salud": ["Tomografía computarizada (TC)", "Resonancia magnética (RM)", "Análisis de orina", "Prueba de glucosa", "Examen de sangre", "Ecografía abdominal"]
 };
-export const ExamForm = () => {
+export const ExamForm = /*#__PURE__*/forwardRef(({}, ref) => {
   const [activeCard, setActiveCard] = useState(null);
-  const [selectedExam, setSelectedExam] = useState('');
+  const [selectedExamType, setSelectedExamType] = useState('');
   const [selectedPackage, setSelectedPackage] = useState('');
-  const [exams, setExams] = useState([]);
+  const [selectedExamTypes, setSelectedExamTypes] = useState([]);
   const {
     examTypes
   } = useExamTypes();
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return selectedExamTypes;
+    }
+  }));
   const handleShowCard = cardName => {
     setActiveCard(cardName);
-    setSelectedExam('');
+    setSelectedExamType('');
     setSelectedPackage('');
   };
   const handleAddExam = () => {
-    if (!selectedExam) {
+    if (!selectedExamType) {
       alert('Por favor, seleccione un examen');
       return;
     }
-    if (!exams.includes(selectedExam)) {
-      setExams([...exams, selectedExam]);
+    const selectedExamObject = examTypes.find(exam => exam.id == selectedExamType);
+    console.log(examTypes, selectedExamType, selectedExamObject);
+    if (selectedExamObject) {
+      console.log(selectedExamObject, [...selectedExamTypes, selectedExamObject]);
+      setSelectedExamTypes([...selectedExamTypes, selectedExamObject]);
     }
-    setSelectedExam('');
+    setSelectedExamType('');
   };
   const handleAddPackage = () => {
     if (!selectedPackage) {
       alert('Por favor, seleccione un paquete');
       return;
     }
-    const nuevosExamenes = paquetesExamenes[selectedPackage].filter(examen => !exams.includes(examen));
-    setExams([...exams, ...nuevosExamenes]);
+    const nuevosExamenes = paquetesExamenes[selectedPackage].filter(examen => !selectedExamTypes.includes(examen));
+    setSelectedExamTypes([...selectedExamTypes, ...nuevosExamenes]);
     setSelectedPackage('');
   };
   const handleRemoveExam = index => {
-    const newExams = exams.filter((_, i) => i !== index);
-    setExams(newExams);
+    const newExams = selectedExamTypes.filter((_, i) => i !== index);
+    setSelectedExamTypes(newExams);
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
@@ -53,10 +63,7 @@ export const ExamForm = () => {
   }, "Seleccionar por:"), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-outline-secondary me-1 mb-1",
     onClick: () => handleShowCard('examenes')
-  }, "Ex\xE1men"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-outline-secondary me-1 mb-1",
-    onClick: () => handleShowCard('paquetes')
-  }, "Paquetes"))), activeCard === 'examenes' && /*#__PURE__*/React.createElement("div", {
+  }, "Ex\xE1men"))), activeCard === 'examenes' && /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -70,8 +77,9 @@ export const ExamForm = () => {
     className: "form-label"
   }, "Ex\xE1menes"), /*#__PURE__*/React.createElement("select", {
     className: "form-select",
-    value: selectedExam,
-    onChange: e => setSelectedExam(e.target.value)
+    value: selectedExamType,
+    onChange: e => setSelectedExamType(e.target.value),
+    disabled: selectedExamTypes.length >= 1
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
   }, "Seleccione un examen"), examTypes.map(examType => /*#__PURE__*/React.createElement("option", {
@@ -81,7 +89,8 @@ export const ExamForm = () => {
     className: "col-12 text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: handleAddExam
+    onClick: handleAddExam,
+    disabled: selectedExamTypes.length >= 1
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-plus"
   })))))), activeCard === 'paquetes' && /*#__PURE__*/React.createElement("div", {
@@ -112,7 +121,7 @@ export const ExamForm = () => {
     onClick: handleAddPackage
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-plus"
-  })))))), exams.length > 0 && /*#__PURE__*/React.createElement("div", {
+  })))))), selectedExamTypes.length > 0 && /*#__PURE__*/React.createElement("div", {
     className: "card mt-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -133,9 +142,9 @@ export const ExamForm = () => {
       width: '100px'
     },
     className: "text-end"
-  }, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, exams.map((examen, index) => /*#__PURE__*/React.createElement("tr", {
+  }, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, selectedExamTypes.map((examType, index) => /*#__PURE__*/React.createElement("tr", {
     key: index
-  }, /*#__PURE__*/React.createElement("td", null, index + 1), /*#__PURE__*/React.createElement("td", null, examen), /*#__PURE__*/React.createElement("td", {
+  }, /*#__PURE__*/React.createElement("td", null, index + 1), /*#__PURE__*/React.createElement("td", null, examType.name), /*#__PURE__*/React.createElement("td", {
     className: "text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-danger btn-sm",
@@ -143,4 +152,4 @@ export const ExamForm = () => {
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
   }))))))))));
-};
+});

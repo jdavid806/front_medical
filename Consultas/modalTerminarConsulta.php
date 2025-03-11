@@ -336,11 +336,16 @@ include "../ConsultasJson/dataPaciente.php";
     ExamForm
   } from './react-dist/exams/components/ExamForm.js';
   import {
-    packagesService
+    packagesService,
+    clinicalRecordService
   } from "./services/api/index.js";
+  import {
+    AlertManager
+  } from "./services/alertManager.js";
 
   const prescriptionFormRef = React.createRef();
   const remissionFormRef = React.createRef();
+  const examFormRef = React.createRef();
 
   ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
     ref: prescriptionFormRef,
@@ -352,16 +357,14 @@ include "../ConsultasJson/dataPaciente.php";
   ReactDOMClient.createRoot(document.getElementById('remisionFormReact')).render(React.createElement(remissionsForm, {
     ref: remissionFormRef,
   }));
-  ReactDOMClient.createRoot(document.getElementById('examsFormReact')).render(React.createElement(ExamForm));
-
-  document.getElementById('finalizarConsulta').addEventListener('click', function() {
-
-  });
+  ReactDOMClient.createRoot(document.getElementById('examsFormReact')).render(React.createElement(ExamForm, {
+    ref: examFormRef
+  }));
 
   function obtenerEstadoRecetas() {
     if (prescriptionFormRef.current) {
       const estado = prescriptionFormRef.current.getFormData();
-      console.log("Estado del formulario:", estado);
+      console.log("Estado de recetas:", estado);
       return estado;
     }
   }
@@ -369,52 +372,140 @@ include "../ConsultasJson/dataPaciente.php";
   function obtenerEstadoRemisiones() {
     if (remissionFormRef.current) {
       const estado = remissionFormRef.current.getFormData();
-      console.log("Estado del formulario:", estado);
+      console.log("Estado de remisiones:", estado);
       return estado;
     }
   }
 
+  function obtenerEstadoExamenes() {
+    if (examFormRef.current) {
+      const estado = examFormRef.current.getFormData();
+      console.log("Estado de examenes:", estado);
+      return estado;
+    }
+  }
+
+  let dataIncapacidad = {}
+
   const packages = await packagesService.getAllPackages();
-  let data = {}
 
   const formIncapacidad = document.getElementById('formCrearIncapacidad');
   const getDataFromFormIncapacidad = () => {
     const formData = new FormData(formIncapacidad);
-    data = {};
+    dataIncapacidad = {};
     for (const pair of formData.entries()) {
-      data[pair[0]] = pair[1];
+      dataIncapacidad[pair[0]] = pair[1];
     }
-    return data;
+    return dataIncapacidad;
   }
 
+  const params = new URLSearchParams(window.location.search);
+  const jsonPath = `../../ConsultasJson/${params.get("tipo_historia")}.json`;
+
+  const response = await fetch(jsonPath);
+  const formData = await response.json();
+
+  let formValues = {}
+
   document.getElementById("finalizarConsulta").addEventListener("click", function() {
-    //captureFormValues(formData.form1);
+    captureFormValues(formData.form1);
     //console.log("Valores capturados:", formValues);
     console.log(getDataFromFormIncapacidad());
     const dataIncapacidad = getDataFromFormIncapacidad();
     const dataRecetas = obtenerEstadoRecetas();
     const dataRemisiones = obtenerEstadoRemisiones();
+    const dataExamenes = obtenerEstadoExamenes();
+    let data = {
+      "clinical_record_type_id": 1,
+      "created_by_user_id": 1,
+      "branch_id": 1,
+      "data": captureFormValues(formData.form1)
+    }
 
-    // clinicalRecordService.createForParent(1, {
-    //     "clinical_record_type_id": 1,
-    //     "created_by_user_id": 1,
-    //     "branch_id": 1,
-    //     "data": formValues
-    // }).then(() => AlertManager.success({
-    //     text: 'Se ha creado el registro exitosamente',
-    //     onClose: () => {
-    //         window.location.reload();
-    //     }
-    // })).catch(err => {
-    //     if (err.data?.errors) {
-    //         AlertManager.formErrors(err.data.errors);
-    //     } else {
-    //         AlertManager.error({
-    //             text: err.message || 'Ocurrió un error inesperado'
-    //         });
-    //     }
-    // });
+    const hasDisplayNone = (id) => {
+      const element = document.getElementById(id);
+      return window.getComputedStyle(element).display === 'none';
+    }
+
+    if (!hasDisplayNone('contenidoIncapacidad')) {
+      data['patient_disability'] = dataIncapacidad;
+    }
+
+    if (!hasDisplayNone('examsFormReact')) {
+      data['exam_order'] = {
+        "patient_id": new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0,
+        "exam_order_state_id": 1,
+        "exam_order_item_id": dataExamenes[0]?.id,
+        "exam_order_item_type": "exam_type"
+      };
+    }
+
+    if (!hasDisplayNone('prescriptionFormReact')) {
+      data['recipe'] = {
+        user_id: 1,
+        patient_id: new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0,
+        medicines: dataRecetas,
+        is_active: true
+      };
+    }
+
+    if (!hasDisplayNone('remisionFormReact')) {
+      data['remission'] = dataRemisiones;
+    }
+
+    console.log(data);
+    clinicalRecordService.clinicalRecordsParamsStore(1, data)
+      .then(() => {
+        AlertManager.success({
+          text: 'Se ha creado el registro exitosamente'
+        })
+        $("#finishModal").modal('hide');
+        setTimeout(() => {
+          const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0;
+          const especialidad = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general';
+          window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
+        }, 1000);
+      }).catch(err => {
+        if (err.data?.errors) {
+          AlertManager.formErrors(err.data.errors);
+        } else {
+          AlertManager.error({
+            text: err.message || 'Ocurrió un error inesperado'
+          });
+        }
+      });
   });
 
   console.log('Paquetes', packages);
+
+  function captureFormValues(formData) {
+    formData.tabs.forEach(tab => {
+      Object.keys(tab).forEach(card => {
+        if (typeof tab[card] === "object") {
+          tab[card].forEach(card => {
+            card.fields.forEach(field => {
+              if (field.type === "checkbox" && document.getElementById(field.id).checked) {
+                field.toggleFields.forEach(toggleField => {
+                  if (toggleField.type === "select") {
+                    formValues[toggleField.name] = document.getElementById(toggleField.id).value;
+                  } else if (toggleField.type === "textarea") {
+                    formValues[toggleField.name] = document.getElementById(toggleField.id).value;
+                  }
+                });
+              } else if (field.type !== "checkbox") {
+                formValues[field.name] = document.getElementById(field.id).value;
+
+                const editor = tinymce.get(field.id);
+                if (editor) {
+                  formValues[field.name] = editor.getContent();
+                }
+              }
+            });
+          });
+        }
+      });
+    });
+    console.log("funcion" + formValues);
+    return formValues;
+  }
 </script>

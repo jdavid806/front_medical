@@ -31,6 +31,7 @@ import { ClinicalRecordTypeService } from './classes/clinicalRecordTypeService.j
 import { SuppliesService } from './classes/suppliesService.js';
 import DepartmentService from './classes/departmentService.js';
 import { PackagesService } from './classes/packagesService.js';
+import ClinicalRecordService from './classes/clinicalRecordService.js';
 
 export const authService = new AuthService('api/auth');
 
@@ -56,7 +57,7 @@ export const appointmentService = new AppointmentService('medical', 'patients', 
 export const appointmentTypeService = new BaseApiService('medical', 'appointment-types');
 export const branchService = new BaseApiService('medical', 'branches');
 
-export const clinicalRecordService = new OneToManyService('medical', 'patients', 'clinical-records');
+export const clinicalRecordService = new ClinicalRecordService('medical', 'patients', 'clinical-records');
 export const patientAdmissionService = new OneToManyService('patients', 'admissions');
 export const patientDisabilityService = new OneToManyService('medical', 'patients', 'disabilities');
 export const patientNursingNoteService = new OneToManyService('medical', 'patients', 'nursing-notes');

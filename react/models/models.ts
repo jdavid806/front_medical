@@ -388,3 +388,34 @@ export interface ExamOrderStateDto {
     created_at: string;
     updated_at: string;
 }
+
+export interface PatientClinicalRecordDto {
+    id: string;
+    clinical_record_type_id: string;
+    created_by_user_id: string;
+    patient_id: string;
+    branch_id: string;
+    description: string | null;
+    data: any;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    clinical_record_type: ClinicalRecordTypeDto;
+    patient: Patient;
+}
+
+interface ClinicalRecordTypeDto {
+    id: string;
+    name: string;
+    description: string;
+    form_config: any;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    key_: string | null;
+}
+
+export interface PatientClinicalRecordsTableItem {
+    id: string
+    status: string
+}

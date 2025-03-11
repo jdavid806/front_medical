@@ -8,6 +8,7 @@ export const useExamTypes = () => {
     try {
       let data = await examTypeService.getAll();
       data = data.filter(item => item.is_active);
+      console.log('Examenes', data);
       setExamsTypes(data);
     } catch (err) {
       ErrorHandler.generic(err);
