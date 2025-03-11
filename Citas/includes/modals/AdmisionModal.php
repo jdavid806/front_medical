@@ -1065,8 +1065,6 @@ include '../modals/NewCompanionModal.php';
             console.error('ID de cita no encontrado en la URL');
             return;
         }
-
-        console.log(citaId);
         getAdmissionInfo(citaId);
     }
 
@@ -1584,7 +1582,6 @@ include '../modals/NewCompanionModal.php';
     let globalProductId = null;
     let globalAdmission = null;
     async function getAdmissionInfo(citaId) {
-        console.log(citaId);
         try {
             // Llamar al servicio para obtener los datos de la admisión
             const admission = await admissionService.getAdmissionById(citaId);
@@ -1592,7 +1589,6 @@ include '../modals/NewCompanionModal.php';
 
             const subsidiary = document.getElementById('subsidiary');
             subsidiary.value = admission.patient.social_security?.entity?.name || "No tiene EPS";
-            console.log(admission);
 
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
@@ -1754,12 +1750,13 @@ include '../modals/NewCompanionModal.php';
             <td></td>
         `;
         } else {
-            let validationPriceProduct = entitySwitch.checked ? product.copayment : product.sale_price;
-            const priceProduct = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
-            const totalPrice = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
-            productRow.innerHTML = `
+            if (!product.error) {
+                let validationPriceProduct = entitySwitch.checked ? product.copayment : product.sale_price;
+                const priceProduct = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
+                const totalPrice = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
+                productRow.innerHTML = `
             <td class="small">${product.id}</td>
-            <td class="small">${entitySwitch.checked ? priceProduct : priceProduct || 'Producto sin nombre'}</td>
+            <td class="small">${product.name || 'Producto sin nombre'}</td>
             <td class="small">${ entitySwitch.checked ? product.copayment : product.sale_price || 'N/A'}</td>
             <td class="small">1</td>
             <td class="small">${product.taxes || '0'}</td>
@@ -1767,6 +1764,8 @@ include '../modals/NewCompanionModal.php';
             <td class="small"><i class="far fa-trash-alt text-danger" onclick="removeRow(this)"></i></td>
             <td></td>
         `;
+            }
+
         }
         tableBody.appendChild(productRow);
 
@@ -1887,6 +1886,19 @@ include '../modals/NewCompanionModal.php';
         }
 
         const requestData = {
+            "admission": [{
+                "user_id": 1,
+                "admission_type_id": 1,
+                "authorization_number": "AUTH123456",
+                "authorization_date": "2025-04-10",
+                "appointment_id": 5,
+                "invoice_id": 10,
+                "debit_note_id": null,
+                "credit_note_id": null,
+                "new_invoice_id": null,
+                "copayment": true,
+                "moderator_fee": false
+            }],
             "invoice": {
                 "user_id": 1,
                 "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),
@@ -1896,7 +1908,7 @@ include '../modals/NewCompanionModal.php';
             "payments": dataPaymentMthods
         }
 
-        console.log("guardar y emitir:", requestData);
+        console.log(requestData);
 
     })
 

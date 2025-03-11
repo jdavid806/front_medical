@@ -53,7 +53,12 @@ include "../header.php";
     </div>
 </div>
 
+
 <script>
+    console.log ("hola")
+</script>
+
+<!-- <script>
     // JSON con los paquetes y sus elementos detalles
     const paquetes = [{
             nombre: "Paquete Básico",
@@ -441,7 +446,7 @@ include "../header.php";
     document.addEventListener('DOMContentLoaded', function() {
         generarFilasTabla();
     });
-</script>
+</script> -->
 
 
 <?php include "../footer.php";

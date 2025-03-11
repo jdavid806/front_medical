@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ExamTable } from "./components/ExamTable.js";
 import { ExamForm } from "./components/ExamForm.js";
 import { CustomModal } from "../components/CustomModal.js";
+import { CustomFormModal } from "../components/CustomFormModal.js";
 import { useExams } from "./hooks/useExams.js";
 import { ExamResultsForm } from "./components/ExamResultsForm.js";
 const ExamApp = () => {
@@ -50,14 +51,12 @@ const ExamApp = () => {
   }), " Nuevo examen")))), /*#__PURE__*/React.createElement(ExamTable, {
     exams: exams,
     onLoadExamResults: handleLoadExamResults
-  }), /*#__PURE__*/React.createElement(CustomModal, {
+  }), /*#__PURE__*/React.createElement(CustomFormModal, {
+    formId: 'createExam',
     show: showFormModal,
     onHide: handleHideFormModal,
     title: "Crear Ex\xE1menes"
-  }, /*#__PURE__*/React.createElement(ExamForm, {
-    onSave: handleSave,
-    onCancel: handleHideFormModal
-  })), /*#__PURE__*/React.createElement(CustomModal, {
+  }, /*#__PURE__*/React.createElement(ExamForm, null)), /*#__PURE__*/React.createElement(CustomModal, {
     show: showResultsFormModal,
     onHide: handleHideResultsFormModal,
     title: "Cargar Resultados"

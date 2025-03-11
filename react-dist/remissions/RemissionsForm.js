@@ -151,11 +151,5 @@ export const remissionsForm = () => {
     value: note,
     onChange: e => setNote(e.target.value),
     required: true
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end mt-3"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: handleSubmit,
-    className: "btn btn-outline-info",
-    type: "button"
-  }, "Guardar Remisi\xF3n"))));
+  }))));
 };

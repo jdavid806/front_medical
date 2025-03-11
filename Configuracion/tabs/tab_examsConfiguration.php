@@ -8,7 +8,7 @@
                         <i class="fa-solid fa-microscope"></i> Exámenes
                     </button>
                 </li>
-                <li class="nav-item" role="exam-categories">
+                <!-- <li class="nav-item" role="exam-categories">
                     <button class="nav-link" id="exam-categories-tab" data-bs-toggle="tab" data-bs-target="#exam-categories-tab-pane"
                         type="button" role="tab" aria-controls="exam-categories-tab-pane" aria-selected="false">
                         <i class="fa-solid fa-folder-open"></i> Categorias de Exámenes
@@ -19,7 +19,7 @@
                         type="button" role="tab" aria-controls="exam-packages-tab-pane" aria-selected="false">
                         <i class="fa-solid fa-box"></i> Paquetes de exámenes
                     </button>
-                </li>
+                </li> -->
             </ul>
 
             <div class="tab-content w-100" id="typeMessages-tabContent">
@@ -27,13 +27,13 @@
                     <div id="examsConfigReact"></div>
                 </div>
 
-                <div class="tab-pane fade" id="exam-categories-tab-pane" role="tabpanel" aria-labelledby="exam-categories-tab">
+                <!-- <div class="tab-pane fade" id="exam-categories-tab-pane" role="tabpanel" aria-labelledby="exam-categories-tab">
                     <div id="examsCategoriesReact"></div>
                 </div>
 
                 <div class="tab-pane fade" id="exam-packages-tab-pane" role="tabpanel" aria-labelledby="exam-packages-tab">
                     Aquí van los paquetes
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -50,5 +50,5 @@
     } from './react-dist/exam-categories/ExamCategoryApp.js';
 
     ReactDOMClient.createRoot(document.getElementById('examsConfigReact')).render(React.createElement(ExamConfigApp));
-    ReactDOMClient.createRoot(document.getElementById('examsCategoriesReact')).render(React.createElement(ExamCategoryApp));
+    // ReactDOMClient.createRoot(document.getElementById('examsCategoriesReact')).render(React.createElement(ExamCategoryApp));
 </script>

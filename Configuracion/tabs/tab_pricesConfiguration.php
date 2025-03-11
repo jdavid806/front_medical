@@ -13,23 +13,38 @@
 <div class="tab-content mt-3" id="myTabContent">
   <div class="tab-pane fade active show" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
     <div class="row gx-3 gy-4 mb-5">
-      <div class="card mb-3">
+      <div id="preciosTable" class="card"
+        data-list='{"valueNames":["name", "barcode", "attentionType", "salePrice", "copayment"],"page":5,"pagination":true}'>
         <div class="card-body">
+          <!-- Buscador -->
+          <div class="search-box mb-3">
+            <input class="form-control search" type="search" placeholder="Buscar precio..." aria-label="Buscar">
+          </div>
+
+          <!-- Tabla -->
           <table class="table table-striped table-hover">
             <thead class="table-dark">
               <tr>
-                <th>Ítem</th>
-                <th>Cups</th>
-                <th>Tipo de Atención</th>
-                <th>Precio Publico</th>
-                <th>Copago</th>
-                <th></th>
+                <th class="sort" data-sort="name">Ítem</th>
+                <th class="sort" data-sort="barcode">Cups</th>
+                <th class="sort" data-sort="attentionType">Tipo de Atención</th>
+                <th class="sort" data-sort="salePrice">Precio Público</th>
+                <th class="sort" data-sort="copayment">Copago</th>
+                <th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="tablaPrecios">
+            <tbody class="list" id="tablaPrecios">
               <!-- Filas dinámicas -->
             </tbody>
           </table>
+
+          <!-- Paginación -->
+          <div class="d-flex justify-content-between mt-3">
+            <span class="d-none d-sm-inline-block" data-list-info></span>
+            <div class="d-flex">
+              <ul class="pagination mb-0"></ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

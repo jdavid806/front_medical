@@ -2,7 +2,7 @@
 include "../ConsultasJson/dataPaciente.php";
 ?>
 
-<div class="modal fade modal-lg" id="finishModal" tabindex="-1" aria-labelledby="finishModalLabel" aria-hidden="true">
+<div class="modal fade modal-xl" id="finishModal" tabindex="-1" aria-labelledby="finishModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -10,7 +10,7 @@ include "../ConsultasJson/dataPaciente.php";
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="d-flex gap-4">
+        <div class="d-flex gap-4 mb-3">
           <div class="d-flex" style="min-width: 200px">
             <ul class="nav flex-column nav-underline fs-9" id="myTab" role="tablist">
               <li class="nav-item" role="presentation">
@@ -47,20 +47,18 @@ include "../ConsultasJson/dataPaciente.php";
           </div>
           <div class="flex-grow-1">
             <div class="tab-content">
-              <div class="tab-pane fade" id="examenesClinicosTab"
-                role="tabpanel">
-                <h4>Exámenes clínicos</h4>
-                <div class="mb-2 form-floating">
-                  <select class="form-select" id="examenesImageneologia"
-                    name="examenesImageneologia">
-                    <option selected disabled value="">Seleccione</option>
-                    <option value="Artereografia">Artereografia</option>
-                    <option value="Rayos X simple">Rayos X simple</option>
-                    <option value="Rayos X Contratado">Rayos X Contratado</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                  <label for="examenesImageneologia">Examen de Imageneología</label>
+              <div class="tab-pane fade" id="examenesClinicosTab" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4>Exámenes clínicos</h4>
+                  <button id="btnAgregarExamenes" class="btn btn-primary" type="button">
+                    <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar exámenes
+                  </button>
+                  <button id="btnCancelarExamenes" class="btn btn-danger" type="button" style="display: none;">
+                    <span class="fa-solid fa-times me-2 fs-9"></span> Cancelar
+                  </button>
                 </div>
+                <hr>
+                <div id="examsFormReact" style="display: none;"></div>
               </div>
 
               <div class="tab-pane fade" id="incapacidadesClinicasTab" role="tabpanel">
@@ -298,6 +296,16 @@ include "../ConsultasJson/dataPaciente.php";
     document.getElementById('btnCancelarRemision').style.display = 'none';
     document.getElementById('btnAgregarRemision').style.display = 'block';
   });
+  document.getElementById('btnAgregarExamenes').addEventListener('click', function() {
+    document.getElementById('examsFormReact').style.display = 'block';
+    document.getElementById('btnAgregarExamenes').style.display = 'none';
+    document.getElementById('btnCancelarExamenes').style.display = 'block';
+  });
+  document.getElementById('btnCancelarExamenes').addEventListener('click', function() {
+    document.getElementById('examsFormReact').style.display = 'none';
+    document.getElementById('btnCancelarExamenes').style.display = 'none';
+    document.getElementById('btnAgregarExamenes').style.display = 'block';
+  });
 </script>
 
 <script type="module">
@@ -307,6 +315,9 @@ include "../ConsultasJson/dataPaciente.php";
   import {
     remissionsForm
   } from './react-dist/remissions/RemissionsForm.js';
+  import {
+    ExamForm
+  } from './react-dist/exams/components/ExamForm.js';
 
   ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
     formId: 'createPrescription',
@@ -315,6 +326,7 @@ include "../ConsultasJson/dataPaciente.php";
     }
   }));
   ReactDOMClient.createRoot(document.getElementById('remisionFormReact')).render(React.createElement(remissionsForm));
+  ReactDOMClient.createRoot(document.getElementById('examsFormReact')).render(React.createElement(ExamForm));
 
   document.getElementById('finalizarConsulta').addEventListener('click', function() {
 

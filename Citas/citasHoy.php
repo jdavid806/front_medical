@@ -593,7 +593,7 @@ foreach ($estados as $estado) {
   // Inicialización
   document.addEventListener('DOMContentLoaded', async () => {
     await refreshAdmissionsData();
-    document.getElementById('generarTurnoBtn').addEventListener('click', generarTurno);
+    // document.getElementById('generarTurnoBtn').addEventListener('click', generarTurno);
   });
 
   // Función de ejemplo para generar turno (mantener tu implementación)

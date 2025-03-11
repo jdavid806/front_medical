@@ -11,7 +11,6 @@ import { FormBuilder } from '../../components/form-builder/FormBuilder';
 export type ExamTypeInputs = {
     name: string
     description: string | undefined
-    exam_category_id: string
     form_config: any
 }
 
@@ -32,7 +31,6 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
         defaultValues: initialData || {
             name: '',
             description: '',
-            exam_category_id: '',
             form_config: {}
         }
     })
@@ -78,7 +76,6 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
         reset(initialData || {
             name: '',
             description: '',
-            exam_category_id: '',
             form_config: {}
         });
         console.log(initialData);
@@ -133,28 +130,6 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
                         }
                     />
                     {getFormErrorMessage('description')}
-                </div>
-                <div className="mb-3">
-                    <Controller
-                        name='exam_category_id'
-                        control={control}
-                        rules={{ required: 'Este campo es requerido' }}
-                        render={({ field }) =>
-                            <>
-                                <label htmlFor={field.name} className="form-label">Categoría *</label>
-                                <Dropdown
-                                    inputId={field.name}
-                                    options={dropdownExamCategories}
-                                    optionLabel='label'
-                                    optionValue='value'
-                                    placeholder="Seleccione la categoría a la que pertenece"
-                                    className={classNames('w-100', { 'p-invalid': errors.exam_category_id })}
-                                    {...field}
-                                />
-                            </>
-                        }
-                    />
-                    {getFormErrorMessage('exam_category_id')}
                 </div>
                 {formConfig && (
                     <div className="card">

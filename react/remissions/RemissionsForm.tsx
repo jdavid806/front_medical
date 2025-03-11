@@ -198,7 +198,7 @@ export const remissionsForm: React.FC = () => {
             required
           ></textarea>
         </div>
-        <div className="d-flex justify-content-end mt-3">
+        {/* <div className="d-flex justify-content-end mt-3">
           <button
             onClick={handleSubmit}
             className="btn btn-outline-info"
@@ -206,7 +206,7 @@ export const remissionsForm: React.FC = () => {
           >
             Guardar Remisión
           </button>
-        </div>
+        </div> */}
       </form>
     </PrimeReactProvider>
   );

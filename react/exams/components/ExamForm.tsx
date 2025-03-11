@@ -1,44 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-const categoriasExamenes = {
-    "Exámenes de laboratorio": [
-        "Examen de sangre",
-        "Análisis de orina",
-        "Prueba de colesterol",
-        "Prueba de glucosa",
-        "Prueba de función hepática"
-    ],
-    "Imágenes médicas": [
-        "Radiografía de tórax",
-        "Ecografía abdominal",
-        "Tomografía computarizada (TC)",
-        "Resonancia magnética (RM)",
-        "Mamografía"
-    ],
-    "Cardiológicos": [
-        "Electrocardiograma",
-        "Prueba de estrés",
-        "Ecocardiograma",
-        "Holter de 24 horas"
-    ],
-    "Exámenes de cáncer": [
-        "Mamografía",
-        "Papanicolaou",
-        "Colonoscopia",
-        "Biopsia de piel",
-        "Examen de próstata (PSA)"
-    ],
-    "Exámenes respiratorios": [
-        "Prueba de función pulmonar",
-        "Espirometría",
-        "Prueba de esfuerzo respiratorio"
-    ],
-    "Exámenes de audición y visión": [
-        "Examen de vista",
-        "Examen de audición",
-        "Audiometría"
-    ]
-};
+import { useExamTypes } from '../../exams-config/hooks/useExamTypes';
 
 const paquetesExamenes = {
     "Paquete básico de salud": [
@@ -84,21 +45,18 @@ const paquetesExamenes = {
     ]
 };
 
-export const ExamForm = ({ onSave, onCancel }) => {
+export const ExamForm = () => {
     const [activeCard, setActiveCard] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedExam, setSelectedExam] = useState('');
     const [selectedPackage, setSelectedPackage] = useState('');
-    const [selectedCategoria, setSelectedCategoria] = useState('');
     const [exams, setExams] = useState<string[]>([]);
+
+    const { examTypes } = useExamTypes()
 
     const handleShowCard = (cardName) => {
         setActiveCard(cardName);
-        // Resetear selecciones al cambiar de card
-        setSelectedCategory('');
         setSelectedExam('');
         setSelectedPackage('');
-        setSelectedCategoria('');
     };
 
     const handleAddExam = () => {
@@ -126,19 +84,6 @@ export const ExamForm = ({ onSave, onCancel }) => {
         setSelectedPackage('');
     };
 
-    const handleAddCategory = () => {
-        if (!selectedCategoria) {
-            alert('Por favor, seleccione una categoría');
-            return;
-        }
-
-        const nuevosExamenes = categoriasExamenes[selectedCategoria]
-            .filter(examen => !exams.includes(examen));
-
-        setExams([...exams, ...nuevosExamenes]);
-        setSelectedCategoria('');
-    };
-
     const handleRemoveExam = (index) => {
         const newExams = exams.filter((_, i) => i !== index);
         setExams(newExams);
@@ -153,8 +98,6 @@ export const ExamForm = ({ onSave, onCancel }) => {
                         onClick={() => handleShowCard('examenes')}>Exámen</button>
                     <button className="btn btn-outline-secondary me-1 mb-1"
                         onClick={() => handleShowCard('paquetes')}>Paquetes</button>
-                    <button className="btn btn-outline-secondary me-1 mb-1"
-                        onClick={() => handleShowCard('categorias')}>Categorías</button>
                 </div>
             </div>
 
@@ -163,30 +106,16 @@ export const ExamForm = ({ onSave, onCancel }) => {
                     <div className="card-body">
                         <h5 className="card-title">Seleccionar exámen</h5>
                         <div className="row g-3">
-                            <div className="col-md-6">
-                                <label className="form-label">Categoria</label>
-                                <select
-                                    className="form-select"
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
-                                >
-                                    <option value="">Seleccione una categoría</option>
-                                    {Object.keys(categoriasExamenes).map(categoria => (
-                                        <option key={categoria} value={categoria}>{categoria}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="col-md-6">
+                            <div className="col-12">
                                 <label className="form-label">Exámenes</label>
                                 <select
                                     className="form-select"
                                     value={selectedExam}
                                     onChange={(e) => setSelectedExam(e.target.value)}
-                                    disabled={!selectedCategory}
                                 >
                                     <option value="">Seleccione un examen</option>
-                                    {selectedCategory && categoriasExamenes[selectedCategory].map(examen => (
-                                        <option key={examen} value={examen}>{examen}</option>
+                                    {examTypes.map(examType => (
+                                        <option key={examType.id} value={examType.id}>{examType.name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -228,34 +157,6 @@ export const ExamForm = ({ onSave, onCancel }) => {
                 </div>
             )}
 
-            {activeCard === 'categorias' && (
-                <div className="card mb-3">
-                    <div className="card-body">
-                        <h5 className="card-title">Seleccionar categoría</h5>
-                        <div className="row g-3">
-                            <div className="col-md-6">
-                                <label className="form-label">Categoría</label>
-                                <select
-                                    className="form-select"
-                                    value={selectedCategoria}
-                                    onChange={(e) => setSelectedCategoria(e.target.value)}
-                                >
-                                    <option value="">Seleccione una categoría</option>
-                                    {Object.keys(categoriasExamenes).map(categoria => (
-                                        <option key={categoria} value={categoria}>{categoria}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="col-12 text-end">
-                                <button className="btn btn-primary" onClick={handleAddCategory}>
-                                    <i className="fa-solid fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {exams.length > 0 && (
                 <div className="card mt-3">
                     <div className="card-body">
@@ -288,15 +189,6 @@ export const ExamForm = ({ onSave, onCancel }) => {
                     </div>
                 </div>
             )}
-
-            <div className="modal-footer">
-                <button className="btn btn-primary" onClick={() => onSave(exams)}>
-                    Guardar
-                </button>
-                <button className="btn btn-outline-primary" onClick={onCancel}>
-                    Cancelar
-                </button>
-            </div>
         </div>
     );
 };

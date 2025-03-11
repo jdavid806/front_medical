@@ -99,10 +99,10 @@ $jsonData = json_encode($remisionesData);
 
                 <div class="col-8">
                     <h3>Remisiones</h3>
-                    <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
+                    <!-- <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
                         data-bs-target="#nuevaRemisionModal">
                         Agregar Nueva remisión
-                    </button>
+                    </button> -->
                     <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="remisiones-tab" data-bs-toggle="tab" href="#tab-remisiones"

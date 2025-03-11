@@ -1,7 +1,6 @@
 async function cargarContenido() {
   let ruta = "http://dev.medicalsoft.ai/api/v1/admin/products";
 
-  // Mapeo de valores en inglés a español
   const attentionTypeMap = {
     PROCEDURE: "Procedimiento",
     CONSULTATION: "Consulta",
@@ -9,36 +8,32 @@ async function cargarContenido() {
 
   try {
     const response = await fetch(ruta);
-    if (!response.ok) {
-      throw new Error("Error en la solicitud");
-    }
+    if (!response.ok) throw new Error("Error en la solicitud");
+
     const result = await response.json();
-
     const tablaPrecios = document.getElementById("tablaPrecios");
-
     tablaPrecios.innerHTML = "";
 
     for (const producto of result.data) {
       let elemento = producto.attributes;
-
       let attentionTypeTranslated =
         attentionTypeMap[elemento.attention_type] || "Desconocido";
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${elemento.name}</td>
-        <td>${elemento.barcode}</td> 
-        <td>${attentionTypeTranslated}</td>
-        <td>${elemento.sale_price || "N/A"}</td>
-        <td>${elemento.copaiment || "N/A"}</td>
+        <td class="name">${elemento.name}</td>
+        <td class="barcode">${elemento.barcode}</td>
+        <td class="attentionType">${attentionTypeTranslated}</td>
+        <td class="salePrice">${elemento.sale_price || "N/A"}</td>
+        <td class="copayment">${elemento.copayment || "N/A"}</td>
         <td>
             <button class="btn btn-primary btn-sm" onclick="editarProducto(${
               producto.id
-            }, '${elemento.name}', '${elemento.barcode}', '${
-        elemento.attention_type
-      }', '${elemento.sale_price}', '${
-        elemento.copaiment
-      }')" data-bs-toggle="modal" data-bs-target="#modalPrice">
+            }, 
+            '${elemento.name}', '${elemento.barcode}', 
+            '${elemento.attention_type}', '${elemento.sale_price}', 
+            '${elemento.copayment}', '${elemento.tax_charge_id}')" 
+            data-bs-toggle="modal" data-bs-target="#modalPrice">
                 <i class="fa-solid fa-pen"></i>
             </button>
             <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
@@ -48,9 +43,21 @@ async function cargarContenido() {
             </button>
         </td>
       `;
-
       tablaPrecios.appendChild(row);
     }
+
+    // Inicia la paginación con List.js
+    new List("preciosTable", {
+      valueNames: [
+        "name",
+        "barcode",
+        "attentionType",
+        "salePrice",
+        "copayment",
+      ],
+      page: 5,
+      pagination: true,
+    });
   } catch (error) {
     console.error("Hubo un problema con la solicitud:", error);
   }
@@ -74,13 +81,30 @@ function editarProducto(
   barcode,
   attentionType,
   salePrice,
-  copago
+  copago,
+  tax_charge_id
 ) {
   document.getElementById("name").value = name;
   document.getElementById("curp").value = barcode;
   document.getElementById("attention_type").value = attentionType;
   document.getElementById("sale_price").value = salePrice || "";
   document.getElementById("copago").value = copago || "";
+
+  let taxSelect = document.getElementById("taxProduct_type");
+
+  function setTaxValue() {
+    if (
+      [...taxSelect.options].some((option) => option.value == tax_charge_id)
+    ) {
+      taxSelect.value = tax_charge_id;
+    }
+  }
+
+  if (taxSelect.options.length > 0) {
+    setTaxValue();
+  } else {
+    setTimeout(setTaxValue, 500); // Esperar 500ms para que se carguen las opciones
+  }
 
   // Agregar un input oculto con el ID del producto
   let hiddenInput = document.getElementById("product_id");
@@ -95,10 +119,22 @@ function editarProducto(
 }
 
 async function createProduct(product) {
-  guardarDatos(
-    "http://dev.medicalsoft.ai/api/v1/admin/products",
-    product
-  );
-  cargarContenido()
+  guardarDatos("http://dev.medicalsoft.ai/api/v1/admin/products", product);
+  cargarContenido();
 }
 
+async function cargarSelectsPrecios() {
+  let rutaEntidades = "http://dev.medicalsoft.ai/medical/entities";
+  let rutaImpuestos = "http://dev.medicalsoft.ai/api/v1/admin/tax-charges";
+  let rutaRetenciones =
+    "http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings";
+
+  let entidades = await obtenerDatos(rutaEntidades);
+  let impuestos = await obtenerDatos(rutaImpuestos);
+  let retenciones = await obtenerDatos(rutaRetenciones);
+
+  cargarSelect("entity-product", entidades.data, "Seleccione una entidad");
+  cargarSelect("taxProduct_type", impuestos.data, "Seleccione un impuesto");
+  cargarSelect("tax_type", impuestos.data, "Seleccione un impuesto");
+  cargarSelect("retention_type", retenciones.data, "Seleccione una retención");
+}

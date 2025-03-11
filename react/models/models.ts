@@ -111,11 +111,13 @@ export interface AppointmentTableItem {
     id: string
     patientName: string;
     patientDNI: string;
+    patientId: string;
     date: string;
     time: string;
     doctorName: string;
     entity: string;
     status: string;
+    stateId: string;
     branchId: string | null;
     isChecked: boolean
 }
@@ -155,6 +157,21 @@ export interface Socialsecurity {
     created_at: string;
     updated_at: string;
     entity_id: string;
+    entity: EntityDto
+}
+
+export interface EntityDto {
+    id: string;
+    name: string;
+    document_type: string;
+    document_number: string;
+    email: string;
+    address: string;
+    phone: string;
+    city_id: string;
+    deleted_at: null;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface UserDto {

@@ -12,20 +12,22 @@ export const useFetchAppointments = (
         const doctorSecondLastName = appointment.user_availability.user.second_last_name;
         const doctorName = `${doctorFirstName} ${doctorMiddleName} ${doctorLastName} ${doctorSecondLastName}`;
 
-        console.log(appointment);
+        console.log('Citas', appointment);
 
 
         return {
             id: appointment.id.toString(),
             patientName: `${appointment.patient.first_name} ${appointment.patient.last_name}`,
             patientDNI: appointment.patient.document_number,
+            patientId: appointment.patient_id.toString(),
             date: appointment.appointment_date,
             time: appointment.appointment_time,
             doctorName,
-            entity: appointment.patient.social_security?.eps || 'Falta traer la eps',
+            entity: appointment.patient.social_security?.entity?.name || 'Falta traer la eps',
             status: appointment.is_active ? 'Activo' : 'Inactivo',
             branchId: appointment.user_availability.branch_id?.toString() || null,
-            isChecked: false
+            isChecked: false,
+            stateId: appointment.appointment_state_id.toString()
         }
     };
     const mapper = customMapper || defaultMapper;

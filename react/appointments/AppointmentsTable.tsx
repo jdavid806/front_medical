@@ -5,6 +5,7 @@ import { ConfigColumns } from "datatables.net-bs5";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
 import { appointmentService } from "../../services/api";
 import { BranchesSelect } from "../branches/BranchesSelect";
+import { appointmentStates, appointmentStatesColors } from "../../services/commons";
 
 export const AppointmentsTable: React.FC = () => {
   const { appointments } = useFetchAppointments(appointmentService.active());
@@ -19,16 +20,59 @@ export const AppointmentsTable: React.FC = () => {
     { data: "status" },
   ];
 
+  const handleMakeClinicalRecord = (patientId: string) => {
+    window.location.href = `/consultas?patient_id=${patientId}&especialidad=medicina_general&tipo_historia=general`
+  }
+
+  const handleCancelAppointment = (appointmentId: string) => {
+    console.log('cancel appointment', appointmentId);
+  }
+
   const slots = {
     6: (cell, data: AppointmentTableItem) => (
       <span
-        className={`badge badge-phoenix ${
-          data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
-        }`}
+        className={`badge badge-phoenix badge-phoenix-${appointmentStatesColors[data.stateId]}`}
       >
-        {data.status ? "Activo" : "Inactivo"}
+        {appointmentStates[data.stateId]}
       </span>
     ),
+    7: (cell, data: AppointmentTableItem) => (
+      <div className="text-end align-middle">
+        <div className="dropdown">
+          <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i data-feather="settings"></i> Acciones
+          </button>
+          <ul className="dropdown-menu" style={{ zIndex: 10000 }}>
+            {data.stateId === '2' && (
+              <li>
+                <a className="dropdown-item" href="#" onClick={(e) => {
+                  e.preventDefault();
+                  handleMakeClinicalRecord(data.patientId);
+                }} data-column="realizar-consulta">
+                  <div className="d-flex gap-2 align-items-center">
+                    <i className="fa-solid fa-stethoscope" style={{ width: '20px' }}></i>
+                    <span>Realizar consulta</span>
+                  </div>
+                </a>
+              </li>
+            )}
+            {data.stateId === '1' && (
+              <li>
+                <a className="dropdown-item" href="#" onClick={(e) => {
+                  e.preventDefault();
+                  handleCancelAppointment(data.id);
+                }} data-column="realizar-consulta">
+                  <div className="d-flex gap-2 align-items-center">
+                    <i className="fa-solid fa-ban" style={{ width: '20px' }}></i>
+                    <span>Cancelar cita</span>
+                  </div>
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    )
   };
 
   return (
@@ -99,6 +143,7 @@ export const AppointmentsTable: React.FC = () => {
                 </th>
                 <th className="border-top custom-th text-start">Entidad</th>
                 <th className="border-top custom-th text-start">Estado</th>
+                <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
               </tr>
             </thead>
           </CustomDataTable>

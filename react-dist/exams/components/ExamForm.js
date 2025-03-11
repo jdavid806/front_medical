@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-const categoriasExamenes = {
-  "Exámenes de laboratorio": ["Examen de sangre", "Análisis de orina", "Prueba de colesterol", "Prueba de glucosa", "Prueba de función hepática"],
-  "Imágenes médicas": ["Radiografía de tórax", "Ecografía abdominal", "Tomografía computarizada (TC)", "Resonancia magnética (RM)", "Mamografía"],
-  "Cardiológicos": ["Electrocardiograma", "Prueba de estrés", "Ecocardiograma", "Holter de 24 horas"],
-  "Exámenes de cáncer": ["Mamografía", "Papanicolaou", "Colonoscopia", "Biopsia de piel", "Examen de próstata (PSA)"],
-  "Exámenes respiratorios": ["Prueba de función pulmonar", "Espirometría", "Prueba de esfuerzo respiratorio"],
-  "Exámenes de audición y visión": ["Examen de vista", "Examen de audición", "Audiometría"]
-};
+import { useExamTypes } from "../../exams-config/hooks/useExamTypes.js";
 const paquetesExamenes = {
   "Paquete básico de salud": ["Examen de sangre", "Análisis de orina", "Examen de vista", "Examen de audición"],
   "Paquete cardiovascular": ["Electrocardiograma", "Prueba de esfuerzo", "Ecocardiograma", "Examen de sangre"],
@@ -15,23 +8,18 @@ const paquetesExamenes = {
   "Paquete de diagnóstico oncológico": ["Mamografía", "Papanicolaou", "Colonoscopia", "Biopsia de piel", "Examen de próstata (PSA)"],
   "Paquete avanzado de salud": ["Tomografía computarizada (TC)", "Resonancia magnética (RM)", "Análisis de orina", "Prueba de glucosa", "Examen de sangre", "Ecografía abdominal"]
 };
-export const ExamForm = ({
-  onSave,
-  onCancel
-}) => {
+export const ExamForm = () => {
   const [activeCard, setActiveCard] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedExam, setSelectedExam] = useState('');
   const [selectedPackage, setSelectedPackage] = useState('');
-  const [selectedCategoria, setSelectedCategoria] = useState('');
   const [exams, setExams] = useState([]);
+  const {
+    examTypes
+  } = useExamTypes();
   const handleShowCard = cardName => {
     setActiveCard(cardName);
-    // Resetear selecciones al cambiar de card
-    setSelectedCategory('');
     setSelectedExam('');
     setSelectedPackage('');
-    setSelectedCategoria('');
   };
   const handleAddExam = () => {
     if (!selectedExam) {
@@ -52,15 +40,6 @@ export const ExamForm = ({
     setExams([...exams, ...nuevosExamenes]);
     setSelectedPackage('');
   };
-  const handleAddCategory = () => {
-    if (!selectedCategoria) {
-      alert('Por favor, seleccione una categoría');
-      return;
-    }
-    const nuevosExamenes = categoriasExamenes[selectedCategoria].filter(examen => !exams.includes(examen));
-    setExams([...exams, ...nuevosExamenes]);
-    setSelectedCategoria('');
-  };
   const handleRemoveExam = index => {
     const newExams = exams.filter((_, i) => i !== index);
     setExams(newExams);
@@ -77,10 +56,7 @@ export const ExamForm = ({
   }, "Ex\xE1men"), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-outline-secondary me-1 mb-1",
     onClick: () => handleShowCard('paquetes')
-  }, "Paquetes"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-outline-secondary me-1 mb-1",
-    onClick: () => handleShowCard('categorias')
-  }, "Categor\xEDas"))), activeCard === 'examenes' && /*#__PURE__*/React.createElement("div", {
+  }, "Paquetes"))), activeCard === 'examenes' && /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -89,33 +65,19 @@ export const ExamForm = ({
   }, "Seleccionar ex\xE1men"), /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Categoria"), /*#__PURE__*/React.createElement("select", {
-    className: "form-select",
-    value: selectedCategory,
-    onChange: e => setSelectedCategory(e.target.value)
-  }, /*#__PURE__*/React.createElement("option", {
-    value: ""
-  }, "Seleccione una categor\xEDa"), Object.keys(categoriasExamenes).map(categoria => /*#__PURE__*/React.createElement("option", {
-    key: categoria,
-    value: categoria
-  }, categoria)))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Ex\xE1menes"), /*#__PURE__*/React.createElement("select", {
     className: "form-select",
     value: selectedExam,
-    onChange: e => setSelectedExam(e.target.value),
-    disabled: !selectedCategory
+    onChange: e => setSelectedExam(e.target.value)
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
-  }, "Seleccione un examen"), selectedCategory && categoriasExamenes[selectedCategory].map(examen => /*#__PURE__*/React.createElement("option", {
-    key: examen,
-    value: examen
-  }, examen)))), /*#__PURE__*/React.createElement("div", {
+  }, "Seleccione un examen"), examTypes.map(examType => /*#__PURE__*/React.createElement("option", {
+    key: examType.id,
+    value: examType.id
+  }, examType.name)))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
@@ -150,34 +112,6 @@ export const ExamForm = ({
     onClick: handleAddPackage
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-plus"
-  })))))), activeCard === 'categorias' && /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement("h5", {
-    className: "card-title"
-  }, "Seleccionar categor\xEDa"), /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Categor\xEDa"), /*#__PURE__*/React.createElement("select", {
-    className: "form-select",
-    value: selectedCategoria,
-    onChange: e => setSelectedCategoria(e.target.value)
-  }, /*#__PURE__*/React.createElement("option", {
-    value: ""
-  }, "Seleccione una categor\xEDa"), Object.keys(categoriasExamenes).map(categoria => /*#__PURE__*/React.createElement("option", {
-    key: categoria,
-    value: categoria
-  }, categoria)))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 text-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary",
-    onClick: handleAddCategory
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-plus"
   })))))), exams.length > 0 && /*#__PURE__*/React.createElement("div", {
     className: "card mt-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -208,13 +142,5 @@ export const ExamForm = ({
     onClick: () => handleRemoveExam(index)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
-  }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "modal-footer"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary",
-    onClick: () => onSave(exams)
-  }, "Guardar"), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-outline-primary",
-    onClick: onCancel
-  }, "Cancelar")));
+  }))))))))));
 };

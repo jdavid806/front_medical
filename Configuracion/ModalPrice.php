@@ -57,37 +57,33 @@ include '../data/consts.php';
                                     <label class="form-label" for="taxProduct_type">Tipo de impuesto</label>
                                     <select class="form-select" id="taxProduct_type" name="tax_type">
                                         <option value="" disabled selected>Seleccionar...</option>
-                                        <option value="Impuesto">Impuesto</option>
                                     </select>
                                 </div>
                             </div>
-                            <div id="entitySection" class="col-12" style="display: none;">
+                            <div id="entity-productSection" class="col-12" style="display: none;">
                                 <div class="card p-3 mt-3">
                                     <div class="row g-3">
                                         <div class="col-md-4">
-                                            <label class="form-label" for="entity">Entidad</label>
-                                            <select class="form-select" id="entity" name="entity">
+                                            <label class="form-label" for="entity-product">Entidad</label>
+                                            <select class="form-select" id="entity-product" name="entity-product">
                                                 <option value="" disabled selected>Seleccionar...</option>
-                                                <option value="Entidad">Entidad</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label" for="entity_price">Precio</label>
-                                            <input class="form-control" id="entity_price" type="number"
-                                                placeholder="Precio" name="entity_price">
+                                            <label class="form-label" for="entity-product_price">Precio</label>
+                                            <input class="form-control" id="entity-product_price" type="number"
+                                                placeholder="Precio" name="entity-product_price">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label" for="tax_type">Tipo de impuesto</label>
                                             <select class="form-select" id="tax_type" name="tax_type">
                                                 <option value="" disabled selected>Seleccionar...</option>
-                                                <option value="Impuesto">Impuesto</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label" for="retention_type">Tipo de retención</label>
                                             <select class="form-select" id="retention_type" name="retention_type">
                                                 <option value="" disabled selected>Seleccionar...</option>
-                                                <option value="Retencion">Retención</option>
                                             </select>
                                         </div>
                                         <div class="col-12 text-end">
@@ -125,8 +121,12 @@ include '../data/consts.php';
 </div>
 <script>
 
+    document.addEventListener("DOMContentLoaded", function () {
+        cargarSelectsPrecios();
+    });
+
     document.getElementById("toggleEntities").addEventListener("change", function () {
-        document.getElementById("entitySection").style.display = this.checked ? "block" : "none";
+        document.getElementById("entity-productSection").style.display = this.checked ? "block" : "none";
     });
 
     document.getElementById("toggleImpuesto").addEventListener("change", function () {
@@ -136,18 +136,42 @@ include '../data/consts.php';
     let preciosEntidades = [];
 
     function agregarFilaPrecio() {
-        let entidad = document.getElementById("entity").value;
-        let precio = document.getElementById("entity_price").value;
-        let impuesto = document.getElementById("tax_type").value;
-        let retencion = document.getElementById("retention_type").value;
+        let entidadId = document.getElementById("entity-product").value;
+        let entidadNombre = document.getElementById("entity-product").selectedOptions[0].text;
 
-        preciosEntidades.push({ entidad, precio, impuesto, retencion });
+        let precio = document.getElementById("entity-product_price").value;
+
+        let impuestoId = document.getElementById("tax_type").value;
+        let impuestoNombre = document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
+
+        let retencionId = document.getElementById("retention_type").value;
+        let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
+
+        // Guardar en el array para futuras referencias
+        preciosEntidades.push({ entidadId, entidadNombre, precio, impuestoId, impuestoNombre, retencionId, retencionNombre });
+
+        // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
         let tabla = document.getElementById("tablaPreciosEntidades");
-        let fila = `<tr><td>${entidad}</td><td>${precio}</td><td>${impuesto}</td><td>${retencion}</td>
-                    <td><button class='btn btn-danger btn-sm' onclick='eliminarFila(${preciosEntidades.length - 1})'>Eliminar</button></td></tr>`;
+        let fila = `<tr>
+                    <td>${entidadNombre}</td>
+                    <td>${precio}</td>
+                    <td>${impuestoNombre}</td>
+                    <td>${retencionNombre}</td>
+                    <td>
+                        <button class='btn btn-danger btn-sm' onclick='eliminarFila(${preciosEntidades.length - 1})'>
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>`;
+
         tabla.innerHTML += fila;
-        document.getElementById("createProductEntidadForm").reset();
+
+        // Limpiar los campos después de agregar la fila
+        document.getElementById("entity-product_price").value = "";
+        document.getElementById("tax_type").value = "";
+        document.getElementById("retention_type").value = "";
     }
+
 
     function eliminarFila(index) {
         preciosEntidades.splice(index, 1);
@@ -164,9 +188,9 @@ include '../data/consts.php';
             attention_type: document.getElementById("attention_type").value,
             sale_price: document.getElementById("sale_price").value,
             copayment: document.getElementById("copago").value,
+            tax_charge_id: document.getElementById("taxProduct_type").value,
         };
-        
-        // impuesto: document.getElementById("taxProduct_type").value,
+
         // entities: preciosEntidades
         // Validación básica
         /* if (!productData.name || !productData.product_type_id) {

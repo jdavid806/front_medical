@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ExamTable } from './components/ExamTable';
 import { ExamForm } from './components/ExamForm';
 import { CustomModal } from '../components/CustomModal';
+import { CustomFormModal } from '../components/CustomFormModal';
 import { useExams } from './hooks/useExams';
 import { ExamResultsForm } from './components/ExamResultsForm';
 
@@ -58,13 +59,14 @@ const ExamApp: React.FC = () => {
                 exams={exams}
                 onLoadExamResults={handleLoadExamResults}>
             </ExamTable>
-            <CustomModal
+            <CustomFormModal
+                formId={'createExam'}
                 show={showFormModal}
                 onHide={handleHideFormModal}
                 title='Crear Exámenes'
             >
-                <ExamForm onSave={handleSave} onCancel={handleHideFormModal}></ExamForm>
-            </CustomModal>
+                <ExamForm></ExamForm>
+            </CustomFormModal>
             <CustomModal
                 show={showResultsFormModal}
                 onHide={handleHideResultsFormModal}

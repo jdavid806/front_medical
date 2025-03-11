@@ -28,6 +28,11 @@ include '../data/mocks.php';
                                 </div>
                             </div>
                         </div>
+
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <label for="isDoctor">¿Es medico?</label>
+                            <input class="mt-1" type="checkbox" id="isDoctor" name="isDoctor">
+                        </div>
                     </div>
                     <div class="col-md-6 mb-1">
                         <div class="card">

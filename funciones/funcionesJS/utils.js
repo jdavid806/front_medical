@@ -258,3 +258,24 @@ function convertirHtmlAWhatsapp(html) {
     .replace(/<p>(.*?)<\/p>/gi, "$1\n\n") // Párrafos con doble salto de línea
     .replace(/<[^>]+>/g, ""); // Elimina cualquier otra etiqueta HTML
 }
+
+function cargarSelect(id, datos, placeholder) {
+  const select = document.getElementById(id);
+  select.innerHTML = "";
+
+  // Agregar opción por defecto
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = placeholder;
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
+  // Agregar opciones desde los datos
+  for (const item of datos) {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = item.name;
+    select.appendChild(option);
+  }
+}

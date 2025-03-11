@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nuevo Paquete</h5>
+                <h5 class="modal-title">Nuevo paquete</h5>
                 <button class="btn btn-close p-1" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -145,15 +145,15 @@
                                                 </select>
                                             </div>
                                             <div class="mt-3" style="display: none;" id="divIncapacidad">
-                                                <?php include "../Incapacidades/formIncapacidad.php" ?>
+                                                <?php include "../Incapacidades/formIncapacidad.php"?>
                                             </div>
-
+                                            <div id="divRemision">
+                                                <?php include "../react-dist/remissions/RemissionsForm.js" ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mt-3" id="divRemision">
-                                    <div id="formRemision"></div>
-                                </div>
+
                             </div>
                         </div>
                         <div class="wizard-step" data-step="2">
@@ -229,18 +229,7 @@
         display: block;
     }
 </style>
-
-<script type="module">
-    import React from "react"
-    import ReactDOMClient from "react-dom/client"
-    import {
-        remissionsForm
-    } from './react-dist/remissions/RemissionsForm.js';
-
-    ReactDOMClient.createRoot(document.getElementById('formRemision')).render(React.createElement(remissionsForm));
-</script>
-
-<script>
+<!-- <script>
     let currentStep = 1;
 
     const updateWizard = () => {
@@ -600,10 +589,6 @@
 
         // Función para manejar el evento click del botón guardar
         document.getElementById('nextStep').addEventListener('click', function() {
-            const diasIncapacidad = document.getElementById('dias').value;
-            const hastaIncapacidad = document.getElementById('hasta').value;
-            const motivoIncapacidad = document.getElementById('reason').value;
-            // console.log("dias inc:", diasIncapacidad);
             // Capturo los valores de los campos individuales
             const nombrePaquete = document.getElementById('nombrePaquete').value.trim();
             const cupsCie = document.getElementById('CupsCie').value;
@@ -624,10 +609,7 @@
                 medicamentos: medicamentosSeleccionados,
                 examenes: examenesSeleccionados,
                 vacunas: vacunasSeleccionadas,
-                insumos: insumosSeleccionados,
-                diasIncapacidad: diasIncapacidad,
-                hastaIncapacidad: hastaIncapacidad,
-                motivoIncapacidad: motivoIncapacidad
+                insumos: insumosSeleccionados
             };
 
             // Mostrar todos los elementos seleccionados
@@ -709,7 +691,6 @@
         document.getElementById('checkVacunas').addEventListener('change', controlarVisibilidadSelectores);
         document.getElementById('checkInsumos').addEventListener('change', controlarVisibilidadSelectores);
         document.getElementById('checkIncapacidad').addEventListener('change', controlarVisibilidadSelectores);
-        document.getElementById('checkRemision').addEventListener('change', controlarVisibilidadSelectores);
     });
 
 
@@ -738,7 +719,7 @@
     const checkVacunas = document.getElementById('checkVacunas');
     const checkInsumos = document.getElementById('checkInsumos');
     const checkIncapacidad = document.getElementById('checkIncapacidad');
-    const checkRemision = document.getElementById('checkRemision');
+    // const checkRemision = document.getElementById('checkRemision');
 
     function controlarVisibilidadSelectores() {
         // Obtenemos el elemento contenedor principal
@@ -750,7 +731,6 @@
         const estadoVacunas = document.getElementById('checkVacunas').checked;
         const estadoInsumos = document.getElementById('checkInsumos').checked;
         const estadoIncapacidad = document.getElementById('checkIncapacidad').checked;
-        const estadoRemision = document.getElementById('checkRemision').checked;
 
         // Obtenemos los divs que contienen los selectores
         const divMedicamentos = document.getElementById('divSelectMedicamentos');
@@ -758,13 +738,10 @@
         const divVacunas = document.getElementById('divSelectVacunas');
         const divInsumos = document.getElementById('divSelecInsumos');
         const divIncapacidad = document.getElementById('divIncapacidad');
-        const divRemision = document.getElementById('divRemision');
 
         // Verificamos si al menos un switch está activado para mostrar u ocultar el card principal
-        const alMenosUnoActivado = estadoMedicamentos || estadoExamenes || estadoVacunas || estadoInsumos || estadoIncapacidad || estadoRemision;
+        const alMenosUnoActivado = estadoMedicamentos || estadoExamenes || estadoVacunas || estadoInsumos || estadoIncapacidad;
         divSelects.style.display = alMenosUnoActivado ? 'block' : 'none';
-        // const remisionActivo = estadoRemision;
-        // divRemision = remisionActivo ? 'block' : 'none';
 
         // Controlamos la visibilidad de cada div según el estado de su switch correspondiente
         divMedicamentos.style.display = estadoMedicamentos ? 'block' : 'none';
@@ -772,7 +749,6 @@
         divVacunas.style.display = estadoVacunas ? 'block' : 'none';
         divInsumos.style.display = estadoInsumos ? 'block' : 'none';
         divIncapacidad.style.display = estadoIncapacidad ? 'block' : 'none';
-        divRemision.style.display = estadoRemision ? 'block' : 'none';
 
     }
 
@@ -1379,27 +1355,6 @@
         `;
         }
 
-        // Agregar incapacidad si existen
-        if (datosPaquete.diasIncapacidad && datosPaquete.diasIncapacidad.length > 0) {
-            contenidoResumen += `
-            <div style="margin-bottom: 15px;">
-                <strong>Incapacidad:</strong>
-                <ul style="margin-top: 5px; padding-left: 20px;">
-                <li>Dias:${diasIncapacidad}</li>
-                <li>Hasta:${hastaIncapacidad}</li>
-        `;
-
-            datosPaquete.insumos.forEach(ins => {
-                const cantidad = insumosConCantidad[ins] || 0;
-                contenidoResumen += `<li>${ins} - Cantidad: ${cantidad}</li>`;
-            });
-
-            contenidoResumen += `
-                </ul>
-            </div>
-        `;
-        }
-
         contenidoResumen += `</div>`;
 
         Swal.fire({
@@ -1423,4 +1378,4 @@
         console.log('Vacunas con cantidades:', vacunasConCantidad);
         console.log('Insumos con cantidades:', insumosConCantidad);
     });
-</script>
+</script> -->
