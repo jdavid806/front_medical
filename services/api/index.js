@@ -30,6 +30,7 @@ import { PaymentMethodService } from './classes/paymentMethodService.js';
 import { ClinicalRecordTypeService } from './classes/clinicalRecordTypeService.js';
 import { SuppliesService } from './classes/suppliesService.js';
 import DepartmentService from './classes/departmentService.js';
+import { PackagesService } from './classes/packagesService.js';
 
 export const authService = new AuthService('api/auth');
 
@@ -128,3 +129,5 @@ export const clinicalRecordTypeService = new ClinicalRecordTypeService('medical'
 /* Entrega de Medicamentos e Insumos */
 export const suppliesService = new SuppliesService('api/v1/admin');
 export const farmaciaService = new FarmaciaService('medical');
+
+export const packagesService = new PackagesService('api/v1/admin');

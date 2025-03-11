@@ -98,7 +98,7 @@ include "../header.php";
 
 
 
-            <!-- <div class="col-md-5 col-lg-5 col-xl-4">
+                <!-- <div class="col-md-5 col-lg-5 col-xl-4">
                 <div class="sticky-leads-sidebar">
                     <div class="lead-details-offcanvas bg-body scrollbar phoenix-offcanvas phoenix-offcanvas-fixed"
                         id="productFilterColumn">
@@ -171,61 +171,61 @@ include "../header.php";
                 </div>
             </div> -->
 
-            <div class="col-md-12 col-lg-12 col-xl-12">
-                <div>
-                    <div class="container">
-                        <div class="row align-items-center">
-                            <div class="col-6">
-                                <div class="timer">
-                                    Tiempo en consulta: <span id="timer">00:00:00</span>
-                                    <script>
-                                        let start = new Date().getTime();
-                                        setInterval(function() {
-                                            let now = new Date().getTime();
-                                            let diff = (now - start) / 1000;
-                                            let minutes = Math.floor(diff / 60);
-                                            let seconds = Math.floor(diff % 60);
-                                            document.getElementById("timer").innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                                        }, 1000);
-                                    </script>
+                <div class="col-md-12 col-lg-12 col-xl-12">
+                    <div>
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-6">
+                                    <div class="timer">
+                                        <!-- Tiempo en consulta: <span id="timer">00:00:00</span> -->
+                                        <script>
+                                            let start = new Date().getTime();
+                                            setInterval(function() {
+                                                let now = new Date().getTime();
+                                                let diff = (now - start) / 1000;
+                                                let minutes = Math.floor(diff / 60);
+                                                let seconds = Math.floor(diff % 60);
+                                                // document.getElementById("timer").innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                                            }, 1000);
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <a href="consultas?1" class="btn btn-danger" id="cancelBtn">Cancelar consulta</a>
+                                </div>
+                                <div class="col-3">
+                                    <button class="btn btn-primary" id="finishBtn" type="button" data-bs-toggle="modal"
+                                        data-bs-target="#finishModal">Terminar consulta</button>
                                 </div>
                             </div>
-                            <div class="col-3">
-                                <a href="consultas?1" class="btn btn-danger" id="cancelBtn">Cancelar consulta</a>
-                            </div>
-                            <div class="col-3">
-                                <button class="btn btn-primary" id="finishBtn" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#finishModal">Terminar consulta</button>
-                            </div>
                         </div>
+
                     </div>
-
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
-<!-- <script src="vendors/tinymce/tinymce.min.js"></script> -->
-<?php include "../footer.php";
-include "./modalDetallePaciente.php";
-include "./modalAntecedenteNecesario.php";
-include "../Incapacidades/modalIncapacidad.php";
-include "../Recetas/modalReceta.php";
-include "../Paraclinicos/modalParaclinico.php";
-include "../Remisiones/modalRemisiones.php";
-include "./modalTerminarConsulta.php";
+    <!-- <script src="vendors/tinymce/tinymce.min.js"></script> -->
+    <?php include "../footer.php";
+    include "./modalDetallePaciente.php";
+    include "./modalAntecedenteNecesario.php";
+    include "../Incapacidades/modalIncapacidad.php";
+    include "../Recetas/modalReceta.php";
+    include "../Paraclinicos/modalParaclinico.php";
+    include "../Remisiones/modalRemisiones.php";
+    include "./modalTerminarConsulta.php";
 
-?>
-<script type="module" src="Consultas/scripts/form.js"></script>
-<script>
-    // document.getElementById("mostrarFormulario").addEventListener("click", function () {
-    //     var formulario = document.getElementById("formularioPrescripciones");
-    //     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
-    // });    
-</script>
+    ?>
+    <script type="module" src="Consultas/scripts/form.js"></script>
+    <script>
+        // document.getElementById("mostrarFormulario").addEventListener("click", function () {
+        //     var formulario = document.getElementById("formularioPrescripciones");
+        //     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
+        // });    
+    </script>
 
-<!-- <script>
+    <!-- <script>
     let formValues = {};
     document.addEventListener("DOMContentLoaded", async function () {
         const params = new URLSearchParams(window.location.search);
@@ -481,125 +481,125 @@ include "./modalTerminarConsulta.php";
 }
 </script> -->
 
-<style>
-    .profile-img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #ddd;
-    }
-
-    video {
-        display: none;
-        width: 100%;
-        max-width: 300px;
-        border-radius: 10px;
-        border: 2px solid #ddd;
-    }
-
-    .steps-container {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-    }
-
-    .steps {
-        list-style: none;
-        display: flex;
-        justify-content: space-between;
-        padding: 0;
-        margin: 0;
-    }
-
-    .step {
-        text-align: center;
-        position: relative;
-        flex: 1;
-    }
-
-    .step-number {
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        line-height: 30px;
-        border-radius: 50%;
-        background-color: #e9ecef;
-        color: #0d6efd;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-
-    .step.active .step-number {
-        background-color: #0d6efd;
-        color: #fff;
-    }
-
-    .wizard-step {
-        display: none;
-    }
-
-    .wizard-step.active {
-        display: block;
-    }
-</style>
-
-<script type="module">
-    import React from "react"
-    import ReactDOMClient from "react-dom/client"
-    import {
-        PastMedicalHistoryForm
-    } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
-
-    ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
-        onFinishSave: () => {
-            validatePastMedicalHistory();
+    <style>
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
         }
-    }));
 
-    async function validatePastMedicalHistory() {
-        const antecedentes = await clinicalRecordService.ofParentByType(
-            "PAST_MEDICAL_HISTORY",
-            patientId
-        );
-
-        if (antecedentes.length === 0) {
-            const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
-            modal.show();
-            document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
-                const antecedentes2 = await clinicalRecordService.ofParentByType(
-                    "PAST_MEDICAL_HISTORY",
-                    patientId
-                );
-                if (antecedentes2.length === 0) {
-                    modal.show();
-                }
-            });
+        video {
+            display: none;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
         }
-    }
 
-    validatePastMedicalHistory()
-</script>
-
-<script type="module">
-    import {
-        appointmentService,
-        patientService,
-        clinicalRecordService
-    } from "../../services/api/index.js";
-    import {
-        formatDate
-    } from "../../services/utilidades.js";
-
-    const patientId = new URLSearchParams(window.location.search).get('patient_id');
-    const patientPromise = patientService.get(patientId);
-
-    const [patient] = await Promise.all([patientPromise]);
-
-    document.querySelectorAll('.patientName').forEach(element => {
-        element.textContent = `${patient.first_name} ${patient.last_name}`;
-        if (element.tagName === 'A') {
-            element.href = `verPaciente?id=${patient.id}`
+        .steps-container {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
         }
-    })
-</script>
+
+        .steps {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #0d6efd;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .step.active .step-number {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+        .wizard-step {
+            display: none;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+    </style>
+
+    <script type="module">
+        import React from "react"
+        import ReactDOMClient from "react-dom/client"
+        import {
+            PastMedicalHistoryForm
+        } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
+
+        ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
+            onFinishSave: () => {
+                validatePastMedicalHistory();
+            }
+        }));
+
+        async function validatePastMedicalHistory() {
+            const antecedentes = await clinicalRecordService.ofParentByType(
+                "PAST_MEDICAL_HISTORY",
+                patientId
+            );
+
+            if (antecedentes.length === 0) {
+                const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
+                modal.show();
+                document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
+                    const antecedentes2 = await clinicalRecordService.ofParentByType(
+                        "PAST_MEDICAL_HISTORY",
+                        patientId
+                    );
+                    if (antecedentes2.length === 0) {
+                        modal.show();
+                    }
+                });
+            }
+        }
+
+        validatePastMedicalHistory()
+    </script>
+
+    <script type="module">
+        import {
+            appointmentService,
+            patientService,
+            clinicalRecordService
+        } from "../../services/api/index.js";
+        import {
+            formatDate
+        } from "../../services/utilidades.js";
+
+        const patientId = new URLSearchParams(window.location.search).get('patient_id');
+        const patientPromise = patientService.get(patientId);
+
+        const [patient] = await Promise.all([patientPromise]);
+
+        document.querySelectorAll('.patientName').forEach(element => {
+            element.textContent = `${patient.first_name} ${patient.last_name}`;
+            if (element.tagName === 'A') {
+                element.href = `verPaciente?id=${patient.id}`
+            }
+        })
+    </script>

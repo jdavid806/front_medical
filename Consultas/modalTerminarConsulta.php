@@ -111,24 +111,13 @@ include "../ConsultasJson/dataPaciente.php";
         <p class="fs-9 text-danger">Antes de finalizar la consulta por favor complete la siguiente información:</p>
 
         <!-- Sección: Motivo & Observaciones de la consulta -->
-        <h6 class="mb-3">observaciones y diagnosticos sugeridos</h6>
         <form class="needs-validation" novalidate>
-          <div class="form-floating mb-3">
-            <textarea required class="form-control" id="motivo" rows="3"></textarea>
-            <label for="motivo">Observaciones</label>
-            <div class="invalid-feedback">Por favor llene el motivo de consulta.</div>
-          </div>
-
           <!-- Sección: RIPS -->
           <h6 class="mt-4 mb-3">RIPS</h6>
           <div class="mb-2">
             <label class="form-check-label" for="gneraRipsCheck">Generar Rips</label>
-            <div class="form-check form-switch mb-2">
-              <input class="form-check-input" id="gneraRipsCheck"
-                onchange="setupToggleSwitch('gneraRipsCheck', ['generarRips']);" type="checkbox" />
-            </div>
 
-            <div id="generarRips" class="d-none">
+            <div id="generarRips">
 
               <!-- <div class="form-floating mb-3">
                 <select class="form-select" id="tipoRip" required>
@@ -246,14 +235,42 @@ include "../ConsultasJson/dataPaciente.php";
                 <input type="text" class="form-control" id="numeroAutorizacion" placeholder="Número de autorización">
                 <label for="numeroAutorizacion">Número de autorización</label>
               </div> -->
+              <h6 class="mb-3">observaciones y diagnosticos sugeridos</h6>
+              <div class="form-floating mb-3">
+                <textarea required class="form-control" id="motivo" rows="3"></textarea>
+                <label for="motivo">Observaciones</label>
+                <div class="invalid-feedback">Por favor llene el motivo de consulta.</div>
+              </div>
         </form>
       </div>
     </div>
 
     <div class="modal-footer d-flex justify-content-between">
-      <span class="timer text-danger">Tiempo en consulta: <input type="text text-primary" id="modalTimer"
-          class="form-control-plaintext" readonly value="00:00:00"></span>
+      <!-- <span class="timer text-danger">Tiempo en consulta: <span id="modalTimerDisplay">00:00:00</span></span> -->
       <div>
+        <script>
+          let startTime = 0;
+          let intervalId = 0;
+
+          function startTimer() {
+            startTime = Date.now();
+            intervalId = setInterval(function() {
+              const elapsedTime = Date.now() - startTime;
+              const h = Math.floor(elapsedTime / 1000 / 60 / 60);
+              const m = Math.floor(elapsedTime / 1000 / 60) % 60;
+              const s = Math.floor(elapsedTime / 1000) % 60;
+              // document.getElementById('modalTimerDisplay').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }, 1000);
+          }
+
+          function stopTimer() {
+            clearInterval(intervalId);
+          }
+
+          document.addEventListener('DOMContentLoaded', function() {
+            startTimer();
+          });
+        </script>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
         <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar</button>
       </div>
@@ -318,6 +335,9 @@ include "../ConsultasJson/dataPaciente.php";
   import {
     ExamForm
   } from './react-dist/exams/components/ExamForm.js';
+  import {
+    packagesService
+  } from "./services/api/index.js";
 
   ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
     formId: 'createPrescription',
@@ -331,4 +351,7 @@ include "../ConsultasJson/dataPaciente.php";
   document.getElementById('finalizarConsulta').addEventListener('click', function() {
 
   });
+
+  const packages = await packagesService.getAllPackages();
+  console.log('Paquetes', packages);
 </script>

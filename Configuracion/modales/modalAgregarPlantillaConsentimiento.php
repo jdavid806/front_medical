@@ -53,7 +53,7 @@
 
       const productId = document.getElementById('consent_id')?.value;
       const productData = {
-        tenant_id: 0,
+        tenant_id: "1",
         title: document.getElementById("titulo-plantilla").value,
         template,
       };

@@ -1385,14 +1385,15 @@
             <div style="margin-bottom: 15px;">
                 <strong>Incapacidad:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
-                <li>Dias:${diasIncapacidad}</li>
-                <li>Hasta:${hastaIncapacidad}</li>
+                <li>Dias: ${datosPaquete.diasIncapacidad}</li>
+                <li>Hasta: ${datosPaquete.hastaIncapacidad}</li>
+                <li>Motivo: ${datosPaquete.motivoIncapacidad}</li>
         `;
 
-            datosPaquete.insumos.forEach(ins => {
-                const cantidad = insumosConCantidad[ins] || 0;
-                contenidoResumen += `<li>${ins} - Cantidad: ${cantidad}</li>`;
-            });
+            // datosPaquete.insumos.forEach(ins => {
+            //     const cantidad = insumosConCantidad[ins] || 0;
+            //     contenidoResumen += `<li>${ins} - Cantidad: ${cantidad}</li>`;
+            // });
 
             contenidoResumen += `
                 </ul>
