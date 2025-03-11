@@ -3,17 +3,21 @@ import { ConfigColumns } from 'datatables.net-bs5';
 import CustomDataTable from '../../components/CustomDataTable';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { TableBasicActions } from '../../components/TableBasicActions';
-import { PatientClinicalRecordDto, PatientClinicalRecordsTableItem } from '../../models/models';
+import { PatientClinicalRecordDto } from '../../models/models';
 import { SeeDetailTableAction } from '../../components/table-actions/SeeDetailTableAction';
 import { RequestCancellationTableAction } from '../../components/table-actions/RequestCancellationTableAction';
 import { PrintTableAction } from '../../components/table-actions/PrintTableAction';
 import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
+import { ShareTableAction } from '../../components/table-actions/ShareTableAction';
+import TableActionsWrapper from '../../components/table-actions/TableActionsWrapper';
+import { clinicalRecordStateColors, clinicalRecordStates } from '../../../services/commons';
 
-type PatientClinicalRecordItem = {
+interface PatientClinicalRecordsTableItem {
     id: string
-    patientName: string
-    diagnosis: string
+    clinicalRecordName: string
+    doctorName: string
+    description: string
+    status: string
 }
 
 type PatientClinicalRecordsTableProps = {
@@ -29,67 +33,54 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
     const [tableRecords, setTableRecords] = useState<PatientClinicalRecordsTableItem[]>([]);
 
     useEffect(() => {
-        const mappedRecords: PatientClinicalRecordsTableItem[] = records.map(record => {
+        const mappedRecords: PatientClinicalRecordsTableItem[] = records.map(clinicalRecord => {
             return {
-                id: record.id,
-                status: record.clinical_record_type.id
+                id: clinicalRecord.id,
+                clinicalRecordName: clinicalRecord.clinical_record_type.name,
+                description: clinicalRecord.description || '--',
+                doctorName: clinicalRecord.created_by_user_id,
+                status: clinicalRecord.clinical_record_type_id
             }
         })
         setTableRecords(mappedRecords);
     }, [records])
 
     const columns: ConfigColumns[] = [
-        { data: 'patientName' },
-        { data: 'diagnosis' },
+        { data: 'clinicalRecordName' },
+        { data: 'doctorName' },
+        { data: 'description' },
+        { data: 'status' },
         { orderable: false, searchable: false }
     ]
 
     const slots = {
+        3: (cell, data: PatientClinicalRecordsTableItem) => (
+            <span
+                className={`badge badge-phoenix badge-phoenix-${clinicalRecordStates[data.status]}`}
+            >
+                {clinicalRecordStateColors[data.status]}
+            </span>
+        ),
         4: (cell, data: PatientClinicalRecordsTableItem) => (
             <div className="text-end align-middle">
-                <div className="dropdown">
-                    <button
-                        className="btn btn-primary dropdown-toggle"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        <i data-feather="settings"></i> Acciones
-                    </button>
-                    <ul className="dropdown-menu" style={{ zIndex: 10000 }}>
+                <TableActionsWrapper>
+                    <SeeDetailTableAction onTrigger={() => onSeeDetail(data.id)} />
 
-                        <SeeDetailTableAction onTrigger={() => onSeeDetail(data.id)} />
-                        {data.status === 'approved' && (
-                            <RequestCancellationTableAction onTrigger={() => onCancelItem(data.id)} />
-                        )}
-                        <PrintTableAction onTrigger={() => onPrintItem(data.id)} />
-                        <DownloadTableAction onTrigger={() => onDownloadItem(data.id)} />
-                        <li>
-                            <hr className="dropdown-divider" />
-                        </li>
-                        <li className="dropdown-header">Compartir</li>
-                        <li>
-                            <a className="dropdown-item"
-                                href="#"
-                                onClick={() => onShareItem(data.id, 'whatsapp')}>
-                                <div className="d-flex gap-2 align-items-center">
-                                    <i className="fa-brands fa-whatsapp" style={{ width: '20px' }}></i>
-                                    <span>Compartir por Whatsapp</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a className="dropdown-item"
-                                href="#"
-                                onClick={() => onShareItem(data.id, 'email')}>
-                                <div className="d-flex gap-2 align-items-center">
-                                    <i className="fa-solid fa-envelope" style={{ width: '20px' }}></i>
-                                    <span>Compartir por Correo</span>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                    {data.status === 'approved' && (
+                        <RequestCancellationTableAction onTrigger={() => onCancelItem(data.id)} />
+                    )}
+
+                    <PrintTableAction onTrigger={() => onPrintItem(data.id)} />
+                    <DownloadTableAction onTrigger={() => onDownloadItem(data.id)} />
+
+                    <li>
+                        <hr className="dropdown-divider" />
+                    </li>
+                    <li className="dropdown-header">Compartir</li>
+
+                    <ShareTableAction shareType='whatsapp' onTrigger={() => onShareItem(data.id, 'whatsapp')} />
+                    <ShareTableAction shareType='email' onTrigger={() => onShareItem(data.id, 'email')} />
+                </TableActionsWrapper>
             </div>
         )
     }

@@ -414,8 +414,3 @@ interface ClinicalRecordTypeDto {
     updated_at: string;
     key_: string | null;
 }
-
-export interface PatientClinicalRecordsTableItem {
-    id: string
-    status: string
-}

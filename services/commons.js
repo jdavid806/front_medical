@@ -103,3 +103,15 @@ export const examOrderStateColors = {
     'generated': 'warning',
     'uploaded': 'success'
 }
+
+export const clinicalRecordStates = {
+    'cancellation_request_pending': 'Solicitud de cancelación pendiente',
+    'cancellation_request_rejected': 'Solicitud de cancelación rechazada',
+    'cancellation_request_approved': 'Solicitud de cancelación aprobada'
+}
+
+export const clinicalRecordStateColors = {
+    'cancellation_request_pending': 'warning',
+    'cancellation_request_rejected': 'danger',
+    'cancellation_request_approved': 'info'
+}

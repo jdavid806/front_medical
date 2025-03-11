@@ -1888,8 +1888,9 @@ include '../modals/NewCompanionModal.php';
             dataPaymentMthods.push(rowData);
         }
 
+        console.log(globalAdmission);
         const requestData = {
-            "admission": [{
+            "admission": {
                 "user_id": 1,
                 "admission_type_id": globalAdmission.id,
                 "authorization_number": entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
@@ -1900,7 +1901,7 @@ include '../modals/NewCompanionModal.php';
                 "new_invoice_id": null,
                 "copayment": true,
                 "moderator_fee": false
-            }],
+            },
             "invoice": {
                 "user_id": 1,
                 "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),

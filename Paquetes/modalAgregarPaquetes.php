@@ -79,10 +79,22 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6 mt-3">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" id="isCodeChecked" type="checkbox" />
-                                        <label class="form-check-label" for="isCodeChecked">Consultar por codigo</label>
+
+                                <div class="col-6" style="display: none;" id="divCodeCup">
+                                    <div class="input-group mt-3">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="codeCup" placeholder="Ingrese el código" oninput="queryCups()" />
+                                            <label for="codeCup" class="form-label">Código cup</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6" style="display: none;" id="divCodeCie">
+                                    <div class="input-group mt-3">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="codeCie" placeholder="Ingrese el código" oninput="queryCie()" />
+                                            <label for="codeCie" class="form-label">Código Cie11</label>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -584,6 +596,8 @@
         const selectCupsCie = document.getElementById('CupsCie');
         const divCie = document.getElementById('divCie');
         const divCups = document.getElementById('divCups');
+        const divCodeCup = document.getElementById('divCodeCup');
+        const divCodeCie = document.getElementById('divCodeCie');
         const selectCie = document.getElementById('selectCie');
         const selectCups = document.getElementById('selectCups');
         const nextStep = document.getElementById('nextStep');
@@ -591,19 +605,13 @@
         console.log("Nota remision", notaRem);
 
         selectCupsCie.addEventListener('change', function() {
-            divCie.style.display = 'none';
-            divCups.style.display = 'none';
 
             if (this.value === 'cie11') {
-                divCie.style.display = 'block';
-                selectCie.required = true;
-                selectCups.required = false;
-                selectCups.value = "";
+                divCodeCie.style.display = 'block';
+                divCodeCup.style.display = 'none';
             } else if (this.value === 'cups') {
-                divCups.style.display = 'block';
-                selectCups.required = true;
-                selectCie.required = false;
-                selectCie.value = "";
+                divCodeCup.style.display = 'block';
+                divCodeCie.style.display = 'none';
             }
         });
 
@@ -1455,4 +1463,12 @@
         console.log('Vacunas con cantidades:', vacunasConCantidad);
         console.log('Insumos con cantidades:', insumosConCantidad);
     });
+
+    function queryCups() {
+        console.log("hola");
+    }
+
+    function queryCie() {
+        console.log("hola");
+    }
 </script>

@@ -24,11 +24,11 @@ include "../header.php";
                             <i class="fas fa-ticket-alt"></i> Turnos
                         </a>
                     </li>
-                    <li class="nav-item" role="presentation">
+                    <!-- <li class="nav-item" role="presentation">
                         <a class="nav-link" id="turnosConfiguracion-tab" data-bs-toggle="tab" href="#turnosConfiguracion" role="tab">
                             <i class="fas fa-cog"></i> Configuración
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
                 <div class="tab-content mt-3" id="turnosTabsContent">
                     <div class="tab-pane fade show active" id="turnos" role="tabpanel">
@@ -37,9 +37,9 @@ include "../header.php";
                     <div class="tab-pane fade" id="turnosGestion" role="tabpanel">
                         <div id="gestionarTicketsReact"></div>
                     </div>
-                    <div class="tab-pane fade" id="turnosConfiguracion" role="tabpanel">
+                    <!-- <div class="tab-pane fade" id="turnosConfiguracion" role="tabpanel">
                         <div id="gestionarModulosReact"></div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -55,13 +55,13 @@ include "../header.php";
     import {
         TicketApp
     } from './react-dist/tickets/TicketApp.js';
-    import {
-        ModuleApp
-    } from './react-dist/modules/ModuleApp.js';
+    // import {
+    //     ModuleApp
+    // } from './react-dist/modules/ModuleApp.js';
 
     ReactDOMClient.createRoot(document.getElementById('generateTicketReact')).render(React.createElement(GenerateTicket));
     ReactDOMClient.createRoot(document.getElementById('gestionarTicketsReact')).render(React.createElement(TicketApp));
-    ReactDOMClient.createRoot(document.getElementById('gestionarModulosReact')).render(React.createElement(ModuleApp));
+    // ReactDOMClient.createRoot(document.getElementById('gestionarModulosReact')).render(React.createElement(ModuleApp));
 </script>
 
 <?php

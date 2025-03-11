@@ -37,29 +37,27 @@ include "../header.php";
                         </button>
 
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalSolicitarInsumoAdministrativo">Administrativo</a>
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoAdmin">Administrativo</a>
 
-                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalSolicitarInsumoProcedimiento">Procedimiento</a>
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoProcedimiento">Procedimiento</a>
 
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <!-- Tabla de productos -->
-                    <div class="col-lg-8">
+                    <!-- Tabla de insumos -->
+                    <div class="col-lg-12">
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                     <tr class="bg-body-highlight">
-                                        <th class="ps-3">Tipo</th>
-                                        <th>Insumos</th>
-                                        <th class="text-end">Observaciones</th>
-                                        <th class="text-end pe-3">Acciones</th>
+                                        <th class="text-center">Tipo</th>
+                                        <th class="text-center" style="width: 35%;">Insumos</th>
+                                        <th class="text-center" style="width: 35%;">Observaciones</th>
+                                        <th class="text-center" style="width: 10%;">Estado</th>
                                     </tr>
                                 </thead>
-                                <tbody class="list">
-                                    <!-- Aquí irían las filas de la tabla -->
-                                </tbody>
+                                <tbody class="list"></tbody>
                             </table>
 
                             <!-- 🔹 Controles de paginación -->
@@ -71,59 +69,93 @@ include "../header.php";
                         </div>
                     </div>
 
-
-                    <!-- <div class="col-lg-4">
-                        <div class="card animated-card">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <img id="vacunaImage" src="https://via.placeholder.com/200x150"
-                                        alt="Imagen de Vacuna" class="img-fluid rounded"
-                                        style="width: 100%; max-width: 200px; height: auto;">
-                                </div>
-                                <h4 class="card-title">Selecciona un producto</h4>
-                                <div class="card-content">
-                                    <p><strong>Tipo:</strong> <span id="tipoProducto">-</span></p>
-                                    <p><strong>Stock:</strong> <span id="stockProducto">-</span></p>
-                                    <p><strong>Precio:</strong> <span id="precioProducto">-</span></p>
-                                </div>
-                                <button class="btn btn-sm btn-primary ver-detalle" type="button"
-                                    data-bs-toggle="modal" data-bs-target="#infoModal" data-id="${product.id}">
-                                    Ver más
-                                </button>
-
-                            </div>
-                        </div>
-                    </div> -->
-
-
                 </div>
 
-            </div>
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card h-100 animated-card">
-                        <div class="card-body">
-                            <div class="text-center mb-3">
-                                <h4>Los siguientes productos se encuentran próximos a caducar o se encuentran caducados
-                                </h4>
-                            </div>
-                            <ul id="" class="list-group">
-                                <!-- Aquí se agregarán los productos dinámicamente -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- <script type="module" src="Inventario/js/inventarioGeneral.js"></script> -->
 
+<script>
+    const insumos = [{
+            tipo: "Administrativo",
+            insumos: ["Papelería", "Carpetas", "Bolígrafo"],
+            observaciones: "Material de oficina para el departamento administrativo",
+            estado: "enviada"
+        },
+        {
+            tipo: "Procedimiento",
+            insumos: ["Guantes", "Mascarillas", "Alcohol"],
+            observaciones: "Insumos para realizar procedimientos médicos",
+            estado: "aceptada"
+        },
+        {
+            tipo: "Administrativo",
+            insumos: ["Toner", "Papel", "Carpetas"],
+            observaciones: "Suministros de oficina para el departamento de contabilidad",
+            estado: "rechazada"
+        },
+        {
+            tipo: "Procedimiento",
+            insumos: ["Jeringas", "Medicamentos", "Agujas"],
+            observaciones: "Material para procedimientos quirúrgicos",
+            estado: "enviada"
+        }
+    ];
+
+
+    // Llenar la tabla con los datos del objeto
+    const tbody = document.querySelector('.list');
+
+    insumos.forEach(insumo => {
+        const tr = document.createElement('tr');
+
+        // Crear una lista de insumos
+        const insumosList = insumo.insumos.map(item => `<li>${item}</li>`).join("");
+
+        // Definir el badge según el estado
+        let badgeClass = "";
+        let badgeText = "";
+
+        switch (insumo.estado) {
+            case "enviada":
+                badgeClass = "badge-phoenix-primary";
+                badgeText = "Enviada";
+                break;
+            case "aceptada":
+                badgeClass = "badge-phoenix-success";
+                badgeText = "Aceptada";
+                break;
+            case "rechazada":
+                badgeClass = "badge-phoenix-danger";
+                badgeText = "Rechazada";
+                break;
+            default:
+                badgeClass = "badge-phoenix-secondary";
+                badgeText = insumo.estado.charAt(0).toUpperCase() + insumo.estado.slice(1);
+        }
+
+        tr.innerHTML = `
+        <td class="text-start">${insumo.tipo}</td>
+        <td class="text-start" style="min-width: 35%;"> 
+            <ul style="list-style-type: none; padding-left: 0;">
+                ${insumosList}
+            </ul>
+        </td>
+        <td class="text-start" style="min-width: 35%;">${insumo.observaciones}</td>
+        <td class="text-center" style="min-width: 10%;">
+            <span class="badge badge-phoenix ${badgeClass}">${badgeText}</span>
+        </td>
+    `;
+
+        tbody.appendChild(tr);
+    });
+</script>
 
 
 <?php include "../footer.php";
-// include "./modal/modalNuevoProducto.php";
+include "./modal/modalSolicitudAdmin.php";
+include "./modal/modalSolicitudProcedimiento.php";
 ?>

@@ -76,7 +76,7 @@ foreach ($estados as $estado) {
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    cursor: grab;
+    /* cursor: grab; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -477,7 +477,7 @@ foreach ($estados as $estado) {
     });
 
     // Inicializar Sortable en nuevas columnas
-    initializeSortable();
+    // initializeSortable();
   }
 
   // Función para agrupar admisiones
