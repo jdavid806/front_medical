@@ -360,7 +360,7 @@ include "../globalesMN.php";
         return;
       }
 
-      const apiUrl = "http://dev.medicalsoft.ai/api/auth/login";
+      const apiUrl = "http://dev.monaros.co/api/auth/login";
 
       fetch(apiUrl, {
         method: 'POST',
@@ -412,7 +412,7 @@ include "../globalesMN.php";
         return false;
       }
 
-      const baseUrl = "http://dev.medicalsoft.ai";
+      const baseUrl = "http://dev.monaros.co";
       const apiUrl = `${baseUrl}/api/create/tenant`;
 
       fetch(apiUrl, {

@@ -277,7 +277,7 @@ $_SESSION["ID"] = 1;
     }
   }
 </script>
-  <script>
+  <!-- <script>
     // Función para decodificar JWT
     function decodeJWT(token) {
       const parts = token.split('.');
@@ -331,7 +331,7 @@ $_SESSION["ID"] = 1;
 
     // Comprobamos si el usuario está autenticado antes de ejecutar cualquier otro código
     checkAuth();
-  </script>
+  </script> -->
 
 
 

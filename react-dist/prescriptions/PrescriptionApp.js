@@ -28,10 +28,17 @@ export const PrescriptionApp = () => {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const handleSubmit = async data => {
+    console.log(data);
+    const newData = {
+      user_id: 1,
+      patient_id: +((new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? 0),
+      medicines: data,
+      is_active: true
+    };
     if (prescription) {
-      await updatePrescription(prescription.id, data);
+      await updatePrescription(prescription.id, newData);
     } else {
-      await createPrescription(data);
+      await createPrescription(newData);
     }
     fetchPrescriptions();
     setShowPrescriptionModal(false);
@@ -66,19 +73,12 @@ export const PrescriptionApp = () => {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
-  }, "Recetas"), /*#__PURE__*/React.createElement("div", {
-    className: "text-end mb-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: ""
-  }, /*#__PURE__*/React.createElement("a", {
-    className: "btn btn-primary",
-    onClick: handleOnCreate
-  }, "Nueva Receta")))), /*#__PURE__*/React.createElement(PrescriptionTable, {
+  }, "Recetas")), /*#__PURE__*/React.createElement(PrescriptionTable, {
     prescriptions: prescriptions,
     onEditItem: handleTableEdit,
     onDeleteItem: handleTableDelete
   }), /*#__PURE__*/React.createElement(PrescriptionModal, {
-    title: prescription ? 'Editar exámen' : 'Crear exámen',
+    title: prescription ? 'Editar receta' : 'Crear receta',
     show: showPrescriptionModal,
     handleSubmit: handleSubmit,
     onHide: handleHidePrescriptionModal,

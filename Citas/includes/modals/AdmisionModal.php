@@ -981,6 +981,7 @@ include '../modals/NewCompanionModal.php';
         // Recorrer cada fila y agregarla a la tabla de resumen
         productRows.forEach((row, index) => {
             const cells = row.querySelectorAll('td');
+            console.log("cells:", cells);
 
             // Extraer los valores de la fila
             const productName = cells[0].textContent; // Nombre del producto
