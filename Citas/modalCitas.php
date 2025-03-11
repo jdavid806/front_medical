@@ -479,6 +479,7 @@ $externalCause = array(
   }
 
   function actualizarHorarios(availableBlocks, fechaSeleccionada) {
+    const fechaInput = document.getElementById("fechaCita");
     const horaSelect = document.getElementById("appointment_time");
     horaSelect.innerHTML = '<option value="">Seleccione la hora</option>';
 
@@ -514,7 +515,7 @@ $externalCause = array(
     });
 
     // Eliminar horas duplicadas
-    const uniqueOpciones = [];
+    let uniqueOpciones = [];
     const seenTimes = new Set();
     opciones.forEach((opcion) => {
       if (!seenTimes.has(opcion.time)) {
@@ -525,6 +526,21 @@ $externalCause = array(
 
     // Ordenar las horas
     uniqueOpciones.sort((a, b) => a.time.localeCompare(b.time));
+
+    // Obtener fecha local (sin UTC)
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Los meses son 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayDate = `${year}-${month}-${day}`;
+
+    // Obtener hora local
+    const currentTime = String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0');
+
+    if (fechaInput.value === todayDate) {
+      uniqueOpciones = uniqueOpciones.filter(opcion => opcion.time >= currentTime);
+    }
 
     // Llenar el select de horas
     uniqueOpciones.forEach((opcion) => {

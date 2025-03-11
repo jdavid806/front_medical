@@ -1,5 +1,4 @@
 async function cargarEspecialidades() {
-  console.log("Cargando especialidades...");
   let ruta = "http://dev.medicalsoft.ai/medical/specialties";
 
   try {

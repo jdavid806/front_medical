@@ -31,10 +31,21 @@ include "../header.php";
                 <div class="row mt-5">
                     <div class="col-md-12">
                         <h2 class="mb-3">Inventario General</h2>
-                        <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
+                        <!-- <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
                             data-bs-target="#modalNuevoProducto">
                             <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo producto
+                        </button> -->
+                        <button class="btn dropdown-toggle mb-4 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo producto
                         </button>
+
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevoMedicamento">Medicamento</a>
+
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevaVacuna">Vacuna</a>
+
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevoInsumo">Insumo</a>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -120,5 +131,8 @@ include "../header.php";
 
 <?php include "../footer.php";
 include "./modal/modalNuevoProducto.php";
+include "./modal/modalNuevoInsumo.php";
+include "./modal/modalNuevoMedicamento.php";
+include "./modal/modalNuevaVacuna.php";
 include "./modal/modalInformaciónProducto.php";
 ?>

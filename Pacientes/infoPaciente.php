@@ -144,6 +144,9 @@
 include "../Consultas/modalAntencedentes.php";
 include "../Consultas/modalInfoPacientes.php";
 ?>
+<?php
+include "./modalPacientes.php";
+?>
 
 <script type="module">
     import {

@@ -283,7 +283,6 @@ $consultasHistorico = [
                     ?>
                 </div>
                 <div class="col-8">
-
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3">
 
                         <?php foreach ($arrayCards as $key => $card) { ?>

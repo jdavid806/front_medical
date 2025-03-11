@@ -70,8 +70,8 @@ include "../header.php";
                         <div class="card animated-card">
                             <div class="card-body">
                                 <div class="text-center mb-3">
-                                    <img id="vacunaImage" src="https://via.placeholder.com/200x150"
-                                        alt="Imagen de Vacuna" class="img-fluid rounded"
+                                    <img id="insumoImage" src="https://via.placeholder.com/200x150"
+                                        alt="Imagen de Insumo" class="img-fluid rounded"
                                         style="width: 100%; max-width: 200px; height: auto;">
                                 </div>
                                 <h4 class="card-title">Selecciona un insumo</h4>

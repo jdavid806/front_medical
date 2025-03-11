@@ -450,7 +450,7 @@ require "./modals/editPartnerModal.php";
 
             </div>
           </div>
-          <input type="hidden" name="patient_id" value="<?php echo $_GET['patient_id'] ?? $_GET['id']; ?>">
+          <input type="hidden" id="modalPacientesPatientId" name="patient_id" value="<?php echo $_GET['patient_id'] ?? $_GET['id']; ?>">
         </form>
       </div>
 

@@ -43,31 +43,58 @@ document.getElementById('finishStep').addEventListener('click', function () {
         relationship: companion.relationship
     }));
 
+    const id = document.getElementById('modalPacientesPatientId').value;
+
     console.log("Datos a enviar:", data);
-
-    patientService.storePatient(data)
-        .then(() => {
-            AlertManager.success({
-                text: 'Se ha creado el registro exitosamente'
-            });
-
-            setTimeout(() => {
-                const modal = document.getElementById('modalCrearPaciente');
-                const modalInstance = bootstrap.Modal.getInstance(modal);
-                modalInstance.hide();
-
-                window.location.reload();
-            }, 4000);
-        })
-        .catch(err => {
-            if (err.data?.errors) {
-                AlertManager.formErrors(err.data.errors);
-            } else {
-                AlertManager.error({
-                    text: err.message || 'Ocurrió un error inesperado'
+    if (!id) {
+        patientService.storePatient(data)
+            .then(() => {
+                AlertManager.success({
+                    text: 'Se ha creado el registro exitosamente'
                 });
-            }
-        });
+
+                setTimeout(() => {
+                    const modal = document.getElementById('modalCrearPaciente');
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    modalInstance.hide();
+
+                    window.location.reload();
+                }, 4000);
+            })
+            .catch(err => {
+                if (err.data?.errors) {
+                    AlertManager.formErrors(err.data.errors);
+                } else {
+                    AlertManager.error({
+                        text: err.message || 'Ocurrió un error inesperado'
+                    });
+                }
+            });
+    } else {
+        patientService.update(id, data)
+            .then(() => {
+                AlertManager.success({
+                    text: 'Se ha actualizado el registro exitosamente'
+                });
+
+                setTimeout(() => {
+                    const modal = document.getElementById('modalCrearPaciente');
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    modalInstance.hide();
+
+                    window.location.reload();
+                }, 4000);
+            })
+            .catch(err => {
+                if (err.data?.errors) {
+                    AlertManager.formErrors(err.data.errors);
+                } else {
+                    AlertManager.error({
+                        text: err.message || 'Ocurrió un error inesperado'
+                    });
+                }
+            });
+    }
 });
 
 document.getElementById('saveCompanionButton').addEventListener('click', function () {

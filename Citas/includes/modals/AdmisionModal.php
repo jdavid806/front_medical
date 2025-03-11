@@ -972,7 +972,6 @@ include '../modals/NewCompanionModal.php';
     function syncTables() {
         const productsTableBody = document.getElementById('productsTableBody');
         const summaryTableBody = document.getElementById('summaryProductsTableBody');
-
         // Limpiar la tabla de resumen
         summaryTableBody.innerHTML = '';
 
@@ -1067,6 +1066,7 @@ include '../modals/NewCompanionModal.php';
             return;
         }
 
+        console.log(citaId);
         getAdmissionInfo(citaId);
     }
 
@@ -1431,7 +1431,7 @@ include '../modals/NewCompanionModal.php';
             clone.querySelector('#fecha-consulta').textContent = consulta.appointment_date;
             clone.querySelector('#hora-consulta').textContent = consulta.appointment_time;
             clone.querySelector('#profesional').textContent = `${consulta.user_availability.user.first_name} ${consulta.user_availability.user.last_name}`;
-            clone.querySelector('#entidad').textContent = consulta.patient.social_security.entity.name;
+            clone.querySelector('#entidad').textContent = consulta.patient.social_security?.entity?.name || "No tiene EPS";
 
 
             clone.querySelector('#generar-admision').href = `generar_admision?id_cita=${consulta.id}`;
@@ -1584,13 +1584,15 @@ include '../modals/NewCompanionModal.php';
     let globalProductId = null;
     let globalAdmission = null;
     async function getAdmissionInfo(citaId) {
+        console.log(citaId);
         try {
             // Llamar al servicio para obtener los datos de la admisión
             const admission = await admissionService.getAdmissionById(citaId);
             globalAdmission = admission;
 
             const subsidiary = document.getElementById('subsidiary');
-            subsidiary.value = admission.patient.social_security.entity.name;
+            subsidiary.value = admission.patient.social_security?.entity?.name || "No tiene EPS";
+            console.log(admission);
 
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
@@ -1642,7 +1644,8 @@ include '../modals/NewCompanionModal.php';
                 });
 
                 /* Información de la entidad */
-                setElementValue('input[name="entity"]', admission.patient.social_security.entity.name);
+                let eps = admission.patient.social_security?.entity?.name || "No tiene eps";
+                setElementValue('input[name="entity"]', eps);
 
                 /* Etiquetas */
                 const typeScheme = document.getElementById('typeScheme');

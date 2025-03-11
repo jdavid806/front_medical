@@ -40,10 +40,6 @@
   </div>
 </div>
 
-<?php
-include "../Pacientes/modalPacientes.php";
-?>
-
 <script type="module">
   import React from "react"
   import ReactDOMClient from "react-dom/client"

@@ -1,5 +1,4 @@
 async function cargarEntidades() {
-  console.log("cargando");
 
   let ruta = "http://dev.medicalsoft.ai/medical/entities";
   try {
@@ -22,7 +21,7 @@ async function cargarEntidades() {
         <td>${producto.phone}</td>
         <td>${producto.address}</td>
         <td>
-            <button class="btn btn-primary btn-sm" onclick="editarConsentimiento(${producto.id}, 
+            <button class="btn btn-primary btn-sm" onclick="editarEntidad(${producto.id}, 
             '${producto.name}', '${producto.document_number}',
             '${producto.document_type}', '${producto.email}', 
             '${producto.phone}', '${producto.address}')" data-bs-toggle="modal" data-bs-target="#crearEntidad">
@@ -56,7 +55,7 @@ async function createEntidad(entidad) {
   guardarDatos("http://dev.medicalsoft.ai/medical/entities", entidad);
 }
 
-function editarConsentimiento(
+function editarEntidad(
   id,
   name,
   document_number,

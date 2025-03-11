@@ -1,4 +1,4 @@
-<div class="modal fade modal-xl" id="modalNuevoProducto" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal-xl" id="modalNuevoInsumo" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -16,7 +16,7 @@
                         </li>
                         <li class="step" data-step="2">
                             <span class="step-number">2</span>
-                            <span class="step-label">Información producto</span>
+                            <span class="step-label">Información insumo</span>
                         </li>
                         <li class="step" data-step="3">
                             <span class="step-number">3</span>
@@ -26,7 +26,7 @@
                 </div>
 
                 <!-- Contenido de los pasos -->
-                <form id="formNuevoProducto" class="needs-validation" novalidate>
+                <form id="formNuevoInsumo" class="needs-validation" novalidate>
                     <div class="wizard-content">
 
                         <div class="wizard-step active" data-step="1">
@@ -36,27 +36,28 @@
                                     <div class="input-group">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="name" required name="name">
-                                            <label for="name" class="form-label">Nombre del producto</label>
-                                            <div class="invalid-feedback">Por favor ingrese el nombre del producto</div>
+                                            <label for="name" class="form-label">Nombre del insumo</label>
+                                            <div class="invalid-feedback">Por favor ingrese el nombre del insumo</div>
                                         </div>
                                     </div>
 
-                                    <div class="input-group mt-3">
+                                    <div class="input-group mt-3" style="display: none;">
                                         <div class="form-floating">
                                             <select class="form-select" name="tipoProducto" id="tipoProducto" required>
                                                 <option value="" disabled selected>Seleccione el tipo del producto</option>
                                                 <option value="producto">producto</option>
                                                 <option value="servicio">servicio</option>
+                                                <option value="insumo" selected>insumo</option>
                                             </select>
-                                            <label for="tipoVacuna" class="form-label">Tipo de producto</label>
-                                            <div class="invalid-feedback">Por favor seleccione un tipo de vacuna.</div>
+                                            <label for="tipoProducto" class="form-label">Tipo de producto</label>
+                                            <div class="invalid-feedback">Por favor seleccione un tipo de producto.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input type="number" class="form-control" min="0" id="stockVacuna" required name="stockVacuna">
-                                            <label for="stockVacuna" class="form-label">Cantidad en Stock</label>
+                                            <input type="number" class="form-control" min="0" id="stockInsumo" required name="stockInsumo">
+                                            <label for="stockInsumo" class="form-label">Cantidad en Stock</label>
                                             <div class="invalid-feedback">Por favor ingrese la cantidad en stock.</div>
                                         </div>
                                     </div>
@@ -71,16 +72,16 @@
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input class="form-control" id="loteVacuna" name="loteVacuna" type="text" required />
-                                            <label for="loteVacuna" class="form-label">Número de Lote</label>
+                                            <input class="form-control" id="loteInsumo" name="loteInsumo" type="text" required />
+                                            <label for="loteInsumo" class="form-label">Número de Lote</label>
                                             <div class="invalid-feedback">Por favor ingrese el número de lote.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <textarea class="form-control" id="descripcionVacuna" name="descripcionVacuna" rows="3"></textarea>
-                                            <label for="descripcionVacuna" class="form-label">Descripción (Opcional)</label>
+                                            <textarea class="form-control" id="descripcionInsumo" name="descripcionInsumo" rows="3"></textarea>
+                                            <label for="descripcionInsumo" class="form-label">Descripción (Opcional)</label>
                                         </div>
                                     </div>
 
@@ -90,18 +91,18 @@
 
                                     <div class="row justify-content-center">
                                         <div class="col-md-6 text-center">
-                                            <h2>Imagen de Vacuna</h2>
+                                            <h2>Imagen de Insumo</h2>
                                             <!-- Imagen de previsualización -->
                                             <div class="mt-3">
-                                                <img id="vacunaPreview" src="https://via.placeholder.com/150" alt="Previsualización" class="profile-img">
+                                                <img id="insumoPreview" src="https://via.placeholder.com/150" alt="Previsualización" class="profile-img">
                                             </div>
                                             <!-- Botones de acción -->
                                             <div class="mt-4">
-                                                <label for="uploadVacunaImage" class="btn btn-primary me-2">
+                                                <label for="uploadInsumoImage" class="btn btn-primary me-2">
                                                     <i class="fa-solid fa-upload me-1"></i> Subir Imagen
                                                 </label>
                                                 <!-- Input oculto para subir imagen -->
-                                                <input type="file" id="uploadVacunaImage" class="d-none" accept="image/*">
+                                                <input type="file" id="uploadInsumoImage" class="d-none" accept="image/*">
                                             </div>
                                         </div>
                                     </div>
@@ -152,7 +153,7 @@
 
                                 <div id="codigoQr" class="d-none mb-2">
                                     <div class="mb-2 form-floating">
-                                        <textarea class="form-control" id="qrInput" name="codigoQr" style="height: 100px"></textarea>
+                                        <input type="file" class="form-control" id="qrInput" name="codigoQr" accept="image/*"></input>
                                         <label for="qrInput" class="form-label">Código QR</label>
                                     </div>
                                 </div>
@@ -181,22 +182,22 @@
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="precioCompraVacuna" name="precioCompraVacuna" type="number" />
-                                    <label for="precioCompraVacuna" class="form-label">Precio de combra</label>
+                                    <input class="form-control" id="precioCompraInsumo" name="precioCompraInsumo" type="number" />
+                                    <label for="precioCompraInsumo" class="form-label">Precio de compra</label>
                                     <div class="invalid-feedback">Ingrese el precio de compra</div>
                                 </div>
                             </div>
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="precioVentaVacuna" name="precioVentaVacuna" type="venta" />
-                                    <label for="precioVentaVacuna" class="form-label">Precio de venta</label>
+                                    <input class="form-control" id="precioVentaInsumo" name="precioVentaInsumo" type="venta" />
+                                    <label for="precioVentaInsumo" class="form-label">Precio de venta</label>
                                     <div class="invalid-feedback">Ingrese el precio de venta</div>
                                 </div>
                             </div>
 
-                            <div class="mb-2 form-floating">
-                                <select class="form-select" id="sucursalVacuna" name="sucursalVacuna">
+                            <div class="mb-2 form-floating mt-3">
+                                <select class="form-select" id="sucursalInsumo" name="sucursalInsumo">
                                     <option selected disabled value="">Seleccione</option>
                                     <option value="Bogotá">Bogotá</option>
                                     <option value="Medellín">Medellín</option>
@@ -204,7 +205,7 @@
                                     <option value="Barranquilla">Barranquilla</option>
                                     <option value="Cartagena">Cartagena</option>
                                 </select>
-                                <label for="sucursalVacuna" class="form-label">Sucursal</label>
+                                <label for="sucursalInsumo" class="form-label">Sucursal</label>
                             </div>
                         </div>
                     </div>

@@ -375,9 +375,9 @@
 
     consultarQR(user_id);
 
-    setInterval(() => {
-      consultarQR(user_id);
-    }, 10000);
+    // setInterval(() => {
+    //   consultarQR(user_id);
+    // }, 10000);
   });
 
 
