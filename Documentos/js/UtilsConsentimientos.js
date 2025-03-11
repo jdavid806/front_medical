@@ -1,5 +1,5 @@
 async function cargarPlantillas() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/firma/consents";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/firma/consents";
   let Plantillas = await obtenerDatos(ruta);
 
   const selectPlantillas = document.getElementById("template-plantilla");

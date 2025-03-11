@@ -1,5 +1,5 @@
 async function cargarEspecialidades() {
-  let ruta = "http://dev.medicalsoft.ai/medical/specialties";
+  let ruta = obtenerRutaPrincipal() + "/medical/specialties";
 
   try {
     const response = await fetch(ruta);
@@ -27,7 +27,7 @@ async function cargarEspecialidades() {
 }
 
 async function cargarSelectsEspecilidad() {
-  let rutaHistorias = "http://dev.medicalsoft.ai/medical/clinical-record-types";
+  let rutaHistorias = obtenerRutaPrincipal() + "/medical/clinical-record-types";
 
   let historias = await obtenerDatos(rutaHistorias);
 

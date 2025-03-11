@@ -1,5 +1,5 @@
 async function obtenerDatosPorId(tabla, id) {
-  const apiUrl = `http://dev.medicalsoft.ai/medical/${tabla}/${id}`;
+  const apiUrl = obtenerRutaPrincipal() + `/medical/${tabla}/${id}`;
 
   try {
     const response = await fetch(apiUrl);
@@ -15,7 +15,7 @@ async function obtenerDatosPorId(tabla, id) {
 }
 
 async function obtenerDatosPorTabla(tabla) {
-  const apiUrl = `http://dev.medicalsoft.ai/medical/${tabla}`;
+  const apiUrl = obtenerRutaPrincipal() + `/medical/${tabla}`;
 
   try {
     const response = await fetch(apiUrl);
@@ -203,7 +203,7 @@ function formatearFechaQuitarHora(fechaISO) {
 }
 
 function reemplazarRuta(ruta) {
-  const base = "http://dev.medicalsoft.ai:8080/";
+  const base = obtenerRutaPrincipal();
 
   return ruta.replace("../", base);
 }
@@ -236,7 +236,7 @@ function copiarTexto(id) {
 }
 
 async function getCountryInfo(value) {
-  let url = "http://dev.medicalsoft.ai/medical/countries";
+  let url = obtenerRutaPrincipal() + "/medical/countries";
   let paises = await obtenerDatos(url);
 
   for (const pais of paises.data) {
@@ -278,4 +278,10 @@ function cargarSelect(id, datos, placeholder) {
     option.textContent = item.name;
     select.appendChild(option);
   }
+}
+
+function obtenerRutaPrincipal() {
+  let url = window.location.origin; 
+  let rutaBase = url.replace(/:\d+$/, "");
+  return rutaBase;
 }

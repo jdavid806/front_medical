@@ -579,6 +579,8 @@
         const selectCie = document.getElementById('selectCie');
         const selectCups = document.getElementById('selectCups');
         const nextStep = document.getElementById('nextStep');
+        const notaRem = document.getElementById('note');
+        console.log("Nota remision",notaRem);
 
         selectCupsCie.addEventListener('change', function() {
             divCie.style.display = 'none';
@@ -773,7 +775,10 @@
         divInsumos.style.display = estadoInsumos ? 'block' : 'none';
         divIncapacidad.style.display = estadoIncapacidad ? 'block' : 'none';
         divRemision.style.display = estadoRemision ? 'block' : 'none';
-
+        if (estadoRemision) {
+            const notaRemision = document.getElementById('note');
+            notaRemision.required = false;
+        }
     }
 
     /**

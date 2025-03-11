@@ -1,5 +1,5 @@
 async function cargarCentrosCosto() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/admin/centres-cost";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/centres-cost";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -35,20 +35,20 @@ async function cargarCentrosCosto() {
 }
 
 async function eliminarCentroC(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/centres-cost/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/centres-cost/${id}`;
   EliminarDatos(url);
   cargarCentrosCosto();
 }
 
 async function updateCentroCosto(id, centroCosto) {
-  let url = "http://dev.medicalsoft.ai/api/v1/admin/centres-cost/" + id;
+  let url = obtenerRutaPrincipal() + "/api/v1/admin/centres-cost/" + id;
   actualizarDatos(url, centroCosto);
   cargarCentrosCosto();
 }
 
 async function createCentroCosto(centroCosto) {
   guardarDatos(
-    "http://dev.medicalsoft.ai/api/v1/admin/centres-cost",
+    obtenerRutaPrincipal() + "/api/v1/admin/centres-cost",
     centroCosto
   );
 }

@@ -1,5 +1,5 @@
 async function cargarRetenciones() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -36,23 +36,27 @@ async function cargarRetenciones() {
 }
 
 async function eliminarRetencion(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-withholdings/${id}`;
   EliminarDatos(url);
 }
 
 async function updateRetencion(id, retencion) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-withholdings/${id}`;
   actualizarDatos(url, retencion);
 }
 
 async function createRetencion(retencion) {
-  guardarDatos("http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings/", retencion);
+  guardarDatos(
+    obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings/",
+    retencion
+  );
 }
 
 function editarRetencion(id, name, porcentaje, accountin_account, description) {
   document.getElementById("nombre-retencion").value = name;
   document.getElementById("porcentaje-retencion").value = porcentaje;
-  document.getElementById("cuenta-contable-retencion").value = accountin_account;
+  document.getElementById("cuenta-contable-retencion").value =
+    accountin_account;
   document.getElementById("descripcion-retencion").value = description;
 
   // Agregar un input oculto con el ID del producto

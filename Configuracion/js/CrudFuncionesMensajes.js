@@ -4,10 +4,10 @@ async function guardarTemplate(datos) {
   let id = template.data.id;
 
   if (laPlantillaEstaVacia(template)) {
-    let url = "http://dev.medicalsoft.ai/api/v1/firma/message-templates";
+    let url = obtenerRutaPrincipal() + "/api/v1/firma/message-templates";
     guardarDatos(url, datos);
   } else {
-    let url = "http://dev.medicalsoft.ai/api/v1/firma/message-templates/" + id;
+    let url = obtenerRutaPrincipal() + "/api/v1/firma/message-templates/" + id;
     actualizarDatos(url, datos);
   }
 }
@@ -17,7 +17,7 @@ async function obtenerTemplate(datos) {
   let belong = datos.belongs_to;
   let type = datos.type;
 
-  let url = `http://dev.medicalsoft.ai/api/v1/firma/message-templates/filter/${tenant}/${belong}/${type}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/firma/message-templates/filter/${tenant}/${belong}/${type}`;
   try {
     const response = await fetch(url);
     if (!response.ok) {

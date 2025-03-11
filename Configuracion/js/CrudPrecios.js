@@ -1,5 +1,5 @@
 async function cargarContenido() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/admin/products";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/products";
 
   const attentionTypeMap = {
     PROCEDURE: "Procedimiento",
@@ -64,13 +64,13 @@ async function cargarContenido() {
 }
 
 async function eliminarPrecio(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
   EliminarDatos(url);
   cargarContenido();
 }
 
 async function updateProduct(id, productData) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/products/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
   actualizarDatos(url, productData);
   cargarContenido();
 }
@@ -119,15 +119,15 @@ function editarProducto(
 }
 
 async function createProduct(product) {
-  guardarDatos("http://dev.medicalsoft.ai/api/v1/admin/products", product);
+  guardarDatos(obtenerRutaPrincipal() + "/api/v1/admin/products", product);
   cargarContenido();
 }
 
 async function cargarSelectsPrecios() {
-  let rutaEntidades = "http://dev.medicalsoft.ai/medical/entities";
-  let rutaImpuestos = "http://dev.medicalsoft.ai/api/v1/admin/tax-charges";
+  let rutaEntidades = obtenerRutaPrincipal() + "/medical/entities";
+  let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
   let rutaRetenciones =
-    "http://dev.medicalsoft.ai/api/v1/admin/tax-withholdings";
+    obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
 
   let entidades = await obtenerDatos(rutaEntidades);
   let impuestos = await obtenerDatos(rutaImpuestos);

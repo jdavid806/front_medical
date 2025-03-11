@@ -19,7 +19,7 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  let url = `http://dev.medicalsoft.ai/medical/entities/${data.social_security.entity_id}`;
+  let url = obtenerRutaPrincipal() + `/medical/entities/${data.social_security.entity_id}`;
   let entidad = await obtenerDatos(url);
 
   let nombrEntidad = entidad.data.name;

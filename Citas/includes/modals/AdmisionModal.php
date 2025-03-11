@@ -1852,13 +1852,13 @@ include '../modals/NewCompanionModal.php';
     })
 
     document.getElementById('saveAndCast').addEventListener('click', function() {
-
         const tableBody = document.getElementById('productsTableBody');
         const rowsProducts = tableBody.getElementsByTagName('tr');
         const tableBodyPaymentsmethod = document.getElementById('paymentsTableBody');
         const rowsPaymentsmethod = tableBody.getElementsByTagName('tr');
         const dataProducts = [];
         const dataPaymentMthods = [];
+        const entitySwitch = document.getElementById('entitySwitch');
 
         for (let row of rowsProducts) {
             const cells = row.getElementsByTagName('td');
@@ -1888,11 +1888,10 @@ include '../modals/NewCompanionModal.php';
         const requestData = {
             "admission": [{
                 "user_id": 1,
-                "admission_type_id": 1,
-                "authorization_number": "AUTH123456",
-                "authorization_date": "2025-04-10",
-                "appointment_id": 5,
-                "invoice_id": 10,
+                "admission_type_id": globalAdmission.id,
+                "authorization_number": entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
+                "authorization_date": entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
+                "appointment_id": globalAdmission.appointment_state_id,
                 "debit_note_id": null,
                 "credit_note_id": null,
                 "new_invoice_id": null,

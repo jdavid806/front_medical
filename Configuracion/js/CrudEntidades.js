@@ -1,6 +1,5 @@
 async function cargarEntidades() {
-
-  let ruta = "http://dev.medicalsoft.ai/medical/entities";
+  let ruta = obtenerRutaPrincipal() + "/medical/entities";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -41,18 +40,18 @@ async function cargarEntidades() {
 }
 
 async function eliminarEntidad(id) {
-  let url = `http://dev.medicalsoft.ai/medical/entities/${id}`;
+  let url = obtenerRutaPrincipal() + `/medical/entities/${id}`;
   EliminarDatos(url);
   cargarMetodosPago();
 }
 
 async function updateEntidad(id, entidad) {
-  let url = `http://dev.medicalsoft.ai/medical/entities/${id}`;
+  let url = obtenerRutaPrincipal() + `/medical/entities/${id}`;
   actualizarDatos(url, entidad);
 }
 
 async function createEntidad(entidad) {
-  guardarDatos("http://dev.medicalsoft.ai/medical/entities", entidad);
+  guardarDatos(obtenerRutaPrincipal() + "/medical/entities", entidad);
 }
 
 function editarEntidad(

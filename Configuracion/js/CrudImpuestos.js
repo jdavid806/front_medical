@@ -1,5 +1,5 @@
 async function cargarImpuestos() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/admin/tax-charges";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -36,17 +36,17 @@ async function cargarImpuestos() {
 }
 
 async function eliminarImpuesto(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/tax-charges/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-charges/${id}`;
   EliminarDatos(url);
 }
 
 async function updateImpuesto(id, impuesto) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/tax-charges/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-charges/${id}`;
   actualizarDatos(url, impuesto);
 }
 
 async function createImpuesto(impuesto) {
-  guardarDatos("http://dev.medicalsoft.ai/api/v1/admin/tax-charges/", impuesto);
+  guardarDatos(obtenerRutaPrincipal() + "/api/v1/admin/tax-charges/", impuesto);
 }
 
 function editarImpuesto(id, name, porcentaje, accountin_account, description) {

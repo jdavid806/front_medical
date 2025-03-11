@@ -1,5 +1,5 @@
 async function cargarConsentimientos() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/firma/consents";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/firma/consents";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -33,25 +33,24 @@ async function cargarConsentimientos() {
 }
 
 async function eliminarConsentimiento(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/firma/consents/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/firma/consents/${id}`;
   EliminarDatos(url);
   cargarMetodosPago();
 }
 
 async function updateConsentimiento(id, consentimeinto) {
-  let url = `http://dev.medicalsoft.ai/api/v1/firma/consents/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/firma/consents/${id}`;
   actualizarDatos(url, consentimeinto);
 }
 
 async function createConsentimiento(consentimiento) {
   guardarDatos(
-    "http://dev.medicalsoft.ai/api/v1/firma/consents/",
+    obtenerRutaPrincipal() + "/api/v1/firma/consents/",
     consentimiento
   );
 }
 
 function editarConsentimiento(id, title, template) {
-
   const editorContainer = document.querySelector(
     `#contenido-plantilla .ql-editor`
   );

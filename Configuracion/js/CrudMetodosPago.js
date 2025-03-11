@@ -1,5 +1,5 @@
 async function cargarMetodosPago() {
-  let ruta = "http://dev.medicalsoft.ai/api/v1/admin/payment-methods";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/payment-methods";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
@@ -44,18 +44,18 @@ async function cargarMetodosPago() {
 }
 
 async function eliminarMetodo(id) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/payment-methods/${id}`;  
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/payment-methods/${id}`;
   EliminarDatos(url);
 }
 
 async function updateMetodoPago(id, metodoPago) {
-  let url = `http://dev.medicalsoft.ai/api/v1/admin/payment-methods/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/payment-methods/${id}`;
   actualizarDatos(url, metodoPago);
 }
 
 async function createMetodoPago(metodoPago) {
   guardarDatos(
-    "http://dev.medicalsoft.ai/api/v1/admin/payment-methods/",
+    obtenerRutaPrincipal() + "/api/v1/admin/payment-methods/",
     metodoPago
   );
 }
