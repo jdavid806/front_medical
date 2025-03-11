@@ -1,10 +1,10 @@
 async function cargarPConsentimientos() {
-  // let ruta = "http://dev.medicalsoft.ai/api/v1/firma/templates";
+  let ruta = "http://dev.medicalsoft.ai/api/v1/firma/templates";
   const patient_id = new URLSearchParams(window.location.search).get(
     "patient_id"
   );
 
-  let ruta = `http://dev.medicalsoft.ai/api/v1/firma/templates/${patient_id}/patient`;
+  // let ruta = `http://dev.medicalsoft.ai/api/v1/firma/templates/${patient_id}/patient`;
   try {
     const response = await fetch(ruta);
     if (!response.ok) {

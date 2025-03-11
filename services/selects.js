@@ -48,6 +48,8 @@ export const userSpecialtiesSelect = async (element) => {
 export const countriesSelect = async (element, onChange, initialValue = '') => {
     const data = await countryService.getAll()
 
+    console.log('Paises:', data);
+
     const mappedData = data.data.filter(country => [
         "AR",
         "BO",
@@ -89,21 +91,33 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
         });
     }
 
+    if (element._handleChange) {
+        element.removeEventListener('change', element._handleChange);
+    }
+
+    const handleChange = (event) => {
+        const selectedOption = element.choicesInstance.getValue();
+        console.log("el país cambió");
+        onChange(selectedOption);
+    }
+
+    element._handleChange = handleChange;
+    element.addEventListener('change', handleChange);
+
     if (initialValue) {
+        console.log(initialValue);
         const selectedCountry = mappedData.find(c => c.value == initialValue);
         if (selectedCountry) {
             element.choicesInstance.setChoiceByValue(selectedCountry.value);
         }
     }
-
-    element.addEventListener('change', (event) => {
-        const selectedOption = element.choicesInstance.getValue();
-        onChange(selectedOption);
-    });
 }
 
 export const departmentsSelect = async (element, countryId, onChange, initialValue = '') => {
     const data = await departmentService.ofParent(countryId);
+
+    console.log('Departamentos:', data);
+
     const mappedData = data.map(item => ({
         value: item.name,
         label: `${item.name}`,
@@ -122,21 +136,34 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
         });
     }
 
+    if (element._handleChange) {
+        element.removeEventListener('change', element._handleChange);
+    }
+
+    const handleChange = (event) => {
+        const selectedOption = element.choicesInstance.getValue();
+        console.log("el departamento cambió");
+        onChange(selectedOption);
+    }
+
+    element._handleChange = handleChange;
+    element.addEventListener('change', handleChange);
+
     if (initialValue) {
+        console.log(initialValue);
+
         const selectedDept = mappedData.find(c => c.value == initialValue);
         if (selectedDept) {
             element.choicesInstance.setChoiceByValue(selectedDept.value);
         }
     }
-
-    element.addEventListener('change', (event) => {
-        const selectedOption = element.choicesInstance.getValue();
-        onChange(selectedOption);
-    });
 };
 
 export const citiesSelect = async (element, departmentId, onChange, initialValue = '') => {
     const data = await cityService.ofParent(departmentId)
+
+    console.log('Ciudades:', data);
+
     const mappedData = data.map(item => {
         return {
             value: item.name,
@@ -157,15 +184,25 @@ export const citiesSelect = async (element, departmentId, onChange, initialValue
         });
     }
 
+    if (element._handleChange) {
+        element.removeEventListener('change', element._handleChange);
+    }
+
+    const handleChange = (event) => {
+        const selectedOption = element.choicesInstance.getValue();
+        console.log("la ciudad cambió");
+
+        onChange(selectedOption);
+    }
+
+    element._handleChange = handleChange;
+    element.addEventListener('change', handleChange);
+
     if (initialValue) {
+        console.log(initialValue);
         const selectedCity = mappedData.find(c => c.value == initialValue);
         if (selectedCity) {
             element.choicesInstance.setChoiceByValue(selectedCity.value);
         }
     }
-
-    element.addEventListener('change', (event) => {
-        const selectedOption = element.choicesInstance.getValue();
-        onChange(selectedOption);
-    });
 }

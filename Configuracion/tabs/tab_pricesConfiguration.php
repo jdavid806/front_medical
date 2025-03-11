@@ -2,9 +2,9 @@
   <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
     <li class="nav-item" role="presentation"><a class="nav-link active" id="home-tab" data-bs-toggle="tab"
         href="#tab-home" role="tab" aria-controls="tab-home" aria-selected="true">Precios</a></li>
-    <li class="nav-item" role="presentation"><a class="nav-link" id="profile-tab" data-bs-toggle="tab"
+    <!-- <li class="nav-item" role="presentation"><a class="nav-link" id="profile-tab" data-bs-toggle="tab"
         href="#tab-profile" role="tab" aria-controls="tab-profile" aria-selected="false" tabindex="-1">Configuración de
-        precios</a></li>
+        precios</a></li> -->
   </ul>
   <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPrice">
     <i class="fa-solid fa-plus"></i> Agregar Precio

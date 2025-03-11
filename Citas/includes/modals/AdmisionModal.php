@@ -537,6 +537,7 @@ include '../modals/NewCompanionModal.php';
                                                     <table class="table" id="productsTable">
                                                         <thead>
                                                             <tr>
+                                                                <th scope="col" class="small">#</th>
                                                                 <th scope="col" class="small">Descripción del Producto</th>
                                                                 <th scope="col" class="small">Precio</th>
                                                                 <th scope="col" class="small">Cantidad</th>
@@ -839,8 +840,8 @@ include '../modals/NewCompanionModal.php';
                                                     <button class="btn dropdown-toggle mb-1 btn-success" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finalizar factura</button>
                                                     <div class="dropdown-menu">
 
-                                                        <a class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar y emitir</a>
-                                                        <a class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar en borrador</a>
+                                                        <a id="saveAndCast" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar y emitir</a>
+                                                        <a id="saveDraft" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar en borrador</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1014,7 +1015,6 @@ include '../modals/NewCompanionModal.php';
         summaryPaymentsTableBody.innerHTML = ''; // Limpiar tabla resumen
 
         Array.from(rows).forEach((row, index) => {
-            console.log(rows);
             const cells = row.querySelectorAll('td');
 
             if (cells.length) {
@@ -1280,7 +1280,8 @@ include '../modals/NewCompanionModal.php';
 
     // Función para agregar métodos de pago a ambas tablas
     function addRowToPaymentTable(values, tableBodyId) {
-        console.log(values);
+        const jsonPaymentmethod = JSON.parse(values[0]);
+        values[0] = jsonPaymentmethod.method;
         const tableBody = document.getElementById(tableBodyId);
         const rowCount = tableBody.rows.length + 1;
 
@@ -1472,12 +1473,11 @@ include '../modals/NewCompanionModal.php';
     }
 
     function populatePaymentMethods(paymentMethods) {
-        console.log(paymentMethods);
         const paymentMethodSelect = document.getElementById('methodPayment');
         if (Array.isArray(paymentMethods)) {
             paymentMethods.forEach(paymentMethod => {
                 const option = document.createElement('option');
-                option.value = paymentMethod;
+                option.value = JSON.stringify(paymentMethod);
                 option.textContent = paymentMethod.method;
                 paymentMethodSelect.appendChild(option);
             });
@@ -1755,6 +1755,7 @@ include '../modals/NewCompanionModal.php';
             const priceProduct = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
             const totalPrice = new Intl.NumberFormat('es-CO').format(validationPriceProduct);
             productRow.innerHTML = `
+            <td class="small">${product.id}</td>
             <td class="small">${entitySwitch.checked ? priceProduct : priceProduct || 'Producto sin nombre'}</td>
             <td class="small">${ entitySwitch.checked ? product.copayment : product.sale_price || 'N/A'}</td>
             <td class="small">1</td>
@@ -1799,7 +1800,7 @@ include '../modals/NewCompanionModal.php';
 
         for (let row of rows) {
             if (row.cells.length) {
-                const totalCell = row.cells[4]; // Columna "Total" (índice 4)
+                const totalCell = row.cells[5]; // Columna "Total" (índice 4)
                 const totalText = totalCell.textContent.replace(' COP', '').trim();
                 const totalValue = parseFloat(totalText.split(".").join("")) || 0;
                 sum += totalValue;
@@ -1846,6 +1847,54 @@ include '../modals/NewCompanionModal.php';
 
     document.getElementById('back_step').addEventListener('click', function() {
         document.getElementById('next_step').disabled = false;
+    })
+
+    document.getElementById('saveAndCast').addEventListener('click', function() {
+
+        const tableBody = document.getElementById('productsTableBody');
+        const rowsProducts = tableBody.getElementsByTagName('tr');
+        const tableBodyPaymentsmethod = document.getElementById('paymentsTableBody');
+        const rowsPaymentsmethod = tableBody.getElementsByTagName('tr');
+        const dataProducts = [];
+        const dataPaymentMthods = [];
+
+        for (let row of rowsProducts) {
+            const cells = row.getElementsByTagName('td');
+
+            const rowData = {
+                product_id: cells[0]?.innerText.trim(), // Ajusta según el índice de las columnas
+                quantity: cells[3]?.innerText.trim(),
+                unit_price: cells[2]?.innerText.trim(),
+                discount: 0,
+            };
+
+            dataProducts.push(rowData);
+        }
+        for (let row of rowsPaymentsmethod) {
+            const cells = row.getElementsByTagName('td');
+
+            const rowData = {
+                payment_method_id: cells[0]?.innerText.trim(), // Ajusta según el índice de las columnas
+                payment_date: "<?php echo date('Y-m-d'); ?>",
+                amount: cells[2]?.innerText.trim(),
+                notes: "",
+            };
+
+            dataPaymentMthods.push(rowData);
+        }
+
+        const requestData = {
+            "invoice": {
+                "user_id": 1,
+                "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),
+                "observations": document.getElementById('observation').value
+            },
+            "invoice_detail": dataProducts,
+            "payments": dataPaymentMthods
+        }
+
+        console.log("guardar y emitir:", requestData);
+
     })
 
     function generateInvoice() {

@@ -190,6 +190,10 @@ RewriteRule ^homeVacunacion$  vacunas/homeVacunacion.php
 RewriteRule ^inventarioGeneral$  Inventario/inventarioGeneral.php
 RewriteRule ^inventarioMedicamentos$  Inventario/inventarioMedicamentos.php
 RewriteRule ^inventarioVacunas$  Inventario/inventarioVacunas.php
+RewriteRule ^inventarioInsumos$  Inventario/inventarioInsumos.php
+
+RewriteRule ^paquetes$  Paquetes/verPaquetes.php
+
 
 #Farmacioa
 RewriteRule ^caja$  Caja/caja.php
@@ -198,6 +202,5 @@ RewriteRule ^insumos$  Farmacia/entregaInsumos.php
 
 RewriteRule ^gestion-turnos$  turnos/gestionTurnos.php
 
-RewriteRule ^paquetes$  Paquetes/verPaquetes.php
 
 RewriteRule ^remisiones$  Remisiones/remisiones.php

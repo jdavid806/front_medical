@@ -22,9 +22,6 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
   let url = `http://dev.medicalsoft.ai/medical/entities/${data.social_security.entity_id}`;
   let entidad = await obtenerDatos(url);
 
-  console.log(entidad);
-  
-
   let nombrEntidad = entidad.data.name;
 
   return {
@@ -55,10 +52,12 @@ async function consultarDatosEnvioPaciente(pacienteId) {
     data.second_last_name,
   ];
 
+  let indicativo = await getCountryInfo(data.country_id);
+  
   return {
     nombre: unirTextos(nombre),
     documento: data.document_type + "-" + data.document_number,
-    telefono: "57"+ data.whatsapp,
+    telefono: indicativo+ data.whatsapp,
   };
 }
 

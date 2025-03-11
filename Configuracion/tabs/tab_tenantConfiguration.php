@@ -377,7 +377,7 @@
 
     setInterval(() => {
       consultarQR(user_id);
-    }, 30000);
+    }, 10000);
   });
 
 

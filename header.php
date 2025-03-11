@@ -145,6 +145,11 @@
               </div>
             </a>
           </li>
+          <li><a class="dropdown-item" href="inventarioInsumos">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="thermometer"></span>Insumos
+              </div>
+            </a>
+          </li>
         </ul>
   </div>
   <ul class="navbar-nav navbar-nav-icons flex-row">

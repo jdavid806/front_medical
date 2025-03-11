@@ -49,21 +49,22 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
             const departments = await departmentService.ofParent(countryId);
             const departmentId = departments.find((department: any) => department.name === patient.department_id).id
 
-            await countriesSelect(countrySelect, async () => {
-                await departmentsSelect(
+            await countriesSelect(countrySelect, (selectedCountry) => {
+                const selectedCountryId = selectedCountry.customProperties.id;
+                departmentsSelect(
                     deptSelect,
-                    countryId,
-                    async () => {
-                        await citiesSelect(
-                            citySelect,
-                            departmentId,
-                            () => { },
-                            patient.city_id
-                        );
-                    },
-                    patient.department_id
+                    selectedCountryId,
+                    (selectedDepartment) => {
+                        citiesSelect(citySelect, selectedDepartment.customProperties.id, () => { });
+                    }
                 );
             }, patient.country_id);
+
+            await departmentsSelect(deptSelect, countryId, (selectedDepartment) => {
+                citiesSelect(citySelect, selectedDepartment.customProperties.id, () => { });
+            }, patient.department_id);
+
+            await citiesSelect(citySelect, departmentId, () => { }, patient.city_id);
 
             (form.elements.namedItem('address') as HTMLInputElement).value = patient.address;
             (form.elements.namedItem('nationality') as HTMLSelectElement).value = patient.nationality;
@@ -79,6 +80,22 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
         return () => {
             modalElement.removeEventListener('show.bs.modal', fillForm);
             modal.dispose();
+
+            // Destruir instancias de Choices y limpiar listeners
+            const cleanSelect = (id) => {
+                const element: any = document.getElementById(id);
+                if (element?.choicesInstance) {
+                    element.choicesInstance.destroy();
+                    delete element.choicesInstance;
+                }
+                if (element) {
+                    element.removeEventListener('change', element.handleChange);
+                }
+            };
+
+            cleanSelect('country_id');
+            cleanSelect('department_id');
+            cleanSelect('city_id');
         };
     }, [patient]);
 

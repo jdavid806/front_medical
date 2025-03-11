@@ -1002,7 +1002,6 @@
         }
     }
 
-    // Primero, añade un event listener al botón de agregar medicamento
     $(document).ready(function() {
         $(document).on('click', '#agregarNuevoMedicamento', function() {
             agregarNuevoMedicamento();

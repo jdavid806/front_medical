@@ -94,10 +94,6 @@ async function actualizarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
-    }
-
     const resultado = await respuesta.json();
 
     // Notificación de éxito
@@ -248,4 +244,17 @@ async function getCountryInfo(value) {
       return pais.phonecode;
     }
   }
+}
+
+function convertirHtmlAWhatsapp(html) {
+  return html
+    .replace(/<strong>(.*?)<\/strong>/gi, "*$1*") // Negritas
+    .replace(/<b>(.*?)<\/b>/gi, "*$1*") // También para <b>
+    .replace(/<em>(.*?)<\/em>/gi, "_$1_") // Cursiva
+    .replace(/<i>(.*?)<\/i>/gi, "_$1_") // También para <i>
+    .replace(/<s>(.*?)<\/s>/gi, "~$1~") // Tachado
+    .replace(/<del>(.*?)<\/del>/gi, "~$1~") // También para <del>
+    .replace(/<br\s*\/?>/gi, "\n") // Saltos de línea
+    .replace(/<p>(.*?)<\/p>/gi, "$1\n\n") // Párrafos con doble salto de línea
+    .replace(/<[^>]+>/g, ""); // Elimina cualquier otra etiqueta HTML
 }

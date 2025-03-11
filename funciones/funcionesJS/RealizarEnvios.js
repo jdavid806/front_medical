@@ -1,4 +1,4 @@
-async function enviarMensaje(ruta, patient_id, user_id, titulo) {
+async function enviarMensaje(ruta, patient_id, user_id, titulo, nombreObjecto) {
   let rutaFinal = reemplazarRuta(ruta);
 
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
@@ -8,21 +8,45 @@ async function enviarMensaje(ruta, patient_id, user_id, titulo) {
 
   const datosEmpresa = await consultarDatosEmpresaPorDoctorId(user_id);
 
-  const datosApi = await consultarDatosWhatssapPorDoctorId(user_id);
+  let tipoMensaje = "";
+  // si ya sé que asco esto en vez de organisar esto, pero aja tengo sueño hambre
+  // y estoys eguro que esto solo lo tocara aquella persona que lo vaya a migrar
+  // asi que aja que sufra el otro yo lo hare facil ＼(≧▽≦)／
+  switch (nombreObjecto) {
+    case "Incapacidad":
+      tipoMensaje = "incapacidades-compartir";
 
-  let mensaje_envio = `Estimado(a) *${nombre_paciente}*,
-  
-Le informamos que el consultorio *${datosEmpresa.nombre_consultorio}* ha generado la siguiente incapacidad a su nombre.  
+      break;
 
-Para más detalles sobre su incapacidad, le recomendamos comunicarse con nuestro equipo o revisar los documentos enviados.  
+    default:
+      break;
+  }
 
-Atentamente,  
-*${datosEmpresa.nombre_consultorio}*`;
+  constDatosMensaje = {
+    tenant_id: "1", // esto lo peuden mandar quemado la verad lo pedi porque no sabia como funcionaba la base XD
+    type: "whatsapp",
+    belongs_to: tipoMensaje,
+  };
+
+  let responseTemplate = await obtenerTemplate(constDatosMensaje);
+
+  let template =
+  responseTemplate.data?.template ||
+    `🔔 Estimado/a ${nombre_paciente},
+
+Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de entrada o contáctenos para más información.
+
+📞 ${datosEmpresa.datos_consultorio.Teléfono}
+🏥 ${datosEmpresa.nombre_consultorio}
+
+¡Estamos atentos para ayudarle!`;
+
+  let mensajeFinal = convertirHtmlAWhatsapp(template);
 
   const parametrosMensaje = {
     number: "573502462970",
     mediatype: "document", // image, video or document
-    caption: mensaje_envio,
+    caption: mensajeFinal,
     media: rutaFinal /* url or base64 */,
     fileName: titulo,
   };
@@ -84,7 +108,7 @@ async function enviarDocumento(
     let resultado = await response.json();
 
     if (resultado.ruta) {
-      enviarMensaje(resultado.ruta, patient_id, user_id, titulo);
+      enviarMensaje(resultado.ruta, patient_id, user_id, titulo, nombreObjecto);
     } else {
       console.error("No se generó el documento correctamente");
     }

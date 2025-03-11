@@ -40,11 +40,16 @@ export const PatientInfo = ({
       const countryId = countries.data.find(country => country.name === patient.country_id).id;
       const departments = await departmentService.ofParent(countryId);
       const departmentId = departments.find(department => department.name === patient.department_id).id;
-      await countriesSelect(countrySelect, async () => {
-        await departmentsSelect(deptSelect, countryId, async () => {
-          await citiesSelect(citySelect, departmentId, () => {}, patient.city_id);
-        }, patient.department_id);
+      await countriesSelect(countrySelect, selectedCountry => {
+        const selectedCountryId = selectedCountry.customProperties.id;
+        departmentsSelect(deptSelect, selectedCountryId, selectedDepartment => {
+          citiesSelect(citySelect, selectedDepartment.customProperties.id, () => {});
+        });
       }, patient.country_id);
+      await departmentsSelect(deptSelect, countryId, selectedDepartment => {
+        citiesSelect(citySelect, selectedDepartment.customProperties.id, () => {});
+      }, patient.department_id);
+      await citiesSelect(citySelect, departmentId, () => {}, patient.city_id);
       form.elements.namedItem('address').value = patient.address;
       form.elements.namedItem('nationality').value = patient.nationality;
       if (patient.social_security) {
@@ -57,6 +62,21 @@ export const PatientInfo = ({
     return () => {
       modalElement.removeEventListener('show.bs.modal', fillForm);
       modal.dispose();
+
+      // Destruir instancias de Choices y limpiar listeners
+      const cleanSelect = id => {
+        const element = document.getElementById(id);
+        if (element?.choicesInstance) {
+          element.choicesInstance.destroy();
+          delete element.choicesInstance;
+        }
+        if (element) {
+          element.removeEventListener('change', element.handleChange);
+        }
+      };
+      cleanSelect('country_id');
+      cleanSelect('department_id');
+      cleanSelect('city_id');
     };
   }, [patient]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {

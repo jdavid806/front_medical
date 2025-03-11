@@ -450,6 +450,7 @@ require "./modals/editPartnerModal.php";
 
             </div>
           </div>
+          <input type="hidden" name="patient_id" value="<?php echo $_GET['patient_id'] ?? $_GET['id']; ?>">
         </form>
       </div>
 
@@ -734,22 +735,18 @@ require "./modals/editPartnerModal.php";
     handleImageUpload();
     // Llama a la función para obtener y cargar los países
     countriesSelect(document.getElementById('country_id'), (selectedOption) => {
-      console.log('Pais seleccionado:', selectedOption);
       const selectedCountryId = selectedOption.customProperties.id;
 
       departmentsSelect(
         document.getElementById('department_id'),
         selectedCountryId,
         (selectedDepartment) => {
-          console.log('Departamento seleccionado:', selectedDepartment);
           const selectedDepartmentId = selectedDepartment.customProperties.id;
 
           citiesSelect(
             document.getElementById('city_id'),
             selectedDepartmentId,
-            (selectedCity) => {
-              console.log('Ciudad seleccionada:', selectedCity);
-            }
+            (selectedCity) => {}
           );
         }
       );
