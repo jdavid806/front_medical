@@ -32,6 +32,7 @@ import { SuppliesService } from './classes/suppliesService.js';
 import DepartmentService from './classes/departmentService.js';
 import { PackagesService } from './classes/packagesService.js';
 import ClinicalRecordService from './classes/clinicalRecordService.js';
+import { UserService } from './classes/userService.js';
 
 export const authService = new AuthService('api/auth');
 
@@ -49,6 +50,7 @@ export const patientService = new PatientService('medical', 'patients');
 export const patientMockService = new PatientMockService('patients');
 
 export const userService = new BaseApiService('medical', 'users');
+export const userServiceMedical = new BaseApiService('medical');
 export const userSpecialtyService = new UserSpecialtyService('medical', 'user-specialties');
 
 // Para recursos anidados

@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { CustomSelectContainer } from "../components/CustomSelectContainer.js";
-import { userFormCountriesSelect } from "../countries/consts/countryConsts.js";
 import { userFormSpecialtiesSelect } from "../user-specialties/consts/userSpecialtiesConsts.js";
 import { userFormCitiesSelect } from "../cities/consts/cityConsts.js";
 import { userFormGendersSelect } from "../consts/genderConsts.js";
 import { userFormRolesSelect } from "../user-roles/consts/userRolesConsts.js";
 import { InputText } from 'primereact/inputtext';
+import { useCountries } from "../countries/hooks/useCountries.js";
+import { Dropdown } from 'primereact/dropdown';
 const UserForm = ({
   formId,
   handleSubmit
 }) => {
   const [user, setUser] = useState({});
-  const handleCountriesChange = countries => {
+  const {
+    countries
+  } = useCountries();
+  const handleCountryChange = country => {
     setUser({
       ...user,
-      country_id: countries[0]
+      country_id: country
     });
   };
   const handleCitiesChange = cities => {
@@ -74,9 +78,21 @@ const UserForm = ({
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
-  }, /*#__PURE__*/React.createElement(CustomSelectContainer, {
-    config: userFormCountriesSelect,
-    onChange: handleCountriesChange
+  }, /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "country_id",
+    name: "country_id",
+    options: countries,
+    value: user.country_id,
+    onChange: e => handleCountryChange(e.value),
+    optionLabel: "name",
+    optionValue: "name",
+    filter: true,
+    className: "w-100",
+    panelStyle: {
+      zIndex: 100000,
+      padding: 0
+    },
+    appendTo: "self"
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(CustomSelectContainer, {
@@ -85,16 +101,15 @@ const UserForm = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
+    className: "form-label",
+    htmlFor: "address"
   }, "Lugar o direcci\xF3n de atenci\xF3n ", /*#__PURE__*/React.createElement("span", {
     className: "text-primary"
-  }, "*")), /*#__PURE__*/React.createElement("input", {
-    className: "form-control",
-    type: "text",
-    id: "direccionAtencion",
+  }, "*")), /*#__PURE__*/React.createElement(InputText, {
+    id: "address",
     name: "address",
     placeholder: "Lugar o direcci\xF3n de atenci\xF3n",
-    required: true
+    className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(CustomSelectContainer, {

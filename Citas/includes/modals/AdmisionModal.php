@@ -881,8 +881,13 @@ include '../modals/NewCompanionModal.php';
         admissionService,
         productService,
         paymentMethodService,
-        userService
+        userService,
+        userServiceMedical
     } from './services/api/index.js';
+
+    import {
+        getJWTPayload
+    } from './services/utilidades.js';
 
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -981,7 +986,6 @@ include '../modals/NewCompanionModal.php';
         // Recorrer cada fila y agregarla a la tabla de resumen
         productRows.forEach((row, index) => {
             const cells = row.querySelectorAll('td');
-            console.log("cells:", cells);
 
             // Extraer los valores de la fila
             const productName = cells[1].textContent; // Nombre del producto
@@ -1439,7 +1443,6 @@ include '../modals/NewCompanionModal.php';
     async function getProducts() {
         try {
             const response = await productService.getAllProducts(); // ya retorna JSON
-            console.log(response);
             let products;
             if (response.data && Array.isArray(response.data)) {
                 products = response.data; // Estructura correcta
@@ -1524,7 +1527,6 @@ include '../modals/NewCompanionModal.php';
         return productService.getProductById(productId) // 👈 Ahora retornamos la promesa
             .then(response => {
                 const product = response; // Asegúrate de que la estructura de la respuesta sea correcta
-                console.log("Prpducto en promesa", product);
                 addProductToTable(product, admission); // Agregar el producto a la tabla
                 populateProductInput(product); // Llenar el input con la información del producto
                 return product; // 👈 Retornar el producto por si se necesita en otra parte
@@ -1545,7 +1547,6 @@ include '../modals/NewCompanionModal.php';
         }
 
         try {
-            console.log("Id del producto", productId);
             const product = await getProductId(productId, admission); // 👈 Esperamos la respuesta
             addProductToTable(product, admission, isEntityActive); // Agregamos el producto con el estado del toggle
         } catch (error) {
@@ -1593,7 +1594,6 @@ include '../modals/NewCompanionModal.php';
 
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
-                console.log("Id del producto global", globalProductId);
                 getProductId(globalProductId, admission);
             }
 
@@ -1854,7 +1854,7 @@ include '../modals/NewCompanionModal.php';
         document.getElementById('next_step').disabled = false;
     })
 
-    document.getElementById('saveAndCast').addEventListener('click', function() {
+    document.getElementById('saveAndCast').addEventListener('click', async function() {
         const tableBody = document.getElementById('productsTableBody');
         const rowsProducts = tableBody.getElementsByTagName('tr');
         const tableBodyPaymentsmethod = document.getElementById('paymentsTableBody');
@@ -1862,6 +1862,7 @@ include '../modals/NewCompanionModal.php';
         const dataProducts = [];
         const dataPaymentMthods = [];
         const entitySwitch = document.getElementById('entitySwitch');
+        const userToken = getJWTPayload();
 
         for (let row of rowsProducts) {
             const cells = row.getElementsByTagName('td');
@@ -1888,14 +1889,14 @@ include '../modals/NewCompanionModal.php';
             dataPaymentMthods.push(rowData);
         }
 
-        console.log(globalAdmission);
+
+
         const requestData = {
+            "userId": userToken.sub,
             "admission": {
-                "user_id": 1,
-                "admission_type_id": globalAdmission.id,
                 "authorization_number": entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
                 "authorization_date": entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
-                "appointment_id": globalAdmission.appointment_state_id,
+                "appointment_id": globalAdmission.id,
                 "debit_note_id": null,
                 "credit_note_id": null,
                 "new_invoice_id": null,
@@ -1903,7 +1904,6 @@ include '../modals/NewCompanionModal.php';
                 "moderator_fee": false
             },
             "invoice": {
-                "user_id": 1,
                 "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),
                 "observations": document.getElementById('observation').value
             },
@@ -1913,13 +1913,14 @@ include '../modals/NewCompanionModal.php';
 
         console.log(requestData);
 
-        // admissionService.createAdmission(requestData, globalAdmission.id)
-        //     .then(response => {
-        //     console.log('Admisión creada exitosamente:', response);
-        //     })
-        //     .catch(error => {
-        //     console.error('Error al crear la admisión:', error);
-        //     });
+        await admissionService.createAdmission(requestData, globalAdmission.patient_id)
+            .then(response => {
+                console.log(response);
+                // window.location.href = 'citasControl'; // Redireccionar a la página de éxito
+            })
+            .catch(error => {
+                console.error('Error al crear la admisión:', error);
+            });
 
     })
 

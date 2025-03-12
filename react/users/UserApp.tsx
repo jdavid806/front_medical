@@ -11,7 +11,24 @@ export const UserApp = () => {
 
         const formData = new FormData(e.currentTarget);
         const data = Object.fromEntries(Array.from(formData.entries()));
-        console.log(data);
+
+        const finalData = {
+            "username": data.username,
+            "email": "22222@example.com",
+            "password": data.password,
+            "first_name": "Jeferson",
+            "middle_name": "David",
+            "last_name": "Dávila",
+            "second_last_name": "Valencia",
+            "user_role_id": 1,
+            "user_specialty_id": 1,
+            "country_id": 1,
+            "city_id": 1,
+            "gender": "MALE",
+            "address": data.address,
+            "phone": data.phone
+        }
+        console.log(data, finalData);
     };
 
     const handleOpenUserFormModal = () => {

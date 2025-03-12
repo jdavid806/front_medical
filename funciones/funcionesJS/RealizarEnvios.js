@@ -1,6 +1,107 @@
-import { generarMensajePersonalizado } from "./FuncionesMensajes.js";
+async function enviarMensaje(tipoUrl, data) {
+  let datosApi = await consultarDatosWhatssap(tipoUrl);
+  console.log(datosApi.apiMensaje);
+  
+  // try {
+  //   const response = await fetch(datosApi.apiMensaje, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       apikey: datosApi.apiKey,
+  //     },
+  //     body: JSON.stringify(data),
+  //   });
 
-async function enviarMensaje(ruta, patient_id, user_id, titulo, nombreObjecto) {
+  //   const result = await response.json();
+  //   if (result) {
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "Mensaje enviado",
+  //       text: "El mensaje se ha enviado correctamente.",
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.error("Error al enviar el mensaje:", error);
+  //   Swal.fire({
+  //     icon: "error",
+  //     title: "Error",
+  //     text: "Error al enviar el mensaje.",
+  //   });
+  // }
+}
+
+// tipos de envios
+
+async function enviarTexto(mensaje, numero) {
+  const parametrosMensaje = {
+    number: numero,
+    text: mensaje,
+  };
+  enviarMensaje("sendText", parametrosMensaje);
+}
+// const parametrosMensaje = {
+//   number: "573502462970",
+//   mediatype: "document", // image, video or document
+//   caption: mensajeFinal,
+//   media: rutaFinal /* url or base64 */,
+//   fileName: titulo,
+// };
+
+async function enviarAnexo(mensaje, numero) {
+  console.log("enviado mesnaje");
+}
+
+async function enviarImagen(mensaje, numero) {
+  console.log("enviado mesnaje");
+}
+
+// funcioens globales
+async function tonifyTurn(patient_id, appointment) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let numero_paciente = datosPaciente.telefono;
+  let nombre_paciente = datosPaciente.nombre;
+
+  const datosEmpresa = await consultarDatosEmpresaPorDoctorId("1");
+
+  const datosMensaje = {
+    tenant_id: "1",
+    type: "whatsapp",
+    belongs_to: "citas-cancelacion",
+  };
+
+  // let responseTemplate = await obtenerTemplate(datosMensaje);
+
+  // let template = "";
+
+  // if (responseTemplate.data && responseTemplate.data.template) {
+  //   template = responseTemplate.data.template;
+  // } else {
+  //   template = `<p>🔔 Estimado/a ${nombre_paciente},</p>
+  //       <p>Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de entrada o contáctenos para más información.</p>
+  //       <p><strong>📞 Teléfono:</strong> ${datosEmpresa.datos_consultorio.Teléfono}</p>
+  //       <p><strong>🏥 Consultorio:</strong> ${datosEmpresa.nombre_consultorio}</p>
+  //       <p>¡Estamos atentos para ayudarle!</p>
+  //   `;
+  // }
+
+  template = `<p>🔔 Estimado/a ${nombre_paciente},</p>
+        <p>Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de entrada o contáctenos para más información.</p>
+        <p><strong>📞 Teléfono:</strong> ${datosEmpresa.datos_consultorio.Teléfono}</p>
+        <p><strong>🏥 Consultorio:</strong> ${datosEmpresa.nombre_consultorio}</p>
+        <p>¡Estamos atentos para ayudarle!</p>
+    `;
+  let mensajeFinal = convertirHtmlAWhatsapp(template);
+  enviarTexto("mensaje", numero_paciente);
+}
+
+async function enviarMensajeAnterior(
+  ruta,
+  patient_id,
+  user_id,
+  titulo,
+  nombreObjecto
+) {
   let rutaFinal = reemplazarRuta(ruta);
 
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
@@ -46,46 +147,6 @@ Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de
 ¡Estamos atentos para ayudarle!`;
 
   let mensajeFinal = convertirHtmlAWhatsapp(template);
-
-  const parametrosMensaje = {
-    number: "573502462970",
-    mediatype: "document", // image, video or document
-    caption: mensajeFinal,
-    media: rutaFinal /* url or base64 */,
-    fileName: titulo,
-  };
-
-  try {
-    const response = await fetch(datosApi.apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: datosApi.apiKey,
-      },
-      body: JSON.stringify(parametrosMensaje),
-    });
-
-    const result = await response.json();
-    if (result) {
-      Swal.fire({
-        icon: "success",
-        title: "Mensaje enviado",
-        text: "El mensaje se ha enviado correctamente.",
-      });
-    }
-  } catch (error) {
-    console.error("Error al enviar el mensaje:", error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Error al enviar el mensaje.",
-    });
-  }
-}
-
-async function envarTexto(mensaje, numero) {
-  console.log("enviado mesnaje");
 }
 
 async function enviarDocumento(
@@ -204,10 +265,4 @@ async function cerrarPuerto(user_id) {
       }
     }
   });
-}
-
-async function tonifyTurn(number, appointment) {
-  console.log("cargando footer");
-  
-  // generarMensajeTexto();
 }

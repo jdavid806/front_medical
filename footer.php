@@ -1043,7 +1043,7 @@ M. Castro c:
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    tonifyTurn(9, 13)
+    tonifyTurn(9, 13);
   });
 </script>
 <!--

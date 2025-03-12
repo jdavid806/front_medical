@@ -1,12 +1,17 @@
-async function consultarDatos() {
-  obtenerDatos();
-  // pendiente esta data
+async function consultarDatosWhatssap(tipo) {
+  let url = obtenerRutaPrincipal() + `/medical/companies/1`;
+  let datosEmpresa = await obtenerDatos(url);
+
+  let datosMensajeria = datosEmpresa.data.communications;
+  let urlBase = "https://apiwhatsapp.medicalsoft.ai/";
+
+  // consulta inatcncia
+  // "https://apiwhatsapp.medicalsoft.ai/instance/connect/testMiguel"
+
   return {
-    apiKey: "75C2D69C6DB2-4F15-BDB2-706F6F28B605",
-    apiUrl: "https://apiwhatsapp.medicalsoft.ai/message/sendMedia/testMiguel",
-    apiConnect:
-      "https://apiwhatsapp.medicalsoft.ai/instance/connect/testMiguel",
-    apiLogOut: "https://apiwhatsapp.medicalsoft.ai/instance/logout/testMiguel",
+    apiKey: datosMensajeria.api_key,
+    apiMensaje: `${urlBase}message/${tipo}/${datosMensajeria.instance}`,
+    apiInstance: urlBase + "instance/" + tipo + "/" + datosMensajeria.instance,
   };
 }
 
@@ -20,7 +25,9 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  let url = obtenerRutaPrincipal() + `/medical/entities/${data.social_security.entity_id}`;
+  let url =
+    obtenerRutaPrincipal() +
+    `/medical/entities/${data.social_security.entity_id}`;
   let entidad = await obtenerDatos(url);
 
   let nombrEntidad = entidad.data.name;
@@ -54,11 +61,11 @@ async function consultarDatosEnvioPaciente(pacienteId) {
   ];
 
   let indicativo = await getCountryInfo(data.country_id);
-  
+
   return {
     nombre: unirTextos(nombre),
     documento: data.document_type + "-" + data.document_number,
-    telefono: indicativo+ data.whatsapp,
+    telefono: indicativo + data.whatsapp,
   };
 }
 

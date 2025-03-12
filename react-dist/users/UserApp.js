@@ -8,7 +8,23 @@ export const UserApp = () => {
     console.log(e.currentTarget);
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(Array.from(formData.entries()));
-    console.log(data);
+    const finalData = {
+      "username": "medicalsoft3",
+      "email": "22222@example.com",
+      "password": "12345678",
+      "first_name": "Jeferson",
+      "middle_name": "David",
+      "last_name": "Dávila",
+      "second_last_name": "Valencia",
+      "user_role_id": 1,
+      "user_specialty_id": 1,
+      "country_id": 1,
+      "city_id": 1,
+      "gender": "MALE",
+      "address": "123 Main St, Apt 4B",
+      "phone": "+1234567890"
+    };
+    console.log(data, finalData);
   };
   const handleOpenUserFormModal = () => {
     setShowUserFormModal(true);
