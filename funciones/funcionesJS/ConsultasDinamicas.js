@@ -1,4 +1,5 @@
-async function consultarDatosWhatssapPorDoctorId(doctorId) {
+async function consultarDatos() {
+  obtenerDatos();
   // pendiente esta data
   return {
     apiKey: "75C2D69C6DB2-4F15-BDB2-706F6F28B605",

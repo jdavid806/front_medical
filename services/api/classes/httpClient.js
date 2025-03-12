@@ -12,7 +12,7 @@ export class HttpClient {
 
     async request(endpoint, method, data = null, params = null) {
         try {
-            const response = await fetch(`http://${this.baseUrl}${endpoint}?${params}`, {
+            const response = await fetch(`https://${this.baseUrl}${endpoint}?${params}`, {
                 method,
                 headers: this.defaultHeaders,
                 body: data ? JSON.stringify(data) : null,

@@ -5,6 +5,7 @@ export const useUsers = () => {
   const fetchUsers = async () => {
     try {
       const data = await userService.getAll();
+      console.log('users', data);
       setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);

@@ -191,30 +191,6 @@ export const PatientInfo = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Tipo de regimen:"), " ", patient.social_security.type_scheme), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Categoria:"), " ", patient.social_security.category)), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Tipo de afiliado:"), " ", patient.social_security.affiliate_type)), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Entidad prestadora de salud (EPS):"), " ", patient.social_security.eps), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Administradora de riesgos laborales (ARL):"), " ", patient.social_security.arl)), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Administradora de fondos de pensiones (AFP):"), " ", patient.social_security.afp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Sucursal:"), " Medellin"))), /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Aseguradora"), " ", patient.social_security["entity"].name || "No tiene aseguradora"))));
+    className: "fw-bold me-2"
+  }, "Aseguradora"), patient.social_security["entity"]?.name || "No tiene aseguradora"))));
 };

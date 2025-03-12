@@ -984,10 +984,10 @@ include '../modals/NewCompanionModal.php';
             console.log("cells:", cells);
 
             // Extraer los valores de la fila
-            const productName = cells[0].textContent; // Nombre del producto
-            const productPrice = cells[1].textContent; // Precio
-            const productQuantity = cells[2].textContent; // Cantidad
-            const subtotal = cells[4].textContent; // Subtotal
+            const productName = cells[1].textContent; // Nombre del producto
+            const productPrice = cells[2].textContent; // Precio
+            const productQuantity = cells[0].textContent; // Cantidad
+            const subtotal = cells[2].textContent; // Subtotal
 
             // Crear la fila para la tabla de resumen
             const summaryRow = document.createElement('tr');
@@ -1912,6 +1912,14 @@ include '../modals/NewCompanionModal.php';
         }
 
         console.log(requestData);
+
+        // admissionService.createAdmission(requestData, globalAdmission.id)
+        //     .then(response => {
+        //     console.log('Admisión creada exitosamente:', response);
+        //     })
+        //     .catch(error => {
+        //     console.error('Error al crear la admisión:', error);
+        //     });
 
     })
 

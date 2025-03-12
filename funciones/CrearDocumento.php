@@ -28,48 +28,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $tipo_Impresion = $_POST['tipo_Impresion'];
   $tipo_documento = $_POST['tipoDocumento'];
 
-  if ($tipo_documento == "Descarga") {
-    $generarDescarga = true;
-  } else {
-    $generarDescarga = false;
-  }
+  // Mostrar los valores capturados para depuración
+  echo "<h2>Datos Capturados</h2>";
+  echo "<strong>Título:</strong> " . htmlspecialchars($titulo) . "<br>";
+  echo "<strong>Contenido:</strong> " . htmlspecialchars($contenido) . "<br>";
+  echo "<strong>Tipo de Impresión:</strong> " . htmlspecialchars($tipo_Impresion) . "<br>";
+  echo "<strong>Tipo de Documento:</strong> " . htmlspecialchars($tipo_documento) . "<br>";
 
-  $sin_logo = empty($logo_consultorio) || in_array(strtolower(trim($logo_consultorio)), ["vacío", "No especificado", "null", ""]);
-  $sin_marca_agua = empty($marca_agua) || in_array(strtolower(trim($marca_agua)), ["vacío", "No especificado", "null", ""]);
-  $sin_firma = empty($firma_doctor) || in_array(strtolower(trim($firma_doctor)), ["vacío", "No especificado", "null", ""]);
+  echo "<h3>Consultorio</h3>";
+  echo "<pre>" . print_r($consultorio, true) . "</pre>";
 
-  if (!$sin_logo) {
-    $tamañoDiv = "70%";
-    $paddingDiv = "20px";
-  } else {
-    $tamañoDiv = "100%";
-    $paddingDiv = "0px";
-  }
+  echo "<h3>Paciente</h3>";
+  echo "<pre>" . print_r($datos_paciente, true) . "</pre>";
 
-  if (!$sin_firma) {
-    $firmaDigital = "<p><strong>Firmado Digitalmente</strong></p>";
-  } else {
-    $firmaDigital = "";
-  }
+  echo "<h3>Doctor</h3>";
+  echo "<pre>" . print_r($doctor, true) . "</pre>";
 
-  $nombrePdf = $titulo . "_" . $datos_paciente['datos_basicos']['documento'] . "_" . $datos_paciente['datos_generales']['fecha_consulta'] . ".pdf";
+  // if ($tipo_documento == "Descarga") {
+  //   $generarDescarga = true;
+  // } else {
+  //   $generarDescarga = false;
+  // }
 
-  ob_start();
-  include "../PlantillasImpresion/PDescargaCarta.php";
-  $html = ob_get_clean();
+  // $sin_logo = empty($logo_consultorio) || in_array(strtolower(trim($logo_consultorio)), ["vacío", "No especificado", "null", ""]);
+  // $sin_marca_agua = empty($marca_agua) || in_array(strtolower(trim($marca_agua)), ["vacío", "No especificado", "null", ""]);
+  // $sin_firma = empty($firma_doctor) || in_array(strtolower(trim($firma_doctor)), ["vacío", "No especificado", "null", ""]);
 
-  $options = $dompdf->getOptions();
-  $options->set(array('isRemoteEnabled' => true));
-  $options->set('defaultPaperSize', 'letter');
-  $options->set('isHtml5ParserEnabled', true);
-  $dompdf->setOptions($options);
+  // if (!$sin_logo) {
+  //   $tamañoDiv = "70%";
+  //   $paddingDiv = "20px";
+  // } else {
+  //   $tamañoDiv = "100%";
+  //   $paddingDiv = "0px";
+  // }
 
-  $dompdf->loadHtml($html);
+  // if (!$sin_firma) {
+  //   $firmaDigital = "<p><strong>Firmado Digitalmente</strong></p>";
+  // } else {
+  //   $firmaDigital = "";
+  // }
 
-  $dompdf->render();
+  // $nombrePdf = $titulo . "_" . $datos_paciente['datos_basicos']['documento'] . "_" . $datos_paciente['datos_generales']['fecha_consulta'] . ".pdf";
 
-  header('Content-Type: application/pdf');
-  $dompdf->stream($nombrePdf, array("Attachment" => $generarDescarga));
+  // ob_start();
+  // include "../PlantillasImpresion/PDescargaCartaTest.php";
+  // // include "../PlantillasImpresion/PDescargaCarta.php";
+  // $html = ob_get_clean();
+
+  // $options = $dompdf->getOptions();
+  // $options->set(array('isRemoteEnabled' => true));
+  // $options->set('defaultPaperSize', 'letter');
+  // $options->set('isHtml5ParserEnabled', true);
+  // $dompdf->setOptions($options);
+
+  // $dompdf->loadHtml($html);
+
+  // $dompdf->render();
+
+  // header('Content-Type: application/pdf');
+  // $dompdf->stream($nombrePdf, array("Attachment" => $generarDescarga));
 } else {
   http_response_code(405);
   echo "Acceso no permitido.";

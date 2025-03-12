@@ -1040,6 +1040,12 @@ M. Castro c:
 <script src="Documentos/js/CrudConsentimientos.js"></script>
 <script src="Documentos/js/UtilsConsentimientos.js"></script>
 
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    tonifyTurn(9, 13)
+  });
+</script>
 <!--
 hasta aca construyo
 M. Castro c:

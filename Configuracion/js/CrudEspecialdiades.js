@@ -14,7 +14,7 @@ async function cargarEspecialidades() {
       row.innerHTML = `
             <td class="name">${especialidad.name}</td>
             <td>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" onclick="abrirModal(${especialidad.id})"  data-bs-target="#vincularHistoriasClinicas">
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" onclick="abrirModal(${especialidad.id}, '${especialidad.name}')"  data-bs-target="#vincularHistoriasClinicas">
                   <i class="fa-solid fa-gears"></i>
                 </button></th>
             </td>
@@ -112,7 +112,7 @@ function obtenerElementosTabla() {
     const tipo = fila.cells[0].textContent;
     const nombre = fila.cells[1].textContent;
     const id = fila.querySelector(".elemento-id").value;
-    const productId = document.getElementById("speciality_id")?.value;
+    const productId = document.getElementById("speciality_name")?.value;
 
     elementos.push({
       specializable_type: tipo,
@@ -124,8 +124,9 @@ function obtenerElementosTabla() {
   return elementos;
 }
 
-function abrirModal(id) {
+function abrirModal(id, name) {
   let hiddenInput = document.getElementById("speciality_id");
+  let hiddenName = document.getElementById("speciality_name");
   if (!hiddenInput) {
     hiddenInput = document.createElement("input");
     hiddenInput.type = "hidden";
@@ -135,16 +136,21 @@ function abrirModal(id) {
       .getElementById("formVincularHistoriasClinicas")
       .appendChild(hiddenInput);
   }
+  if (!hiddenName) {
+    hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.id = "speciality_name";
+    hiddenInput.name = "speciality_name";
+    document
+      .getElementById("formVincularHistoriasClinicas")
+      .appendChild(hiddenInput);
+  }
   hiddenInput.value = id;
+  hiddenName.value = name;
 }
 
 async function updateEspecilidad(id, especialidad) {
   let url = obtenerRutaPrincipal() + `/medical/specializables/${id}`;
-
-  console.log(ulr);
-  console.log(especialidad);
-
-
   actualizarDatos(url, especialidad);
 }
 

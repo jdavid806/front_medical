@@ -22,6 +22,7 @@ export type UserAvailabilityFormInputs = {
     appointment_type_id: string
     appointment_duration: number
     branch_id: string
+    office: string
 }
 
 interface UserAvailabilityFormProps {
@@ -98,7 +99,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
         <div>
             <form id={formId} className="needs-validation" noValidate onSubmit={handleSubmit(onSubmit)}>
                 <Stepper ref={stepperRef}>
-                    <StepperPanel header="Información general xd">
+                    <StepperPanel header="Información general">
                         <div className="mb-3">
                             <Controller
                                 name='user_id'
@@ -125,15 +126,25 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Consultorio *</label>
-                            <InputText
-                                className="w-100"
-                                type="text"
-                                id="office"
-                                value={office}
-                                onChange={(e) => setOffice(e.target.value)}
-                                placeholder="Ingrese el consultorio"
+                            <Controller
+                                name='user_id'
+                                control={control}
+                                rules={{ required: 'Este campo es requerido' }}
+                                render={({ field }) =>
+                                    <>
+                                        <label className="form-label">Consultorio *</label>
+                                        <InputText
+                                            className="w-100"
+                                            type="text"
+                                            id="office"
+                                            value={office}
+                                            onChange={(e) => setOffice(e.target.value)}
+                                            placeholder="Ingrese el consultorio"
+                                        />
+                                    </>
+                                }
                             />
+                            {getFormErrorMessage('user_id')}
                         </div>
 
                         <div className="mb-3">

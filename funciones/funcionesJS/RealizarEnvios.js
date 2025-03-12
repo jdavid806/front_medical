@@ -1,3 +1,5 @@
+import { generarMensajePersonalizado } from "./FuncionesMensajes.js";
+
 async function enviarMensaje(ruta, patient_id, user_id, titulo, nombreObjecto) {
   let rutaFinal = reemplazarRuta(ruta);
 
@@ -15,7 +17,9 @@ async function enviarMensaje(ruta, patient_id, user_id, titulo, nombreObjecto) {
   switch (nombreObjecto) {
     case "Incapacidad":
       tipoMensaje = "incapacidades-compartir";
-
+      break;
+    case "Incapacidad":
+      tipoMensaje = "incapacidades-compartir";
       break;
 
     default:
@@ -31,7 +35,7 @@ async function enviarMensaje(ruta, patient_id, user_id, titulo, nombreObjecto) {
   let responseTemplate = await obtenerTemplate(constDatosMensaje);
 
   let template =
-  responseTemplate.data?.template ||
+    responseTemplate.data?.template ||
     `🔔 Estimado/a ${nombre_paciente},
 
 Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de entrada o contáctenos para más información.
@@ -78,6 +82,10 @@ Le informamos que tiene una nueva notificación. Por favor, revise su bandeja de
       text: "Error al enviar el mensaje.",
     });
   }
+}
+
+async function envarTexto(mensaje, numero) {
+  console.log("enviado mesnaje");
 }
 
 async function enviarDocumento(
@@ -196,4 +204,10 @@ async function cerrarPuerto(user_id) {
       }
     }
   });
+}
+
+async function tonifyTurn(number, appointment) {
+  console.log("cargando footer");
+  
+  // generarMensajeTexto();
 }

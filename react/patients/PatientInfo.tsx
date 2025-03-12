@@ -284,7 +284,7 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
         <i className="fa-solid fa-book-medical fa-lg"></i> Seguridad Social y
         Afiliación
       </h3>
-      <div className="row">
+      {/* <div className="row">
         <div className="col-md-6">
           <p>
             <span className="fw-bold">Tipo de regimen:</span>{" "}
@@ -324,12 +324,12 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
             <span className="fw-bold">Sucursal:</span> Medellin
           </p>
         </div>
-      </div>
+      </div> */}
       <div className="row">
         <div className="col-md-6">
           <p>
-            <span className="fw-bold">Aseguradora</span>{" "}
-            {patient.social_security["entity"].name || "No tiene aseguradora"}
+            <span className="fw-bold me-2">Aseguradora</span>
+            {patient.social_security["entity"]?.name || "No tiene aseguradora"}
           </p>
         </div>
       </div>

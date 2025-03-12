@@ -172,41 +172,131 @@
 
         <div class="tab-pane fade" id="facturacion-tab-pane" role="tabpanel" aria-labelledby="facturacion-tab">
 
-          <form class="row g-3 needs-validation" novalidate>
-            <div class="col-12">
-              <label class="form-label" for="prefijo">Prefijo DIAN</label>
-              <input class="form-control" id="prefijo" type="text" placeholder="Ej: ABC" required>
-              <div class="invalid-feedback">Favor ingrese el prefijo DIAN.</div>
+          <ul class="nav nav-underline fs-9" id="tabFacturasConfig" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" id="fiscal-tab" data-bs-toggle="tab"
+                href="#tab-fiscal" role="tab" aria-controls="tab-fiscal" aria-selected="true">Fiscal</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="gubernamental-tab" data-bs-toggle="tab"
+                href="#tab-gubernamental" role="tab" aria-controls="tab-gubernamental" aria-selected="false"
+                tabindex="-1">Gubernamental</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" id="notaCredito-tab" data-bs-toggle="tab"
+                href="#tab-notaCredito" role="tab" aria-controls="tab-notaCredito" aria-selected="false"
+                tabindex="-1">Notas Credito</a></li>
+          </ul>
+          <div class="tab-content mt-3" id="tabFacturasConfigContent">
+            <div class="tab-pane fade show active" id="tab-fiscal" role="tabpanel" aria-labelledby="fiscal-tab">
+              <form class="row g-3 needs-validation" novalidate>
+                <div class="col-12">
+                  <label class="form-label" for="prefijo">Prefijo DGII</label>
+                  <input class="form-control" id="prefijo" type="text" placeholder="Ej: ABC" required>
+                  <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="numeroResolucion">Número Resolución</label>
+                  <input class="form-control" id="numeroResolucion" type="text" placeholder="Ej: 1234567890" required>
+                  <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaDesde">Facturas Desde</label>
+                  <input class="form-control" id="facturaDesde" type="number" min="1" placeholder="Ej: 1001" required>
+                  <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaHasta">Facturas Hasta</label>
+                  <input class="form-control" id="facturaHasta" type="number" min="1" placeholder="Ej: 2000" required>
+                  <div class="invalid-feedback">Ingrese el número final de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaResolucion">Fecha Resolución</label>
+                  <input class="form-control" id="fechaResolucion" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
+                  <input class="form-control" id="fechaVencimiento" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de vencimiento.</div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
             </div>
-            <div class="col-12">
-              <label class="form-label" for="numeroResolucion">Número Resolución</label>
-              <input class="form-control" id="numeroResolucion" type="text" placeholder="Ej: 1234567890" required>
-              <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
+            <div class="tab-pane fade" id="tab-gubernamental" role="tabpanel" aria-labelledby="gubernamental-tab">
+
+              <form class="row g-3 needs-validation" novalidate>
+                <div class="col-12">
+                  <label class="form-label" for="prefijo">Prefijo DGII</label>
+                  <input class="form-control" id="prefijo" type="text" placeholder="Ej: ABC" required>
+                  <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="numeroResolucion">Número Resolución</label>
+                  <input class="form-control" id="numeroResolucion" type="text" placeholder="Ej: 1234567890" required>
+                  <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaDesde">Facturas Desde</label>
+                  <input class="form-control" id="facturaDesde" type="number" min="1" placeholder="Ej: 1001" required>
+                  <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaHasta">Facturas Hasta</label>
+                  <input class="form-control" id="facturaHasta" type="number" min="1" placeholder="Ej: 2000" required>
+                  <div class="invalid-feedback">Ingrese el número final de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaResolucion">Fecha Resolución</label>
+                  <input class="form-control" id="fechaResolucion" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
+                  <input class="form-control" id="fechaVencimiento" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de vencimiento.</div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
             </div>
-            <div class="col-md-6">
-              <label class="form-label" for="facturaDesde">Facturas Desde</label>
-              <input class="form-control" id="facturaDesde" type="number" min="1" placeholder="Ej: 1001" required>
-              <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
+            <div class="tab-pane fade" id="tab-notaCredito" role="tabpanel" aria-labelledby="notaCredito-tab">
+
+              <form class="row g-3 needs-validation" novalidate>
+                <div class="col-12">
+                  <label class="form-label" for="prefijo">Prefijo DGII</label>
+                  <input class="form-control" id="prefijo" type="text" placeholder="Ej: ABC" required>
+                  <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="numeroResolucion">Número Resolución</label>
+                  <input class="form-control" id="numeroResolucion" type="text" placeholder="Ej: 1234567890" required>
+                  <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaDesde">Facturas Desde</label>
+                  <input class="form-control" id="facturaDesde" type="number" min="1" placeholder="Ej: 1001" required>
+                  <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="facturaHasta">Facturas Hasta</label>
+                  <input class="form-control" id="facturaHasta" type="number" min="1" placeholder="Ej: 2000" required>
+                  <div class="invalid-feedback">Ingrese el número final de facturas.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaResolucion">Fecha Resolución</label>
+                  <input class="form-control" id="fechaResolucion" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de resolución.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
+                  <input class="form-control" id="fechaVencimiento" type="date" required>
+                  <div class="invalid-feedback">Seleccione la fecha de vencimiento.</div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" type="submit">Guardar</button>
+                </div>
+              </form>
             </div>
-            <div class="col-md-6">
-              <label class="form-label" for="facturaHasta">Facturas Hasta</label>
-              <input class="form-control" id="facturaHasta" type="number" min="1" placeholder="Ej: 2000" required>
-              <div class="invalid-feedback">Ingrese el número final de facturas.</div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="fechaResolucion">Fecha Resolución</label>
-              <input class="form-control" id="fechaResolucion" type="date" required>
-              <div class="invalid-feedback">Seleccione la fecha de resolución.</div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
-              <input class="form-control" id="fechaVencimiento" type="date" required>
-              <div class="invalid-feedback">Seleccione la fecha de vencimiento.</div>
-            </div>
-            <div class="col-12">
-              <button class="btn btn-primary" type="submit">Guardar</button>
-            </div>
-          </form>
+          </div>
 
         </div>
 
@@ -388,7 +478,11 @@
     document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function (event) {
       event.preventDefault();
       const datos = capturarDatosInformacionGeneral();
-      console.log('Datos Información General:', datos);
+      // guardarDatos(
+      //   obtenerRutaPrincipal() + "/medical/companies/",
+      //   retencion
+      // );
+      // console.log('Datos Información General:', datos);
       // Aquí puedes enviar los datos a tu backend o hacer lo que necesites
     });
 
@@ -413,43 +507,4 @@
       console.log('Datos SMTP:', datos);
     });
   });
-</script>
-
-
-<script>
-  function capturarDatosFacturacion() {
-    const datos = {
-      prefijo: document.getElementById("prefijo").value,
-      numeroResolucion: document.getElementById("numeroResolucion").value,
-      facturaDesde: document.getElementById("facturaDesde").value,
-      facturaHasta: document.getElementById("facturaHasta").value,
-      fechaResolucion: document.getElementById("fechaResolucion").value,
-      fechaVencimiento: document.getElementById("fechaVencimiento").value,
-    };
-    return datos;
-  }
-
-  function capturarDatosContacto() {
-    const datos = {
-      telefonoConsultorio: document.getElementById("telefono-consultorio").value,
-      correoConsultorio: document.getElementById("correo-consultorio").value,
-      direccionConsultorio: document.getElementById("direccion-consultorio")
-        .value,
-      paisConsultorio: document.getElementById("pais-consultorio").value,
-      ciudadConsultorio: document.getElementById("ciudad-consultorio").value,
-    };
-    return datos;
-  }
-
-  function capturarDatosSMTP() {
-    const datos = {
-      smtpServidor: document.getElementById("smtpServidor").value,
-      smtpPuerto: document.getElementById("smtpPuerto").value,
-      smtpSeguridad: document.getElementById("smtpSeguridad").value,
-      smtpUsuario: document.getElementById("smtpUsuario").value,
-      smtpClave: document.getElementById("smtpClave").value,
-    };
-    return datos;
-  }
-
 </script>
