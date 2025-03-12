@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { CustomSelectContainer } from '../components/CustomSelectContainer';
-import { userFormSpecialtiesSelect } from '../user-specialties/consts/userSpecialtiesConsts';
-import { userFormCitiesSelect } from '../cities/consts/cityConsts';
-import { userFormGendersSelect } from '../consts/genderConsts';
-import { userFormRolesSelect } from '../user-roles/consts/userRolesConsts';
 import { InputText } from 'primereact/inputtext';
-import { useCountries } from '../countries/hooks/useCountries';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
+import { useCountries } from '../countries/hooks/useCountries';
+import { useCities } from '../cities/hooks/useCities';
+import { genders } from '../../services/commons';
+import { useRoles } from '../user-roles/hooks/useUserRoles';
+import { useUserSpecialties } from '../user-specialties/hooks/useUserSpecialties';
 
 export type UserFormInputs = {
     username: string;
@@ -57,8 +56,9 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
             address: '',
             phone: '',
         }
-    })
-    const onSubmit: SubmitHandler<UserFormInputs> = (data) => onHandleSubmit(data)
+    });
+
+    const onSubmit: SubmitHandler<UserFormInputs> = (data) => onHandleSubmit(data);
 
     const getFormErrorMessage = (name: keyof UserFormInputs) => {
         return errors[name] && <small className="p-error">{errors[name].message}</small>
@@ -83,29 +83,33 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
         });
     }, [initialData, reset]);
 
-    const { countries } = useCountries()
+    const { countries } = useCountries();
+    const { cities } = useCities();
+    const { userRoles } = useRoles();
+    const { userSpecialties } = useUserSpecialties();
+    const gendersForSelect = Object.entries(genders).map(([value, label]) => ({ value, label }))
 
     return (
         <>
             <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-                <div className="card">
+                <div className="card mb-2">
                     <div className="card-body">
                         <div className="row">
                             <div className="col-md-6 mb-1">
                                 <Controller
                                     name="first_name"
                                     control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
                                     render={({ field }) => (
-                                        <InputText
-                                            id={field.name}
-                                            name={field.name}
-                                            placeholder="Primer nombre"
-                                            className='w-100'
-                                            ref={field.ref}
-                                            value={field.value}
-                                            onBlur={field.onBlur}
-                                            onChange={field.onChange}
-                                        />
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Primer nombre <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                placeholder="Primer nombre"
+                                                className={classNames('w-100', { 'p-invalid': errors.first_name })}
+                                                {...field}
+                                            />
+                                        </>
                                     )}
                                 />
                                 {getFormErrorMessage('first_name')}
@@ -116,18 +120,12 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                     control={control}
                                     render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">
-                                                Apellido <span className="text-primary">*</span>
-                                            </label>
+                                            <label htmlFor={field.name} className="form-label">Segundo nombre</label>
                                             <InputText
                                                 id={field.name}
-                                                name={field.name}
                                                 placeholder="Segundo nombre"
                                                 className='w-100'
-                                                ref={field.ref}
-                                                value={field.value}
-                                                onBlur={field.onBlur}
-                                                onChange={field.onChange}
+                                                {...field}
                                             />
                                         </>
                                     )}
@@ -138,20 +136,15 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                 <Controller
                                     name="last_name"
                                     control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
                                     render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">
-                                                Apellido <span className="text-primary">*</span>
-                                            </label>
+                                            <label htmlFor={field.name} className="form-label">Primer apellido <span className="text-primary">*</span></label>
                                             <InputText
                                                 id={field.name}
-                                                name={field.name}
                                                 placeholder="Primer apellido"
-                                                className='w-100'
-                                                ref={field.ref}
-                                                value={field.value}
-                                                onBlur={field.onBlur}
-                                                onChange={field.onChange}
+                                                className={classNames('w-100', { 'p-invalid': errors.last_name })}
+                                                {...field}
                                             />
                                         </>
                                     )}
@@ -164,18 +157,12 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                     control={control}
                                     render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">
-                                                Apellido <span className="text-primary">*</span>
-                                            </label>
+                                            <label htmlFor={field.name} className="form-label">Segundo apellido</label>
                                             <InputText
                                                 id={field.name}
-                                                name={field.name}
                                                 placeholder="Segundo apellido"
                                                 className='w-100'
-                                                ref={field.ref}
-                                                value={field.value}
-                                                onBlur={field.onBlur}
-                                                onChange={field.onChange}
+                                                {...field}
                                             />
                                         </>
                                     )}
@@ -187,75 +174,173 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                     name='country_id'
                                     control={control}
                                     rules={{ required: 'Este campo es requerido' }}
-                                    render={({ field }) =>
+                                    render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">País *</label>
+                                            <label htmlFor={field.name} className="form-label">País <span className="text-primary">*</span></label>
                                             <Dropdown
                                                 inputId={field.name}
                                                 options={countries}
                                                 optionLabel='name'
                                                 optionValue='name'
-                                                filter
                                                 placeholder="Seleccione un país"
                                                 className={classNames('w-100', { 'p-invalid': errors.country_id })}
                                                 {...field}
-                                            >
-                                            </Dropdown>
+                                            />
                                         </>
-                                    }
+                                    )}
                                 />
                                 {getFormErrorMessage('country_id')}
                             </div>
                             <div className="col-md-6 mb-1">
                                 <Controller
-                                    name='country_id'
+                                    name='city_id'
                                     control={control}
                                     rules={{ required: 'Este campo es requerido' }}
-                                    render={({ field }) =>
+                                    render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">País *</label>
+                                            <label htmlFor={field.name} className="form-label">Ciudad <span className="text-primary">*</span></label>
                                             <Dropdown
                                                 inputId={field.name}
-                                                options={countries}
+                                                options={cities}
                                                 optionLabel='name'
                                                 optionValue='name'
-                                                filter
-                                                placeholder="Seleccione un país"
-                                                className={classNames('w-100', { 'p-invalid': errors.branch_id })}
+                                                placeholder="Seleccione una ciudad"
+                                                className={classNames('w-100', { 'p-invalid': errors.city_id })}
                                                 {...field}
-                                            >
-                                            </Dropdown>
+                                            />
                                         </>
-                                    }
+                                    )}
                                 />
-                                {getFormErrorMessage('country_id')}
+                                {getFormErrorMessage('city_id')}
                             </div>
                             <div className="col-md-6 mb-1">
-                                <label
-                                    className="form-label"
-                                    htmlFor='address'>
-                                    Lugar o dirección de atención <span className="text-primary">*</span>
-                                </label>
-                                <InputText
-                                    id="address"
+                                <Controller
+                                    name='gender'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Género <span className="text-primary">*</span></label>
+                                            <Dropdown
+                                                inputId={field.name}
+                                                options={gendersForSelect}
+                                                optionLabel='label'
+                                                optionValue='value'
+                                                placeholder="Seleccione un género"
+                                                className={classNames('w-100', { 'p-invalid': errors.gender })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {getFormErrorMessage('gender')}
+                            </div>
+                            <div className="col-md-6 mb-1">
+                                <Controller
                                     name='address'
-                                    placeholder="Lugar o dirección de atención"
-                                    className='w-100'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Dirección <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                placeholder="Dirección"
+                                                className={classNames('w-100', { 'p-invalid': errors.address })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
                                 />
+                                {getFormErrorMessage('address')}
                             </div>
                             <div className="col-md-6 mb-1">
-                                <CustomSelectContainer
-                                    config={userFormGendersSelect}
-                                    onChange={handleGenderChange}
+                                <Controller
+                                    name='phone'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Teléfono <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                placeholder="Teléfono"
+                                                className={classNames('w-100', { 'p-invalid': errors.phone })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
                                 />
+                                {getFormErrorMessage('phone')}
                             </div>
                             <div className="col-md-6 mb-1">
-                                <label className="form-label">Número de Contacto <span className="text-primary">*</span></label>
-                                <input className="form-control" type="text" id="numeroContacto" name='phone' placeholder="Número de Contacto" required />
+                                <Controller
+                                    name='email'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido', pattern: { value: /^\S+@\S+$/i, message: 'Correo inválido' } }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Correo <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                placeholder="Correo"
+                                                className={classNames('w-100', { 'p-invalid': errors.email })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {getFormErrorMessage('email')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="card mb-2">
+                    <div className="card-body">
+                        <div className="row">
+                            <div className="col-md-6 mb-1">
+                                <Controller
+                                    name='user_role_id'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Rol <span className="text-primary">*</span></label>
+                                            <Dropdown
+                                                inputId={field.name}
+                                                options={userRoles}
+                                                optionLabel='name'
+                                                optionValue='id'
+                                                placeholder="Seleccione un rol"
+                                                className={classNames('w-100', { 'p-invalid': errors.user_role_id })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {getFormErrorMessage('user_role_id')}
                             </div>
                             <div className="col-md-6 mb-1">
-                                <label className="form-label">Correo <span className="text-primary">*</span></label>
-                                <input className="form-control" type="email" id="correoContacto" name='email' placeholder="Correo" required />
+                                <Controller
+                                    name='user_specialty_id'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Especialidad <span className="text-primary">*</span></label>
+                                            <Dropdown
+                                                inputId={field.name}
+                                                options={userSpecialties}
+                                                optionLabel='name'
+                                                optionValue='id'
+                                                placeholder="Seleccione una especialidad"
+                                                className={classNames('w-100', { 'p-invalid': errors.user_specialty_id })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {getFormErrorMessage('user_specialty_id')}
                             </div>
                         </div>
                     </div>
@@ -263,33 +348,44 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                 <div className="card">
                     <div className="card-body">
                         <div className="row">
-                            <div className="col-md-12 mb-1">
-                                <CustomSelectContainer
-                                    config={userFormRolesSelect}
-                                    onChange={handleRoleChange}
+                            <div className="col-md-6 mb-1">
+                                <Controller
+                                    name='username'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Username <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                placeholder="Username"
+                                                className={classNames('w-100', { 'p-invalid': errors.username })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
                                 />
+                                {getFormErrorMessage('username')}
                             </div>
                             <div className="col-md-6 mb-1">
-                                <div className={user.user_role_id === 3 ? 'd-block' : 'd-none'}>
-                                    <CustomSelectContainer
-                                        config={userFormSpecialtiesSelect}
-                                        onChange={handleSpecialtyChange}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="row">
-                            <div className="col-md-6 mb-1">
-                                <label className="form-label">Username <span className="text-primary">*</span></label>
-                                <input className="form-control" type="text" required id="username" name='username' placeholder="Username" />
-                            </div>
-                            <div className="col-md-6 mb-1">
-                                <label className="form-label">Contraseña <span className="text-primary">*</span></label>
-                                <input className="form-control" type="password" required id="password" name='password' placeholder="Contraseña" />
+                                <Controller
+                                    name='password'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) => (
+                                        <>
+                                            <label htmlFor={field.name} className="form-label">Contraseña <span className="text-primary">*</span></label>
+                                            <InputText
+                                                id={field.name}
+                                                type="password"
+                                                placeholder="Contraseña"
+                                                className={classNames('w-100', { 'p-invalid': errors.password })}
+                                                {...field}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {getFormErrorMessage('password')}
                             </div>
                         </div>
                     </div>

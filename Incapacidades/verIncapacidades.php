@@ -37,9 +37,9 @@ include "../header.php";
             <h2 class="mb-0">Incapacidades</h2>
             <small class="patientName">Cargando...</small>
           </div>
-          <!-- <button id="btnModalCrearIncapacidad" type="button" class="btn btn-primary">
+          <button id="btnModalCrearIncapacidad" type="button" class="btn btn-primary">
             <i class="fa-solid fa-plus me-2"></i>Nueva incapacidad
-          </button> -->
+          </button>
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@ include "../header.php";
 
   <?php
   include './modalIncapacidad.php'
-  ?>
+    ?>
 
   <template id="templateIncapacidad">
     <tr>
@@ -210,7 +210,7 @@ include "../header.php";
       });
     }
 
-    // document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
+    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
 
     const template = document.getElementById("templateIncapacidad");
     const table = document.getElementById("tableIncapacidades");
@@ -230,8 +230,6 @@ include "../header.php";
     renderIncapacidades(incapacidades);
 
     function renderIncapacidades(incapacidades) {
-      console.log('Incapacidades:', incapacidades);
-
       table.innerHTML = "";
       incapacidades.forEach(incapacidad => {
         const clone = template.content.cloneNode(true);
@@ -266,14 +264,12 @@ include "../header.php";
   </script>
 
   <script>
-    // document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function() {
-    //   $("#modalCrearIncapacidadLabel").html(`Crear Incapacidad`);
+    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function () {
+      $("#modalCrearIncapacidadLabel").html(`Crear Incapacidad`);
 
-    //   document.getElementById("formCrearIncapacidad").reset();
-    //   if (document.getElementById('recurrencia')) {
-    //     checkRecurrencia(document.getElementById('recurrencia'))
-    //   }
-    // })
+      document.getElementById("formCrearIncapacidad").reset();
+      checkRecurrencia(document.getElementById('recurrencia'))
+    })
   </script>
 
   <?php include "../footer.php"; ?>

@@ -2,15 +2,18 @@
 $tabs = [
   'citas' => [
     'title' => 'Citas',
+    'botones' => 'Citas',
     'subtabs' => [
       'creacion' => 'Creación',
       'cancelacion' => 'Cancelación',
       'reagendamiento' => 'Reagendamiento',
+      'turno' => 'Llamado a Turno',
       'compartir' => 'Compartir'
     ]
   ],
   'historia_clinica' => [
     'title' => 'Historia Clínica',
+    'botones' => 'Historia',
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
@@ -18,6 +21,7 @@ $tabs = [
   ],
   'recetas' => [
     'title' => 'Recetas',
+    'botones' => 'Recetas',
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
@@ -25,6 +29,7 @@ $tabs = [
   ],
   'incapacidades' => [
     'title' => 'Incapacidades',
+    'botones' => 'Incapacidad',
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
@@ -32,6 +37,7 @@ $tabs = [
   ],
   'facturacion' => [
     'title' => 'Facturación',
+    'botones' => 'Factura',
     'subtabs' => [
       'creacion' => 'Creación',
       'anulacion' => 'Anulación',
@@ -40,6 +46,7 @@ $tabs = [
   ],
   'examenes' => [
     'title' => 'Exámenes',
+    'botones' => 'Examenes',
     'subtabs' => [
       'creacion' => 'Creación',
       'cargue' => 'Cargue de resultados',
@@ -70,8 +77,8 @@ $tabs = [
           <ul class="collapse list-unstyled ps-3" id="<?= $key ?>-submenu">
             <?php foreach ($tab['subtabs'] as $subkey => $subtitle): ?>
               <li>
-                <button class="nav-link subtab-link" onclick="cambiarContenidoEditor('<?= $key ?>-<?= $subkey ?>')" data-bs-toggle="tab" data-bs-target="#<?= $key ?>-<?= $subkey ?>-pane"
-                  role="tab">
+                <button class="nav-link subtab-link" onclick="cambiarContenidoEditor('<?= $key ?>-<?= $subkey ?>')"
+                  data-bs-toggle="tab" data-bs-target="#<?= $key ?>-<?= $subkey ?>-pane" role="tab">
                   <i class="fas fa-file-alt"></i> <?= $subtitle ?>
                 </button>
               </li>
@@ -89,6 +96,10 @@ $tabs = [
                   <div class="col-md-8">
                     <div class="card-body">
                       <h4 class="card-title"> <?= $subtitle ?> </h4>
+                      <?php
+                      $url = "./botonesDinamicos/".$tab['botones'] . ".php";
+                        include $url;
+                      ?>
                       <div class="rich-text-react" id="<?= $key ?>-<?= $subkey ?>-content"></div>
                     </div>
                   </div>

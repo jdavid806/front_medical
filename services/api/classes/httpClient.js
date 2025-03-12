@@ -10,11 +10,27 @@ export class HttpClient {
         };
     }
 
-    async request(endpoint, method, data = null, params = null) {
+    async request(endpoint, method, data = null, params = null, customHeaders = {}) {
         try {
+            // Fusionar los headers por defecto con los headers personalizados
+            const headers = {
+                ...this.defaultHeaders,
+                ...customHeaders,
+            };
+
+
+            console.log(this.defaultHeaders, customHeaders);
+
+            if (customHeaders["X-DOMAIN"]) {
+                console.log('repetido xd');
+
+                delete headers["X-DOMAIN"];
+                headers["X-DOMAIN"] = customHeaders["X-DOMAIN"];
+            }
+
             const response = await fetch(`https://${this.baseUrl}${endpoint}?${params}`, {
                 method,
-                headers: this.defaultHeaders,
+                headers,
                 body: data ? JSON.stringify(data) : null,
             });
 
@@ -27,14 +43,14 @@ export class HttpClient {
                 throw error;
             }
 
-            return responseData
+            return responseData;
         } catch (error) {
             console.error(`Error en petición ${method} ${endpoint}:`, error);
             throw error;
         }
     }
 
-    async get(endpoint, data = null) {
+    async get(endpoint, data = null, customHeaders = {}) {
         const params = new URLSearchParams();
         if (data) {
             Object.keys(data).forEach((key) => {
@@ -43,23 +59,23 @@ export class HttpClient {
                 }
             });
         }
-        return await this.request(endpoint, "GET", null, params);
+        return await this.request(endpoint, "GET", null, params, customHeaders);
     }
 
-    async post(endpoint, data) {
-        return await this.request(endpoint, "POST", data);
+    async post(endpoint, data, customHeaders = {}) {
+        return await this.request(endpoint, "POST", data, null, customHeaders);
     }
 
-    async patch(endpoint, data) {
-        return await this.request(endpoint, "PATCH", data);
+    async patch(endpoint, data, customHeaders = {}) {
+        return await this.request(endpoint, "PATCH", data, null, customHeaders);
     }
 
-    async put(endpoint, data) {
-        return await this.request(endpoint, "PUT", data);
+    async put(endpoint, data, customHeaders = {}) {
+        return await this.request(endpoint, "PUT", data, null, customHeaders);
     }
 
-    async delete(endpoint, data) {
-        return await this.request(endpoint, "DELETE", data);
+    async delete(endpoint, data, customHeaders = {}) {
+        return await this.request(endpoint, "DELETE", data, null, customHeaders);
     }
 }
 

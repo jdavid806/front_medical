@@ -205,7 +205,7 @@ function formatearFechaQuitarHora(fechaISO) {
 function reemplazarRuta(ruta) {
   const base = obtenerRutaPrincipal();
 
-  return ruta.replace("../", base);
+  return ruta.replace("../", base + "/");
 }
 
 function gerateKeys() {
@@ -255,7 +255,7 @@ function convertirHtmlAWhatsapp(html) {
     .replace(/<s>(.*?)<\/s>/gi, "~$1~") // Tachado
     .replace(/<del>(.*?)<\/del>/gi, "~$1~") // También para <del>
     .replace(/<br\s*\/?>/gi, "\n") // Saltos de línea
-    .replace(/<p>(.*?)<\/p>/gi, "$1\n\n") // Párrafos con doble salto de línea
+    .replace(/<p>(.*?)<\/p>/gi, "$1\n") // Párrafos con doble salto de línea
     .replace(/<[^>]+>/g, ""); // Elimina cualquier otra etiqueta HTML
 }
 
@@ -281,7 +281,59 @@ function cargarSelect(id, datos, placeholder) {
 }
 
 function obtenerRutaPrincipal() {
-  let url = window.location.origin; 
+  let url = window.location.origin;
   let rutaBase = url.replace(/:\d+$/, "");
   return rutaBase;
 }
+
+function consultarTipoMensaje(nombreObjecto) {
+  let tipoMensaje = "";
+  // si ya sé que asco esto en vez de organisar esto, pero aja tengo sueño hambre
+  // y estoy s guro que esto solo lo tocara aquella persona que lo vaya a migrar
+  // asi que aja que sufra el otro yo lo hare facil ＼(≧▽≦)／
+  switch (nombreObjecto) {
+    case "Incapacidad":
+      tipoMensaje = "incapacidades-compartir";
+      break;
+    case "Incapacidad":
+      tipoMensaje = "incapacidades-compartir";
+      break;
+
+    default:
+      tipoMensaje = "No definido";
+      break;
+  }
+  return tipoMensaje;
+}
+
+function cerrarSesion() {
+  let botonSalir = document.getElementById("btn-logout");
+
+  if (botonSalir) {
+    botonSalir.addEventListener("click", () => {
+      Swal.fire({
+        title: "¿Cerrar sesión?",
+        text: "¿Seguro que quieres salir de la aplicación?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, salir",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          sessionStorage.clear();
+          localStorage.clear();
+
+          Swal.fire(
+            "¡Sesión cerrada!",
+            "Has salido correctamente.",
+            "success"
+          ).then(() => {
+            window.location.href = "inicio";
+          });
+        }
+      });
+    });
+  }
+}
+
+window.onload = cerrarSesion;

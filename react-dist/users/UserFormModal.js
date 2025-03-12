@@ -14,7 +14,7 @@ const UserFormModal = ({
     title: "Crear usuario"
   }, /*#__PURE__*/React.createElement(UserForm, {
     formId: formId,
-    handleSubmit: handleSubmit
+    onHandleSubmit: handleSubmit
   }));
 };
 export default UserFormModal;

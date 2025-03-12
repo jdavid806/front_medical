@@ -2,7 +2,8 @@
 include '../data/mocks.php';
 ?>
 
-<div class="modal fade modal-xl" id="modalUserRole" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addUserRolModal" aria-modal="true" role="dialog">
+<div class="modal fade modal-xl" id="modalUserRole" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="addUserRolModal" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
         <form class="needs-validation modal-content" novalidate>
             <div class="modal-header">
@@ -28,11 +29,6 @@ include '../data/mocks.php';
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-flex align-items-center gap-2 mt-2">
-                            <label for="isDoctor">¿Es medico?</label>
-                            <input class="mt-1" type="checkbox" id="isDoctor" name="isDoctor">
-                        </div>
                     </div>
                     <div class="col-md-6 mb-1">
                         <div class="card">
@@ -53,8 +49,10 @@ include '../data/mocks.php';
             <input type="hidden" id="idUsuario" value="<?= $_SESSION['ID'] ?>">
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-link text-danger px-3 my-0" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-arrow-left"></i> &nbsp; Cerrar</button>
-                <button type="button" class="btn btn-primary my-0" onclick="onSubmitUserRole()" id="button-save-user-role"><i class="fas fa-bookmark"></i> &nbsp; Crear Rol de Usuario</button>
+                <button type="button" class="btn btn-link text-danger px-3 my-0" data-bs-dismiss="modal"
+                    aria-label="Close"><i class="fas fa-arrow-left"></i> &nbsp; Cerrar</button>
+                <button type="button" class="btn btn-primary my-0" onclick="onSubmitUserRole()"
+                    id="button-save-user-role"><i class="fas fa-bookmark"></i> &nbsp; Crear Rol de Usuario</button>
             </div>
         </form>
     </div>
@@ -63,28 +61,58 @@ include '../data/mocks.php';
 <script>
     function onSubmitUserRole() {
         let data = {
-            id: $("#modalUserRole #id").val(),
-            name: $("#name").val()
+            id: document.querySelector('#modalUserRole #id').value,
+            name: document.querySelector('#rol-name').value,
+            menus: [],
+            permissions: {}
         };
 
-        console.log(data);
+        // Obtener los menús seleccionados
+        document.querySelectorAll('#rol-menu-list .form-check-input:checked').forEach(menu => {
+            data.menus.push({ id: menu.dataset.menuId, name: menu.nextElementSibling.innerText.trim() });
+        });
 
-        const currentForm = document.getElementById(`modalUserRole`);
+        // Obtener permisos agrupados por categoría
+        const permissionsList = document.querySelectorAll('#rol-permissions-list > *');
+        let currentCategory = "";
+
+        permissionsList.forEach(element => {
+            if (element.tagName === "H5") {
+                currentCategory = element.innerText.trim();
+                data.permissions[currentCategory] = [];
+            } else if (element.classList.contains('form-check')) {
+                const checkbox = element.querySelector('input[type="checkbox"]');
+                const label = element.querySelector('label');
+                if (checkbox && checkbox.checked) {
+                    data.permissions[currentCategory].push(label ? label.innerText.trim() : '');
+                }
+            }
+        });
+
+        console.log(data);
+        
+
+        // console.log('Datos capturados:', JSON.stringify(data, null, 2));
+
+        const currentForm = document.getElementById('modalUserRole');
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
-            $("#modalUserRole").modal('hide');
-            resetModalNewUserRole();
+            // Guardado
         }
+
+        currentForm.reset();
     }
 
     function resetModalNewUserRole() {
-        $("#header-modal-user-role").html(`<i class="fas fa-user"></i> Nuevo Rol de Usuario`);
-        $("#button-save-user-role").html(`<i class="fas fa-bookmark"></i> &nbsp; Crear Rol de Usuario`);
+        document.querySelector("#header-modal-user-role").innerHTML = `<i class="fas fa-user"></i> Nuevo Rol de Usuario`;
+        document.querySelector("#button-save-user-role").innerHTML = `<i class="fas fa-bookmark"></i> &nbsp; Crear Rol de Usuario`;
 
-        $("#modalUserRole #id").val("0");
-        $("#name").val("");
+        document.querySelector("#modalUserRole #id").value = "0";
+        document.querySelector("#rol-name").value = "";
+        document.querySelectorAll('#rol-menu-list .form-check-input').forEach(input => input.checked = false);
+        document.querySelectorAll('#rol-permissions-list .form-check-input').forEach(input => input.checked = false);
     }
 
     function deleteUserRole(id) {
@@ -118,7 +146,7 @@ include '../data/mocks.php';
         $("#modalUserRole").modal('show');
     }
 
-    $('#modalUserRole').on('hidden.bs.modal', function() {
+    $('#modalUserRole').on('hidden.bs.modal', function () {
         resetModalNewUserRole();
     });
 </script>
@@ -142,7 +170,7 @@ include '../data/mocks.php';
                 menuSwitch.dataset.menuId = menu.id;
                 let menuLabel = document.createElement('label');
                 menuLabel.classList.add('form-check-label');
-                menuLabel.onclick = function() {
+                menuLabel.onclick = function () {
                     menuSwitch.checked = !menuSwitch.checked;
                 }
                 menuLabel.innerHTML = menu.name;
@@ -177,7 +205,7 @@ include '../data/mocks.php';
                     let subPermissionLabel = document.createElement('label');
                     subPermissionLabel.classList.add('form-check-label');
                     subPermissionLabel.innerHTML = subPermission.name;
-                    subPermissionLabel.onclick = function() {
+                    subPermissionLabel.onclick = function () {
                         subPermissionSwitch.checked = !subPermissionSwitch.checked;
                     }
                     subPermissionItem.appendChild(subPermissionSwitch);

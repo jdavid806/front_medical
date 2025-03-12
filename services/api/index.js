@@ -80,6 +80,7 @@ export const ticketService = new TicketService('medical', 'tickets');
 export const moduleService = new BaseApiService('medical', 'modules');
 
 export const entityService = new BaseApiService('medical', 'entities');
+export const userRolesService = new BaseApiService('medical', 'user-roles');
 
 /* Countries */
 

@@ -40,9 +40,7 @@ async function generarFormatoIncapacidad(incapacidad) {
     incapacidad.patient_id,
     formatearFechaQuitarHora(incapacidad.created_at)
   );
-  let datosEmpresa = await consultarDatosEmpresaPorDoctorId(
-    incapacidad.user_id
-  );
+  let datosEmpresa = await consultarDatosEmpresa();
   let datosDoctor = await consultarDatosDoctor(incapacidad.user_id);
 
   return {
@@ -68,7 +66,7 @@ async function generarFormatoConsentimiento(consentimeinto) {
     consentimeinto.patient_id,
     formatearFechaQuitarHora(consentimeinto.created_at)
   );
-  let datosEmpresa = await consultarDatosEmpresaPorDoctorId("1");
+  let datosEmpresa = await consultarDatosEmpresa();
   let datosDoctor = await consultarDatosDoctor("1");
 
   return {

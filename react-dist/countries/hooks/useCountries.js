@@ -9,8 +9,7 @@ export const useCountries = () => {
       setLoading(true);
       try {
         const countries = await countryService.getAll();
-        console.log(countries);
-        setCountries(countries);
+        setCountries(countries.data);
       } catch (error) {
         setError(error);
       } finally {

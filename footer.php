@@ -333,7 +333,7 @@
         </div>
       </div>
     </div> -->
-    <div class="setting-panel-item">
+    <!-- <div class="setting-panel-item">
       <h5 class="setting-panel-item-title">Vertical Navbar Appearance</h5>
       <div class="row gx-2">
         <div class="col-6">
@@ -353,7 +353,7 @@
               class="label-text d-dark-none"> Darker</span><span class="label-text d-light-none">Lighter</span></label>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- <div class="setting-panel-item">
       <h5 class="setting-panel-item-title">Horizontal Navbar Shape</h5>
       <div class="row gx-2">
@@ -600,7 +600,6 @@
 <script src="<?= $BASE ?>js/utilidades.js"></script> -->
 <script>
   function changeAjaxFast(table, columnChange, value, columnWhere, idWhere, toast = false) {
-    // console.log("Funcion");
 
     $.ajax({
       type: "POST",
@@ -614,8 +613,6 @@
         'idWhere': idWhere
       },
       success: function (response) {
-        // console.log("Response del changeFastAjax");
-        // console.log(response);
         response = response.trim();
         if (response == "ok") {
           if (toast) {
@@ -630,8 +627,6 @@
             })
           }
         } else {
-          console.log("Response del changeFastAjax");
-          console.log(response);
           if (toast) {
             Swal.fire({
               icon: 'error',
@@ -646,9 +641,6 @@
         }
       },
       error: function (xhr, status, error) {
-        console.log(xhr);
-        console.log(status);
-        console.log(error);
       }
     })
   }
@@ -660,12 +652,10 @@
     this.empty();
     this.append('<option value="0" >-- Seleccione --</option>');
     var $select = $(this);
-    // // console.log($select);
     let camposValue = config['campoValue'].split(',');
     let camposTexto = config['campoTexto'].split(',');
 
     function buscarDatos(open = false) {
-      // // console.log($select);
       $.ajax({
         url: '<?= $BASE ?>FE_Ajax_SelectMaster.php',
         type: 'POST',
@@ -679,7 +669,6 @@
         },
         success: function (response) {
           let data = JSON.parse(response);
-          console.log(data);
 
 
           for (let i = 0; i < data.length; i++) {
@@ -695,8 +684,6 @@
               camposTextoPrint += atob(data[i][btoa(camposTexto[index])]) + ' | ';
             });
             camposTextoPrint = camposTextoPrint.substring(0, camposTextoPrint.length - 3);
-
-            // console.log(camposValuePrint, camposTextoPrint);
 
 
 
@@ -733,7 +720,6 @@
     this.on('select2:open', function (e) {
       // Verificar que todos los datos de config existan
       if (config && config['campoValue'] && config['campoTexto'] && config['tabla']) {
-        // console.log(config['valorInput']);
         // buscarDatos(true);
         var $searchField = $select.data('select2').dropdown.$search || $select.data('select2').dropdown.$searchbox;
         // Evento input para el campo de búsqueda con debouncing
@@ -858,9 +844,6 @@
     }
 
 
-    console.log("Json que llego antes de salvar ", atob(jsonB64));
-
-
 
     let {
       id,
@@ -882,7 +865,6 @@
       url: atob(ajaxB64),
       data,
       success: function (response) {
-        console.log(response);
         const dataJson = JSON.parse(response);
         const {
           icon,
@@ -969,7 +951,6 @@ M. Castro c:
         });
       }
     }).then((editors) => {
-      console.log("Inicialización exitosa");
     }).catch((error) => {
       console.error("Error:", error);
     });
@@ -1043,7 +1024,7 @@ M. Castro c:
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    tonifyTurn(9, 13);
+    consultarDatosEmpresa();
   });
 </script>
 <!--

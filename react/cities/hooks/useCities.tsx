@@ -10,9 +10,7 @@ export const useCities = () => {
         const fetchCities = async () => {
             setLoading(true);
             const data = await cityService.getAll();
-            console.log(data);
-
-            setCities(data);
+            setCities(data.data);
             setLoading(false);
         };
 

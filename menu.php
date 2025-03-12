@@ -277,61 +277,49 @@ $_SESSION["ID"] = 1;
     }
   }
 </script>
-  <!-- <script>
-    // Función para decodificar JWT
-    function decodeJWT(token) {
-      const parts = token.split('.');
+<script>
+  // Función para decodificar JWT
+  function decodeJWT(token) {
+    const parts = token.split('.');
 
-      if (parts.length !== 3) {
-        throw new Error('Token JWT no válido');
-      }
-
-      const payload = parts[1];
-      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedPayload = atob(base64);
-      return JSON.parse(decodedPayload); // Decodificamos el payload y lo convertimos a objeto
+    if (parts.length !== 3) {
+      throw new Error('Token JWT no válido');
     }
 
-    function checkAuth() {
-      const token = localStorage.getItem('auth_token'); // Obtenemos el token almacenado
+    const payload = parts[1];
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedPayload = atob(base64);
+    return JSON.parse(decodedPayload); // Decodificamos el payload y lo convertimos a objeto
+  }
 
-      if (!token) {
-        Swal.fire({
-          icon: 'error',
-          title: 'No estás autenticado',
-          text: 'Serás redirigido al inicio.',
-          showConfirmButton: false,
-          timer: 2000 // Mostrar el mensaje por 2 segundos
-        }).then(() => {
-          window.location.href = 'index.php'; // Redirigir después de mostrar el mensaje
-        });
-      } else {
-        try {
-          const decoded = decodeJWT(token); // Intentamos decodificar el token
+  function checkAuth() {
+    const token = sessionStorage.getItem('auth_token'); // Obtenemos el token almacenado
 
-          // Si el token es válido y contiene el ID del usuario, dejamos al usuario continuar
-          if (!decoded.sub) {
-            throw new Error('Token inválido');
-          }
-        } catch (error) {
-          // Si hay un error con el token, lo eliminamos y redirigimos al inicio
-          Swal.fire({
-            icon: 'error',
-            title: 'Token inválido',
-            text: 'Serás redirigido al inicio.',
-            showConfirmButton: false,
-            timer: 2000 // Mostrar el mensaje por 2 segundos
-          }).then(() => {
-            localStorage.removeItem('auth_token');
-            window.location.href = 'index.php';
-          });
-        }
-      }
+    if (!token) {
+      // Si no hay token, redirigir inmediatamente al inicio
+      window.location.href = 'index.php';
+      return;
     }
 
-    // Comprobamos si el usuario está autenticado antes de ejecutar cualquier otro código
-    checkAuth();
-  </script> -->
+    try {
+      const decoded = decodeJWT(token); // Intentamos decodificar el token
+
+      // Si el token es inválido o no contiene el ID del usuario, redirigir al inicio
+      if (!decoded.sub) {
+        throw new Error('Token inválido');
+      }
+    } catch (error) {
+      // Si hay un error con el token, lo eliminamos y redirigimos al inicio
+      sessionStorage.removeItem('auth_token');
+      window.location.href = 'index.php';
+    }
+  }
+
+  // Comprobamos si el usuario está autenticado antes de ejecutar cualquier otro código
+  checkAuth();
+</script>
+
+
 
 
 

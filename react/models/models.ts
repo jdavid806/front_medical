@@ -234,6 +234,7 @@ export interface UserSpecialtyDto {
 export interface UserRoleDto {
     id: string;
     name: string;
+    group: string;
     is_active: boolean;
     created_at: string;
     updated_at: string;

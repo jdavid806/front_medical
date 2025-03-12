@@ -10,10 +10,6 @@
   data-move-target="#navbarVerticalNav">
   <div class="navbar-logo">
 
-    <button class="btn navbar-toggler navbar-toggler-humburger-icon hover-bg-transparent" type="button"
-      data-bs-toggle="collapse" data-bs-target="#navbarVerticalCollapse" aria-controls="navbarVerticalCollapse"
-      aria-expanded="false" aria-label="Toggle Navigation"><span class="navbar-toggle-icon"><span
-          class="toggle-line"></span></span></button>
     <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
       <div class="d-flex align-items-center">
         <div class="d-flex align-items-center" id=""><img src="/logo_monaros_sinbg_light.png" alt="phoenix"
@@ -30,7 +26,7 @@
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-home"></span>Home</a>
         <ul class="dropdown-menu navbar-dropdown-caret">
-          <li><a class="dropdown-item" href="Dashboard">
+          <li><a class="dropdown-item" href="pacientes">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="home"></span>Inicio
               </div>
             </a>
@@ -126,27 +122,20 @@
           </span>Inventarios</a>
         <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
           <li><a class="dropdown-item" href="inventarioGeneral">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="package"></span>Inventario General
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="package"></span>Inventario
+                General
               </div>
             </a>
           </li>
           <li><a class="dropdown-item" href="inventarioMedicamentos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="plus-square"></span>Inventario Medicamentos
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="plus-square"></span>Inventario Medicamentos
               </div>
             </a>
           </li>
           <li><a class="dropdown-item" href="inventarioVacunas">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="edit-2"></span>Inventario Vacunas
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="paquetes">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="layers"></span>Paquetes
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="inventarioInsumos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="thermometer"></span>Insumos
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="edit-2"></span>Inventario
+                Vacunas
               </div>
             </a>
           </li>
@@ -254,29 +243,11 @@
               </div>
 
               <div class="col-4">
-                <a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
+                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="waiting-room">
-                  <img
-                    src="assets/img/nav-icons/Container.png"
-                    alt=""
-                    width="30" />
+                  <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
                     Sala de espera
-                  </p>
-                </a>
-              </div>
-
-              <div class="col-4">
-                <a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="gestion-turnos">
-                  <img
-                    src="assets/img/nav-icons/Container.png"
-                    alt=""
-                    width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
-                    Turnos
                   </p>
                 </a>
               </div>
@@ -290,11 +261,42 @@
     <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button"
         data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
         <div class="avatar avatar-l ">
-          <img class="rounded-circle " src="../assets/img/team/40x40/57.webp" alt="" />
+          <img class="rounded-circle " src="assets/img/team/40x40/57.webp" alt="" />
 
         </div>
       </a>
+      <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border"
+        aria-labelledby="navbarDropdownUser">
+        <div class="card position-relative border-0">
+          <div class="card-body p-0">
+            <div class="text-center pt-4 pb-3">
+              <div class="avatar avatar-xl ">
+                <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
 
+              </div>
+              <h6 class="mt-2 text-body-emphasis">Jerry Seinfield</h6>
+            </div>
+            <!-- <div class="mb-3 mx-3">
+                      <input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" />
+                    </div> -->
+          </div>
+          <div class="overflow-auto scrollbar" style="height: 4rem;">
+            <ul class="nav d-flex flex-column mb-2 pb-1">
+              <!-- <li class="nav-item"><a class="nav-link px-3 d-block" href="apps/social/settings.php"> <span
+                    class="me-2 text-body align-bottom" data-feather="user"></span><span>Perfil</span></a></li> -->
+              <li class="nav-item"><a class="nav-link px-3 d-block" href="#settings-offcanvas"
+                  data-bs-toggle="offcanvas"> <span class="me-2 text-body align-bottom"
+                    data-feather="sliders"></span>Personalizar</a></li>
+            </ul>
+          </div>
+          <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" id="btn-logout" href="#"> <span
+                class="me-2" data-feather="log-out"> </span>Cerrar Sesión</a></div>
+          <div class="my-2 text-center fw-bold fs-10 text-body-quaternary"><a class="text-body-quaternary me-1"
+              href="#!">Privacy policy</a>&bull;<a class="text-body-quaternary mx-1" href="#!">Terms</a>&bull;<a
+              class="text-body-quaternary ms-1" href="#!">Cookies</a></div>
+        </div>
+      </div>
+      </div>
     </li>
   </ul>
 </nav>

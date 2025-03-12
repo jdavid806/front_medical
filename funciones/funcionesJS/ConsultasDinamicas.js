@@ -25,12 +25,13 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  let url =
-    obtenerRutaPrincipal() +
-    `/medical/entities/${data.social_security.entity_id}`;
-  let entidad = await obtenerDatos(url);
+  // let url =
+  //   obtenerRutaPrincipal() +
+  //   `/medical/entities/${data.social_security.entity_id}`;
+  // let entidad = await obtenerDatos(url);
 
-  let nombrEntidad = entidad.data.name;
+  // let nombrEntidad = entidad.data.name;
+  let nombrEntidad = "Test";
 
   return {
     datos_basicos: {
@@ -90,14 +91,21 @@ async function consultarDatosDoctor(doctorId) {
   };
 }
 
-async function consultarDatosEmpresaPorDoctorId(doctorId) {
+async function consultarDatosEmpresa() {
   // Pendiente Consultar esta data
+  let url = obtenerRutaPrincipal() + `/medical/companies/1`;
+  let datosEmpresa = await obtenerDatos(url);
+
+  let nombre_consultorio = datosEmpresa.name;
+
+  console.log(datosEmpresa); 
+
   return {
     logo_consultorio: "",
-    nombre_consultorio: "Consultorio de Prueba",
+    nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
     marca_agua: "",
     datos_consultorio: [
-      { Dirección: "Calle Falsa 123 del doctor: " + doctorId },
+      { Dirección: "Calle Falsa 123 del doctor: "},
       { Teléfono: 123456789 },
       { Correo: "consultorio@prueba.com" },
     ],
