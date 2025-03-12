@@ -380,45 +380,76 @@
     //   consultarQR(user_id);
     // }, 10000);
   });
-
-
 </script>
 
 <script>
-
   document.addEventListener("DOMContentLoaded", function () {
-    // Selecciona todos los formularios dentro de los tabs
-    const forms = document.querySelectorAll(".tab-pane form");
+    // Formulario de Información General
+    document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const datos = capturarDatosInformacionGeneral();
+      console.log('Datos Información General:', datos);
+      // Aquí puedes enviar los datos a tu backend o hacer lo que necesites
+    });
 
-    forms.forEach((form) => {
-      form.addEventListener("submit", function (event) {
-        event.preventDefault(); // Evita el envío predeterminado
+    // Formulario de Facturación
+    document.getElementById('facturacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const datos = capturarDatosFacturacion();
+      console.log('Datos Facturación:', datos);
+    });
 
-        // Valida el formulario
-        if (!form.checkValidity()) {
-          event.stopPropagation();
-          form.classList.add("was-validated"); // Agrega estilos de validación de Bootstrap
-          return;
-        }
+    // Formulario de Contacto
+    document.getElementById('contacto-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const datos = capturarDatosContacto();
+      console.log('Datos Contacto:', datos);
+    });
 
-        // Captura los datos del formulario
-        const formData = new FormData(form);
-        const formValues = {};
-        formData.forEach((value, key) => {
-          formValues[key] = value;
-        });
-
-        console.log("Formulario enviado:", form.id, formValues);
-
-        // Aquí puedes hacer un envío AJAX o manipular los datos como desees
-        // alert(`Formulario ${form.id} enviado con éxito!`);
-
-        // Opcional: Restablecer el formulario después del envío
-        form.reset();
-        form.classList.remove("was-validated");
-      });
+    // Formulario de Configuración SMTP
+    document.getElementById('comunicacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const datos = capturarDatosSMTP();
+      console.log('Datos SMTP:', datos);
     });
   });
+</script>
 
+
+<script>
+  function capturarDatosFacturacion() {
+    const datos = {
+      prefijo: document.getElementById("prefijo").value,
+      numeroResolucion: document.getElementById("numeroResolucion").value,
+      facturaDesde: document.getElementById("facturaDesde").value,
+      facturaHasta: document.getElementById("facturaHasta").value,
+      fechaResolucion: document.getElementById("fechaResolucion").value,
+      fechaVencimiento: document.getElementById("fechaVencimiento").value,
+    };
+    return datos;
+  }
+
+  function capturarDatosContacto() {
+    const datos = {
+      telefonoConsultorio: document.getElementById("telefono-consultorio").value,
+      correoConsultorio: document.getElementById("correo-consultorio").value,
+      direccionConsultorio: document.getElementById("direccion-consultorio")
+        .value,
+      paisConsultorio: document.getElementById("pais-consultorio").value,
+      ciudadConsultorio: document.getElementById("ciudad-consultorio").value,
+    };
+    return datos;
+  }
+
+  function capturarDatosSMTP() {
+    const datos = {
+      smtpServidor: document.getElementById("smtpServidor").value,
+      smtpPuerto: document.getElementById("smtpPuerto").value,
+      smtpSeguridad: document.getElementById("smtpSeguridad").value,
+      smtpUsuario: document.getElementById("smtpUsuario").value,
+      smtpClave: document.getElementById("smtpClave").value,
+    };
+    return datos;
+  }
 
 </script>

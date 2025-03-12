@@ -1,4 +1,4 @@
-<?php
+o<?php
 session_start();
 include "../globalesMN.php";
 ?>

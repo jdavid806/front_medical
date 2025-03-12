@@ -414,3 +414,8 @@ interface ClinicalRecordTypeDto {
     updated_at: string;
     key_: string | null;
 }
+
+export interface AppointmentTypeDto {
+    id: string;
+    name: string;
+}

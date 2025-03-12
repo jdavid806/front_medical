@@ -2,11 +2,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="solicitudInsumoAdminLabel">Solicitud administrativa</h5>
+                <h5 class="modal-title" id="solicitudInsumoAdminLabel">Solicitud de insumos</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="requestForm">
+                <form id="">
                     <div class="mb-3">
                         <label for="productSelect" class="form-label">Seleccionar Insumo</label>
                         <select id="productSelect" class="form-select">
@@ -126,7 +126,7 @@
     }
 
     // Al enviar el formulario, preparar los datos y enviarlos
-    document.getElementById("requestForm").addEventListener("submit", function (event) {
+    document.getElementById("").addEventListener("submit", function (event) {
         event.preventDefault();
 
         const requestData = {

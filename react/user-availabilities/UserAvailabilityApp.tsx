@@ -23,14 +23,13 @@ export const UserAvailabilityApp = () => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Horarios de Atención</h4>
                     <div className="text-end mb-2">
-                        <ConfigDropdownMenu
-                            title="Nuevo"
-                            onItemClick={(e, item) => {
-                                if (item.target === '#modalCreateUserOpeningHour') {
-                                    setShowFormModal(true)
-                                }
-                            }}
-                        ></ConfigDropdownMenu>
+                        <button
+                            className="btn btn-primary d-flex align-items-center"
+                            onClick={() => setShowFormModal(true)}
+                        >
+                            <i className="fas fa-plus me-2"></i>
+                            Nuevo
+                        </button>
                     </div>
                 </div>
                 <UserAvailabilityTable></UserAvailabilityTable>

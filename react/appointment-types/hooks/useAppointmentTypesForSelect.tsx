@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { appointmentTypeService } from '../../../services/api';
 import { AppointmentTypeDto } from '../../models/models';
+import { appointmentTypes } from '../../../services/commons';
 
 export const useAppointmentTypesForSelect = () => {
-    const [appointmentTypes, setAppointmentTypes] = useState<{ value: string, label: string }[]>([]);
+    const [mappedAppointmentTypes, setMappedAppointmentTypes] = useState<{ value: string, label: string }[]>([]);
 
     const fetchAppointmentTypes = async () => {
         try {
-            const data: AppointmentTypeDto[] = await appointmentTypeService.getAll();
+            const data: AppointmentTypeDto[] = appointmentTypes;
             const mappedData = data.map(item => {
                 return {
                     value: item.id.toString(),
@@ -15,7 +15,7 @@ export const useAppointmentTypesForSelect = () => {
                 }
             })
             console.log('appointment types', data, mappedData);
-            setAppointmentTypes(mappedData);
+            setMappedAppointmentTypes(mappedData);
         } catch (error) {
             console.error('Error fetching appointment types:', error);
         }
@@ -25,5 +25,5 @@ export const useAppointmentTypesForSelect = () => {
         fetchAppointmentTypes();
     }, []);
 
-    return { appointmentTypes };
+    return { appointmentTypes: mappedAppointmentTypes };
 }

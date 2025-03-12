@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ConfigDropdownMenu } from "../config/components/ConfigDropdownMenu.js";
 import { UserAvailabilityTable } from "./components/UserAvailabilityTable.js";
 import UserAvailabilityFormModal from "./components/UserAvailabilityFormModal.js";
 import { PrimeReactProvider } from 'primereact/api';
@@ -21,14 +20,12 @@ export const UserAvailabilityApp = () => {
     className: "mb-1"
   }, "Horarios de Atenci\xF3n"), /*#__PURE__*/React.createElement("div", {
     className: "text-end mb-2"
-  }, /*#__PURE__*/React.createElement(ConfigDropdownMenu, {
-    title: "Nuevo",
-    onItemClick: (e, item) => {
-      if (item.target === '#modalCreateUserOpeningHour') {
-        setShowFormModal(true);
-      }
-    }
-  }))), /*#__PURE__*/React.createElement(UserAvailabilityTable, null), /*#__PURE__*/React.createElement(UserAvailabilityFormModal, {
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary d-flex align-items-center",
+    onClick: () => setShowFormModal(true)
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), "Nuevo"))), /*#__PURE__*/React.createElement(UserAvailabilityTable, null), /*#__PURE__*/React.createElement(UserAvailabilityFormModal, {
     show: showFormModal,
     handleSubmit: handleSubmit,
     onHide: () => {

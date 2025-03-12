@@ -115,3 +115,18 @@ export const clinicalRecordStateColors = {
     'cancellation_request_rejected': 'danger',
     'cancellation_request_approved': 'info'
 }
+
+export const appointmentTypes = [
+    {
+        "id": '1',
+        "name": "Presencial"
+    },
+    {
+        "id": '2',
+        "name": "Virtual"
+    },
+    {
+        "id": '3',
+        "name": "Domiciliaria"
+    }
+]

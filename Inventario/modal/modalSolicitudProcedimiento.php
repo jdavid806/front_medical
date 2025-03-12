@@ -2,34 +2,44 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="solicitudInsumoProcedimientoLabel">Solicitud de insumo por procedimiento</h5>
+                <h5 class="modal-title" id="solicitudInsumoProcedimientoLabel">Solicitud por procedimiento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="requestForm">
-                    <div class="mb-3">
-                        <label for="productSelect" class="form-label">Seleccionar Insumo</label>
-                        <select id="productSelect" class="form-select">
+                    <div class="mb-3" id="divPacientes" style="display: block;">
+                        <label for="pacientes" class="form-label">Seleccionar paciente</label>
+                        <select id="pacientes" class="form-select">
                         </select>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" id="divProcedimientos" style="display: none;">
+                        <label for="procedimientos" class="form-label">Seleccionar procedimiento</label>
+                        <select id="procedimientos" class="form-select">
+                        </select>
+                    </div>
+                    <div class="mb-3" id="divPaquetes" style="display: none;">
+                        <label for="paquetes" class="form-label">Seleccionar paquete</label>
+                        <select id="paquetes" class="form-select">
+                        </select>
+                    </div>
+                    <!-- <div class="mb-3">
                         <label for="quantity" class="form-label">Cantidad</label>
                         <input type="number" id="quantity" class="form-control" min="1">
-                    </div>
-                    <button type="button" id="addInsumo" class="btn btn-secondary">Añadir Insumo</button>
+                    </div> -->
+                    <!-- <button type="button" id="addInsumo" class="btn btn-secondary">Añadir Insumo</button> -->
 
-                    <div class="mt-3" id="divInsumosAgregados" style="display: none;">
+                    <!-- <div class="mt-3" id="divInsumosAgregados" style="display: none;">
                         <h4 class="text-center">Insumos agregados</h4>
-                    </div>
+                    </div> -->
 
                     <!-- <div id="selectedProducts" class="mt-3">
                     </div> -->
 
                     <div class="mb-3">
-                        <label for="observations" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observations"></textarea>
+                        <label for="observationsPro" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observationsPro"></textarea>
                     </div>
-                    <button id="enviarSolicitudAdmin" type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                    <button id="enviarSolicitudProc" type="button" class="btn btn-primary">Enviar Solicitud</button>
                 </form>
             </div>
         </div>
@@ -140,7 +150,7 @@
             .then(response => {
                 console.log("Solicitud enviada con éxito", response);
                 alert('Solicitud enviada con éxito');
-                $('#solicitudInsumoProcedimiento').modal('hide');
+                $('#solicitudInsumoAdmin').modal('hide');
             })
             .catch(error => {
                 console.error("Error al enviar la solicitud:", error);
@@ -155,29 +165,497 @@
 </script> -->
 
 <script>
-    function cargarOpcionesSelect() {
-        const insumosAdministrativos = [
-            "Papelería",
-            "Carpetas",
-            "Bolígrafos",
-            "Post-it",
-            "Toner",
-            "Papel",
-            "Archivadores",
-            "Plumones",
-            "Grapadoras",
-            "Calculadora",
-            "Reglas",
-            "Cinta adhesiva",
-            "Sillas",
-            "Mesas",
-            "Estanterías",
-            "Pizarras",
-            "Rotuladores",
-            "Papel de impresión"
+    const medicamentosE = [{
+            nombre: "Paracetamol",
+            presentacion: "Tabletas",
+            concentracion: "500 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Ibuprofeno",
+            presentacion: "Tabletas",
+            concentracion: "400 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Amoxicilina",
+            presentacion: "Cápsulas",
+            concentracion: "500 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Ciprofloxacino",
+            presentacion: "Tabletas",
+            concentracion: "250 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Loratadina",
+            presentacion: "Tabletas",
+            concentracion: "10 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Cetirizina",
+            presentacion: "Tabletas",
+            concentracion: "10 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Losartán",
+            presentacion: "Tabletas",
+            concentracion: "50 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Amlodipino",
+            presentacion: "Tabletas",
+            concentracion: "5 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Metformina",
+            presentacion: "Tabletas",
+            concentracion: "500 mg",
+            via_administracion: "Oral"
+        },
+        {
+            nombre: "Insulina",
+            presentacion: "Inyección",
+            concentracion: "Varía según el tipo",
+            via_administracion: "Subcutánea"
+        }
+    ];
+
+
+    const diagnosticosE = [{
+            codigo: "1A00",
+            nombre: "COVID-19, enfermedad por coronavirus"
+        },
+        {
+            codigo: "A00",
+            nombre: "Cólera"
+        },
+        {
+            codigo: "B20",
+            nombre: "Infección por el virus de la inmunodeficiencia humana (VIH)"
+        },
+        {
+            codigo: "C50",
+            nombre: "Cáncer de mama"
+        },
+        {
+            codigo: "D50",
+            nombre: "Anemia por deficiencia de hierro"
+        },
+        {
+            codigo: "E11",
+            nombre: "Diabetes mellitus tipo 2"
+        },
+        {
+            codigo: "F32",
+            nombre: "Episodio depresivo mayor"
+        },
+        {
+            codigo: "G40",
+            nombre: "Epilepsia"
+        },
+        {
+            codigo: "I10",
+            nombre: "Hipertensión esencial (primaria)"
+        },
+        {
+            codigo: "J44",
+            nombre: "Enfermedad pulmonar obstructiva crónica (EPOC)"
+        }
+    ];
+
+    const vacunasE = [
+        "Vacuna contra la influenza",
+        "Vacuna contra el tétanos",
+        "Vacuna contra el sarampión",
+        "Vacuna contra la varicela",
+        "Vacuna contra la hepatitis B",
+        "Vacuna contra la hepatitis A",
+        "Vacuna contra el VPH (Virus del Papiloma Humano)",
+        "Vacuna contra la neumonía",
+        "Vacuna contra la fiebre amarilla",
+        "Vacuna contra la difteria"
+    ];
+
+    const insumosE = [{
+            procedimiento: "Consulta general",
+            insumo: "Termómetro"
+        },
+        {
+            procedimiento: "Consulta general",
+            insumo: "Esfigmomanómetro"
+        },
+        {
+            procedimiento: "Consulta general",
+            insumo: "Estetoscopio"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Gel para ecografía"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Transductor"
+        },
+        {
+            procedimiento: "Ecografía abdominal",
+            insumo: "Monitor"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Electrodos"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Cable de ECG"
+        },
+        {
+            procedimiento: "Electrocardiograma",
+            insumo: "Monitor de ECG"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Gel para ecografía"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Transductor cardíaco"
+        },
+        {
+            procedimiento: "Ecocardiograma",
+            insumo: "Monitor"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Aguja de biopsia"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Guantes estériles"
+        },
+        {
+            procedimiento: "Biopsia tumoral",
+            insumo: "Suturas"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Película radiográfica"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Delantal plomado"
+        },
+        {
+            procedimiento: "Radiografía de tórax",
+            insumo: "Protector de tiroides"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Espátula de madera"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Hisopo"
+        },
+        {
+            procedimiento: "Papanicolaou",
+            insumo: "Copa de recolección"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Colposcopio"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Ácido acético"
+        },
+        {
+            procedimiento: "Colposcopía",
+            insumo: "Luz de colposcopio"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Película radiográfica"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Compresor mamario"
+        },
+        {
+            procedimiento: "Mastografía",
+            insumo: "Delantal plomado"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Contraste intravenoso"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Guantes estériles"
+        },
+        {
+            procedimiento: "Tomografía computarizada",
+            insumo: "Túnel tomográfico"
+        }
+    ];
+
+    let paquetes = [{
+            nombre: "Paquete Básico",
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Paracetamol",
+                        cantidad: 10
+                    },
+                    {
+                        nombre: "Ibuprofeno",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: ["001010 - Consulta general"],
+                diagnosticos: [],
+                examenes: ["Análisis de orina", "Hemograma"],
+                vacunas: [{
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Vacuna contra el tétanos",
+                        cantidad: 1
+                    }
+                ],
+                insumos: [{
+                        nombre: "Termómetro",
+                        cantidad: 5
+                    },
+                    {
+                        nombre: "Esfigmomanómetro",
+                        cantidad: 3
+                    },
+                    {
+                        nombre: "Estetoscopio",
+                        cantidad: 2
+                    }
+                ]
+            }
+        },
+        {
+            nombre: "Paquete Prenatal",
+            detalles: {
+                relacion: "cie11",
+                medicamentos: [{
+                        nombre: "Ácido Fólico",
+                        cantidad: 30
+                    },
+                    {
+                        nombre: "Hierro",
+                        cantidad: 25
+                    }
+                ],
+                procedimientos: [],
+                diagnosticos: ["F32 - Episodio depresivo mayor"],
+                examenes: ["Análisis de sangre", "Ecografía abdominal"],
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 2
+                    }
+                ],
+                insumos: [{
+                        nombre: "Gel para ecografía",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Transductor",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Monitor",
+                        cantidad: 1
+                    }
+                ]
+            }
+        },
+        {
+            nombre: "Paquete Cardiológico",
+            detalles: {
+                relacion: "cie11",
+                medicamentos: [{
+                        nombre: "Atorvastatina",
+                        cantidad: 15
+                    },
+                    {
+                        nombre: "Losartán",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: [],
+                diagnosticos: ["I10 - Hipertensión esencial (primaria)", "G40 - Epilepsia"],
+                examenes: ["Perfil lipídico", "Prueba de función cardíaca"],
+                vacunas: [{
+                        nombre: "Vacuna contra la neumonía",
+                        cantidad: 1
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 1
+                    }
+                ],
+                insumos: [{
+                        nombre: "Electrodos",
+                        cantidad: 8
+                    },
+                    {
+                        nombre: "Cable de ECG",
+                        cantidad: 6
+                    },
+                    {
+                        nombre: "Monitor de ECG",
+                        cantidad: 3
+                    },
+                    {
+                        nombre: "Gel para ecografía",
+                        cantidad: 2
+                    }
+                ]
+            }
+        },
+        {
+            nombre: "Paquete Pediátrico",
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Amoxicilina suspensión",
+                        cantidad: 12
+                    },
+                    {
+                        nombre: "Ibuprofeno pediátrico",
+                        cantidad: 15
+                    }
+                ],
+                procedimientos: ["001050 - Biopsia tumoral"],
+                diagnosticos: [],
+                examenes: ["Hemograma", "Análisis de sangre"],
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la varicela",
+                        cantidad: 3
+                    }
+                ],
+                insumos: [{
+                        nombre: "Termómetro",
+                        cantidad: 6
+                    },
+                    {
+                        nombre: "Estetoscopio",
+                        cantidad: 4
+                    },
+                    {
+                        nombre: "Jeringas",
+                        cantidad: 10
+                    }
+                ]
+            }
+        },
+        {
+            nombre: "Paquete Diabetes",
+            detalles: {
+                relacion: "cups",
+                medicamentos: [{
+                        nombre: "Metformina",
+                        cantidad: 25
+                    },
+                    {
+                        nombre: "Insulina",
+                        cantidad: 20
+                    }
+                ],
+                procedimientos: ["001090 - Mastografía"],
+                diagnosticos: [],
+                examenes: ["Hemoglobina glicosilada", "Función renal", "Perfil lipídico"],
+                vacunas: [{
+                        nombre: "Vacuna contra la hepatitis B",
+                        cantidad: 2
+                    },
+                    {
+                        nombre: "Vacuna contra la influenza",
+                        cantidad: 3
+                    }
+                ],
+                insumos: [{
+                        nombre: "Monitores de glucosa",
+                        cantidad: 5
+                    },
+                    {
+                        nombre: "Tiras reactivas",
+                        cantidad: 10
+                    },
+                    {
+                        nombre: "Jeringas para insulina",
+                        cantidad: 7
+                    }
+                ]
+            }
+        }
+    ];
+
+    function cargarOpcionesSelectPacientes() {
+        const pacientes = [{
+                id: 1,
+                nombre: "Juan Pérez"
+            },
+            {
+                id: 2,
+                nombre: "María García"
+            },
+            {
+                id: 3,
+                nombre: "Carlos Sánchez"
+            },
+            {
+                id: 4,
+                nombre: "Ana Martínez"
+            },
+            {
+                id: 5,
+                nombre: "Luis Rodríguez"
+            },
+            {
+                id: 6,
+                nombre: "Pedro Gómez"
+            },
+            {
+                id: 7,
+                nombre: "Laura Díaz"
+            },
+            {
+                id: 8,
+                nombre: "Raúl Fernández"
+            },
+            {
+                id: 9,
+                nombre: "Sofía López"
+            },
+            {
+                id: 10,
+                nombre: "Miguel Hernández"
+            }
         ];
 
-        const selectElement = document.getElementById('productSelect');
+
+        const selectElement = document.getElementById('pacientes');
 
         selectElement.innerHTML = '';
 
@@ -188,113 +666,273 @@
         defaultOption.selected = true;
         selectElement.appendChild(defaultOption);
 
-        insumosAdministrativos.forEach((insumo, index) => {
+        pacientes.forEach((paciente) => {
             const option = document.createElement('option');
-            option.value = index;
-            option.textContent = insumo;
+            option.value = paciente.id;
+            option.textContent = paciente.nombre;
             selectElement.appendChild(option);
         });
     }
 
-    cargarOpcionesSelect();
+    function cargarOpcionesSelectProcedimientos() {
+        const procedimientos = [{
+                codigo: "001010",
+                nombre: "Consulta general"
+            },
+            {
+                codigo: "001020",
+                nombre: "Ecografía abdominal"
+            },
+            {
+                codigo: "001030",
+                nombre: "Electrocardiograma"
+            },
+            {
+                codigo: "001040",
+                nombre: "Ecocardiograma"
+            },
+            {
+                codigo: "001050",
+                nombre: "Biopsia tumoral"
+            },
+            {
+                codigo: "001060",
+                nombre: "Radiografía de tórax"
+            },
+            {
+                codigo: "001070",
+                nombre: "Papanicolaou"
+            },
+            {
+                codigo: "001080",
+                nombre: "Colposcopía"
+            },
+            {
+                codigo: "001090",
+                nombre: "Mastografía"
+            },
+            {
+                codigo: "001100",
+                nombre: "Tomografía computarizada"
+            }
+        ];
 
-    function agregarInsumo() {
-        const productSelect = document.getElementById('productSelect');
-        const quantityInput = document.getElementById('quantity');
-        const divInsumosAgregados = document.getElementById('divInsumosAgregados');
 
-        const productoSeleccionado = productSelect.options[productSelect.selectedIndex].text;
-        const productoValor = productSelect.value;
-        const cantidad = quantityInput.value;
+        const selectElement = document.getElementById('procedimientos');
 
-        if (productoValor === "" || cantidad === "" || cantidad <= 0) {
-            alert("Por favor, seleccione un producto y especifique una cantidad válida.");
-            return;
+        selectElement.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Seleccione";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        selectElement.appendChild(defaultOption);
+
+        procedimientos.forEach((procedimiento) => {
+            const option = document.createElement('option');
+            option.value = procedimiento.codigo;
+            option.textContent = `${procedimiento.codigo} - ${procedimiento.nombre}`;
+            selectElement.appendChild(option);
+        });
+    }
+
+    function cargarOpcionesSelectPaquetes() {
+
+        const selectElement = document.getElementById('paquetes');
+
+        selectElement.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Seleccione";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        selectElement.appendChild(defaultOption);
+
+        paquetes.forEach((paquete) => {
+            const option = document.createElement('option');
+            option.value = paquete.nombre;
+            option.textContent = paquete.nombre;
+            selectElement.appendChild(option);
+        });
+    }
+
+    cargarOpcionesSelectPacientes();
+    cargarOpcionesSelectProcedimientos();
+    cargarOpcionesSelectPaquetes();
+
+    function contorlarVistaProcedimientos() {
+        const selecPacientes = document.getElementById('pacientes');
+        const divProcedimientos = document.getElementById('divProcedimientos');
+        selecPacientes.addEventListener("change", function() {
+            if (this.value && this.value !== "") {
+                divProcedimientos.style.display = "block";
+            } else {
+                divProcedimientos.style.display = "none";
+            }
+        });
+    }
+
+    function contorlarVistaPaquetes() {
+        const selecProcedimientos = document.getElementById('procedimientos');
+        const divPaquetes = document.getElementById('divPaquetes');
+        selecProcedimientos.addEventListener("change", function() {
+            if (this.value && this.value !== "") {
+                divPaquetes.style.display = "block";
+            } else {
+                divPaquetes.style.display = "none";
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        contorlarVistaProcedimientos();
+        contorlarVistaPaquetes();
+    });
+
+    function capturarDatosProcedimiento() {
+        const selectPacientes = document.getElementById('pacientes');
+        const selectProcedimientos = document.getElementById('procedimientos');
+        const selectPaquetes = document.getElementById('paquetes');
+        const observationsPro = document.getElementById('observationsPro');
+
+        // Capturar los valores seleccionados
+        const pacienteSeleccionado = selectPacientes.options[selectPacientes.selectedIndex]?.text || "No seleccionado";
+        const pacienteId = selectPacientes.value || "No seleccionado";
+
+        const procedimientoSeleccionado = selectProcedimientos.options[selectProcedimientos.selectedIndex]?.text || "No seleccionado";
+        const procedimientoId = selectProcedimientos.value || "No seleccionado";
+
+        const paqueteSeleccionado = selectPaquetes.options[selectPaquetes.selectedIndex]?.text || "No seleccionado";
+        const paqueteId = selectPaquetes.value || "No seleccionado";
+
+        const observaciones = observationsPro.value || "Sin observaciones";
+
+        let paqueteInfo = null;
+        for (let i = 0; i < paquetes.length; i++) {
+            if (paquetes[i].nombre === paqueteSeleccionado) {
+                paqueteInfo = paquetes[i];
+                break;
+            }
         }
 
-        let tabla = divInsumosAgregados.querySelector('table');
+        const datosProcedimiento = {
+            paciente: {
+                id: pacienteId,
+                nombre: pacienteSeleccionado
+            },
+            procedimiento: {
+                id: procedimientoId,
+                nombre: procedimientoSeleccionado
+            },
+            paquete: {
+                id: paqueteId,
+                nombre: paqueteSeleccionado,
+                tieneMedicamentos: paqueteInfo ? paqueteInfo.detalles.medicamentos.length > 0 : false,
+                tieneInsumos: paqueteInfo ? paqueteInfo.detalles.insumos.length > 0 : false,
+                tieneVacunas: paqueteInfo ? paqueteInfo.detalles.vacunas.length > 0 : false,
+                detalles: paqueteInfo ? paqueteInfo.detalles : null
+            },
+            observaciones: observaciones,
+            fechaCaptura: new Date().toISOString()
+        };
 
-        if (!tabla) {
-            tabla = document.createElement('table');
-            tabla.className = 'table';
-            tabla.innerHTML = `
-            <thead>
-                <tr>
-                    <th width="50%">Producto</th>
-                    <th width="30%">Cantidad</th>
-                    <th width="20%">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaInsumosBody">
-            </tbody>
-        `;
-            divInsumosAgregados.appendChild(tabla);
-        }
+        console.log("Datos del procedimiento capturados:", datosProcedimiento);
 
-        const tablaBody = document.getElementById('tablaInsumosBody') || tabla.querySelector('tbody');
+        // Crear contenido HTML para mostrar solo medicamentos, insumos y vacunas
+        let detallesHtml = '<div class="text-left">';
 
-        const nuevaFila = document.createElement('tr');
-        nuevaFila.innerHTML = `
-        <td width="50%">${productoSeleccionado}</td>
-        <td width="30%">${cantidad}</td>
-        <td width="20%">
-            <button class="btn btn-danger btn-sm eliminar-insumo"><i class="fas fa-trash"></i></button>
-        </td>
+        // Agregar información básica
+        detallesHtml += `
+        <h4>Resumen solicitud:</h4>
+        <p><strong>Paciente:</strong> ${pacienteSeleccionado}</p>
+        <p><strong>Procedimiento:</strong> ${procedimientoSeleccionado}</p>
+        <p><strong>Paquete:</strong> ${paqueteSeleccionado}</p>
+        <p><strong>Observaciones:</strong> ${observaciones}</p>
+        <hr>
     `;
 
-        nuevaFila.querySelector('.eliminar-insumo').addEventListener('click', function() {
-            nuevaFila.remove();
+        if (paqueteInfo) {
+            let tieneElementos = false;
 
-            if (tablaBody.children.length === 0) {
-                divInsumosAgregados.style.display = 'none';
+            // Medicamentos
+            if (paqueteInfo.detalles.medicamentos.length > 0) {
+                tieneElementos = true;
+                detallesHtml += '<h5 class="mt-3">Medicamentos:</h5><ul>';
+                paqueteInfo.detalles.medicamentos.forEach(med => {
+                    detallesHtml += `<li>${med.nombre} (${med.cantidad} unidades)</li>`;
+                });
+                detallesHtml += '</ul>';
+            }
+
+            // Insumos
+            if (paqueteInfo.detalles.insumos.length > 0) {
+                tieneElementos = true;
+                detallesHtml += '<h5 class="mt-3">Insumos:</h5><ul>';
+                paqueteInfo.detalles.insumos.forEach(ins => {
+                    detallesHtml += `<li>${ins.nombre} (${ins.cantidad} unidades)</li>`;
+                });
+                detallesHtml += '</ul>';
+            }
+
+            // Vacunas
+            if (paqueteInfo.detalles.vacunas.length > 0) {
+                tieneElementos = true;
+                detallesHtml += '<h5 class="mt-3">Vacunas:</h5><ul>';
+                paqueteInfo.detalles.vacunas.forEach(vac => {
+                    detallesHtml += `<li>${vac.nombre} (${vac.cantidad} unidades)</li>`;
+                });
+                detallesHtml += '</ul>';
+            }
+
+            if (!tieneElementos) {
+                detallesHtml += '<p><em>Este paquete no contiene medicamentos, insumos o vacunas.</em></p>';
+            }
+        } else {
+            detallesHtml += '<p><em>No se encontraron detalles del paquete seleccionado.</em></p>';
+        }
+
+        detallesHtml += '</div>';
+
+        Swal.fire({
+            title: 'Resumen solicitud',
+            html: detallesHtml,
+            icon: 'info',
+            confirmButtonText: 'Enviar',
+            confirmButtonColor: '#132030',
+            showCancelButton: false,
+            width: '800px',
+            buttonsStyling: true,
+            customClass: {
+                confirmButton: 'btn btn-lg',
+                actions: 'justify-content-center'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log("Resumen de solicitud enviada:", {
+                    paciente: pacienteSeleccionado,
+                    procedimiento: procedimientoSeleccionado,
+                    paquete: paqueteSeleccionado,
+                    medicamentos: paqueteInfo?.detalles.medicamentos || [],
+                    insumos: paqueteInfo?.detalles.insumos || [],
+                    vacunas: paqueteInfo?.detalles.vacunas || []
+                });
+
+                Swal.fire({
+                    title: '¡Enviado!',
+                    text: 'La solicitud ha sido enviada correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#132030',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    window.location.reload();
+                });
             }
         });
 
-        tablaBody.appendChild(nuevaFila);
-
-        divInsumosAgregados.style.display = 'block';
-
-        productSelect.selectedIndex = 0;
-        quantityInput.value = '';
+        return datosProcedimiento;
     }
 
-    document.getElementById('addInsumo').addEventListener('click', agregarInsumo);
-
-    function enviarSolicitudAdmin() {
-        const tablaBody = document.getElementById('tablaInsumosBody');
-        const observaciones = document.getElementById('observations').value;
-
-        if (!tablaBody || tablaBody.children.length === 0) {
-            alert("No hay insumos agregados para enviar.");
-            return;
-        }
-
-        const insumosSeleccionados = [];
-
-        Array.from(tablaBody.children).forEach((fila, index) => {
-            const celdas = fila.querySelectorAll('td');
-
-            const insumo = {
-                id: index + 1,
-                producto: celdas[0].textContent,
-                cantidad: parseInt(celdas[1].textContent)
-            };
-
-            insumosSeleccionados.push(insumo);
-        });
-
-        const solicitudData = {
-            fecha: new Date().toISOString(),
-            totalInsumos: insumosSeleccionados.length,
-            insumos: insumosSeleccionados,
-            observaciones: observaciones
-        };
-
-        console.log("Datos de la solicitud de insumos administrativos:");
-        console.log(solicitudData);
-
-        alert("Solicitud enviada con éxito.");
-    }
-
-    document.getElementById('enviarSolicitudAdmin').addEventListener('click', enviarSolicitudAdmin);
+    document.getElementById('enviarSolicitudProc').addEventListener("click", capturarDatosProcedimiento);
 </script>

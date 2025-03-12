@@ -3,7 +3,6 @@ import { MultiSelect } from 'primereact/multiselect';
 import { InputNumber } from 'primereact/inputnumber';
 import { daysOfWeek } from '../../../services/commons';
 import { Dropdown } from 'primereact/dropdown';
-import { useUsersForSelect } from '../../users/hooks/useUsersForSelect';
 import { useAppointmentTypesForSelect } from '../../appointment-types/hooks/useAppointmentTypesForSelect';
 import { useBranchesForSelect } from '../../branches/hooks/useBranchesForSelect';
 import { InputText } from 'primereact/inputtext';
@@ -14,11 +13,15 @@ import { StepperPanel } from 'primereact/stepperpanel';
 import { Button } from 'primereact/button';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
+import { useEffect } from 'react';
+import { useUsers } from '../../users/hooks/useUsers';
+import { UserDto } from '../../models/models';
 
 export type UserAvailabilityFormInputs = {
     user_id: string
     appointment_type_id: string
     appointment_duration: number
+    branch_id: string
 }
 
 interface UserAvailabilityFormProps {
@@ -32,18 +35,21 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
         control,
         handleSubmit,
         formState: { errors },
-        trigger
+        trigger,
+        watch
     } = useForm<UserAvailabilityFormInputs>()
     const onSubmit: SubmitHandler<UserAvailabilityFormInputs> = (data) => onHandleSubmit(data)
 
     const [office, setOffice] = useState<string | null>(null);
-    const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
     const [startTime, setStartTime] = useState<Nullable<Date>>(null);
     const [endTime, setEndTime] = useState<Nullable<Date>>(null);
     const [freeSlots, setFreeSlots] = useState<{ start: Nullable<Date>, end: Nullable<Date> }[]>([]);
+    const [selectedUserObject, setSelectedUserObject] = useState<UserDto | undefined>(undefined);
 
-    const { users } = useUsersForSelect()
+    const { users } = useUsers()
+    const [usersForSelect, setUsersForSelect] = useState<{ value: string, label: string }[]>([])
+
     const { appointmentTypes } = useAppointmentTypesForSelect()
     const { branches } = useBranchesForSelect()
 
@@ -61,19 +67,38 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
         setFreeSlots(updatedFreeSlots);
     };
 
-    const handleOnChangeStep = (event: StepperChangeEvent) => {
-        console.log(event);
-    };
-
     const getFormErrorMessage = (name: keyof UserAvailabilityFormInputs) => {
         return errors[name] && <small className="p-error">{errors[name].message}</small>
     };
 
+    useEffect(() => {
+        const { unsubscribe } = watch((value) => {
+            console.log(value)
+            console.log(users);
+
+            if (value.user_id) {
+                const user = users.find(user => user.id.toString() == value.user_id);
+                setSelectedUserObject(user);
+                console.log(user);
+            }
+        })
+        return () => unsubscribe()
+    }, [watch])
+
+    useEffect(() => {
+        setUsersForSelect(users.map(user => {
+            return {
+                value: user.id.toString(),
+                label: user.first_name + ' ' + user.last_name
+            }
+        }))
+    }, [users])
+
     return (
         <div>
             <form id={formId} className="needs-validation" noValidate onSubmit={handleSubmit(onSubmit)}>
-                <Stepper ref={stepperRef} onChangeStep={handleOnChangeStep}>
-                    <StepperPanel header="Información general">
+                <Stepper ref={stepperRef}>
+                    <StepperPanel header="Información general xd">
                         <div className="mb-3">
                             <Controller
                                 name='user_id'
@@ -84,7 +109,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                                         <label htmlFor={field.name} className="form-label">Usuario *</label>
                                         <Dropdown
                                             inputId={field.name}
-                                            options={users}
+                                            options={usersForSelect}
                                             optionLabel='label'
                                             optionValue='value'
                                             filter
@@ -97,6 +122,18 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                                 }
                             />
                             {getFormErrorMessage('user_id')}
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Consultorio *</label>
+                            <InputText
+                                className="w-100"
+                                type="text"
+                                id="office"
+                                value={office}
+                                onChange={(e) => setOffice(e.target.value)}
+                                placeholder="Ingrese el consultorio"
+                            />
                         </div>
 
                         <div className="mb-3">
@@ -151,29 +188,29 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                         </div>
 
                         <div className="mb-3">
-                            <label htmlFor="appointmentType" className='form-label'>Sucursal *</label>
-                            <Dropdown
-                                options={branches}
-                                optionLabel='label'
-                                optionValue='value'
-                                filter
-                                placeholder="Seleccione una sucursal"
-                                value={selectedBranch}
-                                onChange={(e) => setSelectedBranch(e.value)}
-                                className='w-100'>
-                            </Dropdown>
-                        </div>
-
-                        <div className="mb-3">
-                            <label className="form-label">Consultorio *</label>
-                            <InputText
-                                className="w-100"
-                                type="text"
-                                id="office"
-                                value={office}
-                                onChange={(e) => setOffice(e.target.value)}
-                                placeholder="Ingrese el consultorio"
+                            <Controller
+                                name='branch_id'
+                                control={control}
+                                rules={{ required: 'Este campo es requerido' }}
+                                render={({ field }) =>
+                                    <>
+                                        <label htmlFor={field.name} className='form-label'>Sucursal *</label>
+                                        <Dropdown
+                                            inputId={field.name}
+                                            options={branches}
+                                            optionLabel='label'
+                                            optionValue='value'
+                                            filter
+                                            placeholder="Seleccione una sucursal"
+                                            className={classNames('w-100', { 'p-invalid': errors.branch_id })}
+                                            defaultValue={field.value}
+                                            {...field}
+                                        >
+                                        </Dropdown>
+                                    </>
+                                }
                             />
+                            {getFormErrorMessage('branch_id')}
                         </div>
 
                         <div className="mb-3">
