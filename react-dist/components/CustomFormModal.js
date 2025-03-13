@@ -5,6 +5,7 @@ export const CustomFormModal = ({
   formId,
   title,
   show,
+  scrollable,
   onSave,
   onHide
 }) => {
@@ -26,6 +27,7 @@ export const CustomFormModal = ({
     show: show,
     onHide: onHide,
     title: title,
-    footerTemplate: footer
+    footerTemplate: footer,
+    scrollable: scrollable
   }, children);
 };

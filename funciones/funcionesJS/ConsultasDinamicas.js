@@ -98,7 +98,7 @@ async function consultarDatosEmpresa() {
 
   let nombre_consultorio = datosEmpresa.name;
 
-  console.log(datosEmpresa); 
+  // console.log(datosEmpresa); 
 
   // return {
   //   logo_consultorio: "",

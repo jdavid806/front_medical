@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import React from 'react';
 import { CustomModal } from './CustomModal';
 
 interface Props {
@@ -7,11 +6,12 @@ interface Props {
     formId: string;
     title: string;
     show: boolean;
+    scrollable?: boolean;
     onSave?: () => void;
     onHide?: () => void;
 }
 
-export const CustomFormModal: React.FC<Props> = ({ children, formId, title, show, onSave, onHide }) => {
+export const CustomFormModal: React.FC<Props> = ({ children, formId, title, show, scrollable, onSave, onHide }) => {
 
     const footer = (
         <>
@@ -36,7 +36,9 @@ export const CustomFormModal: React.FC<Props> = ({ children, formId, title, show
             show={show}
             onHide={onHide}
             title={title}
-            footerTemplate={footer}>
+            footerTemplate={footer}
+            scrollable={scrollable}
+        >
             {children}
         </CustomModal>
     );

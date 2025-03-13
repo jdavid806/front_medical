@@ -83,7 +83,7 @@
                                 <div class="col-6" style="display: none;" id="divCodeCup">
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="codeCup" placeholder="Ingrese el código" oninput="queryCups()" />
+                                            <input type="text" class="form-control" id="codeCup" placeholder="Ingrese el código" />
                                             <label for="codeCup" class="form-label">Código cup</label>
                                         </div>
                                     </div>
@@ -92,10 +92,18 @@
                                 <div class="col-6" style="display: none;" id="divCodeCie">
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="codeCie" placeholder="Ingrese el código" oninput="queryCie()" />
+                                            <input type="text" class="form-control" id="codeCie" placeholder="Ingrese el código" />
                                             <label for="codeCie" class="form-label">Código Cie11</label>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div class="m-2" id="contentCup">
+
+                                </div>
+
+                                <div class="m-2" id="contentCie">
+
                                 </div>
 
                                 <div class="input-group mt-3">
@@ -260,7 +268,7 @@
     ReactDOMClient.createRoot(document.getElementById('formRemision')).render(React.createElement(remissionsForm));
 </script>
 
-<script>
+<script type="module">
     let currentStep = 1;
 
     const updateWizard = () => {
@@ -1463,12 +1471,100 @@
         console.log('Vacunas con cantidades:', vacunasConCantidad);
         console.log('Insumos con cantidades:', insumosConCantidad);
     });
+</script>
+
+<script type="module">
+    import {
+        cie11Service,
+        cupsService
+    } from './services/api/index.js';
+    let timeout;
+    document.getElementById('codeCup').addEventListener('input', function() {
+        queryCups();
+    });
+    document.getElementById('codeCie').addEventListener('input', function() {
+        queryCie();
+    });
 
     function queryCups() {
-        console.log("hola");
+
+        clearTimeout(timeout); // Cancela el temporizador anterior
+
+        timeout = setTimeout(async () => {
+            const codeType = document.getElementById('codeCup').value;
+            const contentCup = document.getElementById('contentCup');
+
+            if (codeType === "") {
+                contentCup.innerHTML = ""; // Borra el contenido si el input está vacío
+                return;
+            }
+
+            if (codeType.trim() === "") return; // Evita llamadas innecesarias si el input está vacío
+
+            try {
+                const response = await cupsService.getCupsByCode(codeType);
+
+                if (response && Array.isArray(response) && response.length > 0) {
+                    const cup = response[0]; // Suponiendo que solo necesitas el primer resultado
+
+                    contentCup.innerHTML = `
+                    <div class="card p-2">
+                        <h3 style="font-weight: bold; font-size: 20px">${cup.Nombre}</h3>
+                        <p style="margin: 5px 0;"><strong>Código CUP:</strong> ${cup.Codigo}</p>
+                        <p style="margin: 5px 0;"><strong>Descripción:</strong> ${cup.Descripcion}</p>
+                    </div>
+                `;
+                } else {
+                    contentCup.innerHTML = `
+                    <p style="color: red; margin-top: 10px;">No se encontró información para el código ingresado.</p>
+                `;
+                }
+
+            } catch (error) {
+                console.error("Error al obtener datos:", error);
+                contentCup.innerHTML = `<p style="color: red; margin-top: 10px;">Error al cargar los datos.</p>`;
+            }
+        }, 2000);
     }
 
     function queryCie() {
-        console.log("hola");
+
+        clearTimeout(timeout); // Cancela el temporizador anterior
+
+        timeout = setTimeout(async () => {
+            const codeType = document.getElementById('codeCie').value;
+            const contentCie = document.getElementById('contentCie');
+
+            if (codeType === "") {
+                contentCie.innerHTML = ""; // Borra el contenido si el input está vacío
+                return;
+            }
+
+            if (codeType.trim() === "") return;
+
+            try {
+                const response = await cie11Service.getCie11ByCode(codeType);
+                console.log(response);
+
+                if (response && Array.isArray(response) && response.length > 0) {
+                    const cup = response[0]; // Suponiendo que solo necesitas el primer resultado
+
+                    contentCie.innerHTML = `
+                    <div class="card p-2">
+                        <h3 style="font-weight: bold; font-size: 20px">${cup.codigo}</h3>
+                        <p style="margin: 5px 0;"><strong>Descripción:</strong> ${cup.descripcion}</p>
+                    </div>
+                `;
+                } else {
+                    contentCie.innerHTML = `
+                    <p style="color: red; margin-top: 10px;">No se encontró información para el código ingresado.</p>
+                `;
+                }
+
+            } catch (error) {
+                console.error("Error al obtener datos:", error);
+                contentCie.innerHTML = `<p style="color: red; margin-top: 10px;">Error al cargar los datos.</p>`;
+            }
+        }, 2000);
     }
 </script>

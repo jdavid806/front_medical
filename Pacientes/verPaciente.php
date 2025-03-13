@@ -25,7 +25,7 @@ $consultas = [
 ];
 
 $tabs = [
-  ['icono' => 'fas fa-address-book', 'titulo' => 'Consultas medicas', 'texto' => 'Revisa o crea historias médicas', 'url' => 'consulta?patient_id=' . $_GET['id']],
+  ['id' => 'consulta', 'icono' => 'fas fa-address-book', 'titulo' => 'Consultas medicas', 'texto' => 'Revisa o crea historias médicas', 'url' => 'consulta?patient_id=' . $_GET['id']],
   ['icono' => 'calendar-days', 'titulo' => 'Citas', 'texto' => 'Agenda una nueva cita o revisa todas las citas agendadas a este paciente', 'url' => 'verCitas?patient_id=' . $_GET['id']],
   ['icono' => 'fas fa-address-book', 'titulo' => 'Llamar al paciente', 'texto' => 'Revisa o crea historias médicas', 'url' => 'llamar_paciente'],
   ['icono' => 'file-circle-plus', 'titulo' => 'Ordenes médicas', 'texto' => 'Revisa todos los exaenes clínicos generados a este paciente', 'url' => 'verExamenes?patient_id=' . $_GET['id']],
@@ -119,7 +119,7 @@ $tabs = [
                       <?= $tab['texto'] ?>
                     </p>
                     <!-- Botón siempre al fondo -->
-                    <button class="btn btn-primary btn-icon mt-auto" onclick="handleTabClick('<?= $tab['url'] ?>')">
+                    <button class="btn btn-primary btn-icon mt-auto" id="<?= $tab['id'] ?>" onclick="handleTabClick('<?= $tab['url'] ?>')">
                       <span class="fa-solid fa-chevron-right"></span>
                     </button>
                   </div>
@@ -169,6 +169,9 @@ $tabs = [
   document.addEventListener('DOMContentLoaded', async function() {
     const patientId = new URLSearchParams(window.location.search).get('id');
     const exampleData = await patientService.evolution(patientId);
+
+    console.log(exampleData);
+
 
     const container = document.getElementById('patient-evolution-container');
     const template = document.getElementById('patient-evolution').content;

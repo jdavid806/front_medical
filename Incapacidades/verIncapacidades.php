@@ -37,9 +37,9 @@ include "../header.php";
             <h2 class="mb-0">Incapacidades</h2>
             <small class="patientName">Cargando...</small>
           </div>
-          <button id="btnModalCrearIncapacidad" type="button" class="btn btn-primary">
+          <!-- <button id="btnModalCrearIncapacidad" type="button" class="btn btn-primary">
             <i class="fa-solid fa-plus me-2"></i>Nueva incapacidad
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@ include "../header.php";
 
   <?php
   include './modalIncapacidad.php'
-    ?>
+  ?>
 
   <template id="templateIncapacidad">
     <tr>
@@ -159,8 +159,6 @@ include "../header.php";
     function editarIncapacidad(incapacidad) {
       $("#modalCrearIncapacidadLabel").html(`Editar Incapacidad`);
 
-      console.log(incapacidad);
-
       rellenarFormularioConObjeto(incapacidad)
       $("#dias").val(calcularDiasEntreFechas(
         new Date(incapacidad.start_date),
@@ -180,11 +178,10 @@ include "../header.php";
     }
 
     async function compartirIncapacidad(incapacidad) {
-      enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", "9", incapacidad.user_id, "Incapacidad_Médica.pdf");
+      enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", incapacidad.patient_id, incapacidad.user_id, "Incapacidad_Médica.pdf");
     }
 
     function eliminarIncapacidad(id) {
-      console.log('Eliminar incapacidad con ID:', id);
 
       Swal.fire({
         title: '¿Estás seguro?',
@@ -210,7 +207,7 @@ include "../header.php";
       });
     }
 
-    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
+    // document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
 
     const template = document.getElementById("templateIncapacidad");
     const table = document.getElementById("tableIncapacidades");
@@ -244,7 +241,7 @@ include "../header.php";
           new Date(incapacidad.start_date),
           new Date(incapacidad.end_date)
         ) + 1;
-        clone.querySelector(".registrado-por").textContent = `Doctor ID: ${incapacidad.user_id}`;
+        clone.querySelector(".registrado-por").textContent = `${incapacidad.user.first_name} ${incapacidad.user.middle_name} ${incapacidad.user.last_name} ${incapacidad.user.second_last_name}`;
         clone.querySelector(".comentarios").textContent = incapacidad.reason;
 
         clone.querySelector('#btnImpimirIncapacidad').onclick = () => imprimirIncapacidad(incapacidad);
@@ -264,12 +261,12 @@ include "../header.php";
   </script>
 
   <script>
-    document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function () {
-      $("#modalCrearIncapacidadLabel").html(`Crear Incapacidad`);
+    // document.getElementById('btnModalCrearIncapacidad').addEventListener('click', function() {
+    //   $("#modalCrearIncapacidadLabel").html(`Crear Incapacidad`);
 
-      document.getElementById("formCrearIncapacidad").reset();
-      checkRecurrencia(document.getElementById('recurrencia'))
-    })
+    //   document.getElementById("formCrearIncapacidad").reset();
+    //   checkRecurrencia(document.getElementById('recurrencia'))
+    // })
   </script>
 
   <?php include "../footer.php"; ?>

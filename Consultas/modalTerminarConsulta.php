@@ -421,6 +421,7 @@ include "../ConsultasJson/dataPaciente.php";
       "branch_id": 1,
       "data": captureFormValues(formData.form1)
     }
+    const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0
 
     const hasDisplayNone = (id) => {
       const element = document.getElementById(id);
@@ -433,7 +434,7 @@ include "../ConsultasJson/dataPaciente.php";
 
     if (!hasDisplayNone('examsFormReact')) {
       data['exam_order'] = {
-        "patient_id": new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0,
+        "patient_id": patientId,
         "exam_order_state_id": 1,
         "exam_order_item_id": dataExamenes[0]?.id,
         "exam_order_item_type": "exam_type"
@@ -443,7 +444,7 @@ include "../ConsultasJson/dataPaciente.php";
     if (!hasDisplayNone('prescriptionFormReact')) {
       data['recipe'] = {
         user_id: 1,
-        patient_id: new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0,
+        patient_id: patientId,
         medicines: dataRecetas,
         is_active: true
       };
@@ -454,7 +455,7 @@ include "../ConsultasJson/dataPaciente.php";
     }
 
     console.log(data);
-    clinicalRecordService.clinicalRecordsParamsStore(1, data)
+    clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
       .then(() => {
         AlertManager.success({
           text: 'Se ha creado el registro exitosamente'

@@ -245,6 +245,16 @@ async function getCountryInfo(value) {
     }
   }
 }
+async function getSpecialtyName(value) {
+  let url = obtenerRutaPrincipal() + "/medical/specialties";
+  let especialidades = await obtenerDatos(url);
+
+  for (const especilidad of especialidades) {
+    if (value === especilidad.id) {
+      return especilidad.name;
+    }
+  }
+}
 
 function convertirHtmlAWhatsapp(html) {
   return html
@@ -350,7 +360,7 @@ function calcularDiferenciaDias(start_date, end_date) {
   return diferenciaDias;
 }
 
-function convertirDatosVariables(
+async function convertirDatosVariables(
   template,
   nombreObjecto,
   patient_id,
@@ -360,11 +370,14 @@ function convertirDatosVariables(
 
   switch (nombreObjecto) {
     case "Incapacidad":
-      mensaje = reemplazarVariablesIncapacidad(
+      mensaje = await reemplazarVariablesIncapacidad(
         template,
         object_id,
         patient_id
       );
+      break;
+    case "Cita":
+      mensaje = await reemplazarVariablesCita(template, object_id, patient_id);
       break;
 
     default:
@@ -377,12 +390,7 @@ function convertirDatosVariables(
 async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
 
-  let nombrePaciente = [
-    datosPaciente.first_name,
-    datosPaciente.middle_name,
-    datosPaciente.last_name,
-    datosPaciente.second_last_name,
-  ];
+  let nombrePaciente = datosPaciente.nombre;
 
   let urlIncapacidad =
     obtenerRutaPrincipal() + `/medical/disabilities/${object_id}`;
@@ -398,7 +406,9 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
     datosIncapacidad.user.second_last_name,
   ];
 
-  let Especialidad = datosIncapacidad.user.user_specialty_id;
+  let Especialidad = await getSpecialtyName(
+    datosIncapacidad.user.user_specialty_id
+  );
 
   let fechaInicio = datosIncapacidad.start_date;
 
@@ -408,7 +418,7 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
   let recomendaciones = datosIncapacidad.reason;
 
   return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, unirTextos(nombrePaciente) || "")
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
     .replace(/\[\[FECHA_INCAPACIDAD\]\]/g, fechaIncapacidad || "")
     .replace(/\[\[ESPECIALISTA\]\]/g, unirTextos(especialista) || "")
     .replace(/\[\[ESPECIALIDAD\]\]/g, Especialidad || "")
@@ -416,4 +426,36 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
     .replace(/\[\[FECHA_FIN\]\]/g, fechaFin || "")
     .replace(/\[\[DIAS_INCAPACIDAD\]\]/g, dias || "")
     .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
+}
+
+async function reemplazarVariablesCita(template, object_id, patient_id) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let nombrePaciente = datosPaciente.nombre;
+
+  let urlCita = obtenerRutaPrincipal() + `/medical/appointments/${object_id}`;
+  const datosCita = await obtenerDatos(urlCita);
+
+  let fechaCita = datosCita.appointment_date;
+  let HoraCita = datosCita.appointment_time;
+
+  let especialista = [
+    datosCita.user_availability.user.first_name,
+    datosCita.user_availability.user.middle_name,
+    datosCita.user_availability.user.last_name,
+    datosCita.user_availability.user.second_last_name,
+  ];
+
+  let especilidad = await getSpecialtyName(
+    datosCita.user_availability.user.user_specialty_id
+  );
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[FECHA_CITA\]\]/g, fechaCita || "")
+    .replace(/\[\[HORA_CITA\]\]/g, HoraCita || "")
+    .replace(/\[\[ESPECIALISTA\]\]/g, unirTextos(especialista) || "")
+    .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
+    .replace(/\[\[MOTIVO_REAGENDAMIENTO\]\]/g, "Motivo Motivo" || "")
+    .replace(/\[\[MOTIVO_CANCELACION\]\]/g, "Motivo Cancelacion" || "");
 }

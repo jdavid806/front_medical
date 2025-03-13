@@ -86,16 +86,16 @@ async function enviarDocumentoConvertido(
 
   let template = await obtenerTemplate(datosMensaje);
 
-  let mensaje = convertirDatosVariables(
+  let mensaje = await convertirDatosVariables(
     template,
     nombreObjecto,
     patient_id,
     objectoId
   );
 
-  // let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
+  let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
 
-  enviarAnexo(mensaje, numero_paciente, rutaFinal, titulo);
+  enviarAnexo(mensajeFinal, numero_paciente, rutaFinal, titulo);
 }
 
 async function consultarQR(user_id) {
@@ -139,6 +139,8 @@ async function consultarQR(user_id) {
     console.error("Error al cargar el QR:", error);
   }
 }
+
+// Funcioens envio
 
 async function cerrarPuerto(user_id) {
   Swal.fire({
@@ -223,20 +225,26 @@ async function enviarDocumento(
   }
 }
 
-async function tonifyTurn(patient_id, appointment) {
+async function tonifyTurn(patient_id, appointment_id) {
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
-  // const datosEmpresa = await consultarDatosEmpresaPorDoctorId("1");
 
   let numero_paciente = datosPaciente.telefono;
 
   const datosMensaje = {
     tenant_id: "1",
     type: "whatsapp",
-    belongs_to: "citas-cancelacion",
+    belongs_to: "citas-turno",
   };
 
   let template = await obtenerTemplate(datosMensaje);
 
-  let mensajeFinal = convertirHtmlAWhatsapp(template);
+  let mensaje = await convertirDatosVariables(
+    template,
+    "Cita",
+    patient_id,
+    appointment_id
+  );
+
+  let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
   enviarTexto(mensajeFinal, numero_paciente);
 }

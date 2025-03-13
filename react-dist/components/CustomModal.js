@@ -5,14 +5,17 @@ export const CustomModal = ({
   title,
   show,
   onHide,
-  footerTemplate
+  footerTemplate,
+  scrollable = false
 }) => {
   return /*#__PURE__*/React.createElement(Modal, {
     show: show,
     onHide: onHide,
     size: "xl",
     "aria-labelledby": "contained-modal-title-vcenter",
-    centered: true
+    centered: true,
+    className: `${scrollable ? 'modal-dialog-scrollable' : ''}`,
+    scrollable: scrollable
   }, /*#__PURE__*/React.createElement(Modal.Header, {
     closeButton: true
   }, /*#__PURE__*/React.createElement(Modal.Title, {

@@ -70,63 +70,110 @@ function capturarDatosInformacionGeneral() {
 
 function capturarDatosInformacionGeneral() {
   const datos = {
-    name: document.getElementById("nombre-consultorio").value,
-    representatives: [
-      {
-        name: document.getElementById("nombre-representante").value,
-        phone: document.getElementById("telefono-representante").value,
-        email: document.getElementById("correo-representante").value,
-        document_type: document.getElementById("tipoDocumento-representante")
-          .value,
-        document_number: document.getElementById("documento-representante")
-          .value,
-      },
+    representatives: [capturarDatosRepresentante()],
+    offices: [capturarDatosOficina()],
+    billings: [
+      capturarDatosFacturacionConsumidor(),
+      capturarDatosFacturacionFiscal(),
+      capturarDatosFacturacionGubernamental(),
+      capturarDatosFacturacionCredito(),
     ],
-    offices: [
-      {
-        // commercial_name: "TechCorp Main Office",
-        // name: "Main Office",
-        document_type: document.getElementById("tipoDocumento-consultorio")
-          .value,
-        document_number: document.getElementById("documento-consultorio").value,
-      },
-    ],
+    contacts: [capturarDatosContacto()],
+    communication: capturarDatosSMTP(),
+    branches: sedesArray, //Esta variable esta declarada en el archivo configuracion/modales/modalAgregarSede.php,
     // logo: document.getElementById('logo').files[0],
     // marcaAgua: document.getElementById('marcaAgua').files[0],
   };
   return datos;
 }
 
-function capturarDatosFacturacion() {
+function capturarDatosOficina() {
   const datos = {
-    billing: {
-      dian_prefix: document.getElementById("prefijo").value,
-      resolution_number: document.getElementById("numeroResolucion").value,
-      invoice_from: document.getElementById("facturaDesde").value,
-      invoice_to: document.getElementById("facturaHasta").value,
-      resolution_date: document.getElementById("fechaResolucion").value,
-      expiration_date: document.getElementById("fechaVencimiento").value,
-    },
+    name: document.getElementById("nombre-consultorio").value,
+    document_type: document.getElementById("tipoDocumento-consultorio").value,
+    document_number: document.getElementById("documento-consultorio").value,
+  };
+
+  return datos;
+}
+
+function capturarDatosRepresentante() {
+  const datos = {
+    name: document.getElementById("nombre-representante").value,
+    phone: document.getElementById("telefono-representante").value,
+    email: document.getElementById("correo-representante").value,
+    document_type: document.getElementById("tipoDocumento-representante").value,
+    document_number: document.getElementById("documento-representante").value,
+  };
+  return datos;
+}
+
+function capturarDatosFacturacionConsumidor() {
+  const datos = {
+    dian_prefix: document.getElementById("prefijoConsumidor").value,
+    resolution_number: document.getElementById("numeroResolucionConsumidor")
+      .value,
+    invoice_from: document.getElementById("facturaDesdeConsumidor").value,
+    invoice_to: document.getElementById("facturaHastaConsumidor").value,
+    type: 4,
+    resolution_date: document.getElementById("fechaResolucionConsumidor").value,
+    expiration_date: document.getElementById("fechaVencimientoConsumidor")
+      .value,
+  };
+  return datos;
+}
+
+function capturarDatosFacturacionGubernamental() {
+  const datos = {
+    dian_prefix: document.getElementById("prefijoGubernamental").value,
+    resolution_number: document.getElementById("numeroResolucionGubernamental")
+      .value,
+    invoice_from: document.getElementById("facturaDesdeGubernamental").value,
+    invoice_to: document.getElementById("facturaHastaGubernamental").value,
+    type: 1,
+    resolution_date: document.getElementById("fechaResolucionGubernamental")
+      .value,
+    expiration_date: document.getElementById("fechaVencimientoGubernamental")
+      .value,
+  };
+  return datos;
+}
+
+function capturarDatosFacturacionFiscal() {
+  const datos = {
+    dian_prefix: document.getElementById("prefijoFiscal").value,
+    resolution_number: document.getElementById("numeroResolucionFiscal").value,
+    invoice_from: document.getElementById("facturaDesdeFiscal").value,
+    invoice_to: document.getElementById("facturaHastaFiscal").value,
+    type: 2,
+    resolution_date: document.getElementById("fechaResolucionFiscal").value,
+    expiration_date: document.getElementById("fechaVencimientoFiscal").value,
+  };
+  return datos;
+}
+
+function capturarDatosFacturacionCredito() {
+  const datos = {
+    dian_prefix: document.getElementById("prefijoNotaCredito").value,
+    resolution_number: document.getElementById("numeroResolucionNotaCredito")
+      .value,
+    invoice_from: document.getElementById("facturaDesdeNotaCredito").value,
+    invoice_to: document.getElementById("facturaHastaNotaCredito").value,
+    type: 3,
+    resolution_date: document.getElementById("fechaResolucionNotaCredito")
+      .value,
+    expiration_date: document.getElementById("fechaVencimientoNotaCredito")
+      .value,
   };
   return datos;
 }
 
 function capturarDatosContacto() {
   const datos = {
-    // contacts: [
-    //   {
-    //     type: WhatsApp,
-    //     value: document.getElementById("telefono-consultorio").value,
-    //     country: USA,
-    //     city: New York
-    //   }
-    // ],
-    // telefonoConsultorio: ,
-    // correoConsultorio: document.getElementById("correo-consultorio").value,
-    // direccionConsultorio: document.getElementById("direccion-consultorio")
-    //   .value,
-    // paisConsultorio: document.getElementById("pais-consultorio").value,
-    // ciudadConsultorio: document.getElementById("ciudad-consultorio").value,
+    type: "WhatsApp",
+    value: document.getElementById("telefono-consultorio").value,
+    country: document.getElementById("pais-consultorio").value,
+    city: document.getElementById("ciudad-consultorio").value,
   };
   return datos;
 }

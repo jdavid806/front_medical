@@ -271,8 +271,9 @@ export interface UserRoleDto {
     is_active: boolean;
     created_at: string;
     updated_at: string;
+    permissions: string[];
+    menus: string[]
 }
-
 
 export interface PrescriptionDto {
     id: string;

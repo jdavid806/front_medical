@@ -71,21 +71,21 @@
                     <div class="card-body">
                       <h5 class="card-title">Información básica</h5>
                       <div class="row g-3 mb-3">
-                        <div class="col-sm-4">
+                        <!-- <div class="col-sm-4">
                           <div class="mb-2 mb-sm-0">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-wizard-seller">Vendedor*</label>
                             <input class="form-control" type="text" name="seller" placeholder="Vendedor" required="required" id="bootstrap-wizard-validation-wizard-seller" data-wizard-seller="true">
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
-                        </div>
-                        <div class="col-sm-4">
+                        </div> -->
+                        <div class="col-sm-6">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-wizard-date-preparation">Fecha de elaboración*</label>
                             <input class="form-control" type="date" name="date-preparation" placeholder="Fecha de elaboración" required="required" id="bootstrap-wizard-validation-wizard-date-preparation" data-wizard-date-preparation="true">
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-wizard-date-expiry">Fecha de vencimiento*</label>
                             <input class="form-control" type="date" name="date-expiry" placeholder="Fecha de vencimiento" required="required" id="bootstrap-wizard-validation-wizard-date-expiry" data-wizard-date-expiry="true">
@@ -95,7 +95,7 @@
                       </div>
 
                       <div class="row g-3 mb-3">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                           <div class="mb-2 mb-sm-0">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-entity">Entidad</label>
                             <select class="form-select" name="entity" id="bootstrap-wizard-validation-entity">
@@ -107,14 +107,14 @@
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
                         </div>
-                        <div class="col-sm-4">
+                        <!-- <div class="col-sm-4">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-wizard-authorisation-number">Número de Autorizacion*</label>
                             <input class="form-control" type="number" name="authorisation-number" placeholder="úmero de Autorizacion" required="required" id="bootstrap-wizard-validation-wizard-authorisation-number" data-wizard-confirm-password="true">
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
-                        </div>
-                        <div class="col-sm-4">
+                        </div> -->
+                        <div class="col-sm-6">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-entity">Centro de costo</label>
                             <select class="form-select" name="entity" id="bootstrap-wizard-validation-entity">
@@ -136,14 +136,28 @@
                       <h5 class="card-title">Filtrar</h5>
 
                       <div class="row g-3 mb-3">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
+                          <div class="mb-2 mb-sm-0">
+                            <label class="form-label text-body" for="bootstrap-wizard-validation-procedureM">Procedimiento M</label>
+                            <select class="form-select" id="procedureM">
+                            </select>
+                            <div class="invalid-feedback">El campo es obligatorio</div>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
                           <div class="mb-2 mb-sm-0">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-procedure">Procedimiento</label>
                             <input class="form-control" type="text" name="procedure" placeholder="Procedimiento" id="procedure" required="required">
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="input-group mt-3">
+                          <div class="form-floating">
+                            <select class="form-select" id="speciality">
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-entity">Especialista</label>
                             <select class="form-select" name="entity" id="bootstrap-wizard-validation-entity">
@@ -155,7 +169,7 @@
                             <div class="invalid-feedback">El campo es obligatorio</div>
                           </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                           <div class="mb-2">
                             <label class="form-label text-body" for="bootstrap-wizard-validation-wizard-date-expiry">Paciente*</label>
                             <input class="form-control" type="text" name="date-expiry" placeholder="Fecha de vencimiento" required="required" id="bootstrap-wizard-validation-wizard-date-expiry" data-wizard-date-expiry="true">
@@ -163,7 +177,7 @@
                           </div>
                         </div>
 
-                        <div class="col-sm-6">
+                        <!-- <div class="col-sm-6">
                           <div class="mb-2 mb-sm-0">
                             <label class="form-label" for="start-date-procedure">Fecha de Inicio - Procedimiento*</label>
                             <input class="form-control datetimepicker flatpickr-input" name="start-date-procedure" id="start-date-procedure" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly" required="required">
@@ -177,6 +191,16 @@
                             <input class="form-control datetimepicker flatpickr-input" name="date-end-procedure" id="date-end-procedure" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly" required="required">
 
                             <div class="invalid-feedback">El campo es obligatorio</div>
+                          </div>
+                        </div> -->
+
+                        <div class="col-sm-6">
+                          <div class="mb-2">
+                            <label class="form-label" for="rangeDate">
+                              Fecha Inicio - Fin Procedimiento
+                            </label>
+                            <input class="form-control datetimepicker flatpickr-input" id="rangeDate" type="text" placeholder="Desde: dd/mm/aaaa - Hasta: dd/mm/aaaa" data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;d/m/y&quot;,&quot;disableMobile&quot;:true}" readonly="readonly" required="required">
+
                           </div>
                         </div>
                       </div>
@@ -400,6 +424,101 @@
 
 
 <script>
+  const procedimientos = [{
+      id: 1,
+      nombre: "procedimiento 1"
+    },
+    {
+      id: 2,
+      nombre: "procedimiento 2"
+    },
+    {
+      id: 3,
+      nombre: "procediminento 3"
+    }
+  ];
+  const especialistas = [{
+      id: 1,
+      nombre: "especialista 1"
+    },
+    {
+      id: 2,
+      nombre: "especialista 2"
+    },
+    {
+      id: 3,
+      nombre: "especialista 3"
+    }
+  ]
+
+  // function configurarSelectProcedimientosMultiple() {
+  //   // Obtenemos la referencia al select
+  //   const procedureM = document.getElementById('procedureM');
+
+  //   // Añadimos el atributo multiple
+  //   procedureM.setAttribute('multiple', 'multiple');
+
+  //   // Si estás usando alguna biblioteca como Choices.js
+  //   if (typeof Choices !== 'undefined') {
+  //     const choices = new Choices(procedureM, {
+  //       removeItemButton: true,
+  //       placeholder: true
+  //     });
+  //   }
+  // }
+
+  function cargarProcedimientos() {
+    const selectProcedimientos = document.getElementById('procedureM');
+
+    selectProcedimientos.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Seleccione los procedimientos";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+
+    selectProcedimientos.appendChild(placeholderOption);
+
+    procedimientos.forEach(procedimiento => {
+      const optionProc = document.createElement('option');
+
+      optionProc.value = procedimiento.id;
+      optionProc.textContent = procedimiento.nombre;
+
+      selectProcedimientos.appendChild(optionProc);
+    });
+  }
+
+  function cargarEspecialistas() {
+    const selectEspecialistas = document.getElementById('speciality');
+
+    selectEspecialistas.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Seleccione los especialistas";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+
+    selectEspecialistas.appendChild(placeholderOption);
+
+    especialistas.forEach(especialista => {
+      const optionProc = document.createElement('option');
+
+      optionProc.value = especialista.id;
+      optionProc.textContent = especialista.nombre;
+
+      selectEspecialistas.appendChild(optionProc);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    cargarProcedimientos(procedimientos);
+    cargarEspecialistas(especialistas);
+    configurarSelectProcedimientosMultiple();
+  });
+
   // ? /////////////// ======== ///////////////////////////
   // ? /////////////// MODAL    ////////////////////////
   // ? /////////////// ======== ///////////////////////////
@@ -798,5 +917,4 @@
 
 
   });
-
 </script>

@@ -36,22 +36,33 @@
 
           <h6>Ubicación</h6>
           <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label" for="sedeCiudad">Ciudad</label>
-              <input class="form-control" id="sedeCiudad" type="text" placeholder="Ciudad" required>
-              <div class="invalid-feedback">Ingrese una ciudad.</div>
+            <div class="col-sm-12">
+              <div class="mb-2 mb-sm-0">
+                <label for="country_id" class="form-label">Pais</label>
+                <select class="form-select" id="country_id" name="sede[country_id]" required>
+                  <option selected disabled value="">Seleccione</option>
+                </select>
+                <div class="invalid-feedback">El campo es obligatorio</div>
+              </div>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label" for="sedeDepartamento">Departamento/Provincia</label>
-              <input class="form-control" id="sedeDepartamento" type="text" placeholder="Departamento o Provincia"
-                required>
-              <div class="invalid-feedback">Ingrese un departamento o provincia.</div>
+            <div class="col-sm-6">
+              <div class="mb-2">
+                <label for="department_id" class="form-label">Departamento o provincia</label>
+                <select class="form-select" id="department_id" name="sede[department_id]" required>
+                  <option selected disabled value="">Seleccione</option>
+                </select>
+                <div class="invalid-feedback">El campo es obligatorio</div>
+              </div>
             </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="sedePais">País</label>
-            <input class="form-control" id="sedePais" type="text" placeholder="País" required>
-            <div class="invalid-feedback">Ingrese un país.</div>
+            <div class="col-sm-6">
+              <div class="mb-2 mb-sm-0">
+                <label for="city_id" class="form-label">Ciudad</label>
+                <select class="form-select" id="city_id" name="sede[city_id]" required>
+                  <option selected disabled value="">Seleccione</option>
+                </select>
+                <div class="invalid-feedback">El campos es obligatorio</div>
+              </div>
+            </div>
           </div>
 
           <h6>Representante</h6>
@@ -79,8 +90,34 @@
   </div>
 </div>
 
+<script type="module">
+  import {
+    countriesSelect,
+    departmentsSelect,
+    citiesSelect
+  } from "./services/selects.js";
+  document.addEventListener("DOMContentLoaded", async function() {
+    countriesSelect(document.getElementById('country_id'), (selectedOption) => {
+      const selectedCountryId = selectedOption.customProperties.id;
+
+      departmentsSelect(
+        document.getElementById('department_id'),
+        selectedCountryId,
+        (selectedDepartment) => {
+          const selectedDepartmentId = selectedDepartment.customProperties.id;
+
+          citiesSelect(
+            document.getElementById('city_id'),
+            selectedDepartmentId,
+            (selectedCity) => {}
+          );
+        }
+      );
+    });
+  });
+</script>
 <script>
-  document.getElementById("formAgregarSede").addEventListener("submit", function (event) {
+  document.getElementById("formAgregarSede").addEventListener("submit", function(event) {
     event.preventDefault();
 
     // Obtener valores del formulario
@@ -88,14 +125,16 @@
     let correo = document.getElementById("sedeCorreo").value;
     let whatsapp = document.getElementById("sedeWhatsapp").value;
     let direccion = document.getElementById("sedeDireccion").value;
-    let ciudad = document.getElementById("sedeCiudad").value;
-    let departamento = document.getElementById("sedeDepartamento").value;
-    let pais = document.getElementById("sedePais").value;
+    let ciudad = document.getElementById("city_id").value;
+    let departamento = document.getElementById("department_id").value;
+    let pais = document.getElementById("country_id").value;
     let representante = document.getElementById("sedeRepresentante").value;
     let telefono = document.getElementById("sedeTelefono").value;
     let tabla = document.querySelector("#tablaSedes tbody");
     let nuevaFila = tabla.insertRow();
     let rowCount = tabla.rows.length;
+
+    guardarSedeEnArray(nombre, correo, whatsapp, direccion, ciudad, departamento, pais, representante, telefono);
 
     nuevaFila.innerHTML = `
       <td>${rowCount}</td>
@@ -122,5 +161,29 @@
   function eliminarSede(btn) {
     let fila = btn.closest("tr");
     fila.remove();
+  }
+
+  let sedesArray = [];
+
+  function guardarSedeEnArray(nombre, correo, whatsapp, direccion, ciudad, departamento, pais, representante, telefono) {
+    let sede = {
+      name: nombre,
+      email: correo,
+      whatsapp: whatsapp,
+      address: direccion,
+      city: ciudad,
+      state: departamento,
+      country: pais,
+      representatives: [{
+        name: representante,
+        phone: telefono
+      }]
+    };
+
+
+
+    sedesArray.push(sede);
+    console.log("Sede agregada:", sede);
+    console.log("Lista actualizada de sedes:", sedesArray);
   }
 </script>
