@@ -1,12 +1,18 @@
 import React from 'react'
 import { ConfigColumns } from 'datatables.net-bs5';
-import { useUserAvailabilitiesTable } from '../hooks/useUserAvailabilitiesTable';
-import { UserAvailabilityDto } from '../../models/models';
-import { UserTableActions } from '../../users/UserTableActions';
 import CustomDataTable from '../../components/CustomDataTable';
+import { UserAvailabilityTableItem } from '../../models/models';
+import TableActionsWrapper from '../../components/table-actions/TableActionsWrapper';
+import { EditTableAction } from '../../components/table-actions/EditTableAction';
+import { DeleteTableAction } from '../../components/table-actions/DeleteTableAction';
 
-export const UserAvailabilityTable = () => {
-    const { availabilities } = useUserAvailabilitiesTable();
+export interface UserAvailabilityTableProps {
+    availabilities: UserAvailabilityTableItem[]
+    onEditItem?: (id: string) => void
+    onDeleteItem?: (id: string) => void
+}
+
+export const UserAvailabilityTable: React.FC<UserAvailabilityTableProps> = ({ availabilities, onEditItem, onDeleteItem }) => {
 
     const columns: ConfigColumns[] = [
         { data: 'doctorName', },
@@ -19,8 +25,11 @@ export const UserAvailabilityTable = () => {
     ]
 
     const slots = {
-        6: (cell, data: UserAvailabilityDto) => (
-            <UserTableActions></UserTableActions>
+        6: (cell, data: UserAvailabilityTableItem) => (
+            <TableActionsWrapper>
+                <EditTableAction onTrigger={() => onEditItem && onEditItem(data.id)}></EditTableAction>
+                <DeleteTableAction onTrigger={() => onDeleteItem && onDeleteItem(data.id)}></DeleteTableAction>
+            </TableActionsWrapper>
         )
     }
 

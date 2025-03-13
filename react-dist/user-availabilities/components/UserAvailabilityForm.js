@@ -11,13 +11,15 @@ import { Calendar } from 'primereact/calendar';
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { Button } from 'primereact/button';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { useUsers } from "../../users/hooks/useUsers.js";
+import { useModules } from "../../modules/hooks/useModules.js";
 const UserAvailabilityForm = ({
   formId,
-  onHandleSubmit
+  onHandleSubmit,
+  initialData
 }) => {
   const {
     control,
@@ -26,15 +28,37 @@ const UserAvailabilityForm = ({
       errors
     },
     trigger,
-    watch
-  } = useForm();
+    watch,
+    resetField,
+    getValues,
+    setValue,
+    reset
+  } = useForm({
+    defaultValues: initialData || {
+      user_id: '',
+      appointment_type_id: '',
+      appointment_duration: 0,
+      branch_id: '',
+      office: '',
+      module_id: '',
+      days_of_week: [],
+      start_time: null,
+      end_time: null,
+      free_slots: []
+    }
+  });
   const onSubmit = data => onHandleSubmit(data);
-  const [office, setOffice] = useState(null);
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [freeSlots, setFreeSlots] = useState([]);
-  const [selectedUserObject, setSelectedUserObject] = useState(undefined);
+  const {
+    fields,
+    append,
+    remove,
+    update
+  } = useFieldArray({
+    control,
+    name: "free_slots"
+  });
+  const [selectedUser, setSelectedUser] = useState(undefined);
+  const watchUserId = watch('user_id');
   const {
     users
   } = useUsers();
@@ -45,41 +69,33 @@ const UserAvailabilityForm = ({
   const {
     branches
   } = useBranchesForSelect();
+  const {
+    modules
+  } = useModules();
   const daysOfWeekOptions = daysOfWeek.map((day, index) => ({
     label: day,
     value: index
   }));
   const stepperRef = useRef(null);
-  const handleAddFreeSlot = () => {
-    setFreeSlots([...freeSlots, {
-      start: new Date(),
-      end: new Date()
-    }]);
-  };
-  const handleSlotChange = (index, field, value) => {
-    const updatedFreeSlots = [...freeSlots];
-    updatedFreeSlots[index][field] = value;
-    setFreeSlots(updatedFreeSlots);
-  };
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, errors[name].message);
   };
   useEffect(() => {
-    const {
-      unsubscribe
-    } = watch(value => {
-      console.log(value);
-      console.log(users);
-      if (value.user_id) {
-        const user = users.find(user => user.id.toString() == value.user_id);
-        setSelectedUserObject(user);
-        console.log(user);
-      }
+    reset(initialData || {
+      user_id: '',
+      appointment_type_id: '',
+      appointment_duration: 0,
+      branch_id: '',
+      office: '',
+      module_id: '',
+      days_of_week: [],
+      start_time: null,
+      end_time: null,
+      free_slots: []
     });
-    return () => unsubscribe();
-  }, [watch]);
+  }, [initialData, reset]);
   useEffect(() => {
     setUsersForSelect(users.map(user => {
       return {
@@ -88,6 +104,28 @@ const UserAvailabilityForm = ({
       };
     }));
   }, [users]);
+  useEffect(() => {
+    const subscription = watch((value, {
+      name
+    }) => {
+      if (name === 'start_time' && value.start_time && value.end_time && value.start_time > value.end_time) {
+        setValue('end_time', value.start_time);
+      } else if (name === 'end_time' && value.start_time && value.end_time && value.end_time < value.start_time) {
+        setValue('start_time', value.end_time);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
+  useEffect(() => {
+    if (watchUserId) {
+      const user = users.find(role => role.id == watchUserId);
+      setSelectedUser(user);
+      resetField('office');
+      resetField('module_id');
+    } else {
+      setSelectedUser(undefined);
+    }
+  }, [watchUserId, users]);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
     id: formId,
     className: "needs-validation",
@@ -96,7 +134,7 @@ const UserAvailabilityForm = ({
   }, /*#__PURE__*/React.createElement(Stepper, {
     ref: stepperRef
   }, /*#__PURE__*/React.createElement(StepperPanel, {
-    header: "Informaci\xF3n general xd ho"
+    header: "Informaci\xF3n general"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
@@ -121,27 +159,43 @@ const UserAvailabilityForm = ({
         'p-invalid': errors.user_id
       })
     }, field)))
-  }), getFormErrorMessage('user_id')), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('user_id')), selectedUser && selectedUser.role.group === 'DOCTOR' && /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
-    name: "user_id",
+    name: "office",
     control: control,
-    rules: {
-      required: 'Este campo es requerido'
-    },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
-    }, "Consultorio *"), /*#__PURE__*/React.createElement(InputText, {
-      className: "w-100",
+    }, "Consultorio"), /*#__PURE__*/React.createElement(InputText, _extends({
+      id: field.name,
       type: "text",
-      id: "office",
-      value: office,
-      onChange: e => setOffice(e.target.value),
+      className: "w-100",
       placeholder: "Ingrese el consultorio"
-    }))
-  }), getFormErrorMessage('user_id')), /*#__PURE__*/React.createElement("div", {
+    }, field)))
+  })), selectedUser && selectedUser.role.group === 'ADMIN' && /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "module_id",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Modulo"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      inputId: field.name,
+      options: modules,
+      optionLabel: "name",
+      optionValue: "id",
+      filter: true,
+      placeholder: "Seleccione un modulo",
+      className: classNames('w-100', {
+        'p-invalid': errors.user_id
+      })
+    }, field)))
+  })), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "appointment_type_id",
@@ -219,26 +273,35 @@ const UserAvailabilityForm = ({
     }, field)))
   }), getFormErrorMessage('branch_id')), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "days_of_week",
-    className: "form-label"
-  }, "D\xEDas de la semana ", /*#__PURE__*/React.createElement("span", {
-    className: "text-primary"
-  }, "*")), /*#__PURE__*/React.createElement(MultiSelect, {
-    inputId: "days_of_week",
+  }, /*#__PURE__*/React.createElement(Controller, {
     name: "days_of_week",
-    value: selectedDays,
-    placeholder: "Seleccione uno o varios d\xEDas de la semana",
-    onChange: e => setSelectedDays(e.value),
-    options: daysOfWeekOptions,
-    filter: true,
-    className: "w-100 position-relative",
-    panelStyle: {
-      zIndex: 100000,
-      padding: 0
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
     },
-    appendTo: "self"
-  })), /*#__PURE__*/React.createElement("div", {
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "D\xEDas de la semana *"), /*#__PURE__*/React.createElement(MultiSelect, {
+      inputId: field.name,
+      name: field.name,
+      value: field.value,
+      placeholder: "Seleccione uno o varios d\xEDas de la semana",
+      onChange: e => field.onChange(e.value),
+      options: daysOfWeekOptions,
+      filter: true,
+      className: classNames('w-100 position-relative', {
+        'p-invalid': errors.branch_id
+      }),
+      panelStyle: {
+        zIndex: 100000,
+        padding: 0
+      },
+      appendTo: "self"
+    }))
+  }), getFormErrorMessage('days_of_week')), /*#__PURE__*/React.createElement("div", {
     className: "d-flex pt-4 justify-content-end"
   }, /*#__PURE__*/React.createElement(Button, {
     className: "btn btn-primary btn-sm",
@@ -262,29 +325,47 @@ const UserAvailabilityForm = ({
     className: "mb-3 row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 d-flex flex-column gap-2"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "start_time",
-    className: "form-label"
-  }, "Hora de Inicio"), /*#__PURE__*/React.createElement(Calendar, {
-    id: "start_time",
-    hourFormat: "24",
-    showTime: true,
-    timeOnly: true,
-    value: startTime,
-    onChange: e => setStartTime(e.value)
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "start_time",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "start_time",
+      className: "form-label"
+    }, "Hora de Inicio"), /*#__PURE__*/React.createElement(Calendar, {
+      id: field.name,
+      hourFormat: "24",
+      showTime: true,
+      timeOnly: true,
+      value: field.value,
+      onChange: e => field.onChange(e.value)
+    }))
+  }), getFormErrorMessage('start_time')), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 d-flex flex-column gap-2"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "end_time",
-    className: "form-label"
-  }, "Hora de Fin"), /*#__PURE__*/React.createElement(Calendar, {
-    id: "end_time",
-    hourFormat: "24",
-    showTime: true,
-    timeOnly: true,
-    value: endTime,
-    onChange: e => setEndTime(e.value)
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "end_time",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "end_time",
+      className: "form-label"
+    }, "Hora de Fin"), /*#__PURE__*/React.createElement(Calendar, {
+      id: field.name,
+      hourFormat: "24",
+      showTime: true,
+      timeOnly: true,
+      value: field.value,
+      onChange: e => field.onChange(e.value)
+    }))
+  }), getFormErrorMessage('end_time'))), /*#__PURE__*/React.createElement("div", {
     className: "card mt-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header"
@@ -294,49 +375,96 @@ const UserAvailabilityForm = ({
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
-  }, freeSlots.length === 0 ? /*#__PURE__*/React.createElement("p", {
+  }, fields.length === 0 ? /*#__PURE__*/React.createElement("p", {
     className: "text-muted"
-  }, "Puedes agregar espacios libres a continuaci\xF3n.") : freeSlots.map((slot, index) => /*#__PURE__*/React.createElement("div", {
-    key: index,
+  }, "Puedes agregar espacios libres a continuaci\xF3n.") : fields.map((field, index) => /*#__PURE__*/React.createElement("div", {
+    key: field.id,
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-grow-1 gap-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column flex-grow-1 gap-2"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: `start_${index}`,
     className: "form-label"
-  }, "Inicio"), /*#__PURE__*/React.createElement(Calendar, {
-    id: `start_${index}`,
-    hourFormat: "24",
-    showTime: true,
-    timeOnly: true,
-    value: slot.start,
-    onChange: e => handleSlotChange(index, 'start', e.value)
+  }, "Inicio"), /*#__PURE__*/React.createElement(Controller, {
+    name: `free_slots.${index}.start_time`,
+    control: control,
+    rules: {
+      required: "Hora de inicio requerida"
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Calendar, {
+      hourFormat: "24",
+      showTime: true,
+      timeOnly: true,
+      value: field.value,
+      onChange: e => {
+        const newStart = e.value;
+        const currentEnd = getValues(`free_slots.${index}.end_time`);
+
+        // Actualiza ambos campos al mismo tiempo
+        setValue(`free_slots.${index}.start_time`, newStart);
+        if (newStart && currentEnd && newStart > currentEnd) {
+          setValue(`free_slots.${index}.end_time`, newStart);
+        }
+      },
+      className: classNames({
+        'p-invalid': fieldState.error
+      })
+    }), fieldState.error && /*#__PURE__*/React.createElement("small", {
+      className: "p-error"
+    }, fieldState.error.message))
   })), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column flex-grow-1 gap-2"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: `end_${index}`,
     className: "form-label"
-  }, "Fin"), /*#__PURE__*/React.createElement(Calendar, {
-    id: `end_${index}`,
-    hourFormat: "24",
-    showTime: true,
-    timeOnly: true,
-    value: slot.end,
-    onChange: e => handleSlotChange(index, 'end', e.value)
+  }, "Fin"), /*#__PURE__*/React.createElement(Controller, {
+    name: `free_slots.${index}.end_time`,
+    control: control,
+    rules: {
+      required: "Hora de fin requerida"
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Calendar, {
+      hourFormat: "24",
+      showTime: true,
+      timeOnly: true,
+      value: field.value,
+      onChange: e => {
+        const newEnd = e.value;
+        const currentStart = getValues(`free_slots.${index}.start_time`);
+
+        // Actualiza ambos campos al mismo tiempo
+        setValue(`free_slots.${index}.end_time`, newEnd);
+        if (newEnd && currentStart && newEnd < currentStart) {
+          setValue(`free_slots.${index}.start_time`, newEnd);
+        }
+      },
+      className: classNames({
+        'p-invalid': fieldState.error
+      })
+    }), fieldState.error && /*#__PURE__*/React.createElement("small", {
+      className: "p-error"
+    }, fieldState.error.message))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex"
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-danger align-self-end",
-    onClick: () => setFreeSlots(freeSlots.filter((_, i) => i !== index))
+    onClick: () => remove(index)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-trash-alt"
   })))))), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-secondary mt-2",
-    onClick: handleAddFreeSlot
+    onClick: () => append({
+      start_time: null,
+      end_time: null
+    })
   }, "Agregar Espacio Libre"))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex pt-4 justify-content-end gap-3"
   }, /*#__PURE__*/React.createElement(Button, {

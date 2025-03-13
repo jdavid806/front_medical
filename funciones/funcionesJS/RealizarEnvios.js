@@ -67,7 +67,8 @@ async function enviarDocumentoConvertido(
   ruta,
   patient_id,
   titulo,
-  nombreObjecto
+  nombreObjecto,
+  objectoId
 ) {
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
 
@@ -83,11 +84,18 @@ async function enviarDocumentoConvertido(
     belongs_to: tipoMensaje,
   };
 
-  let template = await obtenerTemplate(datosMensaje, patient_id);
+  let template = await obtenerTemplate(datosMensaje);
 
-  let mensajeFinal = convertirHtmlAWhatsapp(template);
+  let mensaje = convertirDatosVariables(
+    template,
+    nombreObjecto,
+    patient_id,
+    objectoId
+  );
 
-  enviarAnexo(mensajeFinal, numero_paciente, rutaFinal, titulo);
+  // let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
+
+  enviarAnexo(mensaje, numero_paciente, rutaFinal, titulo);
 }
 
 async function consultarQR(user_id) {
@@ -204,7 +212,8 @@ async function enviarDocumento(
         resultado.ruta,
         patient_id,
         titulo,
-        nombreObjecto
+        nombreObjecto,
+        objecto.id
       );
     } else {
       console.error("No se generó el documento correctamente");
@@ -215,10 +224,10 @@ async function enviarDocumento(
 }
 
 async function tonifyTurn(patient_id, appointment) {
-  // const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
   // const datosEmpresa = await consultarDatosEmpresaPorDoctorId("1");
 
-  // let numero_paciente = datosPaciente.telefono;
+  let numero_paciente = datosPaciente.telefono;
 
   const datosMensaje = {
     tenant_id: "1",
@@ -226,7 +235,7 @@ async function tonifyTurn(patient_id, appointment) {
     belongs_to: "citas-cancelacion",
   };
 
-  let template = await obtenerTemplate(datosMensaje, patient_id);
+  let template = await obtenerTemplate(datosMensaje);
 
   let mensajeFinal = convertirHtmlAWhatsapp(template);
   enviarTexto(mensajeFinal, numero_paciente);

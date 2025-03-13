@@ -1,5 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller, useForm } from 'react-hook-form';
@@ -14,13 +14,15 @@ const UserForm = ({
   onHandleSubmit,
   initialData
 }) => {
+  const [selectedRole, setSelectedRole] = useState(null);
   const {
     control,
     handleSubmit,
     formState: {
       errors
     },
-    reset
+    reset,
+    watch
   } = useForm({
     defaultValues: initialData || {
       username: '',
@@ -79,6 +81,15 @@ const UserForm = ({
     value,
     label
   }));
+  const watchUserRoleId = watch('user_role_id');
+  useEffect(() => {
+    if (watchUserRoleId) {
+      const role = userRoles.find(role => role.id === watchUserRoleId);
+      setSelectedRole(role);
+    } else {
+      setSelectedRole(null);
+    }
+  }, [watchUserRoleId, userRoles]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onSubmit)
@@ -179,6 +190,7 @@ const UserForm = ({
       className: "text-primary"
     }, "*")), /*#__PURE__*/React.createElement(Dropdown, _extends({
       inputId: field.name,
+      filter: true,
       options: countries,
       optionLabel: "name",
       optionValue: "name",
@@ -204,6 +216,7 @@ const UserForm = ({
       className: "text-primary"
     }, "*")), /*#__PURE__*/React.createElement(Dropdown, _extends({
       inputId: field.name,
+      filter: true,
       options: cities,
       optionLabel: "name",
       optionValue: "name",
@@ -338,7 +351,7 @@ const UserForm = ({
         'p-invalid': errors.user_role_id
       })
     }, field)))
-  }), getFormErrorMessage('user_role_id')), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('user_role_id')), selectedRole && selectedRole.group === 'DOCTOR' && /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "user_specialty_id",

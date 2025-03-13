@@ -5,6 +5,7 @@ import { classNames } from 'primereact/utils';
 import Swal from 'sweetalert2';
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
+    patient_name: '',
     phone: '',
     reason: '',
     priority: 'NONE'
@@ -17,7 +18,7 @@ export const GenerateTicket = () => {
     patient: false
   });
   const [error, setError] = useState('');
-  const [showPhoneInput, setShowPhoneInput] = useState(false);
+  const [showPatientInputs, setShowPatientInputs] = useState(false);
 
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [{
@@ -83,14 +84,16 @@ export const GenerateTicket = () => {
       setPatient(response.data);
       setFormData(prev => ({
         ...prev,
+        patient_name: response.first_name + ' ' + response.middle_name + ' ' + response.last_name + ' ' + response.second_last_name,
         phone: response.whatsapp
       }));
-      setShowPhoneInput(true);
+      setShowPatientInputs(true);
     } catch (err) {
       setPatient(null);
-      setShowPhoneInput(true);
+      setShowPatientInputs(true);
       setFormData(prev => ({
         ...prev,
+        patient_name: '',
         phone: ''
       }));
       setError('Paciente no encontrado, ingrese número telefónico manualmente');
@@ -174,7 +177,19 @@ export const GenerateTicket = () => {
     className: "btn btn-outline-secondary",
     onClick: handleSearchPatient,
     disabled: !patientDni || loading.patient
-  }, loading.patient ? 'Buscando...' : 'Buscar'))), showPhoneInput && /*#__PURE__*/React.createElement("div", {
+  }, loading.patient ? 'Buscando...' : 'Buscar'))), showPatientInputs && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Nombre del paciente *"), /*#__PURE__*/React.createElement("input", {
+    type: "tel",
+    className: "form-control",
+    name: "phone",
+    value: formData.patient_name,
+    onChange: handleChange,
+    required: showPatientInputs,
+    disabled: !!patient
+  })), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
@@ -184,9 +199,9 @@ export const GenerateTicket = () => {
     name: "phone",
     value: formData.phone,
     onChange: handleChange,
-    required: showPhoneInput,
+    required: showPatientInputs,
     disabled: !!patient
-  })), formData.phone && formData.phone !== '' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }))), formData.phone && formData.phone !== '' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header text-center"
@@ -258,10 +273,8 @@ export const GenerateTicket = () => {
   }, "Turno Generado"), /*#__PURE__*/React.createElement("div", {
     className: "h2 fw-bold text-primary"
   }, ticket.ticket_number), /*#__PURE__*/React.createElement("div", {
-    className: "h5"
-  }, "M\xF3dulo: ", ticket.module?.name), /*#__PURE__*/React.createElement("div", {
     className: "text-muted"
-  }, "Prioridad: ", PRIORITY_OPTIONS[ticket.priority]), /*#__PURE__*/React.createElement("div", {
+  }, "Prioridad: ", PRIORITY_OPTIONS.find(p => p.value === ticket.priority)?.label), /*#__PURE__*/React.createElement("div", {
     className: "mt-3"
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",

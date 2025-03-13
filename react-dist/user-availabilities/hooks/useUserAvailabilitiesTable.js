@@ -8,11 +8,18 @@ export const useUserAvailabilitiesTable = () => {
     const data = await userAvailabilityService.active();
     console.log(data);
     const mappedData = data.map(availability => {
+      let daysOfWeekArray;
+      if (typeof availability.days_of_week === 'string') {
+        daysOfWeekArray = JSON.parse(availability.days_of_week);
+      } else {
+        daysOfWeekArray = availability.days_of_week;
+      }
       return {
+        id: availability.id.toString(),
         doctorName: `${availability.user.first_name} ${availability.user.last_name}`,
         appointmentType: availability.appointment_type.name,
         branchName: availability.branch?.address || '',
-        daysOfWeek: JSON.parse(availability.days_of_week).map(day => daysOfWeek[day]).join(', '),
+        daysOfWeek: daysOfWeekArray.map(day => daysOfWeek[day]).join(', '),
         endTime: availability.end_time,
         startTime: availability.start_time
       };

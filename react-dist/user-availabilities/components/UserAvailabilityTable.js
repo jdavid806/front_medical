@@ -1,11 +1,13 @@
 import React from 'react';
-import { useUserAvailabilitiesTable } from "../hooks/useUserAvailabilitiesTable.js";
-import { UserTableActions } from "../../users/UserTableActions.js";
 import CustomDataTable from "../../components/CustomDataTable.js";
-export const UserAvailabilityTable = () => {
-  const {
-    availabilities
-  } = useUserAvailabilitiesTable();
+import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
+import { EditTableAction } from "../../components/table-actions/EditTableAction.js";
+import { DeleteTableAction } from "../../components/table-actions/DeleteTableAction.js";
+export const UserAvailabilityTable = ({
+  availabilities,
+  onEditItem,
+  onDeleteItem
+}) => {
   const columns = [{
     data: 'doctorName'
   }, {
@@ -23,7 +25,11 @@ export const UserAvailabilityTable = () => {
     searchable: false
   }];
   const slots = {
-    6: (cell, data) => /*#__PURE__*/React.createElement(UserTableActions, null)
+    6: (cell, data) => /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(EditTableAction, {
+      onTrigger: () => onEditItem && onEditItem(data.id)
+    }), /*#__PURE__*/React.createElement(DeleteTableAction, {
+      onTrigger: () => onDeleteItem && onDeleteItem(data.id)
+    }))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"

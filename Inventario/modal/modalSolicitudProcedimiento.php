@@ -22,18 +22,6 @@
                         <select id="paquetes" class="form-select">
                         </select>
                     </div>
-                    <!-- <div class="mb-3">
-                        <label for="quantity" class="form-label">Cantidad</label>
-                        <input type="number" id="quantity" class="form-control" min="1">
-                    </div> -->
-                    <!-- <button type="button" id="addInsumo" class="btn btn-secondary">Añadir Insumo</button> -->
-
-                    <!-- <div class="mt-3" id="divInsumosAgregados" style="display: none;">
-                        <h4 class="text-center">Insumos agregados</h4>
-                    </div> -->
-
-                    <!-- <div id="selectedProducts" class="mt-3">
-                    </div> -->
 
                     <div class="mb-3">
                         <label for="observationsPro" class="form-label">Observaciones</label>
@@ -845,7 +833,6 @@
 
         // Agregar información básica
         detallesHtml += `
-        <h4>Resumen solicitud:</h4>
         <p><strong>Paciente:</strong> ${pacienteSeleccionado}</p>
         <p><strong>Procedimiento:</strong> ${procedimientoSeleccionado}</p>
         <p><strong>Paquete:</strong> ${paqueteSeleccionado}</p>
@@ -899,15 +886,9 @@
             title: 'Resumen solicitud',
             html: detallesHtml,
             icon: 'info',
+            confirmButtonColor: '#132030', 
             confirmButtonText: 'Enviar',
-            confirmButtonColor: '#132030',
-            showCancelButton: false,
-            width: '800px',
-            buttonsStyling: true,
-            customClass: {
-                confirmButton: 'btn btn-lg',
-                actions: 'justify-content-center'
-            }
+            width: '600px'
         }).then((result) => {
             if (result.isConfirmed) {
                 console.log("Resumen de solicitud enviada:", {
@@ -925,8 +906,10 @@
                     icon: 'success',
                     confirmButtonColor: '#132030',
                     confirmButtonText: 'Aceptar'
-                }).then(() => {
-                    window.location.reload();
+                }).then((resul) => {
+                    if (resul.isConfirmed) {
+                        window.location.reload();
+                    }
                 });
             }
         });

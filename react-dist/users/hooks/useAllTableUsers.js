@@ -4,12 +4,15 @@ export const useAllTableUsers = () => {
   const [users, setUsers] = useState([]);
   const fetchUsers = async () => {
     userService.getAll().then(users => {
+      console.log(users);
       setUsers(users.map(user => ({
+        id: user.id,
         fullName: `${user.first_name} ${user.last_name}`,
-        specialty: (user.user_specialty_id ? user.user_specialty_id : 'Especialidad Mock').toString(),
-        gender: 'Masculino',
-        phone: '000-000-0000',
-        email: 'correo@ejemplo.com'
+        role: user.role?.name || '--',
+        city: user.city_id,
+        phone: user.phone,
+        email: user.email,
+        roleGroup: user.role?.group || 'INDETERMINATE'
       })));
     });
   };

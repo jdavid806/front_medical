@@ -175,28 +175,38 @@ export interface EntityDto {
 }
 
 export interface UserDto {
-    id: number
-    first_name: string
-    middle_name: string
-    last_name: string
-    second_last_name: string
-    external_id: string
-    user_role_id: number
-    user_specialty_id: number
-    country_id: string
-    city_id: string
-    gender: string
-    is_active: boolean
-    created_at: string
-    updated_at: string
+    id: string;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    second_last_name: string;
+    external_id: string;
+    user_role_id: string;
+    user_specialty_id: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    country_id: string;
+    city_id: string;
+    gender: string;
+    address: string;
+    phone: string;
+    data: any;
+    deleted_at: string | null;
+    email: string;
+    role: UserRoleDto;
+    specialty: UserSpecialtyDto | null;
+    availabilities: UserAvailability[]
 }
 
 export interface UserTableItem {
+    id: string
     fullName: string,
-    specialty: string,
-    gender: string,
+    role: string,
+    city: string
     phone: string,
-    email: string
+    email: string,
+    roleGroup: string
 }
 
 export interface PrescriptionTableItem {
@@ -208,19 +218,42 @@ export interface PrescriptionTableItem {
 
 
 export interface UserAvailability {
-    id: number;
-    user_id: number;
-    appointment_type_id: number;
-    branch_id: number | null;
+    id: string;
+    user_id: string;
+    appointment_type_id: string;
+    branch_id: string | null;
     appointment_duration: number;
-    days_of_week: number[];
+    days_of_week: string | string[];
     start_time: string;
     end_time: string;
     is_active: boolean;
     created_at: string;
     updated_at: string;
     office: string;
+    module_id: string;
     user: UserDto;
+    appointment_type: AppointmentTypeDto;
+    branch: BranchDto;
+    free_slots: UserAvailabilityFreeSlot[]
+}
+
+export interface UserAvailabilityTableItem {
+    id: string
+    doctorName: string
+    appointmentType: string
+    branchName: string
+    daysOfWeek: string
+    endTime: string
+    startTime: string
+}
+
+export interface UserAvailabilityFreeSlot {
+    id: string;
+    user_availability_id: string;
+    start_time: string;
+    end_time: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface UserSpecialtyDto {

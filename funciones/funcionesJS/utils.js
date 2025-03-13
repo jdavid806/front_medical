@@ -295,9 +295,6 @@ function consultarTipoMensaje(nombreObjecto) {
     case "Incapacidad":
       tipoMensaje = "incapacidades-compartir";
       break;
-    case "Incapacidad":
-      tipoMensaje = "incapacidades-compartir";
-      break;
 
     default:
       tipoMensaje = "No definido";
@@ -305,6 +302,8 @@ function consultarTipoMensaje(nombreObjecto) {
   }
   return tipoMensaje;
 }
+
+// cerrarSesion
 
 function cerrarSesion() {
   let botonSalir = document.getElementById("btn-logout");
@@ -337,3 +336,84 @@ function cerrarSesion() {
 }
 
 window.onload = cerrarSesion;
+
+// cerrra sesion
+
+function calcularDiferenciaDias(start_date, end_date) {
+  const fechaInicio = new Date(start_date);
+  const fechaFin = new Date(end_date);
+
+  // Calculamos la diferencia en milisegundos y la convertimos a días
+  const diferenciaTiempo = fechaFin - fechaInicio;
+  const diferenciaDias = diferenciaTiempo / (1000 * 60 * 60 * 24);
+
+  return diferenciaDias;
+}
+
+function convertirDatosVariables(
+  template,
+  nombreObjecto,
+  patient_id,
+  object_id
+) {
+  let mensaje = "";
+
+  switch (nombreObjecto) {
+    case "Incapacidad":
+      mensaje = reemplazarVariablesIncapacidad(
+        template,
+        object_id,
+        patient_id
+      );
+      break;
+
+    default:
+      mensaje = "No definido";
+      break;
+  }
+  return mensaje;
+}
+
+async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let nombrePaciente = [
+    datosPaciente.first_name,
+    datosPaciente.middle_name,
+    datosPaciente.last_name,
+    datosPaciente.second_last_name,
+  ];
+
+  let urlIncapacidad =
+    obtenerRutaPrincipal() + `/medical/disabilities/${object_id}`;
+
+  const datosIncapacidad = await obtenerDatos(urlIncapacidad);
+
+  let fechaIncapacidad = formatearFechaQuitarHora(datosIncapacidad.created_at);
+
+  let especialista = [
+    datosIncapacidad.user.first_name,
+    datosIncapacidad.user.middle_name,
+    datosIncapacidad.user.last_name,
+    datosIncapacidad.user.second_last_name,
+  ];
+
+  let Especialidad = datosIncapacidad.user.user_specialty_id;
+
+  let fechaInicio = datosIncapacidad.start_date;
+
+  let fechaFin = datosIncapacidad.end_date;
+  let dias = calcularDiferenciaDias(fechaInicio, fechaFin);
+
+  let recomendaciones = datosIncapacidad.reason;
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, unirTextos(nombrePaciente) || "")
+    .replace(/\[\[FECHA_INCAPACIDAD\]\]/g, fechaIncapacidad || "")
+    .replace(/\[\[ESPECIALISTA\]\]/g, unirTextos(especialista) || "")
+    .replace(/\[\[ESPECIALIDAD\]\]/g, Especialidad || "")
+    .replace(/\[\[FECHA_INCIO\]\]/g, fechaInicio || "")
+    .replace(/\[\[FECHA_FIN\]\]/g, fechaFin || "")
+    .replace(/\[\[DIAS_INCAPACIDAD\]\]/g, dias || "")
+    .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
+}

@@ -180,7 +180,7 @@ include "../header.php";
     }
 
     async function compartirIncapacidad(incapacidad) {
-      enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", incapacidad.patient_id, incapacidad.user_id, "Incapacidad_Médica.pdf");
+      enviarDocumento(incapacidad, "Descarga", "Incapacidad", "Completa", "9", incapacidad.user_id, "Incapacidad_Médica.pdf");
     }
 
     function eliminarIncapacidad(id) {

@@ -9,6 +9,9 @@ export const useUserCreate = () => {
     try {
       await authService.register(userData);
       SwalManager.success();
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.log(error);
       ErrorHandler.generic(error);

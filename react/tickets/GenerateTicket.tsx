@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 
 export const GenerateTicket = () => {
     const [formData, setFormData] = useState({
+        patient_name: '',
         phone: '',
         reason: '',
         priority: 'NONE'
@@ -19,7 +20,7 @@ export const GenerateTicket = () => {
         patient: false
     });
     const [error, setError] = useState('');
-    const [showPhoneInput, setShowPhoneInput] = useState(false);
+    const [showPatientInputs, setShowPatientInputs] = useState(false);
 
     // Opciones compatibles con el backend
     const REASON_OPTIONS = [
@@ -97,12 +98,16 @@ export const GenerateTicket = () => {
             });
 
             setPatient(response.data);
-            setFormData(prev => ({ ...prev, phone: response.whatsapp }));
-            setShowPhoneInput(true);
+            setFormData(prev => ({
+                ...prev,
+                patient_name: response.first_name + ' ' + response.middle_name + ' ' + response.last_name + ' ' + response.second_last_name,
+                phone: response.whatsapp
+            }));
+            setShowPatientInputs(true);
         } catch (err) {
             setPatient(null);
-            setShowPhoneInput(true);
-            setFormData(prev => ({ ...prev, phone: '' }));
+            setShowPatientInputs(true);
+            setFormData(prev => ({ ...prev, patient_name: '', phone: '' }));
             setError('Paciente no encontrado, ingrese número telefónico manualmente');
         } finally {
             setLoading(prev => ({ ...prev, patient: false }));
@@ -187,19 +192,33 @@ export const GenerateTicket = () => {
                         </div>
 
                         {/* Teléfono (condicional) */}
-                        {showPhoneInput && (
-                            <div className="mb-3">
-                                <label className="form-label">Teléfono *</label>
-                                <input
-                                    type="tel"
-                                    className="form-control"
-                                    name="phone"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    required={showPhoneInput}
-                                    disabled={!!patient}
-                                />
-                            </div>
+                        {showPatientInputs && (
+                            <>
+                                <div className="mb-3">
+                                    <label className="form-label">Nombre del paciente *</label>
+                                    <input
+                                        type="tel"
+                                        className="form-control"
+                                        name="phone"
+                                        value={formData.patient_name}
+                                        onChange={handleChange}
+                                        required={showPatientInputs}
+                                        disabled={!!patient}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Teléfono *</label>
+                                    <input
+                                        type="tel"
+                                        className="form-control"
+                                        name="phone"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required={showPatientInputs}
+                                        disabled={!!patient}
+                                    />
+                                </div>
+                            </>
                         )}
 
                         {formData.phone && formData.phone !== '' && (
@@ -278,8 +297,7 @@ export const GenerateTicket = () => {
                 <div id='ticket-printable' className="mt-4 p-4 bg-light rounded text-center">
                     <h3 className="text-success">Turno Generado</h3>
                     <div className="h2 fw-bold text-primary">{ticket.ticket_number}</div>
-                    <div className="h5">Módulo: {ticket.module?.name}</div>
-                    <div className="text-muted">Prioridad: {PRIORITY_OPTIONS[ticket.priority]}</div>
+                    <div className="text-muted">Prioridad: {PRIORITY_OPTIONS.find((p) => p.value === ticket.priority)?.label}</div>
                     <div className="mt-3">
                         <button
                             type='button'

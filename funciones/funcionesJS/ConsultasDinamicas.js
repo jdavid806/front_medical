@@ -100,14 +100,14 @@ async function consultarDatosEmpresa() {
 
   console.log(datosEmpresa); 
 
-  return {
-    logo_consultorio: "",
-    nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
-    marca_agua: "",
-    datos_consultorio: [
-      { Dirección: "Calle Falsa 123 del doctor: "},
-      { Teléfono: 123456789 },
-      { Correo: "consultorio@prueba.com" },
-    ],
-  };
+  // return {
+  //   logo_consultorio: "",
+  //   nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
+  //   marca_agua: "",
+  //   datos_consultorio: [
+  //     { Dirección: "Calle Falsa 123 del doctor: "},
+  //     { Teléfono: 123456789 },
+  //     { Correo: "consultorio@prueba.com" },
+  //   ],
+  // };
 }

@@ -252,6 +252,20 @@
                 </a>
               </div>
 
+              <div class="col-4">
+                <a
+                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
+                  href="gestion-turnos">
+                  <img
+                    src="assets/img/nav-icons/Container.png"
+                    alt=""
+                    width="30" />
+                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
+                    Turnos
+                  </p>
+                </a>
+              </div>
+
             </div>
           </div>
         </div>

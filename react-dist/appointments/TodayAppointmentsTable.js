@@ -1,36 +1,40 @@
-import React from 'react';
+import React from "react";
 import CustomDataTable from "../components/CustomDataTable.js";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { admissionService } from "../../services/api/index.js";
+import { useEffect } from "react";
 export const TodayAppointmentsTable = () => {
   const {
     appointments
   } = useFetchAppointments(admissionService.getAdmisionsAll());
+  useEffect(() => {
+    console.log(appointments);
+  }, [appointments]);
   const columns = [{
-    data: 'patientName',
-    className: 'text-start'
+    data: "patientName",
+    className: "text-start"
   }, {
-    data: 'patientDNI',
-    className: 'text-start'
+    data: "patientDNI",
+    className: "text-start"
   }, {
-    data: 'date',
-    className: 'text-start'
+    data: "date",
+    className: "text-start"
   }, {
-    data: 'time'
+    data: "time"
   }, {
-    data: 'doctorName'
+    data: "doctorName"
   }, {
-    data: 'entity'
+    data: "entity"
   }, {
-    data: 'status'
+    data: "status"
   }, {
     orderable: false,
     searchable: false
   }];
   const slots = {
     6: (cell, data) => /*#__PURE__*/React.createElement("span", {
-      className: `badge badge-phoenix ${data.status ? 'badge-phoenix-primary' : 'badge-phoenix-secondary'}`
-    }, data.status ? 'Activo' : 'Inactivo'),
+      className: `badge badge-phoenix ${data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"}`
+    }, data.status ? "Activo" : "Inactivo"),
     7: (cell, data) => /*#__PURE__*/React.createElement("div", {
       className: "align-middle white-space-nowrap pe-0 p-3"
     }, /*#__PURE__*/React.createElement("div", {
@@ -47,10 +51,22 @@ export const TodayAppointmentsTable = () => {
       href: `generar_admision?id_cita=${data.id}`,
       className: "dropdown-item",
       id: "generar-admision"
-    }, " Generar admisi\xF3n"), /*#__PURE__*/React.createElement("a", {
+    }, " ", "Generar admisi\xF3n"), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#"
-    }, " Generar link de pago"))))
+    }, "Generar link de pago"), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#"
+    }, "Descargar Factura"), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#"
+    }, "Imprimir factura"), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#"
+    }, "Compartir por whatsapp y correo"), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#"
+    }, "Nota credito"))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"

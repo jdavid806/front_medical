@@ -1,17 +1,20 @@
 import React from 'react';
 import CustomDataTable from '../components/CustomDataTable.js';
-import { useAllTableUsers } from './hooks/useAllTableUsers.js';
-import { UserTableActions } from './UserTableActions.js';
-const UserTable = () => {
-  const {
-    users
-  } = useAllTableUsers();
+import TableActionsWrapper from '../components/table-actions/TableActionsWrapper.js';
+import { EditTableAction } from '../components/table-actions/EditTableAction.js';
+import { DeleteTableAction } from '../components/table-actions/DeleteTableAction.js';
+const UserTable = ({
+  users,
+  onEditItem,
+  onDeleteItem,
+  onAddSignature
+}) => {
   const columns = [{
     data: 'fullName'
   }, {
-    data: 'specialty'
+    data: 'role'
   }, {
-    data: 'gender'
+    data: 'city'
   }, {
     data: 'phone'
   }, {
@@ -21,7 +24,22 @@ const UserTable = () => {
     searchable: false
   }];
   const slots = {
-    5: (cell, data) => /*#__PURE__*/React.createElement(UserTableActions, null)
+    5: (cell, data) => /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(EditTableAction, {
+      onTrigger: () => onEditItem && onEditItem(data.id)
+    }), /*#__PURE__*/React.createElement(DeleteTableAction, {
+      onTrigger: () => onDeleteItem && onDeleteItem(data.id)
+    }), data.roleGroup === 'DOCTOR' && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
+      onClick: () => onAddSignature && onAddSignature(data.id)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-file-signature",
+      style: {
+        width: '20px'
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "A\xF1adir firma")))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
@@ -35,9 +53,9 @@ const UserTable = () => {
     className: "border-top custom-th"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
-  }, "Especialidad"), /*#__PURE__*/React.createElement("th", {
+  }, "Rol"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
-  }, "G\xE9nero"), /*#__PURE__*/React.createElement("th", {
+  }, "Ciudad"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "N\xFAmero de contacto"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"

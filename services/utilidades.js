@@ -134,3 +134,29 @@ export const getJWTPayload = () => {
     console.log("No token found in localStorage");
     return null
 }
+
+export function formatTime(date) {
+    // Usar métodos locales en lugar de UTC
+    const hours = String(date.getHours()).padStart(2, "0"); // Hora local
+    const minutes = String(date.getMinutes()).padStart(2, "0"); // Minutos locales
+    const seconds = String(date.getSeconds()).padStart(2, "0"); // Segundos locales
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+export function convertHHMMSSToDate(timeString) {
+    // Get the current date
+    const currentDate = new Date();
+
+    // Split the time string into hours, minutes, and seconds
+    const [hours, minutes, seconds] = timeString.split(":");
+
+    // Set the hours, minutes, and seconds in the current date
+    currentDate.setHours(hours);
+    currentDate.setMinutes(minutes);
+    currentDate.setSeconds(seconds);
+
+    // Return the Date object with the specified time
+    return currentDate;
+}
+

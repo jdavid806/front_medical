@@ -29,6 +29,7 @@ include "../header.php";
                         <thead class="thead-dark">
                             <tr>
                                 <th>Turno</th>
+                                <th>Paciente</th>
                                 <th>Modulo</th>
                             </tr>
                         </thead>
@@ -69,9 +70,6 @@ include "../header.php";
     let modules = await moduleService.active();
     let tickets = await ticketService.getAll();
 
-    console.log(appointments, modules, tickets);
-
-
     // Función para actualizar solo la tabla de pacientes/consultorios
     function updateTables() {
         const waitingBody = document.getElementById("waiting-body");
@@ -98,6 +96,7 @@ include "../header.php";
             const calledTicket = tickets.find(ticket => ticket.module_id == module_.id && ticket.status == "CALLED");
             row.innerHTML = `
                 <td>${calledTicket?.ticket_number || "..."}</td>
+                <td>${calledTicket?.patient_name || "..."}</td>
                 <td>${module_.name}</td>
             `;
             pendingBody.appendChild(row);
@@ -110,13 +109,11 @@ include "../header.php";
     });
 
     var hostname = window.location.hostname.split('.')[0];
-    console.log(hostname);
 
     var channel = pusher.subscribe(`waiting-room.${hostname}.3`);
     var channelTickets = pusher.subscribe(`tickets.${hostname}.3`);
 
     channel.bind('appointment.created', function(data) {
-        console.log("Evento: appointment.created", data);
         const appointment = {
             id: data.appointment.id,
             consultorio: data.appointment.user_availability.office,
@@ -124,20 +121,12 @@ include "../header.php";
             status: data.appointment.appointment_state_id
         }
 
-        console.log(appointment);
-
-
         appointments.unshift(appointment);
         updateTables();
     });
 
     channel.bind('appointment.state.updated', function(data) {
-        console.log("Evento: appointment.state.updated", data);
-
         const appointment = appointments.find(app => app.id == data.appointmentId);
-
-        console.log('appointment', appointment);
-
 
         if (data.newState == 2) {
             filteredAppointments.unshift(appointment);
@@ -151,18 +140,15 @@ include "../header.php";
     });
 
     channel.bind('appointment.inactivated', function(data) {
-        console.log("Evento: appointment.inactivated", data);
         filteredAppointments = appointments.filter(app => app.id != parseInt(data.appointmentId));
         updateTables();
     });
 
     channelTickets.bind('ticket.generated', function(data) {
-        console.log('ticket.generated', data);
         tickets.push(data.ticket);
     });
 
     channelTickets.bind('ticket.state.updated', function(data) {
-        console.log('ticket.state.updated', data);
         const ticket = tickets.find(t => t.id == data.ticketId);
         ticket.status = data.newState;
         ticket.module_id = data.moduleId;

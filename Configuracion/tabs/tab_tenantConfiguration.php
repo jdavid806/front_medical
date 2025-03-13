@@ -164,7 +164,7 @@
                 alt="Vista previa de la marca de agua">
             </div>
             <div class="col-12">
-              <button class="btn btn-primary" type="submit">Guardar</button>
+              <button class="btn btn-primary" type="submit" id="guardarInfoGeneral">Guardar</button>
             </div>
           </form>
 
@@ -451,7 +451,7 @@
 
     if (input.files && input.files[0]) {
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = function(e) {
         preview.src = e.target.result;
         preview.classList.remove("d-none");
       };
@@ -461,7 +461,7 @@
 </script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function() {
     // const user_id = 1;
 
     // consultarQR(user_id);
@@ -473,9 +473,9 @@
 </script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function() {
     // Formulario de Información General
-    document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+    document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function(event) {
       event.preventDefault();
       const datos = capturarDatosInformacionGeneral();
       // guardarDatos(
@@ -487,24 +487,29 @@
     });
 
     // Formulario de Facturación
-    document.getElementById('facturacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+    document.getElementById('facturacion-tab-pane').querySelector('form').addEventListener('submit', function(event) {
       event.preventDefault();
       const datos = capturarDatosFacturacion();
       console.log('Datos Facturación:', datos);
     });
 
     // Formulario de Contacto
-    document.getElementById('contacto-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+    document.getElementById('contacto-tab-pane').querySelector('form').addEventListener('submit', function(event) {
       event.preventDefault();
       const datos = capturarDatosContacto();
       console.log('Datos Contacto:', datos);
     });
 
     // Formulario de Configuración SMTP
-    document.getElementById('comunicacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
+    document.getElementById('comunicacion-tab-pane').querySelector('form').addEventListener('submit', function(event) {
       event.preventDefault();
       const datos = capturarDatosSMTP();
       console.log('Datos SMTP:', datos);
     });
   });
+
+  document.getElementById('guardarInfoGeneral').addEventListener('click', function() {
+    const datosGuardar = capturarDatosInformacionGeneral();
+    console.log(datosGuardar);
+  })
 </script>

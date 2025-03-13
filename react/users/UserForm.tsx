@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -34,11 +34,13 @@ interface UserFormProps {
 
 const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData }) => {
 
+    const [selectedRole, setSelectedRole] = useState<any>(null);
     const {
         control,
         handleSubmit,
         formState: { errors },
-        reset
+        reset,
+        watch
     } = useForm<UserFormInputs>({
         defaultValues: initialData || {
             username: '',
@@ -88,6 +90,17 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
     const { userRoles } = useRoles();
     const { userSpecialties } = useUserSpecialties();
     const gendersForSelect = Object.entries(genders).map(([value, label]) => ({ value, label }))
+
+    const watchUserRoleId = watch('user_role_id');
+
+    useEffect(() => {
+        if (watchUserRoleId) {
+            const role = userRoles.find((role: any) => role.id === watchUserRoleId);
+            setSelectedRole(role);
+        } else {
+            setSelectedRole(null);
+        }
+    }, [watchUserRoleId, userRoles]);
 
     return (
         <>
@@ -179,6 +192,7 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                             <label htmlFor={field.name} className="form-label">País <span className="text-primary">*</span></label>
                                             <Dropdown
                                                 inputId={field.name}
+                                                filter
                                                 options={countries}
                                                 optionLabel='name'
                                                 optionValue='name'
@@ -201,6 +215,7 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                             <label htmlFor={field.name} className="form-label">Ciudad <span className="text-primary">*</span></label>
                                             <Dropdown
                                                 inputId={field.name}
+                                                filter
                                                 options={cities}
                                                 optionLabel='name'
                                                 optionValue='name'
@@ -320,28 +335,30 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                 />
                                 {getFormErrorMessage('user_role_id')}
                             </div>
-                            <div className="col-md-6 mb-1">
-                                <Controller
-                                    name='user_specialty_id'
-                                    control={control}
-                                    rules={{ required: 'Este campo es requerido' }}
-                                    render={({ field }) => (
-                                        <>
-                                            <label htmlFor={field.name} className="form-label">Especialidad <span className="text-primary">*</span></label>
-                                            <Dropdown
-                                                inputId={field.name}
-                                                options={userSpecialties}
-                                                optionLabel='name'
-                                                optionValue='id'
-                                                placeholder="Seleccione una especialidad"
-                                                className={classNames('w-100', { 'p-invalid': errors.user_specialty_id })}
-                                                {...field}
-                                            />
-                                        </>
-                                    )}
-                                />
-                                {getFormErrorMessage('user_specialty_id')}
-                            </div>
+                            {selectedRole && selectedRole.group === 'DOCTOR' && (
+                                <div className="col-md-6 mb-1">
+                                    <Controller
+                                        name='user_specialty_id'
+                                        control={control}
+                                        rules={{ required: 'Este campo es requerido' }}
+                                        render={({ field }) => (
+                                            <>
+                                                <label htmlFor={field.name} className="form-label">Especialidad <span className="text-primary">*</span></label>
+                                                <Dropdown
+                                                    inputId={field.name}
+                                                    options={userSpecialties}
+                                                    optionLabel='name'
+                                                    optionValue='id'
+                                                    placeholder="Seleccione una especialidad"
+                                                    className={classNames('w-100', { 'p-invalid': errors.user_specialty_id })}
+                                                    {...field}
+                                                />
+                                            </>
+                                        )}
+                                    />
+                                    {getFormErrorMessage('user_specialty_id')}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1024,7 +1024,7 @@ M. Castro c:
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    consultarDatosEmpresa();
+    // tonifyTurn(9, 13);
   });
 </script>
 <!--

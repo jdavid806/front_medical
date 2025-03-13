@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="">
+                <form id="requestInsumo">
                     <div class="mb-3">
                         <label for="productSelect" class="form-label">Seleccionar Insumo</label>
                         <select id="productSelect" class="form-select">
@@ -22,14 +22,11 @@
                         <h4 class="text-center">Insumos agregados</h4>
                     </div>
 
-                    <!-- <div id="selectedProducts" class="mt-3">
-                    </div> -->
-
                     <div class="mb-3">
                         <label for="observations" class="form-label">Observaciones</label>
                         <textarea class="form-control" id="observations"></textarea>
                     </div>
-                    <button id="enviarSolicitudAdmin" type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                    <button id="enviarSolicitudAdmin" type="button" class="btn btn-primary">Enviar Solicitud</button>
                 </form>
             </div>
         </div>
@@ -185,12 +182,12 @@
         defaultOption.value = "";
         defaultOption.textContent = "Seleccione";
         defaultOption.disabled = true;
-        defaultOption.selected = true; 
+        defaultOption.selected = true;
         selectElement.appendChild(defaultOption);
 
         insumosAdministrativos.forEach((insumo, index) => {
             const option = document.createElement('option');
-            option.value = index; 
+            option.value = index;
             option.textContent = insumo;
             selectElement.appendChild(option);
         });
@@ -284,7 +281,6 @@
         });
 
         const solicitudData = {
-            fecha: new Date().toISOString(),
             totalInsumos: insumosSeleccionados.length,
             insumos: insumosSeleccionados,
             observaciones: observaciones
@@ -293,8 +289,34 @@
         console.log("Datos de la solicitud de insumos administrativos:");
         console.log(solicitudData);
 
-        alert("Solicitud enviada con éxito.");
-    }
+        // Crear la lista de insumos para mostrar
+        let listaInsumos = '';
+        insumosSeleccionados.forEach(insumo => {
+            listaInsumos += `<li>${insumo.producto}: ${insumo.cantidad}</li>`;
+        });
 
+        Swal.fire({
+            title: 'Información de Solicitud',
+            html: `
+            <p><strong>Total de insumos:</strong> ${solicitudData.totalInsumos}</p>
+            <div style="text-align: center;">
+                <p><strong>Insumos:</strong></p>
+                <ul style="display: inline-block; text-align: left;">${listaInsumos}</ul>
+            </div>
+            <p><strong>Observaciones:</strong> ${solicitudData.observaciones}</p>
+        `,
+            icon: 'info',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#132030',
+            allowOutsideClick: false,
+            showCancelButton: false
+        }).then((res) => {
+            if (res.isConfirmed) {
+                window.location.reload();
+            }
+        });
+
+        return false;
+    }
     document.getElementById('enviarSolicitudAdmin').addEventListener('click', enviarSolicitudAdmin);
 </script>

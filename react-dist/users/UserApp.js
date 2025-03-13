@@ -3,13 +3,21 @@ import UserTable from "./UserTable.js";
 import UserFormModal from "./UserFormModal.js";
 import { PrimeReactProvider } from 'primereact/api';
 import { useUserCreate } from './hooks/useUserCreate.php.js';
+import { useAllTableUsers } from './hooks/useAllTableUsers.js';
 export const UserApp = () => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const {
     createUser
   } = useUserCreate();
-  const handleSubmit = data => {
-    createUser(data);
+  const {
+    users
+  } = useAllTableUsers();
+  const handleSubmit = async data => {
+    const finalData = {
+      ...data,
+      user_specialty_id: data.user_specialty_id === null || data.user_specialty_id === 0 ? 1 : data.user_specialty_id
+    };
+    await createUser(finalData);
   };
   const handleOpenUserFormModal = () => {
     setShowUserFormModal(true);
@@ -35,7 +43,9 @@ export const UserApp = () => {
     onClick: handleOpenUserFormModal
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus me-2"
-  }), "Nuevo"))), /*#__PURE__*/React.createElement(UserTable, null), /*#__PURE__*/React.createElement(UserFormModal, {
+  }), "Nuevo"))), /*#__PURE__*/React.createElement(UserTable, {
+    users: users
+  }), /*#__PURE__*/React.createElement(UserFormModal, {
     show: showUserFormModal,
     handleSubmit: handleSubmit,
     onHide: handleHideUserFormModal

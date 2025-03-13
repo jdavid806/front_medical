@@ -4,14 +4,20 @@ import UserFormModal from './UserFormModal'
 import { PrimeReactProvider } from 'primereact/api';
 import { UserFormInputs } from './UserForm';
 import { useUserCreate } from './hooks/useUserCreate.php.js';
+import { useAllTableUsers } from './hooks/useAllTableUsers.js';
 
 export const UserApp = () => {
 
     const [showUserFormModal, setShowUserFormModal] = useState(false)
     const { createUser } = useUserCreate()
+    const { users } = useAllTableUsers();
 
-    const handleSubmit = (data: UserFormInputs) => {
-        createUser(data)
+    const handleSubmit = async (data: UserFormInputs) => {
+        const finalData: UserFormInputs = {
+            ...data,
+            user_specialty_id: data.user_specialty_id === null || data.user_specialty_id === 0 ? 1 : data.user_specialty_id
+        }
+        await createUser(finalData)
     };
 
     const handleOpenUserFormModal = () => {
@@ -42,7 +48,7 @@ export const UserApp = () => {
                         </button>
                     </div>
                 </div>
-                <UserTable></UserTable>
+                <UserTable users={users}></UserTable>
                 <UserFormModal
                     show={showUserFormModal}
                     handleSubmit={handleSubmit}

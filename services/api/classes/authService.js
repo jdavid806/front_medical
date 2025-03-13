@@ -10,7 +10,7 @@ export class AuthService extends BaseApiService {
         console.log(url, url.split('.').slice(0, 3).join('.').replace('/', ''));
 
         return await this.httpClient.post(`${this.microservice}/register`, data, {
-            "X-DOMAIN": 'cenode.medicalsoft.ai'
+            "X-DOMAIN": 'dev.monaros.co'
         })
     }
 }
