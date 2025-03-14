@@ -993,6 +993,8 @@ M. Castro c:
 <script src="funciones/funcionesJS/utils.js"></script>
 <script src="funciones/funcionesJS/CrearFormatoImpresion.js"></script>
 <script src="funciones/funcionesJS/RealizarEnvios.js"></script>
+<script src="funciones/funcionesJS/funcioneConfig.js"></script>
+<script src="funciones/funcionesJS/FuncionesFacturas.js"></script>
 
 <!-- encriptar info -->
 <script src="funciones/funcionesEncrypt/encriptar.js"></script>
@@ -1025,6 +1027,7 @@ M. Castro c:
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // tonifyTurn(9, 13);
+    // crearDocumento(3, "Impresion", "ordenMedica", "Completa", "Orden Medica");
   });
 </script>
 <!--

@@ -93,8 +93,13 @@ async function actualizarDatos(url, datos) {
       },
       body: JSON.stringify(datos),
     });
+    const contentType = respuesta.headers.get("content-type");
 
-    const resultado = await respuesta.json();
+    let resultado = {};
+
+    if (contentType && contentType.includes("application/json")) {
+      resultado = await respuesta.json();
+    }
 
     // Notificación de éxito
     Swal.fire({

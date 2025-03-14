@@ -5,14 +5,35 @@ async function consultarDatosWhatssap(tipo) {
   let datosMensajeria = datosEmpresa.data.communications;
   let urlBase = "https://apiwhatsapp.medicalsoft.ai/";
 
-  // consulta inatcncia
-  // "https://apiwhatsapp.medicalsoft.ai/instance/connect/testMiguel"
-
   return {
     apiKey: datosMensajeria.api_key,
     apiMensaje: `${urlBase}message/${tipo}/${datosMensajeria.instance}`,
     apiInstance: urlBase + "instance/" + tipo + "/" + datosMensajeria.instance,
   };
+}
+
+async function consultarWhatssapConectado() {
+  const datosApi = await consultarDatosWhatssap("connect");
+
+  try {
+    const response = await fetch(datosApi.apiInstance, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: datosApi.apiKey,
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.instance && result.instance.state === "open") {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error al cargar el QR:", error);
+  }
 }
 
 async function consultarDatosPaciente(pacienteId, fechaConsulta) {
@@ -25,13 +46,8 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  // let url =
-  //   obtenerRutaPrincipal() +
-  //   `/medical/entities/${data.social_security.entity_id}`;
-  // let entidad = await obtenerDatos(url);
-
-  // let nombrEntidad = entidad.data.name;
-  let nombrEntidad = "Test";
+  // let nombrEntidad = data.social_security.entity.name;
+  let nombrEntidad = "test";
 
   return {
     datos_basicos: {
@@ -82,11 +98,10 @@ async function consultarDatosDoctor(doctorId) {
 
   // pendiente consultar
   // Datos firma
-  // Datos de especialidad
 
   return {
     nombre: "Dr(a). " + unirTextos(nombre),
-    especialidad: data.user_specialty_id,
+    especialidad: data.specialty.name,
     firma: "",
   };
 }
@@ -98,16 +113,16 @@ async function consultarDatosEmpresa() {
 
   let nombre_consultorio = datosEmpresa.name;
 
-  // console.log(datosEmpresa); 
+  console.log(datosEmpresa);
 
-  // return {
-  //   logo_consultorio: "",
-  //   nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
-  //   marca_agua: "",
-  //   datos_consultorio: [
-  //     { Dirección: "Calle Falsa 123 del doctor: "},
-  //     { Teléfono: 123456789 },
-  //     { Correo: "consultorio@prueba.com" },
-  //   ],
-  // };
+  return {
+    logo_consultorio: "",
+    nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
+    marca_agua: "",
+    datos_consultorio: [
+      { Dirección: "Calle Falsa 123 del doctor: " },
+      { Teléfono: 123456789 },
+      { Correo: "consultorio@prueba.com" },
+    ],
+  };
 }

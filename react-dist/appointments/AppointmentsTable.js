@@ -1,34 +1,81 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CustomDataTable from "../components/CustomDataTable.js";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { appointmentService } from "../../services/api/index.js";
-import { BranchesSelect } from "../branches/BranchesSelect.js";
 import { appointmentStates, appointmentStatesColors } from "../../services/commons.js";
+import UserManager from "../../services/userManager.js";
+import { useBranchesForSelect } from "../branches/hooks/useBranchesForSelect.js";
 export const AppointmentsTable = () => {
   const {
     appointments
   } = useFetchAppointments(appointmentService.active());
+  const {
+    branches
+  } = useBranchesForSelect();
+  const [selectedBranch, setSelectedBranch] = React.useState(null);
+  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [filteredAppointments, setFilteredAppointments] = React.useState([]);
   const columns = [{
     data: "patientName",
-    className: "text-start"
+    className: "text-start",
+    orderable: true
   }, {
     data: "patientDNI",
-    className: "text-start"
+    className: "text-start",
+    orderable: true
   }, {
     data: "date",
-    className: "text-start"
+    className: "text-start",
+    orderable: true,
+    type: "date"
   }, {
-    data: "time"
+    data: "time",
+    orderable: true
   }, {
-    data: "doctorName"
+    data: "doctorName",
+    orderable: true
   }, {
-    data: "entity"
+    data: "entity",
+    orderable: true
   }, {
-    data: "status"
+    data: "status",
+    orderable: true
   }];
+  useEffect(() => {
+    let filtered = [...appointments];
+
+    // Filtro por sucursal
+    if (selectedBranch) {
+      filtered = filtered.filter(appointment => appointment.branchId === selectedBranch);
+    }
+
+    // Filtro por rango de fechas
+    if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
+      const startDate = new Date(selectedDate[0]);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(selectedDate[1]);
+      endDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(appointment => {
+        const appointmentDate = new Date(appointment.date);
+        return appointmentDate >= startDate && appointmentDate <= endDate;
+      });
+    }
+
+    // Ordenar por fecha de consulta
+    filtered.sort((a, b) => {
+      return b.date.localeCompare(a.date);
+    });
+    setFilteredAppointments(filtered);
+  }, [appointments, selectedBranch, selectedDate]);
   const handleMakeClinicalRecord = patientId => {
-    console.log('make clinical record');
-    window.location.href = `/consultas?patient_id=${patientId}&especialidad=medicina_general&tipo_historia=general`;
+    UserManager.onAuthChange((isAuthenticated, user) => {
+      if (user) {
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}`;
+      }
+    });
+  };
+  const handleCancelAppointment = appointmentId => {
+    console.log("cancel appointment", appointmentId);
   };
   const slots = {
     6: (cell, data) => /*#__PURE__*/React.createElement("span", {
@@ -50,7 +97,7 @@ export const AppointmentsTable = () => {
       style: {
         zIndex: 10000
       }
-    }, data.stateId === '2' && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }, data.stateId === "2" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -63,14 +110,14 @@ export const AppointmentsTable = () => {
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-stethoscope",
       style: {
-        width: '20px'
+        width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), data.stateId === '1' && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), data.stateId === "1" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
         e.preventDefault();
-        handleMakeClinicalRecord(data.patientId);
+        handleCancelAppointment(data.id);
       },
       "data-column": "realizar-consulta"
     }, /*#__PURE__*/React.createElement("div", {
@@ -78,60 +125,26 @@ export const AppointmentsTable = () => {
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-ban",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "accordion mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-item"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "accordion-header",
-    id: "filters"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "accordion-button collapsed",
-    type: "button",
-    "data-bs-toggle": "collapse",
-    "data-bs-target": "#filtersCollapse",
-    "aria-expanded": "false",
-    "aria-controls": "filtersCollapse"
-  }, "Filtrar citas")), /*#__PURE__*/React.createElement("div", {
-    id: "filtersCollapse",
-    className: "accordion-collapse collapse",
-    "aria-labelledby": "filters"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-body"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-grow-1"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-3"
-  }, /*#__PURE__*/React.createElement(BranchesSelect, {
-    selectId: "sucursal"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "rangoFechasCitas",
-    className: "form-label"
-  }, "Fecha de consulta (hasta)"), /*#__PURE__*/React.createElement("input", {
-    className: "form-control datetimepicker flatpickr-input",
-    id: "rangoFechasCitas",
-    name: "rangoFechaCitas",
-    type: "text",
-    placeholder: "dd/mm/yyyy",
-    "data-options": "{\"mode\":\"range\",\"dateFormat\":\"d/m/y\",\"disableMobile\":true}"
-  }))))))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
-    data: appointments,
-    slots: slots
+    data: filteredAppointments,
+    slots: slots,
+    customOptions: {
+      order: [[2, "desc"]],
+      ordering: true,
+      columnDefs: [{
+        orderable: false,
+        targets: [7]
+      }]
+    }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {

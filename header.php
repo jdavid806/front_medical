@@ -46,6 +46,11 @@
               </div>
             </a>
           </li>
+          <li><a class="dropdown-item" href="telemedicina">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="user-cast"></span>Telemedicina
+              </div>
+            </a>
+          </li>
         </ul>
       </li>
       <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="Menu_reports" role="button"
@@ -116,6 +121,32 @@
       </ul>
     </li>
     <ul>
+      <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="farmacia" role="button"
+          data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
+            class="uil fs-8 me-2 uil-airplay">
+          </span>Farmacia</a>
+        <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
+          <li><a class="dropdown-item" href="farmacia">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="heart"></span>Entrega de
+                medicamentos
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="insumos">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="package"></span>Entrega de insumos
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="caja">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="edit-2"></span>Caja
+              </div>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
       <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="inventarioGeneral" role="button"
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-folder">
@@ -140,6 +171,8 @@
             </a>
           </li>
         </ul>
+      </li>
+    </ul>
   </div>
   <ul class="navbar-nav navbar-nav-icons flex-row">
     <li class="nav-item">
@@ -253,13 +286,9 @@
               </div>
 
               <div class="col-4">
-                <a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
+                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="gestion-turnos">
-                  <img
-                    src="assets/img/nav-icons/Container.png"
-                    alt=""
-                    width="30" />
+                  <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
                     Turnos
                   </p>
@@ -303,8 +332,8 @@
                     data-feather="sliders"></span>Personalizar</a></li>
             </ul>
           </div>
-          <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" id="btn-logout" href="#"> <span
-                class="me-2" data-feather="log-out"> </span>Cerrar Sesión</a></div>
+          <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" id="btn-logout" href="#">
+              <span class="me-2" data-feather="log-out"> </span>Cerrar Sesión</a></div>
           <div class="my-2 text-center fw-bold fs-10 text-body-quaternary"><a class="text-body-quaternary me-1"
               href="#!">Privacy policy</a>&bull;<a class="text-body-quaternary mx-1" href="#!">Terms</a>&bull;<a
               class="text-body-quaternary ms-1" href="#!">Cookies</a></div>

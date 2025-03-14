@@ -119,7 +119,7 @@ $tabs = [
                       <?= $tab['texto'] ?>
                     </p>
                     <!-- Botón siempre al fondo -->
-                    <button class="btn btn-primary btn-icon mt-auto" id="<?= $tab['id'] ?>" onclick="handleTabClick('<?= $tab['url'] ?>')">
+                    <button class="btn btn-primary btn-icon mt-auto" data-url="<?= $tab['url'] ?>" id="<?= $tab['id'] ?>" onclick="handleTabClick(this)">
                       <span class="fa-solid fa-chevron-right"></span>
                     </button>
                   </div>
@@ -165,13 +165,20 @@ $tabs = [
   import {
     patientService
   } from './services/api/index.js';
+  import UserManager from './services/userManager.js';
 
   document.addEventListener('DOMContentLoaded', async function() {
-    const patientId = new URLSearchParams(window.location.search).get('id');
+    const clinicalRecordCard = document.getElementById('consulta');
+    clinicalRecordCard.style.display = 'none';
+    const patientId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('patient_id');
     const exampleData = await patientService.evolution(patientId);
 
-    console.log(exampleData);
-
+    UserManager.onAuthChange((isAuthenticated, user) => {
+      if (user) {
+        clinicalRecordCard.style.display = 'block';
+        clinicalRecordCard.setAttribute('data-url', `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}`);
+      }
+    })
 
     const container = document.getElementById('patient-evolution-container');
     const template = document.getElementById('patient-evolution').content;
@@ -188,7 +195,8 @@ $tabs = [
 </script>
 
 <script>
-  function handleTabClick(url) {
+  function handleTabClick(element) {
+    const url = element.getAttribute('data-url');
     switch (url) {
       case 'llamar_paciente':
         console.log("llamar al paciente");

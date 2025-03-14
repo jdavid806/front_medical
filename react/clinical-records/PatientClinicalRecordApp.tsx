@@ -1,32 +1,52 @@
 import React from 'react';
 import { PrimeReactProvider } from 'primereact/api';
+import { useSpecializables } from '../specializables/hooks/useSpecializables';
+import { useEffect } from 'react';
+import { ClinicalRecordTypeDto, PatientClinicalRecordDto } from '../models/models';
+import { useState } from 'react';
+import { useClinicalRecordTypes } from '../clinical-record-types/hooks/useClinicalRecordTypes';
+import { useClinicalRecords } from './hooks/useClinicalRecords';
 import { PatientClinicalRecordsTable } from './components/PatientClinicalRecordsTable';
 
-interface Historia {
-    id: number;
-    nombre: string;
-    doctor: string;
-    motivo: string;
-    estado: string;
-}
-
 interface PatientClinicalRecordAppProps {
-    nombreEspecialidad: string;
-    tiposEspecialidad: { [key: string]: string };
-    historiasFiltradas: Historia[];
-    estadosEspecialidad: { [key: string]: { badgeClass: string; name: string } };
 }
 
-export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> = ({
-    nombreEspecialidad,
-    tiposEspecialidad,
-    historiasFiltradas,
-    estadosEspecialidad,
-}) => {
+const specialtyId = new URLSearchParams(window.location.search).get('especialidad');
+const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '';
+
+export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> = () => {
+
+    const { specializables } = useSpecializables();
+    const { clinicalRecordTypes } = useClinicalRecordTypes();
+    const { clinicalRecords } = useClinicalRecords(patientId);
+    const [tableClinicalRecords, setTableClinicalRecords] = useState<PatientClinicalRecordDto[]>([]);
+    const [specialtyClinicalRecords, setSpecialtyClinicalRecords] = useState<ClinicalRecordTypeDto[]>([]);
+
+    useEffect(() => {
+        if (specializables && clinicalRecordTypes) {
+            const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && record.specializable_type === 'Historia Clínica').map(record => record.specializable_id.toString());
+            const filteredClinicalRecords = clinicalRecordTypes.filter(record => specialtyClinicalRecordIds.includes(record.id.toString()));
+            console.log(specialtyClinicalRecordIds, filteredClinicalRecords, clinicalRecords, clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
+
+            setSpecialtyClinicalRecords(filteredClinicalRecords);
+            setTableClinicalRecords(clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
+        }
+    }, [specializables, clinicalRecordTypes, clinicalRecords]);
+
+    useEffect(() => {
+        if (specializables) {
+            const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && record.specializable_type === 'Historia Clínica').map(record => record.specializable_id.toString());
+
+            setTableClinicalRecords(clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
+        }
+    }, [specializables, clinicalRecords]);
+
     const solicitarAnulacion = (id: number) => {
         // Lógica para solicitar anulación
         console.log(`Solicitar anulación para la historia con ID: ${id}`);
     };
+
+    const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
 
     return (
         <PrimeReactProvider>
@@ -47,13 +67,10 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
                                 Crear Historia Clínica
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                {Object.entries(tiposEspecialidad).map(([key, tipo]) => (
-                                    <li key={key}>
-                                        <a
-                                            className="dropdown-item"
-                                            href={`consultas?patient_id=${new URLSearchParams(window.location.search).get('patient_id')}&especialidad=${nombreEspecialidad}&tipo_historia=${key}`}
-                                        >
-                                            Crear {tipo}
+                                {specialtyClinicalRecords.map((record) => (
+                                    <li key={record.id}>
+                                        <a className="dropdown-item" href={`consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}`}>
+                                            Crear {record.name}
                                         </a>
                                     </li>
                                 ))}
@@ -64,7 +81,7 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
             </div>
 
             <div className="row mt-4">
-                {/* <PatientClinicalRecordsTable /> */}
+                <PatientClinicalRecordsTable records={tableClinicalRecords} />
             </div>
         </PrimeReactProvider>
     );

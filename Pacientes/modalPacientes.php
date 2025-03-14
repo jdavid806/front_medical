@@ -117,7 +117,6 @@ require "./modals/editPartnerModal.php";
                         <div class="col-sm-6">
                           <div class="mb-1">
                             <label class="form-label" for="date_of_birth">Fecha de nacimiento</label>
-                            <!-- <input class="form-control datetimepicker flatpickr-input" id="date_of_birth" name="patient[date_of_birth]" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly" required> -->
 
                             <input type="date" name="patient[date_of_birth]" class="form-control" id="date_of_birth">
 
@@ -189,16 +188,13 @@ require "./modals/editPartnerModal.php";
                   <div class="row justify-content-center">
                     <div class="col-md-6 text-center">
                       <h2>Imagen de Perfil</h2>
-                      <!-- Imagen de previsualización -->
                       <div class="mt-3">
                         <img id="profilePreview" src="../assets/img/profile/profile_default.jpg" alt="Previsualización"
                           class="profile-img">
                       </div>
-                      <!-- Video para captura -->
                       <div class="mt-3">
                         <video id="camera" autoplay></video>
                       </div>
-                      <!-- Botones de acción -->
                       <div class="mt-4">
                         <label for="uploadImage" class="btn btn-primary me-2">
                           <i class="fa-solid fa-upload me-1"></i> Subir Imagen
@@ -210,7 +206,6 @@ require "./modals/editPartnerModal.php";
                           <i class="fa-solid fa-check fs-4 text-success"></i>
                         </div>
                       </div>
-                      <!-- Input oculto para subir imagen -->
                       <input type="file" id="uploadImage" class="d-none" accept="image/*">
                     </div>
                   </div>
@@ -268,9 +263,6 @@ require "./modals/editPartnerModal.php";
                         <label class="form-label" for="nationality">Nacionalidad</label>
                         <select class="form-select" id="nationality" name="patient[nationality]" required>
                           <option selected disabled value="">Seleccione</option>
-                          <?php foreach ($countries as $key => $value) { ?>
-                            <option value="<?= $key ?>"><?= $value ?></option>
-                          <?php } ?>
                         </select>
                         <div class="invalid-feedback">El campos es obligatorio</div>
                       </div>
@@ -297,13 +289,9 @@ require "./modals/editPartnerModal.php";
 
                 <div class="card-body" id="companionForm">
 
-                  <!--  -->
-
-
                   <h5 class="card-title">Información del acompañante</h5>
                   <div id="tableExample3" data-list="{&quot;valueNames&quot;:[&quot;name&quot;,&quot;email&quot;,&quot;age&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                      <!-- Search Box -->
                       <div class="search-box">
                         <form class="position-relative">
                           <input class="form-control search-input search form-control-sm" type="search" placeholder="Search" aria-label="Search">
@@ -312,7 +300,6 @@ require "./modals/editPartnerModal.php";
                           </svg>
                         </form>
                       </div>
-                      <!-- Botón Nuevo -->
                       <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#newPartnerModal" id="openSecondModal">Nuevo</button>
 
 
@@ -336,7 +323,7 @@ require "./modals/editPartnerModal.php";
                     <div class="d-flex justify-content-between mt-3"><span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 to 5 <span class="text-body-tertiary"> Items of </span>43</span>
                       <div class="d-flex"><button class="page-link disabled" data-list-pagination="prev" disabled=""><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                             <path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path>
-                          </svg><!-- <span class="fas fa-chevron-left"></span> Font Awesome fontawesome.com --></button>
+                          </svg></button>
                         <ul class="mb-0 pagination">
                           <li class="active"><button class="page btn-primary" type="button" data-i="1" data-page="5">1</button></li>
                           <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
@@ -344,7 +331,7 @@ require "./modals/editPartnerModal.php";
                           <li class="disabled"><button class="page" type="button">...</button></li>
                         </ul><button class="page-link pe-0" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
                             <path fill="currentColor" d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
-                          </svg><!-- <span class="fas fa-chevron-right"></span> Font Awesome fontawesome.com --></button>
+                          </svg></button>
                       </div>
                     </div>
                   </div>
@@ -752,9 +739,11 @@ require "./modals/editPartnerModal.php";
       );
     });
 
+    countriesSelect(document.getElementById('nationality'));
+
     getEntities();
 
-  
+
     if (true) {
       document.getElementById('label_eps').textContent = 'Aseguradora';
       console.log('ocultando campos de colombia');

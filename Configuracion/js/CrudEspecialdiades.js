@@ -53,7 +53,8 @@ function cargarSelectsFuncionesEspecialidades() {
     .addEventListener("click", function () {
       const select = document.getElementById("cie11");
       const id = select.value;
-      const texto = select.options[select.selectedIndex]?.text;
+      const texto = select.value;
+      // const texto = select.options[select.selectedIndex]?.text;
 
       if (id) {
         agregarFilaTablaEspecialidad("CIE-11", texto, id);

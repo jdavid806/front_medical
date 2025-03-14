@@ -36,7 +36,7 @@ export interface UserRoleFormInputs {
 const roleGroupOptions = [
     { label: 'Médico', value: 'DOCTOR' },
     { label: 'Administrativo', value: 'ADMIN' },
-    { label: 'Indeterminado', value: 'INDETERMINATE' }
+    // { label: 'Indeterminado', value: 'INDETERMINATE' }
 ];
 
 export const UserRoleForm: React.FC<UserRoleFormProps> = ({

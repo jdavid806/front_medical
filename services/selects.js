@@ -114,7 +114,7 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
 }
 
 export const departmentsSelect = async (element, countryId, onChange, initialValue = '') => {
-    const data = await departmentService.ofParent(countryId);
+    const data = await departmentService.getByCountry(countryId);
 
     console.log('Departamentos:', data);
 
@@ -160,7 +160,7 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
 };
 
 export const citiesSelect = async (element, departmentId, onChange, initialValue = '') => {
-    const data = await cityService.ofParent(departmentId)
+    const data = await cityService.getByDepartment(departmentId)
 
     console.log('Ciudades:', data);
 

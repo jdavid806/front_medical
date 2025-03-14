@@ -56,11 +56,17 @@ export const TodayAppointmentsTable = () => {
       href: "#"
     }, "Generar link de pago"), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
-      href: "#"
+      href: "#",
+      onClick: () => generarFatura(data,false)
     }, "Descargar Factura"), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
-      href: "#"
+      href: "#",
+      onClick: () => generarFatura(data,true)
     }, "Imprimir factura"), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
+      onClick: () => generarTicketFatura(data,false)
+    }, "Imprimir ticket factura"), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#"
     }, "Compartir por whatsapp y correo"), /*#__PURE__*/React.createElement("a", {

@@ -247,33 +247,32 @@ include "../ConsultasJson/dataPaciente.php";
 
     <div class="modal-footer d-flex justify-content-between">
       <!-- <span class="timer text-danger">Tiempo en consulta: <span id="modalTimerDisplay">00:00:00</span></span> -->
-      <div>
-        <script>
-          let startTime = 0;
-          let intervalId = 0;
 
-          function startTimer() {
-            startTime = Date.now();
-            intervalId = setInterval(function() {
-              const elapsedTime = Date.now() - startTime;
-              const h = Math.floor(elapsedTime / 1000 / 60 / 60);
-              const m = Math.floor(elapsedTime / 1000 / 60) % 60;
-              const s = Math.floor(elapsedTime / 1000) % 60;
-              // document.getElementById('modalTimerDisplay').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }, 1000);
-          }
+      <script>
+        let startTime = 0;
+        let intervalId = 0;
 
-          function stopTimer() {
-            clearInterval(intervalId);
-          }
+        function startTimer() {
+          startTime = Date.now();
+          intervalId = setInterval(function() {
+            const elapsedTime = Date.now() - startTime;
+            const h = Math.floor(elapsedTime / 1000 / 60 / 60);
+            const m = Math.floor(elapsedTime / 1000 / 60) % 60;
+            const s = Math.floor(elapsedTime / 1000) % 60;
+            // document.getElementById('modalTimerDisplay').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+          }, 1000);
+        }
 
-          document.addEventListener('DOMContentLoaded', function() {
-            startTimer();
-          });
-        </script>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
-        <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar</button>
-      </div>
+        function stopTimer() {
+          clearInterval(intervalId);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          startTimer();
+        });
+      </script>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+      <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar</button>
     </div>
   </div>
 </div>
@@ -337,11 +336,13 @@ include "../ConsultasJson/dataPaciente.php";
   } from './react-dist/exams/components/ExamForm.js';
   import {
     packagesService,
-    clinicalRecordService
+    clinicalRecordService,
+    clinicalRecordTypeService
   } from "./services/api/index.js";
   import {
     AlertManager
   } from "./services/alertManager.js";
+  import UserManager from "./services/userManager.js";
 
   const prescriptionFormRef = React.createRef();
   const remissionFormRef = React.createRef();
@@ -387,7 +388,14 @@ include "../ConsultasJson/dataPaciente.php";
 
   let dataIncapacidad = {}
 
-  const packages = await packagesService.getAllPackages();
+  const [packages, clinicalRecordTypes] = await Promise.all([
+    packagesService.getPackagesByExams(),
+    clinicalRecordTypeService.getAll()
+  ]);
+  const urlClinicalRecordType = new URLSearchParams(window.location.search).get("tipo_historia");
+  const currentClinicalRecordType = clinicalRecordTypes.find((type) => type.key_ === urlClinicalRecordType);
+
+  console.log('Paquetes y tipos de historia', packages, clinicalRecordTypes, urlClinicalRecordType, currentClinicalRecordType, UserManager.getUser());
 
   const formIncapacidad = document.getElementById('formCrearIncapacidad');
   const getDataFromFormIncapacidad = () => {
@@ -416,8 +424,9 @@ include "../ConsultasJson/dataPaciente.php";
     const dataRemisiones = obtenerEstadoRemisiones();
     const dataExamenes = obtenerEstadoExamenes();
     let data = {
-      "clinical_record_type_id": 1,
-      "created_by_user_id": 1,
+      "clinical_record_type_id": currentClinicalRecordType.id,
+      "created_by_user_id": UserManager.getUser().id,
+      "description": document.getElementById("motivo").value,
       "branch_id": 1,
       "data": captureFormValues(formData.form1)
     }

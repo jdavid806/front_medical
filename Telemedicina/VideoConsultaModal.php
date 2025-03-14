@@ -87,7 +87,7 @@
         }
 
         // Crear la URL con el roomId
-        let salaUrl = `https://erp.medicalsoftplus.com/ventasPet/videoLlamada?room=${roomId}`;
+        let salaUrl = `https://dev.monaros.ai/videoLlamada?room=${roomId}`;
         console.log("URL de la sala:", salaUrl); // Para depuración
 
         // Evento para el botón "Entrar"

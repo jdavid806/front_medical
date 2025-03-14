@@ -7,4 +7,8 @@ export class UserService extends BaseApiService {
     async getExternalId(id) {
         return await this.httpClient.get(`${this.microservice}/users/external-id/${id}`);
     }
+
+    async getByExternalId(id) {
+        return await this.httpClient.get(`${this.microservice}/users/search/${id}`);
+    }
 }

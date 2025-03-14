@@ -53,7 +53,7 @@
 
   <!-- JS -->
   <script>
-    document.addEventListener("DOMContentLoaded", async function () {
+    document.addEventListener("DOMContentLoaded", async function() {
       await cargarEspecialidades();
       new List("especialidadesTable", {
         valueNames: ["name"],

@@ -19,6 +19,10 @@ export class DepartmentService extends OneToManyService {
     async getDepartments(countryId) {
         return await this.httpClient.get(`${this.microservice}/countries/${countryId}/${this.endpoint}`)
     }
+
+    async getByCountry(countryId) {
+        return await this.httpClient.get(`${this.microservice}/departments/${countryId}`)
+    }
 }
 
 export default DepartmentService;

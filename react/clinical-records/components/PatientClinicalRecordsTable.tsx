@@ -22,11 +22,11 @@ interface PatientClinicalRecordsTableItem {
 
 type PatientClinicalRecordsTableProps = {
     records: PatientClinicalRecordDto[]
-    onSeeDetail: (id: string) => void
-    onCancelItem: (id: string) => void
-    onPrintItem: (id: string) => void
-    onDownloadItem: (id: string) => void
-    onShareItem: (id: string, type: string) => void
+    onSeeDetail?: (id: string) => void
+    onCancelItem?: (id: string) => void
+    onPrintItem?: (id: string) => void
+    onDownloadItem?: (id: string) => void
+    onShareItem?: (id: string, type: string) => void
 }
 
 export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTableProps> = ({ records, onSeeDetail, onCancelItem, onPrintItem, onDownloadItem, onShareItem }) => {
@@ -38,7 +38,7 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
                 id: clinicalRecord.id,
                 clinicalRecordName: clinicalRecord.clinical_record_type.name,
                 description: clinicalRecord.description || '--',
-                doctorName: clinicalRecord.created_by_user_id,
+                doctorName: `${clinicalRecord.created_by_user.first_name} ${clinicalRecord.created_by_user.middle_name} ${clinicalRecord.created_by_user.last_name} ${clinicalRecord.created_by_user.second_last_name}`,
                 status: clinicalRecord.clinical_record_type_id
             }
         })
@@ -49,37 +49,36 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
         { data: 'clinicalRecordName' },
         { data: 'doctorName' },
         { data: 'description' },
-        { data: 'status' },
         { orderable: false, searchable: false }
     ]
 
     const slots = {
+        // 3: (cell, data: PatientClinicalRecordsTableItem) => (
+        //     <span
+        //         className={`badge badge-phoenix badge-phoenix-${clinicalRecordStates[data.status]}`}
+        //     >
+        //         {clinicalRecordStateColors[data.status]}
+        //     </span>
+        // ),
         3: (cell, data: PatientClinicalRecordsTableItem) => (
-            <span
-                className={`badge badge-phoenix badge-phoenix-${clinicalRecordStates[data.status]}`}
-            >
-                {clinicalRecordStateColors[data.status]}
-            </span>
-        ),
-        4: (cell, data: PatientClinicalRecordsTableItem) => (
             <div className="text-end align-middle">
                 <TableActionsWrapper>
-                    <SeeDetailTableAction onTrigger={() => onSeeDetail(data.id)} />
+                    <SeeDetailTableAction onTrigger={() => onSeeDetail && onSeeDetail(data.id)} />
 
                     {data.status === 'approved' && (
-                        <RequestCancellationTableAction onTrigger={() => onCancelItem(data.id)} />
+                        <RequestCancellationTableAction onTrigger={() => onCancelItem && onCancelItem(data.id)} />
                     )}
 
-                    <PrintTableAction onTrigger={() => onPrintItem(data.id)} />
-                    <DownloadTableAction onTrigger={() => onDownloadItem(data.id)} />
+                    <PrintTableAction onTrigger={() => onPrintItem && onPrintItem(data.id)} />
+                    <DownloadTableAction onTrigger={() => onDownloadItem && onDownloadItem(data.id)} />
 
                     <li>
                         <hr className="dropdown-divider" />
                     </li>
                     <li className="dropdown-header">Compartir</li>
 
-                    <ShareTableAction shareType='whatsapp' onTrigger={() => onShareItem(data.id, 'whatsapp')} />
-                    <ShareTableAction shareType='email' onTrigger={() => onShareItem(data.id, 'email')} />
+                    <ShareTableAction shareType='whatsapp' onTrigger={() => onShareItem && onShareItem(data.id, 'whatsapp')} />
+                    <ShareTableAction shareType='email' onTrigger={() => onShareItem && onShareItem(data.id, 'email')} />
                 </TableActionsWrapper>
             </div>
         )
@@ -98,8 +97,7 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
                             <tr>
                                 <th className="border-top custom-th">Nombre de la historia</th>
                                 <th className="border-top custom-th">Doctor(a)</th>
-                                <th className="border-top custom-th">Descripción</th>
-                                <th className="border-top custom-th">Estado</th>
+                                <th className="border-top custom-th">Observaciones</th>
                                 <th className="text-end align-middle pe-0 border-top mb-2" scope="col">Acciones</th>
                             </tr>
                         </thead>

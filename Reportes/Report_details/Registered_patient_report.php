@@ -458,11 +458,6 @@ $patientsJson = json_encode($patients);
                                     <table id="patientsTable" class="table table-sm fs-9 leads-table">
                                         <thead>
                                             <tr>
-                                                <th class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
-                                                    <div class="form-check mb-0 fs-8">
-                                                        <input class="form-check-input" type="checkbox" data-bulk-select='{"body":"purchasers-sellers-body"}' />
-                                                    </div>
-                                                </th>
                                                 <th class="sort align-middle ps-0 pe-5 text-uppercase text-nowrap" scope="col" data-sort="deals_name" style="min-width:120px;">Nombre</th>
                                                 <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="deal_owner" style="min-width:50px;">Telefono</th>
                                                 <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="account_name" style="min-width:250px;">País</th>
@@ -475,14 +470,9 @@ $patientsJson = json_encode($patients);
                                                 <th class="sort text-end align-middle pe-0 ps-4" scope="col"></th>
                                             </tr>
                                         </thead>
-                                        <tbody class="list" id="purchasers-sellers-body">
+                                        <tbody class="list" id="data-patients">
                                             <?php foreach ($patients as $patient): ?>
                                                 <tr>
-                                                    <td class="fs-9 align-middle py-0">
-                                                        <div class="form-check mb-0 fs-8">
-                                                            <input class="form-check-input" type="checkbox" data-bulk-select-row='' />
-                                                        </div>
-                                                    </td>
                                                     <td><?= htmlspecialchars($patient["nombre"]) ?></td>
                                                     <td><?= htmlspecialchars($patient["telefono"]) ?></td>
                                                     <td><?= htmlspecialchars($patient["pais"]) ?></td>
@@ -846,7 +836,7 @@ $patientsJson = json_encode($patients);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 
-    <script>
+    <script type="module">
         const charts = {};
 
         function renderBarChart(elementId, labels, data, label) {

@@ -6,12 +6,14 @@ const CustomDataTable = ({
   children,
   data,
   slots,
-  columns
+  columns,
+  customOptions
 }) => {
   const options = {
     language: {
       url: "https://cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json"
-    }
+    },
+    ...customOptions
   };
   return /*#__PURE__*/React.createElement(DataTable, {
     data: data,

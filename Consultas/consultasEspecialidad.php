@@ -69,7 +69,7 @@ $tiposHistorias = [
     'traumatologia' => [
         'historiaTraumatologia' => 'Historia Traumatologia',
     ],
-    'cardiologia' => [
+    'Cardiología' => [
         'historiaCardiologia' => 'Historia Cardiologia',
     ],
     'gastroenterologia' => [
@@ -212,13 +212,13 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="pacientes">Pacientes</a></li>
                 <li class="breadcrumb-item"><a href="" class="patientName">Cargando...</a></li>
-                <li class="breadcrumb-item"><a href="consulta" id="patientClinicalHistoryAnchor">Historias Clínicas</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()"><?= $nombreEspecialidad ?></li>
+                <li class="breadcrumb-item active especialidadName" onclick="location.reload()"></li>
             </ol>
         </nav>
 
         <div class="row">
-            <div class="col-12">
+            <div id="patientClinicalRecordAppReact"></div>
+            <!-- <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="mb-0">Historias Clínicas - <?= $nombreEspecialidad ?></h2>
@@ -234,10 +234,10 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
 
-        <div class="row mt-4">
+        <!-- <div class="row mt-4">
             <table class="table table-sm tableDataTableSearch">
                 <thead>
                     <tr>
@@ -320,10 +320,16 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
                     <?php } ?>
                 </tbody>
             </table>
-        </div>
+        </div> -->
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.especialidadName').forEach(div => {
+                div.textContent = new URLSearchParams(window.location.search).get('especialidad');
+            })
+        })
+
         function solicitarAnulacion(id) {
             console.log('Solicitando anulación para historia clinica con ID:', id);
 
@@ -353,6 +359,16 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
 </div>
 
 <script type="module">
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        PatientClinicalRecordApp
+    } from './react-dist/clinical-records/PatientClinicalRecordApp.js';
+
+    ReactDOMClient.createRoot(document.getElementById('patientClinicalRecordAppReact')).render(React.createElement(PatientClinicalRecordApp));
+</script>
+
+<script type="module">
     import {
         patientService
     } from "../../services/api/index.js";
@@ -375,5 +391,4 @@ $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
             element.href = `verPaciente?id=${patient.id}`
         }
     })
-    document.getElementById('patientClinicalHistoryAnchor').href = `consulta?patient_id=${patient.id}`
 </script>

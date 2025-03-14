@@ -7,7 +7,7 @@
             </script>
             <div class="col-6">
                 <label for="dias" class="form-label">Días de Incapacidad</label>
-                <input type="number" class="form-control" id="dias" name="dias" min="1" required>
+                <input type="number" class="form-control" id="dias" name="dias" min="1">
             </div>
             <div class="col-6">
                 <label for="hasta" class="form-label">Hasta</label>

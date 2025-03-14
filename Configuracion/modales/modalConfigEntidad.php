@@ -24,13 +24,14 @@
             <div class="col-md-6">
               <h6>Listado de CIE-11</h6>
               <div class="mb-3">
-                <label class="form-label" for="cie11">Seleccione CIE-11</label>
-                <select class="form-select" id="cie11">
+                <label class="form-label" for="cie11">Excriba un Código CIE-11</label>
+                <input type="text" class="form-control" id="cie11" placeholder="Código CIE-11">
+                <!-- <select class="form-select" >
                   <option value="" disabled selected>Seleccione un diagnóstico</option>
                   <option value="A00">Cólera (A00)</option>
                   <option value="B01">Varicela (B01)</option>
                   <option value="C34">Cáncer de pulmón (C34)</option>
-                </select>
+                </select> -->
               </div>
               <button class="btn btn-primary w-100" type="button" id="agregarCie11">Agregar CIE-11</button>
             </div>

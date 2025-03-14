@@ -436,10 +436,11 @@ export interface PatientClinicalRecordDto {
     created_at: string;
     updated_at: string;
     clinical_record_type: ClinicalRecordTypeDto;
+    created_by_user: UserDto;
     patient: Patient;
 }
 
-interface ClinicalRecordTypeDto {
+export interface ClinicalRecordTypeDto {
     id: string;
     name: string;
     description: string;
@@ -453,4 +454,13 @@ interface ClinicalRecordTypeDto {
 export interface AppointmentTypeDto {
     id: string;
     name: string;
+}
+
+export interface SpecializableDto {
+    id: string;
+    specialty_id: string;
+    specializable_id: string;
+    specializable_type: string;
+    created_at: string;
+    updated_at: string;
 }

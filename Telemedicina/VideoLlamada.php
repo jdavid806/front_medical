@@ -346,7 +346,7 @@
 
 
 <script>
-const socket = io("http://consultorio2.medicalsoft.ai", {
+const socket = io("https://dev.medicalsoft.ai", {
     path: "/telemedicina/socket.io",
     transports: ["websocket"]
 });

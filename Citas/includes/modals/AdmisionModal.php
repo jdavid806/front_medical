@@ -282,6 +282,10 @@ include '../modals/NewCompanionModal.php';
                                                     <input class="form-check-input mt-1" id="entitySwitch" type="checkbox">
                                                     <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturación Entidad</label>
                                                 </div>
+                                                <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
+                                                    <input class="form-check-input mt-1" id="entitySwitch" type="checkbox">
+                                                    <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturar consumidor</label>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -476,7 +480,6 @@ include '../modals/NewCompanionModal.php';
                                                 <h5 class="card-title">Información del procedimiento</h5>
 
                                                 <div class="row g-3 mb-3">
-                                                    <!-- Primera fila: Select de procedimientos (12 columnas) -->
                                                     <div class="col-12">
                                                         <div class="mb-3">
                                                             <label class="form-label" for="services">Procedimiento *</label>
@@ -487,7 +490,6 @@ include '../modals/NewCompanionModal.php';
                                                         </div>
                                                     </div>
 
-                                                    <!-- Segunda fila: Precio, Cantidad, Subtotal y Botón (todos en una misma fila) -->
                                                     <div class="col-12">
                                                         <div class="row align-items-end">
                                                             <!-- Precio -->
@@ -499,7 +501,6 @@ include '../modals/NewCompanionModal.php';
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Cantidad -->
                                                             <div class="col-md-3">
                                                                 <div class="mb-0">
                                                                     <label class="form-label" for="productQuantity">Cantidad</label>
@@ -508,7 +509,6 @@ include '../modals/NewCompanionModal.php';
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Subtotal -->
                                                             <div class="col-md-3">
                                                                 <div class="mb-0">
                                                                     <label class="form-label" for="subtotal">Subtotal</label>
@@ -517,7 +517,6 @@ include '../modals/NewCompanionModal.php';
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Botón -->
                                                             <div class="col-md-3">
                                                                 <div class="mb-0">
                                                                     <button class="btn btn-primary w-100 rounded-pill" type="button" id="addProduct">
@@ -886,7 +885,8 @@ include '../modals/NewCompanionModal.php';
     } from './services/api/index.js';
 
     import {
-        getJWTPayload
+        getJWTPayload,
+        getUserLogged
     } from './services/utilidades.js';
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -982,6 +982,7 @@ include '../modals/NewCompanionModal.php';
 
         // Obtener todas las filas de la tabla de productos
         const productRows = productsTableBody.querySelectorAll('tr');
+        console.log(productRows);
 
         // Recorrer cada fila y agregarla a la tabla de resumen
         productRows.forEach((row, index) => {
@@ -1102,7 +1103,7 @@ include '../modals/NewCompanionModal.php';
                 infoFactura.style.display = 'none'; // Muestra la información de la factura
 
             } else {
-                formProduct.style.display = 'block'; // Muestra el formulario
+                formProduct.style.display = 'none'; // Muestra el formulario
                 infoFactura.style.display = 'block'; // Oculta la información de la factura
             }
         });
@@ -1125,7 +1126,7 @@ include '../modals/NewCompanionModal.php';
                 addService.style.display = 'none';
             } else {
                 targetElement.style.display = 'none';
-                formProduct.style.display = 'block';
+                formProduct.style.display = 'none';
                 addService.style.display = 'block';
             }
 
@@ -1858,20 +1859,22 @@ include '../modals/NewCompanionModal.php';
         const tableBody = document.getElementById('productsTableBody');
         const rowsProducts = tableBody.getElementsByTagName('tr');
         const tableBodyPaymentsmethod = document.getElementById('paymentsTableBody');
-        const rowsPaymentsmethod = tableBody.getElementsByTagName('tr');
+        const rowsPaymentsmethod = tableBodyPaymentsmethod.getElementsByTagName('tr');
         const dataProducts = [];
         const dataPaymentMthods = [];
         const entitySwitch = document.getElementById('entitySwitch');
-        const userToken = getJWTPayload();
+        const userLogged = getUserLogged();
 
         for (let row of rowsProducts) {
             const cells = row.getElementsByTagName('td');
 
             const rowData = {
-                product_id: cells[0]?.innerText.trim(), // Ajusta según el índice de las columnas
-                quantity: cells[3]?.innerText.trim(),
-                unit_price: cells[2]?.innerText.trim(),
+                product_id: Number(cells[0]?.innerText.trim()), // Ajusta según el índice de las columnas
+                quantity: Number(cells[3]?.innerText.trim()),
+                unit_price: Number(cells[2]?.innerText.trim()),
+                amount: Number(cells[2]?.innerText.trim()),
                 discount: 0,
+                subtotal: Number(cells[2]?.innerText.trim()),
             };
 
             dataProducts.push(rowData);
@@ -1879,20 +1882,21 @@ include '../modals/NewCompanionModal.php';
         for (let row of rowsPaymentsmethod) {
             const cells = row.getElementsByTagName('td');
 
-            const rowData = {
-                payment_method_id: cells[0]?.innerText.trim(), // Ajusta según el índice de las columnas
-                payment_date: "<?php echo date('Y-m-d'); ?>",
-                amount: cells[2]?.innerText.trim(),
-                notes: "",
-            };
-
-            dataPaymentMthods.push(rowData);
+            if (Number(cells[0]?.innerText.trim()) > 0) {
+                const rowData = {
+                    payment_method_id: Number(cells[0]?.innerText.trim()), // Ajusta según el índice de las columnas
+                    payment_date: "<?php echo date('Y-m-d'); ?>",
+                    amount: Number(cells[2]?.innerText.trim()),
+                    notes: "xxxxxxx",
+                };
+                dataPaymentMthods.push(rowData);
+            }
         }
 
-
+        console.log(userLogged, dataProducts, dataPaymentMthods);
 
         const requestData = {
-            "userId": userToken.sub,
+            "external_id": `${userLogged.external_id}`,
             "admission": {
                 "authorization_number": entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
                 "authorization_date": entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
@@ -1903,11 +1907,21 @@ include '../modals/NewCompanionModal.php';
                 "copayment": true,
                 "moderator_fee": false
             },
-            "invoice": {
+            "cash_receipt": {
+                "type": entitySwitch.checked ? "entity" : "public",
+                "status": "Pagado",
+                "subtotal": dataProducts[0].unit_price,
+                "discount": 0,
+                "iva": 0,
+                "total_amount": dataProducts[0].unit_price,
+                "observations": document.getElementById('observation').value,
                 "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),
-                "observations": document.getElementById('observation').value
+                "paid_amount": dataProducts[0].unit_price,
+                "remaining_amount": 0,
+                "quantity_total": 1,
+                "user_id": userLogged.id
             },
-            "invoice_detail": dataProducts,
+            "cash_receipt_detail": dataProducts,
             "payments": dataPaymentMthods
         }
 

@@ -9,7 +9,7 @@ export const SeeDetailTableAction = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2 align-items-center"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-print",
+    className: "fa-solid fa-eye",
     style: {
       width: '20px'
     }

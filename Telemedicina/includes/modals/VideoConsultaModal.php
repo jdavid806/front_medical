@@ -72,44 +72,38 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
 <script>
-    const socket = io("http://consultorio2.medicalsoft.ai", {
-        path: "/telemedicina/socket.io",
-        transports: ["websocket"]
-    });
+    document.addEventListener("DOMContentLoaded", () => {
 
-    // Cuando se abre el modal, se genera una sala si es un doctor
-    document.getElementById("modalVideoConsulta").addEventListener("show.bs.modal", () => {
-        const role = "doctor"; 
-        socket.emit("create-room", role);
-        document.getElementById("roomIdText").textContent = "Generando...";
-    });
+        console.log("Script ejecutado");
+        // Obtener elementos
+        const btnEntrar = document.getElementById("btnEntrar");
+        const btnCopiar = document.getElementById("btnCopiar");
+        const roomIdText = document.getElementById("roomIdText");
 
-    // Escuchar cuando se crea la sala
-    socket.on("room-created", (roomId) => {
-        console.log("🆕 Sala creada con ID:", roomId);
-        
-        // Actualizar el texto del código de sala en el modal
-        document.getElementById("roomIdText").textContent = roomId;
+        // Verificar si ya hay un Room ID o generar uno nuevo
+        let roomId = roomIdText.textContent.trim();
+        if (!roomId || roomId.includes("...")) {
+            roomId = Math.random().toString(36).substring(2, 10); // Generar Room ID único
+            roomIdText.textContent = roomId; // Mostrar en la interfaz
+        }
 
-        // Generar enlace de la sala
-        const roomLink = `${window.location.origin}/videoLlamada?roomId=${roomId}`;
+        // Crear la URL con el roomId
+        let salaUrl = `https://dev.monaros.co/videoLlamada?room=${roomId}`;
+        console.log("URL de la sala:", salaUrl); // Para depuración
 
-        // Configurar botón de entrar
-        document.getElementById("btnEntrar").onclick = () => {
-            window.open(roomLink, "_blank");
-        };
-
-        // Configurar botón de copiar enlace
-        document.getElementById("btnCopiar").onclick = () => copyToClipboard(roomLink);
-    });
-
-    // Función para copiar enlace al portapapeles
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert("✅ Enlace copiado al portapapeles");
-        }).catch(err => {
-            console.error("❌ Error al copiar:", err);
+        // Evento para el botón "Entrar"
+        btnEntrar.addEventListener("click", () => {
+            window.location.href = salaUrl;
         });
-    }
+
+        // Evento para copiar el enlace de la sala
+        btnCopiar.addEventListener("click", () => {
+            navigator.clipboard.writeText(salaUrl)
+                .then(() => alert("Enlace copiado al portapapeles."))
+                .catch(err => console.error("Error al copiar:", err));
+        });
+    });
 </script>
+
+
 

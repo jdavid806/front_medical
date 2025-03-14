@@ -36,7 +36,7 @@ async function enviarTexto(mensaje, numero) {
     number: numero,
     text: mensaje,
   };
-  enviarMensaje("sendText", parametrosMensaje);
+  // enviarMensaje("sendText", parametrosMensaje);
 }
 
 async function enviarAnexo(mensaje, numero, urlArchivo, titulo) {
@@ -47,7 +47,7 @@ async function enviarAnexo(mensaje, numero, urlArchivo, titulo) {
     media: urlArchivo /* url or base64 */,
     fileName: titulo,
   };
-  enviarMensaje("sendMedia", parametrosMensaje);
+  // enviarMensaje("sendMedia", parametrosMensaje);
 }
 
 async function enviarImagen(mensaje, numero, urlImagen, titulo) {
@@ -59,7 +59,7 @@ async function enviarImagen(mensaje, numero, urlImagen, titulo) {
     media: urlImagen /* url or base64 */,
     fileName: titulo,
   };
-  enviarMensaje("sendMedia", parametrosMensaje);
+  // enviarMensaje("sendMedia", parametrosMensaje);
 }
 
 // utils
@@ -98,90 +98,7 @@ async function enviarDocumentoConvertido(
   enviarAnexo(mensajeFinal, numero_paciente, rutaFinal, titulo);
 }
 
-async function consultarQR(user_id) {
-  const datosApi = await consultarDatosWhatssapPorDoctorId(user_id);
-
-  const imgElement = document.getElementById("qrWhatsApp");
-  const statusIcon = document.getElementById("statusIcon");
-  const actionButton = document.getElementById("actionButton");
-
-  if (!imgElement) {
-    console.error("No se encontró el elemento con el ID especificado");
-    return;
-  }
-
-  try {
-    const response = await fetch(datosApi.apiConnect, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: datosApi.apiKey,
-      },
-    });
-
-    const result = await response.json();
-
-    if (result.instance && result.instance.state === "open") {
-      imgElement.classList.add("d-none");
-
-      statusIcon.classList.remove("d-none");
-      actionButton.classList.remove("d-none");
-      actionButton.onclick = () => cerrarPuerto(user_id);
-    } else {
-      statusIcon.classList.add("d-none");
-      actionButton.classList.add("d-none");
-
-      imgElement.classList.remove("d-none");
-
-      imgElement.src = result.base64;
-    }
-  } catch (error) {
-    console.error("Error al cargar el QR:", error);
-  }
-}
-
-// Funcioens envio
-
-async function cerrarPuerto(user_id) {
-  Swal.fire({
-    title: "¿Estás seguro?",
-    text: "Esta acción Desconectara la conexión.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sí, desconectar",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const datosApi = await consultarDatosWhatssapPorDoctorId(user_id);
-        await fetch(datosApi.apiLogOut, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: datosApi.apiKey,
-          },
-        });
-        Swal.fire(
-          "¡Desconectado exitosamente!",
-          "La sesión se ha desconectado correctamente.",
-          "success"
-        ).then(() => {
-          location.reload();
-        });
-      } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-        Swal.fire(
-          "Error",
-          "No se pudo desconectar. Inténtalo de nuevo.",
-          "error"
-        );
-      }
-    }
-  });
-}
-
-// funcioens globales
+// llamado de envios
 async function enviarDocumento(
   objecto,
   tipoDocumento,

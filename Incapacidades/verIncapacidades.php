@@ -207,7 +207,7 @@ include "../header.php";
       });
     }
 
-    // document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
+    //document.getElementById('btnModalCrearIncapacidad').addEventListener('click', agregarIncapacidad);
 
     const template = document.getElementById("templateIncapacidad");
     const table = document.getElementById("tableIncapacidades");

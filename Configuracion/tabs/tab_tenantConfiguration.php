@@ -197,17 +197,20 @@
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionConsumidor">Número Resolución</label>
-                  <input class="form-control" id="numeroResolucionConsumidor" type="text" placeholder="Ej: 1234567890" required>
+                  <input class="form-control" id="numeroResolucionConsumidor" type="text" placeholder="Ej: 1234567890"
+                    required>
                   <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaDesdeConsumidor">Facturas Desde</label>
-                  <input class="form-control" id="facturaDesdeConsumidor" type="number" min="1" placeholder="Ej: 1001" required>
+                  <input class="form-control" id="facturaDesdeConsumidor" type="number" min="1" placeholder="Ej: 1001"
+                    required>
                   <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaHastaConsumidor">Facturas Hasta</label>
-                  <input class="form-control" id="facturaHastaConsumidor" type="number" min="1" placeholder="Ej: 2000" required>
+                  <input class="form-control" id="facturaHastaConsumidor" type="number" min="1" placeholder="Ej: 2000"
+                    required>
                   <div class="invalid-feedback">Ingrese el número final de facturas.</div>
                 </div>
                 <div class="col-md-6">
@@ -235,17 +238,20 @@
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionFiscal">Número Resolución</label>
-                  <input class="form-control" id="numeroResolucionFiscal" type="text" placeholder="Ej: 1234567890" required>
+                  <input class="form-control" id="numeroResolucionFiscal" type="text" placeholder="Ej: 1234567890"
+                    required>
                   <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaDesdeFiscal">Facturas Desde</label>
-                  <input class="form-control" id="facturaDesdeFiscal" type="number" min="1" placeholder="Ej: 1001" required>
+                  <input class="form-control" id="facturaDesdeFiscal" type="number" min="1" placeholder="Ej: 1001"
+                    required>
                   <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaHastaFiscal">Facturas Hasta</label>
-                  <input class="form-control" id="facturaHastaFiscal" type="number" min="1" placeholder="Ej: 2000" required>
+                  <input class="form-control" id="facturaHastaFiscal" type="number" min="1" placeholder="Ej: 2000"
+                    required>
                   <div class="invalid-feedback">Ingrese el número final de facturas.</div>
                 </div>
                 <div class="col-md-6">
@@ -273,17 +279,20 @@
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionGubernamental">Número Resolución</label>
-                  <input class="form-control" id="numeroResolucionGubernamental" type="text" placeholder="Ej: 1234567890" required>
+                  <input class="form-control" id="numeroResolucionGubernamental" type="text"
+                    placeholder="Ej: 1234567890" required>
                   <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaDesdeGubernamental">Facturas Desde</label>
-                  <input class="form-control" id="facturaDesdeGubernamental" type="number" min="1" placeholder="Ej: 1001" required>
+                  <input class="form-control" id="facturaDesdeGubernamental" type="number" min="1"
+                    placeholder="Ej: 1001" required>
                   <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaHastaGubernamental">Facturas Hasta</label>
-                  <input class="form-control" id="facturaHastaGubernamental" type="number" min="1" placeholder="Ej: 2000" required>
+                  <input class="form-control" id="facturaHastaGubernamental" type="number" min="1"
+                    placeholder="Ej: 2000" required>
                   <div class="invalid-feedback">Ingrese el número final de facturas.</div>
                 </div>
                 <div class="col-md-6">
@@ -311,17 +320,20 @@
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionNotaCredito">Número Resolución</label>
-                  <input class="form-control" id="numeroResolucionNotaCredito" type="text" placeholder="Ej: 1234567890" required>
+                  <input class="form-control" id="numeroResolucionNotaCredito" type="text" placeholder="Ej: 1234567890"
+                    required>
                   <div class="invalid-feedback">Favor ingrese el número de resolución.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaDesdeNotaCredito">Facturas Desde</label>
-                  <input class="form-control" id="facturaDesdeNotaCredito" type="number" min="1" placeholder="Ej: 1001" required>
+                  <input class="form-control" id="facturaDesdeNotaCredito" type="number" min="1" placeholder="Ej: 1001"
+                    required>
                   <div class="invalid-feedback">Ingrese el número inicial de facturas.</div>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label" for="facturaHastaNotaCredito">Facturas Hasta</label>
-                  <input class="form-control" id="facturaHastaNotaCredito" type="number" min="1" placeholder="Ej: 2000" required>
+                  <input class="form-control" id="facturaHastaNotaCredito" type="number" min="1" placeholder="Ej: 2000"
+                    required>
                   <div class="invalid-feedback">Ingrese el número final de facturas.</div>
                 </div>
                 <div class="col-md-6">
@@ -392,21 +404,24 @@
           <div class="row">
             <!-- Sección de Vincular WhatsApp -->
             <div class="col-md-6 qr-container">
-              <h5>Vincular WhatsApp</h5>
-              <p>Escanea este código QR para vincular tu cuenta de WhatsApp.</p>
+              <h5>Estado WhatsApp</h5>
 
               <div class="d-flex flex-column align-items-center text-center mt-4">
-                <span id="statusIcon">
+                <span id="goodIcon" class="d-none">
                   <i class="fas fa-check-circle text-success"
                     style="font-size: 100px; width: 100px; height: 100px;"></i>
                 </span>
-
-                <!-- Imagen QR -->
-                <img src="" alt="Código QR" id="qrWhatsApp" class="mt-3 img-fluid" style="max-width: 200px;">
+                <span id="badIcon" class="d-none">
+                  <i class="fas fa-circle-xmark text-danger" style="font-size: 100px; width: 100px; height: 100px;"></i>
+                </span>
 
                 <div class="mt-3" aria-label="Botones-Conexion">
-                  <button id="actionButton" class="btn btn-danger">
+                  <button id="actionButton" class="d-none btn btn-danger">
                     <i class="fas fa-times-circle"></i> Quitar conexión
+                  </button>
+                  <button id="modalButton" class="d-none btn btn-warning" data-bs-toggle="modal"
+                    data-bs-target="#modalVerQr">
+                    <i class="fas fa-times-circle"></i> Conectar WhatsApp
                   </button>
                 </div>
               </div>
@@ -497,7 +512,7 @@
 
     if (input.files && input.files[0]) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         preview.src = e.target.result;
         preview.classList.remove("d-none");
       };
@@ -507,21 +522,16 @@
 </script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // const user_id = 1;
-
-    // consultarQR(user_id);
+  document.addEventListener("DOMContentLoaded", function () {
+    consultarQR();
     cargarDatosTenant();
-    // setInterval(() => {
-    //   consultarQR(user_id);
-    // }, 10000);
   });
 </script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // Formulario de Información General
-    document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function (event) {
       event.preventDefault();
       const datos = capturarDatosInformacionGeneral();
       // guardarDatos(
@@ -533,28 +543,28 @@
     });
 
     // Formulario de Facturación
-    document.getElementById('facturacion-tab-pane').querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('facturacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
       event.preventDefault();
       const datos = capturarDatosFacturacion();
       console.log('Datos Facturación:', datos);
     });
 
     // Formulario de Contacto
-    document.getElementById('contacto-tab-pane').querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('contacto-tab-pane').querySelector('form').addEventListener('submit', function (event) {
       event.preventDefault();
       const datos = capturarDatosContacto();
       console.log('Datos Contacto:', datos);
     });
 
     // Formulario de Configuración SMTP
-    document.getElementById('comunicacion-tab-pane').querySelector('form').addEventListener('submit', function(event) {
+    document.getElementById('comunicacion-tab-pane').querySelector('form').addEventListener('submit', function (event) {
       event.preventDefault();
       const datos = capturarDatosSMTP();
       console.log('Datos SMTP:', datos);
     });
   });
 
-  document.getElementById('guardarInfoGeneral').addEventListener('click', function() {
+  document.getElementById('guardarInfoGeneral').addEventListener('click', function () {
     const datosGuardar = capturarDatosInformacionGeneral();
     console.log(datosGuardar);
   })

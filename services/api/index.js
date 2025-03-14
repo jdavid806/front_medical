@@ -56,7 +56,7 @@ export const examResultService = new BaseApiService("medical", "exam-results");
 export const patientService = new PatientService("medical", "patients");
 export const patientMockService = new PatientMockService("patients");
 
-export const userService = new BaseApiService("medical", "users");
+export const userService = new UserService("medical", "users");
 export const userServiceMedical = new BaseApiService("medical");
 export const userSpecialtyService = new UserSpecialtyService(
   "medical",
@@ -129,6 +129,7 @@ export const moduleService = new BaseApiService("medical", "modules");
 
 export const entityService = new BaseApiService("medical", "entities");
 export const userRolesService = new BaseApiService("medical", "user-roles");
+export const specializablesService = new BaseApiService("medical", "specializables");
 
 /* Countries */
 

@@ -71,6 +71,8 @@ document.getElementById('finishStep').addEventListener('click', function () {
                 }
             });
     } else {
+        console.log('Actualizando', id, data);
+
         patientService.update(id, data)
             .then(() => {
                 AlertManager.success({

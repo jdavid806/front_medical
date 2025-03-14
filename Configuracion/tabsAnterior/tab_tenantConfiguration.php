@@ -374,11 +374,8 @@
     const user_id = 1;
 
     consultarQR(user_id);
-
-    setInterval(() => {
-      consultarQR(user_id);
-    }, 30000);
   });
 
+  
 
 </script>

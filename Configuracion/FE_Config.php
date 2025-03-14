@@ -126,12 +126,6 @@ include "../header.php";
               <i class="fas fa-microscope"></i> Exámenes
             </a>
           </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="modulos-atencion-tab" data-bs-toggle="tab" href="#tab-modulos-atencion" role="tab"
-              aria-controls="tab-modulos-atencion" aria-selected="false">
-              <i class="fas fa-hospital-user"></i> Módulos
-            </a>
-          </li>
         </ul>
 
         <div class="tab-content mt-3" id="myTabContent">
@@ -184,9 +178,6 @@ include "../header.php";
           <div class="tab-pane fade" id="tab-examenes" role="tabpanel" aria-labelledby="examenes-tab">
             <?php include "./tabs/tab_examsConfiguration.php"; ?>
           </div>
-          <div class="tab-pane fade" id="tab-modulos-atencion" role="tabpanel" aria-labelledby="modulos-atencion-tab">
-            <?php include "./tabs/tab_attentionModulesConfiguration.php"; ?>
-          </div>
         </div>
 
       </div>
@@ -226,4 +217,6 @@ include "./ModalUserRole.php";
 include "./modales/modalAgregarPlantillaConsentimiento.php";
 include "./ModalPrice.php";
 include "./modales/modalConfigEntidad.php";
+
+include "./modales/ModalVincularWS.php";
 ?>

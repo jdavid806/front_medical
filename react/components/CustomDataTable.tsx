@@ -9,14 +9,16 @@ interface CustomDataTableProps {
     data: any[];
     slots?: any;
     columns: ConfigColumns[];
+    customOptions?: any;
 }
 
-const CustomDataTable: React.FC<CustomDataTableProps> = ({ children, data, slots, columns }) => {
+const CustomDataTable: React.FC<CustomDataTableProps> = ({ children, data, slots, columns, customOptions }) => {
 
     const options = {
         language: {
             url: "https://cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json"
-        }
+        },
+        ...customOptions
     }
 
     return (
