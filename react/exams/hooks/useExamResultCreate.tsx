@@ -1,16 +1,15 @@
 import { useState } from 'react'
+import { examResultService } from '../../../services/api'
 import { ErrorHandler } from '../../../services/errorHandler'
 import { SwalManager } from '../../../services/alertManagerImported'
-import { UserRoleFormInputs } from '../components/UserRoleForm'
-import { userRolesService } from '../../../services/api'
 
-export const useUserRoleCreate = () => {
+export const useExamResultCreate = () => {
     const [loading, setLoading] = useState<boolean>(false)
 
-    const createUserRole = async (userRoleData: Omit<UserRoleFormInputs, 'id'>) => {
+    const createExamResult = async (examResultData: Omit<any, 'id'>) => {
         setLoading(true)
         try {
-            await userRolesService.storeMenusPermissions(userRoleData)
+            await examResultService.create(examResultData)
             SwalManager.success()
         } catch (error) {
             ErrorHandler.generic(error)
@@ -19,5 +18,5 @@ export const useUserRoleCreate = () => {
         }
     }
 
-    return { loading, createUserRole }
+    return { loading, createExamResult }
 }

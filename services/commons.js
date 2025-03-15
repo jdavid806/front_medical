@@ -94,6 +94,25 @@ export const appointmentStatesColors = {
     5: 'danger'
 }
 
+export const appointmentStatesByKey = {
+    'pending': 'Pendiente',
+    'pending_consultation': 'En espera de consulta',
+    'pending_consultation.PROCEDURE': 'En espera de examen',
+    'in_consultation': 'En consulta',
+    'consultation_completed': 'Consulta finalizada',
+    'cancelled': 'Cancelada',
+    'rescheduled': 'Reprogramada'
+}
+
+export const appointmentStateColorsByKey = {
+    'pending': 'warning',
+    'pending_consultation': 'info',
+    'in_consultation': 'primary',
+    'consultation_completed': 'success',
+    'cancelled': 'danger',
+    'rescheduled': 'secondary'
+}
+
 export const examOrderStates = {
     'generated': 'Pendiente por cargar resultados',
     'uploaded': 'Resultados subidos'

@@ -15,11 +15,14 @@ export const useFetchAppointments = (fetchPromise, customMapper) => {
       date: appointment.appointment_date,
       time: appointment.appointment_time,
       doctorName,
-      entity: appointment.patient.social_security?.entity?.name || 'Falta traer la eps',
+      entity: appointment.patient.social_security?.entity?.name || '--',
       status: appointment.is_active ? 'Activo' : 'Inactivo',
       branchId: appointment.user_availability.branch_id?.toString() || null,
       isChecked: false,
-      stateId: appointment.appointment_state_id.toString()
+      stateId: appointment.appointment_state_id.toString(),
+      stateKey: appointment.appointment_state?.name,
+      attentionType: appointment.attention_type,
+      productId: appointment.product_id
     };
   };
   const mapper = customMapper || defaultMapper;

@@ -35,9 +35,9 @@ export const PatientClinicalRecordApp = () => {
       setTableClinicalRecords(clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
     }
   }, [specializables, clinicalRecords]);
-  const solicitarAnulacion = id => {
-    // Lógica para solicitar anulación
-    console.log(`Solicitar anulación para la historia con ID: ${id}`);
+  const printClinicalRecord = (id, title) => {
+    //@ts-ignore
+    crearDocumento(id, "Impresion", "Consulta", "Completa", title);
   };
   const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
   return /*#__PURE__*/React.createElement(PrimeReactProvider, null, /*#__PURE__*/React.createElement("div", {
@@ -67,6 +67,7 @@ export const PatientClinicalRecordApp = () => {
   }, "Crear ", record.name)))))))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
-    records: tableClinicalRecords
+    records: tableClinicalRecords,
+    onPrintItem: printClinicalRecord
   })));
 };

@@ -34,13 +34,13 @@ export const UserRoleApp = () => {
   };
   const handleSubmit = async data => {
     console.log(data);
-    // if (userRole) {
-    //     await updateUserRole(userRole.id, data)
-    // } else {
-    //     await createUserRole(data)
-    // }
-    // fetchUserRoles()
-    // setShowFormModal(false)
+    if (userRole) {
+      await updateUserRole(userRole.id, data);
+    } else {
+      await createUserRole(data);
+    }
+    fetchUserRoles();
+    setShowFormModal(false);
   };
   const handleTableEdit = id => {
     fetchUserRole(id);
@@ -54,8 +54,8 @@ export const UserRoleApp = () => {
     setInitialData({
       name: userRole?.name || '',
       group: userRole?.group || '',
-      permissions: userRole?.permissions || [],
-      menus: userRole?.menus || []
+      permissions: userRole?.permissions.map(permission => permission.key) || [],
+      menus: userRole?.menus.map(menu => menu.key) || []
     });
   }, [userRole]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {

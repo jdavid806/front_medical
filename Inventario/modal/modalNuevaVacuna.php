@@ -113,16 +113,15 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
-                <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
-                <button class="btn btn-primary d-none" id="finishStep" type="submit">Finalizar</button>
+                <button class="btn btn-secondary" id="prevStepVac" type="button" disabled>Anterior</button>
+                <button class="btn btn-primary" id="nextStepVac" type="button">Siguiente</button>
+                <button class="btn btn-primary d-none" id="finishStepVac" type="submit">Finalizar</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<script type="module" src="../Inventario/js/inventarioVacunas.js"></script>
 
 <script>
     let currentStep = 1;
@@ -139,12 +138,12 @@
         });
 
         // Controlar los botones
-        document.getElementById('prevStep').disabled = currentStep === 1;
-        document.getElementById('nextStep').classList.toggle('d-none', currentStep === 3);
-        document.getElementById('finishStep').classList.toggle('d-none', currentStep !== 3);
+        document.getElementById('prevStepVac').disabled = currentStep === 1;
+        document.getElementById('nextStepVac').classList.toggle('d-none', currentStep === 3);
+        document.getElementById('finishStepVac').classList.toggle('d-none', currentStep !== 3);
     };
 
-    document.getElementById('nextStep').addEventListener('click', () => {
+    document.getElementById('nextStepVac').addEventListener('click', () => {
         const currentForm = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
@@ -155,7 +154,7 @@
         }
     });
 
-    document.getElementById('prevStep').addEventListener('click', () => {
+    document.getElementById('prevStepVac').addEventListener('click', () => {
         currentStep--;
         updateWizard();
     });
@@ -163,3 +162,5 @@
 
     updateWizard();
 </script>
+
+<script type="module" src="../Inventario/js/inventarioVacunas.js"></script>

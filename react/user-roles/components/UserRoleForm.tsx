@@ -155,11 +155,11 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
-                                            id="flexSwitchCheckDefault"
+                                            id={menu.key_}
                                             checked={selectedMenus.includes(menu.key_)}
                                             onChange={(e) => handleMenuChange(menu.key_, e.target.checked)}
                                         />
-                                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
+                                        <label className="form-check-label" htmlFor={menu.key_}>
                                             {menu.name}
                                         </label>
                                     </div>
@@ -181,14 +181,14 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
                                                 <input
                                                     className="form-check-input"
                                                     type="checkbox"
-                                                    id="flexSwitchCheckDefault"
+                                                    id={permission.key_}
                                                     checked={selectedPermissions.includes(permission.key_)}
                                                     onChange={(e) =>
                                                         handlePermissionChange(permission.key_, e.target.checked)
                                                     }
                                                 />
-                                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
-
+                                                <label className="form-check-label" htmlFor={permission.key_}>
+                                                    {permission.name}
                                                 </label>
                                             </div>
                                         ))}

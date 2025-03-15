@@ -1924,6 +1924,8 @@ include '../modals/NewCompanionModal.php';
             payments: dataPaymentMthods
         }
 
+        console.log(requestData);
+
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {
                 let contenidoResumen = `
@@ -1938,11 +1940,16 @@ include '../modals/NewCompanionModal.php';
                     icon: 'success',
                     width: '600px',
                     confirmButtonText: 'Finalizar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Imprimir factura',
                     confirmButtonColor: '#4CAF50'
                 }).then((result) => {
+                    console.log(result);
                     if (result.isConfirmed) {
 
                         window.location.href = 'citasControl'; // Redireccionar a la página de éxito
+                    } else {
+                        generateInvoice(response.admission_data.id);
                     }
                 });
             })
@@ -1951,16 +1958,6 @@ include '../modals/NewCompanionModal.php';
             });
 
     })
-
-    function generateInvoice() {
-        const totalAmount = document.getElementById('totalSumAmount').textContent
-        const total = document.getElementById('totalSum').textContent
-        document.querySelector('td[data-field="subtotal"]').innerText = total;
-        document.querySelector('td[data-field="total"]').innerText = total;
-        document.querySelector('td[data-field="paid"]').innerText = totalAmount;
-        document.querySelector('td[data-field="balance"]').innerText = total - totalAmount;
-        document.querySelector('td[data-field="total_invoice"]').innerText = total;
-    }
 </script>
 
 <style>

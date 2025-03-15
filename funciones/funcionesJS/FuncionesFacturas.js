@@ -27,6 +27,7 @@ async function generarFatura(factura, generarDescarga) {
 }
 
 async function generarTicketFatura(factura, generarDescarga) {
+  console.log(factura);
   try {
     // Crear un formulario oculto
     let form = document.createElement("form");
@@ -52,4 +53,12 @@ async function generarTicketFatura(factura, generarDescarga) {
   } catch (error) {
     console.error("Error en la solicitud:", error);
   }
+}
+
+async function generateInvoice(idCita, generarDescarga) {
+  console.log("======================");
+  console.log("dEBUG");
+  console.log(idCita);
+  console.log("======================");
+  generarFatura(factura, false);
 }

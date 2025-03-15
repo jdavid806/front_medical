@@ -7,7 +7,7 @@ export const useUserRoleCreate = () => {
   const createUserRole = async userRoleData => {
     setLoading(true);
     try {
-      await userRolesService.create(userRoleData);
+      await userRolesService.storeMenusPermissions(userRoleData);
       SwalManager.success();
     } catch (error) {
       ErrorHandler.generic(error);

@@ -41,9 +41,9 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
         }
     }, [specializables, clinicalRecords]);
 
-    const solicitarAnulacion = (id: number) => {
-        // Lógica para solicitar anulación
-        console.log(`Solicitar anulación para la historia con ID: ${id}`);
+    const printClinicalRecord = (id: string, title: string) => {
+        //@ts-ignore
+        crearDocumento(id, "Impresion", "Consulta", "Completa", title);
     };
 
     const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
@@ -81,7 +81,7 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
             </div>
 
             <div className="row mt-4">
-                <PatientClinicalRecordsTable records={tableClinicalRecords} />
+                <PatientClinicalRecordsTable records={tableClinicalRecords} onPrintItem={printClinicalRecord} />
             </div>
         </PrimeReactProvider>
     );

@@ -189,7 +189,7 @@
                             <div class="input-group mt-3">
                                 <div class="form-floating">
                                     <input class="form-control" id="precioVentaMedicamentoInv" name="precioVentaMedicamentoInv"
-                                        type="venta" />
+                                        type="number" />
                                     <label for="precioVentaMedicamentoInv" class="form-label">Precio de venta</label>
                                     <div class="invalid-feedback">Ingrese el precio de venta</div>
                                 </div>
@@ -301,13 +301,13 @@
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
-            currentStep++;
+            currentStepInv++;
             updateWizardInv();
         }
     });
 
     document.getElementById('prevStepInv').addEventListener('click', () => {
-        currentStep--;
+        currentStepInv--;
         updateWizardInv();
     });
 

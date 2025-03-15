@@ -34,6 +34,7 @@ import DepartmentService from "./classes/departmentService.js";
 import { PackagesService } from "./classes/packagesService.js";
 import ClinicalRecordService from "./classes/clinicalRecordService.js";
 import { UserService } from "./classes/userService.js";
+import { UserRoleService } from "./classes/userRoleService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -128,7 +129,7 @@ export const ticketService = new TicketService("medical", "tickets");
 export const moduleService = new BaseApiService("medical", "modules");
 
 export const entityService = new BaseApiService("medical", "entities");
-export const userRolesService = new BaseApiService("medical", "user-roles");
+export const userRolesService = new UserRoleService("medical", "user-roles");
 export const specializablesService = new BaseApiService("medical", "specializables");
 
 /* Countries */

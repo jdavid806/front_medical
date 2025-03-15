@@ -105,6 +105,16 @@ export interface AppointmentDto {
     updated_at: string;
     patient: Patient;
     user_availability: UserAvailability
+    appointment_state: AppointmentStateDto
+    product_id: string
+}
+
+interface AppointmentStateDto {
+    id: string;
+    name: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface AppointmentTableItem {
@@ -112,12 +122,15 @@ export interface AppointmentTableItem {
     patientName: string;
     patientDNI: string;
     patientId: string;
+    productId: string;
     date: string;
     time: string;
     doctorName: string;
     entity: string;
     status: string;
     stateId: string;
+    stateKey: string;
+    attentionType: string;
     branchId: string | null;
     isChecked: boolean
 }
@@ -271,8 +284,24 @@ export interface UserRoleDto {
     is_active: boolean;
     created_at: string;
     updated_at: string;
-    permissions: string[];
-    menus: string[]
+    permissions: UserRolePermissionDto[];
+    menus: UserRoleMenuDto[]
+}
+
+export interface UserRolePermissionDto {
+    id: number;
+    key: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface UserRoleMenuDto {
+    id: number;
+    key: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface PrescriptionDto {

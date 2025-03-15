@@ -4,9 +4,10 @@ import { DynamicForm } from '../../components/dynamic-form/DynamicForm';
 
 interface ExamResultsFormProps {
     examId: string;
+    handleSave?: (data: any) => void
 }
 
-export const ExamResultsForm: React.FC<ExamResultsFormProps> = ({ examId }) => {
+export const ExamResultsForm: React.FC<ExamResultsFormProps> = ({ examId, handleSave }) => {
 
     const { exam, fetchExam } = useExam()
     const [formConfig, setFormConfig] = useState<any | null>()
@@ -29,6 +30,10 @@ export const ExamResultsForm: React.FC<ExamResultsFormProps> = ({ examId }) => {
         return null
     };
 
+    const onSave = () => {
+        handleSave?.(handleGetFormValues())
+    }
+
     return (
         <>
             <DynamicForm
@@ -36,7 +41,7 @@ export const ExamResultsForm: React.FC<ExamResultsFormProps> = ({ examId }) => {
                 form={formConfig}>
             </DynamicForm>
             <div className="modal-footer">
-                <button className="btn btn-primary" onClick={() => handleGetFormValues()}>
+                <button className="btn btn-primary" onClick={onSave}>
                     Guardar
                 </button>
             </div>

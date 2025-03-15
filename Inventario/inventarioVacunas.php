@@ -178,8 +178,8 @@ include "../header.php";
 
 
 <?php include "../footer.php";
-include "./modal/modalGrupoVacunas.php";
 include "./modal/modalNuevaVacuna.php";
+include "./modal/modalGrupoVacunas.php";
 ?>
 
 

@@ -27,18 +27,18 @@ async function cargarContenido() {
         <td class="salePrice">${elemento.sale_price || "N/A"}</td>
         <td class="copayment">${elemento.copayment || "N/A"}</td>
         <td>
-            <button class="btn btn-primary btn-sm" onclick="editarProducto(${
-              producto.id
-            }, 
+            <button class="btn btn-primary btn-sm" onclick="editarProducto(
+            ${producto.id}, 
             '${elemento.name}', '${elemento.barcode}', 
             '${elemento.attention_type}', '${elemento.sale_price}', 
-            '${elemento.copayment}', '${elemento.tax_charge_id}')" 
+            '${elemento.copayment}', 
+            '${elemento.tax_charge_id}',
+            '${elemento.exam_type_id}')" 
             data-bs-toggle="modal" data-bs-target="#modalPrice">
                 <i class="fa-solid fa-pen"></i>
             </button>
-            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
-              producto.id
-            })">
+            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
+        })">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </td>
@@ -82,13 +82,24 @@ function editarProducto(
   attentionType,
   salePrice,
   copago,
-  tax_charge_id
+  tax_charge_id,
+  examTypeId
 ) {
   document.getElementById("name").value = name;
   document.getElementById("curp").value = barcode;
   document.getElementById("attention_type").value = attentionType;
   document.getElementById("sale_price").value = salePrice || "";
   document.getElementById("copago").value = copago || "";
+
+  const examTypeSection = document.getElementById("examTypeSection");
+  const examTypeElement = document.getElementById("exam_type_id");
+  const examTypeIdValue = examTypeId || "";
+
+  examTypeSection.style.display = attentionType === "PROCEDURE" ? "block" : "none";
+
+  if (examTypeElement.choicesInstance) {
+    examTypeElement.choicesInstance.setChoiceByValue(+examTypeIdValue);
+  }
 
   let taxSelect = document.getElementById("taxProduct_type");
 

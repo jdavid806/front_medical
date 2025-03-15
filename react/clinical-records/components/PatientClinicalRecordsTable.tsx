@@ -24,7 +24,7 @@ type PatientClinicalRecordsTableProps = {
     records: PatientClinicalRecordDto[]
     onSeeDetail?: (id: string) => void
     onCancelItem?: (id: string) => void
-    onPrintItem?: (id: string) => void
+    onPrintItem?: (id: string, title: string) => void
     onDownloadItem?: (id: string) => void
     onShareItem?: (id: string, type: string) => void
 }
@@ -69,7 +69,7 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
                         <RequestCancellationTableAction onTrigger={() => onCancelItem && onCancelItem(data.id)} />
                     )}
 
-                    <PrintTableAction onTrigger={() => onPrintItem && onPrintItem(data.id)} />
+                    <PrintTableAction onTrigger={() => onPrintItem && onPrintItem(data.id, data.clinicalRecordName)} />
                     <DownloadTableAction onTrigger={() => onDownloadItem && onDownloadItem(data.id)} />
 
                     <li>

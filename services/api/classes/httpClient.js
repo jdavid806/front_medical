@@ -34,7 +34,15 @@ export class HttpClient {
                 body: data ? JSON.stringify(data) : null,
             });
 
-            const responseData = await response.json();
+            const contentType = response.headers.get("content-type");
+
+            let responseData = null;
+
+            if (contentType && contentType.includes("application/json")) {
+                responseData = await response.json();
+            } else {
+                responseData = await response.text();
+            }
 
             if (!response.ok) {
                 const error = new Error(responseData.message || 'Error en la solicitud');

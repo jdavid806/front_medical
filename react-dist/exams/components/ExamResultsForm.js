@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useExam } from "../hooks/useExam.js";
 import { DynamicForm } from "../../components/dynamic-form/DynamicForm.js";
 export const ExamResultsForm = ({
-  examId
+  examId,
+  handleSave
 }) => {
   const {
     exam,
@@ -23,6 +24,9 @@ export const ExamResultsForm = ({
     }
     return null;
   };
+  const onSave = () => {
+    handleSave?.(handleGetFormValues());
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(DynamicForm, {
     ref: dynamicFormRef,
     form: formConfig
@@ -30,6 +34,6 @@ export const ExamResultsForm = ({
     className: "modal-footer"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: () => handleGetFormValues()
+    onClick: onSave
   }, "Guardar")));
 };

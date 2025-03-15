@@ -134,17 +134,10 @@
               <label class="form-label" for="tipoDocumento-consultorio">Tipo Documento</label>
               <select class="form-control" id="tipoDocumento-consultorio" name="tipoDocumento-consultorio" required>
                 <option value="">Seleccione un tipo de documento</option>
-                <option value="rfc">RFC</option>
-                <option value="ruc_peru">RUC</option>
-                <option value="ruc_ecuador">RUC</option>
-                <option value="cuit">CUIT</option>
-                <option value="rut">RUT</option>
-                <option value="nit_colombia">NIT</option>
-                <option value="rnc">RNC</option>
-                <option value="ruc_panama">RUC</option>
-                <option value="ruc_paraguay">RUC</option>
-                <option value="ruc_uruguay">RUT</option>
-                <option value="ruc_venezuela">RIF</option>
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="PASSPORT">PASAPORTE</option>
+                <option value="NIT">NIT</option>
               </select>
               <div class="invalid-feedback">Seleccione un Tipo de Documento.</div>
             </div>
@@ -588,84 +581,84 @@
         ],
       };
 
-      console.log(infoGeneral);
+      createEmpresa(infoGeneral);
     });
 
 
-    // Manejar el formulario de Facturación Fiscal
-    handleForm("form-fiscal", async (data) => {
-      let infoGeneral = {
-        dian_prefix: data.prefijoFiscal,
-        resolution_number: data.numeroResolucionFiscal,
-        invoice_from: data.facturaDesdeFiscal,
-        invoice_to: data.facturaHastaFiscal,
-        type: "Fiscal",
-        resolution_date: data.fechaResolucionFiscal,
-        expiration_date: data.fechaVencimientoFiscal
-      };
-    });
+    // // Manejar el formulario de Facturación Fiscal
+    // handleForm("form-fiscal", async (data) => {
+    //   let infoGeneral = {
+    //     dian_prefix: data.prefijoFiscal,
+    //     resolution_number: data.numeroResolucionFiscal,
+    //     invoice_from: data.facturaDesdeFiscal,
+    //     invoice_to: data.facturaHastaFiscal,
+    //     type: "Fiscal",
+    //     resolution_date: data.fechaResolucionFiscal,
+    //     expiration_date: data.fechaVencimientoFiscal
+    //   };
+    // });
 
-    // Manejar el formulario de Facturación Consumidor
-    handleForm("form-consumidor", async (data) => {
-      let infoGeneral = {
-        dian_prefix: data.prefijoConsumidor,
-        resolution_number: data.numeroResolucionConsumidor,
-        invoice_from: data.facturaDesdeConsumidor,
-        invoice_to: data.facturaHastaConsumidor,
-        type: "Consumidor",
-        resolution_date: data.fechaResolucionConsumidor,
-        expiration_date: data.fechaVencimientoConsumidor
-      };
-    });
+    // // Manejar el formulario de Facturación Consumidor
+    // handleForm("form-consumidor", async (data) => {
+    //   let infoGeneral = {
+    //     dian_prefix: data.prefijoConsumidor,
+    //     resolution_number: data.numeroResolucionConsumidor,
+    //     invoice_from: data.facturaDesdeConsumidor,
+    //     invoice_to: data.facturaHastaConsumidor,
+    //     type: "Consumidor",
+    //     resolution_date: data.fechaResolucionConsumidor,
+    //     expiration_date: data.fechaVencimientoConsumidor
+    //   };
+    // });
 
-    // Manejar el formulario de Facturación Gubernamental
-    handleForm("form-gubernamental", async (data) => {
-      let infoGeneral = {
-        dian_prefix: data.prefijoGubernamental,
-        resolution_number: data.numeroResolucionGubernamental,
-        invoice_from: data.facturaDesdeGubernamental,
-        invoice_to: data.facturaHastaGubernamental,
-        type: "Gubernamental",
-        resolution_date: data.fechaResolucionGubernamental,
-        expiration_date: data.fechaVencimientoGubernamental
-      };
-    });
+    // // Manejar el formulario de Facturación Gubernamental
+    // handleForm("form-gubernamental", async (data) => {
+    //   let infoGeneral = {
+    //     dian_prefix: data.prefijoGubernamental,
+    //     resolution_number: data.numeroResolucionGubernamental,
+    //     invoice_from: data.facturaDesdeGubernamental,
+    //     invoice_to: data.facturaHastaGubernamental,
+    //     type: "Gubernamental",
+    //     resolution_date: data.fechaResolucionGubernamental,
+    //     expiration_date: data.fechaVencimientoGubernamental
+    //   };
+    // });
 
-    // Manejar el formulario de Notas de Crédito
-    handleForm("form-notaCredito", async (data) => {
-      let infoGeneral = {
-        dian_prefix: data.prefijoNotaCredito,
-        resolution_number: data.numeroResolucionNotaCredito,
-        invoice_from: data.facturaDesdeNotaCredito,
-        invoice_to: data.facturaHastaNotaCredito,
-        type: "NotasCredito",
-        resolution_date: data.fechaResolucionNotaCredito,
-        expiration_date: data.fechaVencimientoNotaCredito
-      };
-    });
+    // // Manejar el formulario de Notas de Crédito
+    // handleForm("form-notaCredito", async (data) => {
+    //   let infoGeneral = {
+    //     dian_prefix: data.prefijoNotaCredito,
+    //     resolution_number: data.numeroResolucionNotaCredito,
+    //     invoice_from: data.facturaDesdeNotaCredito,
+    //     invoice_to: data.facturaHastaNotaCredito,
+    //     type: "NotasCredito",
+    //     resolution_date: data.fechaResolucionNotaCredito,
+    //     expiration_date: data.fechaVencimientoNotaCredito
+    //   };
+    // });
 
-    // Manejar el formulario de Contacto
-    handleForm("form-contacto", async (data) => {
-      let infoGeneral = {
-        phone: data.telefonoconsultorio,
-        email: data.correoconsultorio,
-        address: data.direccionconsultorio,
-        country: data.paisconsultorio,
-        city: data.ciudadconsultorio,
-      };
-    });
+    // // Manejar el formulario de Contacto
+    // handleForm("form-contacto", async (data) => {
+    //   let infoGeneral = {
+    //     phone: data.telefonoconsultorio,
+    //     email: data.correoconsultorio,
+    //     address: data.direccionconsultorio,
+    //     country: data.paisconsultorio,
+    //     city: data.ciudadconsultorio,
+    //   };
+    // });
 
-    // Manejar el formulario de Configuración SMTP
-    handleForm("form-smtp", async (data) => {
-      console.log("Enviando datos de Configuración SMTP:", data);
-      let infoGeneral = {
-        smtp_server: data.smtpServidor,
-        port: data.smtpPuerto,
-        security: data.smtpSeguridad,
-        email: data.smtpUsuario,
-        password: data.smtpClave
-      };
-    });
+    // // Manejar el formulario de Configuración SMTP
+    // handleForm("form-smtp", async (data) => {
+    //   console.log("Enviando datos de Configuración SMTP:", data);
+    //   let infoGeneral = {
+    //     smtp_server: data.smtpServidor,
+    //     port: data.smtpPuerto,
+    //     security: data.smtpSeguridad,
+    //     email: data.smtpUsuario,
+    //     password: data.smtpClave
+    //   };
+    // });
 
     consultarQR();
     cargarDatosTenant();

@@ -115,6 +115,7 @@ RewriteRule ^nuevaConsulta$  Consultas/nuevaConsulta.php
 
 #Examenes
 RewriteRule ^verExamenes$  Examenes/verExamenes.php
+RewriteRule ^cargarResultadosExamen$  Examenes/cargarResultadosExamen.php
 
 #Recetas
 RewriteRule ^verRecetas$  Recetas/verRecetas.php

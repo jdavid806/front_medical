@@ -11,10 +11,9 @@ const roleGroupOptions = [{
 }, {
   label: 'Administrativo',
   value: 'ADMIN'
-}, {
-  label: 'Indeterminado',
-  value: 'INDETERMINATE'
-}];
+}
+// { label: 'Indeterminado', value: 'INDETERMINATE' }
+];
 export const UserRoleForm = ({
   formId,
   onHandleSubmit,
@@ -136,12 +135,12 @@ export const UserRoleForm = ({
   }, /*#__PURE__*/React.createElement("input", {
     className: "form-check-input",
     type: "checkbox",
-    id: "flexSwitchCheckDefault",
+    id: menu.key_,
     checked: selectedMenus.includes(menu.key_),
     onChange: e => handleMenuChange(menu.key_, e.target.checked)
   }), /*#__PURE__*/React.createElement("label", {
     className: "form-check-label",
-    htmlFor: "flexSwitchCheckDefault"
+    htmlFor: menu.key_
   }, menu.name)))))), /*#__PURE__*/React.createElement("div", {
     className: "col-6"
   }, /*#__PURE__*/React.createElement("div", {
@@ -158,11 +157,11 @@ export const UserRoleForm = ({
   }, /*#__PURE__*/React.createElement("input", {
     className: "form-check-input",
     type: "checkbox",
-    id: "flexSwitchCheckDefault",
+    id: permission.key_,
     checked: selectedPermissions.includes(permission.key_),
     onChange: e => handlePermissionChange(permission.key_, e.target.checked)
   }), /*#__PURE__*/React.createElement("label", {
     className: "form-check-label",
-    htmlFor: "flexSwitchCheckDefault"
-  }))), /*#__PURE__*/React.createElement("hr", null)))))))));
+    htmlFor: permission.key_
+  }, permission.name))), /*#__PURE__*/React.createElement("hr", null)))))))));
 };

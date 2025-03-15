@@ -34,6 +34,12 @@ include '../data/consts.php';
                                     <option value="CONSULTATION">Consulta</option>
                                 </select>
                             </div>
+                            <div id="examTypeSection" class="col-12" style="display: none;">
+                                <label class="form-label" for="exam_type_id">Examen</label>
+                                <select class="form-select" id="exam_type_id" name="exam_type_id" required>
+                                    <option value="" disabled selected>Seleccionar...</option>
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <label class="form-label" for="sale_price">Precio público</label>
                                 <input class="form-control" id="sale_price" type="number" placeholder="Precio público"
@@ -119,17 +125,34 @@ include '../data/consts.php';
         </div>
     </div>
 </div>
-<script>
+<script type="module">
+    import {
+        examTypeSelect
+    } from "./services/selects.js";
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
+        examTypeSelect(document.getElementById("exam_type_id"));
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
         cargarSelectsPrecios();
     });
 
-    document.getElementById("toggleEntities").addEventListener("change", function () {
+    document.getElementById("attention_type").addEventListener("change", function() {
+        console.log("Attention Type:", this.value);
+        if (this.value === "PROCEDURE") {
+            document.getElementById("examTypeSection").style.display = "block";
+        } else {
+            document.getElementById("examTypeSection").style.display = "none";
+        }
+    })
+
+    document.getElementById("toggleEntities").addEventListener("change", function() {
         document.getElementById("entity-productSection").style.display = this.checked ? "block" : "none";
     });
 
-    document.getElementById("toggleImpuesto").addEventListener("change", function () {
+    document.getElementById("toggleImpuesto").addEventListener("change", function() {
         document.getElementById("taxSection").style.display = this.checked ? "block" : "none";
     });
 
@@ -148,7 +171,15 @@ include '../data/consts.php';
         let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
 
         // Guardar en el array para futuras referencias
-        preciosEntidades.push({ entidadId, entidadNombre, precio, impuestoId, impuestoNombre, retencionId, retencionNombre });
+        preciosEntidades.push({
+            entidadId,
+            entidadNombre,
+            precio,
+            impuestoId,
+            impuestoNombre,
+            retencionId,
+            retencionNombre
+        });
 
         // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
         let tabla = document.getElementById("tablaPreciosEntidades");
@@ -178,7 +209,7 @@ include '../data/consts.php';
         document.getElementById("tablaPreciosEntidades").deleteRow(index);
     }
 
-    document.getElementById("createProductForm").addEventListener("submit", async function (e) {
+    document.getElementById("createProductForm").addEventListener("submit", async function(e) {
         e.preventDefault();
 
         const productId = document.getElementById('product_id')?.value;
@@ -189,6 +220,7 @@ include '../data/consts.php';
             sale_price: document.getElementById("sale_price").value,
             copayment: document.getElementById("copago").value,
             tax_charge_id: document.getElementById("taxProduct_type").value,
+            exam_type_id: document.getElementById("exam_type_id").value
         };
 
         // entities: preciosEntidades

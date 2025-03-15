@@ -5,6 +5,9 @@ import { ConfigColumns } from "datatables.net-bs5";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
 import { admissionService } from "../../services/api";
 import { useEffect } from "react";
+import { PrintTableAction } from "../components/table-actions/PrintTableAction";
+import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
+import { ShareTableAction } from "../components/table-actions/ShareTableAction";
 
 export const TodayAppointmentsTable: React.FC = () => {
   const { appointments } = useFetchAppointments(
@@ -28,13 +31,15 @@ export const TodayAppointmentsTable: React.FC = () => {
 
   const slots = {
     6: (cell, data: AppointmentTableItem) => (
-      <span
-        className={`badge badge-phoenix ${
-          data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
-        }`}
-      >
-        {data.status ? "Activo" : "Inactivo"}
-      </span>
+      console.log("cita admision:", data),
+      (
+        <span
+          className={`badge badge-phoenix ${data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
+            }`}
+        >
+          {data.status ? "Activo" : "Inactivo"}
+        </span>
+      )
     ),
     7: (cell, data: AppointmentTableItem) => (
       <div className="align-middle white-space-nowrap pe-0 p-3">
@@ -54,7 +59,6 @@ export const TodayAppointmentsTable: React.FC = () => {
               className="dropdown-item"
               id="generar-admision"
             >
-              {" "}
               Generar admisión
             </a>
             <a className="dropdown-item" href="#">
@@ -72,6 +76,11 @@ export const TodayAppointmentsTable: React.FC = () => {
             <a className="dropdown-item" href="#">
               Nota credito
             </a>
+            <hr />
+            <PrintTableAction onTrigger={() => console.log("imprimir")}></PrintTableAction>
+            <DownloadTableAction onTrigger={() => console.log("descargar")}></DownloadTableAction>
+            <ShareTableAction shareType="whatsapp" onTrigger={() => console.log("compartir por whatsapp")}></ShareTableAction>
+            <ShareTableAction shareType="email" onTrigger={() => console.log("compartir por correo")}></ShareTableAction>
           </div>
         </div>
       </div>

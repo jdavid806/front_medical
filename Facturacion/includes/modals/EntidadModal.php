@@ -206,15 +206,39 @@
                       <label class="form-label" for="fechaVencimiento">Fecha de vencimiento</label>
                       <input class="form-control datetimepicker flatpickr-input" id="fechaVencimiento" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
                     </div> -->
-                    <div class="col-6">
+                    <!-- <div class="col-6">
                       <label class="form-label" for="metodoPago">Metodo de pago</label>
                       <select class="form-select" id="metodoPago">
                         <option disabled>Seleccione</option>
                         <option value="credito" selected>Crédito</option>
                         <option value="contado">Contado</option>
                       </select>
+                    </div> -->
+                    <div class="col-12">
+                      <label class="form-label" for="metodoPagoCheck">¿Desea cambiar el metodo de pago de crédito a contado?</label>
+                      <input class="form-check-input" id="metodoPagoCheck" type="checkbox" />
                     </div>
-                    <div class="col-6">
+
+                    <input type="hidden" name="modoPago" id="modoPago" value="credito">
+
+                    <div class="col-6" id="divMetodoPago" style="display: none;">
+                      <label class="form-label" for="metodoPago">Metodo de pago</label>
+                      <select class="form-select" id="metodoPago">
+                        <option disabled>Seleccione</option>
+                        <option value="metodo1" selected>Metodo 1</option>
+                        <option value="metodo2">Metodo 2</option>
+                      </select>
+                    </div>
+                    <div class="col-6 mt-3" id="divDiasPlazo">
+                      <div class="input-group">
+                        <div class="form-floating">
+                          <input type="text" class="form-control" id="diasPlazo" name="diasPlazo">
+                          <label for="diasPlazo" class="form-label">Plazo (dias)</label>
+                          <div class="invalid-feedback">Por favor ingrese el plazo.</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6" id="divFechaVencimiento">
                       <label class="form-label" for="fechaVencimiento">Fecha de vencimiento</label>
                       <input class="form-control datetimepicker flatpickr-input" id="fechaVencimiento" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
                     </div>
@@ -505,6 +529,80 @@
       });
     }
   }
+
+
+  const metodoPagoCheck = document.getElementById('metodoPagoCheck');
+
+  function cambiarMetodo() {
+    const divMetodoPago = document.getElementById('divMetodoPago');
+    const metodoPago = document.getElementById('metodoPago');
+    const divDiasPlazo = document.getElementById('divDiasPlazo');
+    const diasPlazo = document.getElementById('diasPlazo');
+    const divFechaVencimiento = document.getElementById('divFechaVencimiento');
+    const fechaVencimiento = document.getElementById('fechaVencimiento');
+    const modoPago = document.getElementById('modoPago');
+
+    if (metodoPagoCheck.checked) {
+      divMetodoPago.style.display = 'block';
+      metodoPago.required = true;
+      divDiasPlazo.style.display = 'none';
+      divFechaVencimiento.style.display = 'none';
+      modoPago.value = 'contado';
+    } else {
+      divMetodoPago.style.display = 'none';
+      divDiasPlazo.style.display = 'block';
+      diasPlazo.required = true;
+      divFechaVencimiento.style.display = 'block';
+      fechaVencimiento.required = true;
+      modoPago.value = 'credito';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    metodoPagoCheck.addEventListener('change', cambiarMetodo);
+    cambiarMetodo();
+
+    const diasPlazoInput = document.getElementById('diasPlazo');
+    const fechaVencimientoInput = document.getElementById('fechaVencimiento');
+
+    // Verificar si flatpickr está inicializado en el input de fecha
+    let flatpickrInstance = fechaVencimientoInput._flatpickr;
+
+    function calcularFechaVencimiento() {
+      // Obtener el valor de días de plazo y convertirlo a número
+      const diasPlazo = parseInt(diasPlazoInput.value, 10);
+
+      // Verificar si el valor es un número válido
+      if (!isNaN(diasPlazo)) {
+        // Obtener la fecha actual
+        const fechaActual = new Date();
+
+        // Calcular la nueva fecha sumando los días de plazo
+        const fechaVencimiento = new Date(fechaActual);
+        fechaVencimiento.setDate(fechaActual.getDate() + diasPlazo);
+
+        // Si flatpickr está disponible, usarlo para establecer la fecha
+        if (flatpickrInstance) {
+          flatpickrInstance.setDate(fechaVencimiento);
+        } else {
+          // Formatear la fecha manualmente en formato dd/mm/yyyy
+          const dia = String(fechaVencimiento.getDate()).padStart(2, '0');
+          const mes = String(fechaVencimiento.getMonth() + 1).padStart(2, '0'); // +1 porque los meses van de 0-11
+          const año = fechaVencimiento.getFullYear();
+
+          // Asignar la fecha formateada al input
+          fechaVencimientoInput.value = `${dia}/${mes}/${año}`;
+        }
+      }
+    }
+
+    // Asignar evento input y change al campo de días de plazo
+    diasPlazoInput.addEventListener('input', calcularFechaVencimiento);
+    diasPlazoInput.addEventListener('change', calcularFechaVencimiento);
+
+    // Calcular inicialmente en caso de que haya un valor predeterminado
+    calcularFechaVencimiento();
+  });
 
   function capturarDatos() {
     const fechaElaboracion = document.getElementById('fechaElaboracion').value;
