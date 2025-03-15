@@ -283,8 +283,8 @@ include '../modals/NewCompanionModal.php';
                                                     <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturación Entidad</label>
                                                 </div>
                                                 <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
-                                                    <input class="form-check-input mt-1" id="entitySwitch" type="checkbox">
-                                                    <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturar consumidor</label>
+                                                    <input class="form-check-input mt-1" id="consumidorSwitch" type="checkbox">
+                                                    <label class="form-check-label text-primary mt-1" for="consumidorSwitch">Facturar consumidor</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -1870,6 +1870,7 @@ include '../modals/NewCompanionModal.php';
         const dataPaymentMthods = [];
         const entitySwitch = document.getElementById('entitySwitch');
         const userLogged = getUserLogged();
+        const consumidorSwitch = document.getElementById('consumidorSwitch');
 
         for (let row of rowsProducts) {
             const cells = row.getElementsByTagName('td');
@@ -1901,7 +1902,7 @@ include '../modals/NewCompanionModal.php';
 
         const requestData = {
             external_id: `${userLogged.external_id}`,
-            public_invoice: false,
+            public_invoice: consumidorSwitch.checked,
             admission: {
                 authorization_number: entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
                 authorization_date: entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
@@ -1922,7 +1923,6 @@ include '../modals/NewCompanionModal.php';
             invoice_detail: dataProducts,
             payments: dataPaymentMthods
         }
-
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {

@@ -7,7 +7,7 @@ export const useRoles = () => {
   const fetchUserRoles = async () => {
     try {
       const data = await userRolesService.active();
-      console.log('Roles:', data);
+      // console.log('Roles:', data);
       setUserRoles(data);
     } catch (err) {
       ErrorHandler.generic(err);

@@ -2,6 +2,9 @@ async function consultarDatosWhatssap(tipo) {
   let url = obtenerRutaPrincipal() + `/medical/companies/1`;
   let datosEmpresa = await obtenerDatos(url);
 
+  console.log(datosEmpresa);
+  
+
   let datosMensajeria = datosEmpresa.data.communications;
   let urlBase = "https://apiwhatsapp.medicalsoft.ai/";
 

@@ -326,15 +326,21 @@
         const divInputStockInv = document.getElementById('divInputStockInv');
 
         divInputStockInv.style.display = estadoCheckStockInv ? 'block' : 'none';
-        if (divInputStockInv.style.display === "block") {
-            const inputStockInv = document.getElementById('stockMedicamentoInv');
-            inputStockInv.required = true;
-        }
+        // if (divInputStockInv.style.display === "block") {
+        //     const inputStockInv = document.getElementById('stockMedicamentoInv');
+        //     inputStockInv.required = true;
+        // }else if(divInputStockInv.style.display === "none"){
+        //     inputStockInv.required = false;
+        // }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
         controlarVistaStockInv();
         document.getElementById('cantidadStockInv').addEventListener('change', controlarVistaStockInv);
+
+        document.getElementById('nextStepInv').addEventListener('click', function(){
+            console.log("Boton presionado");
+        });
     });
 </script>
 <script>

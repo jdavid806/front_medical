@@ -6,7 +6,7 @@ export const useUserAvailabilitiesTable = () => {
   const [loading, setLoading] = useState(false);
   const fetchData = async () => {
     const data = await userAvailabilityService.active();
-    console.log(data);
+    // console.log(data);
     const mappedData = data.map(availability => {
       let daysOfWeekArray;
       if (typeof availability.days_of_week === 'string') {

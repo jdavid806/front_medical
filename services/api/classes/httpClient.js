@@ -19,10 +19,10 @@ export class HttpClient {
             };
 
 
-            console.log(this.defaultHeaders, customHeaders);
+            // console.log(this.defaultHeaders, customHeaders);
 
             if (customHeaders["X-DOMAIN"]) {
-                console.log('repetido xd');
+                // console.log('repetido xd');
 
                 delete headers["X-DOMAIN"];
                 headers["X-DOMAIN"] = customHeaders["X-DOMAIN"];

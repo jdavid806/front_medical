@@ -4,7 +4,7 @@ export const useAllTableUsers = () => {
   const [users, setUsers] = useState([]);
   const fetchUsers = async () => {
     userService.getAll().then(users => {
-      console.log(users);
+      // console.log(users);
       setUsers(users.map(user => ({
         id: user.id,
         fullName: `${user.first_name} ${user.last_name}`,

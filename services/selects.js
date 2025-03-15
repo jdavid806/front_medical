@@ -13,7 +13,6 @@ export const usersSelect = async (element) => {
         items: mappedUsers,
         choices: mappedUsers
     });
-    console.log(usersChoices);
 }
 
 export const usersSelectWithData = (data, element) => {
@@ -23,7 +22,6 @@ export const usersSelectWithData = (data, element) => {
             label: `${user.first_name} ${user.last_name}`
         }
     })
-    console.log(mappedUsers);
 
     return new Choices(element, {
         items: mappedUsers,
@@ -47,8 +45,6 @@ export const userSpecialtiesSelect = async (element) => {
 
 export const countriesSelect = async (element, onChange, initialValue = '') => {
     const data = await countryService.getAll()
-
-    console.log('Paises:', data);
 
     const mappedData = data.data.filter(country => [
         "AR",
@@ -97,7 +93,6 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
 
     const handleChange = (event) => {
         const selectedOption = element.choicesInstance.getValue();
-        console.log("el país cambió");
         onChange(selectedOption);
     }
 
@@ -105,7 +100,6 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
     element.addEventListener('change', handleChange);
 
     if (initialValue) {
-        console.log(initialValue);
         const selectedCountry = mappedData.find(c => c.value == initialValue);
         if (selectedCountry) {
             element.choicesInstance.setChoiceByValue(selectedCountry.value);
@@ -114,9 +108,7 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
 }
 
 export const departmentsSelect = async (element, countryId, onChange, initialValue = '') => {
-    const data = await departmentService.getByCountry(countryId);
-
-    console.log('Departamentos:', data);
+    const data = await departmentService.ofParent(countryId);
 
     const mappedData = data.map(item => ({
         value: item.name,
@@ -142,7 +134,6 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
 
     const handleChange = (event) => {
         const selectedOption = element.choicesInstance.getValue();
-        console.log("el departamento cambió");
         onChange(selectedOption);
     }
 
@@ -150,7 +141,6 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
     element.addEventListener('change', handleChange);
 
     if (initialValue) {
-        console.log(initialValue);
 
         const selectedDept = mappedData.find(c => c.value == initialValue);
         if (selectedDept) {
@@ -160,9 +150,7 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
 };
 
 export const citiesSelect = async (element, departmentId, onChange, initialValue = '') => {
-    const data = await cityService.getByDepartment(departmentId)
-
-    console.log('Ciudades:', data);
+    const data = await cityService.ofParent(departmentId)
 
     const mappedData = data.map(item => {
         return {
@@ -190,7 +178,6 @@ export const citiesSelect = async (element, departmentId, onChange, initialValue
 
     const handleChange = (event) => {
         const selectedOption = element.choicesInstance.getValue();
-        console.log("la ciudad cambió");
 
         onChange(selectedOption);
     }
@@ -199,7 +186,6 @@ export const citiesSelect = async (element, departmentId, onChange, initialValue
     element.addEventListener('change', handleChange);
 
     if (initialValue) {
-        console.log(initialValue);
         const selectedCity = mappedData.find(c => c.value == initialValue);
         if (selectedCity) {
             element.choicesInstance.setChoiceByValue(selectedCity.value);
