@@ -230,17 +230,21 @@
                       </select>
                     </div>
                     <div class="col-6 mt-3" id="divDiasPlazo">
-                      <div class="input-group">
-                        <div class="form-floating">
-                          <input type="text" class="form-control" id="diasPlazo" name="diasPlazo">
-                          <label for="diasPlazo" class="form-label">Plazo (dias)</label>
-                          <div class="invalid-feedback">Por favor ingrese el plazo.</div>
-                        </div>
-                      </div>
+                      <label for="diasPlazo" class="form-label">Plazo (dias)</label>
+                      <input type="text" class="form-control" id="diasPlazo" name="diasPlazo">
+                      <div class="invalid-feedback">Por favor ingrese el plazo.</div>
                     </div>
-                    <div class="col-6" id="divFechaVencimiento">
+                    <div class="col-6 mt-3" id="divFechaVencimiento">
                       <label class="form-label" for="fechaVencimiento">Fecha de vencimiento</label>
                       <input class="form-control datetimepicker flatpickr-input" id="fechaVencimiento" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label" for="taxCharge">Impuesto cargo</label>
+                      <input class="form-control" type="text" name="taxCharge" id="taxCharge">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label" for="taxWithholding">Impuesto retencion</label>
+                      <input class="form-control" type="text" name="taxWithholding" id="taxWithholding">
                     </div>
                   </div>
                 </div>

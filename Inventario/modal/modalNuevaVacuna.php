@@ -92,19 +92,32 @@
                                         <input type="number" class="form-control" id="stock" name="stock" required>
                                         <label for="stock">Cantidad en stock</label>
                                     </div>
+                                    <div class="col-12 mt-3">
+                                        <label class="form-label" for="cantidadStock">Cantidad minima en stock</label>
+                                        <input class="form-check-input" id="cantidadStock" type="checkbox" />
+                                    </div>
+
+                                    <div class="input-group mt-3" id="divInputStock" style="display: none;">
+                                        <div class="form-floating" style="width: 100%">
+                                            <input type="number" class="form-control" min="0" id="stockMinimoVacuna"
+                                                name="stockMinimoVacuna" placeholder="Ingrese la cantidad minima que desea manejar en stock">
+                                            <label for="stockMinimoVacuna" class="form-label">Ingrese la cantidad minima que desea manejar en stock</label>
+                                            <div class="invalid-feedback">Por favor ingrese la cantidad minima de stock.</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <select class="form-select" id="supplier_id" name="supplier_id" required>
-                                            <option selected disabled value="">Seleccione un proveedor</option>
-                                            <option value="1">Proveedor 1</option>
-                                            <option value="2">Proveedor 2</option>
-                                        </select>
+                                        <input type="number" class="form-control" id="supplier_id" name="supplier_id" required>
                                         <label for="supplier_id">Proveedor</label>
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input type="number" class="form-control" id="purchase_price" name="purchase_price" required>
                                         <label for="purchase_price">Precio de compra</label>
+                                    </div>
+                                    <div class="form-floating mb-6">
+                                        <input type="number" class="form-control" id="sale_price" name="sale_price" required>
+                                        <label for="sale_price">Precio de venta</label>
                                     </div>
                                 </div>
                             </div>
@@ -124,43 +137,60 @@
 
 
 <script>
-    let currentStep = 1;
+    let currentStepVac = 1;
 
-    const updateWizard = () => {
+    const updateWizardVac = () => {
         // Actualizar los pasos visuales
         document.querySelectorAll('.step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepVac);
         });
 
         // Mostrar el contenido correspondiente
         document.querySelectorAll('.wizard-step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepVac);
         });
 
         // Controlar los botones
-        document.getElementById('prevStepVac').disabled = currentStep === 1;
-        document.getElementById('nextStepVac').classList.toggle('d-none', currentStep === 3);
-        document.getElementById('finishStepVac').classList.toggle('d-none', currentStep !== 3);
+        document.getElementById('prevStepVac').disabled = currentStepVac === 1;
+        document.getElementById('nextStepVac').classList.toggle('d-none', currentStepVac === 3);
+        document.getElementById('finishStepVac').classList.toggle('d-none', currentStepVac !== 3);
     };
 
     document.getElementById('nextStepVac').addEventListener('click', () => {
-        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStepVac}"]`);
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
-            currentStep++;
-            updateWizard();
+            currentStepVac++;
+            updateWizardVac();
         }
     });
 
     document.getElementById('prevStepVac').addEventListener('click', () => {
-        currentStep--;
-        updateWizard();
+        currentStepVac--;
+        updateWizardVac();
     });
 
 
-    updateWizard();
+    updateWizardVac();
+
+    function controlarVistaStock() {
+        const checkStock = document.getElementById('cantidadStock');
+        const estadoCheckStock = document.getElementById('cantidadStock').checked;
+        const divInputStock = document.getElementById('divInputStock');
+
+        divInputStock.style.display = estadoCheckStock ? 'block' : 'none';
+        if (divInputStock.style.display === "block") {
+            const inputStock = document.getElementById('stockMedicamento');
+            inputStock.required = true;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        controlarVistaStock();
+        document.getElementById('cantidadStock').addEventListener('change', controlarVistaStock);
+    });
 </script>
 
 <script type="module" src="../Inventario/js/inventarioVacunas.js"></script>

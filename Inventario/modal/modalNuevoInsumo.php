@@ -62,6 +62,20 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-12 mt-3">
+                                        <label class="form-label" for="cantidadStock">Cantidad minima en stock</label>
+                                        <input class="form-check-input" id="cantidadStock" type="checkbox" />
+                                    </div>
+
+                                    <div class="input-group mt-3" id="divInputStock" style="display: none;">
+                                        <div class="form-floating" style="width: 100%">
+                                            <input type="number" class="form-control" min="0" id="stockMinimoMedicamento"
+                                                name="stockMinimoMedicamento" placeholder="Ingrese la cantidad minima que desea manejar en stock">
+                                            <label for="stockMinimoMedicamento" class="form-label">Ingrese la cantidad minima que desea manejar en stock</label>
+                                            <div class="invalid-feedback">Por favor ingrese la cantidad minima de stock.</div>
+                                        </div>
+                                    </div>
+
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
                                             <input class="form-control datetimepicker" id="fechaCaducidad" type="text" required="required" />
@@ -93,12 +107,12 @@
                                         <div class="col-md-6 text-center">
                                             <h2>Imagen de Insumo</h2>
                                             <!-- Imagen de previsualización -->
-                                            <div class="mt-3">
+                                            <div class="mt-3 d-flex justify-content-center">
                                                 <img id="insumoPreview" src="https://via.placeholder.com/150" alt="Previsualización" class="profile-img">
                                             </div>
                                             <!-- Botones de acción -->
                                             <div class="mt-4">
-                                                <label for="uploadInsumoImage" class="btn btn-primary me-2">
+                                                <label for="uploadInsumoImage" class="btn btn-primary">
                                                     <i class="fa-solid fa-upload me-1"></i> Subir Imagen
                                                 </label>
                                                 <!-- Input oculto para subir imagen -->
@@ -106,6 +120,7 @@
                                             </div>
                                         </div>
                                     </div>
+
 
                                 </div>
                             </div>
@@ -213,9 +228,9 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
-                <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
-                <button class="btn btn-secondary d-none" id="finishStep" type="submit" form="wizardForm">Finalizar</button>
+                <button class="btn btn-secondary" id="prevStepIns" type="button" disabled>Anterior</button>
+                <button class="btn btn-primary" id="nextStepIns" type="button">Siguiente</button>
+                <button class="btn btn-secondary d-none" id="finishStepIns" type="submit" form="wizardForm">Finalizar</button>
             </div>
         </div>
     </div>
@@ -287,39 +302,39 @@
 <script type="module" src="./Inventario/js/inventarioGeneral.js"></script>
 
 <script>
-    let currentStep = 1;
+    let currentStepIns = 1;
 
-    const updateWizard = () => {
+    const updateWizardIns = () => {
         // Actualizar los pasos visuales
         document.querySelectorAll('.step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepIns);
         });
 
         // Mostrar el contenido correspondiente
         document.querySelectorAll('.wizard-step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepIns);
         });
 
         // Controlar los botones
-        document.getElementById('prevStep').disabled = currentStep === 1;
-        document.getElementById('nextStep').classList.toggle('d-none', currentStep === 3);
-        document.getElementById('finishStep').classList.toggle('d-none', currentStep !== 3);
+        document.getElementById('prevStepIns').disabled = currentStepIns === 1;
+        document.getElementById('nextStepIns').classList.toggle('d-none', currentStepIns === 3);
+        document.getElementById('finishStepIns').classList.toggle('d-none', currentStepIns !== 3);
     };
 
-    document.getElementById('nextStep').addEventListener('click', () => {
-        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+    document.getElementById('nextStepIns').addEventListener('click', () => {
+        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStepIns}"]`);
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
-            currentStep++;
-            updateWizard();
+            currentStepIns++;
+            updateWizardIns();
         }
     });
 
-    document.getElementById('prevStep').addEventListener('click', () => {
-        currentStep--;
-        updateWizard();
+    document.getElementById('prevStepIns').addEventListener('click', () => {
+        currentStepIns--;
+        updateWizardIns();
     });
 
     // document.getElementById('modalGrupoVacuna').addEventListener('submit', function(event) {
@@ -329,7 +344,24 @@
     //     }
     // });
 
-    updateWizard();
+    updateWizardIns();
+
+    function controlarVistaStock() {
+        const checkStock = document.getElementById('cantidadStock');
+        const estadoCheckStock = document.getElementById('cantidadStock').checked;
+        const divInputStock = document.getElementById('divInputStock');
+
+        divInputStock.style.display = estadoCheckStock ? 'block' : 'none';
+        if (divInputStock.style.display === "block") {
+            const inputStock = document.getElementById('stockMedicamento');
+            inputStock.required = true;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        controlarVistaStock();
+        document.getElementById('cantidadStock').addEventListener('change', controlarVistaStock);
+    });
 </script>
 <script>
     const profilePreview = document.getElementById('profilePreview');

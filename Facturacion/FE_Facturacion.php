@@ -2,6 +2,7 @@
 include "../menu.php";
 include "../header.php";
 include "./includes/modals/FacturaElectronica.php";
+include "./includes/modals/modalNotaCredito.php";
 include "./includes/modals/NoteCreditModal.php";
 include "./includes/modals/NoteDebitModal.php";
 include "./includes/modals/EntidadModal.php";
@@ -223,7 +224,7 @@ include "./includes/modals/CustomerModal.php";
                         <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> Ver</a>
                         <a class="dropdown-item" href="#"><i class="fas fa-download"></i> Descargar</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Nota crédito</a>
+                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalNotaCredito">Nota crédito</a>
                         <a class="dropdown-item" href="#">Nota débito</a>
                       </div>
                     </div>

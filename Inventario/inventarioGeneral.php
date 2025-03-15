@@ -35,7 +35,7 @@ include "../header.php";
                             data-bs-target="#modalNuevoProducto">
                             <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo producto
                         </button> -->
-                        <button class="btn dropdown-toggle mb-4 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <!-- <button class="btn dropdown-toggle mb-4 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo producto
                         </button>
 
@@ -45,7 +45,7 @@ include "../header.php";
                             <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevaVacuna">Vacuna</a>
 
                             <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevoInsumo">Insumo</a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="row">

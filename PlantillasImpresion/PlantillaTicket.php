@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recibo tipo ticket</title>
+  <title>Recibo de Caja</title>
   <style>
     body {
       font-family: "Courier New", Courier, monospace;
@@ -43,28 +43,41 @@
     .barcode img {
       width: 100%;
     }
+
+    .logo img {
+      width: 50px;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 
 <body>
-  <div class="">
+  <div class="receipt-container">
+    <!-- Logo y datos de la empresa -->
+    <div class="logo"><img src="logo.png" alt="Logo Empresa"></div>
     <div class="fw-bold">FARMACIA DELIVERY</div>
     <div>Av. Principal 123, Ciudad</div>
     <div>Tel: +1 234 567 890</div>
 
     <div class="receipt-divider"></div>
 
-    <div class="fw-bold">RECIBO DE ENTREGA</div>
-    <div>Pedido: #12346</div>
-    <div>Fecha: 27/02/2025 14:45</div>
-
-    <div class="receipt-divider"></div>
-
+    <!-- Datos del paciente -->
     <div>Cliente: Sophia Anderson</div>
     <div>Tel: +1 888 8888 8888</div>
 
     <div class="receipt-divider"></div>
 
+    <!-- Título de recibo -->
+    <div class="fw-bold">RECIBO DE CAJA</div>
+    <div>Fecha impresión: 27/02/2025 14:45</div>
+    <div>Fecha factura: 27/02/2025 14:40</div>
+    <div>Comprobante: #12346</div>
+    <div>Autorización: 987654321</div>
+    <div>Fecha autorización: 27/02/2025 14:35</div>
+
+    <div class="receipt-divider"></div>
+
+    <!-- Ítems a facturar -->
     <div class="d-flex">
       <span>Amoxicilina 500mg</span>
       <span>$12.99</span>
@@ -85,6 +98,7 @@
 
     <div class="receipt-divider"></div>
 
+    <!-- Totales -->
     <div class="d-flex">
       <span>Subtotal:</span>
       <span>$39.74</span>
@@ -104,10 +118,19 @@
 
     <div class="receipt-divider"></div>
 
+    <!-- Métodos de pago -->
     <div>Método de pago: Tarjeta de crédito</div>
-    <div>Atendido por: Carlos Méndez</div>
+    <div>Pago recibido: $38.71</div>
+    <div>Vuelto: $0.00</div>
+
+    <div class="receipt-divider"></div>
+
+    <!-- Mensaje de agradecimiento -->
+    <div>¡Gracias por su compra!</div>
+    <div>Para dudas o reclamos: soporte@farmacia.com</div>
 
     <div class="barcode">
+      <img src="barcode.png" alt="Código de barras">
     </div>
   </div>
 </body>

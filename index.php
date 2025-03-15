@@ -1,4 +1,5 @@
-o<?php
+o
+<?php
 session_start();
 include "../globalesMN.php";
 ?>
@@ -380,13 +381,34 @@ include "../globalesMN.php";
 
             const token = data.data[0].original.access_token;
             sessionStorage.setItem('auth_token', token);
-            Swal.fire('Autenticación', data.message, 'success');
-
+            Swal.fire({
+              title: '¡Bienvenido a MedicalSoft!',
+              html: `
+    <p style="margin-top: 10px; font-size: 18px; font-weight: bold;">Nos alegra verte de nuevo</p>
+  `,
+              icon: 'success',
+              showConfirmButton: true, 
+              confirmButtonText: '¡entrar!',
+              confirmButtonColor: '#3085d6',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdrop: `
+    rgba(247, 247, 255, 0.4)
+    center center
+    no-repeat
+  `,
+              customClass: {
+                popup: 'animated fadeInDown faster',
+                confirmButton: 'swal2-confirm-custom'               },
+              didOpen: () => {
+                const popup = document.querySelector('.swal2-popup');
+                popup.style.animation = 'bounceIn 1s';
+              }
+            });
             setTimeout(() => {
               window.location.href = 'Dashboard';
-            }, 500);
+            }, 3000);
           } else {
-            Swal.fire('Error', data.message || 'Credenciales incorrectas', 'error');
+            Swal.fire('Error', 'Credenciales incorrectas', 'error');
           }
         })
         .catch(error => {

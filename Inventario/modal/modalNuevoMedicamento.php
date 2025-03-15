@@ -54,17 +54,37 @@
                                         </div>
                                     </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <select class="form-select" name="concentracion" id="concentracion"
-                                                required>
-                                                <option value="" disabled selected>Seleccione</option>
-                                                <option value="ml">ml</option>
-                                                <option value="mg">mg</option>
-                                                <option value="ui">UI</option>
-                                            </select>
-                                            <label for="concentracion" class="form-label">Concentración</label>
-                                            <div class="invalid-feedback">Por favor seleccione la Concentración.</div>
+                                    <div class="mt-1">
+                                        <label for="" class="form-label">Concentración</label>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <div class="form-floating">
+                                                    <input type="number" class="form-control" min="0" id="volumenConcentracion"
+                                                        required name="volumenConcentracion">
+                                                    <label for="volumenConcentracion" class="form-label">Volumen</label>
+                                                    <div class="invalid-feedback">Por favor ingrese la via de administración.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="input-group">
+                                                <div class="form-floating">
+                                                    <select class="form-select" name="unidadConcentracion" id="unidadConcentracion"
+                                                        required>
+                                                        <option value="" disabled selected>Seleccione</option>
+                                                        <option value="ml">ml</option>
+                                                        <option value="mg">mg</option>
+                                                        <option value="ui">UI</option>
+                                                    </select>
+                                                    <label for="unidadConcentracion" class="form-label">Unidad</label>
+                                                    <div class="invalid-feedback">Por favor seleccione la Concentración.</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -87,18 +107,25 @@
                                     </div>
 
                                     <div class="input-group mt-3">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" id="cantidadStock" type="checkbox" />
-                                            <label class="form-check-label" for="cantidadStock">Cantidad minima en stock</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="input-group mt-3" id="divInputStock" style="display: none;">
-                                        <div class="form-floating" style="width: 100%">
+                                        <div class="form-floating">
                                             <input type="number" class="form-control" min="0" id="stockMedicamento"
                                                 name="stockMedicamento">
                                             <label for="stockMedicamento" class="form-label">Cantidad en Stock</label>
                                             <div class="invalid-feedback">Por favor ingrese la cantidad en stock.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-3">
+                                        <label class="form-label" for="cantidadStock">Cantidad minima en stock</label>
+                                        <input class="form-check-input" id="cantidadStock" type="checkbox" />
+                                    </div>
+
+                                    <div class="input-group mt-3" id="divInputStock" style="display: none;">
+                                        <div class="form-floating" style="width: 100%">
+                                            <input type="number" class="form-control" min="0" id="stockMinimoMedicamento"
+                                                name="stockMinimoMedicamento" placeholder="Ingrese la cantidad minima que desea manejar en stock">
+                                            <label for="stockMinimoMedicamento" class="form-label">Ingrese la cantidad minima que desea manejar en stock</label>
+                                            <div class="invalid-feedback">Por favor ingrese la cantidad minima de stock.</div>
                                         </div>
                                     </div>
 
@@ -135,12 +162,12 @@
                                     <div class="row justify-content-center">
                                         <div class="col-md-6 text-center">
                                             <h2>Imagen del Medicamento</h2>
-                                            <div class="mt-3">
+                                            <div class="mt-3 d-flex justify-content-center">
                                                 <img id="medicamentoPreview" src="https://via.placeholder.com/150"
                                                     alt="Previsualización" class="profile-img">
                                             </div>
-                                            <div class="mt-4">
-                                                <label for="uploadMedicamentoImage" class="btn btn-primary me-2">
+                                            <div class="mt-4 d-flex justify-content-center">
+                                                <label for="uploadMedicamentoImage" class="btn btn-primary">
                                                     <i class="fa-solid fa-upload me-1"></i> Subir Imagen
                                                 </label>
                                                 <input type="file" id="uploadMedicamentoImage" class="d-none"
@@ -169,13 +196,13 @@
 
                                 </div>
                             </div>
-                            <div class="input-group mt-3">
+                            <!-- <div class="input-group mt-3">
                                 <div class="form-floating">
                                     <input class="form-control" id="concentracionMedicamento" name="concentracionMedicamento"
                                         type="number" />
                                     <label for="concentracionMedicamento" class="form-label">Concentración</label>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
@@ -311,6 +338,7 @@
         updateWizard();
     });
 
+    updateWizard();
     // document.getElementById('modalGrupoVacuna').addEventListener('submit', function(event) {
     //     if (!this.checkValidity()) {
     //         event.preventDefault();
@@ -318,7 +346,6 @@
     //     }
     // });
 
-    updateWizard();
 
     function controlarVistaStock() {
         const checkStock = document.getElementById('cantidadStock');
