@@ -17,7 +17,7 @@ export const PreadmissionForm = ({
     onSubmit: handleSubmit
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
-  }, /*#__PURE__*/React.createElement("label", null, "Peso (kg)"), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("label", null, "Peso (lb)"), /*#__PURE__*/React.createElement("input", {
     type: "number",
     className: "form-control m-1",
     value: values.weight,
@@ -25,6 +25,13 @@ export const PreadmissionForm = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", null, "Talla (cm)"), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    className: "form-control m-1",
+    value: values.height,
+    onChange: handleChange("height")
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", null, "IMC"), /*#__PURE__*/React.createElement("input", {
     type: "number",
     className: "form-control m-1",
     value: values.height,

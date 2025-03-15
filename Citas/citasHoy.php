@@ -364,28 +364,6 @@ foreach ($estados as $estado) {
   </tr>
 </template>
 
-<script type="module">
-  import React from "react"
-  import ReactDOMClient from "react-dom/client"
-  import {
-    TodayAppointmentsTable
-  } from './react-dist/appointments/TodayAppointmentsTable.js';
-  import {
-    AppointmentsTable
-  } from './react-dist/appointments/AppointmentsTable.js';
-  import {
-    GenerateTicket
-  } from './react-dist/tickets/GenerateTicket.js';
-  import {
-    TicketApp
-  } from './react-dist/tickets/TicketApp.js';
-
-  ReactDOMClient.createRoot(document.getElementById('admissionsTableReact')).render(React.createElement(TodayAppointmentsTable));
-  ReactDOMClient.createRoot(document.getElementById('appointmentsTableReact')).render(React.createElement(AppointmentsTable));
-  ReactDOMClient.createRoot(document.getElementById('generateTicketReact')).render(React.createElement(GenerateTicket));
-  ReactDOMClient.createRoot(document.getElementById('gestionarTicketsReact')).render(React.createElement(TicketApp));
-</script>
-
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script type="module">
   import {
@@ -634,3 +612,25 @@ include "../footer.php";
 ?>
 
 <script src="./assets/js/main.js"></script>
+
+<script type="module">
+  import React from "react"
+  import ReactDOMClient from "react-dom/client"
+  import {
+    TodayAppointmentsTable
+  } from './react-dist/appointments/TodayAppointmentsTable.js';
+  import {
+    AppointmentsTable
+  } from './react-dist/appointments/AppointmentsTable.js';
+  import {
+    GenerateTicket
+  } from './react-dist/tickets/GenerateTicket.js';
+  import {
+    TicketApp
+  } from './react-dist/tickets/TicketApp.js';
+
+  ReactDOMClient.createRoot(document.getElementById('admissionsTableReact')).render(React.createElement(TodayAppointmentsTable));
+  ReactDOMClient.createRoot(document.getElementById('appointmentsTableReact')).render(React.createElement(AppointmentsTable));
+  ReactDOMClient.createRoot(document.getElementById('generateTicketReact')).render(React.createElement(GenerateTicket));
+  ReactDOMClient.createRoot(document.getElementById('gestionarTicketsReact')).render(React.createElement(TicketApp));
+</script>

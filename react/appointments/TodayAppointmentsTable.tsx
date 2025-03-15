@@ -9,7 +9,13 @@ import { PrintTableAction } from "../components/table-actions/PrintTableAction";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction";
 
-export const TodayAppointmentsTable: React.FC = () => {
+interface TodayAppointmentsTableProps {
+  onPrintItem?: (id: string, title: string) => void;
+  onDownloadItem?: (id: string, title: string) => void;
+  onShareItem?: (id: string, title: string, type: string) => void;
+}
+
+export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ onPrintItem, onDownloadItem, onShareItem }) => {
   const { appointments } = useFetchAppointments(
     admissionService.getAdmisionsAll()
   );
@@ -77,8 +83,14 @@ export const TodayAppointmentsTable: React.FC = () => {
               Nota credito
             </a>
             <hr />
-            <PrintTableAction onTrigger={() => console.log("imprimir")}></PrintTableAction>
-            <DownloadTableAction onTrigger={() => console.log("descargar")}></DownloadTableAction>
+            <PrintTableAction onTrigger={() => {
+              //@ts-ignore
+              generateInvoice(data.id, false);
+            }}></PrintTableAction>
+            <DownloadTableAction onTrigger={() => {
+              //@ts-ignore
+              generateInvoice(data.id, true);
+            }}></DownloadTableAction>
             <ShareTableAction shareType="whatsapp" onTrigger={() => console.log("compartir por whatsapp")}></ShareTableAction>
             <ShareTableAction shareType="email" onTrigger={() => console.log("compartir por correo")}></ShareTableAction>
           </div>

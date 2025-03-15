@@ -108,7 +108,7 @@ export const countriesSelect = async (element, onChange, initialValue = '') => {
 }
 
 export const departmentsSelect = async (element, countryId, onChange, initialValue = '') => {
-    const data = await departmentService.ofParent(countryId);
+    const data = await departmentService.getByCountry(countryId);
 
     const mappedData = data.map(item => ({
         value: item.name,
@@ -150,7 +150,7 @@ export const departmentsSelect = async (element, countryId, onChange, initialVal
 };
 
 export const citiesSelect = async (element, departmentId, onChange, initialValue = '') => {
-    const data = await cityService.ofParent(departmentId)
+    const data = await cityService.getByDepartment(departmentId)
 
     const mappedData = data.map(item => {
         return {

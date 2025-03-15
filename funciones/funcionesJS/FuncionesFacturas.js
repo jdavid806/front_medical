@@ -60,5 +60,5 @@ async function generateInvoice(idCita, generarDescarga) {
   console.log("dEBUG");
   console.log(idCita);
   console.log("======================");
-  generarFatura(factura, false);
+  // generarFatura(factura, false);
 }

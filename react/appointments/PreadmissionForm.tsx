@@ -26,7 +26,7 @@ export const PreadmissionForm: React.FC<{ initialValues: any }> = ({
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label>Peso (kg)</label>
+        <label>Peso (lb)</label>
         <input
           type="number"
           className="form-control m-1"
@@ -36,6 +36,15 @@ export const PreadmissionForm: React.FC<{ initialValues: any }> = ({
       </div>
       <div className="form-group">
         <label>Talla (cm)</label>
+        <input
+          type="number"
+          className="form-control m-1"
+          value={values.height}
+          onChange={handleChange("height")}
+        />
+      </div>
+      <div className="form-group">
+        <label>IMC</label>
         <input
           type="number"
           className="form-control m-1"

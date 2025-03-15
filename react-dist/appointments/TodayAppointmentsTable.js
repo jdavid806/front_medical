@@ -6,7 +6,11 @@ import { useEffect } from "react";
 import { PrintTableAction } from "../components/table-actions/PrintTableAction.js";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction.js";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
-export const TodayAppointmentsTable = () => {
+export const TodayAppointmentsTable = ({
+  onPrintItem,
+  onDownloadItem,
+  onShareItem
+}) => {
   const {
     appointments
   } = useFetchAppointments(admissionService.getAdmisionsAll());
@@ -70,9 +74,15 @@ export const TodayAppointmentsTable = () => {
       className: "dropdown-item",
       href: "#"
     }, "Nota credito"), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => console.log("imprimir")
+      onTrigger: () => {
+        //@ts-ignore
+        generateInvoice(data.id, false);
+      }
     }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => console.log("descargar")
+      onTrigger: () => {
+        //@ts-ignore
+        generateInvoice(data.id, true);
+      }
     }), /*#__PURE__*/React.createElement(ShareTableAction, {
       shareType: "whatsapp",
       onTrigger: () => console.log("compartir por whatsapp")
