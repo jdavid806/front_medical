@@ -93,13 +93,8 @@ async function actualizarDatos(url, datos) {
       },
       body: JSON.stringify(datos),
     });
-    const contentType = respuesta.headers.get("content-type");
 
-    let resultado = {};
-
-    if (contentType && contentType.includes("application/json")) {
-      resultado = await respuesta.json();
-    }
+    const resultado = await respuesta.json();
 
     // Notificación de éxito
     Swal.fire({
@@ -364,6 +359,9 @@ function calcularDiferenciaDias(start_date, end_date) {
 
   return diferenciaDias;
 }
+
+
+//datos variables
 
 async function convertirDatosVariables(
   template,

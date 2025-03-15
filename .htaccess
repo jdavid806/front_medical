@@ -215,5 +215,6 @@ RewriteRule ^insumos$  Farmacia/entregaInsumos.php
 
 RewriteRule ^gestion-turnos$  turnos/gestionTurnos.php
 
+RewriteRule ^panel-encuesta$  encuestas/encuentas.php
 
 RewriteRule ^remisiones$  Remisiones/remisiones.php

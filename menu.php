@@ -273,51 +273,53 @@ $_SESSION["ID"] = 1;
       "uuid": "https://esm.sh/uuid?dev",
       "primereact/tabview": "https://esm.sh/primereact/tabview?dev",
       "react-beautiful-dnd": "https://esm.sh/react-beautiful-dnd?dev",
-      "primereact/inputtextarea": "https://esm.sh/primereact/inputtextarea?dev"
+      "primereact/inputtextarea": "https://esm.sh/primereact/inputtextarea?dev",
+      "primereact/divider": "https://esm.sh/primereact/divider?dev",
+      "primereact/password": "https://esm.sh/primereact/password?dev"
     }
   }
 </script>
-<script>
-  // Función para decodificar JWT
-  function decodeJWT(token) {
-    const parts = token.split('.');
+  <script>
+    // Función para decodificar JWT
+    function decodeJWT(token) {
+      const parts = token.split('.');
 
-    if (parts.length !== 3) {
-      throw new Error('Token JWT no válido');
-    }
-
-    const payload = parts[1];
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const decodedPayload = atob(base64);
-    return JSON.parse(decodedPayload); // Decodificamos el payload y lo convertimos a objeto
-  }
-
-  function checkAuth() {
-    const token = sessionStorage.getItem('auth_token'); // Obtenemos el token almacenado
-
-    if (!token) {
-      // Si no hay token, redirigir inmediatamente al inicio
-      window.location.href = 'index.php';
-      return;
-    }
-
-    try {
-      const decoded = decodeJWT(token); // Intentamos decodificar el token
-
-      // Si el token es inválido o no contiene el ID del usuario, redirigir al inicio
-      if (!decoded.sub) {
-        throw new Error('Token inválido');
+      if (parts.length !== 3) {
+        throw new Error('Token JWT no válido');
       }
-    } catch (error) {
-      // Si hay un error con el token, lo eliminamos y redirigimos al inicio
-      sessionStorage.removeItem('auth_token');
-      window.location.href = 'index.php';
-    }
-  }
 
-  // Comprobamos si el usuario está autenticado antes de ejecutar cualquier otro código
-  checkAuth();
-</script>
+      const payload = parts[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const decodedPayload = atob(base64);
+      return JSON.parse(decodedPayload); // Decodificamos el payload y lo convertimos a objeto
+    }
+
+    function checkAuth() {
+      const token = sessionStorage.getItem('auth_token'); // Obtenemos el token almacenado
+
+      if (!token) {
+        // Si no hay token, redirigir inmediatamente al inicio
+        window.location.href = 'index.php';
+        return;
+      }
+
+      try {
+        const decoded = decodeJWT(token); // Intentamos decodificar el token
+
+        // Si el token es inválido o no contiene el ID del usuario, redirigir al inicio
+        if (!decoded.sub) {
+          throw new Error('Token inválido');
+        }
+      } catch (error) {
+        // Si hay un error con el token, lo eliminamos y redirigimos al inicio
+        sessionStorage.removeItem('auth_token');
+        window.location.href = 'index.php';
+      }
+    }
+
+    // Comprobamos si el usuario está autenticado antes de ejecutar cualquier otro código
+    checkAuth();
+  </script>
 
 
 

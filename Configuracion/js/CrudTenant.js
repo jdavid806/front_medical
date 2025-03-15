@@ -46,29 +46,6 @@ async function cargarDatosTenant() {
 }
 
 function capturarDatosInformacionGeneral() {
-  // const datos = {
-  //   nombreRepresentante: document.getElementById("nombre-representante").value,
-  //   telefonoRepresentante: document.getElementById("telefono-representante")
-  //     .value,
-  //   correoRepresentante: document.getElementById("correo-representante").value,
-  //   tipoDocumentoRepresentante: document.getElementById(
-  //     "tipoDocumento-representante"
-  //   ).value,
-  //   documentoRepresentante: document.getElementById("documento-representante")
-  //     .value,
-  //   nombreConsultorio: document.getElementById("nombre-consultorio").value,
-  //   tipoDocumentoConsultorio: document.getElementById(
-  //     "tipoDocumento-consultorio"
-  //   ).value,
-  //   documentoConsultorio: document.getElementById("documento-consultorio")
-  //     .value,
-  //   logo: document.getElementById("logo").files[0], // Archivo de imagen
-  //   marcaAgua: document.getElementById("marcaAgua").files[0], // Archivo de imagen
-  // };
-  return "probando data";
-}
-
-function capturarDatosInformacionGeneral() {
   const datos = {
     name: document.getElementById("nombre-consultorio").value,
     representatives: [
@@ -90,8 +67,8 @@ function capturarDatosInformacionGeneral() {
         document_number: document.getElementById("documento-consultorio").value,
       },
     ],
-    logo: document.getElementById('logo').files[0],
-    marcaAgua: document.getElementById('marcaAgua').files[0],
+    logo: document.getElementById("logo").files[0],
+    marcaAgua: document.getElementById("marcaAgua").files[0],
   };
   return datos;
 }

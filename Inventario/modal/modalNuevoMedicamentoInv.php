@@ -1,4 +1,4 @@
-<div class="modal fade modal-xl" id="modalNuevoMedicamento" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal-xl" id="modalNuevoMedicamentoInv" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -22,7 +22,7 @@
                 </div>
 
                 <!-- Contenido de los pasos -->
-                <form id="formNuevoMedicamento" class="needs-validation" novalidate>
+                <form id="formNuevoMedicamentoInv" class="needs-validation" novalidate>
                     <div class="wizard-content">
 
                         <div class="wizard-step active" data-step="1">
@@ -31,9 +31,9 @@
 
                                     <div class="input-group">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="nombreMedicamento" required
-                                                name="nombreMedicamento">
-                                            <label for="nombreMedicamento" class="form-label">Nombre del
+                                            <input type="text" class="form-control" id="nombreMedicamentoInv" required
+                                                name="nombreMedicamentoInv">
+                                            <label for="nombreMedicamentoInv" class="form-label">Nombre del
                                                 Medicamento</label>
                                             <div class="invalid-feedback">Por favor ingrese el nombre del medicamento.
                                             </div>
@@ -42,89 +42,89 @@
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <select class="form-select" name="tipoMedicamento" id="tipoMedicamento"
+                                            <select class="form-select" name="tipoMedicamentoInv" id="tipoMedicamentoInv"
                                                 required>
                                                 <option value="" disabled selected>Presentación del medicamento</option>
                                                 <option value="tableta">Tableta</option>
                                                 <option value="jarabe">Jarabe</option>
                                                 <option value="inyeccion">Inyección</option>
                                             </select>
-                                            <label for="tipoMedicamento" class="form-label">Presentación</label>
+                                            <label for="tipoMedicamentoInv" class="form-label">Presentación</label>
                                             <div class="invalid-feedback">Por favor seleccione la Presentación.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <select class="form-select" name="concentracion" id="concentracion"
+                                            <select class="form-select" name="concentracionInv" id="concentracionInv"
                                                 required>
                                                 <option value="" disabled selected>Seleccione</option>
                                                 <option value="ml">ml</option>
                                                 <option value="mg">mg</option>
                                                 <option value="ui">UI</option>
                                             </select>
-                                            <label for="concentracion" class="form-label">Concentración</label>
+                                            <label for="concentracionInv" class="form-label">Concentración</label>
                                             <div class="invalid-feedback">Por favor seleccione la Concentración.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" min="0" id="viaAdministracion"
-                                                required name="viaAdministracion">
-                                            <label for="viaAdministracion" class="form-label">Via de administración</label>
+                                            <input type="text" class="form-control" min="0" id="viaAdministracionInv"
+                                                required name="viaAdministracionInv">
+                                            <label for="viaAdministracionInv" class="form-label">Via de administración</label>
                                             <div class="invalid-feedback">Por favor ingrese la via de administración.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" min="0" id="laboratorio"
-                                                required name="laboratorio">
-                                            <label for="laboratorio" class="form-label">Laboratorio</label>
+                                            <input type="text" class="form-control" min="0" id="laboratorioInv"
+                                                required name="laboratorioInv">
+                                            <label for="laboratorioInv" class="form-label">Laboratorio</label>
                                             <div class="invalid-feedback">Por favor ingrese el laboratorio.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" id="cantidadStock" type="checkbox" />
-                                            <label class="form-check-label" for="cantidadStock">Cantidad minima en stock</label>
+                                            <input class="form-check-input" id="cantidadStockInv" type="checkbox" />
+                                            <label class="form-check-label" for="cantidadStockInv">Cantidad minima en stock</label>
                                         </div>
                                     </div>
 
-                                    <div class="input-group mt-3" id="divInputStock" style="display: none;">
+                                    <div class="input-group mt-3" id="divInputStockInv" style="display: none;">
                                         <div class="form-floating" style="width: 100%">
-                                            <input type="number" class="form-control" min="0" id="stockMedicamento"
-                                                name="stockMedicamento">
-                                            <label for="stockMedicamento" class="form-label">Cantidad en Stock</label>
+                                            <input type="number" class="form-control" min="0" id="stockMedicamentoInv"
+                                                name="stockMedicamentoInv">
+                                            <label for="stockMedicamentoInv" class="form-label">Cantidad en Stock</label>
                                             <div class="invalid-feedback">Por favor ingrese la cantidad en stock.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input class="form-control datetimepicker" id="fechaCaducidad" type="text"
+                                            <input class="form-control datetimepicker" id="fechaCaducidadInv" type="text"
                                                 required="required" />
-                                            <label for="fechaCaducidad" class="form-label">Fecha de Caducidad</label>
+                                            <label for="fechaCaducidadInv" class="form-label">Fecha de Caducidad</label>
                                             <div class="invalid-feedback">Por favor seleccione una fecha válida.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <input class="form-control" id="loteMedicamento" name="loteMedicamento"
+                                            <input class="form-control" id="loteMedicamentoInv" name="loteMedicamentoInv"
                                                 type="text" required />
-                                            <label for="loteMedicamento" class="form-label">Número de Lote</label>
+                                            <label for="loteMedicamentoInv" class="form-label">Número de Lote</label>
                                             <div class="invalid-feedback">Por favor ingrese el número de lote.</div>
                                         </div>
                                     </div>
 
                                     <div class="input-group mt-3">
                                         <div class="form-floating">
-                                            <textarea class="form-control" id="descripcionMedicamento"
-                                                name="descripcionMedicamento" rows="3"></textarea>
-                                            <label for="descripcionMedicamento" class="form-label">Descripción
+                                            <textarea class="form-control" id="descripcionMedicamentoInv"
+                                                name="descripcionMedicamentoInv" rows="3"></textarea>
+                                            <label for="descripcionMedicamentoInv" class="form-label">Descripción
                                                 (Opcional)</label>
                                         </div>
                                     </div>
@@ -136,14 +136,14 @@
                                         <div class="col-md-6 text-center">
                                             <h2>Imagen del Medicamento</h2>
                                             <div class="mt-3">
-                                                <img id="medicamentoPreview" src="https://via.placeholder.com/150"
+                                                <img id="medicamentoPreviewInv" src="https://via.placeholder.com/150"
                                                     alt="Previsualización" class="profile-img">
                                             </div>
                                             <div class="mt-4">
-                                                <label for="uploadMedicamentoImage" class="btn btn-primary me-2">
+                                                <label for="uploadMedicamentoImageInv" class="btn btn-primary me-2">
                                                     <i class="fa-solid fa-upload me-1"></i> Subir Imagen
                                                 </label>
-                                                <input type="file" id="uploadMedicamentoImage" class="d-none"
+                                                <input type="file" id="uploadMedicamentoImageInv" class="d-none"
                                                     accept="image/*">
                                             </div>
                                         </div>
@@ -155,42 +155,42 @@
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="pesoMedicamento" name="pesoMedicamento"
+                                    <input class="form-control" id="pesoMedicamentoInv" name="pesoMedicamentoInv"
                                         type="number" />
-                                    <label for="pesoMedicamento" class="form-label">Peso del Medicamento</label>
+                                    <label for="pesoMedicamentoInv" class="form-label">Peso del Medicamento</label>
 
                                 </div>
                             </div>
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="capacidadMedicamento" name="capacidadMedicamento"
+                                    <input class="form-control" id="capacidadMedicamentoInv" name="capacidadMedicamentoInv"
                                         type="number" />
-                                    <label for="capacidadMedicamento" class="form-label">Capacidad de Medicamento</label>
+                                    <label for="capacidadMedicamentoInv" class="form-label">Capacidad de Medicamento</label>
 
                                 </div>
                             </div>
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="concentracionMedicamento" name="concentracionMedicamento"
+                                    <input class="form-control" id="concentracionMedicamentoInv" name="concentracionMedicamentoInv"
                                         type="number" />
-                                    <label for="concentracionMedicamento" class="form-label">Concentración</label>
+                                    <label for="concentracionMedicamentoInv" class="form-label">Concentración</label>
                                 </div>
                             </div>
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="precioCompraMedicamento" name="precioCompraMedicamento"
+                                    <input class="form-control" id="precioCompraMedicamentoInv" name="precioCompraMedicamentoInv"
                                         type="number" />
-                                    <label for="precioCompraMedicamento" class="form-label">Precio de compra</label>
+                                    <label for="precioCompraMedicamentoInv" class="form-label">Precio de compra</label>
                                     <div class="invalid-feedback">Ingrese el precio de compra</div>
                                 </div>
                             </div>
 
                             <div class="input-group mt-3">
                                 <div class="form-floating">
-                                    <input class="form-control" id="precioVentaMedicamento" name="precioVentaMedicamento"
+                                    <input class="form-control" id="precioVentaMedicamentoInv" name="precioVentaMedicamentoInv"
                                         type="venta" />
-                                    <label for="precioVentaMedicamento" class="form-label">Precio de venta</label>
+                                    <label for="precioVentaMedicamentoInv" class="form-label">Precio de venta</label>
                                     <div class="invalid-feedback">Ingrese el precio de venta</div>
                                 </div>
                             </div>
@@ -200,10 +200,10 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
-                <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
-                <button class="btn btn-secondary d-none" id="finishStep" type="submit"
-                    form="formNuevoMedicamento">Finalizar</button>
+                <button class="btn btn-secondary" id="prevStepInv" type="button" disabled>Anterior</button>
+                <button class="btn btn-primary" id="nextStepInv" type="button">Siguiente</button>
+                <button class="btn btn-secondary d-none" id="finishStepInv" type="submit"
+                    form="formNuevoMedicamentoInv">Finalizar</button>
             </div>
         </div>
     </div>
@@ -276,39 +276,39 @@
 <script type="module" src="../Inventario/js/inventarioMedicamentos.js"></script>
 
 <script>
-    let currentStep = 1;
+    let currentStepInv = 1;
 
-    const updateWizard = () => {
+    const updateWizardInv = () => {
         // Actualizar los pasos visuales
         document.querySelectorAll('.step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepInv);
         });
 
         // Mostrar el contenido correspondiente
         document.querySelectorAll('.wizard-step').forEach(step => {
-            step.classList.toggle('active', step.dataset.step == currentStep);
+            step.classList.toggle('active', step.dataset.step == currentStepInv);
         });
 
         // Controlar los botones
-        document.getElementById('prevStep').disabled = currentStep === 1;
-        document.getElementById('nextStep').classList.toggle('d-none', currentStep === 2);
-        document.getElementById('finishStep').classList.toggle('d-none', currentStep !== 2);
+        document.getElementById('prevStepInv').disabled = currentStepInv === 1;
+        document.getElementById('nextStepInv').classList.toggle('d-none', currentStepInv === 2);
+        document.getElementById('finishStepInv').classList.toggle('d-none', currentStepInv !== 2);
     };
 
-    document.getElementById('nextStep').addEventListener('click', () => {
-        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
+    document.getElementById('nextStepInv').addEventListener('click', () => {
+        const currentForm = document.querySelector(`.wizard-step[data-step="${currentStepInv}"]`);
         if (currentForm.querySelector(':invalid')) {
             currentForm.querySelector(':invalid').focus();
             currentForm.classList.add('was-validated');
         } else {
             currentStep++;
-            updateWizard();
+            updateWizardInv();
         }
     });
 
-    document.getElementById('prevStep').addEventListener('click', () => {
+    document.getElementById('prevStepInv').addEventListener('click', () => {
         currentStep--;
-        updateWizard();
+        updateWizardInv();
     });
 
     // document.getElementById('modalGrupoVacuna').addEventListener('submit', function(event) {
@@ -318,23 +318,23 @@
     //     }
     // });
 
-    updateWizard();
+    updateWizardInv();
 
-    function controlarVistaStock() {
-        const checkStock = document.getElementById('cantidadStock');
-        const estadoCheckStock = document.getElementById('cantidadStock').checked;
-        const divInputStock = document.getElementById('divInputStock');
+    function controlarVistaStockInv() {
+        const checkStockInv = document.getElementById('cantidadStockInv');
+        const estadoCheckStockInv = document.getElementById('cantidadStockInv').checked;
+        const divInputStockInv = document.getElementById('divInputStockInv');
 
-        divInputStock.style.display = estadoCheckStock ? 'block' : 'none';
-        if (divInputStock.style.display === "block") {
-            const inputStock = document.getElementById('stockMedicamento');
-            inputStock.required = true;
+        divInputStockInv.style.display = estadoCheckStockInv ? 'block' : 'none';
+        if (divInputStockInv.style.display === "block") {
+            const inputStockInv = document.getElementById('stockMedicamentoInv');
+            inputStockInv.required = true;
         }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        controlarVistaStock();
-        document.getElementById('cantidadStock').addEventListener('change', controlarVistaStock);
+        controlarVistaStockInv();
+        document.getElementById('cantidadStockInv').addEventListener('change', controlarVistaStockInv);
     });
 </script>
 <script>

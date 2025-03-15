@@ -9,6 +9,8 @@ import { useCities } from "../cities/hooks/useCities.js";
 import { genders } from "../../services/commons.js";
 import { useRoles } from "../user-roles/hooks/useUserRoles.js";
 import { useUserSpecialties } from "../user-specialties/hooks/useUserSpecialties.js";
+import { Divider } from 'primereact/divider';
+import { Password } from 'primereact/password';
 const UserForm = ({
   formId,
   onHandleSubmit,
@@ -90,6 +92,14 @@ const UserForm = ({
       setSelectedRole(null);
     }
   }, [watchUserRoleId, userRoles]);
+  const passwordHeader = /*#__PURE__*/React.createElement("div", {
+    className: "font-bold mb-3"
+  }, "Escribe una contrase\xF1a");
+  const passwordFooter = /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", {
+    className: "mt-2"
+  }, "Sugerencias"), /*#__PURE__*/React.createElement("ul", {
+    className: "pl-2 ml-2 mt-0 line-height-3"
+  }, /*#__PURE__*/React.createElement("li", null, "Al menos una min\xFAscula"), /*#__PURE__*/React.createElement("li", null, "Al menos una may\xFAscula"), /*#__PURE__*/React.createElement("li", null, "Al menos un n\xFAmero"), /*#__PURE__*/React.createElement("li", null, "M\xEDnimo 8 caracteres")));
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onSubmit)
@@ -419,14 +429,15 @@ const UserForm = ({
       className: "form-label"
     }, "Contrase\xF1a ", /*#__PURE__*/React.createElement("span", {
       className: "text-primary"
-    }, "*")), /*#__PURE__*/React.createElement(InputText, _extends({
-      id: field.name,
-      type: "password",
-      placeholder: "Contrase\xF1a",
-      className: classNames('w-100', {
-        'p-invalid': errors.password
-      })
-    }, field)))
+    }, "*")), /*#__PURE__*/React.createElement(Password, _extends({}, field, {
+      header: passwordHeader,
+      footer: passwordFooter,
+      mediumLabel: "Medio",
+      strongLabel: "Fuerte",
+      weakLabel: "De\u0301bil",
+      className: "w-100",
+      inputClassName: "w-100"
+    })))
   }), getFormErrorMessage('password')))))));
 };
 export default UserForm;

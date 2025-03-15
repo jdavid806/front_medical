@@ -881,7 +881,8 @@ include '../modals/NewCompanionModal.php';
         productService,
         paymentMethodService,
         userService,
-        userServiceMedical
+        userServiceMedical,
+        appointmentService
     } from './services/api/index.js';
 
     import {
@@ -892,6 +893,12 @@ include '../modals/NewCompanionModal.php';
     document.addEventListener('DOMContentLoaded', function() {
 
         flatpickr("#datepicker", {
+            dateFormat: "d/m/Y",
+            defaultDate: new Date(), // Establece la fecha actual
+            disableMobile: true
+        });
+
+        flatpickr("#dateAuthorisation", {
             dateFormat: "d/m/Y",
             defaultDate: new Date(), // Establece la fecha actual
             disableMobile: true
@@ -982,7 +989,6 @@ include '../modals/NewCompanionModal.php';
 
         // Obtener todas las filas de la tabla de productos
         const productRows = productsTableBody.querySelectorAll('tr');
-        console.log(productRows);
 
         // Recorrer cada fila y agregarla a la tabla de resumen
         productRows.forEach((row, index) => {
@@ -1283,7 +1289,7 @@ include '../modals/NewCompanionModal.php';
         const jsonPaymentmethod = JSON.parse(values[0]);
         values[0] = jsonPaymentmethod.method;
         const tableBody = document.getElementById(tableBodyId);
-        const rowCount = tableBody.rows.length + 1;
+        const rowCount = jsonPaymentmethod.id;
 
         // Convertir valores
         switch (values[0]) {
@@ -1587,12 +1593,12 @@ include '../modals/NewCompanionModal.php';
     async function getAdmissionInfo(citaId) {
         try {
             // Llamar al servicio para obtener los datos de la admisión
-            const admission = await admissionService.getAdmissionById(citaId);
+            const admission = await appointmentService.get(citaId);
             globalAdmission = admission;
+
 
             const subsidiary = document.getElementById('subsidiary');
             subsidiary.value = admission.patient.social_security?.entity?.name || "No tiene EPS";
-
             if (admission.product_id) {
                 globalProductId = admission.product_id; // Guardamos productId globalmente
                 getProductId(globalProductId, admission);
@@ -1893,44 +1899,52 @@ include '../modals/NewCompanionModal.php';
             }
         }
 
-        console.log(userLogged, dataProducts, dataPaymentMthods);
-
         const requestData = {
-            "external_id": `${userLogged.external_id}`,
-            "admission": {
-                "authorization_number": entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
-                "authorization_date": entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
-                "appointment_id": globalAdmission.id,
-                "debit_note_id": null,
-                "credit_note_id": null,
-                "new_invoice_id": null,
-                "copayment": true,
-                "moderator_fee": false
+            external_id: `${userLogged.external_id}`,
+            public_invoice: false,
+            admission: {
+                authorization_number: entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
+                authorization_date: entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
+                appointment_id: globalAdmission.id,
             },
-            "cash_receipt": {
-                "type": entitySwitch.checked ? "entity" : "public",
-                "status": "Pagado",
-                "subtotal": dataProducts[0].unit_price,
-                "discount": 0,
-                "iva": 0,
-                "total_amount": dataProducts[0].unit_price,
-                "observations": document.getElementById('observation').value,
-                "due_date": document.getElementById('datepicker').value.split('/').reverse().join('-'),
-                "paid_amount": dataProducts[0].unit_price,
-                "remaining_amount": 0,
-                "quantity_total": 1,
-                "user_id": userLogged.id
+            invoice: {
+                type: entitySwitch.checked ? "entity" : "public",
+                status: "Pagado",
+                subtotal: dataProducts[0].unit_price,
+                discount: 0,
+                taxes: 0,
+                total_amount: dataProducts[0].unit_price,
+                observations: document.getElementById('observation').value,
+                due_date: document.getElementById('datepicker').value.split('/').reverse().join('-'),
+                paid_amount: dataProducts[0].unit_price,
+                user_id: userLogged.id
             },
-            "cash_receipt_detail": dataProducts,
-            "payments": dataPaymentMthods
+            invoice_detail: dataProducts,
+            payments: dataPaymentMthods
         }
 
-        console.log(requestData);
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {
-                console.log(response);
-                // window.location.href = 'citasControl'; // Redireccionar a la página de éxito
+                let contenidoResumen = `
+                    <div style="margin-bottom: 15px;">
+                        <ul style="margin-top: 5px; padding-left: 20px;">
+                        <li>Documento #: ${response.data.invoice_code}</li>
+                        </div>
+                `;
+                Swal.fire({
+                    title: 'Admision creada',
+                    html: contenidoResumen,
+                    icon: 'success',
+                    width: '600px',
+                    confirmButtonText: 'Finalizar',
+                    confirmButtonColor: '#4CAF50'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        window.location.href = 'citasControl'; // Redireccionar a la página de éxito
+                    }
+                });
             })
             .catch(error => {
                 console.error('Error al crear la admisión:', error);

@@ -8,6 +8,8 @@ import { useCities } from '../cities/hooks/useCities';
 import { genders } from '../../services/commons';
 import { useRoles } from '../user-roles/hooks/useUserRoles';
 import { useUserSpecialties } from '../user-specialties/hooks/useUserSpecialties';
+import { Divider } from 'primereact/divider';
+import { Password } from 'primereact/password';
 
 export type UserFormInputs = {
     username: string;
@@ -101,6 +103,20 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
             setSelectedRole(null);
         }
     }, [watchUserRoleId, userRoles]);
+
+    const passwordHeader = <div className="font-bold mb-3">Escribe una contraseña</div>;
+    const passwordFooter = (
+        <>
+            <Divider />
+            <p className="mt-2">Sugerencias</p>
+            <ul className="pl-2 ml-2 mt-0 line-height-3">
+                <li>Al menos una minúscula</li>
+                <li>Al menos una mayúscula</li>
+                <li>Al menos un número</li>
+                <li>Mínimo 8 caracteres</li>
+            </ul>
+        </>
+    );
 
     return (
         <>
@@ -392,12 +408,15 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                     render={({ field }) => (
                                         <>
                                             <label htmlFor={field.name} className="form-label">Contraseña <span className="text-primary">*</span></label>
-                                            <InputText
-                                                id={field.name}
-                                                type="password"
-                                                placeholder="Contraseña"
-                                                className={classNames('w-100', { 'p-invalid': errors.password })}
+                                            <Password
                                                 {...field}
+                                                header={passwordHeader}
+                                                footer={passwordFooter}
+                                                mediumLabel='Medio'
+                                                strongLabel='Fuerte'
+                                                weakLabel='Débil'
+                                                className='w-100'
+                                                inputClassName='w-100'
                                             />
                                         </>
                                     )}

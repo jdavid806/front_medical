@@ -170,6 +170,12 @@
               </div>
             </a>
           </li>
+          <li><a class="dropdown-item" href="inventarioInsumos">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="thermometer"></span>Inventario
+                Insumos
+              </div>
+            </a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -291,6 +297,16 @@
                   <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
                     Turnos
+                  </p>
+                </a>
+              </div>
+
+              <div class="col-4">
+                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
+                  href="#">
+                  <img src="assets/img/nav-icons/IconButton.png" alt="" width="30" />
+                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
+                    Encuentas
                   </p>
                 </a>
               </div>

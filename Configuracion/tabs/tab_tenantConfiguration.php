@@ -77,7 +77,7 @@
 
         <div class="tab-pane fade show active" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab">
 
-          <form class="row g-3 needs-validation" novalidate>
+          <form class="row g-3 needs-validation" novalidate id="company-general">
             <h5>Datos Representante</h5>
             <div class="col-12">
               <label class="form-label" for="nombre-representante">Nombre</label>
@@ -523,12 +523,71 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Manejar el formulario de Información General
+    handleForm("company-general", async (data) => {
+      console.log("Enviando datos de Información General:", data);
+    });
+
+    handleForm("tab-fiscal", async (data) => {
+      console.log("Enviando datos de Facturación Fiscal:", data);
+    });
+
+    handleForm("contacto-form", async (data) => {
+      console.log("Enviando datos de Contacto:", data);
+    });
+
+    handleForm("smtp-form", async (data) => {
+      console.log("Enviando datos de Configuración SMTP:", data);
+    });
+
+    // Manejar el formulario de Sedes
+    handleForm("sedes-form", async (data) => {
+      console.log("Enviando datos de Sedes:", data);
+    });
+
     consultarQR();
     cargarDatosTenant();
   });
 </script>
 
 <script>
+  function handleForm(formId, callback) {
+    const form = document.getElementById(formId);
+
+    if (!form) {
+      console.warn(`El formulario con ID ${formId} no existe en el DOM`);
+      return;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const formDataObject = {};
+
+      formData.forEach((value, key) => {
+        formDataObject[key] = value;
+      });
+
+      console.log(`Datos del formulario ${formId}:`, formDataObject);
+
+      try {
+        if (callback) {
+          await callback(formDataObject);
+        }
+
+        form.reset();
+
+      } catch (error) {
+        console.error(`Error al procesar el formulario ${formId}:`, error);
+        alert(`Error al procesar el formulario: ${error.message}`);
+      }
+    });
+  }
+</script>
+
+<!-- <script>
+  
   document.addEventListener("DOMContentLoaded", function () {
     // Formulario de Información General
     document.getElementById('general-tab-pane').querySelector('form').addEventListener('submit', function (event) {
@@ -568,4 +627,4 @@
     const datosGuardar = capturarDatosInformacionGeneral();
     console.log(datosGuardar);
   })
-</script>
+</script> -->

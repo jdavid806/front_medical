@@ -891,12 +891,12 @@
         contenedor.className = "row justify-content-center"; // Bootstrap row
 
         // Crear una tarjeta por cada medicamento
-        medicamentos.forEach(medicamento => {
+        medicamentos.forEach((medicamento, index) => {
             const cardContainer = document.createElement("div");
             cardContainer.className = "col-md-12 mb-3"; // Columna responsive para cada tarjeta
 
             const card = document.createElement("div");
-            card.className = "card p-3 shadow-sm"; // Clases de Bootstrap para diseño
+            card.className = "card card-medicamento p-3 shadow-sm"; // Clases de Bootstrap para diseño
 
             // Nombre del medicamento
             const nombreMed = document.createElement("h5");
@@ -913,6 +913,7 @@
             divFrecuencia.className = "col-6 mb-3";
             const selectFrecuencia = document.createElement("select");
             selectFrecuencia.className = "form-control";
+            selectFrecuencia.id = `frecuencia-${index}`;
             const opcionesFrecuencia = ["Diaria", "Semanal", "Mensual"];
             opcionesFrecuencia.forEach(opcion => {
                 const option = document.createElement("option");
@@ -929,6 +930,7 @@
             inputDuracion.type = "number";
             inputDuracion.placeholder = "Duración (días)";
             inputDuracion.className = "form-control";
+            inputDuracion.id = `duracion-${index}`;
             divDuracion.appendChild(inputDuracion);
 
             // Campo de indicaciones
@@ -937,6 +939,7 @@
             const textareaIndicaciones = document.createElement("textarea");
             textareaIndicaciones.placeholder = "Indicaciones";
             textareaIndicaciones.className = "form-control";
+            textareaIndicaciones.id = `indicaciones-${index}`;
             textareaIndicaciones.rows = 2;
             divIndicaciones.appendChild(textareaIndicaciones);
 
@@ -954,107 +957,6 @@
         // Agregar el contenedor al div principal
         divCantidadMedicamentos.appendChild(contenedor);
     }
-
-
-
-    // Función auxiliar para mostrar los medicamentos
-    // function mostrarMedicamentos(medicamentos) {
-    //     // Limpiar el contenido previo del div
-    //     divCantidadMedicamentos.innerHTML = "";
-
-    //     // Agregar estilos para centrar el contenido
-    //     divCantidadMedicamentos.style.textAlign = "center";
-
-    //     // Crear título para la tabla
-    //     const tituloMedicamentos = document.createElement("h4");
-    //     tituloMedicamentos.textContent = "Ingrese la cantidad para cada medicamento";
-    //     divCantidadMedicamentos.appendChild(tituloMedicamentos);
-
-    //     // Crear tabla
-    //     const tablaMedicamentos = document.createElement("table");
-    //     tablaMedicamentos.style.width = "80%";
-    //     tablaMedicamentos.style.margin = "0 auto";
-    //     tablaMedicamentos.style.borderCollapse = "collapse";
-    //     tablaMedicamentos.style.marginTop = "15px";
-
-    //     // Crear encabezado de la tablaMedicamentos
-    //     const thead = document.createElement("thead");
-    //     const headerRow = document.createElement("tr");
-
-    //     // Encabezado para nombre del medicamento
-    //     const thNombre = document.createElement("th");
-    //     thNombre.textContent = "Medicamento";
-    //     thNombre.style.padding = "10px";
-    //     thNombre.style.backgroundColor = "#f2f2f2";
-    //     thNombre.style.borderBottom = "1px solid #ddd";
-    //     thNombre.style.width = "75%";
-
-    //     // Encabezado para cantidad
-    //     const thCantidad = document.createElement("th");
-    //     thCantidad.textContent = "Cantidad";
-    //     thCantidad.style.padding = "10px";
-    //     thCantidad.style.backgroundColor = "#f2f2f2";
-    //     thCantidad.style.borderBottom = "1px solid #ddd";
-    //     thCantidad.style.width = "25%";
-
-    //     // Agregar encabezados a la fila y la fila al encabezado
-    //     headerRow.appendChild(thNombre);
-    //     headerRow.appendChild(thCantidad);
-    //     thead.appendChild(headerRow);
-    //     tablaMedicamentos.appendChild(thead);
-
-    //     // Crear cuerpo de la tablaMedicamentos
-    //     const tbody = document.createElement("tbody");
-
-    //     // Agregar cada medicamento como una fila
-    //     for (const medicamento of medicamentos) {
-    //         const row = document.createElement("tr");
-    //         row.style.borderBottom = "1px solid #ddd";
-
-    //         const inputIdMed = 'cantidad_medicamento_' + medicamento.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-
-    //         // Celda para el nombre del medicamento
-    //         const tdNombre = document.createElement("td");
-    //         tdNombre.textContent = medicamento || "Medicamento sin nombre";
-    //         tdNombre.style.padding = "10px";
-    //         tdNombre.style.textAlign = "left";
-    //         tdNombre.style.width = "75%";
-
-    //         // Celda para el input de cantidad
-    //         const tdCantidad = document.createElement("td");
-    //         tdCantidad.style.padding = "10px";
-    //         tdCantidad.style.width = "25%";
-
-    //         // Crear input para la cantidad
-    //         const inputCantidad = document.createElement("input");
-    //         inputCantidad.type = "number";
-    //         inputCantidad.min = "1";
-    //         inputCantidad.dataset.medicamento = medicamento;
-    //         inputCantidad.id = inputIdMed;
-    //         inputCantidad.className = "input-cantidad-medicamento";
-    //         inputCantidad.style.width = "100px";
-    //         inputCantidad.style.padding = "5px";
-    //         inputCantidad.style.textAlign = "center";
-    //         inputCantidad.style.borderRadius = "4px";
-    //         inputCantidad.style.border = "1px solid #ccc";
-
-    //         // Agregar input a la celda
-    //         tdCantidad.appendChild(inputCantidad);
-
-    //         // Agregar celdas a la fila
-    //         row.appendChild(tdNombre);
-    //         row.appendChild(tdCantidad);
-
-    //         // Agregar fila al cuerpo de la tablaMedicamentos
-    //         tbody.appendChild(row);
-    //     }
-
-    //     // Agregar cuerpo a la tablaMedicamentos
-    //     tablaMedicamentos.appendChild(tbody);
-
-    //     // Agregar la tablaMedicamentos al div
-    //     divCantidadMedicamentos.appendChild(tablaMedicamentos);
-    // }
 
 
     function mostrarVacunas(vacunas) {
@@ -1486,4 +1388,28 @@
         }
 
     }
+
+    function obtenerValoresMedicamentos() {
+        const medicamentosData = [];
+        const tarjetas = document.querySelectorAll(".card-medicamento");
+
+        console.log(tarjetas);
+
+        tarjetas.forEach((card, index) => {
+            console.log(card);
+            const medicamentoObj = {
+                nombre: card.querySelector("h5").textContent,
+                frecuencia: document.getElementById(`frecuencia-${index}`).value,
+                duracion: document.getElementById(`duracion-${index}`).value,
+                indicaciones: document.getElementById(`indicaciones-${index}`).value
+            };
+            medicamentosData.push(medicamentoObj);
+        });
+
+        console.log(medicamentosData); // Aquí puedes enviarlo a un servidor o usarlo en otra parte de tu sistema.
+    }
+
+    document.getElementById('finishStep').addEventListener('click', function() {
+        obtenerValoresMedicamentos();
+    });
 </script>

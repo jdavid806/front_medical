@@ -40,7 +40,7 @@ include "../header.php";
                         </button>
 
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevoMedicamento">Medicamento</a>
+                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevoMedicamentoInv">Medicamento</a>
 
                             <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalNuevaVacuna">Vacuna</a>
 
@@ -132,6 +132,7 @@ include "../header.php";
 <?php include "../footer.php";
 include "./modal/modalNuevoProducto.php";
 include "./modal/modalNuevoInsumo.php";
+include "./modal/modalNuevoMedicamentoInv.php";
 include "./modal/modalNuevoMedicamento.php";
 include "./modal/modalNuevaVacuna.php";
 include "./modal/modalInformaciónProducto.php";

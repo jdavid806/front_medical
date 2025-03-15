@@ -26,7 +26,7 @@ include "../header.php";
                             <div class="col-md-12">
                                 <h2 class="mb-3">Vacunas</h2>
                                 <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
-                                    data-bs-target="#modalVacuna">
+                                    data-bs-target="#modalNuevaVacuna">
                                     <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar Vacuna
                                 </button>
                             </div>
@@ -179,6 +179,7 @@ include "../header.php";
 
 <?php include "../footer.php";
 include "./modal/modalGrupoVacunas.php";
+include "./modal/modalNuevaVacuna.php";
 ?>
 
 

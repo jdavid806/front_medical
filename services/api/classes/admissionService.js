@@ -3,7 +3,7 @@ import BaseApiService from "./baseApiService.js";
 export class AdmissionService extends BaseApiService {
   async createAdmission(data, patientId) {
     return await this.httpClient.post(
-      `${this.microservice}/${this.endpoint}/${patientId}/create`,
+      `${this.microservice}/${this.endpoint}/new-store/${patientId}`,
       data,
       {
         headers: {
