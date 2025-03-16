@@ -2,6 +2,8 @@ import { userService } from "./api/index.js";
 
 const UserManager = (() => {
     let userData = null;
+    let permissions = null;
+    let menus = null;
     let authListeners = [];
 
     const decodeToken = (token) => {
@@ -26,7 +28,10 @@ const UserManager = (() => {
         try {
             const decoded = decodeToken(token);
             const data = await userService.getByExternalId(decoded.sub);
-            userData = data;
+            const { role, ...rest } = data;
+            userData = rest;
+            permissions = role.permissions;
+            menus = role.menus;
             localStorage.setItem('userData', JSON.stringify(data));
             notifyAuthChange(true);
             return data;
@@ -38,7 +43,7 @@ const UserManager = (() => {
     };
 
     const notifyAuthChange = (isAuthenticated) => {
-        authListeners.forEach(callback => callback(isAuthenticated, userData));
+        authListeners.forEach(callback => callback(isAuthenticated, userData, permissions, menus));
     };
 
     return {
@@ -52,6 +57,8 @@ const UserManager = (() => {
         },
 
         getUser: () => userData,
+        getPermissions: () => permissions,
+        getMenus: () => menus,
 
         refreshUser: async () => {
             return await fetchUserData();

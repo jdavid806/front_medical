@@ -39,99 +39,67 @@
       font-size: 0.8em;
       color: #555;
     }
-
-    .barcode img {
-      width: 100%;
-    }
-
-    .logo img {
-      width: 50px;
-      margin-bottom: 5px;
-    }
   </style>
 </head>
 
 <body>
   <div class="receipt-container">
-    <!-- Logo y datos de la empresa -->
-    <div class="logo"><img src="logo.png" alt="Logo Empresa"></div>
-    <div class="fw-bold">FARMACIA DELIVERY</div>
-    <div>Av. Principal 123, Ciudad</div>
-    <div>Tel: +1 234 567 890</div>
+    <div class="fw-bold"> <?php echo $empresa_nombre; ?> </div>
+    <div> <?php echo $empresa_direccion; ?> </div>
+    <div>Tel: <?php echo $empresa_telefono; ?> </div>
 
     <div class="receipt-divider"></div>
 
-    <!-- Datos del paciente -->
-    <div>Cliente: Sophia Anderson</div>
-    <div>Tel: +1 888 8888 8888</div>
-
-    <div class="receipt-divider"></div>
-
-    <!-- Título de recibo -->
     <div class="fw-bold">RECIBO DE CAJA</div>
-    <div>Fecha impresión: 27/02/2025 14:45</div>
-    <div>Fecha factura: 27/02/2025 14:40</div>
-    <div>Comprobante: #12346</div>
-    <div>Autorización: 987654321</div>
-    <div>Fecha autorización: 27/02/2025 14:35</div>
+    <div>Fecha impresión: <?php echo $fecha_impresion; ?> </div>
+    <div>Fecha factura: <?php echo $fecha_factura; ?> </div>
+    <div>Nro. Comprobante: <?php echo $numero_comprobante; ?> </div>
+    <div>Autorización: <?php echo $numero_autorizacion; ?> </div>
+    <div>Fecha autorización: <?php echo $fecha_autorizacion; ?> </div>
 
     <div class="receipt-divider"></div>
 
-    <!-- Ítems a facturar -->
-    <div class="d-flex">
-      <span>Amoxicilina 500mg</span>
-      <span>$12.99</span>
-    </div>
-    <div class="small">1 caja x $12.99</div>
-
-    <div class="d-flex">
-      <span>Loratadina 10mg</span>
-      <span>$17.50</span>
-    </div>
-    <div class="small">2 cajas x $8.75</div>
-
-    <div class="d-flex">
-      <span>Omeprazol 20mg</span>
-      <span>$9.25</span>
-    </div>
-    <div class="small">1 caja x $9.25</div>
+    <div class="fw-bold">Datos del Paciente</div>
+    <div>Nombre: <?php echo $paciente_nombre; ?> </div>
+    <div>Documento: <?php echo $paciente_documento; ?> </div>
 
     <div class="receipt-divider"></div>
 
-    <!-- Totales -->
+    <div class="fw-bold">Items Facturados</div>
+    <?php foreach ($related_invoice['details'] as $item): ?>
+      <div class="d-flex">
+        <span><?php echo $item['quantity'] . 'x ' . $item['amount']; ?></span>
+        <span>$<?php echo $item['unit_price']; ?></span>
+      </div>
+    <?php endforeach; ?>
+
+    <div class="receipt-divider"></div>
+
     <div class="d-flex">
       <span>Subtotal:</span>
-      <span>$39.74</span>
+      <span>$<?php echo $subtotal; ?></span>
     </div>
     <div class="d-flex">
-      <span>Impuestos (10%):</span>
-      <span>$3.97</span>
+      <span>IVA (10%):</span>
+      <span>$<?php echo $iva; ?></span>
     </div>
     <div class="d-flex">
       <span>Descuento:</span>
-      <span>-$5.00</span>
+      <span>-$<?php echo $descuento; ?></span>
     </div>
     <div class="d-flex fw-bold">
       <span>TOTAL:</span>
-      <span>$38.71</span>
+      <span>$<?php echo $total; ?></span>
     </div>
 
     <div class="receipt-divider"></div>
 
-    <!-- Métodos de pago -->
-    <div>Método de pago: Tarjeta de crédito</div>
-    <div>Pago recibido: $38.71</div>
-    <div>Vuelto: $0.00</div>
+    <div>Método de pago: <?php echo $pago_metodo; ?></div>
+    <div>Pago: $<?php echo $pago_monto; ?></div>
 
     <div class="receipt-divider"></div>
 
-    <!-- Mensaje de agradecimiento -->
-    <div>¡Gracias por su compra!</div>
-    <div>Para dudas o reclamos: soporte@farmacia.com</div>
-
-    <div class="barcode">
-      <img src="barcode.png" alt="Código de barras">
-    </div>
+    <div><?php echo $footer_mensaje; ?></div>
   </div>
 </body>
 

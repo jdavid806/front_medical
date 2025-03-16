@@ -219,3 +219,5 @@ RewriteRule ^gestion-turnos$  turnos/gestionTurnos.php
 RewriteRule ^panel-encuesta$  encuestas/encuentas.php
 
 RewriteRule ^remisiones$  Remisiones/remisiones.php
+
+RewriteRule ^noAutorizado$ Pagesphp/unauthorized.php

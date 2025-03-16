@@ -60,14 +60,14 @@ async function guardarDatos(url, datos) {
 
     const resultado = await respuesta.json();
 
+    console.log(resultado);
+
     Swal.fire({
       icon: "success",
       title: "¡Guardado exitosamente!",
       text: "Los datos se han guardado correctamente.",
       timer: 2000,
       showConfirmButton: false,
-    }).then(() => {
-      location.reload();
     });
     return resultado;
   } catch (error) {
@@ -95,6 +95,7 @@ async function actualizarDatos(url, datos) {
     });
 
     const resultado = await respuesta.json();
+    console.log(resultado);
 
     // Notificación de éxito
     Swal.fire({
@@ -103,8 +104,6 @@ async function actualizarDatos(url, datos) {
       text: "Los datos se han actualizado correctamente.",
       timer: 2000,
       showConfirmButton: false,
-    }).then(() => {
-      location.reload();
     });
     return resultado;
   } catch (error) {
@@ -359,7 +358,6 @@ function calcularDiferenciaDias(start_date, end_date) {
 
   return diferenciaDias;
 }
-
 
 //datos variables
 

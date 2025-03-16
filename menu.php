@@ -238,9 +238,68 @@ $_SESSION["ID"] = 1;
     }
   </style>
 
+  <script type="module">
+    import UserManager from "./services/userManager.js";
+    import {
+      menuService,
+      permissionService
+    } from "./services/api/index.js";
+
+    UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
+      console.log(isAuthenticated, user, userPermissions, userMenus);
+      const menusFromService = await menuService.getAll()
+
+      if (user && userPermissions && userMenus) {
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.add('d-none');
+
+        const checkPermission = (key) => userPermissions.map(p => p.key).includes(key);
+        const checkMenu = (key) => userMenus.map(m => m.key).includes(key);
+
+        document.querySelectorAll('[data-permission-role]').forEach(element => {
+          const permissionKey = element.dataset.permissionRole;
+
+          if (permissionKey && !checkPermission(permissionKey)) {
+            element.remove()
+          }
+        })
+
+        document.querySelectorAll('[data-menu-role]').forEach(element => {
+          const menuKey = element.dataset.menuRole;
+
+          if (menuKey && !checkMenu(menuKey)) {
+            element.remove()
+          };
+        })
+
+        const fullPath = window.location.pathname;
+        const parts = fullPath.split('/').filter(part => part !== '');
+        const firstPart = parts[0] || '';
+        const menuRouteFromService = menusFromService.find(menu => menu.route === firstPart).route;
+
+        if (!userMenus.find(menu => menu.route === firstPart || !menuRouteFromService)) {
+          window.location.href = 'noAutorizado';
+        }
+      }
+    });
+  </script>
 </head>
 
 <body>
+  <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" id="loading-screen">
+    <div class="text-center d-flex flex-column gap-2 justify-content-center align-items-center">
+      <img src="/logo_monaros_sinbg_light.png" alt="phoenix" width="125">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+  <style>
+    #loading-screen {
+      background: #fff;
+      z-index: 100000;
+    }
+  </style>
   <script type="importmap">
     {
     "imports": {

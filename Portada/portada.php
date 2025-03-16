@@ -63,7 +63,7 @@ $baner = "";
       <?php endif ?>
       <div class="row justify-content-center g-4">
 
-        <div class="col-12 col-md-auto text-secondary-lighter">
+        <div class="col-12 col-md-auto text-secondary-lighter" data-menu-role="pacientes">
           <div class="card bg-secondary text-secondary-lighter" style="max-width:18rem;">
             <div class="card-body bg-secondary">
               <h5 class="card-title text-secondary-lighter"><span data-feather="user"></span> Pacientes</h5>
@@ -239,7 +239,12 @@ $baner = "";
     doctorSelect.addEventListener('change', filterCalendar);
 
     const patientsCount = await patientService.activeCount();
-    document.getElementById('patientsActiveCount').textContent = patientsCount;
+    const patientsActiveCount = document.getElementById('patientsActiveCount');
+
+    if (patientsActiveCount) {
+      patientsActiveCount.textContent = patientsCount;
+    }
+
     const appointmentsCount = await appointmentService.activeCount();
     console.log('citas activas:', appointmentsCount);
 

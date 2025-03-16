@@ -917,24 +917,6 @@ M. Castro c:
 <script src="Configuracion/js/CrudImpuestos.js"></script>
 <script src="Configuracion/js/CrudRecargos.js"></script>
 <script src="Configuracion/js/CrudTenant.js"></script>
-<script type="module">
-  import UserManager from "./services/userManager.js";
-</script>
-<script>
-  function checkPermission(type, key) {
-    const permissions = JSON.parse(sessionStorage.getItem('permissions'));
-    const menus = JSON.parse(sessionStorage.getItem('menus'));
-
-    if (permissions && menus) {
-      const menu = menus.find(menu => menu.name === type);
-      if (menu) {
-        return menu.permissions.find(permission => permission.name === key);
-      }
-    }
-
-    return false;
-  }
-</script>
 
 <!-- funcionex textarea -->
 <!-- <script src="apiVoz_4.0.js"></script> -->
@@ -987,6 +969,7 @@ M. Castro c:
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
 <!-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6.3.1-12/skins/ui/oxide/skin.min.css"
   referrerpolicy="origin"></script> -->
+
 </body>
 
 </html>
