@@ -473,7 +473,7 @@
 
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('.tableDataTableSearch').DataTable({
       paging: true, // Habilita la paginación
       pageLength: 5, // Número de filas por página
@@ -504,7 +504,7 @@
           "sSortDescending": ": activar para ordenar la columna de manera descendente"
         }
       },
-      "drawCallback": function(settings) {
+      "drawCallback": function (settings) {
         // Personaliza los botones de paginación después de que DataTables se haya inicializado
         $('.dataTables_paginate .paginate_button').addClass('btn btn-primary');
         $('.dataTables_paginate .paginate_button.disabled').addClass('btn btn-primary');
@@ -539,7 +539,7 @@
         'columnWhere': columnWhere,
         'idWhere': idWhere
       },
-      success: function(response) {
+      success: function (response) {
         response = response.trim();
         if (response == "ok") {
           if (toast) {
@@ -567,13 +567,14 @@
           }
         }
       },
-      error: function(xhr, status, error) {}
+      error: function (xhr, status, error) {
+      }
     })
   }
 </script>
 <script>
   // Definir la función selectMaster
-  $.fn.selectMaster = function(config = null) {
+  $.fn.selectMaster = function (config = null) {
     this.select2();
     this.empty();
     this.append('<option value="0" >-- Seleccione --</option>');
@@ -593,7 +594,7 @@
           valorInput: btoa(config['valorInput']),
           selected: (config['selected'] != '0' ? btoa(config['selected']) : '0'),
         },
-        success: function(response) {
+        success: function (response) {
           let data = JSON.parse(response);
 
 
@@ -633,7 +634,7 @@
     // Definir una función de debouncing
     function debounce(func, delay) {
       let timer;
-      return function() {
+      return function () {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
@@ -643,13 +644,13 @@
       };
     }
 
-    this.on('select2:open', function(e) {
+    this.on('select2:open', function (e) {
       // Verificar que todos los datos de config existan
       if (config && config['campoValue'] && config['campoTexto'] && config['tabla']) {
         // buscarDatos(true);
         var $searchField = $select.data('select2').dropdown.$search || $select.data('select2').dropdown.$searchbox;
         // Evento input para el campo de búsqueda con debouncing
-        $searchField.off('input').on('input', debounce(function() {
+        $searchField.off('input').on('input', debounce(function () {
           var searchText = $(this).val();
           config['valorInput'] = searchText;
           $select.empty();
@@ -688,7 +689,7 @@
 </div>
 
 <script>
-  window.createDoughnutChart = function(
+  window.createDoughnutChart = function (
     elementId,
     titleText,
     titleSubtext,
@@ -737,7 +738,7 @@
           position: "outside",
           formatter: "{b}: {d}%",
         },
-      }, ],
+      },],
     };
 
     // Usar la configuración para inicializar el gráfico
@@ -778,7 +779,7 @@
       visible,
       callback = false
     } = JSON.parse(atob(jsonB64));
-    $("#contentOffCanvasMaster").find("textarea, input, select").each(function() {
+    $("#contentOffCanvasMaster").find("textarea, input, select").each(function () {
       let idElemento = $(this).attr("id");
       if (idElemento) {
         data[idElemento] = $(this).val();
@@ -790,7 +791,7 @@
       type: "POST",
       url: atob(ajaxB64),
       data,
-      success: function(response) {
+      success: function (response) {
         const dataJson = JSON.parse(response);
         const {
           icon,
@@ -819,7 +820,7 @@
 
         }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
 
       }
     })
@@ -862,21 +863,16 @@ M. Castro c:
 <script type="module">
   import React from "react";
   import ReactDOMClient from "react-dom/client";
-  import {
-    Editor
-  } from "primereact/editor";
+  import { Editor } from "primereact/editor";
 
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".rich-text-react").forEach((element) => {
       ReactDOMClient.createRoot(element).render(
-        React.createElement(Editor, {
-          style: {
-            height: "400px"
-          }
-        })
+        React.createElement(Editor, { style: { height: "400px" } })
       );
     });
   });
+
 </script>
 
 <script>
@@ -931,7 +927,7 @@ M. Castro c:
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     // tonifyTurn(9, 13);
     // crearDocumento(3, "Impresion", "ordenMedica", "Completa", "Orden Medica");
   });
@@ -944,14 +940,14 @@ M. Castro c:
 <!-- ===============================================-->
 <!--    JavaScripts-->
 <!-- ===============================================-->
-
+ 
 <script src="<?= $BASE ?>vendors/popper/popper.min.js"></script>
 <script src="<?= $BASE ?>vendors/bootstrap/bootstrap.min.js"></script>
 <script src="<?= $BASE ?>vendors/anchorjs/anchor.min.js"></script>
 <script src="<?= $BASE ?>vendors/is/is.min.js"></script>
 <script src="<?= $BASE ?>vendors/fontawesome/all.min.js"></script>
 <script src="<?= $BASE ?>vendors/lodash/lodash.min.js"></script>
-<script src="<?= $BASE ?>vendors/list.js/list.min.js"></script>
+<!-- <script src="<?= $BASE ?>vendors/list.js/list.min.js"></script> -->
 <script src="<?= $BASE ?>vendors/feather-icons/feather.min.js"></script>
 <script src="<?= $BASE ?>vendors/dayjs/dayjs.min.js"></script>
 <script src="<?= $BASE ?>vendors/leaflet/leaflet.js"></script>
@@ -969,7 +965,6 @@ M. Castro c:
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
 <!-- <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6.3.1-12/skins/ui/oxide/skin.min.css"
   referrerpolicy="origin"></script> -->
-
 </body>
 
 </html>

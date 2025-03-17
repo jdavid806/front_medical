@@ -17,6 +17,9 @@ import { Calendar } from "primereact/calendar";
 import { Nullable } from "primereact/ts-helpers";
 import { CustomFormModal } from "../components/CustomFormModal";
 import { PreadmissionForm } from "./PreadmissionForm";
+import { PrintTableAction } from "../components/table-actions/PrintTableAction";
+import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
+import { ShareTableAction } from "../components/table-actions/ShareTableAction";
 
 export const AppointmentsTable: React.FC = () => {
   const { appointments } = useFetchAppointments(appointmentService.active());
@@ -102,7 +105,6 @@ export const AppointmentsTable: React.FC = () => {
 
   const slots = {
     6: (cell, data: AppointmentTableItem) => {
-      console.log("citas validacion:", data);
       const color =
         appointmentStatesColors[data.stateId] ||
         appointmentStateColorsByKey[data.stateKey];
@@ -215,6 +217,27 @@ export const AppointmentsTable: React.FC = () => {
                   </a>
                 </li>
               ))}
+            <hr />
+            <PrintTableAction
+              onTrigger={() => {
+                //@ts-ignore
+                generateInvoice(data.id, false);
+              }}
+            ></PrintTableAction>
+            <DownloadTableAction
+              onTrigger={() => {
+                //@ts-ignore
+                generateInvoice(data.id, true);
+              }}
+            ></DownloadTableAction>
+            <ShareTableAction
+              shareType="whatsapp"
+              onTrigger={() => console.log("compartir por whatsapp")}
+            ></ShareTableAction>
+            <ShareTableAction
+              shareType="email"
+              onTrigger={() => console.log("compartir por correo")}
+            ></ShareTableAction>
           </ul>
         </div>
       </div>
@@ -328,9 +351,12 @@ export const AppointmentsTable: React.FC = () => {
         formId={"createPreadmission"}
         show={showFormModal.isShow}
         onHide={handleHideFormModal}
-        title="Crear Preadmision"
+        title={"Crear Preadmision" + " - " + showFormModal.data["patientName"]}
       >
-        <PreadmissionForm initialValues={showFormModal.data}></PreadmissionForm>
+        <PreadmissionForm
+          initialValues={showFormModal.data}
+          formId="createPreadmission"
+        ></PreadmissionForm>
       </CustomFormModal>
     </>
   );

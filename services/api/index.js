@@ -35,6 +35,7 @@ import { PackagesService } from "./classes/packagesService.js";
 import ClinicalRecordService from "./classes/clinicalRecordService.js";
 import { UserService } from "./classes/userService.js";
 import { UserRoleService } from "./classes/userRoleService.js";
+import { HistoryPreadmissionService } from "./classes/historyPreadmissionService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -130,7 +131,10 @@ export const moduleService = new BaseApiService("medical", "modules");
 
 export const entityService = new BaseApiService("medical", "entities");
 export const userRolesService = new UserRoleService("medical", "user-roles");
-export const specializablesService = new BaseApiService("medical", "specializables");
+export const specializablesService = new BaseApiService(
+  "medical",
+  "specializables"
+);
 
 /* Countries */
 
@@ -203,3 +207,7 @@ export const suppliesService = new SuppliesService("api/v1/admin");
 export const farmaciaService = new FarmaciaService("medical");
 
 export const packagesService = new PackagesService("api/v1/admin");
+export const historyPreadmission = new HistoryPreadmissionService(
+  "medical",
+  "history-preadmissions"
+);

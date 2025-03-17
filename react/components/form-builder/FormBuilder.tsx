@@ -39,6 +39,8 @@ export const FormBuilder: React.FC<FormBuilderProps> = forwardRef(({ form }, ref
                 .map((card: any, index) => ({
                     ...Object.assign(card, { id: `card-${index}` }),
                     fields: card.fields.map((field: any) => {
+                        console.log(field);
+
                         initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
                         if (field.type === 'checkbox' && field.toggleFields) {
                             field.toggleFields.forEach((subField: any) => {

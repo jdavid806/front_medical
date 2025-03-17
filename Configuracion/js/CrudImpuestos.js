@@ -38,15 +38,20 @@ async function cargarImpuestos() {
 async function eliminarImpuesto(id) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-charges/${id}`;
   EliminarDatos(url);
+  cargarImpuestos();
 }
 
 async function updateImpuesto(id, impuesto) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-charges/${id}`;
   actualizarDatos(url, impuesto);
+  $("#crearImpuesto").modal("hide");
+  cargarImpuestos();
 }
 
 async function createImpuesto(impuesto) {
   guardarDatos(obtenerRutaPrincipal() + "/api/v1/admin/tax-charges/", impuesto);
+  $("#crearImpuesto").modal("hide");
+  cargarImpuestos();
 }
 
 function editarImpuesto(id, name, porcentaje, accountin_account, description) {

@@ -200,6 +200,7 @@ RewriteRule ^Factura_entidad$  Citas/EntidadView.php
 
 RewriteRule ^homeVacunacion$  vacunas/homeVacunacion.php
 
+RewriteRule ^homeInventario$  Inventario/homeInventario.php
 RewriteRule ^inventarioGeneral$  Inventario/inventarioGeneral.php
 RewriteRule ^inventarioMedicamentos$  Inventario/inventarioMedicamentos.php
 RewriteRule ^inventarioVacunas$  Inventario/inventarioVacunas.php
@@ -210,6 +211,7 @@ RewriteRule ^paquetes$  Paquetes/verPaquetes.php
 RewriteRule ^solicitarInsumos$  Inventario/solicitudInsumos.php
 
 #Farmacioa
+RewriteRule ^homeFarmacia$  Farmacia/homeFarmacia.php
 RewriteRule ^caja$  Caja/caja.php
 RewriteRule ^farmacia$  Farmacia/entregaMedicamentos.php
 RewriteRule ^insumos$  Farmacia/entregaInsumos.php
@@ -221,3 +223,5 @@ RewriteRule ^panel-encuesta$  encuestas/encuentas.php
 RewriteRule ^remisiones$  Remisiones/remisiones.php
 
 RewriteRule ^noAutorizado$ Pagesphp/unauthorized.php
+
+RewriteRule ^homeMarketing$ Marketing/homeMarketing.php

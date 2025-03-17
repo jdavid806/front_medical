@@ -46,11 +46,14 @@ async function cargarMetodosPago() {
 async function eliminarMetodo(id) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/payment-methods/${id}`;
   EliminarDatos(url);
+  cargarMetodosPago();
 }
 
 async function updateMetodoPago(id, metodoPago) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/payment-methods/${id}`;
   actualizarDatos(url, metodoPago);
+  $("#crearMetodoPago").modal("hide");
+  cargarMetodosPago();
 }
 
 async function createMetodoPago(metodoPago) {
@@ -58,6 +61,8 @@ async function createMetodoPago(metodoPago) {
     obtenerRutaPrincipal() + "/api/v1/admin/payment-methods/",
     metodoPago
   );
+  $("#crearMetodoPago").modal("hide");
+  cargarMetodosPago();
 }
 
 function editarMetodo(id, method, accounting_account, bank, description) {

@@ -6,6 +6,7 @@ export const useFetchAppointments = (
   customMapper?: (dto: AppointmentDto) => AppointmentTableItem
 ) => {
   const defaultMapper = (appointment: AppointmentDto): AppointmentTableItem => {
+    console.log("citas 2", appointment);
     const doctorFirstName = appointment.user_availability.user.first_name;
     const doctorMiddleName = appointment.user_availability.user.middle_name;
     const doctorLastName = appointment.user_availability.user.last_name;

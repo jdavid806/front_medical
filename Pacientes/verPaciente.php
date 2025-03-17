@@ -39,6 +39,7 @@ $tabs = [
   ['icono' => 'fas fa-user-nurse', 'titulo' => 'Notas de Enfermeria', 'texto' => 'Revisa las notas de enfermeria del paciente', 'url' => 'enfermeria?patient_id=' . $_GET['id']],
   ['icono' => 'fas fa-external-link-alt', 'titulo' => 'Evoluciones', 'texto' => 'Revisa la evoluciones del paciente', 'url' => 'evoluciones?patient_id=' . $_GET['id']],
   ['icono' => 'fas fa-retweet', 'titulo' => 'Remisiones', 'texto' => 'Revisa la remisiones del paciente', 'url' => 'remisiones?patient_id=' . $_GET['id']],
+  ['icono' => 'far fa-address-book', 'titulo' => 'Preadmisiones', 'texto' => 'Revisa las preadmisiones del paciente', 'url' => 'preadmisiones?patient_id=' . $_GET['id']],
 ];
 
 ?>

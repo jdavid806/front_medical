@@ -9,6 +9,9 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { PreadmissionForm } from "./PreadmissionForm.js";
+import { PrintTableAction } from "../components/table-actions/PrintTableAction.js";
+import { DownloadTableAction } from "../components/table-actions/DownloadTableAction.js";
+import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
 export const AppointmentsTable = () => {
   const {
     appointments
@@ -94,7 +97,6 @@ export const AppointmentsTable = () => {
   };
   const slots = {
     6: (cell, data) => {
-      console.log("citas validacion:", data);
       const color = appointmentStatesColors[data.stateId] || appointmentStateColorsByKey[data.stateKey];
       const text = appointmentStates[data.stateId] || appointmentStatesByKey[`${data.stateKey}.${data.attentionType}`] || appointmentStatesByKey[data.stateKey];
       return /*#__PURE__*/React.createElement("span", {
@@ -175,7 +177,23 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))))))
+    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(PrintTableAction, {
+      onTrigger: () => {
+        //@ts-ignore
+        generateInvoice(data.id, false);
+      }
+    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
+      onTrigger: () => {
+        //@ts-ignore
+        generateInvoice(data.id, true);
+      }
+    }), /*#__PURE__*/React.createElement(ShareTableAction, {
+      shareType: "whatsapp",
+      onTrigger: () => console.log("compartir por whatsapp")
+    }), /*#__PURE__*/React.createElement(ShareTableAction, {
+      shareType: "email",
+      onTrigger: () => console.log("compartir por correo")
+    }))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "accordion mb-3"
@@ -270,8 +288,9 @@ export const AppointmentsTable = () => {
     formId: "createPreadmission",
     show: showFormModal.isShow,
     onHide: handleHideFormModal,
-    title: "Crear Preadmision"
+    title: "Crear Preadmision" + " - " + showFormModal.data["patientName"]
   }, /*#__PURE__*/React.createElement(PreadmissionForm, {
-    initialValues: showFormModal.data
+    initialValues: showFormModal.data,
+    formId: "createPreadmission"
   })));
 };

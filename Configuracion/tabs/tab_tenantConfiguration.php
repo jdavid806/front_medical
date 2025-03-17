@@ -52,9 +52,9 @@
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="contacto-tab" data-bs-toggle="tab" data-bs-target="#contacto-tab-pane"
-            type="button" role="tab" aria-controls="contacto-tab-pane" aria-selected="false">
-            <i class="fa-solid fa-address-book"></i> Contacto
+          <button class="nav-link" id="representante-tab" data-bs-toggle="tab" data-bs-target="#representante-tab-pane"
+            type="button" role="tab" aria-controls="representante-tab-pane" aria-selected="false">
+            <i class="fa-solid fa-address-book"></i> Representante
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -78,52 +78,6 @@
         <div class="tab-pane fade show active" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab">
 
           <form class="row g-3 needs-validation" novalidate id="form-general">
-            <h5>Datos Representante</h5>
-            <div class="col-12">
-              <label class="form-label" for="nombre-representante">Nombre</label>
-              <input class="form-control" id="nombre-representante" name="nombre-representante" type="text"
-                placeholder="Jhon Doe" required>
-              <div class="invalid-feedback">El Nombre del Representante no puede estar Vacio.</div>
-            </div>
-            <div class="col-6">
-              <label class="form-label" for="telefono-representante">Telefono</label>
-              <input class="form-control" id="telefono-representante" name="telefono-representante" type="tel"
-                placeholder="+57 300 123 4567">
-            </div>
-            <div class="col-6">
-              <label class="form-label" for="correo-representante">Correo</label>
-              <input class="form-control" id="correo-representante" name="correo-representante" type="email"
-                placeholder="ejemplo@correo.com">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="tipoDocumento-representante">Tipo Documento</label>
-              <select class="form-control" id="tipoDocumento-representante" name="tipoDocumento-representante" required>
-                <option value="">Seleccione un tipo de documento</option>
-                <option value="passport">Pasaporte</option>
-                <option value="dni">Documento Nacional de Identidad (DNI)</option>
-                <option value="id-card">Tarjeta de Identificación (ID Card)</option>
-                <option value="ssn">Número de Seguro Social (SSN)</option>
-                <option value="curp">CURP</option>
-                <option value="rfc">RFC</option>
-                <option value="cedula">Cédula de Ciudadanía</option>
-                <option value="nit">NIT</option>
-                <option value="ine">INE</option>
-                <option value="cpf">CPF</option>
-                <option value="cuil">CUIL</option>
-                <option value="ruc">RUC</option>
-                <option value="run">RUN</option>
-                <option value="nif">NIF</option>
-                <option value="nie">NIE</option>
-                <option value="sin">SIN</option>
-              </select>
-              <div class="invalid-feedback">Seleccione un Tipo de Documento.</div>
-            </div>
-            <div class="col-6 mb-3">
-              <label class="form-label" for="documento-representante">Documento</label>
-              <input class="form-control" id="documento-representante" name="documento-representante" type="text"
-                placeholder="123456789" required>
-              <div class="invalid-feedback">El Documento del Representante no puede estar Vacio.</div>
-            </div>
             <h5>Datos Consultorio</h5>
             <div class="col-12">
               <label class="form-label" for="nombre-consultorio">Nombre Comercial</label>
@@ -146,7 +100,44 @@
               <label class="form-label" for="documento-consultorio">Documento</label>
               <input class="form-control" id="documento-consultorio" name="documento-consultorio" type="text"
                 placeholder="123456789" required>
-              <div class="invalid-feedback">El Documento del Representante no puede estar Vacio.</div>
+              <div class="invalid-feedback">El Documento del consultorio no puede estar Vacio.</div>
+            </div>
+            <h5>Configuración General</h5>
+            <div class="col-md-6">
+              <label class="form-label" for="telefono-consultorio">WhatsApp</label>
+              <input class="form-control" id="telefono-consultorio" name="telefono-consultorio" type="tel"
+                placeholder="+57 300 123 4567" required>
+              <div class="invalid-feedback">Ingrese un número de WhatsApp válido.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="correo-consultorio">Correo Electrónico</label>
+              <input class="form-control" id="correo-consultorio" name="correo-consultorio" type="email"
+                placeholder="ejemplo@correo.com" required>
+              <div class="invalid-feedback">Ingrese un correo electrónico válido.</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="direccion-consultorio">Dirección</label>
+              <input class="form-control" id="direccion-consultorio" name="direccion-consultorio" type="text"
+                placeholder="Ej: Calle 123 #45-67, Bogotá" required>
+              <div class="invalid-feedback">Ingrese una dirección válida.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="pais-consultorio">País</label>
+              <select class="form-control" id="pais-consultorio" name="pais-consultorio" required>
+                <option value="">Seleccione un país</option>
+                <option value="CO">Colombia</option>
+                <option value="MX">México</option>
+                <option value="AR">Argentina</option>
+                <option value="CL">Chile</option>
+                <option value="PE">Perú</option>
+              </select>
+              <div class="invalid-feedback">Seleccione un país.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="ciudad-consultorio">Ciudad</label>
+              <input class="form-control" id="ciudad-consultorio" name="ciudad-consultorio" type="text"
+                placeholder="Ej: Medellín" required>
+              <div class="invalid-feedback">Ingrese una ciudad válida.</div>
             </div>
             <div class="col-12">
               <label class="form-label">Logo</label>
@@ -367,44 +358,42 @@
 
         </div>
 
-        <div class="tab-pane fade" id="contacto-tab-pane" role="tabpanel" aria-labelledby="contacto-tab">
+        <div class="tab-pane fade" id="representante-tab-pane" role="tabpanel" aria-labelledby="representante-tab">
 
-          <form class="row g-3 needs-validation" novalidate id="form-contacto">
-            <div class="col-md-6">
-              <label class="form-label" for="telefono-consultorio">WhatsApp</label>
-              <input class="form-control" id="telefono-consultorio" name="telefono-consultorio" type="tel"
-                placeholder="+57 300 123 4567" required>
-              <div class="invalid-feedback">Ingrese un número de WhatsApp válido.</div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="correo-consultorio">Correo Electrónico</label>
-              <input class="form-control" id="correo-consultorio" name="correo-consultorio" type="email"
-                placeholder="ejemplo@correo.com" required>
-              <div class="invalid-feedback">Ingrese un correo electrónico válido.</div>
-            </div>
+          <form class="row g-3 needs-validation" novalidate id="form-representante">
             <div class="col-12">
-              <label class="form-label" for="direccion-consultorio">Dirección</label>
-              <input class="form-control" id="direccion-consultorio" name="direccion-consultorio" type="text"
-                placeholder="Ej: Calle 123 #45-67, Bogotá" required>
-              <div class="invalid-feedback">Ingrese una dirección válida.</div>
+              <label class="form-label" for="nombre-representante">Nombre</label>
+              <input class="form-control" id="nombre-representante" name="nombre-representante" type="text"
+                placeholder="Jhon Doe" required>
+              <div class="invalid-feedback">El Nombre del Representante no puede estar Vacio.</div>
+            </div>
+            <div class="col-6">
+              <label class="form-label" for="telefono-representante">Telefono</label>
+              <input class="form-control" id="telefono-representante" name="telefono-representante" type="tel"
+                placeholder="+57 300 123 4567">
+            </div>
+            <div class="col-6">
+              <label class="form-label" for="correo-representante">Correo</label>
+              <input class="form-control" id="correo-representante" name="correo-representante" type="email"
+                placeholder="ejemplo@correo.com">
             </div>
             <div class="col-md-6">
-              <label class="form-label" for="pais-consultorio">País</label>
-              <select class="form-control" id="pais-consultorio" name="pais-consultorio" required>
-                <option value="">Seleccione un país</option>
-                <option value="CO">Colombia</option>
-                <option value="MX">México</option>
-                <option value="AR">Argentina</option>
-                <option value="CL">Chile</option>
-                <option value="PE">Perú</option>
+              <label class="form-label" for="tipoDocumento-representante">Tipo Documento</label>
+              <select class="form-control" id="tipoDocumento-representante" name="tipoDocumento-representante" required>
+                <option value="">Seleccione un tipo de documento</option>
+                <option value="DNI">DNI</option>
+                <option value="RUC">RUC</option>
+                <option value="PASSPORT">PASAPORTE</option>
+                <option value="NIT">NIT</option>
+                <option value="CC">CEDULA DE CIUDADANIA</option>
               </select>
-              <div class="invalid-feedback">Seleccione un país.</div>
+              <div class="invalid-feedback">Seleccione un Tipo de Documento.</div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label" for="ciudad-consultorio">Ciudad</label>
-              <input class="form-control" id="ciudad-consultorio" name="ciudad-consultorio" type="text"
-                placeholder="Ej: Medellín" required>
-              <div class="invalid-feedback">Ingrese una ciudad válida.</div>
+            <div class="col-6 mb-3">
+              <label class="form-label" for="documento-representante">Documento</label>
+              <input class="form-control" id="documento-representante" name="documento-representante" type="text"
+                placeholder="123456789" required>
+              <div class="invalid-feedback">El Documento del Representante no puede estar Vacio.</div>
             </div>
             <div class="col-12">
               <button class="btn btn-primary" type="submit">Guardar</button>
@@ -570,18 +559,15 @@
         document_type: data.tipoDocumentoconsultorio,
         document_number: data.documentoconsultorio,
         logo: logoBase64,
-        watermark: marcaAguaBase64
+        watermark: marcaAguaBase64,
+        phone: data.telefonoconsultorio,
+        email: data.correoconsultorio,
+        address: data.direccionconsultorio,
+        country: data.paisconsultorio,
+        city: data.ciudadconsultorio
       };
-
-      let representative = {
-        name: data.nombrerepresentante,
-        phone: data.telefonorepresentante,
-        email: data.correorepresentante,
-        document_type: data.tipoDocumentorepresentante,
-        document_number: data.documentorepresentante,
-      };
-
-      createEmpresa(infoGeneral, representative);
+      updateEmpresa(infoGeneral);
+      cargarDatosTenant();
     });
 
     handleForm("form-fiscal", async (data) => {
@@ -594,6 +580,13 @@
         resolution_date: data.fechaResolucionFiscal,
         expiration_date: data.fechaVencimientoFiscal
       };
+
+      if (consultarConfigFacturaExiste(id)) {
+        updateTipoFacturas(id, infoGeneral);
+      } else {
+        createTipoFacturas(id, infoGeneral);
+      }
+      cargarDatosTenant();
     });
 
     // Manejar el formulario de Facturación Consumidor
@@ -607,6 +600,13 @@
         resolution_date: data.fechaResolucionConsumidor,
         expiration_date: data.fechaVencimientoConsumidor
       };
+
+      if (consultarConfigFacturaExiste(id)) {
+        updateTipoFacturas(id, infoGeneral);
+      } else {
+        createTipoFacturas(id, infoGeneral);
+      }
+      cargarDatosTenant();
     });
 
     // Manejar el formulario de Facturación Gubernamental
@@ -620,6 +620,13 @@
         resolution_date: data.fechaResolucionGubernamental,
         expiration_date: data.fechaVencimientoGubernamental
       };
+
+      if (consultarConfigFacturaExiste(id)) {
+        updateTipoFacturas(id, infoGeneral);
+      } else {
+        createTipoFacturas(id, infoGeneral);
+      }
+      cargarDatosTenant();
     });
 
     // Manejar el formulario de Notas de Crédito
@@ -633,22 +640,36 @@
         resolution_date: data.fechaResolucionNotaCredito,
         expiration_date: data.fechaVencimientoNotaCredito
       };
+
+      if (consultarConfigFacturaExiste(id)) {
+        updateTipoFacturas(id, infoGeneral);
+      } else {
+        createTipoFacturas(id, infoGeneral);
+      }
+      cargarDatosTenant();
     });
 
-    // Manejar el formulario de Contacto
-    handleForm("form-contacto", async (data) => {
-      let infoGeneral = {
-        phone: data.telefonoconsultorio,
-        email: data.correoconsultorio,
-        address: data.direccionconsultorio,
-        country: data.paisconsultorio,
-        city: data.ciudadconsultorio,
+    // Manejar el formulario de representante
+    handleForm("form-representante", async (data) => {
+
+      let representative = {
+        name: data.nombrerepresentante,
+        phone: data.telefonorepresentante,
+        email: data.correorepresentante,
+        document_type: data.tipoDocumentorepresentante,
+        document_number: data.documentorepresentante,
       };
+
+      if (consultarRepresentanteExiste()) {
+        updateRepresentante(representative);
+      } else {
+        createRepresentante(representative);
+      }
+      cargarDatosTenant();
     });
 
     // Manejar el formulario de Configuración SMTP
     handleForm("form-smtp", async (data) => {
-      console.log("Enviando datos de Configuración SMTP:", data);
       let infoGeneral = {
         smtp_server: data.smtpServidor,
         port: data.smtpPuerto,
@@ -656,6 +677,22 @@
         email: data.smtpUsuario,
         password: data.smtpClave
       };
+
+      let configSmtp = {
+        smtp_server: data.smtpServidor,
+        port: data.smtpPuerto,
+        security: data.smtpSeguridad,
+        email: data.smtpUsuario,
+        password: data.smtpClave
+      };
+
+      if (consultarSmtpExiste()) {
+        updateSmtp(configSmtp);
+      } else {
+        createSmtp(configSmtp);
+        cargarDatosTenant();
+      }
+      cargarDatosTenant();
     });
 
     consultarQR();
@@ -685,6 +722,7 @@
       });
 
       try {
+
         if (callback) {
           await callback(formDataObject);
         }

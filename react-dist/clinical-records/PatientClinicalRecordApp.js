@@ -22,7 +22,7 @@ export const PatientClinicalRecordApp = () => {
   const [specialtyClinicalRecords, setSpecialtyClinicalRecords] = useState([]);
   useEffect(() => {
     if (specializables && clinicalRecordTypes) {
-      const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && record.specializable_type === 'Historia Clínica').map(record => record.specializable_id.toString());
+      const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && ['Historia Clínica', 'clinical_record'].includes(record.specializable_type)).map(record => record.specializable_id.toString());
       const filteredClinicalRecords = clinicalRecordTypes.filter(record => specialtyClinicalRecordIds.includes(record.id.toString()));
       console.log(specialtyClinicalRecordIds, filteredClinicalRecords, clinicalRecords, clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
       setSpecialtyClinicalRecords(filteredClinicalRecords);

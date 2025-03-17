@@ -46,30 +46,62 @@
   <div class="receipt-container">
     <div class="fw-bold"> <?php echo $empresa_nombre; ?> </div>
     <div> <?php echo $empresa_direccion; ?> </div>
-    <div>Tel: <?php echo $empresa_telefono; ?> </div>
+    <div>
+      Tel:
+      <div>
+        <?php echo $empresa_telefono; ?>
+      </div>
+    </div>
+    <div>
+      email:
+      <div>
+        <?php echo $empresa_correo; ?>
+      </div>
+    </div>
 
     <div class="receipt-divider"></div>
 
     <div class="fw-bold">RECIBO DE CAJA</div>
-    <div>Fecha impresión: <?php echo $fecha_impresion; ?> </div>
-    <div>Fecha factura: <?php echo $fecha_factura; ?> </div>
-    <div>Nro. Comprobante: <?php echo $numero_comprobante; ?> </div>
-    <div>Autorización: <?php echo $numero_autorizacion; ?> </div>
-    <div>Fecha autorización: <?php echo $fecha_autorizacion; ?> </div>
+    <hr>
+    <div><span class="fw-bold">Fecha impresión:</span>
+      <div><?php echo $fecha_impresion; ?></div>
+    </div>
+    <div><span class="fw-bold">Fecha factura:</span>
+      <div><?php echo $fecha_factura; ?></div>
+    </div>
+    <div><span class="fw-bold">Nro. Comprobante:</span>
+      <div><?php echo $numero_comprobante; ?></div>
+    </div>
+    <div><span class="fw-bold">Nro. Comprobante:</span>
+      <div><?php echo $numero_autorizacion; ?></div>
+    </div>
+    <div><span class="fw-bold">Fecha autorización:</span>
+      <div><?php echo $fecha_autorizacion; ?></div>
+    </div>
+    <hr>
 
     <div class="receipt-divider"></div>
 
     <div class="fw-bold">Datos del Paciente</div>
-    <div>Nombre: <?php echo $paciente_nombre; ?> </div>
-    <div>Documento: <?php echo $paciente_documento; ?> </div>
-
+    <div>
+      <span class="fw-bold">Nombre: </span>
+      <div>
+        <?php echo $paciente_nombre; ?>
+      </div>
+    </div>
+    <div>
+      <span class="fw-bold">Documento: </span>
+      <div>
+        <?php echo $paciente_documento; ?>
+      </div>
+    </div>
+    <hr>
     <div class="receipt-divider"></div>
 
     <div class="fw-bold">Items Facturados</div>
-    <?php foreach ($related_invoice['details'] as $item): ?>
+    <?php foreach ($detalle_items as $item): ?>
       <div class="d-flex">
-        <span><?php echo $item['quantity'] . 'x ' . $item['amount']; ?></span>
-        <span>$<?php echo $item['unit_price']; ?></span>
+        <span>$<?php echo $item; ?></span>
       </div>
     <?php endforeach; ?>
 
@@ -92,9 +124,19 @@
       <span>$<?php echo $total; ?></span>
     </div>
 
+    <hr>
     <div class="receipt-divider"></div>
 
-    <div>Método de pago: <?php echo $pago_metodo; ?></div>
+    <?php foreach ($payment_methods as $pago): ?>
+      <div class="d-flex justify-content-between">
+        <span><?php echo $pago['metodo']; ?></span>
+        <span><?php echo $pago['fecha']; ?></span>
+        <span>$<?php echo number_format($pago['monto'], decimals: 2); ?></span>
+        <span><?php echo $pago['notas']; ?></span>
+        <span>Ref: <?php echo $pago['referencia']; ?></span>
+        <span>Banco: <?php echo $pago['banco']; ?></span>
+      </div>
+    <?php endforeach; ?>
     <div>Pago: $<?php echo $pago_monto; ?></div>
 
     <div class="receipt-divider"></div>

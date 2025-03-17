@@ -35,12 +35,14 @@ async function cargarConsentimientos() {
 async function eliminarConsentimiento(id) {
   let url = obtenerRutaPrincipal() + `/api/v1/firma/consents/${id}`;
   EliminarDatos(url);
-  cargarMetodosPago();
+  cargarConsentimientos();
 }
 
 async function updateConsentimiento(id, consentimeinto) {
   let url = obtenerRutaPrincipal() + `/api/v1/firma/consents/${id}`;
   actualizarDatos(url, consentimeinto);
+  $('#crearPlantilla').modal('hide');
+  cargarConsentimientos();
 }
 
 async function createConsentimiento(consentimiento) {
@@ -48,6 +50,8 @@ async function createConsentimiento(consentimiento) {
     obtenerRutaPrincipal() + "/api/v1/firma/consents/",
     consentimiento
   );
+  $('#crearPlantilla').modal('hide');
+  cargarConsentimientos();
 }
 
 function editarConsentimiento(id, title, template) {

@@ -1,11 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { useExamCategories } from '../../exam-categories/hooks/useExamCategories';
 import { FormBuilder } from '../../components/form-builder/FormBuilder';
 
 export type ExamTypeInputs = {
@@ -39,8 +37,6 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
         onHandleSubmit(data)
     }
 
-    const { examCategories } = useExamCategories()
-    const [dropdownExamCategories, setDropdownExamCategories] = useState<{ value: string, label: string }[]>([]);
     const [formConfig, setFormConfig] = useState<object | null>(null);
 
     const formBuilderRef = useRef<any>(null);
@@ -82,12 +78,6 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
 
         setFormConfig(initialData?.form_config || null);
     }, [initialData, reset]);
-
-    useEffect(() => {
-        setDropdownExamCategories(examCategories.map(item => ({
-            label: item.name, value: item.id
-        })))
-    }, [examCategories])
 
     return (
         <div>

@@ -43,6 +43,7 @@ async function eliminarCentroC(id) {
 async function updateCentroCosto(id, centroCosto) {
   let url = obtenerRutaPrincipal() + "/api/v1/admin/centres-cost/" + id;
   actualizarDatos(url, centroCosto);
+  $('#crearCentroCostos').modal('hide');
   cargarCentrosCosto();
 }
 
@@ -51,6 +52,8 @@ async function createCentroCosto(centroCosto) {
     obtenerRutaPrincipal() + "/api/v1/admin/centres-cost",
     centroCosto
   );
+  $('#crearCentroCostos').modal('hide');
+  cargarCentrosCosto()
 }
 
 function editarCentroC(id, name, code, description) {

@@ -97,6 +97,12 @@ include "../header.php";
             </a>
           </li>
           <li class="nav-item" role="presentation">
+            <a class="nav-link" id="user-absences-tab" data-bs-toggle="tab" href="#tab-user-absences" role="tab"
+              aria-controls="tab-user-absences" aria-selected="false">
+              <i class="fas fa-calendar-alt"></i> Ausencias Programadas
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
             <a class="nav-link" id="precios-tab" data-bs-toggle="tab" href="#tab-precios" role="tab"
               aria-controls="tab-precios" aria-selected="false">
               <i class="fas fa-dollar-sign"></i> Precios
@@ -161,6 +167,9 @@ include "../header.php";
           <div class="tab-pane fade" id="tab-horarios" role="tabpanel" aria-labelledby="horarios-tab">
             <?php //esto esta generando error en consola
             include "./includes/userAvailabilities.php"; ?>
+          </div>
+          <div class="tab-pane fade" id="tab-user-absences" role="tabpanel" aria-labelledby="user-absences-tab">
+            <?php include "./tabs/tab_userAbsencesConfiguration.php"; ?>
           </div>
           <div class="tab-pane fade" id="tab-precios" role="tabpanel" aria-labelledby="precios-tab">
             <?php include "./tabs/tab_pricesConfiguration.php"; ?>

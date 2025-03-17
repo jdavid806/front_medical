@@ -42,16 +42,20 @@ async function cargarEntidades() {
 async function eliminarEntidad(id) {
   let url = obtenerRutaPrincipal() + `/medical/entities/${id}`;
   EliminarDatos(url);
-  cargarMetodosPago();
+  cargarEntidades();
 }
 
 async function updateEntidad(id, entidad) {
   let url = obtenerRutaPrincipal() + `/medical/entities/${id}`;
   actualizarDatos(url, entidad);
+  $('#crearPlantilla').modal('hide');
+  cargarEntidades();
 }
 
 async function createEntidad(entidad) {
   guardarDatos(obtenerRutaPrincipal() + "/medical/entities", entidad);
+  $('#crearPlantilla').modal('hide');
+  cargarEntidades();
 }
 
 function editarEntidad(

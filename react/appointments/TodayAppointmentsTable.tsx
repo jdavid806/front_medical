@@ -15,13 +15,26 @@ interface TodayAppointmentsTableProps {
   onShareItem?: (id: string, title: string, type: string) => void;
 }
 
-export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ onPrintItem, onDownloadItem, onShareItem }) => {
-  const { appointments } = useFetchAppointments(
+export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
+  onPrintItem,
+  onDownloadItem,
+  onShareItem,
+}) => {
+  let { appointments } = useFetchAppointments(
     admissionService.getAdmisionsAll()
   );
 
+  const [filteredAppointments, setFilteredAppointments] = React.useState<
+    AppointmentTableItem[]
+  >([]);
+
   useEffect(() => {
-    console.log(appointments);
+    console.log("citas en admision:", appointments);
+    setFilteredAppointments(
+      appointments.filter((appointment) => appointment.stateId === "1")
+    );
+
+    console.log("filter:", appointments);
   }, [appointments]);
 
   const columns: ConfigColumns[] = [
@@ -40,8 +53,9 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
       console.log("cita admision:", data),
       (
         <span
-          className={`badge badge-phoenix ${data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
-            }`}
+          className={`badge badge-phoenix ${
+            data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
+          }`}
         >
           {data.status ? "Activo" : "Inactivo"}
         </span>
@@ -67,32 +81,6 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
             >
               Generar admisión
             </a>
-            <a className="dropdown-item" href="#">
-              Generar link de pago
-            </a>
-            <a className="dropdown-item" href="#">
-              Descargar Factura
-            </a>
-            <a className="dropdown-item" href="#">
-              Imprimir factura
-            </a>
-            <a className="dropdown-item" href="#">
-              Compartir por whatsapp y correo
-            </a>
-            <a className="dropdown-item" href="#">
-              Nota credito
-            </a>
-            <hr />
-            <PrintTableAction onTrigger={() => {
-              //@ts-ignore
-              generateInvoice(data.id, false);
-            }}></PrintTableAction>
-            <DownloadTableAction onTrigger={() => {
-              //@ts-ignore
-              generateInvoice(data.id, true);
-            }}></DownloadTableAction>
-            <ShareTableAction shareType="whatsapp" onTrigger={() => console.log("compartir por whatsapp")}></ShareTableAction>
-            <ShareTableAction shareType="email" onTrigger={() => console.log("compartir por correo")}></ShareTableAction>
           </div>
         </div>
       </div>
@@ -103,7 +91,11 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
     <>
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable columns={columns} data={appointments} slots={slots}>
+          <CustomDataTable
+            columns={columns}
+            data={filteredAppointments}
+            slots={slots}
+          >
             <thead>
               <tr>
                 <th className="border-top custom-th text-start">Nombre</th>

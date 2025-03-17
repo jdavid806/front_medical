@@ -146,8 +146,6 @@ async function EliminarDatos(url) {
           title: "¡Éxito!",
           text: "El recurso se eliminó correctamente.",
           confirmButtonText: "Aceptar",
-        }).then(() => {
-          location.reload();
         });
       } catch (error) {
         console.error("Error al eliminar el recurso:", error);

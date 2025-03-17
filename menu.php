@@ -268,17 +268,17 @@ $_SESSION["ID"] = 1;
           const menuKey = element.dataset.menuRole;
 
           if (menuKey && !checkMenu(menuKey)) {
-            element.remove()
+            //element.remove()
           };
         })
 
         const fullPath = window.location.pathname;
         const parts = fullPath.split('/').filter(part => part !== '');
         const firstPart = parts[0] || '';
-        const menuRouteFromService = menusFromService.find(menu => menu.route === firstPart).route;
+        const menuRouteFromService = menusFromService.find(menu => menu.route === firstPart)?.route;
 
         if (!userMenus.find(menu => menu.route === firstPart || !menuRouteFromService)) {
-          window.location.href = 'noAutorizado';
+          //window.location.href = 'noAutorizado';
         }
       }
     });

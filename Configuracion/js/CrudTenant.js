@@ -10,10 +10,6 @@ async function cargarDatosTenant() {
     if (datosEmpresa && datosEmpresa.data) {
       let dataEmpresa = datosEmpresa.data[0];
 
-      console.log("Debug");
-
-      console.log(dataEmpresa);
-
       // Asignar los datos a los campos del formulario de Información General
       document.getElementById("id_Empresa").value = dataEmpresa.id;
       document.getElementById("nombre-consultorio").value = dataEmpresa.name;
@@ -134,102 +130,116 @@ async function cargarDatosTenant() {
   }
 }
 
-async function createEmpresa(infoGeneral, representative) {
+// async function createEmpresa(infoGeneral, representative) {
+//   let rutaRepresentante =
+//     obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/representative`;
+
+//   let datosEmpresa = await obtenerDatos(rutaCompanie);
+//   let datosRepresentante = await obtenerDatos(rutaRepresentante);
+
+//   if (datosEmpresa && datosEmpresa.data && datosEmpresa.data.id) {
+//     actualizarDatos(rutaCompanie, infoGeneral);
+//   } else {
+//     let dataEnvio = { name: infoGeneral.name };
+//     await guardarDatos(rutaCompanie, dataEnvio);
+//   }
+
+//   if (
+//     !datosRepresentante ||
+//     !datosRepresentante.data ||
+//     (Array.isArray(datosRepresentante.data) &&
+//       datosRepresentante.data.length === 0)
+//   ) {
+//     await guardarDatos(rutaRepresentante, representative);
+//   } else {
+//   }
+// }
+
+async function updateEmpresa(infoGeneral) {
   let idEmpresa = document.getElementById("id_Empresa").value;
   let rutaCompanie = obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}`;
-  let rutaRepresentante =
-    obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/representative`;
+  actualizarDatos(rutaCompanie, infoGeneral);
+}
 
-  let datosEmpresa = await obtenerDatos(rutaCompanie);
-  let datosRepresentante = await obtenerDatos(rutaRepresentante);
+// Representante
+async function createRepresentante(representante) {
+  let url = obtenerRutaRepresentante();
+  guardarDatos(url, representante);
+}
 
-  if (datosEmpresa && datosEmpresa.data && datosEmpresa.data.id) {
-    actualizarDatos(rutaCompanie, infoGeneral);
-  } else {
-    let dataEnvio = { name: infoGeneral.name };
-    await guardarDatos(rutaCompanie, dataEnvio);
+async function updateRepresentante(representante) {
+  let url = obtenerRutaRepresentante();
+  actualizarDatos(url, representante);
+}
+
+async function consultarRepresentanteExiste() {
+  let url = obtenerRutaRepresentante();
+  let datosRepresentante = await obtenerDatos(url);
+  if (datosRepresentante == null) {
+    return false;
   }
+  return true;
+}
 
-  if (
-    !datosRepresentante ||
-    !datosRepresentante.data ||
-    (Array.isArray(datosRepresentante.data) &&
-      datosRepresentante.data.length === 0)
-  ) {
-    await guardarDatos(rutaRepresentante, representative);
-  } else {
+function obtenerRutaRepresentante() {
+  let idEmpresa = document.getElementById("id_Empresa").value;
+  return (
+    obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/representative`
+  );
+}
+
+// Facturas
+async function updateTipoFacturas(configFactura) {
+  let url = obtenerRutaFacturas(id);
+  actualizarDatos(url, configFactura);
+}
+
+async function createTipoFacturas(configFactura) {
+  let url = obtenerRutaFacturas();
+  guardarDatos(url, configFactura);
+}
+
+function consultarConfigFacturaExiste() {
+  let url = obtenerRutaFacturas(id);
+  let data = obtenerDatos(url);
+  console.log(data);
+}
+
+function obtenerRutaFacturas(id) {
+  let idEmpresa = document.getElementById("id_Empresa").value;
+  if (id != null) {
+    return (
+      obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/billings/${id}`
+    );
+  }
+  return obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/billings`;
+}
+
+// smtp
+async function createSmtp(smtpConfig) {
+  let url = obtenerRutaComunciaciones();
+  guardarDatos(url, smtpConfig);
+}
+
+async function updateSmtp(smtpConfig) {
+  let url = obtenerRutaComunciaciones();
+  actualizarDatos(url, smtpConfig);
+}
+
+async function consultarSmtpExiste() {
+  let url = obtenerRutaComunciaciones();
+  try {
+    let datosSmtp = await obtenerDatos(url);
+    console.log(datosSmtp);
+    return false;
+  } catch (error) {
+    return true;
   }
 }
 
-// function capturarDatosInformacionGeneral() {
-//   const datos = {
-//     name: document.getElementById("nombre-consultorio").value,
-//     representatives: [
-//       {
-//         name: document.getElementById("nombre-representante").value,
-//         phone: document.getElementById("telefono-representante").value,
-//         email: document.getElementById("correo-representante").value,
-//         document_type: document.getElementById("tipoDocumento-representante")
-//           .value,
-//         document_number: document.getElementById("documento-representante")
-//           .value,
-//       },
-//     ],
-//     offices: [
-//       {
-//         name: "Main Office",
-//         document_type: document.getElementById("tipoDocumento-consultorio")
-//           .value,
-//         document_number: document.getElementById("documento-consultorio").value,
-//       },
-//     ],
-//     logo: document.getElementById("logo").files[0],
-//     marcaAgua: document.getElementById("marcaAgua").files[0],
-//   };
-//   return datos;
-// }
-
-// function capturarDatosFacturacion() {
-//   const datos = {
-//     billing: {
-//       dian_prefix: document.getElementById("prefijo").value,
-//       resolution_number: document.getElementById("numeroResolucion").value,
-//       invoice_from: document.getElementById("facturaDesde").value,
-//       invoice_to: document.getElementById("facturaHasta").value,
-//       resolution_date: document.getElementById("fechaResolucion").value,
-//       expiration_date: document.getElementById("fechaVencimiento").value,
-//     },
-//   };
-//   return datos;
-// }
-
-// function capturarDatosContacto() {
-//   const datos = {
-//     // contacts: [
-//     //   {
-//     //     type: WhatsApp,
-//     //     value: document.getElementById("telefono-consultorio").value,
-//     //     country: USA,
-//     //     city: New York
-//     //   }
-//     // ],
-//     // telefonoConsultorio: ,
-//     // correoConsultorio: document.getElementById("correo-consultorio").value,
-//     // direccionConsultorio: document.getElementById("direccion-consultorio")
-//     //   .value,
-//     // paisConsultorio: document.getElementById("pais-consultorio").value,
-//     // ciudadConsultorio: document.getElementById("ciudad-consultorio").value,
-//   };
-//   return datos;
-// }
-
-// function capturarDatosSMTP() {
-//   const datos = {
-//     smtpServidor: document.getElementById("smtpServidor").value,
-//     smtpPuerto: document.getElementById("smtpPuerto").value,
-//     smtpSeguridad: document.getElementById("smtpSeguridad").value,
-//     smtpUsuario: document.getElementById("smtpUsuario").value,
-//     smtpClave: document.getElementById("smtpClave").value,
-//   };
-//   return datos;
-// }
+function obtenerRutaComunciaciones() {
+  let idEmpresa = document.getElementById("id_Empresa").value;
+  return (
+    obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}/communication`
+  );
+}

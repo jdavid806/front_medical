@@ -96,7 +96,7 @@
         }
 
         form.reset();
-        $('#crearMetodoPago').modal('hide');
+        $('#crearImpuesto').modal('hide');
       } catch (error) {
         alert('Error al crear el producto: ' + error.message);
       }

@@ -123,7 +123,7 @@
 
         // Limpiar formulario y cerrar modal
         form.reset();
-        $('#crearPlantilla').modal('hide');
+        $('#crearEntidad').modal('hide');
         cargarConsentimientos();
       } catch (error) {
         alert('Error al crear el producto: ' + error.message);

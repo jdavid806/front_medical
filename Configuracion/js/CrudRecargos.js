@@ -38,11 +38,14 @@ async function cargarRetenciones() {
 async function eliminarRetencion(id) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-withholdings/${id}`;
   EliminarDatos(url);
+  cargarRetenciones();
 }
 
 async function updateRetencion(id, retencion) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/tax-withholdings/${id}`;
   actualizarDatos(url, retencion);
+  $("#crearImpuestoRetencion").modal("hide");
+  cargarRetenciones();
 }
 
 async function createRetencion(retencion) {
@@ -50,6 +53,8 @@ async function createRetencion(retencion) {
     obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings/",
     retencion
   );
+  $("#crearImpuestoRetencion").modal("hide");
+  cargarRetenciones();
 }
 
 function editarRetencion(id, name, porcentaje, accountin_account, description) {

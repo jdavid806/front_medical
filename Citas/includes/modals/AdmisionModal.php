@@ -1846,10 +1846,6 @@ include '../modals/NewCompanionModal.php';
                 case "1":
                     this.disabled = true; // Deshabilita el botón
                     break;
-                case "2":
-                    generateInvoice();
-                    break;
-
                 default:
                     break;
             }
@@ -1928,6 +1924,7 @@ include '../modals/NewCompanionModal.php';
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {
+                console.log(response);
                 let contenidoResumen = `
                     <div style="margin-bottom: 15px;">
                         <ul style="margin-top: 5px; padding-left: 20px;">
@@ -1949,7 +1946,10 @@ include '../modals/NewCompanionModal.php';
 
                         window.location.href = 'citasControl'; // Redireccionar a la página de éxito
                     } else {
-                        generateInvoice(response.admission_data.id);
+                        generateInvoice(response.admission_data.appointment_id, true);
+                        setTimeout(function() {
+                            window.location.href = 'citasControl';
+                        }, 3000);
                     }
                 });
             })

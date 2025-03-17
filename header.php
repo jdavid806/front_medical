@@ -47,7 +47,26 @@
             </a>
           </li>
           <li><a class="dropdown-item" href="telemedicina">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="user-cast"></span>Telemedicina
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="video"></span>Telemedicina
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeFarmacia">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="airplay"></span>Farmacia
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeInventario">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="folder"></span>Inventario
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeMarketing">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="briefcase"></span>Marketing
               </div>
             </a>
           </li>
@@ -133,8 +152,8 @@
             </a>
           </li>
           <li><a class="dropdown-item" href="insumos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="package"></span>Entrega de insumos
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="package"></span>Entrega de
+                insumos
               </div>
             </a>
           </li>
@@ -171,7 +190,8 @@
             </a>
           </li>
           <li><a class="dropdown-item" href="inventarioInsumos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="thermometer"></span>Inventario
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="thermometer"></span>Inventario
                 Insumos
               </div>
             </a>
@@ -303,7 +323,7 @@
 
               <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="#">
+                  href="panel-encuesta">
                   <img src="assets/img/nav-icons/IconButton.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
                     Encuentas

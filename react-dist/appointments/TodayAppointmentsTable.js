@@ -3,19 +3,19 @@ import CustomDataTable from "../components/CustomDataTable.js";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { admissionService } from "../../services/api/index.js";
 import { useEffect } from "react";
-import { PrintTableAction } from "../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
 export const TodayAppointmentsTable = ({
   onPrintItem,
   onDownloadItem,
   onShareItem
 }) => {
-  const {
+  let {
     appointments
   } = useFetchAppointments(admissionService.getAdmisionsAll());
+  const [filteredAppointments, setFilteredAppointments] = React.useState([]);
   useEffect(() => {
-    console.log(appointments);
+    console.log("citas en admision:", appointments);
+    setFilteredAppointments(appointments.filter(appointment => appointment.stateId === "1"));
+    console.log("filter:", appointments);
   }, [appointments]);
   const columns = [{
     data: "patientName",
@@ -58,38 +58,7 @@ export const TodayAppointmentsTable = ({
       href: `generar_admision?id_cita=${data.id}`,
       className: "dropdown-item",
       id: "generar-admision"
-    }, "Generar admisi\xF3n"), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#"
-    }, "Generar link de pago"), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#"
-    }, "Descargar Factura"), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#"
-    }, "Imprimir factura"), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#"
-    }, "Compartir por whatsapp y correo"), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#"
-    }, "Nota credito"), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
-        generateInvoice(data.id, false);
-      }
-    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
-        generateInvoice(data.id, true);
-      }
-    }), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "whatsapp",
-      onTrigger: () => console.log("compartir por whatsapp")
-    }), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "email",
-      onTrigger: () => console.log("compartir por correo")
-    }))))
+    }, "Generar admisi\xF3n"))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
@@ -97,7 +66,7 @@ export const TodayAppointmentsTable = ({
     className: "card-body"
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
-    data: appointments,
+    data: filteredAppointments,
     slots: slots
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"

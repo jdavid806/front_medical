@@ -2,10 +2,7 @@ async function consultarDatosWhatssap(tipo) {
   let url = obtenerRutaPrincipal() + `/medical/companies/1`;
   let datosEmpresa = await obtenerDatos(url);
 
-  console.log(datosEmpresa);
-  
-
-  let datosMensajeria = datosEmpresa.data.communications;
+  let datosMensajeria = datosEmpresa.data.communication;
   let urlBase = "https://apiwhatsapp.medicalsoft.ai/";
 
   return {
@@ -110,22 +107,19 @@ async function consultarDatosDoctor(doctorId) {
 }
 
 async function consultarDatosEmpresa() {
-  // Pendiente Consultar esta data
   let url = obtenerRutaPrincipal() + `/medical/companies/1`;
   let datosEmpresa = await obtenerDatos(url);
 
-  let nombre_consultorio = datosEmpresa.name;
-
-  console.log(datosEmpresa);
+  let dataEmpresa = datosEmpresa.data;
 
   return {
     logo_consultorio: "",
-    nombre_consultorio: datosEmpresa.data.offices[0].commercial_name,
-    marca_agua: "",
+    nombre_consultorio: dataEmpresa.name,
+    marca_agua: dataEmpresa.watermark,
     datos_consultorio: [
-      { Dirección: "Calle Falsa 123 del doctor: " },
-      { Teléfono: 123456789 },
-      { Correo: "consultorio@prueba.com" },
+      { Dirección: dataEmpresa.address },
+      { Teléfono: dataEmpresa.phone },
+      { Correo: dataEmpresa.email },
     ],
   };
 }
