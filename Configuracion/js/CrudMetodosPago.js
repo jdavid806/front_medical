@@ -16,16 +16,12 @@ async function cargarMetodosPago() {
       row.innerHTML = `
         <td>${producto.method}</td>
         <td>${producto.accounting_account}</td> 
-        <td>N/A</td>
         <td>${producto.description || "N/A"}</td>
         <td>
-            <button class="btn btn-primary btn-sm" onclick="editarMetodo(${
-              producto.id
-            }, '${producto.method}', '${
-        producto.accounting_account
-      }', 'N/A', '${
-        producto.description
-      }')" data-bs-toggle="modal" data-bs-target="#crearMetodoPago">
+            <button class="btn btn-primary btn-sm" onclick="editarMetodo
+            (${producto.id}, '${producto.method}',
+             '${producto.accounting_account}', '${producto.description}')" 
+             data-bs-toggle="modal" data-bs-target="#crearMetodoPago">
                 <i class="fa-solid fa-pen"></i>
             </button>
             <button class="btn btn-danger btn-sm" onclick="eliminarMetodo(${
@@ -57,18 +53,15 @@ async function updateMetodoPago(id, metodoPago) {
 }
 
 async function createMetodoPago(metodoPago) {
-  guardarDatos(
-    obtenerRutaPrincipal() + "/api/v1/admin/payment-methods/",
-    metodoPago
-  );
+  let url = obtenerRutaPrincipal() + "/api/v1/admin/payment-methods/";
+  guardarDatos(url, metodoPago);
   $("#crearMetodoPago").modal("hide");
   cargarMetodosPago();
 }
 
-function editarMetodo(id, method, accounting_account, bank, description) {
+function editarMetodo(id, method, accounting_account, description) {
   document.getElementById("nombre-metodo").value = method;
   document.getElementById("numero-cuenta").value = accounting_account;
-  document.getElementById("banco-metodo").value = bank;
   document.getElementById("descripcion-metodo").value = description;
 
   // Agregar un input oculto con el ID del producto

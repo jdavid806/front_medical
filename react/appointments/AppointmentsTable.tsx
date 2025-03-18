@@ -3,14 +3,6 @@ import { AppointmentTableItem } from "../models/models";
 import CustomDataTable from "../components/CustomDataTable";
 import { ConfigColumns } from "datatables.net-bs5";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
-import { appointmentService } from "../../services/api";
-import {
-  appointmentStateColorsByKey,
-  appointmentStates,
-  appointmentStatesByKey,
-  appointmentStatesColors,
-} from "../../services/commons";
-import UserManager from "../../services/userManager";
 import { useBranchesForSelect } from "../branches/hooks/useBranchesForSelect";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
@@ -20,21 +12,23 @@ import { PreadmissionForm } from "./PreadmissionForm";
 import { PrintTableAction } from "../components/table-actions/PrintTableAction";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction";
+import { appointmentService } from "../../services/api";
+import UserManager from "../../services/userManager"
+import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStates, appointmentStatesByKey } from "../../services/commons"
+import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm";
+import { set } from "react-hook-form";
 
 export const AppointmentsTable: React.FC = () => {
   const { appointments } = useFetchAppointments(appointmentService.active());
   const { branches } = useBranchesForSelect();
 
-  const [selectedBranch, setSelectedBranch] = React.useState<string | null>(
-    null
-  );
+  const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
+  const [selectedBranch, setSelectedBranch] = React.useState<string | null>(null);
   const [selectedDate, setSelectedDate] =
     React.useState<Nullable<(Date | null)[]>>(null);
   const [filteredAppointments, setFilteredAppointments] = React.useState<
     AppointmentTableItem[]
   >([]);
-
-  console.log("Citas: ", appointments);
 
   const columns: ConfigColumns[] = [
     { data: "patientName", className: "text-start", orderable: true },
@@ -53,21 +47,36 @@ export const AppointmentsTable: React.FC = () => {
 
   useEffect(() => {
     let filtered = [...appointments];
-
-    // Filtro por sucursal
+    console.log("appointments", { ...appointments });
+    // Filtro por estado
     if (selectedBranch) {
-      filtered = filtered.filter(
-        (appointment) => appointment.branchId === selectedBranch
+      filtered = filtered?.filter(
+        (appointment) => appointment.stateKey === selectedBranch
       );
+      console.log("selectedBranch", selectedBranch);
     }
 
     // Filtro por rango de fechas
     if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
-      const startDate = new Date(selectedDate[0]);
-      startDate.setHours(0, 0, 0, 0);
+      const startDate = new Date(
+        Date.UTC(
+          selectedDate[0].getFullYear(),
+          selectedDate[0].getMonth(),
+          selectedDate[0].getDate()
+        )
+      );
 
-      const endDate = new Date(selectedDate[1]);
-      endDate.setHours(23, 59, 59, 999);
+      const endDate = new Date(
+        Date.UTC(
+          selectedDate[1].getFullYear(),
+          selectedDate[1].getMonth(),
+          selectedDate[1].getDate(),
+          23,
+          59,
+          59,
+          999
+        )
+      );
 
       filtered = filtered.filter((appointment) => {
         const appointmentDate = new Date(appointment.date);
@@ -83,15 +92,40 @@ export const AppointmentsTable: React.FC = () => {
     setFilteredAppointments(filtered);
   }, [appointments, selectedBranch, selectedDate]);
 
-  const handleMakeClinicalRecord = (patientId: string) => {
+  const handleMakeClinicalRecord = (
+    patientId: string,
+    appointmentId: string
+  ) => {
     UserManager.onAuthChange((isAuthenticated, user) => {
       if (user) {
-        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}`;
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
       }
     });
   };
 
-  const handleCancelAppointment = (appointmentId: string) => {};
+  //objecto de filtrado 
+  const appointmentStatesByKey = {
+    'Pendiente': 'Pendiente',
+    'pending_consultation': 'En espera de consulta',
+    'pending_consultation.PROCEDURE': 'En espera de examen',
+    'in_consultation': 'En consulta',
+    'consultation_completed': 'Consulta finalizada',
+    'cancelled': 'Cancelada',
+    'rescheduled': 'Reprogramada'
+  };
+
+  //filtrar objecto en el select
+  const getAppointmentStates = () => {
+    return Object.entries(appointmentStatesByKey).map(([key, label]) => ({
+      value: key,
+      label: label
+    }));
+  };
+
+
+  const handleCancelAppointment = (appointmentId: string) => { };
+
+
 
   const handleHideFormModal = () => {
     setShowFormModal({ isShow: false, data: {} });
@@ -103,6 +137,10 @@ export const AppointmentsTable: React.FC = () => {
     examId = ""
   ) => {
     window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&exam_id=${examId}`;
+  };
+
+  const handleLoadExamResultsFile = () => {
+    setShowLoadExamResultsFileModal(true)
   };
 
   const slots = {
@@ -152,7 +190,8 @@ export const AppointmentsTable: React.FC = () => {
               </a>
             </li>
             {(data.stateId === "2" ||
-              data.stateKey === "pending_consultation") &&
+              data.stateKey === "pending_consultation" ||
+              data.stateKey === "in_consultation") &&
               data.attentionType === "CONSULTATION" && (
                 <li>
                   <a
@@ -160,7 +199,7 @@ export const AppointmentsTable: React.FC = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      handleMakeClinicalRecord(data.patientId);
+                      handleMakeClinicalRecord(data.patientId, data.id);
                     }}
                     data-column="realizar-consulta"
                   >
@@ -177,25 +216,47 @@ export const AppointmentsTable: React.FC = () => {
             {(data.stateId === "2" ||
               data.stateKey === "pending_consultation") &&
               data.attentionType === "PROCEDURE" && (
-                <li>
-                  <a
-                    className="dropdown-item"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLoadExamResults(data.patientId, data.productId);
-                    }}
-                    data-column="realizar-consulta"
-                  >
-                    <div className="d-flex gap-2 align-items-center">
-                      <i
-                        className="fa-solid fa-stethoscope"
-                        style={{ width: "20px" }}
-                      ></i>
-                      <span>Realizar examen</span>
-                    </div>
-                  </a>
-                </li>
+                <>
+                  <li>
+                    <a
+                      className="dropdown-item"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleLoadExamResults(data.patientId, data.productId);
+                      }}
+                      data-column="realizar-consulta"
+                    >
+                      <div className="d-flex gap-2 align-items-center">
+                        <i
+                          className="fa-solid fa-stethoscope"
+                          style={{ width: "20px" }}
+                        ></i>
+                        <span>Realizar examen</span>
+                      </div>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a
+                      className="dropdown-item"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleLoadExamResultsFile();
+                      }}
+                      data-column="realizar-consulta"
+                    >
+                      <div className="d-flex gap-2 align-items-center">
+                        <i
+                          className="fa-solid fa-stethoscope"
+                          style={{ width: "20px" }}
+                        ></i>
+                        <span>Subir resultados</span>
+                      </div>
+                    </a>
+                  </li>
+                </>
               )}
             {data.stateId === "1" ||
               (data.stateKey === "pending" && (
@@ -220,6 +281,22 @@ export const AppointmentsTable: React.FC = () => {
                 </li>
               ))}
             <hr />
+            <li className="dropdown-header">Cita</li>
+            <li>
+              <a className="dropdown-item"
+                href="#"
+                onClick={() => {
+                  // @ts-ignore
+                  shareAppointmentMessage(data.id, data.patientId)
+                }}>
+                <div className="d-flex gap-2 align-items-center">
+                  <i className="fa-brands fa-whatsapp" style={{ width: '20px' }}></i>
+                  <span>Compartir cita</span>
+                </div>
+              </a>
+            </li>
+            <hr />
+            <li className="dropdown-header">Factura</li>
             <PrintTableAction
               onTrigger={() => {
                 //@ts-ignore
@@ -279,15 +356,15 @@ export const AppointmentsTable: React.FC = () => {
                   <div className="row g-3">
                     <div className="col">
                       <label htmlFor="branch_id" className="form-label">
-                        Sucursal
+                        Estados
                       </label>
                       <Dropdown
                         inputId="branch_id"
-                        options={branches}
+                        options={getAppointmentStates()}
                         optionLabel="label"
                         optionValue="value"
                         filter
-                        placeholder="Filtrar por sucursal"
+                        placeholder="Filtrar por estado"
                         className="w-100"
                         value={selectedBranch}
                         onChange={(e) => setSelectedBranch(e.value)}
@@ -365,6 +442,14 @@ export const AppointmentsTable: React.FC = () => {
           initialValues={showFormModal.data}
           formId="createPreadmission"
         ></PreadmissionForm>
+      </CustomFormModal>
+      <CustomFormModal
+        formId={"loadExamResultsFile"}
+        show={showLoadExamResultsFileModal}
+        onHide={() => setShowLoadExamResultsFileModal(false)}
+        title={"Subir resultados de examen"}
+      >
+        <ExamResultsFileForm></ExamResultsFileForm>
       </CustomFormModal>
     </>
   );

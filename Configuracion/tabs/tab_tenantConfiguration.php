@@ -180,6 +180,7 @@
 
             <div class="tab-pane fade" id="tab-consumidor" role="tabpanel" aria-labelledby="consumidor-tab">
               <form class="row g-3 needs-validation" novalidate id="form-consumidor">
+                <input type="hidden" name="" id="idFacturaConsumidor" value="">
                 <div class="col-12">
                   <label class="form-label" for="prefijoConsumidor">Prefijo DGII</label>
                   <input class="form-control" id="prefijoConsumidor" name="prefijoConsumidor" type="text"
@@ -224,6 +225,7 @@
 
             <div class="tab-pane fade show active" id="tab-fiscal" role="tabpanel" aria-labelledby="fiscal-tab">
               <form class="row g-3 needs-validation" novalidate id="form-fiscal">
+                <input type="hidden" id="idFacturaFiscal" value="">
                 <div class="col-12">
                   <label class="form-label" for="prefijoFiscal">Prefijo DGII</label>
                   <input class="form-control" id="prefijoFiscal" name="prefijoFiscal" type="text" placeholder="Ej: ABC"
@@ -268,6 +270,7 @@
             <div class="tab-pane fade" id="tab-gubernamental" role="tabpanel" aria-labelledby="gubernamental-tab">
 
               <form class="row g-3 needs-validation" novalidate id="form-gubernamental">
+                <input type="hidden" name="" id="idFacturaGubernamental" value="">
                 <div class="col-12">
                   <label class="form-label" for="prefijoGubernamental">Prefijo DGII</label>
                   <input class="form-control" id="prefijoGubernamental" name="prefijoGubernamental" type="text"
@@ -312,6 +315,7 @@
             <div class="tab-pane fade" id="tab-notaCredito" role="tabpanel" aria-labelledby="notaCredito-tab">
 
               <form class="row g-3 needs-validation" novalidate id="form-notaCredito">
+                <input type="hidden" name="" id="idNotaCredito" value="">
                 <div class="col-12">
                   <label class="form-label" for="prefijoNotaCredito">Prefijo DGII</label>
                   <input class="form-control" id="prefijoNotaCredito" name="prefijoNotaCredito" type="text"
@@ -361,6 +365,7 @@
         <div class="tab-pane fade" id="representante-tab-pane" role="tabpanel" aria-labelledby="representante-tab">
 
           <form class="row g-3 needs-validation" novalidate id="form-representante">
+            <input type="hidden" name="" id="representanteId" value="">
             <div class="col-12">
               <label class="form-label" for="nombre-representante">Nombre</label>
               <input class="form-control" id="nombre-representante" name="nombre-representante" type="text"
@@ -435,6 +440,7 @@
             <div class="col-md-6">
               <h5>Configuración de Correo SMTP</h5>
               <form class="row g-3 needs-validation" novalidate id="form-smtp">
+                <input type="hidden" name="" id="smtpId" value="">
                 <div class="col-12">
                   <label class="form-label" for="smtpServidor">Servidor SMTP</label>
                   <input class="form-control" id="smtpServidor" name="smtpServidor" type="text"
@@ -571,87 +577,90 @@
     });
 
     handleForm("form-fiscal", async (data) => {
+      let id = document.getElementById("idFacturaFiscal").value;
       let infoGeneral = {
         dian_prefix: data.prefijoFiscal,
         resolution_number: data.numeroResolucionFiscal,
         invoice_from: data.facturaDesdeFiscal,
         invoice_to: data.facturaHastaFiscal,
-        type: "Fiscal",
+        type: "tax_invoice",
         resolution_date: data.fechaResolucionFiscal,
         expiration_date: data.fechaVencimientoFiscal
       };
-
-      if (consultarConfigFacturaExiste(id)) {
+      if (id != null) {
         updateTipoFacturas(id, infoGeneral);
       } else {
-        createTipoFacturas(id, infoGeneral);
+        createTipoFacturas(infoGeneral);
       }
       cargarDatosTenant();
     });
 
     // Manejar el formulario de Facturación Consumidor
     handleForm("form-consumidor", async (data) => {
+      let id = document.getElementById("idFacturaConsumidor").value;
       let infoGeneral = {
         dian_prefix: data.prefijoConsumidor,
         resolution_number: data.numeroResolucionConsumidor,
         invoice_from: data.facturaDesdeConsumidor,
         invoice_to: data.facturaHastaConsumidor,
-        type: "Consumidor",
+        type: "consumer",
         resolution_date: data.fechaResolucionConsumidor,
         expiration_date: data.fechaVencimientoConsumidor
       };
 
-      if (consultarConfigFacturaExiste(id)) {
+      if (id != null) {
         updateTipoFacturas(id, infoGeneral);
       } else {
-        createTipoFacturas(id, infoGeneral);
+        createTipoFacturas(infoGeneral);
       }
       cargarDatosTenant();
     });
 
     // Manejar el formulario de Facturación Gubernamental
     handleForm("form-gubernamental", async (data) => {
+      let id = document.getElementById("idFacturaGubernamental").value;
       let infoGeneral = {
         dian_prefix: data.prefijoGubernamental,
         resolution_number: data.numeroResolucionGubernamental,
         invoice_from: data.facturaDesdeGubernamental,
         invoice_to: data.facturaHastaGubernamental,
-        type: "Gubernamental",
+        type: "government_invoice",
         resolution_date: data.fechaResolucionGubernamental,
         expiration_date: data.fechaVencimientoGubernamental
       };
 
-      if (consultarConfigFacturaExiste(id)) {
+      if (id != null) {
         updateTipoFacturas(id, infoGeneral);
       } else {
-        createTipoFacturas(id, infoGeneral);
+        createTipoFacturas(infoGeneral);
       }
       cargarDatosTenant();
     });
 
     // Manejar el formulario de Notas de Crédito
     handleForm("form-notaCredito", async (data) => {
+      let id = document.getElementById("idNotaCredito").value;
       let infoGeneral = {
         dian_prefix: data.prefijoNotaCredito,
         resolution_number: data.numeroResolucionNotaCredito,
         invoice_from: data.facturaDesdeNotaCredito,
         invoice_to: data.facturaHastaNotaCredito,
-        type: "NotasCredito",
+        type: "credit_note",
         resolution_date: data.fechaResolucionNotaCredito,
         expiration_date: data.fechaVencimientoNotaCredito
       };
 
-      if (consultarConfigFacturaExiste(id)) {
+      if (id != null) {
         updateTipoFacturas(id, infoGeneral);
       } else {
-        createTipoFacturas(id, infoGeneral);
+        createTipoFacturas(infoGeneral);
       }
       cargarDatosTenant();
     });
 
     // Manejar el formulario de representante
     handleForm("form-representante", async (data) => {
-
+      let id = document.getElementById("representanteId").value;
       let representative = {
         name: data.nombrerepresentante,
         phone: data.telefonorepresentante,
@@ -660,7 +669,7 @@
         document_number: data.documentorepresentante,
       };
 
-      if (consultarRepresentanteExiste()) {
+      if (id != null) {
         updateRepresentante(representative);
       } else {
         createRepresentante(representative);
@@ -670,13 +679,7 @@
 
     // Manejar el formulario de Configuración SMTP
     handleForm("form-smtp", async (data) => {
-      let infoGeneral = {
-        smtp_server: data.smtpServidor,
-        port: data.smtpPuerto,
-        security: data.smtpSeguridad,
-        email: data.smtpUsuario,
-        password: data.smtpClave
-      };
+      let id = document.getElementById("smtpId").value;
 
       let configSmtp = {
         smtp_server: data.smtpServidor,
@@ -686,13 +689,11 @@
         password: data.smtpClave
       };
 
-      if (consultarSmtpExiste()) {
+      if (id != null) {
         updateSmtp(configSmtp);
       } else {
         createSmtp(configSmtp);
-        cargarDatosTenant();
       }
-      cargarDatosTenant();
     });
 
     consultarQR();

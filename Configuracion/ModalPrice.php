@@ -29,6 +29,12 @@
                                     <option value="CONSULTATION">Consulta</option>
                                 </select>
                             </div>
+                            <div class="col-12" style="display: none;" id="examTypeSection">
+                                <label class="form-label" for="exam_type_id">Examen</label>
+                                <select class="form-select" id="exam_type_id" name="exam_type_id" required>
+                                    <option value="" disabled selected>Seleccionar...</option>
+                                </select>
+                            </div>
                             <div class="col-6">
                                 <label class="form-label" for="sale_price">Precio público</label>
                                 <input class="form-control" id="sale_price" type="number" placeholder="Precio público"
@@ -115,16 +121,23 @@
     </div>
 </div>
 <script>
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         cargarSelectsPrecios();
+        const examTypeSection = document.getElementById("examTypeSection");
+        document.getElementById("attention_type").addEventListener("change", function() {
+            if (this.value === "PROCEDURE") {
+                examTypeSection.style.display = "block";
+            } else {
+                examTypeSection.style.display = "none";
+            }
+        });
     });
 
-    document.getElementById("toggleEntities").addEventListener("change", function () {
+    document.getElementById("toggleEntities").addEventListener("change", function() {
         document.getElementById("entity-productSection").style.display = this.checked ? "block" : "none";
     });
 
-    document.getElementById("toggleImpuesto").addEventListener("change", function () {
+    document.getElementById("toggleImpuesto").addEventListener("change", function() {
         document.getElementById("taxSection").style.display = this.checked ? "block" : "none";
     });
 
@@ -143,7 +156,15 @@
         let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
 
         // Guardar en el array para futuras referencias
-        preciosEntidades.push({ entidadId, entidadNombre, precio, impuestoId, impuestoNombre, retencionId, retencionNombre });
+        preciosEntidades.push({
+            entidadId,
+            entidadNombre,
+            precio,
+            impuestoId,
+            impuestoNombre,
+            retencionId,
+            retencionNombre
+        });
 
         // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
         let tabla = document.getElementById("tablaPreciosEntidades");
@@ -173,7 +194,7 @@
         document.getElementById("tablaPreciosEntidades").deleteRow(index);
     }
 
-    document.getElementById("createProductForm").addEventListener("submit", async function (e) {
+    document.getElementById("createProductForm").addEventListener("submit", async function(e) {
         e.preventDefault();
 
         const productId = document.getElementById('product_id')?.value;
@@ -182,9 +203,9 @@
             barcode: document.getElementById("curp").value,
             attention_type: document.getElementById("attention_type").value,
             sale_price: document.getElementById("sale_price").value,
-            price: document.getElementById("sale_price").value,
             copayment: document.getElementById("copago").value,
             tax_charge_id: document.getElementById("taxProduct_type").value,
+            exam_type_id: document.getElementById("exam_type_id").value
         };
 
         // entities: preciosEntidades

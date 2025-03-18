@@ -14,6 +14,7 @@ interface PatientClinicalRecordAppProps {
 
 const specialtyId = new URLSearchParams(window.location.search).get('especialidad');
 const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '';
+const appointmentId = new URLSearchParams(window.location.search).get('appointment_id') || '';
 
 export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> = () => {
 
@@ -66,6 +67,10 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
         };
     };
 
+    const seeDetail = (id: string, clinicalRecordType: string) => {
+        window.location.href = `detalleConsulta?clinicalRecordId=${id}&patient_id=${patientId}&tipo_historia=${clinicalRecordType}&especialidad=${specialtyId}`;
+    };
+
     const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
 
     return (
@@ -89,7 +94,7 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
                             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 {specialtyClinicalRecords.map((record) => (
                                     <li key={record.id}>
-                                        <a className="dropdown-item" href={`consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}`}>
+                                        <a className="dropdown-item" href={`consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}&appointment_id=${appointmentId}`}>
                                             Crear {record.name}
                                         </a>
                                     </li>
@@ -103,6 +108,7 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
             <div className="row mt-4">
                 <PatientClinicalRecordsTable
                     records={tableClinicalRecords}
+                    onSeeDetail={seeDetail}
                     onPrintItem={printClinicalRecord}
                     onDownloadItem={downloadClinicalRecord}
                     onShareItem={shareClinicalRecord}

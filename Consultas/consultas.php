@@ -587,7 +587,35 @@ include "./modalTerminarConsulta.php";
 
 <script type="module">
     import {
-        appointmentService,
+        appointmentService
+    } from "../../services/api/index.js";
+
+    const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
+
+    if (appointmentId) {
+        const appointment = await appointmentService.get(appointmentId);
+
+        console.log('Cita:', appointment);
+
+
+        if (appointment.appointment_state.name === 'pending_consultation') {
+            appointmentService.changeStatus(appointmentId, 'in_consultation')
+        }
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: 'No fue posible encontrar la cita relacionada.',
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            //window.history.back();
+        });
+    }
+</script>
+
+<script type="module">
+    import {
         patientService,
         clinicalRecordService
     } from "../../services/api/index.js";

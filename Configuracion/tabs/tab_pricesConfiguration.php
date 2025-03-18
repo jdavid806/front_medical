@@ -1,3 +1,17 @@
+<style>
+  .fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
   <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
     <li class="nav-item" role="presentation"><a class="nav-link active" id="home-tab" data-bs-toggle="tab"

@@ -286,7 +286,7 @@ $_SESSION["ID"] = 1;
 </head>
 
 <body>
-  <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" id="loading-screen">
+  <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center d-none" id="loading-screen">
     <div class="text-center d-flex flex-column gap-2 justify-content-center align-items-center">
       <img src="/logo_monaros_sinbg_light.png" alt="phoenix" width="125">
       <div class="spinner-border text-primary" role="status">
@@ -334,7 +334,8 @@ $_SESSION["ID"] = 1;
       "react-beautiful-dnd": "https://esm.sh/react-beautiful-dnd?dev",
       "primereact/inputtextarea": "https://esm.sh/primereact/inputtextarea?dev",
       "primereact/divider": "https://esm.sh/primereact/divider?dev",
-      "primereact/password": "https://esm.sh/primereact/password?dev"
+      "primereact/password": "https://esm.sh/primereact/password?dev",
+      "primereact/card": "https://esm.sh/primereact/card?dev"
     }
   }
 </script>

@@ -3,6 +3,28 @@
     font-size: large;
   }
 </style>
+<style>
+  /* Estilos para el dropdown de Choices */
+  .choices__list--dropdown .choices__item--selectable {
+    color: #333;
+    /* Color del texto normal */
+    padding: 8px 10px;
+  }
+
+  /* Cuando se hace hover */
+  .choices__list--dropdown .choices__item--selectable:hover,
+  .choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background-color: #f5f5f5;
+    /* Color de fondo al hacer hover */
+    color: #333 !important;
+    /* Color del texto al hacer hover */
+  }
+
+  /* Opcional: estilo para el placeholder */
+  .choices__list--dropdown .choices__placeholder {
+    color: #999;
+  }
+</style>
 
 
 <link rel="stylesheet" href="fuentes/fuentes.css">
@@ -26,7 +48,7 @@
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-home"></span>Home</a>
         <ul class="dropdown-menu navbar-dropdown-caret">
-          <li><a class="dropdown-item" href="pacientes">
+          <li><a class="dropdown-item" href="Dashboard">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="home"></span>Inicio
               </div>
             </a>
@@ -36,11 +58,11 @@
               </div>
             </a>
           </li>
-          <li><a class="dropdown-item" href="citasControl#citas">
+          <!-- <li><a class="dropdown-item" href="citasControl#citas">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>Citas
               </div>
             </a>
-          </li>
+          </li> -->
           <li><a class="dropdown-item" href="citasControl">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="user-plus"></span>Admisiones
               </div>
@@ -73,6 +95,12 @@
           <li><a class="dropdown-item" href="homeMarketing">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
                   data-feather="briefcase"></span>Marketing
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeAuditoria">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="user-check"></span>Auditoria
               </div>
             </a>
           </li>
@@ -242,12 +270,12 @@
         <div class="card bg-body-emphasis position-relative border-0">
           <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 11rem;">
             <div class="row text-center align-items-center gx-0 gy-0">
-              <div class="col-4">
+              <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="FE_FCE"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Facturación</p>
                 </a>
-              </div>
+              </div> -->
               <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="FE_Config">
@@ -256,41 +284,41 @@
                 </a>
               </div>
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="FE_Contabilidad"><img src="assets/img/nav-icons/Calculator.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Contabilidad</p>
                 </a>
-              </div>
+              </div> -->
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="FE_Nomina"><img src="assets/img/nav-icons/Calculator.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Nómina</p>
                 </a>
-              </div>
+              </div> -->
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="Menu_reports"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Reportes</p>
                 </a>
-              </div>
+              </div> -->
 
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="caja"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Caja</p>
                 </a>
-              </div>
+              </div> -->
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="Config_PDF"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">PDF</p>
                 </a>
-              </div>
+              </div> -->
 
               <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
@@ -299,13 +327,13 @@
                 </a>
               </div> -->
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="consultas-anulacion-pendiente"><img src="assets/img/nav-icons/Container.png" alt=""
                     width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Anulaciones</p>
                 </a>
-              </div>
+              </div> -->
 
               <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"

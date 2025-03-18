@@ -43,21 +43,31 @@ function cargarSelectsFuncionesEspecialidades() {
       const texto = select.options[select.selectedIndex]?.text;
 
       if (id) {
-        agregarFilaTablaEspecialidad("Historia Clínica", texto, id);
+        agregarFilaTablaEspecialidad(
+          "Historia Clínica",
+          texto,
+          id,
+          "historia clinica"
+        );
         select.value = ""; // Reiniciar selección
       }
     });
 
   document
     .getElementById("agregarCie11")
-    .addEventListener("click", function () {
+    .addEventListener("click", async function () {
       const select = document.getElementById("cie11");
-      const id = select.value;
       const texto = select.value;
       // const texto = select.options[select.selectedIndex]?.text;
-
+      let endpointCie11 =
+        obtenerRutaPrincipal() + "/medical/cie11/get-by-code/" + texto;
+      let endpointExecute = await obtenerDatos(endpointCie11);
+      const cie11 =
+        endpointExecute[0].codigo + " - " + endpointExecute[0].descripcion;
+      const id = endpointExecute[0].codigo;
+      const description = endpointExecute[0].descripcion;
       if (id) {
-        agregarFilaTablaEspecialidad("CIE-11", texto, id);
+        agregarFilaTablaEspecialidad("CIE-11", cie11, id, description);
         select.value = ""; // Reiniciar selección
       }
     });
@@ -87,13 +97,14 @@ function cargarSelectsFuncionesEspecialidades() {
     });
 }
 
-function agregarFilaTablaEspecialidad(tipo, nombre, id) {
+function agregarFilaTablaEspecialidad(tipo, nombre, id, description = "") {
   const fila = document.createElement("tr");
   fila.innerHTML = `
         <td>${tipo}</td>
         <td>${nombre}</td>
         <td>
             <input type="hidden" class="elemento-id" value="${id}">
+            <input type="hidden" class="elemento-description" value="${description}">
             <button class="btn btn-danger btn-sm eliminar">Eliminar</button>
         </td>
     `;
@@ -113,12 +124,14 @@ function obtenerElementosTabla() {
     const tipo = fila.cells[0].textContent;
     const nombre = fila.cells[1].textContent;
     const id = fila.querySelector(".elemento-id").value;
+    const description = fila.querySelector(".elemento-description").value;
     const productId = document.getElementById("speciality_name")?.value;
 
     elementos.push({
       specializable_type: tipo,
       specializable_id: id,
       specialty_id: productId,
+      description: description,
     });
   });
 
@@ -130,9 +143,19 @@ function rellenarElementos() {
   tabla.innerHTML = "";
 }
 
-function abrirModal(id, name) {
+async function abrirModal(id, name) {
   let hiddenInput = document.getElementById("speciality_id");
   let hiddenName = document.getElementById("speciality_name");
+
+  console.log(id);
+
+  let rutaSpecializables =
+    obtenerRutaPrincipal() + "/medical/specializables/by-specialty/" + id;
+
+  let dataEspecializables = await obtenerDatos(rutaSpecializables);
+
+  console.log("Specializables: ", dataEspecializables);
+
   if (!hiddenInput) {
     hiddenInput = document.createElement("input");
     hiddenInput.type = "hidden";
@@ -161,6 +184,12 @@ async function updateEspecilidad(id, especialidad) {
 }
 
 async function createEspecilidad(especialidad) {
-  let url = obtenerRutaPrincipal() + "/medical/specializables/";
-  guardarDatos(url, especialidad);
+  let url =
+    obtenerRutaPrincipal() +
+    "/medical/specializables/" +
+    especialidad[0].specialty_id;
+  actualizarDatos(url, especialidad);
+  setTimeout(() => {
+    window.location.href = "FE_Config";
+  }, 2000);
 }

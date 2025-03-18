@@ -28,6 +28,8 @@ export const ExamConfigApp = () => {
     }
 
     const handleSubmit = async (data: ExamTypeInputs) => {
+        console.log(data);
+
         if (examType) {
             await updateExamType(examType.id, data)
         } else {

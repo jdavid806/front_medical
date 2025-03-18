@@ -1,20 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 import { userService } from "../../../services/api/index.js";
-export const useUsers = () => {
-  const [users, setUsers] = useState([]);
-  const fetchUsers = async () => {
+import { ErrorHandler } from "../../../services/errorHandler.js";
+export const useUser = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const fetchUser = async id => {
     try {
-      const data = await userService.getAll();
-      setUsers(data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
+      const data = await userService.get(id);
+      setUser(data);
+    } catch (err) {
+      ErrorHandler.generic(err);
+    } finally {
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchUsers();
-  }, []);
   return {
-    users,
-    fetchUsers
+    user,
+    setUser,
+    fetchUser,
+    loading
   };
 };

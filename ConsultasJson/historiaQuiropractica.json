@@ -54,20 +54,6 @@
               }
             ]
           }
-        ],
-        "card5": [
-          {
-            "title": "Resumen IA",
-            "class": "col-12",
-            "fields": [
-              {
-                "id": "resuemnIA",
-                "label": "",
-                "type": "textarea",
-                "name": "resuemnIA"
-              }
-            ]
-          }
         ]
       },
       {
@@ -464,101 +450,6 @@
                 "type": "textarea",
                 "name": "indiceEvaluacionFuncional",
                 "class": "col-6"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Resumen IA",
-        "card": [
-          {
-            "title": "Recomendaciones",
-            "fields": [
-              {
-                "id": "recomendaciones",
-                "label": "",
-                "type": "textarea",
-                "name": "recomendaciones"
-              }
-            ]
-          }
-        ],
-        "card2": [
-          {
-            "title": "Analisis medico",
-            "fields": [
-              {
-                "id": "analisisMedico",
-                "label": "",
-                "type": "textarea",
-                "name": "analisisMedico"
-              }
-            ]
-          }
-        ],
-        "card3": [
-          {
-            "title": "Incapacidad",
-            "fields": [
-              {
-                "id": "incapacidad",
-                "label": "",
-                "type": "textarea",
-                "name": "incapacidad"
-              }
-            ]
-          }
-        ],
-        "card4": [
-          {
-            "title": "Examenes",
-            "fields": [
-              {
-                "id": "examenes",
-                "label": "",
-                "type": "textarea",
-                "name": "examenes"
-              }
-            ]
-          }
-        ],
-        "card5": [
-          {
-            "title": "Justificación del diagnostico",
-            "fields": [
-              {
-                "id": "justificacionDiagnostico",
-                "label": "",
-                "type": "textarea",
-                "name": "justificacionDiagnostico"
-              }
-            ]
-          }
-        ],
-        "card6": [
-          {
-            "title": "Receta",
-            "fields": [
-              {
-                "id": "receta",
-                "label": "",
-                "type": "textarea",
-                "name": "receta"
-              }
-            ]
-          }
-        ],
-        "card7": [
-          {
-            "title": "Resumen IA",
-            "class": "col-12",
-            "fields": [
-              {
-                "id": "diagnosticoSugerido",
-                "label": "",
-                "type": "textarea",
-                "name": "diagnosticoSugerido"
               }
             ]
           }

@@ -17,11 +17,11 @@
               <label class="form-label" for="numero-cuenta">Número de Cuenta (si aplica)</label>
               <input class="form-control" id="numero-cuenta" type="text">
             </div>
-            <div class="mb-3 col-md-6">
+            <!-- <div class="mb-3 col-md-6">
               <label class="form-label" for="banco-metodo">Banco o Entidad</label>
               <input class="form-control" id="banco-metodo" type="text">
-            </div>
-            <div class="mb-3 col-md-6">
+            </div> -->
+            <div class="mb-3 col-md-12">
               <label class="form-label" for="descripcion-metodo">Detalles Adicionales</label>
               <textarea class="form-control" id="descripcion-metodo" rows="2"></textarea>
             </div>
@@ -64,7 +64,7 @@
           alert('Nombre y tipo son campos obligatorios');
           return;
       } */
-
+      
       try {
         if (productId) {
           updateMetodoPago(productId, productData);

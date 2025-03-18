@@ -177,7 +177,7 @@ $tabs = [
     UserManager.onAuthChange((isAuthenticated, user) => {
       if (user) {
         clinicalRecordCard.style.display = 'block';
-        clinicalRecordCard.setAttribute('data-url', `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}`);
+        clinicalRecordCard.setAttribute('data-url', `historialConsultasEspecialidad?patient_id=${patientId}&especialidad=${user.specialty.name}`);
       }
     })
 

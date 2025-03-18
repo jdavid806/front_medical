@@ -10,6 +10,15 @@ export class AppointmentService extends OneToManyService {
             throw error;
         }
     }
+
+    async changeStatus(id, statusKey) {
+        try {
+            return await this.httpClient.post(`${this.microservice}/change-status-appointment/${id}/${statusKey}`);
+        } catch (error) {
+            console.error(`Error getting ${this.childEndpoint} for parent ${parentId}:`, error);
+            throw error;
+        }
+    }
 }
 
 export default AppointmentService;

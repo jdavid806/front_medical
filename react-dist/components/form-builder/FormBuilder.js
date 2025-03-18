@@ -34,16 +34,25 @@ export const FormBuilder = /*#__PURE__*/forwardRef(({
           id: `card-${index}`
         }),
         fields: card.fields.map(field => {
-          initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
+          console.log(field);
+          if (formData.values?.[field.id]) {
+            initialFormValues[field.id] = formData.values[field.id];
+            console.log(initialFormValues[field.id]);
+          } else {
+            initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
+          }
           if (field.type === 'checkbox' && field.toggleFields) {
             field.toggleFields.forEach(subField => {
-              initialFormValues[subField.id] = '';
+              if (!formData.values?.[subField.id]) {
+                initialFormValues[subField.id] = '';
+              }
             });
           }
           return field;
         })
       }))
     }));
+    console.log('Initial form values:', initialFormValues);
     setFormValues(initialFormValues);
     setTabs(initializedTabs);
   };

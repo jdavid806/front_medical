@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import { CustomSelectContainer } from "../components/CustomSelectContainer.js";
-import { patientsSelect } from "../patients/consts/patientConsts.js";
-import { PrimeReactProvider } from 'primereact/api';
+import { PrimeReactProvider } from "primereact/api";
 import { Dropdown } from "primereact/dropdown";
 import { useEffect } from "react";
-import { productService } from "../../services/api/index.js";
+import { productService, patientService, estimatesService } from "../../services/api/index.js";
+import { Calendar } from "primereact/calendar";
 export const EstimateForm = () => {
-  const form = {};
   const [discount, setDiscount] = useState("");
+  const [dueDate, setDueDate] = useState(null);
+  const [observations, setObservations] = useState("");
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [subtotal, setSubtotal] = useState("");
-  const [selectedService, setSelectedService] = useState("");
+  const [selectedService, setSelectedService] = useState(0);
+  const [selectedPatient, setSelectedPatient] = useState("");
   const [products, setProducts] = useState([]);
   //totales
   const [priceTotal, setPriceTotal] = useState("");
@@ -20,9 +21,12 @@ export const EstimateForm = () => {
   const [discountTotal, setDiscountTotal] = useState("");
   const [total, setTotal] = useState("");
   const [services, setServices] = useState([]);
+  const [servicePatient, setServicePatient] = useState([]);
   const [mappedServices, setMappedServices] = useState([]);
+  const [mappedServicePatient, setMappedServicePatient] = useState([]);
   useEffect(() => {
     fetchProductsAndServices();
+    fetchPatients();
   }, []);
   const fetchProductsAndServices = async () => {
     const data = await productService.getAllProducts();
@@ -32,10 +36,19 @@ export const EstimateForm = () => {
         label: item.attributes.name
       };
     });
-    console.log('Services: ', data);
-    console.log('Mapped services: ', mappedData);
     setServices(data.data);
     setMappedServices(mappedData);
+  };
+  const fetchPatients = async () => {
+    const data = await patientService.getAll();
+    const mappedData = data.map(item => {
+      return {
+        value: item.id,
+        label: item.first_name + " " + item.last_name
+      };
+    });
+    setServicePatient(data.data);
+    setMappedServicePatient(mappedData);
   };
   function cambiarLabel() {
     const generarPara = document.getElementById("generarPara").value;
@@ -88,6 +101,7 @@ export const EstimateForm = () => {
     }
     const total = precio * cantidad - descuento;
     const newProduct = {
+      product_id: selectedService,
       description: descripcion,
       price: precio,
       quantity: cantidad,
@@ -117,11 +131,34 @@ export const EstimateForm = () => {
   }
   function handleProductChange(event) {
     const product = services.find(service => service.id == event.value);
-    console.log(event, services, product);
     if (product) {
       setPrice(product.attributes.purchase_price);
     }
     setSelectedService(event.value);
+  }
+  function selectedPatientChange(event) {
+    setSelectedPatient(event.value);
+  }
+  function saveEstimate() {
+    const formattedDueDate = dueDate ? dueDate.toISOString().split("T")[0] : null;
+    const requestData = {
+      user_id: selectedPatient,
+      deposit_id: 2,
+      due_date: formattedDueDate,
+      observations: observations,
+      estimate: products.map(product => {
+        return {
+          product_id: product.product_id,
+          quantity: product.quantity,
+          discount: product.discount
+        };
+      })
+    };
+    estimatesService.createEstimates(requestData).then(response => {
+      window.location.reload();
+    }).catch(error => {
+      console.error("Error saving estimate:", error);
+    });
   }
   return /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
@@ -139,25 +176,28 @@ export const EstimateForm = () => {
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "form-group col-md-6"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "generarPara"
-  }, "Generar para"), /*#__PURE__*/React.createElement("select", {
-    className: "form-control",
-    id: "generarPara",
-    onChange: () => {
-      cambiarLabel();
-    }
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "paciente"
-  }, "Pacientes"), /*#__PURE__*/React.createElement("option", {
-    value: "entidad"
-  }, "Entidaded"))), /*#__PURE__*/React.createElement("div", {
-    className: "form-group col-md-6",
+    className: "form-group col-md-12",
     id: "patientSelectContent"
-  }, /*#__PURE__*/React.createElement(CustomSelectContainer, {
-    config: patientsSelect
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "patients",
+    className: "form-label"
+  }, "Pacientes"), /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "patients",
+    value: selectedPatient,
+    onChange: selectedPatientChange,
+    options: mappedServicePatient,
+    optionLabel: "label",
+    optionValue: "value",
+    filter: true,
+    className: "w-100",
+    style: {
+      zIndex: 100000
+    },
+    panelStyle: {
+      zIndex: 100000
+    },
+    appendTo: document.body
+  })), /*#__PURE__*/React.createElement("div", {
     className: "form-group",
     id: "depositSelectContent"
   }, /*#__PURE__*/React.createElement("label", {
@@ -166,7 +206,7 @@ export const EstimateForm = () => {
     className: "form-control",
     id: "deposito"
   }, /*#__PURE__*/React.createElement("option", null, "General"))), /*#__PURE__*/React.createElement("div", {
-    className: "form-group"
+    className: "form-group col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "products_and_services_select",
     className: "form-label"
@@ -187,6 +227,17 @@ export const EstimateForm = () => {
     },
     appendTo: "self"
   })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-5"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "fechaVencimiento"
+  }, "Fecha de vencimiento:"), /*#__PURE__*/React.createElement(Calendar, {
+    value: dueDate,
+    onChange: e => setDueDate(e.value),
+    appendTo: "self",
+    className: "w-100"
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-end gap-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row flex-1"
@@ -199,7 +250,8 @@ export const EstimateForm = () => {
     className: "form-control",
     id: "precio",
     value: price,
-    onChange: price => setPrice(price.target.value)
+    onChange: price => setPrice(price.target.value),
+    readOnly: true
   })), /*#__PURE__*/React.createElement("div", {
     className: "form-group col-md-3"
   }, /*#__PURE__*/React.createElement("label", {
@@ -262,28 +314,20 @@ export const EstimateForm = () => {
   }, /*#__PURE__*/React.createElement("strong", null, "Totales")), /*#__PURE__*/React.createElement("td", null, priceTotal, "COP"), /*#__PURE__*/React.createElement("td", null, quantityTotal, "COP"), /*#__PURE__*/React.createElement("td", null, discountTotal), /*#__PURE__*/React.createElement("td", null, total, "$ COP"), /*#__PURE__*/React.createElement("td", null)))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-5"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-5"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "fechaVencimiento"
-  }, "Fecha de vencimiento:"), /*#__PURE__*/React.createElement("input", {
-    className: "form-control datetimepicker",
-    id: "fechaVencimiento",
-    type: "text",
-    placeholder: "dd/mm/yyyy",
-    "data-options": "{\"disableMobile\":true,\"dateFormat\":\"d/m/Y\"}"
-  })), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-outline-danger btn-lg me-1 mb-1",
-    type: "button"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-dollar-sign"
-  }), " Totalizar Presupuesto")), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-md-12"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "observaciones"
   }, "Observaciones o notas:"), /*#__PURE__*/React.createElement("textarea", {
     id: "observaciones",
-    className: "form-control"
-  })))))));
+    className: "form-control",
+    value: observations,
+    onInput: e => setObservations(e.target.value),
+    rows: 7
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end mt-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: saveEstimate,
+    className: "btn btn-outline-info",
+    type: "button"
+  }, "Guardar")))))));
 };

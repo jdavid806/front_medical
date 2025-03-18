@@ -97,7 +97,7 @@ $baner = "";
           </div>
         </div>
 
-        <div class="col-12 col-md-auto">
+        <!-- <div class="col-12 col-md-auto">
           <div class="card" style="max-width:16rem;">
             <div class="card-body">
               <h5 class="card-title"><span data-feather="dollar-sign"></span> Ventas del mes</h5>
@@ -111,7 +111,7 @@ $baner = "";
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
       <hr class="bg-body-secondary mb-6 mt-4" />

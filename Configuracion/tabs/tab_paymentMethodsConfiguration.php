@@ -13,7 +13,6 @@
           <tr>
             <th>Nombre</th>
             <th>Número de Cuenta</th>
-            <th>Banco / Entidad</th>
             <th>Detalles</th>
             <th>Acciones</th>
           </tr>

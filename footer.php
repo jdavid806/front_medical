@@ -898,6 +898,12 @@ M. Castro c:
 <script src="funciones/funcionesJS/funcioneConfig.js"></script>
 <script src="funciones/funcionesJS/FuncionesFacturas.js"></script>
 
+<!-- manejo de eventos mensajes -->
+<script src="funciones/funcionesJS/eventos_mensajes/EventosMensajes.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosCitas.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosTurnos.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosFacturas.js"></script>
+
 <!-- encriptar info -->
 <script src="funciones/funcionesEncrypt/encriptar.js"></script>
 
@@ -921,15 +927,13 @@ M. Castro c:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+
 <!-- Crud Consetimintos -->
 <script src="Documentos/js/CrudConsentimientos.js"></script>
 <script src="Documentos/js/UtilsConsentimientos.js"></script>
 
-
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // tonifyTurn(9, 13);
-    // crearDocumento(3, "Impresion", "ordenMedica", "Completa", "Orden Medica");
+  document.addEventListener("DOMContentLoaded", async function () {
   });
 </script>
 <!--
@@ -940,14 +944,14 @@ M. Castro c:
 <!-- ===============================================-->
 <!--    JavaScripts-->
 <!-- ===============================================-->
- 
+
 <script src="<?= $BASE ?>vendors/popper/popper.min.js"></script>
 <script src="<?= $BASE ?>vendors/bootstrap/bootstrap.min.js"></script>
 <script src="<?= $BASE ?>vendors/anchorjs/anchor.min.js"></script>
 <script src="<?= $BASE ?>vendors/is/is.min.js"></script>
 <script src="<?= $BASE ?>vendors/fontawesome/all.min.js"></script>
 <script src="<?= $BASE ?>vendors/lodash/lodash.min.js"></script>
-<!-- <script src="<?= $BASE ?>vendors/list.js/list.min.js"></script> -->
+<script src="<?= $BASE ?>vendors/list.js/list.min.js"></script>
 <script src="<?= $BASE ?>vendors/feather-icons/feather.min.js"></script>
 <script src="<?= $BASE ?>vendors/dayjs/dayjs.min.js"></script>
 <script src="<?= $BASE ?>vendors/leaflet/leaflet.js"></script>

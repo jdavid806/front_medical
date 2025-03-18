@@ -5,6 +5,7 @@
 	},
 	"dependencies": {
 		"@tinymce/tinymce-react": "^6.0.0",
+		"@types/react-beautiful-dnd": "^13.1.8",
 		"@types/react-select": "^5.0.1",
 		"bootstrap": "^5.3.3",
 		"choices.js": "^11.0.4",
@@ -14,11 +15,13 @@
 		"primeicons": "^7.0.0",
 		"primereact": "^10.9.2",
 		"react": "^19.0.0",
+		"react-beautiful-dnd": "^13.1.1",
 		"react-bootstrap": "^2.10.9",
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.54.2",
 		"react-select": "^5.10.0",
-		"sweetalert2": "^11.17.2"
+		"sweetalert2": "^11.17.2",
+		"uuid": "^11.1.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.26.4",

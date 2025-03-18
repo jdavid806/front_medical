@@ -22,6 +22,7 @@ export const PatientClinicalRecordsTable = ({
       return {
         id: clinicalRecord.id,
         clinicalRecordName: clinicalRecord.clinical_record_type.name,
+        clinicalRecordType: clinicalRecord.clinical_record_type.key_ || '',
         description: clinicalRecord.description || '--',
         doctorName: `${clinicalRecord.created_by_user.first_name} ${clinicalRecord.created_by_user.middle_name} ${clinicalRecord.created_by_user.last_name} ${clinicalRecord.created_by_user.second_last_name}`,
         status: clinicalRecord.clinical_record_type_id,
@@ -41,17 +42,10 @@ export const PatientClinicalRecordsTable = ({
     searchable: false
   }];
   const slots = {
-    // 3: (cell, data: PatientClinicalRecordsTableItem) => (
-    //     <span
-    //         className={`badge badge-phoenix badge-phoenix-${clinicalRecordStates[data.status]}`}
-    //     >
-    //         {clinicalRecordStateColors[data.status]}
-    //     </span>
-    // ),
     3: (cell, data) => /*#__PURE__*/React.createElement("div", {
       className: "text-end align-middle"
     }, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(SeeDetailTableAction, {
-      onTrigger: () => onSeeDetail && onSeeDetail(data.id)
+      onTrigger: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
     }), data.status === 'approved' && /*#__PURE__*/React.createElement(RequestCancellationTableAction, {
       onTrigger: () => onCancelItem && onCancelItem(data.id)
     }), /*#__PURE__*/React.createElement(PrintTableAction, {

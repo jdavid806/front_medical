@@ -107,7 +107,7 @@ $examenes = [
     document.getElementById('productName').textContent = product.name
 
     ReactDOMClient.createRoot(document.getElementById('examsAppReact')).render(React.createElement(ExamResultsForm, {
-        examId: product.exam_type_id,
+        examId: examOrder.id,
         handleSave: (data) => {
             examResultService.create({
                     "exam_order_id": examOrder.id,

@@ -241,14 +241,19 @@ async function generarFacturaTemporal(idCita) {
 async function obtenerFacturaIdByCitaId(id) {
   try {
     let url =
-      obtenerRutaPrincipal() + `/medical/admissions/by-appointment/${idCita}`;
+      obtenerRutaPrincipal() + `/medical/admissions/by-appointment/${id}`;
     let datosEmpresa = await consultarDatosEmpresa();
 
     // Obtener los datos desde la API
     const response = await fetch(url);
     const data = await response.json();
 
-    console.log(data);
+    if (!data || !data.admission) {
+      console.error("Datos no encontrados");
+      return;
+    }
+
+    return data.related_invoice[0].id;
   } catch (error) {
     console.error("Error general:", error);
   }

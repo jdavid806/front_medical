@@ -5,16 +5,17 @@ import { Dropdown } from 'primereact/dropdown';
 import { Controller, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useCountries } from "../countries/hooks/useCountries.js";
-import { useCities } from "../cities/hooks/useCities.js";
 import { genders } from "../../services/commons.js";
 import { useRoles } from "../user-roles/hooks/useUserRoles.js";
 import { useUserSpecialties } from "../user-specialties/hooks/useUserSpecialties.js";
 import { Divider } from 'primereact/divider';
 import { Password } from 'primereact/password';
+import { useCitiesByCountry } from "../cities/hooks/useCitiesByCountry.js";
 const UserForm = ({
   formId,
   onHandleSubmit,
-  initialData
+  initialData,
+  config
 }) => {
   const [selectedRole, setSelectedRole] = useState(null);
   const {
@@ -24,7 +25,9 @@ const UserForm = ({
       errors
     },
     reset,
-    watch
+    watch,
+    setValue,
+    getValues
   } = useForm({
     defaultValues: initialData || {
       username: '',
@@ -36,8 +39,8 @@ const UserForm = ({
       second_last_name: '',
       user_role_id: 0,
       user_specialty_id: 0,
-      country_id: 0,
-      city_id: 0,
+      country_id: '',
+      city_id: '',
       gender: '',
       address: '',
       phone: ''
@@ -48,6 +51,13 @@ const UserForm = ({
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, errors[name].message);
+  };
+  const fetchCitiesByCountryName = countryId => {
+    const country = countries.find(country => country.name === countryId);
+    console.log(countryId, country);
+    if (country) {
+      fetchCities(country.id);
+    }
   };
   useEffect(() => {
     reset(initialData || {
@@ -60,8 +70,8 @@ const UserForm = ({
       second_last_name: '',
       user_role_id: 0,
       user_specialty_id: 0,
-      country_id: 0,
-      city_id: 0,
+      country_id: '',
+      city_id: '',
       gender: '',
       address: '',
       phone: ''
@@ -71,8 +81,11 @@ const UserForm = ({
     countries
   } = useCountries();
   const {
-    cities
-  } = useCities();
+    cities,
+    fetchCities,
+    isInitialCitiesLoad,
+    setIsInitialCitiesLoad
+  } = useCitiesByCountry();
   const {
     userRoles
   } = useRoles();
@@ -84,6 +97,19 @@ const UserForm = ({
     label
   }));
   const watchUserRoleId = watch('user_role_id');
+  const watchCountryId = watch('country_id');
+  useEffect(() => {
+    if (initialData && initialData.country_id) {
+      fetchCitiesByCountryName(initialData.country_id);
+    }
+  }, [countries]);
+  useEffect(() => {
+    if (isInitialCitiesLoad && cities.length > 0 && initialData?.city_id) {
+      console.log(initialData.city_id);
+      setValue('city_id', initialData.city_id);
+      setIsInitialCitiesLoad(false);
+    }
+  }, [cities, initialData, setValue, isInitialCitiesLoad]);
   useEffect(() => {
     if (watchUserRoleId) {
       const role = userRoles.find(role => role.id === watchUserRoleId);
@@ -92,6 +118,11 @@ const UserForm = ({
       setSelectedRole(null);
     }
   }, [watchUserRoleId, userRoles]);
+  useEffect(() => {
+    if (watchCountryId) {
+      fetchCitiesByCountryName(watchCountryId);
+    }
+  }, [watchCountryId]);
   const passwordHeader = /*#__PURE__*/React.createElement("div", {
     className: "font-bold mb-3"
   }, "Escribe una contrase\xF1a");
@@ -224,7 +255,7 @@ const UserForm = ({
       className: "form-label"
     }, "Ciudad ", /*#__PURE__*/React.createElement("span", {
       className: "text-primary"
-    }, "*")), /*#__PURE__*/React.createElement(Dropdown, _extends({
+    }, "*")), /*#__PURE__*/React.createElement(Dropdown, {
       inputId: field.name,
       filter: true,
       options: cities,
@@ -233,8 +264,10 @@ const UserForm = ({
       placeholder: "Seleccione una ciudad",
       className: classNames('w-100', {
         'p-invalid': errors.city_id
-      })
-    }, field)))
+      }),
+      value: field.value,
+      onChange: e => field.onChange(e.value)
+    }))
   }), getFormErrorMessage('city_id')), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(Controller, {
@@ -386,7 +419,7 @@ const UserForm = ({
         'p-invalid': errors.user_specialty_id
       })
     }, field)))
-  }), getFormErrorMessage('user_specialty_id'))))), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('user_specialty_id'))))), !config?.credentials || config?.credentials?.visible && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"

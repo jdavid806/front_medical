@@ -2,19 +2,24 @@ import React from 'react';
 import UserForm from "./UserForm.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 const UserFormModal = ({
+  title,
   show,
   handleSubmit,
-  onHide
+  onHide,
+  initialData,
+  config
 }) => {
   const formId = 'createDoctor';
   return /*#__PURE__*/React.createElement(CustomFormModal, {
     show: show,
     formId: formId,
     onHide: onHide,
-    title: "Crear usuario"
+    title: title
   }, /*#__PURE__*/React.createElement(UserForm, {
     formId: formId,
-    onHandleSubmit: handleSubmit
+    onHandleSubmit: handleSubmit,
+    initialData: initialData,
+    config: config
   }));
 };
 export default UserFormModal;

@@ -212,12 +212,10 @@ export const EstimateForm = () => {
         };
       }),
     };
-    console.log(requestData);
 
     estimatesService
       .createEstimates(requestData)
       .then((response) => {
-        // console.log("Estimate saved successfully:", response);
         window.location.reload();
       })
       .catch((error) => {
@@ -237,20 +235,7 @@ export const EstimateForm = () => {
         <h2 className="mb-5">Generar presupuesto</h2>
         <form id="productForm" className="d-flex flex-column gap-3 mb-5">
           <div className="row">
-            <div className="form-group col-md-6">
-              <label htmlFor="generarPara">Generar para</label>
-              <select
-                className="form-control"
-                id="generarPara"
-                onChange={() => {
-                  cambiarLabel();
-                }}
-              >
-                <option value="paciente">Pacientes</option>
-                <option value="entidad">Entidaded</option>
-              </select>
-            </div>
-            <div className="form-group col-md-6" id="patientSelectContent">
+            <div className="form-group col-md-12" id="patientSelectContent">
               <label htmlFor="patients" className="form-label">
                 Pacientes
               </label>

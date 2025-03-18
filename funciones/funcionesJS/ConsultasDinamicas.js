@@ -9,6 +9,7 @@ async function consultarDatosWhatssap(tipo) {
     apiKey: datosMensajeria.api_key,
     apiMensaje: `${urlBase}message/${tipo}/${datosMensajeria.instance}`,
     apiInstance: urlBase + "instance/" + tipo + "/" + datosMensajeria.instance,
+    testNumero: urlBase + "chat/whatsappNumbers/"+ datosMensajeria.instance,
   };
 }
 

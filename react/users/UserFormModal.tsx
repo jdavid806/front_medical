@@ -1,14 +1,17 @@
 import React from 'react';
-import UserForm, { UserFormInputs } from './UserForm';
+import UserForm, { UserFormConfig, UserFormInputs } from './UserForm';
 import { CustomFormModal } from '../components/CustomFormModal';
 
 interface UserFormModalProps {
+    title: string;
     show: boolean;
     handleSubmit: (data: UserFormInputs) => void;
+    initialData?: UserFormInputs;
+    config?: UserFormConfig;
     onHide?: () => void;
 }
 
-const UserFormModal: React.FC<UserFormModalProps> = ({ show, handleSubmit, onHide }) => {
+const UserFormModal: React.FC<UserFormModalProps> = ({ title, show, handleSubmit, onHide, initialData, config }) => {
 
     const formId = 'createDoctor'
 
@@ -17,8 +20,13 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ show, handleSubmit, onHid
             show={show}
             formId={formId}
             onHide={onHide}
-            title='Crear usuario'>
-            <UserForm formId={formId} onHandleSubmit={handleSubmit}></UserForm>
+            title={title}>
+            <UserForm
+                formId={formId}
+                onHandleSubmit={handleSubmit}
+                initialData={initialData}
+                config={config}
+            ></UserForm>
         </CustomFormModal>
     );
 };

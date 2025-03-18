@@ -1,0 +1,540 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Información de la Consulta",
+        "card": [
+          {
+            "title": "Motivo de la consulta",
+            "fields": [
+              {
+                "id": "motivoConsulta",
+                "label": "",
+                "type": "textarea",
+                "name": "motivoConsulta"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Evolución de los sintomas",
+            "fields": [
+              {
+                "id": "evolucionSintomas",
+                "label": "",
+                "type": "textarea",
+                "name": "evolucionSintomas"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Contexto de los sintomas",
+            "fields": [
+              {
+                "id": "contextoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "contextoSintoma"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Manejo de los sintomas",
+            "fields": [
+              {
+                "id": "manejoSintoma",
+                "label": "",
+                "type": "textarea",
+                "name": "manejoSintoma"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Verificación",
+        "card": [
+          {
+            "title": "Pre salida Quirofano",
+            "fields": [
+              {
+                "id": "nombreProcedimiento",
+                "label": "El nombre del procedimiento",
+                "type": "select",
+                "name": "nombreProcedimiento",
+                "options": [
+                  {
+                    "value": "si",
+                    "text": "Si"
+                  },
+                  {
+                    "value": "noProcede",
+                    "text": "No procede"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "recuentoInstrumentos",
+                "label": "El recuento de instrumentos",
+                "type": "select",
+                "name": "recuentoInstrumentos",
+                "options": [
+                  {
+                    "value": "si",
+                    "text": "Si"
+                  },
+                  {
+                    "value": "noProcede",
+                    "text": "No procede"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "etiquetadoMuestras",
+                "label": "El etiquetado de las muestras (lectura de etiquetas en voz alta, incluido el nombre del paciente)",
+                "type": "select",
+                "name": "etiquetadoMuestras",
+                "options": [
+                  {
+                    "value": "si",
+                    "text": "Si"
+                  },
+                  {
+                    "value": "noProcede",
+                    "text": "No procede"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "problemasInstrumentalEquipos",
+                "label": "Problemas que resolver relacionados al instrumental y/o equipos",
+                "type": "select",
+                "name": "problemasInstrumentalEquipos",
+                "options": [
+                  {
+                    "value": "si",
+                    "text": "Si"
+                  },
+                  {
+                    "value": "noProcede",
+                    "text": "No procede"
+                  },
+                  {
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "aspectosCriticosRecuperacion",
+                "label": "Aspectos criticos de recuperacion del paciente",
+                "type": "textarea",
+                "name": "aspectosCriticosRecuperacion"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Escala aldrete",
+        "card": [
+          {
+            "title": ""
+          }
+        ]
+      },
+      {
+        "tab": "Cirugía",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "diagnosticoPrincipal",
+                "label": "Diagnóstico principal",
+                "type": "textarea",
+                "name": "diagnosticoPrincipal",
+                "class": "col-6"
+              },
+              {
+                "id": "complicaciones",
+                "label": "Complicaciones",
+                "type": "textarea",
+                "name": "complicaciones",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Ojos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "derecho",
+                "label": "Derecho",
+                "type": "textarea",
+                "name": "derecho",
+                "class": "col-6"
+              },
+              {
+                "id": "izquierdo",
+                "label": "Izquierdo",
+                "type": "textarea",
+                "name": "izquierdo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Descripción de la cirugía",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "descripcionCirugia",
+                "label": "Descripción de la cirugía",
+                "type": "number",
+                "name": "descripcionCirugia"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "Tensión",
+            "fields": [
+              {
+                "id": "tensionA",
+                "label": "",
+                "type": "number",
+                "name": "tensionA",
+                "class": "col-6"
+              },
+              {
+                "id": "tensionB",
+                "label": "",
+                "type": "number",
+                "name": "tensionB",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Signos vitales",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso Corporal [Kg]",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "altura",
+                "label": "Altura [cm]",
+                "type": "number",
+                "name": "altura"
+              },
+              {
+                "id": "imc",
+                "label": "Índice de Masa Corporal (IMC)",
+                "type": "number",
+                "name": "imc"
+              },
+              {
+                "id": "porcentajeGrasaCorporal",
+                "label": "Porcentaje de Grasa Corporal [%]",
+                "type": "number",
+                "name": "porcentajeGrasaCorporal"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examen Físico",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "cabezaCheck",
+                "class": "col-6",
+                "label": "Cabeza",
+                "type": "checkbox",
+                "name": "cabezaCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cabezaText",
+                    "name": "cabezaText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "ojosCheck",
+                "class": "col-6",
+                "label": "Ojos",
+                "type": "checkbox",
+                "name": "ojosCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "ojosText",
+                    "name": "ojosText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "oidosCheck",
+                "class": "col-6",
+                "label": "Oídos",
+                "type": "checkbox",
+                "name": "oidosCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "oidosText",
+                    "name": "oidosText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "narizCheck",
+                "class": "col-6",
+                "label": "Nariz",
+                "type": "checkbox",
+                "name": "narizCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "narizText",
+                    "name": "narizText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "bocaFaringeCheck",
+                "class": "col-6",
+                "label": "Boca y Faringe",
+                "type": "checkbox",
+                "name": "bocaFaringeCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "bocaFaringeText",
+                    "name": "bocaFaringeText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "cuelloCheck",
+                "class": "col-6",
+                "label": "Cuello",
+                "type": "checkbox",
+                "name": "cuelloCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cuelloText",
+                    "name": "cuelloText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "pielCheck",
+                "class": "col-6",
+                "label": "Piel",
+                "type": "checkbox",
+                "name": "pielCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "pielText",
+                    "name": "pielText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "sistemaNeurologicoCheck",
+                "class": "col-6",
+                "label": "Sistema Neurológico",
+                "type": "checkbox",
+                "name": "sistemaNeurologicoCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "sistemaNeurologicoText",
+                    "name": "sistemaNeurologicoText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "extremidadesSuperioresCheck",
+                "class": "col-6",
+                "label": "Extremidades Superiores",
+                "type": "checkbox",
+                "name": "extremidadesSuperioresCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "extremidadesSuperioresText",
+                    "name": "extremidadesSuperioresText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "extremidadesInferioresCheck",
+                "class": "col-6",
+                "label": "Extremidades Inferiores",
+                "type": "checkbox",
+                "name": "extremidadesInferioresCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "extremidadesInferioresText",
+                    "name": "extremidadesInferioresText",
+                    "label": ""
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observacionesExamenFisico",
+                "label": "",
+                "type": "textarea",
+                "name": "observacionesExamenFisico"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

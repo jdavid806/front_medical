@@ -9,6 +9,7 @@ import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecords
 import UserManager from "../../services/userManager.js";
 const specialtyId = new URLSearchParams(window.location.search).get('especialidad');
 const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '';
+const appointmentId = new URLSearchParams(window.location.search).get('appointment_id') || '';
 export const PatientClinicalRecordApp = () => {
   const {
     specializables
@@ -56,6 +57,9 @@ export const PatientClinicalRecordApp = () => {
     }
     ;
   };
+  const seeDetail = (id, clinicalRecordType) => {
+    window.location.href = `detalleConsulta?clinicalRecordId=${id}&patient_id=${patientId}&tipo_historia=${clinicalRecordType}&especialidad=${specialtyId}`;
+  };
   const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
   return /*#__PURE__*/React.createElement(PrimeReactProvider, null, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -80,11 +84,12 @@ export const PatientClinicalRecordApp = () => {
     key: record.id
   }, /*#__PURE__*/React.createElement("a", {
     className: "dropdown-item",
-    href: `consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}`
+    href: `consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}&appointment_id=${appointmentId}`
   }, "Crear ", record.name)))))))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
     records: tableClinicalRecords,
+    onSeeDetail: seeDetail,
     onPrintItem: printClinicalRecord,
     onDownloadItem: downloadClinicalRecord,
     onShareItem: shareClinicalRecord

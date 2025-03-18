@@ -10,6 +10,16 @@ export class CityService extends OneToManyService {
             throw error;
         }
     }
+
+    async getByCountry(countryId) {
+        try {
+            const url = `${this.microservice}/cities/by-country/${countryId}`;
+            return await this.httpClient.get(url);
+        } catch (error) {
+            console.error(`Error getting cities for country ${countryId}:`, error);
+            throw error;
+        }
+    }
 }
 
 export default CityService;

@@ -10,6 +10,7 @@ async function cargarDatosTenant() {
     if (datosEmpresa && datosEmpresa.data) {
       let dataEmpresa = datosEmpresa.data[0];
 
+      // console.log("debug", datosEmpresa);
       // Asignar los datos a los campos del formulario de Información General
       document.getElementById("id_Empresa").value = dataEmpresa.id;
       document.getElementById("nombre-consultorio").value = dataEmpresa.name;
@@ -20,6 +21,8 @@ async function cargarDatosTenant() {
 
       // Asignar los datos del representante
       if (dataEmpresa.representative) {
+        document.getElementById("representanteId").value =
+          dataEmpresa.representative.id;
         document.getElementById("nombre-representante").value =
           dataEmpresa.representative.name;
         document.getElementById("telefono-representante").value =
@@ -42,6 +45,7 @@ async function cargarDatosTenant() {
 
       // Asignar los datos a los campos del formulario de Configuración SMTP
       if (dataEmpresa.communication) {
+        document.getElementById("smtpId").value = dataEmpresa.communication.id;
         document.getElementById("smtpServidor").value =
           dataEmpresa.communication.smtp_server;
         document.getElementById("smtpPuerto").value =
@@ -57,24 +61,70 @@ async function cargarDatosTenant() {
       // Asignar los datos a los campos de Facturación (Fiscal, Consumidor, Gubernamental, Notas de Crédito)
       if (dataEmpresa.billings && dataEmpresa.billings.length > 0) {
         dataEmpresa.billings.forEach((billing) => {
-          const formId = `form-${billing.type.toLowerCase()}`;
-          document.querySelector(`#${formId} #prefijo${billing.type}`).value =
-            billing.dian_prefix;
-          document.querySelector(
-            `#${formId} #numeroResolucion${billing.type}`
-          ).value = billing.resolution_number;
-          document.querySelector(
-            `#${formId} #facturaDesde${billing.type}`
-          ).value = billing.invoice_from;
-          document.querySelector(
-            `#${formId} #facturaHasta${billing.type}`
-          ).value = billing.invoice_to;
-          document.querySelector(
-            `#${formId} #fechaResolucion${billing.type}`
-          ).value = billing.resolution_date;
-          document.querySelector(
-            `#${formId} #fechaVencimiento${billing.type}`
-          ).value = billing.expiration_date;
+          // nota del desarrollador sé que habra alguna mejor manera de ahcer esto pero tengo sueño XD
+          switch (billing.type) {
+            case "tax_invoice":
+              document.getElementById("idFacturaFiscal").value = billing.id;
+              document.getElementById("prefijoFiscal").value =
+                billing.dian_prefix;
+              document.getElementById("numeroResolucionFiscal").value =
+                billing.resolution_number;
+              document.getElementById("facturaDesdeFiscal").value =
+                billing.invoice_from;
+              document.getElementById("facturaHastaFiscal").value =
+                billing.invoice_to;
+              document.getElementById("fechaResolucionFiscal").value =
+                billing.resolution_date;
+              document.getElementById("fechaVencimientoFiscal").value =
+                billing.expiration_date;
+              break;
+            case "consumer":
+              document.getElementById("idFacturaConsumidor").value = billing.id;
+              document.getElementById("prefijoConsumidor").value =
+                billing.dian_prefix;
+              document.getElementById("numeroResolucionConsumidor").value =
+                billing.resolution_number;
+              document.getElementById("facturaDesdeConsumidor").value =
+                billing.invoice_from;
+              document.getElementById("facturaHastaConsumidor").value =
+                billing.invoice_to; // fechaVencimientoConsumidor
+              document.getElementById("fechaResolucionConsumidor").value =
+                billing.resolution_date;
+              document.getElementById("fechaVencimientoConsumidor").value =
+                billing.expiration_date;
+              break;
+            case "government_invoice":
+              document.getElementById("idFacturaGubernamental").value =
+                billing.id;
+              document.getElementById("prefijoGubernamental").value =
+                billing.dian_prefix;
+              document.getElementById("numeroResolucionGubernamental").value =
+                billing.resolution_number;
+              document.getElementById("facturaDesdeGubernamental").value =
+                billing.invoice_from;
+              document.getElementById("facturaHastaGubernamental").value =
+                billing.invoice_to;
+              document.getElementById("fechaResolucionGubernamental").value =
+                billing.resolution_date;
+              document.getElementById("fechaVencimientoGubernamental").value =
+                billing.expiration_date;
+              break;
+            case "credit_note":
+              document.getElementById("idNotaCredito").value = billing.id;
+              document.getElementById("prefijoNotaCredito").value =
+                billing.dian_prefix;
+              document.getElementById("numeroResolucionNotaCredito").value =
+                billing.resolution_number;
+              document.getElementById("facturaDesdeNotaCredito").value =
+                billing.invoice_from;
+              document.getElementById("facturaHastaNotaCredito").value =
+                billing.invoice_to; // fechaVencimientoNotaCredito
+              document.getElementById("fechaResolucionNotaCredito").value =
+                billing.resolution_date;
+              document.getElementById("fechaVencimientoNotaCredito").value =
+                billing.expiration_date;
+              break;
+          }
         });
       }
 
@@ -165,20 +215,13 @@ async function updateEmpresa(infoGeneral) {
 async function createRepresentante(representante) {
   let url = obtenerRutaRepresentante();
   guardarDatos(url, representante);
+  cargarDatosTenant();
 }
 
 async function updateRepresentante(representante) {
   let url = obtenerRutaRepresentante();
   actualizarDatos(url, representante);
-}
-
-async function consultarRepresentanteExiste() {
-  let url = obtenerRutaRepresentante();
-  let datosRepresentante = await obtenerDatos(url);
-  if (datosRepresentante == null) {
-    return false;
-  }
-  return true;
+  cargarDatosTenant();
 }
 
 function obtenerRutaRepresentante() {
@@ -189,20 +232,16 @@ function obtenerRutaRepresentante() {
 }
 
 // Facturas
-async function updateTipoFacturas(configFactura) {
+async function updateTipoFacturas(id, configFactura) {
   let url = obtenerRutaFacturas(id);
   actualizarDatos(url, configFactura);
+  cargarDatosTenant();
 }
 
 async function createTipoFacturas(configFactura) {
   let url = obtenerRutaFacturas();
   guardarDatos(url, configFactura);
-}
-
-function consultarConfigFacturaExiste() {
-  let url = obtenerRutaFacturas(id);
-  let data = obtenerDatos(url);
-  console.log(data);
+  cargarDatosTenant();
 }
 
 function obtenerRutaFacturas(id) {
@@ -219,22 +258,13 @@ function obtenerRutaFacturas(id) {
 async function createSmtp(smtpConfig) {
   let url = obtenerRutaComunciaciones();
   guardarDatos(url, smtpConfig);
+  cargarDatosTenant();
 }
 
 async function updateSmtp(smtpConfig) {
   let url = obtenerRutaComunciaciones();
   actualizarDatos(url, smtpConfig);
-}
-
-async function consultarSmtpExiste() {
-  let url = obtenerRutaComunciaciones();
-  try {
-    let datosSmtp = await obtenerDatos(url);
-    console.log(datosSmtp);
-    return false;
-  } catch (error) {
-    return true;
-  }
+  cargarDatosTenant();
 }
 
 function obtenerRutaComunciaciones() {

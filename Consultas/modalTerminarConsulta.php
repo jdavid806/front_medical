@@ -144,26 +144,14 @@ include "../ConsultasJson/dataPaciente.php";
               <div class="row g-3 mb-3">
                 <div class="col-md-6">
                   <div class="form-floating">
-                    <select class="form-select" id="diagnosticoPrincipal" required>
-                      <option value="" selected disabled>Seleccione</option>
-                      <option value="A00">A00 - Cólera</option>
-                      <option value="B01">B01 - Varicela</option>
-                      <option value="C34">C34 - Neoplasia maligna del pulmón</option>
-                      <option value="E11">E11 - Diabetes mellitus tipo 2</option>
+                    <select class="form-select" id="diagnosticoPrincipal">
                     </select>
-                    <label for="diagnosticoPrincipal">Diagnóstico principal *</label>
-                    <div class="invalid-feedback">Por favor seleccione un diagnóstico principal.</div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-floating">
                     <select class="form-select" id="tipoDiagnostico">
-                      <option value="" selected disabled>Seleccione</option>
-                      <option value="definitivo">Definitivo</option>
-                      <option value="presuntivo">Presuntivo</option>
-                      <option value="diferencial">Diferencial</option>
                     </select>
-                    <label for="tipoDiagnostico">Tipo de diagnóstico</label>
                   </div>
                 </div>
               </div>
@@ -173,37 +161,19 @@ include "../ConsultasJson/dataPaciente.php";
                 <div class="col-md-4">
                   <div class="form-floating">
                     <select class="form-select" id="diagnosticoRel1">
-                      <option value="" selected disabled>Seleccione</option>
-                      <option value="J18">J18 - Neumonía</option>
-                      <option value="M79">M79 - Dolor muscular</option>
-                      <option value="K35">K35 - Apendicitis aguda</option>
-                      <option value="N39">N39 - Infección del tracto urinario</option>
                     </select>
-                    <label for="diagnosticoRel1">Diagnóstico relacionado 1</label>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-floating">
                     <select class="form-select" id="diagnosticoRel2">
-                      <option value="" selected disabled>Seleccione</option>
-                      <option value="J18">J18 - Neumonía</option>
-                      <option value="M79">M79 - Dolor muscular</option>
-                      <option value="K35">K35 - Apendicitis aguda</option>
-                      <option value="N39">N39 - Infección del tracto urinario</option>
                     </select>
-                    <label for="diagnosticoRel2">Diagnóstico relacionado 2</label>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="form-floating">
                     <select class="form-select" id="diagnosticoRel3">
-                      <option value="" selected disabled>Seleccione</option>
-                      <option value="J18">J18 - Neumonía</option>
-                      <option value="M79">M79 - Dolor muscular</option>
-                      <option value="K35">K35 - Apendicitis aguda</option>
-                      <option value="N39">N39 - Infección del tracto urinario</option>
                     </select>
-                    <label for="diagnosticoRel3">Diagnóstico relacionado 3</label>
                   </div>
                 </div>
               </div>
@@ -278,6 +248,118 @@ include "../ConsultasJson/dataPaciente.php";
 </div>
 </div>
 
+<script type="module">
+  import {
+    getUserLogged
+  } from './services/utilidades.js';
+
+  document.addEventListener('DOMContentLoaded', function() {
+
+    let userLogged = getUserLogged();
+    console.log("user logged:", userLogged);
+    const cie11 = userLogged.specialty.specializables.filter(item => item.specializable_type == "CIE-11")
+    cargarCie11(cie11)
+    cargarTipoDiagnostico();
+  })
+
+  function cargarTipoDiagnostico() {
+    const tipoDiagnostico = document.getElementById('tipoDiagnostico');
+
+    const options = [{
+        value: '',
+        text: 'Seleccione',
+        disabled: true,
+        selected: true
+      },
+      {
+        value: 'definitivo',
+        text: 'Definitivo'
+      },
+      {
+        value: 'presuntivo',
+        text: 'Presuntivo'
+      },
+      {
+        value: 'diferencial',
+        text: 'Diferencial'
+      }
+    ];
+
+    options.forEach(optionData => {
+      const option = document.createElement('option');
+      option.value = optionData.value;
+      option.text = optionData.text;
+      if (optionData.disabled) option.disabled = true;
+      if (optionData.selected) option.selected = true;
+      tipoDiagnostico.appendChild(option);
+    });
+    configurarSelectCie11();
+  }
+
+  function cargarCie11(cie11) {
+    console.log("Cie11: ", cie11);
+
+    // Obtenemos referencias a todos los selects
+    const selects = [
+      document.getElementById('diagnosticoPrincipal'),
+      document.getElementById('diagnosticoRel1'),
+      document.getElementById('diagnosticoRel2'),
+      document.getElementById('diagnosticoRel3'),
+    ];
+
+    // Limpiamos y configuramos cada select
+    selects.forEach(select => {
+      // Limpiar el select
+      select.innerHTML = '';
+
+      if (cie11.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.text = 'Esta especialidad no tiene CIE-11';
+        select.appendChild(option);
+      } else {
+        // Opción por defecto (placeholder)
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.text = 'Seleccione CIE-11';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        select.appendChild(defaultOption);
+
+        // Agregar opciones de CIE-11
+        cie11.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.id;
+          option.text = item.description || item.specializable_id;
+          select.appendChild(option);
+        });
+      }
+    });
+    configurarSelectCie11();
+  }
+
+  function configurarSelectCie11() {
+    // Obtenemos todas las referencias a selects
+    const selects = [
+      document.getElementById('diagnosticoPrincipal'),
+      document.getElementById('diagnosticoRel1'),
+      document.getElementById('diagnosticoRel2'),
+      document.getElementById('diagnosticoRel3'),
+      document.getElementById('tipoDiagnostico')
+    ];
+
+    // Verificamos una sola vez si Choices está definido
+    if (typeof Choices === 'undefined') return;
+
+    // Configuramos cada select con Choices
+    selects.forEach(select => {
+      new Choices(select, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    });
+  }
+</script>
 
 <script>
   document.getElementById('btnAgregarIncapacidad').addEventListener('click', function() {
@@ -337,7 +419,8 @@ include "../ConsultasJson/dataPaciente.php";
   import {
     packagesService,
     clinicalRecordService,
-    clinicalRecordTypeService
+    clinicalRecordTypeService,
+    appointmentService
   } from "./services/api/index.js";
   import {
     AlertManager
@@ -430,6 +513,7 @@ include "../ConsultasJson/dataPaciente.php";
       "branch_id": 1,
       "data": captureFormValues(formData.form1)
     }
+    const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
     const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0
 
     const hasDisplayNone = (id) => {
@@ -465,7 +549,8 @@ include "../ConsultasJson/dataPaciente.php";
 
     console.log(data);
     clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
-      .then(() => {
+      .then(async () => {
+        await appointmentService.changeStatus(appointmentId, 'consultation_completed')
         AlertManager.success({
           text: 'Se ha creado el registro exitosamente'
         })
@@ -504,7 +589,48 @@ include "../ConsultasJson/dataPaciente.php";
                 });
               } else if (field.type !== "checkbox") {
                 formValues[field.name] = document.getElementById(field.id).value;
-
+                if (field.id === "peso") {
+                  formValues[field.name] = document.getElementById('peso').value + " Lbs";
+                }
+                if (field.id === "altura") {
+                  formValues[field.name] = document.getElementById('altura').value + " cm";
+                }
+                if (field.id === "imc") {
+                  formValues[field.name] = document.getElementById('imc').value + " kg/m²";
+                }
+                if (field.id === "porcentajeGrasaCorporal") {
+                  formValues[field.name] = document.getElementById('porcentajeGrasaCorporal').value + " %";
+                }
+                if (field.id === "presionArterialDiastolica") {
+                  formValues[field.name] = document.getElementById('presionArterialDiastolica').value + " mmHg";
+                }
+                if (field.id === "presionArterialSistolica") {
+                  formValues[field.name] = document.getElementById('presionArterialSistolica').value + " mmHg";
+                }
+                if (field.id === "tensionArterialMedia") {
+                  formValues[field.name] = document.getElementById('tensionArterialMedia').value + " mmHg";
+                }
+                if (field.id === "saturacion") {
+                  formValues[field.name] = document.getElementById('saturacion').value + " %";
+                }
+                if (field.id === "circunferenciaAbdominal") {
+                  formValues[field.name] = document.getElementById('circunferenciaAbdominal').value + " cm";
+                }
+                if (field.id === "circunferenciaCintura") {
+                  formValues[field.name] = document.getElementById('circunferenciaCintura').value + " cm";
+                }
+                if (field.id === "perimetroCefalico") {
+                  formValues[field.name] = document.getElementById('perimetroCefalico').value + " cm";
+                }
+                if (field.id === "frecuenciaRespiratoria") {
+                  formValues[field.name] = document.getElementById('frecuenciaRespiratoria').value + " rpm";
+                }
+                if (field.id === "frecuenciaCardiaca") {
+                  formValues[field.name] = document.getElementById('frecuenciaCardiaca').value + " lpm";
+                }
+                if (field.id === "temperatura") {
+                  formValues[field.name] = document.getElementById('temperatura').value + " °Celsius";
+                }
                 const editor = tinymce.get(field.id);
                 if (editor) {
                   formValues[field.name] = editor.getContent();

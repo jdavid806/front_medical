@@ -94,7 +94,11 @@ async function actualizarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    const resultado = await respuesta.json();
+    const contentType = respuesta.headers.get("content-type");
+    let resultado = {};
+    if (contentType && contentType.includes("application/json")) {
+      resultado = await respuesta.json();
+    }
     console.log(resultado);
 
     // Notificación de éxito
@@ -254,16 +258,26 @@ async function getSpecialtyName(value) {
 }
 
 function convertirHtmlAWhatsapp(html) {
-  return html
-    .replace(/<strong>(.*?)<\/strong>/gi, "*$1*") // Negritas
-    .replace(/<b>(.*?)<\/b>/gi, "*$1*") // También para <b>
-    .replace(/<em>(.*?)<\/em>/gi, "_$1_") // Cursiva
-    .replace(/<i>(.*?)<\/i>/gi, "_$1_") // También para <i>
-    .replace(/<s>(.*?)<\/s>/gi, "~$1~") // Tachado
-    .replace(/<del>(.*?)<\/del>/gi, "~$1~") // También para <del>
-    .replace(/<br\s*\/?>/gi, "\n") // Saltos de línea
-    .replace(/<p>(.*?)<\/p>/gi, "$1\n") // Párrafos con doble salto de línea
-    .replace(/<[^>]+>/g, ""); // Elimina cualquier otra etiqueta HTML
+  return (
+    html
+      // **Negritas**: convierte <strong> y <b> a *texto*
+      .replace(/<strong>(.*?)<\/strong>/gi, "*$1*")
+      .replace(/<b>(.*?)<\/b>/gi, "*$1*")
+      // _Cursiva_: convierte <em> y <i> a _texto_
+      .replace(/<em>(.*?)<\/em>/gi, "_$1_")
+      .replace(/<i>(.*?)<\/i>/gi, "_$1_")
+      // ~Tachado~: convierte <s> y <del> a ~texto~
+      .replace(/<s>(.*?)<\/s>/gi, "~$1~")
+      .replace(/<del>(.*?)<\/del>/gi, "~$1~")
+      // Saltos de línea: convierte <br> a una nueva línea
+      .replace(/<br\s*\/?>/gi, "\n")
+      // Párrafos: convierte <p> en texto con salto de línea
+      .replace(/<p>(.*?)<\/p>/gi, "$1\n")
+      // Elimina cualquier otra etiqueta HTML restante
+      .replace(/<[^>]+>/g, "")
+      // Elimina los saltos de línea sobrantes al final del texto
+      .replace(/\n+$/, "")
+  );
 }
 
 function cargarSelect(id, datos, placeholder) {
@@ -378,6 +392,16 @@ async function convertirDatosVariables(
     case "Cita":
       mensaje = await reemplazarVariablesCita(template, object_id, patient_id);
       break;
+    case "Turno":
+      mensaje = await reemplazarVariablesTurno(template, object_id);
+      break;
+    case "Factura":
+      mensaje = await reemplazarVariablesFactura(
+        template,
+        object_id,
+        patient_id
+      );
+      break;
 
     default:
       mensaje = "No definido";
@@ -457,4 +481,55 @@ async function reemplazarVariablesCita(template, object_id, patient_id) {
     .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
     .replace(/\[\[MOTIVO_REAGENDAMIENTO\]\]/g, "Motivo Motivo" || "")
     .replace(/\[\[MOTIVO_CANCELACION\]\]/g, "Motivo Cancelacion" || "");
+}
+
+async function reemplazarVariablesTurno(template, object_id) {
+  let urlTurno = obtenerRutaPrincipal() + `/medical/tickets/${object_id}`;
+  const datosTurno = await obtenerDatos(urlTurno);
+
+  let nombrePaciente = datosTurno.patient_name;
+  let ticket = datosTurno.ticket_number;
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[TICKET\]\]/g, ticket || "");
+}
+
+async function reemplazarVariablesFactura(template, object_id, patient_id) {
+  console.log(template);
+  console.log(object_id);
+
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let nombrePaciente = datosPaciente.nombre;
+
+  console.log(nombrePaciente);
+  
+
+  // let urlCita = obtenerRutaPrincipal() + `/medical/appointments/${object_id}`;
+  // const datosCita = await obtenerDatos(urlCita);
+
+  // let fechaCita = datosCita.appointment_date;
+  // let HoraCita = datosCita.appointment_time;
+
+  // let especialista = [
+  //   datosCita.user_availability.user.first_name,
+  //   datosCita.user_availability.user.middle_name,
+  //   datosCita.user_availability.user.last_name,
+  //   datosCita.user_availability.user.second_last_name,
+  // ];
+
+  // let especilidad = await getSpecialtyName(
+  //   datosCita.user_availability.user.user_specialty_id
+  // );
+
+  // return template
+  //   .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+  //   .replace(/\[\[FECHA_CITA\]\]/g, fechaCita || "")
+  //   .replace(/\[\[HORA_CITA\]\]/g, HoraCita || "")
+  //   .replace(/\[\[ESPECIALISTA\]\]/g, unirTextos(especialista) || "")
+  //   .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
+  //   .replace(/\[\[MOTIVO_REAGENDAMIENTO\]\]/g, "Motivo Motivo" || "")
+  //   .replace(/\[\[MOTIVO_CANCELACION\]\]/g, "Motivo Cancelacion" || "");
+  return "debug";
 }

@@ -228,3 +228,11 @@ RewriteRule ^noAutorizado$ Pagesphp/unauthorized.php
 RewriteRule ^homeMarketing$ Marketing/homeMarketing.php
 
 RewriteRule ^preadmisiones$ Citas/HistoryPreadmission.php
+
+RewriteRule ^homeAuditoria$ Auditoria/homeAuditoria.php
+
+RewriteRule ^historialConsultasEspecialidad$  Consultas/historialConsultasEspecialidad.php
+
+RewriteRule ^detalleConsulta$  Consultas/detalleConsulta.php
+
+RewriteRule ^plantillasMensajes$  Marketing/plantillasMensajes.php

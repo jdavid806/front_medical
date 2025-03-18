@@ -350,15 +350,15 @@
             selectMedicamentos.appendChild(placeholderOption);
 
             // Recorremos el array de medicamentos y creamos las opciones
-            if (medicamentos.data.length > 0) {
-                medicamentos.data.forEach(medicamento => {
+            if (medicamentos.length > 0) {
+                medicamentos.forEach(medicamento => {
                     const optionMeds = document.createElement('option');
 
                     // Usamos el nombre como value
-                    optionMeds.value = medicamento.name;
+                    optionMeds.value = medicamento.name + ' - ' + medicamento.id;
 
                     // Mostramos información adicional en el texto visible
-                    optionMeds.textContent = `${medicamento.name} - ${medicamento.concentracion} (${medicamento.presentacion})`;
+                    optionMeds.textContent = `${medicamento.name} - (${medicamento.concentration ? medicamento.concentration : 'sin concentracion'}) (${medicamento.presentation ? medicamento.presentation : 'sin presentacion'})`;
 
                     // Añadimos la opción al select
                     selectMedicamentos.appendChild(optionMeds);
@@ -388,8 +388,8 @@
 
             selectExamenes.appendChild(placeholderOptionExs);
 
-            if (examenes.data.length > 0) {
-                examenes.data.forEach(examen => {
+            if (examenes.length > 0) {
+                examenes.forEach(examen => {
                     const optionExs = document.createElement('option');
 
                     optionExs.value = examen.id;
@@ -423,11 +423,11 @@
 
             selectVacunas.appendChild(placeholderOptionVac);
 
-            if (vacunas.data.length > 0) {
-                vacunas.data.forEach(vacuna => {
+            if (vacunas.length > 0) {
+                vacunas.forEach(vacuna => {
                     const optionVac = document.createElement('option');
 
-                    optionVac.value = vacuna.id;
+                    optionVac.value = vacuna.name + ' - ' + vacuna.id;
 
                     optionVac.textContent = vacuna.name;
 
@@ -458,11 +458,11 @@
 
             selectInsumos.appendChild(placeholderOptionIns);
 
-            if (insumos.data.length) {
-                insumos.data.forEach(insumo => {
+            if (insumos.length) {
+                insumos.forEach(insumo => {
                     const optionIns = document.createElement('option');
 
-                    optionIns.value = insumo.id;
+                    optionIns.value = insumo.name + ' - ' + insumo.id;
 
                     optionIns.textContent = insumo.name;
 
@@ -892,9 +892,11 @@
         // Contenedor de las tarjetas con clases de Bootstrap
         const contenedor = document.createElement("div");
         contenedor.className = "row justify-content-center"; // Bootstrap row
-
         // Crear una tarjeta por cada medicamento
         medicamentos.forEach((medicamento, index) => {
+            const medicamentoData = medicamento.split(' - ');
+            const name = medicamentoData[0];
+            const id = medicamentoData[1];
             const cardContainer = document.createElement("div");
             cardContainer.className = "col-md-12 mb-3"; // Columna responsive para cada tarjeta
 
@@ -903,7 +905,7 @@
 
             // Nombre del medicamento
             const nombreMed = document.createElement("h5");
-            nombreMed.textContent = medicamento || "Medicamento sin nombre";
+            nombreMed.textContent = name || "Medicamento sin nombre";
             nombreMed.className = "text-center mb-3";
             card.appendChild(nombreMed);
 
@@ -911,13 +913,31 @@
             const formRow = document.createElement("div");
             formRow.className = "row";
 
+            // Campo de concentración
+            const divConcentracion = document.createElement("div");
+            divConcentracion.className = "col-6 mb-3";
+            const inputConcentracion = document.createElement("input");
+            inputConcentracion.type = "text";
+            inputConcentracion.placeholder = "Concentración";
+            inputConcentracion.className = "form-control";
+            inputConcentracion.id = `concentracion-${index}`;
+            inputConcentracion.value = medicamento.concentration || '';
+            divConcentracion.appendChild(inputConcentracion);
+
+            // Campo hidden para el ID del medicamento
+            const inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.id = `medicamento_id-${index}`;
+            inputId.value = id || '';
+            card.appendChild(inputId);
+
             // Campo de frecuencia (Select)
             const divFrecuencia = document.createElement("div");
             divFrecuencia.className = "col-6 mb-3";
             const selectFrecuencia = document.createElement("select");
             selectFrecuencia.className = "form-control";
             selectFrecuencia.id = `frecuencia-${index}`;
-            const opcionesFrecuencia = ["Diaria", "Semanal", "Mensual"];
+            const opcionesFrecuencia = ["Seleccione", "Diaria", "Semanal", "Mensual"];
             opcionesFrecuencia.forEach(opcion => {
                 const option = document.createElement("option");
                 option.value = opcion.toLowerCase();
@@ -925,6 +945,55 @@
                 selectFrecuencia.appendChild(option);
             });
             divFrecuencia.appendChild(selectFrecuencia);
+
+            // Campo de presentación (Select)
+            const divPresentacion = document.createElement("div");
+            divPresentacion.className = "col-6 mb-3";
+            const selectPresentacion = document.createElement("select");
+            selectPresentacion.className = "form-control";
+            selectPresentacion.id = `presentacion-${index}`;
+            const opcionesPresentacion = ["Seleccione", "Crema", "Jarabe", "Inyeccion", "Tabletas"];
+            opcionesPresentacion.forEach(opcion => {
+                const option = document.createElement("option");
+                option.value = opcion.toLowerCase();
+                option.textContent = opcion;
+                selectPresentacion.appendChild(option);
+            });
+            divPresentacion.appendChild(selectPresentacion);
+
+            // Campo de cantidad (input)
+            const divCantidad = document.createElement("div");
+            divCantidad.className = "col-6 mb-3";
+            divCantidad.style.display = "none"; // Oculto por defecto
+            const inputCantidad = document.createElement("input");
+            inputCantidad.type = "text1";
+            inputCantidad.placeholder = "Cantidad";
+            inputCantidad.className = "form-control";
+            inputCantidad.id = `cantidad-${index}`;
+            divCantidad.appendChild(inputCantidad);
+
+            // Campo de "Tomar cada" (select)
+            const divTomarCada = document.createElement("div");
+            divTomarCada.className = "col-6 mb-3";
+            divTomarCada.style.display = "none"; // Oculto por defecto
+            const selectTomarCada = document.createElement("select");
+            selectTomarCada.className = "form-control";
+            selectTomarCada.id = `tomarCada-${index}`;
+            const opcionesTomarCada = ["1 hora", "2 horas", "3 horas", "4 horas", "5 horas", "6 horas", "7 horas", "8 horas", "9 horas", "10 horas", "12 horas", "24 horas"];
+            opcionesTomarCada.forEach(opcion => {
+                const option = document.createElement("option");
+                option.value = opcion.toLowerCase();
+                option.textContent = opcion;
+                selectTomarCada.appendChild(option);
+            });
+            divTomarCada.appendChild(selectTomarCada);
+
+            // Evento para mostrar/ocultar campos según la selección
+            selectPresentacion.addEventListener('change', function() {
+                const seleccion = this.value;
+                divCantidad.style.display = (seleccion === 'crema' || seleccion === 'jarabe' || seleccion === 'inyeccion') ? 'block' : 'none';
+                divTomarCada.style.display = (seleccion === 'jarabe' || seleccion === 'tabletas') ? 'block' : 'none';
+            });
 
             // Campo de duración en días
             const divDuracion = document.createElement("div");
@@ -938,7 +1007,7 @@
 
             // Campo de indicaciones
             const divIndicaciones = document.createElement("div");
-            divIndicaciones.className = "col-6 mb-3";
+            divIndicaciones.className = "col-12 mb-3";
             const textareaIndicaciones = document.createElement("textarea");
             textareaIndicaciones.placeholder = "Indicaciones";
             textareaIndicaciones.className = "form-control";
@@ -947,8 +1016,12 @@
             divIndicaciones.appendChild(textareaIndicaciones);
 
             // Agregar los campos a la fila
+            formRow.appendChild(divConcentracion);
             formRow.appendChild(divFrecuencia);
             formRow.appendChild(divDuracion);
+            formRow.appendChild(divPresentacion);
+            formRow.appendChild(divCantidad);
+            formRow.appendChild(divTomarCada);
             formRow.appendChild(divIndicaciones);
 
             // Agregar fila al card
@@ -1002,21 +1075,32 @@
 
         const tbody = document.createElement("tbody");
 
-        for (const vacuna of vacunas) {
+        for (const [index, vacuna] of vacunas.entries()) {
+
+            const vacunaData = vacuna.split(' - ');
+            const name = vacunaData[0];
+            const id = vacunaData[1];
+
             const row = document.createElement("tr");
             row.style.borderBottom = "1px solid #ddd";
 
             const inputIdVac = 'cantidad_vacuna_' + vacuna.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
             const tdNombre = document.createElement("td");
-            tdNombre.textContent = vacuna || "Vacuna sin nombre";
+            tdNombre.textContent = name || "Vacuna sin nombre";
             tdNombre.style.padding = "10px";
             tdNombre.style.textAlign = "left";
-            tdNombre.style.width = "75%"
+            tdNombre.style.width = "75%";
+
+            const inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.value = id;
+            inputId.id = `vacuna_id_${index}`;
+            row.appendChild(inputId);
 
             const tdCantidad = document.createElement("td");
             tdCantidad.style.padding = "10px";
-            tdCantidad.style.width = "25%"
+            tdCantidad.style.width = "25%";
 
             const inputCantidad = document.createElement("input");
             inputCantidad.type = "number";
@@ -1083,17 +1167,28 @@
 
         const tbody = document.createElement("tbody");
 
-        for (const insumo of insumos) {
+        for (const [index, insumo] of insumos.entries()) {
+
+            const insumoData = insumo.split(' - ');
+            const name = insumoData[0];
+            const id = insumoData[1];
+
             const row = document.createElement("tr");
             row.style.borderBottom = "1px solid #ddd";
 
             const inputIdIns = 'cantidad_insumo_' + insumo.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 
             const tdNombre = document.createElement("td");
-            tdNombre.textContent = insumo || "Insumo sin nombre";
+            tdNombre.textContent = name || "Insumo sin nombre";
             tdNombre.style.padding = "10px";
             tdNombre.style.textAlign = "left";
             tdNombre.style.width = "75%";
+
+            const inputId = document.createElement("input");
+            inputId.type = "hidden";
+            inputId.value = id;
+            inputId.id = `insumo_id_${index}`;
+            row.appendChild(inputId);
 
             const tdCantidad = document.createElement("td");
             tdCantidad.style.padding = "10px";
@@ -1311,7 +1406,14 @@
         cie11Service,
         cupsService
     } from './services/api/index.js';
+    import {
+        getUserLogged
+    } from './services/utilidades.js';
     let timeout;
+    let userLogged;
+    document.addEventListener('DOMContentLoaded', function() {
+        userLogged = getUserLogged();
+    })
     document.getElementById('btnBuscarCup').addEventListener('click', function() {
         queryCups();
     });
@@ -1396,15 +1498,17 @@
         const medicamentosData = [];
         const tarjetas = document.querySelectorAll(".card-medicamento");
 
-        console.log(tarjetas);
-
         tarjetas.forEach((card, index) => {
-            console.log(card);
             const medicamentoObj = {
                 nombre: card.querySelector("h5").textContent,
-                frecuencia: document.getElementById(`frecuencia-${index}`).value,
-                duracion: document.getElementById(`duracion-${index}`).value,
-                indicaciones: document.getElementById(`indicaciones-${index}`).value
+                id: card.querySelector("h5").textContent,
+                concentration: document.getElementById(`concentracion-${index}`).value,
+                frequency: document.getElementById(`frecuencia-${index}`).value,
+                duration_days: document.getElementById(`duracion-${index}`).value,
+                medication_type: document.getElementById(`presentacion-${index}`).value,
+                quantity: document.getElementById(`cantidad-${index}`).value,
+                instructions: document.getElementById(`indicaciones-${index}`).value,
+                id: document.getElementById(`medicamento_id-${index}`).value
             };
             medicamentosData.push(medicamentoObj);
         });

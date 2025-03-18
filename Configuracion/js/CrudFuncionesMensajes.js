@@ -55,6 +55,38 @@ async function obtenerTemplate(datos, plantillaConfiguracion = false) {
   }
 }
 
+async function enviarArchivoWhatssap(datos) {
+  let tenant = datos.tenant_id;
+  let belong = datos.belongs_to;
+  let type = datos.type;
+
+  let url =
+    obtenerRutaPrincipal() +
+    `/api/v1/firma/message-templates/filter/${tenant}/${belong}/${type}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Error en la solicitud");
+    }
+    const repuesta = await response.json();
+
+    let plantilla = repuesta.data;
+
+    let respuesta = "";
+
+    if (Object.keys(repuesta.data).length === 0) {
+      repuesta = false;
+    } else {
+      respuesta = plantilla.attached;
+    }
+
+    return respuesta;
+  } catch (error) {
+    console.error("Hubo un problema con la solicitud:", error);
+    return null;
+  }
+}
+
 async function obtenerIdTemplate(datos) {
   let tenant = datos.tenant_id;
   let belong = datos.belongs_to;

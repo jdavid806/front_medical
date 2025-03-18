@@ -10,6 +10,8 @@ import { useRoles } from '../user-roles/hooks/useUserRoles';
 import { useUserSpecialties } from '../user-specialties/hooks/useUserSpecialties';
 import { Divider } from 'primereact/divider';
 import { Password } from 'primereact/password';
+import { useCitiesByCountry } from '../cities/hooks/useCitiesByCountry';
+import { CountryDto } from '../models/models';
 
 export type UserFormInputs = {
     username: string;
@@ -21,20 +23,31 @@ export type UserFormInputs = {
     second_last_name: string;
     user_role_id: number;
     user_specialty_id: number;
-    country_id: number;
-    city_id: number;
+    country_id: string;
+    city_id: string;
     gender: string;
     address: string;
     phone: string;
+}
+
+export interface UserFormElementConfig {
+    visible: boolean;
+}
+
+export interface UserFormConfig {
+    username?: UserFormElementConfig;
+    password?: UserFormElementConfig;
+    credentials?: UserFormElementConfig;
 }
 
 interface UserFormProps {
     formId: string;
     onHandleSubmit: (data: UserFormInputs) => void;
     initialData?: UserFormInputs;
+    config?: UserFormConfig;
 }
 
-const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData }) => {
+const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData, config }) => {
 
     const [selectedRole, setSelectedRole] = useState<any>(null);
     const {
@@ -42,7 +55,9 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
         handleSubmit,
         formState: { errors },
         reset,
-        watch
+        watch,
+        setValue,
+        getValues
     } = useForm<UserFormInputs>({
         defaultValues: initialData || {
             username: '',
@@ -54,8 +69,8 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
             second_last_name: '',
             user_role_id: 0,
             user_specialty_id: 0,
-            country_id: 0,
-            city_id: 0,
+            country_id: '',
+            city_id: '',
             gender: '',
             address: '',
             phone: '',
@@ -68,6 +83,15 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
         return errors[name] && <small className="p-error">{errors[name].message}</small>
     };
 
+    const fetchCitiesByCountryName = (countryId: string) => {
+        const country = countries.find((country: CountryDto) => country.name === countryId);
+        console.log(countryId, country);
+
+        if (country) {
+            fetchCities(country.id);
+        }
+    }
+
     useEffect(() => {
         reset(initialData || {
             username: '',
@@ -79,8 +103,8 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
             second_last_name: '',
             user_role_id: 0,
             user_specialty_id: 0,
-            country_id: 0,
-            city_id: 0,
+            country_id: '',
+            city_id: '',
             gender: '',
             address: '',
             phone: '',
@@ -88,12 +112,28 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
     }, [initialData, reset]);
 
     const { countries } = useCountries();
-    const { cities } = useCities();
+    const { cities, fetchCities, isInitialCitiesLoad, setIsInitialCitiesLoad } = useCitiesByCountry();
     const { userRoles } = useRoles();
     const { userSpecialties } = useUserSpecialties();
     const gendersForSelect = Object.entries(genders).map(([value, label]) => ({ value, label }))
 
     const watchUserRoleId = watch('user_role_id');
+    const watchCountryId = watch('country_id');
+
+    useEffect(() => {
+        if (initialData && initialData.country_id) {
+            fetchCitiesByCountryName(initialData.country_id);
+        }
+    }, [countries]);
+
+    useEffect(() => {
+        if (isInitialCitiesLoad && cities.length > 0 && initialData?.city_id) {
+            console.log(initialData.city_id);
+
+            setValue('city_id', initialData.city_id);
+            setIsInitialCitiesLoad(false);
+        }
+    }, [cities, initialData, setValue, isInitialCitiesLoad]);
 
     useEffect(() => {
         if (watchUserRoleId) {
@@ -103,6 +143,12 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
             setSelectedRole(null);
         }
     }, [watchUserRoleId, userRoles]);
+
+    useEffect(() => {
+        if (watchCountryId) {
+            fetchCitiesByCountryName(watchCountryId);
+        }
+    }, [watchCountryId]);
 
     const passwordHeader = <div className="font-bold mb-3">Escribe una contraseña</div>;
     const passwordFooter = (
@@ -228,16 +274,19 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                     rules={{ required: 'Este campo es requerido' }}
                                     render={({ field }) => (
                                         <>
-                                            <label htmlFor={field.name} className="form-label">Ciudad <span className="text-primary">*</span></label>
+                                            <label htmlFor={field.name} className="form-label">
+                                                Ciudad <span className="text-primary">*</span>
+                                            </label>
                                             <Dropdown
                                                 inputId={field.name}
                                                 filter
                                                 options={cities}
-                                                optionLabel='name'
-                                                optionValue='name'
+                                                optionLabel="name"
+                                                optionValue="name"
                                                 placeholder="Seleccione una ciudad"
                                                 className={classNames('w-100', { 'p-invalid': errors.city_id })}
-                                                {...field}
+                                                value={field.value}
+                                                onChange={(e) => field.onChange(e.value)}
                                             />
                                         </>
                                     )}
@@ -378,54 +427,56 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                         </div>
                     </div>
                 </div>
-                <div className="card">
-                    <div className="card-body">
-                        <div className="row">
-                            <div className="col-md-6 mb-1">
-                                <Controller
-                                    name='username'
-                                    control={control}
-                                    rules={{ required: 'Este campo es requerido' }}
-                                    render={({ field }) => (
-                                        <>
-                                            <label htmlFor={field.name} className="form-label">Username <span className="text-primary">*</span></label>
-                                            <InputText
-                                                id={field.name}
-                                                placeholder="Username"
-                                                className={classNames('w-100', { 'p-invalid': errors.username })}
-                                                {...field}
-                                            />
-                                        </>
-                                    )}
-                                />
-                                {getFormErrorMessage('username')}
-                            </div>
-                            <div className="col-md-6 mb-1">
-                                <Controller
-                                    name='password'
-                                    control={control}
-                                    rules={{ required: 'Este campo es requerido' }}
-                                    render={({ field }) => (
-                                        <>
-                                            <label htmlFor={field.name} className="form-label">Contraseña <span className="text-primary">*</span></label>
-                                            <Password
-                                                {...field}
-                                                header={passwordHeader}
-                                                footer={passwordFooter}
-                                                mediumLabel='Medio'
-                                                strongLabel='Fuerte'
-                                                weakLabel='Débil'
-                                                className='w-100'
-                                                inputClassName='w-100'
-                                            />
-                                        </>
-                                    )}
-                                />
-                                {getFormErrorMessage('password')}
+                {!config?.credentials || config?.credentials?.visible && (
+                    <div className="card">
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6 mb-1">
+                                    <Controller
+                                        name='username'
+                                        control={control}
+                                        rules={{ required: 'Este campo es requerido' }}
+                                        render={({ field }) => (
+                                            <>
+                                                <label htmlFor={field.name} className="form-label">Username <span className="text-primary">*</span></label>
+                                                <InputText
+                                                    id={field.name}
+                                                    placeholder="Username"
+                                                    className={classNames('w-100', { 'p-invalid': errors.username })}
+                                                    {...field}
+                                                />
+                                            </>
+                                        )}
+                                    />
+                                    {getFormErrorMessage('username')}
+                                </div>
+                                <div className="col-md-6 mb-1">
+                                    <Controller
+                                        name='password'
+                                        control={control}
+                                        rules={{ required: 'Este campo es requerido' }}
+                                        render={({ field }) => (
+                                            <>
+                                                <label htmlFor={field.name} className="form-label">Contraseña <span className="text-primary">*</span></label>
+                                                <Password
+                                                    {...field}
+                                                    header={passwordHeader}
+                                                    footer={passwordFooter}
+                                                    mediumLabel='Medio'
+                                                    strongLabel='Fuerte'
+                                                    weakLabel='Débil'
+                                                    className='w-100'
+                                                    inputClassName='w-100'
+                                                />
+                                            </>
+                                        )}
+                                    />
+                                    {getFormErrorMessage('password')}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
             </form>
         </>
     );

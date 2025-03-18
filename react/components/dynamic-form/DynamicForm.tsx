@@ -35,10 +35,18 @@ export const DynamicForm: React.FC<DynamicFormProps> = forwardRef(({ form }, ref
                 .map((card: any, index) => ({
                     ...Object.assign(card, { id: `card-${index}` }),
                     fields: card.fields.map((field: any) => {
-                        initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
+                        if (formData.values?.[field.id]) {
+                            initialFormValues[field.id] = formData.values[field.id];
+                            console.log(initialFormValues[field.id]);
+                        } else {
+                            initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
+                        }
+
                         if (field.type === 'checkbox' && field.toggleFields) {
                             field.toggleFields.forEach((subField: any) => {
-                                initialFormValues[subField.id] = '';
+                                if (!formData.values?.[subField.id]) {
+                                    initialFormValues[subField.id] = '';
+                                }
                             });
                         }
                         return field;

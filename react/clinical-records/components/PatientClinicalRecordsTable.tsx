@@ -14,6 +14,7 @@ import TableActionsWrapper from '../../components/table-actions/TableActionsWrap
 interface PatientClinicalRecordsTableItem {
     id: string
     clinicalRecordName: string
+    clinicalRecordType: string
     doctorName: string
     description: string
     status: string
@@ -22,7 +23,7 @@ interface PatientClinicalRecordsTableItem {
 
 type PatientClinicalRecordsTableProps = {
     records: PatientClinicalRecordDto[]
-    onSeeDetail?: (id: string) => void
+    onSeeDetail?: (id: string, clinicalRecordType: string) => void
     onCancelItem?: (id: string) => void
     onPrintItem?: (id: string, title: string) => void
     onDownloadItem?: (id: string, title: string) => void
@@ -37,10 +38,12 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
             return {
                 id: clinicalRecord.id,
                 clinicalRecordName: clinicalRecord.clinical_record_type.name,
+                clinicalRecordType: clinicalRecord.clinical_record_type.key_ || '',
                 description: clinicalRecord.description || '--',
                 doctorName: `${clinicalRecord.created_by_user.first_name} ${clinicalRecord.created_by_user.middle_name} ${clinicalRecord.created_by_user.last_name} ${clinicalRecord.created_by_user.second_last_name}`,
                 status: clinicalRecord.clinical_record_type_id,
-                patientId: clinicalRecord.patient_id
+                patientId: clinicalRecord.patient_id,
+
             }
         })
         setTableRecords(mappedRecords);
@@ -54,17 +57,10 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
     ]
 
     const slots = {
-        // 3: (cell, data: PatientClinicalRecordsTableItem) => (
-        //     <span
-        //         className={`badge badge-phoenix badge-phoenix-${clinicalRecordStates[data.status]}`}
-        //     >
-        //         {clinicalRecordStateColors[data.status]}
-        //     </span>
-        // ),
         3: (cell, data: PatientClinicalRecordsTableItem) => (
             <div className="text-end align-middle">
                 <TableActionsWrapper>
-                    <SeeDetailTableAction onTrigger={() => onSeeDetail && onSeeDetail(data.id)} />
+                    <SeeDetailTableAction onTrigger={() => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)} />
 
                     {data.status === 'approved' && (
                         <RequestCancellationTableAction onTrigger={() => onCancelItem && onCancelItem(data.id)} />

@@ -1,23 +1,27 @@
-import { useState, useEffect } from 'react';
-import { userService } from "../../../services/api/index.js";
-import { UserDto } from '../../models/models.js';
+import React, { useState } from "react";
+import { UserDto } from "../../models/models";
+import { userService } from "../../../services/api";
+import { ErrorHandler } from "../../../services/errorHandler";
 
-export const useUsers = () => {
-    const [users, setUsers] = useState<UserDto[]>([]);
+export const useUser = () => {
+    const [user, setUser] = useState<UserDto | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const fetchUsers = async () => {
+    const fetchUser = async (id: string) => {
         try {
-            const data: UserDto[] = await userService.getAll();
-            setUsers(data);
-        } catch (error) {
-            console.error('Error fetching users:', error);
+            const data = await userService.get(id);
+            setUser(data);
+        } catch (err) {
+            ErrorHandler.generic(err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    return { users, fetchUsers };
+    return {
+        user,
+        setUser,
+        fetchUser,
+        loading
+    };
 };
-

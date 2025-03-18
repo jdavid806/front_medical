@@ -7,9 +7,17 @@ $tabs = [
       'creacion' => 'Creación',
       'cancelacion' => 'Cancelación',
       'reagendamiento' => 'Reagendamiento',
-      'turno' => 'Llamado a Turno',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => false
+  ],
+  'turnos' => [
+    'title' => 'Turnos',
+    'botones' => 'Turnos',
+    'subtabs' => [
+      'llamado' => 'Llamado a Turno',
+    ],
+    'anexo' => false
   ],
   'historia_clinica' => [
     'title' => 'Historia Clínica',
@@ -17,7 +25,8 @@ $tabs = [
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => true
   ],
   'recetas' => [
     'title' => 'Recetas',
@@ -25,7 +34,8 @@ $tabs = [
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => true
   ],
   'incapacidades' => [
     'title' => 'Incapacidades',
@@ -33,7 +43,8 @@ $tabs = [
     'subtabs' => [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => true
   ],
   'facturacion' => [
     'title' => 'Facturación',
@@ -42,7 +53,8 @@ $tabs = [
       'creacion' => 'Creación',
       'anulacion' => 'Anulación',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => true
   ],
   'examenes' => [
     'title' => 'Exámenes',
@@ -51,7 +63,8 @@ $tabs = [
       'creacion' => 'Creación',
       'cargue' => 'Cargue de resultados',
       'compartir' => 'Compartir'
-    ]
+    ],
+    'anexo' => true
   ]
 ];
 ?>
@@ -97,8 +110,8 @@ $tabs = [
                     <div class="card-body">
                       <h4 class="card-title"> <?= $subtitle ?> </h4>
                       <?php
-                      $url = "./botonesDinamicos/".$tab['botones'] . ".php";
-                        include $url;
+                      $url = "./botonesDinamicos/" . $tab['botones'] . ".php";
+                      include $url;
                       ?>
                       <div class="rich-text-react" id="<?= $key ?>-<?= $subkey ?>-content"></div>
                     </div>
@@ -112,12 +125,14 @@ $tabs = [
                         <option value="correo">Correo</option>
                       </select>
                     </div>
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="adjunto-<?= $key ?>-<?= $subkey ?>">
-                      <label class="form-check-label" for="adjunto-<?= $key ?>-<?= $subkey ?>">
-                        <i class="fas fa-paperclip"></i> Adjuntar PDF Generado
-                      </label>
-                    </div>
+                    <?php if ($tab['anexo']): ?>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="adjunto-<?= $key ?>-<?= $subkey ?>">
+                        <label class="form-check-label" for="adjunto-<?= $key ?>-<?= $subkey ?>">
+                          <i class="fas fa-paperclip"></i> Adjuntar PDF Generado
+                        </label>
+                      </div>
+                    <?php endif; ?>
                     <button class="btn btn-success mt-3" id="guardar-<?= $key ?>-<?= $subkey ?>"
                       onclick="guardarDataPlantilla('<?= $key ?>-<?= $subkey ?>')">
                       <i class="fas fa-save"></i> Guardar
