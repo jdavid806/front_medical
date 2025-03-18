@@ -274,7 +274,8 @@
     import {
         cie11Service,
         cupsService,
-        packagesService
+        packagesService,
+        examenTypeService
     } from './services/api/index.js';
 
     let currentStep = 1;
@@ -324,7 +325,9 @@
         medicamentos = await packagesService.getPackagesByMedications();
         vacunas = await packagesService.getPackagesByVaccines();
         insumos = await packagesService.getPackagesBySupplies();
-        examenes = await packagesService.getPackagesByExams();
+        examenes = await examenTypeService.getExamenTypes();
+
+        console.log("Selects:", medicamentos, vacunas, insumos, examenes);
 
         /**
          * Función para cargar los medicamentos en el select

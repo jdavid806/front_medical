@@ -3,6 +3,16 @@ include "../menu.php";
 include "../header.php";
 ?>
 
+<script type="module">
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        PreadmissionTable
+    } from './react-dist/appointments/PreadmissionTable.js';
+
+    ReactDOMClient.createRoot(document.getElementById('history-preadmission-data-content')).render(React.createElement(PreadmissionTable));
+</script>
+
 <div class="componente">
     <div class="content">
         <nav class="mb-3" aria-label="breadcrumb">

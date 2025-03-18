@@ -240,11 +240,24 @@
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxCharge">Impuesto cargo</label>
-                      <input class="form-control" type="text" name="taxCharge" id="taxCharge">
+                      <select class="form-control" id="taxCharge" name="taxCharge">
+                        <option value="" disabled selected>Selecciona un impuesto</option>
+                        <option value="1">IVA 21%</option>
+                        <option value="2">IVA 10%</option>
+                        <option value="3">IVA 4%</option>
+                      </select>
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxWithholding">Impuesto retencion</label>
-                      <input class="form-control" type="text" name="taxWithholding" id="taxWithholding">
+                      <select class="form-control" name="taxWithholding" id="taxWithholding">
+                        <option value="" disabled selected>Seleccione una retención de impuesto</option>
+                        <option value="10">10% - Retención general</option>
+                        <option value="15">15% - Retención profesionales</option>
+                        <option value="19">19% - Retención empresarial</option>
+                        <option value="24">24% - Retención especial</option>
+                        <option value="5">5% - Retención reducida</option>
+                        <option value="0">0% - Sin retención</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -422,6 +435,21 @@
     }
   ];
 
+  const impuestos = [{
+      id: 1,
+      nombre: "Impuesto 1"
+    },
+    {
+      id: 2,
+      nombre: "Impuesto 2"
+    },
+    {
+      id: 3,
+      nombre: "Impuesto 3"
+    }
+  ];
+
+
   function cargarProcedimientos() {
     const selectProcedimientos = document.getElementById('procedure');
 
@@ -534,6 +562,29 @@
     }
   }
 
+  function cargarImpuestosCargo() {
+    const selectImpuestosCargo = document.getElementById('taxCharge');
+
+    selectImpuestosCargo.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = "";
+    placeholderOption.textContent = "Seleccione los impuestos";
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+
+    selectImpuestosCargo.appendChild(placeholderOption);
+
+    impuestos.forEach(impuesto => {
+      const optionPro = document.createElement('option');
+
+      optionPro.value = impuesto.id;
+
+      optionPro.textContent = impuesto.nombre;
+
+      selectImpuestosCargo.appendChild(optionPro);
+    });
+  }
 
   const metodoPagoCheck = document.getElementById('metodoPagoCheck');
 
@@ -704,6 +755,7 @@
     cargarProcedimientos();
     cargarEspecialistas();
     cargarPacientes();
+    cargarImpuestosCargo();
     configurarSelectProcedimientosMultiple();
     configurarSelectEspecialistasMultiple();
     configurarSelectPacientesMultiple();

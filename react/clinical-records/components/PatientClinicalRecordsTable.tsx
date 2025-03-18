@@ -10,7 +10,6 @@ import { PrintTableAction } from '../../components/table-actions/PrintTableActio
 import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
 import { ShareTableAction } from '../../components/table-actions/ShareTableAction';
 import TableActionsWrapper from '../../components/table-actions/TableActionsWrapper';
-import { clinicalRecordStateColors, clinicalRecordStates } from '../../../services/commons';
 
 interface PatientClinicalRecordsTableItem {
     id: string
@@ -18,6 +17,7 @@ interface PatientClinicalRecordsTableItem {
     doctorName: string
     description: string
     status: string
+    patientId: string
 }
 
 type PatientClinicalRecordsTableProps = {
@@ -25,8 +25,8 @@ type PatientClinicalRecordsTableProps = {
     onSeeDetail?: (id: string) => void
     onCancelItem?: (id: string) => void
     onPrintItem?: (id: string, title: string) => void
-    onDownloadItem?: (id: string) => void
-    onShareItem?: (id: string, type: string) => void
+    onDownloadItem?: (id: string, title: string) => void
+    onShareItem?: (id: string, type: string, title: string, patient_id: string) => void
 }
 
 export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTableProps> = ({ records, onSeeDetail, onCancelItem, onPrintItem, onDownloadItem, onShareItem }) => {
@@ -39,7 +39,8 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
                 clinicalRecordName: clinicalRecord.clinical_record_type.name,
                 description: clinicalRecord.description || '--',
                 doctorName: `${clinicalRecord.created_by_user.first_name} ${clinicalRecord.created_by_user.middle_name} ${clinicalRecord.created_by_user.last_name} ${clinicalRecord.created_by_user.second_last_name}`,
-                status: clinicalRecord.clinical_record_type_id
+                status: clinicalRecord.clinical_record_type_id,
+                patientId: clinicalRecord.patient_id
             }
         })
         setTableRecords(mappedRecords);
@@ -70,15 +71,15 @@ export const PatientClinicalRecordsTable: React.FC<PatientClinicalRecordsTablePr
                     )}
 
                     <PrintTableAction onTrigger={() => onPrintItem && onPrintItem(data.id, data.clinicalRecordName)} />
-                    <DownloadTableAction onTrigger={() => onDownloadItem && onDownloadItem(data.id)} />
+                    <DownloadTableAction onTrigger={() => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)} />
 
                     <li>
                         <hr className="dropdown-divider" />
                     </li>
                     <li className="dropdown-header">Compartir</li>
 
-                    <ShareTableAction shareType='whatsapp' onTrigger={() => onShareItem && onShareItem(data.id, 'whatsapp')} />
-                    <ShareTableAction shareType='email' onTrigger={() => onShareItem && onShareItem(data.id, 'email')} />
+                    <ShareTableAction shareType='whatsapp' onTrigger={() => onShareItem && onShareItem(data.id, 'whatsapp', data.clinicalRecordName, data.patientId)} />
+                    <ShareTableAction shareType='email' onTrigger={() => onShareItem && onShareItem(data.id, 'email', data.clinicalRecordName, data.patientId)} />
                 </TableActionsWrapper>
             </div>
         )

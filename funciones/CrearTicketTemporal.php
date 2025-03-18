@@ -1,27 +1,22 @@
 <?php
-$user_ip = $_SERVER['REMOTE_ADDR'];
-$response = file_get_contents("http://ip-api.com/json/$user_ip");
-$data = json_decode($response, true);
-
-if ($data && $data['status'] === 'success') {
-
-  $timezone = $data['timezone'];
-  date_default_timezone_set($timezone);
-} else {
-  date_default_timezone_set('America/Bogota'); // Fallback a una zona por defecto
-}
 
 require_once '../dompdf/autoload.inc.php';
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $options = new Options();
-  $options->set('isRemoteEnabled', true);
-  $options->set('isHtml5ParserEnabled', true);
+// Configurar Dompdf
+$options = new Options();
+$options->set('isRemoteEnabled', true);
+$options->set('defaultPaperSize', 'letter');
+$options->set('isHtml5ParserEnabled', true);
 
-  $dompdf = new Dompdf($options);
+$dompdf = new Dompdf($options);
+
+// **Ruta personalizada para almacenar PDFs**
+$rutaPersonalizada = "../documentos_generados/";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   $datos = json_decode($_POST['data'], true);
 
@@ -38,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $payment_methods = $datos['metodos_pago'];
   $total_payment = $datos['total_pagado'];
   $datails = $datos['detalles'];
-  $descargar = $datos['descargar'];
 
   $empresa_nombre = $empresa['nombre_consultorio'];
   $empresa_direccion = $empresa['datos_consultorio'][0]['Dirección'];
@@ -102,17 +96,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   include "../PlantillasImpresion/PlantillaTicket.php";
   $html = ob_get_clean();
 
-  // echo $html;
-
   $dompdf->loadHtml($html);
 
   $dompdf->setPaper([0, 0, 240, 1000], 'portrait');
 
   $dompdf->render();
 
-  header('Content-Type: application/pdf');
-  $dompdf->stream("ticket.pdf", array("Attachment" => $descargar));
+  // **Verificar si la carpeta personalizada existe, si no, crearla**
+  if (!is_dir($rutaPersonalizada)) {
+    mkdir($rutaPersonalizada, 0777, true);
+  }
+
+  // **Eliminar archivos antiguos (mayores a 1 día)**
+  $files = glob($rutaPersonalizada . "*.pdf");
+  $now = time();
+  foreach ($files as $file) {
+    if (is_file($file) && $now - filemtime($file) > 86400) { // 86400 segundos = 1 día
+      unlink($file);
+    }
+  }
+
+  // **Generar un nombre único para el archivo**
+  $filename = "factura_" . time() . ".pdf";
+  $filePath = $rutaPersonalizada . $filename;
+
+  // **Guardar el PDF en la carpeta personalizada**
+  file_put_contents($filePath, $dompdf->output());
+
+  // **Retornar la ruta del archivo en JSON**
+  echo json_encode(["ruta" => $filePath]);
+
 } else {
   http_response_code(405);
-  echo "Acceso no permitido.";
+  echo json_encode(["error" => "Acceso no permitido."]);
 }

@@ -4,8 +4,8 @@ include "../header.php";
 include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
-    ['icono' => 'comments', 'titulo' => 'Mensajeria masiva', 'texto' => 'Ver opciones de mensajeria masiva', 'url' => 'Mensajes_whatsapp'],
-    ['icono' => 'chart-bar', 'titulo' => 'Encuestas', 'texto' => 'Visualizar panel de encuestas', 'url' => 'panel-encuesta'],
+    ['icono' => 'receipt', 'titulo' => 'Turnos', 'texto' => 'Ir a gestión de turnos', 'url' => 'gestion-turnos'],
+    ['icono' => 'chalkboard-teacher', 'titulo' => 'Sala de espera', 'texto' => 'Visualizar sala de espera', 'url' => 'waiting-room'],
   
 ];
 
@@ -31,7 +31,7 @@ $tabs = [
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="homeMarketing">Marketing</a></li>
+                <li class="breadcrumb-item"><a href="homeTurnos">Turnos</a></li>
                 <li class="breadcrumb-item active" onclick="location.reload()" id="nameBradcumb"></li>
             </ol>
         </nav>

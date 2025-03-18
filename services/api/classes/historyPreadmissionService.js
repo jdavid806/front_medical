@@ -13,9 +13,9 @@ export class HistoryPreadmissionService extends BaseApiService {
     );
   }
 
-  async getLastHistoryPatient(patientId) {
+  async getHistoryPatient(patientId, isLast = 1) {
     return await this.httpClient.get(
-      `${this.microservice}/${this.endpoint}/last-history/${patientId}`
+      `${this.microservice}/${this.endpoint}/last-history/${patientId}/${isLast}`
     );
   }
 }

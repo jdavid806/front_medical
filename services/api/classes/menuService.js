@@ -5,7 +5,7 @@ export class MenuService extends BaseApiService {
         return Promise.resolve([
             { name: 'Pacientes', key_: 'pacientes', route:'pacientes' },
             { name: 'Pacientes | Consultas', key_: 'pacientes_consultas', route:'consultas-especialidad' },
-            { name: 'Pacientes | Ordenes Medicas', key_: 'pacientes_notas_ordenes_medicas', route:'verExamenes' },
+            { naem: 'Pacientes | Ordenes Medicas', key_: 'pacientes_notas_ordenes_medicas', route:'verExamenes' },
             { name: 'Pacientes | Recetas', key_: 'pacientes_recetas', route:'verRecetas' },
             { name: 'Pacientes | Incapacidades', key_: 'pacientes_incapacidades', route:'verIncapacidades' },
             { name: 'Pacientes | Antecedentes', key_: 'pacientes_antecendetes', route:'verAntecedentes' },
@@ -21,7 +21,7 @@ export class MenuService extends BaseApiService {
             { name: 'Seguridad', key_: 'seguridad' },
             { name: 'Inventarios', key_: 'inventarios', route:'homeInventario' },
             { name: 'Marketing', key_: 'marketing', route:'homeMarketing' },
-            { name: 'Turnos', key_: 'turnos', route:'homeMarketing' },
+            { name: 'Turnos', key_: 'turnos', route:'homeTurnos' },
             { name: 'Farmacia', key_: 'farmacia', route:'homeFarmacia' },
             { name: 'Contabilidad', key_: 'contabilidad' },
             { name: 'Nomina', key_: 'nomina' },

@@ -34,6 +34,8 @@ export const AppointmentsTable: React.FC = () => {
     AppointmentTableItem[]
   >([]);
 
+  console.log("Citas: ", appointments);
+
   const columns: ConfigColumns[] = [
     { data: "patientName", className: "text-start", orderable: true },
     { data: "patientDNI", className: "text-start", orderable: true },
@@ -232,11 +234,17 @@ export const AppointmentsTable: React.FC = () => {
             ></DownloadTableAction>
             <ShareTableAction
               shareType="whatsapp"
-              onTrigger={() => console.log("compartir por whatsapp")}
+              onTrigger={() => {
+                //@ts-ignore
+                sendInvoice(data.id, data.patientId);
+              }}
             ></ShareTableAction>
             <ShareTableAction
               shareType="email"
-              onTrigger={() => console.log("compartir por correo")}
+              onTrigger={() => {
+                //@ts-ignore
+                sendInvoice(data.id, data.patientId);
+              }}
             ></ShareTableAction>
           </ul>
         </div>

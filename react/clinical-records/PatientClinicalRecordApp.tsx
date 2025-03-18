@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useClinicalRecordTypes } from '../clinical-record-types/hooks/useClinicalRecordTypes';
 import { useClinicalRecords } from './hooks/useClinicalRecords';
 import { PatientClinicalRecordsTable } from './components/PatientClinicalRecordsTable';
+import UserManager from '../../services/userManager';
 
 interface PatientClinicalRecordAppProps {
 }
@@ -46,6 +47,25 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
         crearDocumento(id, "Impresion", "Consulta", "Completa", title);
     };
 
+    const downloadClinicalRecord = (id: string, title: string) => {
+        //@ts-ignore
+        crearDocumento(id, "Descarga", "Consulta", "Completa", title);
+    };
+
+    const shareClinicalRecord = (id: string, type: string, title: string, patient_id: string) => {
+        console.log(id, type, title, patient_id);
+
+        switch (type) {
+            case 'whatsapp':
+                //@ts-ignore
+                enviarDocumento(id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title)
+                break;
+
+            default:
+                break;
+        };
+    };
+
     const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
 
     return (
@@ -81,7 +101,12 @@ export const PatientClinicalRecordApp: React.FC<PatientClinicalRecordAppProps> =
             </div>
 
             <div className="row mt-4">
-                <PatientClinicalRecordsTable records={tableClinicalRecords} onPrintItem={printClinicalRecord} />
+                <PatientClinicalRecordsTable
+                    records={tableClinicalRecords}
+                    onPrintItem={printClinicalRecord}
+                    onDownloadItem={downloadClinicalRecord}
+                    onShareItem={shareClinicalRecord}
+                />
             </div>
         </PrimeReactProvider>
     );

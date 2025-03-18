@@ -72,7 +72,7 @@
     <div><span class="fw-bold">Nro. Comprobante:</span>
       <div><?php echo $numero_comprobante; ?></div>
     </div>
-    <div><span class="fw-bold">Nro. Comprobante:</span>
+    <div><span class="fw-bold">Nro. Autorización:</span>
       <div><?php echo $numero_autorizacion; ?></div>
     </div>
     <div><span class="fw-bold">Fecha autorización:</span>
@@ -99,11 +99,9 @@
     <div class="receipt-divider"></div>
 
     <div class="fw-bold">Items Facturados</div>
-    <?php foreach ($detalle_items as $item): ?>
-      <div class="d-flex">
-        <span>$<?php echo $item; ?></span>
-      </div>
-    <?php endforeach; ?>
+    <div>
+      <?php echo $detalles_ticket_html; ?>
+    </div>
 
     <div class="receipt-divider"></div>
 
@@ -111,33 +109,28 @@
       <span>Subtotal:</span>
       <span>$<?php echo $subtotal; ?></span>
     </div>
-    <div class="d-flex">
+    <!-- <div class="d-flex">
       <span>IVA (10%):</span>
       <span>$<?php echo $iva; ?></span>
-    </div>
+    </div> -->
     <div class="d-flex">
       <span>Descuento:</span>
       <span>-$<?php echo $descuento; ?></span>
     </div>
     <div class="d-flex fw-bold">
       <span>TOTAL:</span>
-      <span>$<?php echo $total; ?></span>
+      <span>$<?php echo $subtotal; ?></span>
     </div>
 
     <hr>
     <div class="receipt-divider"></div>
 
-    <?php foreach ($payment_methods as $pago): ?>
-      <div class="d-flex justify-content-between">
-        <span><?php echo $pago['metodo']; ?></span>
-        <span><?php echo $pago['fecha']; ?></span>
-        <span>$<?php echo number_format($pago['monto'], decimals: 2); ?></span>
-        <span><?php echo $pago['notas']; ?></span>
-        <span>Ref: <?php echo $pago['referencia']; ?></span>
-        <span>Banco: <?php echo $pago['banco']; ?></span>
+    <div>
+      <span class="fw-bold">Método de pago:: </span>
+      <div>
+        <?php echo $metodos_pago_html; ?>
       </div>
-    <?php endforeach; ?>
-    <div>Pago: $<?php echo $pago_monto; ?></div>
+    </div>
 
     <div class="receipt-divider"></div>
 

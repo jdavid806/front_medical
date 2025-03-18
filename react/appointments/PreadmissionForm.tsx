@@ -61,7 +61,7 @@ export const PreadmissionForm: React.FC<{
   const fetchLastHistory = async () => {
     let data: any = {};
     try {
-      data = await historyPreadmission.getLastHistoryPatient(
+      data = await historyPreadmission.getHistoryPatient(
         initialValues.patientId
       );
       setValues({

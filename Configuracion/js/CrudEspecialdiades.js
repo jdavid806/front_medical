@@ -125,6 +125,11 @@ function obtenerElementosTabla() {
   return elementos;
 }
 
+function rellenarElementos() {
+  const tabla = document.getElementById("tablaElementos");
+  tabla.innerHTML = "";
+}
+
 function abrirModal(id, name) {
   let hiddenInput = document.getElementById("speciality_id");
   let hiddenName = document.getElementById("speciality_name");

@@ -24,7 +24,8 @@ export const PatientClinicalRecordsTable = ({
         clinicalRecordName: clinicalRecord.clinical_record_type.name,
         description: clinicalRecord.description || '--',
         doctorName: `${clinicalRecord.created_by_user.first_name} ${clinicalRecord.created_by_user.middle_name} ${clinicalRecord.created_by_user.last_name} ${clinicalRecord.created_by_user.second_last_name}`,
-        status: clinicalRecord.clinical_record_type_id
+        status: clinicalRecord.clinical_record_type_id,
+        patientId: clinicalRecord.patient_id
       };
     });
     setTableRecords(mappedRecords);
@@ -54,19 +55,19 @@ export const PatientClinicalRecordsTable = ({
     }), data.status === 'approved' && /*#__PURE__*/React.createElement(RequestCancellationTableAction, {
       onTrigger: () => onCancelItem && onCancelItem(data.id)
     }), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => onPrintItem && onPrintItem(data.id)
+      onTrigger: () => onPrintItem && onPrintItem(data.id, data.clinicalRecordName)
     }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => onDownloadItem && onDownloadItem(data.id)
+      onTrigger: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
     }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
       className: "dropdown-divider"
     })), /*#__PURE__*/React.createElement("li", {
       className: "dropdown-header"
     }, "Compartir"), /*#__PURE__*/React.createElement(ShareTableAction, {
       shareType: "whatsapp",
-      onTrigger: () => onShareItem && onShareItem(data.id, 'whatsapp')
+      onTrigger: () => onShareItem && onShareItem(data.id, 'whatsapp', data.clinicalRecordName, data.patientId)
     }), /*#__PURE__*/React.createElement(ShareTableAction, {
       shareType: "email",
-      onTrigger: () => onShareItem && onShareItem(data.id, 'email')
+      onTrigger: () => onShareItem && onShareItem(data.id, 'email', data.clinicalRecordName, data.patientId)
     })))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {

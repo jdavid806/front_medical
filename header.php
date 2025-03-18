@@ -52,6 +52,12 @@
               </div>
             </a>
           </li>
+          <li><a class="dropdown-item" href="homeTurnos">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="monitor"></span>Turnos
+              </div>
+            </a>
+          </li>
           <li><a class="dropdown-item" href="homeFarmacia">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
                   data-feather="airplay"></span>Farmacia
@@ -139,7 +145,7 @@
         </li>
       </ul>
     </li>
-    <ul>
+    <!-- <ul>
       <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="farmacia" role="button"
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-airplay">
@@ -198,7 +204,7 @@
           </li>
         </ul>
       </li>
-    </ul>
+    </ul> -->
   </div>
   <ul class="navbar-nav navbar-nav-icons flex-row">
     <li class="nav-item">
@@ -286,12 +292,12 @@
                 </a>
               </div>
 
-              <div class="col-4"><a
+              <!-- <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="Mensajes_whatsapp"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Mensajería</p>
                 </a>
-              </div>
+              </div> -->
 
               <div class="col-4"><a
                   class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
@@ -301,7 +307,7 @@
                 </a>
               </div>
 
-              <div class="col-4">
+              <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="waiting-room">
                   <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
@@ -309,9 +315,9 @@
                     Sala de espera
                   </p>
                 </a>
-              </div>
+              </div> -->
 
-              <div class="col-4">
+              <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="gestion-turnos">
                   <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
@@ -319,9 +325,9 @@
                     Turnos
                   </p>
                 </a>
-              </div>
+              </div> -->
 
-              <div class="col-4">
+              <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
                   href="panel-encuesta">
                   <img src="assets/img/nav-icons/IconButton.png" alt="" width="30" />
@@ -329,7 +335,7 @@
                     Encuentas
                   </p>
                 </a>
-              </div>
+              </div> -->
 
             </div>
           </div>

@@ -1,5 +1,5 @@
 async function cargarContenido() {
-  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/products";
+  let ruta = obtenerRutaPrincipal() + "/api/v1/admin/products/servicios";
 
   const attentionTypeMap = {
     PROCEDURE: "Procedimiento",
@@ -12,33 +12,33 @@ async function cargarContenido() {
 
     const result = await response.json();
     const tablaPrecios = document.getElementById("tablaPrecios");
+
     tablaPrecios.innerHTML = "";
 
-    for (const producto of result.data) {
-      let elemento = producto.attributes;
+    for (const producto of result) {
       let attentionTypeTranslated =
-        attentionTypeMap[elemento.attention_type] || "Desconocido";
+        attentionTypeMap[producto.attention_type] || "Desconocido";
 
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td class="name">${elemento.name}</td>
-        <td class="barcode">${elemento.barcode}</td>
+        <td class="name">${producto.name}</td>
+        <td class="barcode">${producto.barcode}</td>
         <td class="attentionType">${attentionTypeTranslated}</td>
-        <td class="salePrice">${elemento.sale_price || "N/A"}</td>
-        <td class="copayment">${elemento.copayment || "N/A"}</td>
+        <td class="salePrice">${producto.sale_price || "N/A"}</td>
+        <td class="copayment">${producto.copayment || "N/A"}</td>
         <td>
-            <button class="btn btn-primary btn-sm" onclick="editarProducto(
-            ${producto.id}, 
-            '${elemento.name}', '${elemento.barcode}', 
-            '${elemento.attention_type}', '${elemento.sale_price}', 
-            '${elemento.copayment}', 
-            '${elemento.tax_charge_id}',
-            '${elemento.exam_type_id}')" 
+            <button class="btn btn-primary btn-sm" onclick="editarProducto(${
+              producto.id
+            }, 
+            '${producto.name}', '${producto.barcode}', 
+            '${producto.attention_type}', '${producto.sale_price}', 
+            '${producto.copayment}', '${producto.tax_charge_id}')" 
             data-bs-toggle="modal" data-bs-target="#modalPrice">
                 <i class="fa-solid fa-pen"></i>
             </button>
-            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
-        })">
+            <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
+              producto.id
+            })">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </td>
@@ -70,9 +70,14 @@ async function eliminarPrecio(id) {
 }
 
 async function updateProduct(id, productData) {
-  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/servicios/${id}`;
   actualizarDatos(url, productData);
   cargarContenido();
+}
+
+async function createProduct(product) {
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/servicios`;
+  guardarDatos(url, product);
 }
 
 function editarProducto(
@@ -82,24 +87,13 @@ function editarProducto(
   attentionType,
   salePrice,
   copago,
-  tax_charge_id,
-  examTypeId
+  tax_charge_id
 ) {
   document.getElementById("name").value = name;
   document.getElementById("curp").value = barcode;
   document.getElementById("attention_type").value = attentionType;
   document.getElementById("sale_price").value = salePrice || "";
   document.getElementById("copago").value = copago || "";
-
-  const examTypeSection = document.getElementById("examTypeSection");
-  const examTypeElement = document.getElementById("exam_type_id");
-  const examTypeIdValue = examTypeId || "";
-
-  examTypeSection.style.display = attentionType === "PROCEDURE" ? "block" : "none";
-
-  if (examTypeElement.choicesInstance) {
-    examTypeElement.choicesInstance.setChoiceByValue(+examTypeIdValue);
-  }
 
   let taxSelect = document.getElementById("taxProduct_type");
 
@@ -127,11 +121,6 @@ function editarProducto(
     document.getElementById("createProductForm").appendChild(hiddenInput);
   }
   hiddenInput.value = id;
-}
-
-async function createProduct(product) {
-  guardarDatos(obtenerRutaPrincipal() + "/api/v1/admin/products", product);
-  cargarContenido();
 }
 
 async function cargarSelectsPrecios() {

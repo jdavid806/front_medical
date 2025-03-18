@@ -44,7 +44,7 @@ export const PreadmissionForm = ({
   const fetchLastHistory = async () => {
     let data = {};
     try {
-      data = await historyPreadmission.getLastHistoryPatient(initialValues.patientId);
+      data = await historyPreadmission.getHistoryPatient(initialValues.patientId);
       setValues({
         weight: data.weight,
         height: data.size,

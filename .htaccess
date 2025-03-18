@@ -216,6 +216,7 @@ RewriteRule ^caja$  Caja/caja.php
 RewriteRule ^farmacia$  Farmacia/entregaMedicamentos.php
 RewriteRule ^insumos$  Farmacia/entregaInsumos.php
 
+RewriteRule ^homeTurnos$  turnos/homeTurnos.php
 RewriteRule ^gestion-turnos$  turnos/gestionTurnos.php
 
 RewriteRule ^panel-encuesta$  encuestas/encuentas.php
@@ -225,3 +226,5 @@ RewriteRule ^remisiones$  Remisiones/remisiones.php
 RewriteRule ^noAutorizado$ Pagesphp/unauthorized.php
 
 RewriteRule ^homeMarketing$ Marketing/homeMarketing.php
+
+RewriteRule ^preadmisiones$ Citas/HistoryPreadmission.php

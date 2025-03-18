@@ -228,7 +228,6 @@ include "../header.php";
 
     pacientesData = procesarPacientes(pacientesData);
 
-    console.log(pacientesData);
 
     var pusher = new Pusher('5e57937071269859a439', {
       cluster: 'us2'
@@ -237,20 +236,17 @@ include "../header.php";
     var channel = pusher.subscribe('waiting-room.consultorio2.3');
 
     channel.bind('appointment.created', function(data) {
-      console.log("Evento: appointment.created", data);
       pacientesData.forEach(paciente => {
         if (paciente.id === data.appointment.patient_id) {
           paciente.appointments.push(data.appointment);
         }
       })
       pacientesData = procesarPacientes(pacientesData);
-      console.log(pacientesData);
 
       renderPacientes(pacientesData)
     });
 
     channel.bind('appointment.state.updated', function(data) {
-      console.log("Evento: appointment.state.updated", data);
       pacientesData.forEach(paciente => {
         paciente.appointments.forEach(cita => {
           if (cita.id === data.appointmentId) {
@@ -260,13 +256,11 @@ include "../header.php";
         })
       })
       pacientesData = procesarPacientes(pacientesData);
-      console.log(pacientesData);
 
       renderPacientes(pacientesData)
     });
 
     channel.bind('appointment.inactivated', function(data) {
-      console.log("Evento: appointment.inactivated", data);
       pacientesData.forEach(paciente => {
         paciente.appointments.forEach(cita => {
           if (cita.id === data.appointmentId) {
@@ -275,7 +269,6 @@ include "../header.php";
         })
       })
       pacientesData = procesarPacientes(pacientesData);
-      console.log(pacientesData);
 
       renderPacientes(pacientesData)
     });
@@ -364,7 +357,7 @@ include "../header.php";
           <span class="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
           <p class="fw-bold mb-0">Nombre:</p>
         </div>
-        <p class="text-body-emphasis ms-3 mb-2">${paciente.first_name}</p>
+        <p class="text-body-emphasis ms-3 mb-2">${paciente.first_name ? `${paciente.first_name}` : ''} ${paciente.middle_name ? ` ${paciente.middle_name}` : ''} ${paciente.last_name ? ` ${paciente.last_name}` : ''} ${paciente.second_last_name ? ` ${paciente.second_last_name}` : ''}</p>
         
         <div class="d-flex align-items-center">
           <span class="fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"></span>

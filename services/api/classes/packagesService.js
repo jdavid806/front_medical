@@ -10,15 +10,17 @@ export class PackagesService extends BaseApiService {
   }
 
   async getPackagesByMedications() {
-    return await this.httpClient.get(`${this.microservice}/packages/medicina`);
+    return await this.httpClient.get(
+      `${this.microservice}/products/medicamentos`
+    );
   }
 
   async getPackagesByVaccines() {
-    return await this.httpClient.get(`${this.microservice}/packages/vacunas`);
+    return await this.httpClient.get(`${this.microservice}/products/vacunas`);
   }
 
   async getPackagesBySupplies() {
-    return await this.httpClient.get(`${this.microservice}/packages/insumos`);
+    return await this.httpClient.get(`${this.microservice}/products/insumos`);
   }
 }
 

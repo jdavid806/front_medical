@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useClinicalRecordTypes } from "../clinical-record-types/hooks/useClinicalRecordTypes.js";
 import { useClinicalRecords } from "./hooks/useClinicalRecords.js";
 import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecordsTable.js";
+import UserManager from "../../services/userManager.js";
 const specialtyId = new URLSearchParams(window.location.search).get('especialidad');
 const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '';
 export const PatientClinicalRecordApp = () => {
@@ -39,6 +40,22 @@ export const PatientClinicalRecordApp = () => {
     //@ts-ignore
     crearDocumento(id, "Impresion", "Consulta", "Completa", title);
   };
+  const downloadClinicalRecord = (id, title) => {
+    //@ts-ignore
+    crearDocumento(id, "Descarga", "Consulta", "Completa", title);
+  };
+  const shareClinicalRecord = (id, type, title, patient_id) => {
+    console.log(id, type, title, patient_id);
+    switch (type) {
+      case 'whatsapp':
+        //@ts-ignore
+        enviarDocumento(id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title);
+        break;
+      default:
+        break;
+    }
+    ;
+  };
   const nombreEspecialidad = new URLSearchParams(window.location.search).get('especialidad');
   return /*#__PURE__*/React.createElement(PrimeReactProvider, null, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -68,6 +85,8 @@ export const PatientClinicalRecordApp = () => {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
     records: tableClinicalRecords,
-    onPrintItem: printClinicalRecord
+    onPrintItem: printClinicalRecord,
+    onDownloadItem: downloadClinicalRecord,
+    onShareItem: shareClinicalRecord
   })));
 };

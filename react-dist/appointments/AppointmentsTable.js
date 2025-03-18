@@ -22,6 +22,7 @@ export const AppointmentsTable = () => {
   const [selectedBranch, setSelectedBranch] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState(null);
   const [filteredAppointments, setFilteredAppointments] = React.useState([]);
+  console.log("Citas: ", appointments);
   const columns = [{
     data: "patientName",
     className: "text-start",
@@ -189,10 +190,16 @@ export const AppointmentsTable = () => {
       }
     }), /*#__PURE__*/React.createElement(ShareTableAction, {
       shareType: "whatsapp",
-      onTrigger: () => console.log("compartir por whatsapp")
+      onTrigger: () => {
+        //@ts-ignore
+        sendInvoice(data.id, data.patientId);
+      }
     }), /*#__PURE__*/React.createElement(ShareTableAction, {
       shareType: "email",
-      onTrigger: () => console.log("compartir por correo")
+      onTrigger: () => {
+        //@ts-ignore
+        sendInvoice(data.id, data.patientId);
+      }
     }))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
