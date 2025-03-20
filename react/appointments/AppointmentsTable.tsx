@@ -3,7 +3,6 @@ import { AppointmentTableItem } from "../models/models";
 import CustomDataTable from "../components/CustomDataTable";
 import { ConfigColumns } from "datatables.net-bs5";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
-import { useBranchesForSelect } from "../branches/hooks/useBranchesForSelect";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Nullable } from "primereact/ts-helpers";
@@ -14,13 +13,11 @@ import { DownloadTableAction } from "../components/table-actions/DownloadTableAc
 import { ShareTableAction } from "../components/table-actions/ShareTableAction";
 import { appointmentService } from "../../services/api";
 import UserManager from "../../services/userManager"
-import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStates, appointmentStatesByKey } from "../../services/commons"
+import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStateFilters, appointmentStatesByKeyTwo } from "../../services/commons"
 import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm";
-import { set } from "react-hook-form";
 
 export const AppointmentsTable: React.FC = () => {
   const { appointments } = useFetchAppointments(appointmentService.active());
-  const { branches } = useBranchesForSelect();
 
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = React.useState<string | null>(null);
@@ -46,14 +43,10 @@ export const AppointmentsTable: React.FC = () => {
   });
 
   useEffect(() => {
-    let filtered: AppointmentTableItem[] = [];
-
-    filtered = [...appointments]
+    let filtered: AppointmentTableItem[] = [...appointments];
 
     if (selectedBranch) {
-      filtered = filtered?.filter(
-        (appointment) => appointment.stateKey === selectedBranch
-      );
+      filtered = filtered.filter((appointment) => `${appointment.stateKey}` === selectedBranch);
     }
 
     if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
@@ -83,10 +76,6 @@ export const AppointmentsTable: React.FC = () => {
       });
     }
 
-    filtered.sort((a, b) => {
-      return b.date.localeCompare(a.date);
-    });
-
     setFilteredAppointments(filtered);
   }, [appointments, selectedBranch, selectedDate]);
 
@@ -101,40 +90,26 @@ export const AppointmentsTable: React.FC = () => {
     });
   };
 
-  //objecto de filtrado 
-  const appointmentStatesByKey = {
-    'pending': 'Pendiente',
-    'pending_consultation': 'En espera de consulta',
-    'pending_consultation.PROCEDURE': 'En espera de examen',
-    'in_consultation': 'En consulta',
-    'consultation_completed': 'Consulta finalizada',
-    'cancelled': 'Cancelada',
-    'rescheduled': 'Reprogramada'
-  };
-
   //filtrar objecto en el select
   const getAppointmentStates = () => {
-    return Object.entries(appointmentStatesByKey).map(([key, label]) => ({
+    return Object.entries(appointmentStateFilters).map(([key, label]) => ({
       value: key,
       label: label
     }));
   };
 
-
   const handleCancelAppointment = (appointmentId: string) => { };
-
-
 
   const handleHideFormModal = () => {
     setShowFormModal({ isShow: false, data: {} });
   };
 
   const handleLoadExamResults = (
+    appointmentId: string,
     patientId: string,
-    productId: string,
-    examId = ""
+    productId: string
   ) => {
-    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&exam_id=${examId}`;
+    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
   };
 
   const handleLoadExamResultsFile = () => {
@@ -144,12 +119,8 @@ export const AppointmentsTable: React.FC = () => {
   const slots = {
     6: (cell, data: AppointmentTableItem) => {
       const color =
-        appointmentStatesColors[data.stateId] ||
-        appointmentStateColorsByKey[data.stateKey];
-      const text =
-        appointmentStates[data.stateId] ||
-        appointmentStatesByKey[`${data.stateKey}.${data.attentionType}`] ||
-        appointmentStatesByKey[data.stateKey];
+        appointmentStateColorsByKey[data.stateKey] || appointmentStatesColors[data.stateId];
+      const text = appointmentStatesByKeyTwo[data.stateKey]?.[data.attentionType] || appointmentStatesByKeyTwo[data.stateKey] || "SIN ESTADO";
       return (
         <span className={`badge badge-phoenix badge-phoenix-${color}`}>
           {text}
@@ -221,7 +192,7 @@ export const AppointmentsTable: React.FC = () => {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleLoadExamResults(data.patientId, data.productId);
+                        handleLoadExamResults(data.id, data.patientId, data.productId);
                       }}
                       data-column="realizar-consulta"
                     >
@@ -258,25 +229,26 @@ export const AppointmentsTable: React.FC = () => {
               )}
             {data.stateId === "1" ||
               (data.stateKey === "pending" && (
-                <li>
-                  <a
-                    className="dropdown-item"
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleCancelAppointment(data.id);
-                    }}
-                    data-column="realizar-consulta"
-                  >
-                    <div className="d-flex gap-2 align-items-center">
-                      <i
-                        className="fa-solid fa-ban"
-                        style={{ width: "20px" }}
-                      ></i>
-                      <span>Cancelar cita</span>
-                    </div>
-                  </a>
-                </li>
+                <></>
+                // <li>
+                //   <a
+                //     className="dropdown-item"
+                //     href="#"
+                //     onClick={(e) => {
+                //       e.preventDefault();
+                //       handleCancelAppointment(data.id);
+                //     }}
+                //     data-column="realizar-consulta"
+                //   >
+                //     <div className="d-flex gap-2 align-items-center">
+                //       <i
+                //         className="fa-solid fa-ban"
+                //         style={{ width: "20px" }}
+                //       ></i>
+                //       <span>Cancelar cita</span>
+                //     </div>
+                //   </a>
+                // </li>
               ))}
             <hr />
             <li className="dropdown-header">Cita</li>
@@ -398,7 +370,7 @@ export const AppointmentsTable: React.FC = () => {
             data={filteredAppointments}
             slots={slots}
             customOptions={{
-              order: [[2, "desc"]],
+              order: [[1, 'asc'], [2, "asc"]],
               ordering: true,
               columnDefs: [{ orderable: false, targets: [7] }],
             }}

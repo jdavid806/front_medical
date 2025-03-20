@@ -62,13 +62,15 @@ $examenes = [
         examResultService,
         examOrderService,
         examOrderStateService,
-        patientService
+        patientService,
+        appointmentService
     } from "./services/api/index.js";
     import AlertManager from "./services/alertManager.js";
     import UserManager from "./services/userManager.js";
 
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const examId = new URLSearchParams(window.location.search).get('exam_id');
+    const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
     const productId = new URLSearchParams(window.location.search).get('product_id');
 
     const patientPromise = patientService.get(patientId);
@@ -88,6 +90,8 @@ $examenes = [
         examOrderStatesPromise
     ]);
 
+    await appointmentService.changeStatus(appointmentId, 'in_consultation')
+
     document.querySelectorAll('.patientName').forEach(element => {
         element.textContent = `${patient.first_name} ${patient.last_name}`;
         if (element.tagName === 'A') {
@@ -102,7 +106,14 @@ $examenes = [
             e.created_at.slice(0, 10) >= new Date().toISOString().slice(0, 10)
     });
 
-    console.log(product, examOrder);
+    if (!examOrder) {
+        AlertManager.error({
+            text: 'No hay exámenes disponibles para este paciente'
+        })
+        setTimeout(() => {
+            history.back()
+        }, 1000);
+    }
 
     document.getElementById('productName').textContent = product.name
 
@@ -114,7 +125,8 @@ $examenes = [
                     "created_by_user_id": UserManager.getUser().id,
                     "results": data
                 })
-                .then(() => {
+                .then(async () => {
+                    await appointmentService.changeStatus(appointmentId, 'consultation_completed')
                     AlertManager.success({
                         text: 'Se ha creado el registro exitosamente'
                     })

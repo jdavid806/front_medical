@@ -63,12 +63,12 @@ export const ExamTable = ({
     }), /*#__PURE__*/React.createElement("span", null, "Cargar resultados")))), /*#__PURE__*/React.createElement(PrintTableAction, {
       onTrigger: () => {
         //@ts-ignore
-        crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+        crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
       }
     }), /*#__PURE__*/React.createElement(DownloadTableAction, {
       onTrigger: () => {
         //@ts-ignore
-        crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+        crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
       }
     }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
       className: "dropdown-divider"
@@ -78,7 +78,7 @@ export const ExamTable = ({
       shareType: "whatsapp",
       onTrigger: () => {
         //@ts-ignore
-        enviarDocumento(id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title);
+        enviarDocumento(data.id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title);
       }
     }))))
   };

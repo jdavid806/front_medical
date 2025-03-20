@@ -8,14 +8,11 @@ export const TodayAppointmentsTable = ({
   onDownloadItem,
   onShareItem
 }) => {
-  let {
+  const {
     appointments
   } = useFetchAppointments(admissionService.getAdmisionsAll());
-  const [filteredAppointments, setFilteredAppointments] = React.useState([]);
   useEffect(() => {
-    console.log("citas en admision:", appointments);
-    setFilteredAppointments(appointments.filter(appointment => appointment.stateId === "1"));
-    console.log("filter:", appointments);
+    console.log('ADMISIONES DE HOY', appointments);
   }, [appointments]);
   const columns = [{
     data: "patientName",
@@ -33,16 +30,11 @@ export const TodayAppointmentsTable = ({
   }, {
     data: "entity"
   }, {
-    data: "status"
-  }, {
     orderable: false,
     searchable: false
   }];
   const slots = {
-    6: (cell, data) => (console.log("cita admision:", data), /*#__PURE__*/React.createElement("span", {
-      className: `badge badge-phoenix ${data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"}`
-    }, data.status ? "Activo" : "Inactivo")),
-    7: (cell, data) => /*#__PURE__*/React.createElement("div", {
+    6: (cell, data) => /*#__PURE__*/React.createElement("div", {
       className: "align-middle white-space-nowrap pe-0 p-3"
     }, /*#__PURE__*/React.createElement("div", {
       className: "btn-group me-1"
@@ -66,7 +58,7 @@ export const TodayAppointmentsTable = ({
     className: "card-body"
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
-    data: filteredAppointments,
+    data: appointments,
     slots: slots
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
@@ -81,8 +73,6 @@ export const TodayAppointmentsTable = ({
   }, "Profesional asignado"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
   }, "Entidad"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Estado"), /*#__PURE__*/React.createElement("th", {
     className: "text-end align-middle pe-0 border-top mb-2"
   })))))));
 };

@@ -646,15 +646,25 @@ include "../ConsultasJson/dataPaciente.php";
   }
 
   document.getElementById('diagnosticoPrincipal').addEventListener('change', async function() {
-    console.log(this.value);
+    document.getElementById("btnAgregarReceta").click();
+    document.getElementById("btnAgregarIncapacidad").click();
     let packageByCie11 = await packagesService.getPackageByCie11(this.value);
 
     console.log("cie11: ", packageByCie11);
+    const incapacidad = packageByCie11.data[0].package_items.filter(item => item.item_type == 'Incapacidad')[0];
+
+    document.getElementById('dias').value = incapacidad.prescription.days_incapacity;
+    document.getElementById('reason').value = incapacidad.prescription.reason;
+    const today = new Date();
+    const daysIncapacity = incapacidad.prescription.days_incapacity;
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + daysIncapacity);
+    const formattedEndDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    document.getElementById('hasta').value = formattedEndDate;
+
+    console.log("incapacidad: ", incapacidad);
 
     const mappedData = packageByCie11.data[0].package_items.filter(item => item.item_type == 'medicamento' || item.item_type == 'Vacunas').map(item => item.prescription);
-    document.getElementById("btnAgregarReceta").click();
-
-    console.log("mapped: ", mappedData);
 
     ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
       ref: prescriptionFormRef,

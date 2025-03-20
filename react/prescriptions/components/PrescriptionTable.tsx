@@ -43,11 +43,11 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ prescriptions, on
                     <TableActionsWrapper>
                         <PrintTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(data.id, "Impresion", "Receta", "Completa", "Examen de prueba");
+                            crearDocumento(data.id, "Impresion", "Receta", "Completa", "Receta");
                         }} />
                         <DownloadTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(data.id, "Descarga", "Receta", "Completa", "Examen de prueba");
+                            crearDocumento(data.id, "Descarga", "Receta", "Completa", "Receta");
                         }} />
                         <li>
                             <hr className="dropdown-divider" />

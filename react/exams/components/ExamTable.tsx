@@ -66,11 +66,11 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                         </li>
                         <PrintTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
                         }} />
                         <DownloadTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
                         }} />
                         <li>
                             <hr className="dropdown-divider" />
@@ -78,7 +78,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                         <li className="dropdown-header">Compartir</li>
                         <ShareTableAction shareType='whatsapp' onTrigger={() => {
                             //@ts-ignore
-                            enviarDocumento(id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title)
+                            enviarDocumento(data.id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title)
                         }} />
                     </ul>
                 </div>

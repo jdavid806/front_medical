@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CustomDataTable from "../components/CustomDataTable.js";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
-import { useBranchesForSelect } from "../branches/hooks/useBranchesForSelect.js";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { CustomFormModal } from "../components/CustomFormModal.js";
@@ -11,14 +10,13 @@ import { DownloadTableAction } from "../components/table-actions/DownloadTableAc
 import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
 import { appointmentService } from "../../services/api/index.js";
 import UserManager from "../../services/userManager.js";
-import { appointmentStatesColors, appointmentStateColorsByKey } from "../../services/commons.js";
+import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStateFilters, appointmentStatesByKeyTwo } from "../../services/commons.js";
+import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm.js";
 export const AppointmentsTable = () => {
   const {
     appointments
   } = useFetchAppointments(appointmentService.active());
-  const {
-    branches
-  } = useBranchesForSelect();
+  const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState(null);
   const [filteredAppointments, setFilteredAppointments] = React.useState([]);
@@ -54,16 +52,9 @@ export const AppointmentsTable = () => {
   });
   useEffect(() => {
     let filtered = [...appointments];
-    console.log("appointments", {
-      ...appointments
-    });
-    // Filtro por estado
     if (selectedBranch) {
-      filtered = filtered?.filter(appointment => appointment.stateDescription === selectedBranch);
-      console.log("selectedBranch", selectedBranch);
+      filtered = filtered.filter(appointment => `${appointment.stateKey}` === selectedBranch);
     }
-
-    // Filtro por rango de fechas
     if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
       const startDate = new Date(Date.UTC(selectedDate[0].getFullYear(), selectedDate[0].getMonth(), selectedDate[0].getDate()));
       const endDate = new Date(Date.UTC(selectedDate[1].getFullYear(), selectedDate[1].getMonth(), selectedDate[1].getDate(), 23, 59, 59, 999));
@@ -72,11 +63,6 @@ export const AppointmentsTable = () => {
         return appointmentDate >= startDate && appointmentDate <= endDate;
       });
     }
-
-    // Ordenar por fecha de consulta
-    filtered.sort((a, b) => {
-      return b.date.localeCompare(a.date);
-    });
     setFilteredAppointments(filtered);
   }, [appointments, selectedBranch, selectedDate]);
   const handleMakeClinicalRecord = (patientId, appointmentId) => {
@@ -87,32 +73,9 @@ export const AppointmentsTable = () => {
     });
   };
 
-  //objecto de filtrado de tabla 
-  //    const appointmentStatesByKey = {
-  //     'pending': 'Pendiente',
-  //     'pending_consultation': 'En espera de consulta',
-  //     'pending_consultation.PROCEDURE': 'En espera de examen',
-  //     'in_consultation': 'En consulta',
-  //     'consultation_completed': 'Consulta finalizada',
-  //     'cancelled': 'Cancelada',
-  //     'rescheduled': 'Reprogramada'
-  // };
-
-  //objecto de filtrado de Busqueda 
-
-  const appointmentStatesSearch = {
-    'Pendiente': 'Pendiente',
-    'En espera de consulta': 'En espera de consulta',
-    'En espera de examen': 'En espera de examen',
-    'En consulta': 'En consulta',
-    'Consulta Finalizada': 'Consulta Finalizada',
-    'Cancelada': 'Cancelada',
-    'Reprogramada': 'Reprogramada'
-  };
-
   //filtrar objecto en el select
   const getAppointmentStates = () => {
-    return Object.entries(appointmentStatesSearch).map(([key, label]) => ({
+    return Object.entries(appointmentStateFilters).map(([key, label]) => ({
       value: key,
       label: label
     }));
@@ -124,13 +87,16 @@ export const AppointmentsTable = () => {
       data: {}
     });
   };
-  const handleLoadExamResults = (patientId, productId, examId = "") => {
-    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&exam_id=${examId}`;
+  const handleLoadExamResults = (appointmentId, patientId, productId) => {
+    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
+  };
+  const handleLoadExamResultsFile = () => {
+    setShowLoadExamResultsFileModal(true);
   };
   const slots = {
     6: (cell, data) => {
-      const color = appointmentStatesColors[data.stateId] || appointmentStateColorsByKey[data.stateKey];
-      const text = data.stateDescription;
+      const color = appointmentStateColorsByKey[data.stateKey] || appointmentStatesColors[data.stateId];
+      const text = appointmentStatesByKeyTwo[data.stateKey]?.[data.attentionType] || appointmentStatesByKeyTwo[data.stateKey] || "SIN ESTADO";
       return /*#__PURE__*/React.createElement("span", {
         className: `badge badge-phoenix badge-phoenix-${color}`
       }, text);
@@ -179,12 +145,12 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), (data.stateId === "2" || data.stateKey === "pending_consultation") && data.attentionType === "PROCEDURE" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), (data.stateId === "2" || data.stateKey === "pending_consultation") && data.attentionType === "PROCEDURE" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
         e.preventDefault();
-        handleLoadExamResults(data.patientId, data.productId);
+        handleLoadExamResults(data.id, data.patientId, data.productId);
       },
       "data-column": "realizar-consulta"
     }, /*#__PURE__*/React.createElement("div", {
@@ -194,22 +160,60 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen")))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
         e.preventDefault();
-        handleCancelAppointment(data.id);
+        handleLoadExamResultsFile();
       },
       "data-column": "realizar-consulta"
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
     }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-ban",
+      className: "fa-solid fa-stethoscope",
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(PrintTableAction, {
+    }), /*#__PURE__*/React.createElement("span", null, "Subir resultados"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null)
+    // <li>
+    //   <a
+    //     className="dropdown-item"
+    //     href="#"
+    //     onClick={(e) => {
+    //       e.preventDefault();
+    //       handleCancelAppointment(data.id);
+    //     }}
+    //     data-column="realizar-consulta"
+    //   >
+    //     <div className="d-flex gap-2 align-items-center">
+    //       <i
+    //         className="fa-solid fa-ban"
+    //         style={{ width: "20px" }}
+    //       ></i>
+    //       <span>Cancelar cita</span>
+    //     </div>
+    //   </a>
+    // </li>
+    , /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
+      className: "dropdown-header"
+    }, "Cita"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
+      onClick: () => {
+        // @ts-ignore
+        shareAppointmentMessage(data.id, data.patientId);
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-brands fa-whatsapp",
+      style: {
+        width: '20px'
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "Compartir cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
+      className: "dropdown-header"
+    }, "Factura"), /*#__PURE__*/React.createElement(PrintTableAction, {
       onTrigger: () => {
         //@ts-ignore
         generateInvoice(data.id, false);
@@ -298,7 +302,7 @@ export const AppointmentsTable = () => {
     data: filteredAppointments,
     slots: slots,
     customOptions: {
-      order: [[2, "desc"]],
+      order: [[1, 'asc'], [2, "asc"]],
       ordering: true,
       columnDefs: [{
         orderable: false,
@@ -330,5 +334,10 @@ export const AppointmentsTable = () => {
   }, /*#__PURE__*/React.createElement(PreadmissionForm, {
     initialValues: showFormModal.data,
     formId: "createPreadmission"
-  })));
+  })), /*#__PURE__*/React.createElement(CustomFormModal, {
+    formId: "loadExamResultsFile",
+    show: showLoadExamResultsFileModal,
+    onHide: () => setShowLoadExamResultsFileModal(false),
+    title: "Subir resultados de examen"
+  }, /*#__PURE__*/React.createElement(ExamResultsFileForm, null)));
 };

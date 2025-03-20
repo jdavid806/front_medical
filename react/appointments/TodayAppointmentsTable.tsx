@@ -15,26 +15,13 @@ interface TodayAppointmentsTableProps {
   onShareItem?: (id: string, title: string, type: string) => void;
 }
 
-export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
-  onPrintItem,
-  onDownloadItem,
-  onShareItem,
-}) => {
-  let { appointments } = useFetchAppointments(
+export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ onPrintItem, onDownloadItem, onShareItem }) => {
+  const { appointments } = useFetchAppointments(
     admissionService.getAdmisionsAll()
   );
 
-  const [filteredAppointments, setFilteredAppointments] = React.useState<
-    AppointmentTableItem[]
-  >([]);
-
   useEffect(() => {
-    console.log("citas en admision:", appointments);
-    setFilteredAppointments(
-      appointments.filter((appointment) => appointment.stateId === "1")
-    );
-
-    console.log("filter:", appointments);
+    console.log('ADMISIONES DE HOY', appointments);
   }, [appointments]);
 
   const columns: ConfigColumns[] = [
@@ -44,24 +31,11 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
     { data: "time" },
     { data: "doctorName" },
     { data: "entity" },
-    { data: "status" },
     { orderable: false, searchable: false },
   ];
 
   const slots = {
     6: (cell, data: AppointmentTableItem) => (
-      console.log("cita admision:", data),
-      (
-        <span
-          className={`badge badge-phoenix ${
-            data.status ? "badge-phoenix-primary" : "badge-phoenix-secondary"
-          }`}
-        >
-          {data.status ? "Activo" : "Inactivo"}
-        </span>
-      )
-    ),
-    7: (cell, data: AppointmentTableItem) => (
       <div className="align-middle white-space-nowrap pe-0 p-3">
         <div className="btn-group me-1">
           <button
@@ -81,6 +55,32 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
             >
               Generar admisión
             </a>
+            {/* <a className="dropdown-item" href="#">
+              Generar link de pago
+            </a>
+            <a className="dropdown-item" href="#">
+              Descargar Factura
+            </a>
+            <a className="dropdown-item" href="#">
+              Imprimir factura
+            </a>
+            <a className="dropdown-item" href="#">
+              Compartir por whatsapp y correo
+            </a>
+            <a className="dropdown-item" href="#">
+              Nota credito
+            </a>
+            <hr />
+            <PrintTableAction onTrigger={() => {
+              //@ts-ignore
+              generateInvoice(data.id, false);
+            }}></PrintTableAction>
+            <DownloadTableAction onTrigger={() => {
+              //@ts-ignore
+              generateInvoice(data.id, true);
+            }}></DownloadTableAction>
+            <ShareTableAction shareType="whatsapp" onTrigger={() => console.log("compartir por whatsapp")}></ShareTableAction>
+            <ShareTableAction shareType="email" onTrigger={() => console.log("compartir por correo")}></ShareTableAction> */}
           </div>
         </div>
       </div>
@@ -91,11 +91,7 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
     <>
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable
-            columns={columns}
-            data={filteredAppointments}
-            slots={slots}
-          >
+          <CustomDataTable columns={columns} data={appointments} slots={slots}>
             <thead>
               <tr>
                 <th className="border-top custom-th text-start">Nombre</th>
@@ -112,7 +108,6 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
                   Profesional asignado
                 </th>
                 <th className="border-top custom-th text-start">Entidad</th>
-                <th className="border-top custom-th text-start">Estado</th>
                 <th className="text-end align-middle pe-0 border-top mb-2"></th>
               </tr>
             </thead>

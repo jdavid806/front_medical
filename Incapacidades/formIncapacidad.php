@@ -9,7 +9,7 @@
                 <label for="dias" class="form-label">Días de Incapacidad</label>
                 <input type="number" class="form-control" id="dias" name="dias" min="1">
             </div>
-            <div class="col-6" id="contentFecha">
+            <div class="col-12" id="contentFecha">
                 <label for="hasta" class="form-label">Hasta</label>
                 <input type="date" class="form-control" id="hasta" name="end_date" readonly>
             </div>

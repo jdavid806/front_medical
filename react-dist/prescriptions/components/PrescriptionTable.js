@@ -39,12 +39,12 @@ const PrescriptionTable = ({
     }, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(PrintTableAction, {
       onTrigger: () => {
         //@ts-ignore
-        crearDocumento(data.id, "Impresion", "Receta", "Completa", "Examen de prueba");
+        crearDocumento(data.id, "Impresion", "Receta", "Completa", "Receta");
       }
     }), /*#__PURE__*/React.createElement(DownloadTableAction, {
       onTrigger: () => {
         //@ts-ignore
-        crearDocumento(data.id, "Descarga", "Receta", "Completa", "Examen de prueba");
+        crearDocumento(data.id, "Descarga", "Receta", "Completa", "Receta");
       }
     }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
       className: "dropdown-divider"

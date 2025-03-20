@@ -469,7 +469,8 @@ const UserForm = ({
       strongLabel: "Fuerte",
       weakLabel: "De\u0301bil",
       className: "w-100",
-      inputClassName: "w-100"
+      inputClassName: "w-100",
+      toggleMask: true
     })))
   }), getFormErrorMessage('password')))))));
 };

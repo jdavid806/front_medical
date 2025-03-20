@@ -467,6 +467,7 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                                     weakLabel='Débil'
                                                     className='w-100'
                                                     inputClassName='w-100'
+                                                    toggleMask
                                                 />
                                             </>
                                         )}

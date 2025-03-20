@@ -73,6 +73,10 @@ export const appointmentService = new AppointmentService(
   "patients",
   "appointments"
 );
+export const appointmentStateService = new BaseApiService(
+  "medical",
+  "appointment-states"
+);
 export const appointmentTypeService = new BaseApiService(
   "medical",
   "appointment-types"

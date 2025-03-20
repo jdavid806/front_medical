@@ -146,27 +146,28 @@ include "../header.php";
                                     aria-labelledby="headingFiltros" data-bs-parent="#accordionFiltros">
                                     <div class="accordion-body">
                                         <div class="row g-3 mb-4">
-                                            <div class="col-12 col-md-4">
+                                            <div class="col-12 col-md-6">
                                                 <label for="searchPaciente" class="form-label">Buscar Paciente</label>
                                                 <input type="text" id="searchPaciente" class="form-control"
                                                     placeholder="Buscar por nombre o documento">
                                             </div>
-                                            <div class="col-12 col-md-4">
+                                            <!-- <div class="col-12 col-md-4">
                                                 <label for="fechaRango" class="form-label">Fecha de Última
                                                     Consulta</label>
                                                 <input class="form-control datetimepicker" id="fechaRango" type="text"
                                                     placeholder="d/m/y to d/m/y"
                                                     data-options='{"mode":"range","dateFormat":"d/m/y","disableMobile":true}' />
-                                            </div>
-                                            <div class="col-12 col-md-4">
+                                            </div> -->
+                                            <div class="col-12 col-md-6">
                                                 <label for="statusPaciente" class="form-label">Filtrar por
                                                     Estado</label>
                                                 <select id="statusPaciente" class="form-select">
                                                     <option value="">Seleccione Estado</option>
-                                                    <option value="1">Pendiente</option>
-                                                    <option value="2">En espera de consulta</option>
-                                                    <option value="3">En consulta</option>
-                                                    <option value="8">Consulta finalizada</option>
+                                                    <option value="pending">Pendiente</option>
+                                                    <option value="pending_consultation">En espera</option>
+                                                    <option value="in_consultation">En proceso</option>
+                                                    <option value="consultation_completed">Finalizada</option>
+                                                    <option value="cancelled">Cancelada</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -199,7 +200,8 @@ include "../header.php";
 
 <script type="module">
     import {
-        patientService
+        patientService,
+        appointmentStateService
     } from "../../services/api/index.js";
     import {
         formatDate,
@@ -215,129 +217,68 @@ include "../header.php";
 
     document.addEventListener("DOMContentLoaded", async () => {
 
-
         let pacientesData = await patientService.getAll();
-
-        console.log("pacientesData", pacientesData);
-        const pacientesReestructurados = reestructurarPacientes(pacientesData);
-
+        const appointmentStates = await appointmentStateService.getAll();
 
         function procesarPacientes(pacientes) {
-            // 1. Configuración - CAMBIAR ESTOS VALORES PARA PRUEBAS
-            const SUCURSAL_ACTUAL = 1; // Sucursal del usuario (1-5)
-            const ESTADO_CANCELADO = 4; // Estado para citas canceladas
-            const PRIORIDAD_ESTADOS = {
-                ACTIVO: 1, // Citas activas y estado != 4
-                ESTADO_4: 2, // Citas activas con estado 4
-                INACTIVO: 3 // Citas inactivas
-            };
-
             const hoy = new Date().toISOString().split('T')[0];
 
             return pacientes
                 .map(paciente => {
+                    // Ordenar citas por fecha y hora
+                    const citasOrdenadas = paciente.appointments
+                        .sort((a, b) => {
+                            const fechaHoraA = new Date(`${a.appointment_date}T${a.appointment_time}`);
+                            const fechaHoraB = new Date(`${b.appointment_date}T${b.appointment_time}`);
+                            return fechaHoraA - fechaHoraB;
+                        });
 
-                    // 4. Filtrar citas para hoy en sucursal actual
-                    const citasHoy = paciente.appointments.filter(c =>
-                        c.appointment_date === hoy &&
-                        (c.userAvailability?.branch_id || 1) === SUCURSAL_ACTUAL
-                    );
+                    // Obtener la primera cita
+                    const primeraCita = citasOrdenadas[0];
 
+                    // Determinar el estado de la primera cita
+                    const estado = primeraCita ? primeraCita.appointment_state.name : null;
 
-                    // 5. Clasificar citas en grupos de prioridad
-                    let estado = null;
-                    let horaOrden = null;
-                    let prioridad = null;
-
-                    if (citasHoy.length > 0) {
-                        // Separar en grupos
-                        const grupoActivo = citasHoy.filter(c =>
-                            c.is_active && c.appointment_state_id !== ESTADO_CANCELADO
-                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-                        const grupoEstado4 = citasHoy.filter(c =>
-                            c.is_active && c.appointment_state_id === ESTADO_CANCELADO
-                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-                        const grupoInactivo = citasHoy.filter(c =>
-                            !c.is_active
-                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-                        // Determinar grupo prioritario
-                        const grupoPrincipal = [{
-                                prioridad: PRIORIDAD_ESTADOS.ACTIVO,
-                                citas: grupoActivo
-                            },
-                            {
-                                prioridad: PRIORIDAD_ESTADOS.ESTADO_4,
-                                citas: grupoEstado4
-                            },
-                            {
-                                prioridad: PRIORIDAD_ESTADOS.INACTIVO,
-                                citas: grupoInactivo
-                            }
-                        ].find(g => g.citas.length > 0);
-
-                        if (grupoPrincipal) {
-                            const primeraCita = grupoPrincipal.citas[0];
-                            prioridad = grupoPrincipal.prioridad;
-                            horaOrden = primeraCita.appointment_time;
-                            estado = grupoPrincipal.prioridad === PRIORIDAD_ESTADOS.INACTIVO ?
-                                5 : primeraCita.appointment_state_id;
-                        }
-                    }
-
-                    // 6. Obtener última consulta clínica
-                    const ultimaConsulta = paciente.clinical_records
-                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]?.created_at;
+                    // Determinar si la cita de hoy está finalizada o cancelada
+                    const citaHoy = paciente.appointments.find(c => c.appointment_date === hoy);
+                    const esFinalizadaOCancelada = citaHoy &&
+                        (citaHoy.appointment_state.name === 'consultation_completed' ||
+                            citaHoy.appointment_state.name === 'cancelled');
 
                     return {
                         ...paciente,
-                        appointments: paciente.appointments,
-                        status: estado,
-                        _prioridad: prioridad,
-                        _horaOrden: horaOrden,
-                        _ultimaConsulta: ultimaConsulta
+                        estado,
+                        primeraCita,
+                        _esFinalizadaOCancelada: esFinalizadaOCancelada,
+                        _fechaHoraPrimeraCita: primeraCita ?
+                            new Date(`${primeraCita.appointment_date}T${primeraCita.appointment_time}`) : new Date(0)
                     };
                 })
                 .sort((a, b) => {
-                    // 7. Lógica de ordenamiento mejorada
-                    const tieneCitaA = a._prioridad !== null;
-                    const tieneCitaB = b._prioridad !== null;
+                    // Ordenar primero por si la cita de hoy está finalizada o cancelada
+                    if (a._esFinalizadaOCancelada && !b._esFinalizadaOCancelada) return 1;
+                    if (!a._esFinalizadaOCancelada && b._esFinalizadaOCancelada) return -1;
 
-                    // Caso 1: Ambos tienen citas hoy
-                    if (tieneCitaA && tieneCitaB) {
-                        if (a._prioridad === b._prioridad) {
-                            return a._horaOrden.localeCompare(b._horaOrden);
-                        }
-                        return a._prioridad - b._prioridad;
-                    }
-
-                    // Caso 2: Solo uno tiene cita hoy
-                    if (tieneCitaA) return -1;
-                    if (tieneCitaB) return 1;
-
-                    // Caso 3: Ninguno tiene cita hoy - ordenar por última consulta
-                    const fechaA = a._ultimaConsulta ? new Date(a._ultimaConsulta) : new Date(0);
-                    const fechaB = b._ultimaConsulta ? new Date(b._ultimaConsulta) : new Date(0);
-                    return fechaB - fechaA;
+                    // Ordenar por fecha y hora de la primera cita
+                    return a._fechaHoraPrimeraCita - b._fechaHoraPrimeraCita;
                 })
                 .map(({
-                    _prioridad,
-                    _horaOrden,
-                    _ultimaConsulta,
+                    _esFinalizadaOCancelada,
+                    _fechaHoraPrimeraCita,
                     ...paciente
                 }) => paciente);
         }
 
         pacientesData = procesarPacientes(pacientesData);
 
+        console.log('PACIENTES', pacientesData);
+
 
         var pusher = new Pusher('5e57937071269859a439', {
             cluster: 'us2'
         });
-
-        var channel = pusher.subscribe('waiting-room.consultorio2.3');
+        var hostname = window.location.hostname.split('.')[0];
+        var channel = pusher.subscribe('waiting-room.' + hostname);
 
         channel.bind('appointment.created', function(data) {
             pacientesData.forEach(paciente => {
@@ -351,11 +292,12 @@ include "../header.php";
         });
 
         channel.bind('appointment.state.updated', function(data) {
+            console.log(data, pacientesData);
+
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
-                        cita.appointment_state_id = data.newState;
-                        paciente.status = data.newState;
+                        cita.appointment_state = appointmentStates.find(state => state.id === data.newState);
                     }
                 })
             })
@@ -368,7 +310,7 @@ include "../header.php";
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
-                        cita.is_active = false;
+                        cita.appointment_state = appointmentStates.find(state => state.name === 'cancelled');
                     }
                 })
             })
@@ -381,11 +323,8 @@ include "../header.php";
 
         // Función para filtrar y mostrar los pacientes
         const filterPacientes = () => {
-            const pacientesReestructurados = reestructurarPacientes(pacientesData);
-            console.log("pacientesReestructuradosssss", pacientesReestructurados);
-
             const searchText = document.getElementById("searchPaciente").value.toLowerCase();
-            const fechaRango = document.getElementById("fechaRango").value;
+            // const fechaRango = document.getElementById("fechaRango").value;
             const status = document.getElementById("statusPaciente").value;
 
             const filteredPacientes = pacientesData.filter(paciente => {
@@ -398,25 +337,28 @@ include "../header.php";
                 }
 
                 // Filtro de fechas
-                const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b
-                    .created_at) - new Date(a.created_at));
-                const lastClinicalRecord = sortedClinicalRecords[0];
-                const fechaRangoValue = document.getElementById("fechaRango").value;
-                const [fechaInicio, fechaFin] = fechaRangoValue.split(" to ");
-                let lastClinicalRecordDate = null
+                // const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b
+                //     .created_at) - new Date(a.created_at));
+                // const lastClinicalRecord = sortedClinicalRecords[0];
+                // const fechaRangoValue = document.getElementById("fechaRango").value;
+                // const [fechaInicio, fechaFin] = fechaRangoValue.split(" to ");
+                // let lastClinicalRecordDate = null
 
-                if (lastClinicalRecord) {
-                    lastClinicalRecordDate = new Date(lastClinicalRecord.created_at);
-                }
+                // if (lastClinicalRecord) {
+                //     lastClinicalRecordDate = new Date(lastClinicalRecord.created_at);
+                // }
 
-
-                if (fechaRangoValue && ((lastClinicalRecordDate < parseFechaDMY(fechaInicio) ||
-                            lastClinicalRecordDate > parseFechaDMY(fechaFin)) || !
-                        lastClinicalRecordDate)) {
-                    isMatch = false;
-                }
+                // if (fechaRangoValue && ((lastClinicalRecordDate < parseFechaDMY(fechaInicio) ||
+                //             lastClinicalRecordDate > parseFechaDMY(fechaFin)) || !
+                //         lastClinicalRecordDate)) {
+                //     isMatch = false;
+                // }
                 // Filtro por status
-                if (status && paciente.status != status) {
+
+                console.log(status, paciente.estado);
+
+
+                if (status && paciente.estado != status) {
                     isMatch = false;
                 }
 
@@ -431,41 +373,28 @@ include "../header.php";
         const renderPacientes = (pacientes) => {
             const pacientesReestructurados = reestructurarPacientes(pacientes);
 
+            console.log('Pacientes reestructurados', pacientesReestructurados);
 
 
             const pacientesList = document.getElementById("pacientesList");
             pacientesList.innerHTML = ""; // Limpiar los resultados anteriores
 
-            // Obtener la página actual desde el parámetro en la URL o predeterminado
             const currentPage = getCurrentPage();
             const startIndex = (currentPage - 1) * itemsPerPage;
-            const paginatedPacientes = pacientes.slice(startIndex, startIndex + itemsPerPage);
+            const paginatedPacientes = pacientesReestructurados.slice(startIndex, startIndex + itemsPerPage);
 
             paginatedPacientes.forEach(paciente => {
                 const idPaciente = paciente.id;
 
-                // Filtrar pacientesReestructurados para encontrar el elemento con el mismo id
                 const pacienteFiltrado = pacientesReestructurados.filter(
                     paciente => paciente.id === idPaciente
-                );
+                )[0];
 
-                const estadoActual = pacienteFiltrado[0].appointment_state.estadoActual;
-                const estadoColor = pacienteFiltrado[0].appointment_state.colorEstado;
+                if (pacienteFiltrado) {
+                    const estadoActual = pacienteFiltrado.appointment_state.estadoActual;
+                    const estadoColor = pacienteFiltrado.appointment_state.colorEstado;
 
-                console.log(pacienteFiltrado);
-                const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b
-                    .created_at) - new Date(a.created_at));
-                const lastClinicalRecord = sortedClinicalRecords[0];
-
-                // Obtener la hora de la última consulta en formato colombiano (UTC-5)
-                const horaConsulta = lastClinicalRecord ? new Date(lastClinicalRecord.created_at)
-                    .toLocaleTimeString('en-CO', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: 'America/Bogota'
-                    }) : "Hora no disponible";
-
-                const cardHtml = `
+                    const cardHtml = `
             <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
     <div class="card card-paciente">
         <div class="card-body">
@@ -475,7 +404,7 @@ include "../header.php";
             </div>
 
             <!-- Estado del paciente -->
-           <span class="badge badge-phoenix fs-10 mb-3" style="background-color: ${estadoColor}; color: #ffffff;">
+           <span class="badge badge-phoenix badge-phoenix-${estadoColor} fs-10 mb-3">
                     ${estadoActual}
             </span>
 
@@ -505,7 +434,7 @@ include "../header.php";
                         <p class="fw-bold mb-0">Fecha</p>
                     </div>
                     <p class="text-body-emphasis  mb-3">
-                        ${lastClinicalRecord ? formatDate(lastClinicalRecord.created_at).split(',')[0] : "Fecha no disponible"}
+                        ${pacienteFiltrado.cita.appointment_date || "Fecha no disponible"}
                     </p>
                 </div>
 
@@ -515,7 +444,7 @@ include "../header.php";
                         <p class="fw-bold mb-0">Hora</p>
                     </div>
                     <p class="text-body-emphasis">
-                        ${horaConsulta}
+                        ${pacienteFiltrado.cita.appointment_time || "Hora no disponible"}
                     </p>
                 </div>
 
@@ -545,7 +474,8 @@ include "../header.php";
     </div>
 </div>
         `;
-                pacientesList.innerHTML += cardHtml;
+                    pacientesList.innerHTML += cardHtml;
+                }
             });
         };
 
@@ -609,7 +539,7 @@ include "../header.php";
         };
 
         document.getElementById("searchPaciente").addEventListener("input", filterPacientes);
-        document.getElementById("fechaRango").addEventListener("input", filterPacientes);
+        // document.getElementById("fechaRango").addEventListener("input", filterPacientes);
         document.getElementById("statusPaciente").addEventListener("change", filterPacientes);
 
         // Inicializa el filtro con todos los pacientes al cargar

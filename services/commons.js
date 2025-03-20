@@ -94,6 +94,15 @@ export const appointmentStatesColors = {
     5: 'danger'
 }
 
+export const appointmentStateFilters = {
+    'pending': 'Pendiente',
+    'pending_consultation': 'En espera',
+    'in_consultation': 'En proceso',
+    'consultation_completed': 'Finalizada',
+    'cancelled': 'Cancelada',
+    'rescheduled': 'Reprogramada'
+}
+
 export const appointmentStatesByKey = {
     'pending': 'Pendiente',
     'pending_consultation': 'En espera de consulta',
@@ -103,6 +112,24 @@ export const appointmentStatesByKey = {
     'cancelled': 'Cancelada',
     'rescheduled': 'Reprogramada'
 }
+
+export const appointmentStatesByKeyTwo = {
+    "pending": "Pendiente",
+    "pending_consultation": {
+        "CONSULTATION": "En espera de consulta",
+        "PROCEDURE": "En espera de examen"
+    },
+    "in_consultation": {
+        "CONSULTATION": "En Consulta",
+        "PROCEDURE": "En Examen"
+    },
+    "consultation_completed": {
+        "CONSULTATION": "Consulta Finalizada",
+        "PROCEDURE": "Examen Finalizado"
+    },
+    "cancelled": "Cancelada",
+    "rescheduled": "Reprogramada"
+};
 
 export const appointmentStateColorsByKey = {
     'pending': 'warning',
