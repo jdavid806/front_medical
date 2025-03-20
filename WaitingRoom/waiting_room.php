@@ -110,8 +110,8 @@ include "../header.php";
 
     var hostname = window.location.hostname.split('.')[0];
 
-    var channel = pusher.subscribe(`waiting-room.${hostname}.3`);
-    var channelTickets = pusher.subscribe(`tickets.${hostname}.3`);
+    var channel = pusher.subscribe(`waiting-room.${hostname}`);
+    var channelTickets = pusher.subscribe(`tickets.${hostname}`);
 
     channel.bind('appointment.created', function(data) {
         const appointment = {

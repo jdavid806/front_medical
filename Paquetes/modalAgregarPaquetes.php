@@ -322,12 +322,12 @@
 
     document.addEventListener('DOMContentLoaded', async function() {
 
+        document.getElementById('contentFecha').style.display = 'none';
+
         medicamentos = await packagesService.getPackagesByMedications();
         vacunas = await packagesService.getPackagesByVaccines();
         insumos = await packagesService.getPackagesBySupplies();
         examenes = await examenTypeService.getExamenTypes();
-
-        console.log("Selects:", medicamentos, vacunas, insumos, examenes);
 
         /**
          * Función para cargar los medicamentos en el select
@@ -660,7 +660,6 @@
         // Función para manejar el evento click del botón guardar
         document.getElementById('nextStep').addEventListener('click', function() {
             const diasIncapacidad = document.getElementById('dias').value;
-            const hastaIncapacidad = document.getElementById('hasta').value;
             const motivoIncapacidad = document.getElementById('reason').value;
             // const userRemision = document.getElementById('user').value;
             // const specialityRemision = document.getElementById('userSpecialty').value;
@@ -687,7 +686,6 @@
                 vacunas: vacunasSeleccionadas,
                 insumos: insumosSeleccionados,
                 diasIncapacidad: diasIncapacidad,
-                hastaIncapacidad: hastaIncapacidad,
                 motivoIncapacidad: motivoIncapacidad,
                 // usuarioRemision: userRemision,
                 // especialidadRemision: specialityRemision,
@@ -1356,7 +1354,6 @@
                 <strong>Incapacidad:</strong>
                 <ul style="margin-top: 5px; padding-left: 20px;">
                 <li>Dias: ${datosPaquete.diasIncapacidad}</li>
-                <li>Hasta: ${datosPaquete.hastaIncapacidad}</li>
                 <li>Motivo: ${datosPaquete.motivoIncapacidad}</li>
         `;
 
@@ -1367,7 +1364,6 @@
             //         <strong>Incapacidad:</strong>
             //         <ul style="margin-top: 5px; padding-left: 20px;">
             //         <li>Dias: ${datosPaquete.diasIncapacidad}</li>
-            //         <li>Hasta: ${datosPaquete.hastaIncapacidad}</li>
             //         <li>Motivo: ${datosPaquete.motivoIncapacidad}</li>
             // `;
 
@@ -1402,9 +1398,11 @@
 </script>
 
 <script type="module">
+    let choicesExamenes;
     import {
         cie11Service,
-        cupsService
+        cupsService,
+        packagesService
     } from './services/api/index.js';
     import {
         getUserLogged
@@ -1494,9 +1492,123 @@
 
     }
 
+    function obtenerDatosVacunas() {
+        const datos = [];
+        // Seleccionar todos los inputs de cantidad
+        const inputsCantidad = document.querySelectorAll('.input-cantidad-vacuna');
+
+        inputsCantidad.forEach(input => {
+            const cantidad = parseInt(input.value);
+
+            // Validar que la cantidad sea un número válido
+            if (!isNaN(cantidad) && cantidad >= 1) {
+                // Obtener la fila padre
+                const fila = input.closest('tr');
+
+                // Buscar el input hidden con el ID de la vacuna
+                const idVacunaInput = fila.querySelector('input[type="hidden"]');
+
+                if (idVacunaInput) {
+                    datos.push({
+                        id: idVacunaInput.value,
+                        quantity: `${cantidad}`,
+                        type: 'Vacunas'
+                    });
+                }
+            }
+        });
+
+        return datos;
+    }
+
+    function obtenerDatosInsumos() {
+        const datos = [];
+        // Seleccionar todos los inputs de cantidad de insumos
+        const inputsCantidad = document.querySelectorAll('.input-cantidad-insumo');
+
+        inputsCantidad.forEach(input => {
+            const cantidad = parseInt(input.value);
+
+            // Validar que la cantidad sea un número válido
+            if (!isNaN(cantidad) && cantidad >= 1) {
+                // Obtener la fila padre
+                const fila = input.closest('tr');
+
+                // Buscar el input hidden con el ID del insumo
+                const idInsumoInput = fila.querySelector('input[type="hidden"]');
+
+                if (idInsumoInput) {
+                    datos.push({
+                        id: idInsumoInput.value,
+                        quantity: `${cantidad}`,
+                        type: 'Insumos'
+                    });
+                }
+            }
+        });
+
+        return datos;
+    }
+
+    function obtenerSeleccionados(selectId) {
+        const select = document.getElementById(selectId);
+
+        // Si el select no existe, devolver array vacío
+        if (!select) return [];
+
+        // Obtener todas las opciones seleccionadas
+        const seleccionados = [];
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].selected && select.options[i].value !== "") {
+                seleccionados.push(select.options[i].value);
+            }
+        }
+
+        return seleccionados;
+    }
+
     function obtenerValoresMedicamentos() {
         const medicamentosData = [];
         const tarjetas = document.querySelectorAll(".card-medicamento");
+        const datosVacunas = obtenerDatosVacunas();
+        const datosInsumos = obtenerDatosInsumos();
+        const examenes = obtenerSeleccionados('selectExamenes')
+        const incapacidades = [{
+            id: 1,
+            type: "Incapacidad",
+            prescriptions: {
+                days_incapacity: document.getElementById('dias').value,
+                reason: document.getElementById('reason').value
+            }
+        }];
+
+        let specialty_id = document.getElementById('userSpecialty') ? document.getElementById('userSpecialty').value.split(' - ').pop() : "";
+        let user = document.getElementById('user') ? document.getElementById('user').value.split(' - ').pop() : "";
+
+        let cup = document.getElementById('codeCup').value ? document.getElementById('codeCup').value : "";
+        let cie11 = document.getElementById('codeCie').value ? document.getElementById('codeCie').value : "";
+        let remision = []
+
+
+        if (specialty_id) {
+            remision = [{
+                id: 1,
+                type: "Remision",
+                prescriptions: {
+                    specialty_id,
+                    note: document.getElementById('note').value
+                }
+            }];
+        } else {
+            remision = [{
+                id: 1,
+                type: "Remision",
+                prescriptions: {
+                    user,
+                    note: document.getElementById('note').value
+                }
+            }];
+        }
 
         tarjetas.forEach((card, index) => {
             const medicamentoObj = {
@@ -1508,15 +1620,117 @@
                 medication_type: document.getElementById(`presentacion-${index}`).value,
                 quantity: document.getElementById(`cantidad-${index}`).value,
                 instructions: document.getElementById(`indicaciones-${index}`).value,
-                id: document.getElementById(`medicamento_id-${index}`).value
+                id: document.getElementById(`medicamento_id-${index}`).value,
+                type: 'medicamento'
             };
             medicamentosData.push(medicamentoObj);
         });
 
-        console.log(medicamentosData); // Aquí puedes enviarlo a un servidor o usarlo en otra parte de tu sistema.
+        const items = buildData(datosVacunas, datosInsumos, medicamentosData, examenes, incapacidades, remision);
+
+        let requestData;
+
+        if (cup) {
+            requestData = {
+                name: document.getElementById('nombrePaquete').value,
+                package_type_id: 5,
+                description: "Este es un paquete de prueba.",
+                cup,
+                items: items
+            }
+        } else {
+            requestData = {
+                name: document.getElementById('nombrePaquete').value,
+                package_type_id: 5,
+                description: "Este es un paquete de prueba.",
+                cie11,
+                items: items
+            }
+        }
+
+        return requestData;
     }
 
-    document.getElementById('finishStep').addEventListener('click', function() {
-        obtenerValoresMedicamentos();
+    function buildData(datosVacunas, datosInsumos, datosMedicamentos, examenes, incapacidades, remision) {
+
+        let dataVacunasInsumos = [...datosVacunas, ...datosInsumos];
+
+        datosMedicamentos = datosMedicamentos.map((item) => {
+            return {
+                id: item.id,
+                type: item.type,
+                prescriptions: {
+                    concentration: item.concentration,
+                    frequency: item.frequency,
+                    duration_days: item.duration_days,
+                    medication_type: item.medication_type,
+                    quantity: item.quantity,
+                    instructions: item.instructions
+                }
+            }
+
+
+        });
+        dataVacunasInsumos = dataVacunasInsumos.map((item) => {
+            return {
+                id: item.id,
+                type: item.type,
+                prescriptions: {
+                    quantity: item.quantity,
+                }
+            }
+        })
+
+        examenes = examenes.map((item) => {
+            return {
+                id: item,
+                type: 'Examen',
+                prescriptions: {
+                    quantity: "1",
+                }
+            }
+        })
+
+        return [...datosMedicamentos, ...dataVacunasInsumos, ...examenes, ...incapacidades, ...remision];
+
+    }
+
+    document.getElementById('finishStep').addEventListener('click', async function() {
+        const requestData = obtenerValoresMedicamentos();
+        console.log(requestData);
+
+        await packagesService.createPackages(requestData).then(response => {
+                console.log(response);
+                // let contenidoResumen = `
+                //     <div style="margin-bottom: 15px;">
+                //         <ul style="margin-top: 5px; padding-left: 20px;">
+                //         <li>Documento #: ${response.data.invoice_code}</li>
+                //         </div>
+                // `;
+                // Swal.fire({
+                //     title: 'Admision creada',
+                //     html: contenidoResumen,
+                //     icon: 'success',
+                //     width: '600px',
+                //     confirmButtonText: 'Finalizar',
+                //     showCancelButton: true,
+                //     cancelButtonText: 'Imprimir factura',
+                //     confirmButtonColor: '#4CAF50'
+                // }).then((result) => {
+                //     console.log(result);
+                //     if (result.isConfirmed) {
+
+                //         window.location.href = 'citasControl'; // Redireccionar a la página de éxito
+                //     } else {
+                //         generateInvoice(response.admission_data.appointment_id, true);
+                //         setTimeout(function() {
+                //             window.location.href = 'citasControl';
+                //         }, 3000);
+                //     }
+                // });
+            })
+            .catch(error => {
+                console.error('Error al crear la admisión:', error);
+            });
     });
 </script>

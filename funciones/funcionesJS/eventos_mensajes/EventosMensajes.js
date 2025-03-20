@@ -67,8 +67,8 @@ async function sendInvoice(idCita, patient_id) {
       facturaId
     );
 
-    // let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
+    let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
 
-    // enviarAnexo(mensajeFinal, numero_paciente, rutaFinal, titulo);
+    enviarAnexo(mensajeFinal, numero_paciente, rutaFinal, "Factura");
   }
 }

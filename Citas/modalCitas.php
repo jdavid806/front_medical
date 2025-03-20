@@ -70,13 +70,10 @@ $externalCause = array(
 
       // Event listener para actualizar los campos de Whatsapp y Correo Electrónico
       selectPatient.addEventListener("change", () => {
-        console.log("Event listener triggered");
 
         const selectedPatientId = selectPatient.value;
-        console.log("Select Patient ID:", selectPatient.value);
 
         const selectedPatient = patientsData.find(patient => patient.id == selectedPatientId);
-        console.log("Selected Patient Data:", selectedPatient);
 
         if (selectedPatient) {
           document.getElementById("telefonoPaciente").value = selectedPatient.whatsapp ||
@@ -362,7 +359,6 @@ $externalCause = array(
   async function getProducts() {
     try {
       const response = await productService.getAllProducts(); // ya retorna JSON
-      console.log("Respuesta completa: ", response); // Log adicional para verificar la respuesta completa
 
       let products;
       if (response.data && Array.isArray(response.data)) {
@@ -373,9 +369,7 @@ $externalCause = array(
         console.error("Estructura de respuesta desconocida");
       }
 
-      if (Array.isArray(products)) {
-        console.log("Es un array de productos"); // Confirma que es un array
-      } else {
+      if (Array.isArray(products)) {} else {
         console.error("No es un array de productos");
       }
       populateProductSelect(products);
@@ -564,7 +558,6 @@ $externalCause = array(
   });
 
   function filtrarDoctores(availableBlocks, selectedDate, selectedTime) {
-    console.log(availableBlocks, selectedDate, selectedTime);
 
     let availableAvailabilities = [];
 
@@ -616,7 +609,6 @@ $externalCause = array(
       document.getElementById("assigned_user_availability_id")
     );
 
-    console.log(usersSelectChoices, doctorOptions);
   }
 
   function editarCita(id) {

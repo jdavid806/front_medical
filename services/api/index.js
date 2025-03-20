@@ -36,6 +36,7 @@ import ClinicalRecordService from "./classes/clinicalRecordService.js";
 import { UserService } from "./classes/userService.js";
 import { UserRoleService } from "./classes/userRoleService.js";
 import { HistoryPreadmissionService } from "./classes/historyPreadmissionService.js";
+import { CashControlService } from "./classes/cashControlService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -201,6 +202,10 @@ export const paymentMethodService = new PaymentMethodService(
 export const clinicalRecordTypeService = new ClinicalRecordTypeService(
   "medical"
 );
+
+/* Control de caja */
+
+export const cashControlService = new CashControlService("api/v1/admin", "cash-closures");
 
 /* Entrega de Medicamentos e Insumos */
 export const suppliesService = new SuppliesService("api/v1/admin");

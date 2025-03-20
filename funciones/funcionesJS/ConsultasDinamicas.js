@@ -9,7 +9,7 @@ async function consultarDatosWhatssap(tipo) {
     apiKey: datosMensajeria.api_key,
     apiMensaje: `${urlBase}message/${tipo}/${datosMensajeria.instance}`,
     apiInstance: urlBase + "instance/" + tipo + "/" + datosMensajeria.instance,
-    testNumero: urlBase + "chat/whatsappNumbers/"+ datosMensajeria.instance,
+    testNumero: urlBase + "chat/whatsappNumbers/" + datosMensajeria.instance,
   };
 }
 
@@ -63,7 +63,7 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
       genero: traducirGenero(data.gender),
       entidad: nombrEntidad,
       "tipo afiliado": data.social_security.affiliate_type,
-      fecha_consulta: fechaConsulta,
+      "fecha Consulta": fechaConsulta,
     },
   };
 }
@@ -118,6 +118,7 @@ async function consultarDatosEmpresa() {
     nombre_consultorio: dataEmpresa.name,
     marca_agua: dataEmpresa.watermark,
     datos_consultorio: [
+      { RNC: dataEmpresa.document_number },
       { Dirección: dataEmpresa.address },
       { Teléfono: dataEmpresa.phone },
       { Correo: dataEmpresa.email },

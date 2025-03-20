@@ -11,9 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $titulo = $_POST['titulo'];
 
   $consultorio = json_decode($_POST['consultorio'], true);
-  $logo_consultorio = $consultorio['logo_consultorio'];
+  // $logo_consultorio = $consultorio['logo_consultorio'];
+  $logo_consultorio = "https://monaros.co/sistema/p/cenode.jpeg";
   $nombre_consultorio = $consultorio['nombre_consultorio'];
-  $marca_agua = $consultorio['marca_agua'];
+  // $marca_agua = $consultorio['marca_agua'];
+  $marca_agua = "https://monaros.co/sistema/p/cenode.jpeg";
   $datos_consultorio = $consultorio['datos_consultorio'];
 
   $datos_paciente = json_decode($_POST['paciente'], true);

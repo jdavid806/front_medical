@@ -4,460 +4,617 @@ include "../header.php";
 ?>
 
 <style type="text/css">
-  .custom-btn {
-    width: 150px;
-    /* Establece el ancho fijo */
-    height: 40px;
-    /* Establece la altura fija */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 5px;
-    /* Espaciado opcional entre botones */
-  }
+    .custom-btn {
+        width: 150px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin-bottom: 5px;
+    }
 
-  .custom-btn i {
-    margin-right: 5px;
-    /* Espaciado entre el ícono y el texto */
-  }
+    .custom-btn i {
+        margin-right: 5px;
+    }
+
+    /* Estilos para las tarjetas */
+    .card-paciente {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card-paciente:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-paciente .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+    }
+
+    .card-paciente .avatar {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+    }
+
+    .card-paciente .badge {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .card-paciente .info-paciente {
+        width: 100%;
+        text-align: left;
+    }
+
+    .card-paciente .info-paciente p {
+        margin-bottom: 8px;
+        font-size: 14px;
+        white-space: normal;
+        overflow: visible;
+
+    }
+
+    .card-paciente .btn-ver {
+        width: 100%;
+        margin-top: auto;
+        font-size: 14px;
+    }
+
+    /* Estilos para las columnas */
+    .info-paciente .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .info-paciente .col-6 {
+        flex: 1 1 45%;
+        min-width: 45%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-paciente .avatar {
+            width: 60px;
+            height: 60px;
+        }
+
+        .card-paciente .info-paciente p {
+            font-size: 12px;
+        }
+
+        .card-paciente .btn-ver {
+            font-size: 12px;
+        }
+
+        .info-paciente .col-6 {
+            flex: 1 1 100%;
+            /* En móviles, una columna por fila */
+            min-width: 100%;
+        }
+    }
 </style>
 
+
+
 <div class="componente">
-  <div class="content">
-    <div class="container-small">
-      <nav class="mb-3" aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0">
-          <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-          <li class="breadcrumb-item active" onclick="location.reload()">Pacientes</li>
-        </ol>
-      </nav>
+    <div class="content">
+        <div class="container-small">
+            <nav class="mb-3" aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Pacientes</li>
+                </ol>
+            </nav>
 
-      <div class="tab-content mt-3" id="myTabContent">
-        <div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
-          <div class="pb-9">
-            <div class="row align-items-center justify-content-between mb-4">
-              <div class="col-md-6">
-                <h2 class="mb-0">Pacientes</h2>
-              </div>
-              <div class="col-md-6 text-md-end">
-                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCrearPaciente">
-                  <span class="fa-solid fa-plus me-2 fs-9"></span> Nuevo Paciente
-                </button>
-              </div>
-            </div>
+            <div class="tab-content mt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="tab-home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="pb-9">
+                        <div class="row align-items-center justify-content-between mb-4">
+                            <div class="col-md-6">
+                                <h2 class="mb-0">Pacientes</h2>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#modalCrearPaciente">
+                                    <span class="fa-solid fa-plus me-2 fs-9"></span> Nuevo Paciente
+                                </button>
+                            </div>
+                        </div>
 
-            <div class="accordion mb-4" id="accordionFiltros">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingFiltros">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
-                    Filtros
-                  </button>
-                </h2>
-                <div id="collapseFiltros" class="accordion-collapse collapse" aria-labelledby="headingFiltros" data-bs-parent="#accordionFiltros">
-                  <div class="accordion-body">
-                    <div class="row g-3 mb-4">
-                      <div class="col-12 col-md-4">
-                        <label for="searchPaciente" class="form-label">Buscar Paciente</label>
-                        <input type="text" id="searchPaciente" class="form-control" placeholder="Buscar por nombre o documento">
-                      </div>
-                      <div class="col-12 col-md-4">
-                        <label for="fechaRango" class="form-label">Fecha de Última Consulta</label>
-                        <input class="form-control datetimepicker" id="fechaRango" type="text" placeholder="d/m/y to d/m/y" data-options='{"mode":"range","dateFormat":"d/m/y","disableMobile":true}' />
-                      </div>
-                      <div class="col-12 col-md-4">
-                        <label for="statusPaciente" class="form-label">Filtrar por Estado</label>
-                        <select id="statusPaciente" class="form-select">
-                          <option value="">Seleccione Estado</option>
-                          <option value="1">Pendiente</option>
-                          <option value="2">En espera de consulta</option>
-                          <option value="3">En consulta</option>
-                          <option value="4">Consulta finalizada</option>
-                        </select>
-                      </div>
+                        <div class="accordion mb-4" id="accordionFiltros">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingFiltros">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseFiltros" aria-expanded="false"
+                                        aria-controls="collapseFiltros">
+                                        Filtros
+                                    </button>
+                                </h2>
+                                <div id="collapseFiltros" class="accordion-collapse collapse"
+                                    aria-labelledby="headingFiltros" data-bs-parent="#accordionFiltros">
+                                    <div class="accordion-body">
+                                        <div class="row g-3 mb-4">
+                                            <div class="col-12 col-md-4">
+                                                <label for="searchPaciente" class="form-label">Buscar Paciente</label>
+                                                <input type="text" id="searchPaciente" class="form-control"
+                                                    placeholder="Buscar por nombre o documento">
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <label for="fechaRango" class="form-label">Fecha de Última
+                                                    Consulta</label>
+                                                <input class="form-control datetimepicker" id="fechaRango" type="text"
+                                                    placeholder="d/m/y to d/m/y"
+                                                    data-options='{"mode":"range","dateFormat":"d/m/y","disableMobile":true}' />
+                                            </div>
+                                            <div class="col-12 col-md-4">
+                                                <label for="statusPaciente" class="form-label">Filtrar por
+                                                    Estado</label>
+                                                <select id="statusPaciente" class="form-select">
+                                                    <option value="">Seleccione Estado</option>
+                                                    <option value="1">Pendiente</option>
+                                                    <option value="2">En espera de consulta</option>
+                                                    <option value="3">En consulta</option>
+                                                    <option value="8">Consulta finalizada</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="container">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
+                                id="pacientesList">
+                                <!-- Aquí se generarán las tarjetas de paciente dinámicamente -->
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-4" id="paginationControls">
+                            <!-- Los botones de paginación se generarán aquí -->
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div class="container">
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="pacientesList">
-                <!-- Aquí se generarán las tarjetas de paciente dinámicamente -->
-              </div>
+                <div class="tab-pane fade" id="tab-profile" role="tabpanel" aria-labelledby="profile-tab"></div>
+                <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="contact-tab"></div>
             </div>
-
-            <div class="d-flex justify-content-center mt-4" id="paginationControls">
-              <!-- Los botones de paginación se generarán aquí -->
-            </div>
-          </div>
         </div>
-
-        <div class="tab-pane fade" id="tab-profile" role="tabpanel" aria-labelledby="profile-tab"></div>
-        <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="contact-tab"></div>
-      </div>
     </div>
-  </div>
 </div>
 
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
 <script type="module">
-  import {
-    patientService
-  } from "../../services/api/index.js";
-  import {
-    formatDate,
-    parseFechaDMY
-  } from "../../services/utilidades.js";
-  import {
-    appointmentStates,
-    appointmentStatesColors
-  } from "../../services/commons.js";
+    import {
+        patientService
+    } from "../../services/api/index.js";
+    import {
+        formatDate,
+        parseFechaDMY
+    } from "../../services/utilidades.js";
+    import {
+        appointmentStates,
+        appointmentStatesColors
+    } from "../../services/commons.js";
+    import {
+        reestructurarPacientes
+    } from '../Pacientes/js/reestructurarPacientes.js';
 
-  document.addEventListener("DOMContentLoaded", async () => {
-    let pacientesData = await patientService.getAll();
-
-    function procesarPacientes(pacientes) {
-      // 1. Configuración - CAMBIAR ESTOS VALORES PARA PRUEBAS
-      const SUCURSAL_ACTUAL = 1; // Sucursal del usuario (1-5)
-      const ESTADO_CANCELADO = 4; // Estado para citas canceladas
-      const PRIORIDAD_ESTADOS = {
-        ACTIVO: 1, // Citas activas y estado != 4
-        ESTADO_4: 2, // Citas activas con estado 4
-        INACTIVO: 3 // Citas inactivas
-      };
-
-      const hoy = new Date().toISOString().split('T')[0];
-
-      return pacientes
-        .map(paciente => {
-
-          // 4. Filtrar citas para hoy en sucursal actual
-          const citasHoy = paciente.appointments.filter(c =>
-            c.appointment_date === hoy &&
-            (c.userAvailability?.branch_id || 1) === SUCURSAL_ACTUAL
-          );
+    document.addEventListener("DOMContentLoaded", async () => {
 
 
-          // 5. Clasificar citas en grupos de prioridad
-          let estado = null;
-          let horaOrden = null;
-          let prioridad = null;
+        let pacientesData = await patientService.getAll();
 
-          if (citasHoy.length > 0) {
-            // Separar en grupos
-            const grupoActivo = citasHoy.filter(c =>
-              c.is_active && c.appointment_state_id !== ESTADO_CANCELADO
-            ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-            const grupoEstado4 = citasHoy.filter(c =>
-              c.is_active && c.appointment_state_id === ESTADO_CANCELADO
-            ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-            const grupoInactivo = citasHoy.filter(c =>
-              !c.is_active
-            ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
-
-            // Determinar grupo prioritario
-            const grupoPrincipal = [{
-                prioridad: PRIORIDAD_ESTADOS.ACTIVO,
-                citas: grupoActivo
-              },
-              {
-                prioridad: PRIORIDAD_ESTADOS.ESTADO_4,
-                citas: grupoEstado4
-              },
-              {
-                prioridad: PRIORIDAD_ESTADOS.INACTIVO,
-                citas: grupoInactivo
-              }
-            ].find(g => g.citas.length > 0);
-
-            if (grupoPrincipal) {
-              const primeraCita = grupoPrincipal.citas[0];
-              prioridad = grupoPrincipal.prioridad;
-              horaOrden = primeraCita.appointment_time;
-              estado = grupoPrincipal.prioridad === PRIORIDAD_ESTADOS.INACTIVO ?
-                5 : primeraCita.appointment_state_id;
-            }
-          }
-
-          // 6. Obtener última consulta clínica
-          const ultimaConsulta = paciente.clinical_records
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]?.created_at;
-
-          return {
-            ...paciente,
-            appointments: paciente.appointments,
-            status: estado,
-            _prioridad: prioridad,
-            _horaOrden: horaOrden,
-            _ultimaConsulta: ultimaConsulta
-          };
-        })
-        .sort((a, b) => {
-          // 7. Lógica de ordenamiento mejorada
-          const tieneCitaA = a._prioridad !== null;
-          const tieneCitaB = b._prioridad !== null;
-
-          // Caso 1: Ambos tienen citas hoy
-          if (tieneCitaA && tieneCitaB) {
-            if (a._prioridad === b._prioridad) {
-              return a._horaOrden.localeCompare(b._horaOrden);
-            }
-            return a._prioridad - b._prioridad;
-          }
-
-          // Caso 2: Solo uno tiene cita hoy
-          if (tieneCitaA) return -1;
-          if (tieneCitaB) return 1;
-
-          // Caso 3: Ninguno tiene cita hoy - ordenar por última consulta
-          const fechaA = a._ultimaConsulta ? new Date(a._ultimaConsulta) : new Date(0);
-          const fechaB = b._ultimaConsulta ? new Date(b._ultimaConsulta) : new Date(0);
-          return fechaB - fechaA;
-        })
-        .map(({
-          _prioridad,
-          _horaOrden,
-          _ultimaConsulta,
-          ...paciente
-        }) => paciente);
-    }
-
-    pacientesData = procesarPacientes(pacientesData);
+        console.log("pacientesData", pacientesData);
+        const pacientesReestructurados = reestructurarPacientes(pacientesData);
 
 
-    var pusher = new Pusher('5e57937071269859a439', {
-      cluster: 'us2'
-    });
+        function procesarPacientes(pacientes) {
+            // 1. Configuración - CAMBIAR ESTOS VALORES PARA PRUEBAS
+            const SUCURSAL_ACTUAL = 1; // Sucursal del usuario (1-5)
+            const ESTADO_CANCELADO = 4; // Estado para citas canceladas
+            const PRIORIDAD_ESTADOS = {
+                ACTIVO: 1, // Citas activas y estado != 4
+                ESTADO_4: 2, // Citas activas con estado 4
+                INACTIVO: 3 // Citas inactivas
+            };
 
-    var channel = pusher.subscribe('waiting-room.consultorio2.3');
+            const hoy = new Date().toISOString().split('T')[0];
 
-    channel.bind('appointment.created', function(data) {
-      pacientesData.forEach(paciente => {
-        if (paciente.id === data.appointment.patient_id) {
-          paciente.appointments.push(data.appointment);
-        }
-      })
-      pacientesData = procesarPacientes(pacientesData);
+            return pacientes
+                .map(paciente => {
 
-      renderPacientes(pacientesData)
-    });
+                    // 4. Filtrar citas para hoy en sucursal actual
+                    const citasHoy = paciente.appointments.filter(c =>
+                        c.appointment_date === hoy &&
+                        (c.userAvailability?.branch_id || 1) === SUCURSAL_ACTUAL
+                    );
 
-    channel.bind('appointment.state.updated', function(data) {
-      pacientesData.forEach(paciente => {
-        paciente.appointments.forEach(cita => {
-          if (cita.id === data.appointmentId) {
-            cita.appointment_state_id = data.newState;
-            paciente.status = data.newState;
-          }
-        })
-      })
-      pacientesData = procesarPacientes(pacientesData);
 
-      renderPacientes(pacientesData)
-    });
+                    // 5. Clasificar citas en grupos de prioridad
+                    let estado = null;
+                    let horaOrden = null;
+                    let prioridad = null;
 
-    channel.bind('appointment.inactivated', function(data) {
-      pacientesData.forEach(paciente => {
-        paciente.appointments.forEach(cita => {
-          if (cita.id === data.appointmentId) {
-            cita.is_active = false;
-          }
-        })
-      })
-      pacientesData = procesarPacientes(pacientesData);
+                    if (citasHoy.length > 0) {
+                        // Separar en grupos
+                        const grupoActivo = citasHoy.filter(c =>
+                            c.is_active && c.appointment_state_id !== ESTADO_CANCELADO
+                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
 
-      renderPacientes(pacientesData)
-    });
+                        const grupoEstado4 = citasHoy.filter(c =>
+                            c.is_active && c.appointment_state_id === ESTADO_CANCELADO
+                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
 
-    const itemsPerPage = 8; // Número de pacientes por página
+                        const grupoInactivo = citasHoy.filter(c =>
+                            !c.is_active
+                        ).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time));
 
-    // Función para filtrar y mostrar los pacientes
-    const filterPacientes = () => {
-      const searchText = document.getElementById("searchPaciente").value.toLowerCase();
-      const fechaRango = document.getElementById("fechaRango").value;
-      const status = document.getElementById("statusPaciente").value;
+                        // Determinar grupo prioritario
+                        const grupoPrincipal = [{
+                                prioridad: PRIORIDAD_ESTADOS.ACTIVO,
+                                citas: grupoActivo
+                            },
+                            {
+                                prioridad: PRIORIDAD_ESTADOS.ESTADO_4,
+                                citas: grupoEstado4
+                            },
+                            {
+                                prioridad: PRIORIDAD_ESTADOS.INACTIVO,
+                                citas: grupoInactivo
+                            }
+                        ].find(g => g.citas.length > 0);
 
-      const filteredPacientes = pacientesData.filter(paciente => {
-        let isMatch = true;
+                        if (grupoPrincipal) {
+                            const primeraCita = grupoPrincipal.citas[0];
+                            prioridad = grupoPrincipal.prioridad;
+                            horaOrden = primeraCita.appointment_time;
+                            estado = grupoPrincipal.prioridad === PRIORIDAD_ESTADOS.INACTIVO ?
+                                5 : primeraCita.appointment_state_id;
+                        }
+                    }
 
-        // Filtro de búsqueda por nombre o documento
-        if (searchText && !paciente.first_name.toLowerCase().includes(searchText) && !paciente.document_number.includes(searchText)) {
-          isMatch = false;
+                    // 6. Obtener última consulta clínica
+                    const ultimaConsulta = paciente.clinical_records
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]?.created_at;
+
+                    return {
+                        ...paciente,
+                        appointments: paciente.appointments,
+                        status: estado,
+                        _prioridad: prioridad,
+                        _horaOrden: horaOrden,
+                        _ultimaConsulta: ultimaConsulta
+                    };
+                })
+                .sort((a, b) => {
+                    // 7. Lógica de ordenamiento mejorada
+                    const tieneCitaA = a._prioridad !== null;
+                    const tieneCitaB = b._prioridad !== null;
+
+                    // Caso 1: Ambos tienen citas hoy
+                    if (tieneCitaA && tieneCitaB) {
+                        if (a._prioridad === b._prioridad) {
+                            return a._horaOrden.localeCompare(b._horaOrden);
+                        }
+                        return a._prioridad - b._prioridad;
+                    }
+
+                    // Caso 2: Solo uno tiene cita hoy
+                    if (tieneCitaA) return -1;
+                    if (tieneCitaB) return 1;
+
+                    // Caso 3: Ninguno tiene cita hoy - ordenar por última consulta
+                    const fechaA = a._ultimaConsulta ? new Date(a._ultimaConsulta) : new Date(0);
+                    const fechaB = b._ultimaConsulta ? new Date(b._ultimaConsulta) : new Date(0);
+                    return fechaB - fechaA;
+                })
+                .map(({
+                    _prioridad,
+                    _horaOrden,
+                    _ultimaConsulta,
+                    ...paciente
+                }) => paciente);
         }
 
-        // Filtro de fechas
-        const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        const lastClinicalRecord = sortedClinicalRecords[0];
-        const fechaRangoValue = document.getElementById("fechaRango").value;
-        const [fechaInicio, fechaFin] = fechaRangoValue.split(" to ");
-        let lastClinicalRecordDate = null
-
-        if (lastClinicalRecord) {
-          lastClinicalRecordDate = new Date(lastClinicalRecord.created_at);
-        }
+        pacientesData = procesarPacientes(pacientesData);
 
 
-        if (fechaRangoValue && ((lastClinicalRecordDate < parseFechaDMY(fechaInicio) || lastClinicalRecordDate > parseFechaDMY(fechaFin)) || !lastClinicalRecordDate)) {
-          isMatch = false;
-        }
+        var pusher = new Pusher('5e57937071269859a439', {
+            cluster: 'us2'
+        });
 
-        // Filtro por status
-        if (status && paciente.status != status) {
-          isMatch = false;
-        }
+        var channel = pusher.subscribe('waiting-room.consultorio2.3');
 
-        return isMatch;
-      });
+        channel.bind('appointment.created', function(data) {
+            pacientesData.forEach(paciente => {
+                if (paciente.id === data.appointment.patient_id) {
+                    paciente.appointments.push(data.appointment);
+                }
+            })
+            pacientesData = procesarPacientes(pacientesData);
 
-      renderPacientes(filteredPacientes);
-      renderPagination(filteredPacientes);
-    };
+            renderPacientes(pacientesData)
+        });
 
-    // Función para renderizar las tarjetas de pacientes
-    const renderPacientes = (pacientes) => {
-      const pacientesList = document.getElementById("pacientesList");
-      pacientesList.innerHTML = ""; // Limpiar los resultados anteriores
+        channel.bind('appointment.state.updated', function(data) {
+            pacientesData.forEach(paciente => {
+                paciente.appointments.forEach(cita => {
+                    if (cita.id === data.appointmentId) {
+                        cita.appointment_state_id = data.newState;
+                        paciente.status = data.newState;
+                    }
+                })
+            })
+            pacientesData = procesarPacientes(pacientesData);
 
-      // Obtener la página actual desde el parámetro en la URL o predeterminado
-      const currentPage = getCurrentPage();
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const paginatedPacientes = pacientes.slice(startIndex, startIndex + itemsPerPage);
+            renderPacientes(pacientesData)
+        });
 
-      paginatedPacientes.forEach(paciente => {
-        const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        const lastClinicalRecord = sortedClinicalRecords[0];
+        channel.bind('appointment.inactivated', function(data) {
+            pacientesData.forEach(paciente => {
+                paciente.appointments.forEach(cita => {
+                    if (cita.id === data.appointmentId) {
+                        cita.is_active = false;
+                    }
+                })
+            })
+            pacientesData = procesarPacientes(pacientesData);
 
-        const cardHtml = `
-          <div class="col">
-  <div class="card h-100 hover-actions-trigger">
-    <div class="card-body d-flex flex-column align-items-center text-center">
-      
-      <!-- Imagen arriba -->
-      <div class="avatar avatar-xl rounded-circle mb-3">
-        <img class="rounded-circle" src="<?= $ConfigNominaUser['logoBase64'] ?>" alt="Paciente" onerror="this.onerror=null; this.src='../assets/img/profile/profile_default.jpg';" />
-      </div>
+            renderPacientes(pacientesData)
+        });
 
-      <!-- Información del paciente -->
-      <span class="badge badge-phoenix fs-10 mb-3 badge-phoenix-${appointmentStatesColors[paciente.status] || 'secondary'}">
-        ${appointmentStates[paciente.status] || 'Sin estado'}
-      </span>
+        const itemsPerPage = 8; // Número de pacientes por página
 
-      <div class="d-flex flex-column align-items-start w-100">
-        <div class="d-flex align-items-center">
-          <span class="fa-solid fa-id-card me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
-          <p class="fw-bold mb-0">Documento:</p>
+        // Función para filtrar y mostrar los pacientes
+        const filterPacientes = () => {
+            const pacientesReestructurados = reestructurarPacientes(pacientesData);
+            console.log("pacientesReestructuradosssss", pacientesReestructurados);
+
+            const searchText = document.getElementById("searchPaciente").value.toLowerCase();
+            const fechaRango = document.getElementById("fechaRango").value;
+            const status = document.getElementById("statusPaciente").value;
+
+            const filteredPacientes = pacientesData.filter(paciente => {
+                let isMatch = true;
+
+                // Filtro de búsqueda por nombre o documento
+                if (searchText && !paciente.first_name.toLowerCase().includes(searchText) && !
+                    paciente.document_number.includes(searchText)) {
+                    isMatch = false;
+                }
+
+                // Filtro de fechas
+                const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b
+                    .created_at) - new Date(a.created_at));
+                const lastClinicalRecord = sortedClinicalRecords[0];
+                const fechaRangoValue = document.getElementById("fechaRango").value;
+                const [fechaInicio, fechaFin] = fechaRangoValue.split(" to ");
+                let lastClinicalRecordDate = null
+
+                if (lastClinicalRecord) {
+                    lastClinicalRecordDate = new Date(lastClinicalRecord.created_at);
+                }
+
+
+                if (fechaRangoValue && ((lastClinicalRecordDate < parseFechaDMY(fechaInicio) ||
+                            lastClinicalRecordDate > parseFechaDMY(fechaFin)) || !
+                        lastClinicalRecordDate)) {
+                    isMatch = false;
+                }
+                // Filtro por status
+                if (status && paciente.status != status) {
+                    isMatch = false;
+                }
+
+                return isMatch;
+            });
+
+            renderPacientes(filteredPacientes);
+            renderPagination(filteredPacientes);
+        };
+
+        // Función para renderizar las tarjetas de pacientes
+        const renderPacientes = (pacientes) => {
+            const pacientesReestructurados = reestructurarPacientes(pacientes);
+
+
+
+            const pacientesList = document.getElementById("pacientesList");
+            pacientesList.innerHTML = ""; // Limpiar los resultados anteriores
+
+            // Obtener la página actual desde el parámetro en la URL o predeterminado
+            const currentPage = getCurrentPage();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedPacientes = pacientes.slice(startIndex, startIndex + itemsPerPage);
+
+            paginatedPacientes.forEach(paciente => {
+                const idPaciente = paciente.id;
+
+                // Filtrar pacientesReestructurados para encontrar el elemento con el mismo id
+                const pacienteFiltrado = pacientesReestructurados.filter(
+                    paciente => paciente.id === idPaciente
+                );
+
+                const estadoActual = pacienteFiltrado[0].appointment_state.estadoActual;
+                const estadoColor = pacienteFiltrado[0].appointment_state.colorEstado;
+
+                console.log(pacienteFiltrado);
+                const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b
+                    .created_at) - new Date(a.created_at));
+                const lastClinicalRecord = sortedClinicalRecords[0];
+
+                // Obtener la hora de la última consulta en formato colombiano (UTC-5)
+                const horaConsulta = lastClinicalRecord ? new Date(lastClinicalRecord.created_at)
+                    .toLocaleTimeString('en-CO', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'America/Bogota'
+                    }) : "Hora no disponible";
+
+                const cardHtml = `
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+    <div class="card card-paciente">
+        <div class="card-body">
+            <!-- Imagen del paciente -->
+            <div class="avatar avatar-xl rounded-circle">
+                <img class="rounded-circle" src="<?= $ConfigNominaUser['logoBase64'] ?>" alt="Paciente" onerror="this.onerror=null; this.src='../assets/img/profile/profile_default.jpg';" />
+            </div>
+
+            <!-- Estado del paciente -->
+           <span class="badge badge-phoenix fs-10 mb-3" style="background-color: ${estadoColor}; color: #ffffff;">
+                    ${estadoActual}
+            </span>
+
+            <!-- Información del paciente en columnas -->
+            <div class="info-paciente row">
+                <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <span class="fa-solid fa-id-card me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0">Documento</p>
+                    </div>
+                    <p class="text-body-emphasis mb-3">${paciente.document_number}</p>
+                </div>
+
+             
+
+                <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <span class="fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0">Edad</p>
+                    </div>
+                    <p class="text-body-emphasis  mb-3">${calculateAge(paciente.date_of_birth)} Años</p>
+                </div>
+
+                <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <span class="far fa-calendar-check me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0">Fecha</p>
+                    </div>
+                    <p class="text-body-emphasis  mb-3">
+                        ${lastClinicalRecord ? formatDate(lastClinicalRecord.created_at).split(',')[0] : "Fecha no disponible"}
+                    </p>
+                </div>
+
+                <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <span class="far fa-clock me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0">Hora</p>
+                    </div>
+                    <p class="text-body-emphasis">
+                        ${horaConsulta}
+                    </p>
+                </div>
+
+
+                   <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <span class="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
+                        <p class="fw-bold mb-0">Nombre</p>
+                    </div>
+                    <p class="text-body-emphasis">
+                        ${paciente.first_name ? `${paciente.first_name}` : ''} 
+                        ${paciente.middle_name ? ` ${paciente.middle_name}` : ''} 
+                        ${paciente.last_name ? ` ${paciente.last_name}` : ''} 
+                        ${paciente.second_last_name ? ` ${paciente.second_last_name}` : ''}
+                    </p>
+                </div>
+            </div>
+            
+
+
+
+            <!-- Botón para ver el paciente -->
+            <button class="btn btn-primary btn-ver" onclick="window.location.href='verPaciente?id=${paciente.id}'">
+                Ver Paciente
+            </button>
         </div>
-        <p class="text-body-emphasis ms-3 mb-2">${paciente.document_number}</p>
-        
-        <div class="d-flex align-items-center">
-          <span class="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
-          <p class="fw-bold mb-0">Nombre:</p>
-        </div>
-        <p class="text-body-emphasis ms-3 mb-2">${paciente.first_name ? `${paciente.first_name}` : ''} ${paciente.middle_name ? ` ${paciente.middle_name}` : ''} ${paciente.last_name ? ` ${paciente.last_name}` : ''} ${paciente.second_last_name ? ` ${paciente.second_last_name}` : ''}</p>
-        
-        <div class="d-flex align-items-center">
-          <span class="fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
-          <p class="fw-bold mb-0">Edad:</p>
-        </div>
-        <p class="text-body-emphasis ms-3 mb-2">
-  ${calculateAge(paciente.date_of_birth)} Años
-</p>
-        
-        <div class="d-flex align-items-center text-start">
-        <span class="far fa-calendar-check me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
-          <p class="mb-0 fw-bold">Fecha de Última Consulta: </p>
-        </div>
-        <p class="text-body-emphasis ms-3 mb-2 text-start">
-  ${lastClinicalRecord ? formatDate(lastClinicalRecord.created_at).split(',')[0] : "Fecha no disponible"}
-</p>
-      </div>
-
-      <!-- Botón abajo -->
-      <button class="btn btn-primary btn-icon mt-auto w-100" 
-        data-bs-toggle="modal" 
-        onclick="window.location.href='verPaciente?id=${paciente.id}'">
-        Ver Paciente
-      </button>
-      
     </div>
-  </div>
 </div>
-`;
+        `;
+                pacientesList.innerHTML += cardHtml;
+            });
+        };
 
-        pacientesList.innerHTML += cardHtml;
-      });
-    };
+        function calculateAge(dateOfBirth) {
+            const birthDate = new Date(dateOfBirth);
+            const currentDate = new Date();
+            let age = currentDate.getFullYear() - birthDate.getFullYear();
+            const monthDifference = currentDate.getMonth() - birthDate.getMonth();
 
-    function calculateAge(dateOfBirth) {
-      const birthDate = new Date(dateOfBirth);
-      const currentDate = new Date();
-      let age = currentDate.getFullYear() - birthDate.getFullYear();
-      const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+            // Si aún no ha pasado su cumpleaños este año, restamos 1
+            if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
+                age--;
+            }
 
-      // Si aún no ha pasado su cumpleaños este año, restamos 1
-      if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
-        age--;
-      }
+            return age;
+        }
 
-      return age;
-    }
+        // Función para renderizar los controles de paginación
+        const renderPagination = (pacientes) => {
+            const totalPages = Math.ceil(pacientes.length / itemsPerPage);
+            const paginationControls = document.getElementById("paginationControls");
+            paginationControls.innerHTML = ""; // Limpiar los controles anteriores
 
-    // Función para renderizar los controles de paginación
-    const renderPagination = (pacientes) => {
-      const totalPages = Math.ceil(pacientes.length / itemsPerPage);
-      const paginationControls = document.getElementById("paginationControls");
-      paginationControls.innerHTML = ""; // Limpiar los controles anteriores
+            if (totalPages > 1) {
+                const currentPage = getCurrentPage();
 
-      if (totalPages > 1) {
-        const currentPage = getCurrentPage();
-
-        let paginationHtml = `
+                let paginationHtml = `
           <ul class="pagination">
             <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
               <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage - 1}'">&laquo;</a>
             </li>`;
 
-        for (let page = 1; page <= totalPages; page++) {
-          paginationHtml += `
+                for (let page = 1; page <= totalPages; page++) {
+                    paginationHtml += `
             <li class="page-item ${page === currentPage ? 'active' : ''}">
               <a class="page-link" href="#" onclick="window.location.href='?page=${page}'">${page}</a>
             </li>`;
-        }
+                }
 
-        paginationHtml += `
+                paginationHtml += `
             <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
               <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage + 1}'">&raquo;</a>
             </li>
           </ul>`;
 
-        paginationControls.innerHTML = paginationHtml;
-      }
-    };
+                paginationControls.innerHTML = paginationHtml;
+            }
+        };
 
-    // Función para obtener la página actual desde la URL
-    const getCurrentPage = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      return parseInt(urlParams.get("page") || "1");
-    };
+        // Función para obtener la página actual desde la URL
+        const getCurrentPage = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get("page") || "1");
+        };
 
-    // Función para cambiar de página
-    const changePage = (page) => {
-      const urlParams = new URLSearchParams(window.location.search);
-      urlParams.set("page", page);
-      window.location.search = urlParams.toString();
-    };
+        // Función para cambiar de página
+        const changePage = (page) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set("page", page);
+            window.location.search = urlParams.toString();
+        };
 
-    document.getElementById("searchPaciente").addEventListener("input", filterPacientes);
-    document.getElementById("fechaRango").addEventListener("input", filterPacientes);
-    document.getElementById("statusPaciente").addEventListener("change", filterPacientes);
+        document.getElementById("searchPaciente").addEventListener("input", filterPacientes);
+        document.getElementById("fechaRango").addEventListener("input", filterPacientes);
+        document.getElementById("statusPaciente").addEventListener("change", filterPacientes);
 
-    // Inicializa el filtro con todos los pacientes al cargar
-    filterPacientes();
-  });
+        // Inicializa el filtro con todos los pacientes al cargar
+        filterPacientes();
+    });
 </script>
 
 

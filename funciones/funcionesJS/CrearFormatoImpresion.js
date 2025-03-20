@@ -113,7 +113,7 @@ async function generarFormatoConsulta(consulta_id) {
     if (valor !== null && valor !== "") {
       tieneContenido = true;
       contenido += `
-    <div class="mb-2">
+    <div class="">
       <h4 class="fw-bold text-capitalize">${clave
         .replace(/([A-Z])/g, " $1")
         .toLowerCase()}</h4>
@@ -154,16 +154,16 @@ async function generarFormatoReceta(recetaId) {
   let datosReceta = resultado.data;
 
   let contenido = `
-  <div class="container p-3 border rounded shadow-sm text-start">
+  <div class="container border rounded shadow-sm text-start">
     <h3 class="text-primary text-center">Receta Médica</h3>
-    <h4 class="text-secondary mb-3">Detalles de la receta:</h4>
+    <h4 class="text-secondary">Detalles de la receta:</h4>
 `;
 
   // Generamos el contenido en formato horizontal y agrupado
   if (datosReceta.recipe_items.length > 0) {
     datosReceta.recipe_items.forEach((item, index) => {
       contenido += `
-      <div class="mb-4">
+      <div class="mb-2">
         <h5 class="text-primary">Medicamento ${index + 1}:</h5>
         <p><strong>Nombre:</strong> ${
           item.medication
@@ -210,7 +210,6 @@ async function generarFormatoOrden(ordenId) {
   let resultado = await obtenerDatos(url);
 
   // console.log(resultado);
-  
 
   // let contenido = `
   // <div>

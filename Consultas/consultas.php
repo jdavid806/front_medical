@@ -548,41 +548,48 @@ include "./modalTerminarConsulta.php";
     }
 </style>
 
+<script>
+    const patientId = new URLSearchParams(window.location.search).get('patient_id');
+</script>
+
 <script type="module">
-    // import React from "react"
-    // import ReactDOMClient from "react-dom/client"
-    // import {
-    //     PastMedicalHistoryForm
-    // } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        PastMedicalHistoryForm
+    } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
+    import {
+        clinicalRecordService
+    } from "./services/api/index.js";
 
-    // ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
-    //     onFinishSave: () => {
-    //         //validatePastMedicalHistory();
-    //     }
-    // }));
+    ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
+        onFinishSave: () => {
+            validatePastMedicalHistory();
+        }
+    }));
 
-    // async function validatePastMedicalHistory() {
-    //     const antecedentes = await clinicalRecordService.ofParentByType(
-    //         "PAST_MEDICAL_HISTORY",
-    //         patientId
-    //     );
+    async function validatePastMedicalHistory() {
+        const antecedentes = await clinicalRecordService.ofParentByType(
+            "PAST_MEDICAL_HISTORY",
+            patientId
+        );
 
-    //     if (antecedentes.length === 0) {
-    //         const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
-    //         modal.show();
-    //         document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
-    //             const antecedentes2 = await clinicalRecordService.ofParentByType(
-    //                 "PAST_MEDICAL_HISTORY",
-    //                 patientId
-    //             );
-    //             if (antecedentes2.length === 0) {
-    //                 modal.show();
-    //             }
-    //         });
-    //     }
-    // }
+        if (antecedentes.length === 0) {
+            const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
+            modal.show();
+            document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
+                const antecedentes2 = await clinicalRecordService.ofParentByType(
+                    "PAST_MEDICAL_HISTORY",
+                    patientId
+                );
+                if (antecedentes2.length === 0) {
+                    modal.show();
+                }
+            });
+        }
+    }
 
-    //validatePastMedicalHistory()
+    validatePastMedicalHistory()
 </script>
 
 <script type="module">
@@ -623,7 +630,6 @@ include "./modalTerminarConsulta.php";
         formatDate
     } from "../../services/utilidades.js";
 
-    const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const patientPromise = patientService.get(patientId);
 
     const [patient] = await Promise.all([patientPromise]);

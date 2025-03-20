@@ -182,7 +182,7 @@ export const GenerateTicket = () => {
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Nombre del paciente *"), /*#__PURE__*/React.createElement("input", {
-    type: "tel",
+    type: "text",
     className: "form-control",
     name: "phone",
     value: formData.patient_name,

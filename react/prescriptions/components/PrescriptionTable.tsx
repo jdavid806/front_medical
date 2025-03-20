@@ -3,6 +3,10 @@ import { ConfigColumns } from 'datatables.net-bs5';
 import { PrescriptionDto, PrescriptionTableItem } from '../../models/models.js';
 import CustomDataTable from '../../components/CustomDataTable.js';
 import { TableBasicActions } from '../../components/TableBasicActions.js';
+import { PrintTableAction } from '../../components/table-actions/PrintTableAction.js';
+import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction.js';
+import { ShareTableAction } from '../../components/table-actions/ShareTableAction.js';
+import TableActionsWrapper from '../../components/table-actions/TableActionsWrapper.js';
 
 interface PrescriptionTableProps {
     prescriptions: PrescriptionDto[]
@@ -34,10 +38,28 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({ prescriptions, on
 
     const slots = {
         2: (cell, data: PrescriptionTableItem) => (
-            <TableBasicActions
-                onEdit={() => onEditItem(data.id)}
-                onDelete={() => onDeleteItem(data.id)}>
-            </TableBasicActions>
+            <>
+                <div className="text-end flex justify-cointent-end">
+                    <TableActionsWrapper>
+                        <PrintTableAction onTrigger={() => {
+                            //@ts-ignore
+                            crearDocumento(data.id, "Impresion", "Receta", "Completa", "Examen de prueba");
+                        }} />
+                        <DownloadTableAction onTrigger={() => {
+                            //@ts-ignore
+                            crearDocumento(data.id, "Descarga", "Receta", "Completa", "Examen de prueba");
+                        }} />
+                        <li>
+                            <hr className="dropdown-divider" />
+                        </li>
+                        <li className="dropdown-header">Compartir</li>
+                        <ShareTableAction shareType='whatsapp' onTrigger={() => {
+                            //@ts-ignore
+                            enviarDocumento(data.id, "Descarga", "Receta", "Completa", patient_id, UserManager.getUser().id, title)
+                        }} />
+                    </TableActionsWrapper>
+                </div>
+            </>
         )
     }
 

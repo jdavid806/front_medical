@@ -8,7 +8,7 @@ export const useUsersForSelect = () => {
       const mappedData = data.map(user => {
         return {
           value: user.id.toString(),
-          label: user.first_name + ' ' + user.last_name
+          label: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`
         };
       });
       setUsers(mappedData);

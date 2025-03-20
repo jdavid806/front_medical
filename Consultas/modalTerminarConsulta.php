@@ -329,7 +329,7 @@ include "../ConsultasJson/dataPaciente.php";
         // Agregar opciones de CIE-11
         cie11.forEach(item => {
           const option = document.createElement('option');
-          option.value = item.id;
+          option.value = item.specializable_id;
           option.text = item.description || item.specializable_id;
           select.appendChild(option);
         });
@@ -644,4 +644,25 @@ include "../ConsultasJson/dataPaciente.php";
     console.log("funcion" + formValues);
     return formValues;
   }
+
+  document.getElementById('diagnosticoPrincipal').addEventListener('change', async function() {
+    console.log(this.value);
+    let packageByCie11 = await packagesService.getPackageByCie11(this.value);
+
+    console.log("cie11: ", packageByCie11);
+
+    const mappedData = packageByCie11.data[0].package_items.filter(item => item.item_type == 'medicamento' || item.item_type == 'Vacunas').map(item => item.prescription);
+    document.getElementById("btnAgregarReceta").click();
+
+    console.log("mapped: ", mappedData);
+
+    ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
+      ref: prescriptionFormRef,
+      initialData: {
+        medicines: mappedData
+      },
+      formId: 'createPrescription',
+      handleSubmit: () => {}
+    }));
+  });
 </script>

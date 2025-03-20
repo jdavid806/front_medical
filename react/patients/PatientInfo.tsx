@@ -2,23 +2,23 @@ import React from 'react';
 import { Patient } from '../models/models';
 import { useEffect } from 'react';
 import { citiesSelect, countriesSelect, departmentsSelect } from '../../services/selects';
-import { cityService, countryService, departmentService } from '../../services/api';
+import { countryService, departmentService } from '../../services/api';
+import { genders, maritalStatus } from '../../services/commons';
 
 interface PatientInfoProps {
     patient: Patient;
 }
 
 export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
-    console.log(patient);
 
     useEffect(() => {
+
         const modalElement = document.getElementById('modalCrearPaciente');
         if (!modalElement || !patient) return;
 
         // @ts-ignore
         const modal = new bootstrap.Modal(modalElement);
         const fillForm = async () => {
-            console.log("Rellenando el formulario...", patient);
 
             const form = document.getElementById('formNuevoPaciente') as HTMLFormElement;
 
@@ -121,15 +121,15 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
                     <p><span className="fw-bold">Apellidos:</span> {patient.last_name} {patient.second_last_name}</p>
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Genero:</span> {patient.gender}</p>
+                    <p><span className="fw-bold">Genero:</span> {genders[patient.gender]}</p>
                     <p><span className="fw-bold">Fecha Nacimiento:</span> {patient.date_of_birth}</p>
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Whatsapp:</span> {patient.whatsapp}</p>
-                    <p><span className="fw-bold">Correo:</span> {patient.email}</p>
+                    <p><span className="fw-bold">Whatsapp:</span> {patient.validated_data.whatsapp}</p>
+                    <p><span className="fw-bold">Correo:</span> {patient.validated_data.email}</p>
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Estado Civil:</span> {patient.civil_status}</p>
+                    <p><span className="fw-bold">Estado Civil:</span> {maritalStatus[patient.civil_status]}</p>
                 </div>
                 <div className="col-md-6">
                     <p><span className="fw-bold">Etnia:</span> {patient.ethnicity}</p>

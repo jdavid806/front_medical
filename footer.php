@@ -903,6 +903,10 @@ M. Castro c:
 <script src="funciones/funcionesJS/eventos_mensajes/EventosCitas.js"></script>
 <script src="funciones/funcionesJS/eventos_mensajes/EventosTurnos.js"></script>
 <script src="funciones/funcionesJS/eventos_mensajes/EventosFacturas.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosHistorias.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosRecetas.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosIncapacidad.js"></script>
+<script src="funciones/funcionesJS/eventos_mensajes/EventosExamenes.js"></script>
 
 <!-- encriptar info -->
 <script src="funciones/funcionesEncrypt/encriptar.js"></script>

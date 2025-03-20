@@ -2,7 +2,7 @@ import { patientService } from "../../services/api/index.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     patientService.getAll();
-    console.log ("Estoy en pacientes");
+    
     const pacientesData = JSON.parse(document.getElementById("pacientesData").textContent);
     const itemsPerPage = 6; // Número de pacientes por página
   

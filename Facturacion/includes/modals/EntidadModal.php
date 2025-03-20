@@ -57,10 +57,6 @@
                     <div class="col-6">
                       <label class="form-label" for="entity">Entidad</label>
                       <select class="form-select" id="entity">
-                        <option selected="">Seleccione</option>
-                        <option value="1">Entidad 1</option>
-                        <option value="2">Entidad 2</option>
-                        <option value="3">Entidad 3</option>
                       </select>
                     </div>
                     <div class="col-6">
@@ -83,21 +79,13 @@
                   <h5 class="card-title">Filtrar </h5>
                   <div class="row">
                     <div class="col-6">
-                      <label class="form-label" for="procedure">Procedimiento</label>
+                      <label class="form-label" for="patients">procedimientos</label>
                       <select class="form-select" id="procedure">
-                        <!-- <option selected="">Seleccione</option>
-                        <option value="1">Procedimiento 1</option>
-                        <option value="2">Procedimiento 2</option>
-                        <option value="3">Procedimiento 3</option> -->
                       </select>
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="especialistas">Especialistas</label>
                       <select class="form-select" id="especialistas">
-                        <!-- <option selected="">Seleccione</option>
-                        <option value="1">Especialista 1</option>
-                        <option value="2">Especialista 2</option>
-                        <option value="3">Especialista 3</option> -->
                       </select>
                     </div>
                     <div class="col-6">
@@ -326,6 +314,158 @@
   }
 </style>
 
+<script type="module">
+  import {
+    entityService,
+    productService,
+    userService,
+    patientService
+  } from "../../services/api/index.js";
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("hola");
+    createSelectEntities();
+    cargarProcedimientos();
+    cargarEspecialistas();
+    cargarPacientes();
+  })
+
+  async function createSelectEntities() {
+    const entities = await entityService.getAll();
+
+    const select = document.getElementById("entity");
+    select.innerHTML = '<option selected disabled>Seleccione</option>';
+
+    if (entities.data.length) {
+
+      entities.data.forEach(entity => {
+        const option = document.createElement("option");
+        option.value = entity.id;
+        option.textContent = entity.name;
+        select.appendChild(option);
+      });
+
+    }
+    configurarSelectEntites();
+  }
+
+  function configurarSelectEntites() {
+    // Obtenemos la referencia al select
+    const select = document.getElementById('entity');
+
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(select, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  async function cargarProcedimientos() {
+    const selectProcedimientos = document.getElementById('procedure');
+    let procedimientos = await productService.getAllProducts();
+
+    procedimientos = procedimientos.data.filter(item => item.attributes.attention_type === "PROCEDURE");
+
+    selectProcedimientos.innerHTML = '<option selected disabled>Seleccione</option>';
+
+    if (procedimientos.length) {
+
+      procedimientos.forEach(procedure => {
+        const option = document.createElement("option");
+        option.value = procedure.id;
+        option.textContent = procedure.attributes.name;
+        selectProcedimientos.appendChild(option);
+      });
+
+    }
+    configurarSelectProcedimientosMultiple();
+  }
+
+  function configurarSelectProcedimientosMultiple() {
+    const procedure = document.getElementById('procedure');
+
+    procedure.setAttribute('multiple', 'multiple');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(procedure, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  async function cargarEspecialistas() {
+    const selectEspecialistas = document.getElementById('especialistas');
+    const especialistas = await userService.getAllUsers();
+
+    selectEspecialistas.innerHTML = '<option selected disabled>Seleccione</option>';
+
+    especialistas.forEach(especialista => {
+      const optionEsp = document.createElement('option');
+
+      optionEsp.value = especialista.id;
+      optionEsp.textContent = especialista.first_name + " " + especialista.last_name + " - " + especialista.specialty.name;
+
+      selectEspecialistas.appendChild(optionEsp);
+    });
+    configurarSelectEspecialistasMultiple();
+  }
+
+  async function cargarPacientes() {
+    const selectPacientes = document.getElementById('patients');
+    const pacientes = await patientService.getAll();
+
+    console.log(pacientes);
+
+    selectPacientes.innerHTML = '<option selected disabled>Seleccione</option>';
+
+    selectPacientes.appendChild(placeholderOption);
+
+    pacientes.forEach(paciente => {
+      const optionPac = document.createElement('option');
+
+      optionPac.value = paciente.id;
+      optionPac.textContent = paciente.first_name + " " + paciente.last_name;
+
+      selectPacientes.appendChild(optionPac);
+    });
+    configurarSelectPacientesMultiple();
+  }
+
+
+
+  function configurarSelectEspecialistasMultiple() {
+    const especialistas = document.getElementById('especialistas');
+
+    especialistas.setAttribute('multiple', 'multiple');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(especialistas, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  function configurarSelectPacientesMultiple() {
+    const patients = document.getElementById('patients');
+
+    patients.setAttribute('multiple', 'multiple');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(patients, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+</script>
+
 <script>
   let currentStep = 1;
 
@@ -448,119 +588,6 @@
       nombre: "Impuesto 3"
     }
   ];
-
-
-  function cargarProcedimientos() {
-    const selectProcedimientos = document.getElementById('procedure');
-
-    selectProcedimientos.innerHTML = '';
-
-    const placeholderOption = document.createElement('option');
-    placeholderOption.value = "";
-    placeholderOption.textContent = "Seleccione los procedimientos";
-    placeholderOption.disabled = true;
-    placeholderOption.selected = true;
-
-    selectProcedimientos.appendChild(placeholderOption);
-
-    procedimientos.forEach(procedimiento => {
-      const optionPro = document.createElement('option');
-
-      optionPro.value = procedimiento.id;
-
-      optionPro.textContent = procedimiento.nombre;
-
-      selectProcedimientos.appendChild(optionPro);
-    });
-  }
-
-  function cargarEspecialistas() {
-    const selectEspecialistas = document.getElementById('especialistas');
-
-    selectEspecialistas.innerHTML = '';
-
-    const placeholderOption = document.createElement('option');
-    placeholderOption.value = "";
-    placeholderOption.textContent = "Seleccione un especialista";
-    placeholderOption.disabled = true;
-    placeholderOption.selected = true;
-
-    selectEspecialistas.appendChild(placeholderOption);
-
-    especialistas.forEach(especialista => {
-      const optionEsp = document.createElement('option');
-
-      optionEsp.value = especialista.id;
-      optionEsp.textContent = especialista.nombre;
-
-      selectEspecialistas.appendChild(optionEsp);
-    });
-  }
-
-  function cargarPacientes() {
-    const selectPacientes = document.getElementById('patients');
-
-    selectPacientes.innerHTML = '';
-
-    const placeholderOption = document.createElement('option');
-    placeholderOption.value = "";
-    placeholderOption.textContent = "Seleccione un paciente";
-    placeholderOption.disabled = true;
-    placeholderOption.selected = true;
-
-    selectPacientes.appendChild(placeholderOption);
-
-    pacientes.forEach(paciente => {
-      const optionPac = document.createElement('option');
-
-      optionPac.value = paciente.id;
-      optionPac.textContent = paciente.nombre;
-
-      selectPacientes.appendChild(optionPac);
-    });
-  }
-
-  function configurarSelectProcedimientosMultiple() {
-    const procedure = document.getElementById('procedure');
-
-    procedure.setAttribute('multiple', 'multiple');
-
-    // Choices.js
-    if (typeof Choices !== 'undefined') {
-      const choices = new Choices(procedure, {
-        removeItemButton: true,
-        placeholder: true
-      });
-    }
-  }
-
-  function configurarSelectEspecialistasMultiple() {
-    const especialistas = document.getElementById('especialistas');
-
-    especialistas.setAttribute('multiple', 'multiple');
-
-    // Choices.js
-    if (typeof Choices !== 'undefined') {
-      const choices = new Choices(especialistas, {
-        removeItemButton: true,
-        placeholder: true
-      });
-    }
-  }
-
-  function configurarSelectPacientesMultiple() {
-    const patients = document.getElementById('patients');
-
-    patients.setAttribute('multiple', 'multiple');
-
-    // Choices.js
-    if (typeof Choices !== 'undefined') {
-      const choices = new Choices(patients, {
-        removeItemButton: true,
-        placeholder: true
-      });
-    }
-  }
 
   function cargarImpuestosCargo() {
     const selectImpuestosCargo = document.getElementById('taxCharge');
@@ -746,21 +773,17 @@
     });
 
     console.log('Datos capturados:', datos);
+
     return datos;
   }
   const finishStep = document.getElementById('finishStep');
   finishStep.addEventListener("click", capturarDatos);
 
   document.addEventListener("DOMContentLoaded", function() {
-    cargarProcedimientos();
-    cargarEspecialistas();
-    cargarPacientes();
     cargarImpuestosCargo();
-    configurarSelectProcedimientosMultiple();
-    configurarSelectEspecialistasMultiple();
-    configurarSelectPacientesMultiple();
   });
 </script>
+
 
 
 

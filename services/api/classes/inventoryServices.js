@@ -19,6 +19,19 @@ export class InventoryService extends BaseApiService {
       }
     );
   }
+
+  async createMedication(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/medicamentos`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   async deleteProduct(id) {
     return await this.httpClient.delete(`api/v1/admin/products/${id}`, {
       headers: {

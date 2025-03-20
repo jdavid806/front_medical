@@ -40,13 +40,15 @@ async function cargarContenido() {
             <td class="salePrice">${producto.sale_price || "N/A"}</td>
             <td class="copayment">${producto.copayment || "N/A"}</td>
             <td>
-                <button class="btn btn-primary btn-sm" onclick="editarProducto(${producto.id
-            })" 
+                <button class="btn btn-primary btn-sm" onclick="editarProducto(${
+                  producto.id
+                })" 
                 data-bs-toggle="modal" data-bs-target="#modalPrice">
                     <i class="fa-solid fa-pen"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
-            })">
+                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
+                  producto.id
+                })">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
@@ -97,7 +99,7 @@ async function updateProduct(id, productData) {
 }
 
 async function createProduct(product) {
-  let url = obtenerRutaPrincipal() + `/api/v1/admin/products/servicios`;
+  let url = obtenerRutaPrincipal() + `/api/v1/admin/product-create-entities`;
   guardarDatos(url, product);
 }
 
@@ -125,7 +127,8 @@ async function editarProducto(id) {
   const examTypeElement = document.getElementById("exam_type_id");
   const examTypeIdValue = producto.exam_type_id || "";
 
-  examTypeSection.style.display = producto.attention_type === "PROCEDURE" ? "block" : "none";
+  examTypeSection.style.display =
+    producto.attention_type === "PROCEDURE" ? "block" : "none";
 
   if (examTypeElement.choicesInstance) {
     examTypeElement.choicesInstance.setChoiceByValue(+examTypeIdValue);
@@ -151,7 +154,8 @@ async function editarProducto(id) {
 async function cargarSelectsPrecios() {
   let rutaEntidades = obtenerRutaPrincipal() + "/medical/entities";
   let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
-  let rutaRetenciones = obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
+  let rutaRetenciones =
+    obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
   let rutaExamenes = obtenerRutaPrincipal() + "/medical/exam-types";
 
   let entidades = await obtenerDatos(rutaEntidades);

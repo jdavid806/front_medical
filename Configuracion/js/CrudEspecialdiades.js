@@ -147,14 +147,23 @@ async function abrirModal(id, name) {
   let hiddenInput = document.getElementById("speciality_id");
   let hiddenName = document.getElementById("speciality_name");
 
-  console.log(id);
-
   let rutaSpecializables =
     obtenerRutaPrincipal() + "/medical/specializables/by-specialty/" + id;
 
   let dataEspecializables = await obtenerDatos(rutaSpecializables);
 
-  console.log("Specializables: ", dataEspecializables);
+  if (dataEspecializables.length) {
+    dataEspecializables.forEach((element) => {
+      agregarFilaTablaEspecialidad(
+        element.specializable_type,
+        element.specializable_id + " - " + element.description,
+        element.specialty_id,
+        element.description
+      );
+    });
+  } else {
+    rellenarElementos();
+  }
 
   if (!hiddenInput) {
     hiddenInput = document.createElement("input");

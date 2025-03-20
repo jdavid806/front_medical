@@ -1923,7 +1923,7 @@ include '../modals/NewCompanionModal.php';
         console.log(requestData);
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
-            .then(response => {
+            .then(async response => {
                 console.log(response);
                 let contenidoResumen = `
                     <div style="margin-bottom: 15px;">
@@ -1931,6 +1931,7 @@ include '../modals/NewCompanionModal.php';
                         <li>Documento #: ${response.data.invoice_code}</li>
                         </div>
                 `;
+                await sendInvoice(response.admission_data.appointment_id, response.admission_data.patient_id);
                 Swal.fire({
                     title: 'Admision creada',
                     html: contenidoResumen,

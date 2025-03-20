@@ -7,7 +7,7 @@ export const useAllTableUsers = () => {
       console.log(users);
       setUsers(users.map(user => ({
         id: user.id,
-        fullName: `${user.first_name} ${user.last_name}`,
+        fullName: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`,
         role: user.role?.name || '--',
         city: user.city_id,
         phone: user.phone,

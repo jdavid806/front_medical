@@ -387,7 +387,8 @@
                 <img class="rounded-circle " src="assets/img/team/72x72/57.webp" alt="" />
 
               </div>
-              <h6 class="mt-2 text-body-emphasis">Jerry Seinfield</h6>
+              <h6 class="mt-2 text-body-emphasis username"></h6>
+              <b class="mt-2 text-body-emphasis"><span class="user-role"></span><span class="user-specialty"></span></b>
             </div>
             <!-- <div class="mb-3 mx-3">
                       <input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" />
@@ -413,6 +414,29 @@
     </li>
   </ul>
 </nav>
+
+<script type="module">
+  import UserManager from './services/userManager.js';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    UserManager.onAuthChange((isAuthenticated, user, permissions, menus, role) => {
+
+      if (user && role) {
+        document.querySelectorAll('.username').forEach(element => {
+          element.textContent = `${user.first_name} ${user.middle_name} ${user.last_name} ${user.second_last_name}`;
+        })
+        document.querySelectorAll('.user-role').forEach(element => {
+          element.textContent = role.name;
+        })
+        document.querySelectorAll('.user-specialty').forEach(element => {
+          if (role.group == 'DOCTOR') {
+            element.textContent = ' | ' + user.specialty.name;
+          }
+        })
+      }
+    })
+  })
+</script>
 
 <script>
   const themeController = document.body;

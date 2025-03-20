@@ -65,7 +65,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
     const mappedData = data.map(item => {
       return {
         value: item.id,
-        label: item.first_name + " " + item.last_name
+        label: item.first_name + " " + item.last_name + " - " + item.id
       };
     });
     setMappedServiceUsers(mappedData);
@@ -76,7 +76,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
     const mappedData = data.map(item => {
       return {
         value: item.id,
-        label: item.name
+        label: item.name + " - " + item.id
       };
     });
     setMappedServiceUserSpecialty(mappedData);

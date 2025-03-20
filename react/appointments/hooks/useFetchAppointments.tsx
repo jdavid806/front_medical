@@ -1,12 +1,53 @@
 import { useState, useEffect } from "react";
 import { AppointmentTableItem, AppointmentDto } from "../../models/models";
+const getEstado = (appointment: AppointmentDto): string => {
+  const stateId = appointment.appointment_state_id.toString();
+  const stateKey = appointment.appointment_state?.name;
+  const attentionType = appointment.attention_type;
 
+  // Función auxiliar para simplificar las condiciones
+  const isPending = () =>
+    stateId === "1" || (stateKey === "pending" && attentionType === "PROCEDURE");
+
+  const isWaitingForConsultation = () =>
+    (stateId === "2" ||
+      stateKey === "pending_consultation" ||
+      stateKey === "in_consultation") &&
+    attentionType === "CONSULTATION";
+
+  const isWaitingForExam = () =>
+    (stateId === "2" || stateKey === "pending_consultation") &&
+    attentionType === "PROCEDURE";
+
+  const isConsultationCompleted = () =>
+    stateId === "8" ||
+    (stateKey === "consultation_completed" && attentionType === "CONSULTATION");
+
+  const isInConsultation = () =>
+    stateId === "7" ||
+    (stateKey === "in_consultation" && attentionType === "CONSULTATION");
+
+  // Usar switch-case para determinar el estado
+  switch (true) {
+    case isPending():
+      return "Pendiente";
+    case isWaitingForConsultation():
+      return "En espera de consulta";
+    case isWaitingForExam():
+      return "En espera de examen";
+    case isConsultationCompleted():
+      return "Consulta Finalizada";
+    case isInConsultation():
+      return "En Consulta";
+    default:
+      return "Desconocido"; // Estado por defecto
+  }
+};
 export const useFetchAppointments = (
   fetchPromise: Promise<AppointmentDto[]>,
   customMapper?: (dto: AppointmentDto) => AppointmentTableItem
 ) => {
   const defaultMapper = (appointment: AppointmentDto): AppointmentTableItem => {
-    console.log("citas 2", appointment);
     const doctorFirstName = appointment.user_availability.user.first_name;
     const doctorMiddleName = appointment.user_availability.user.middle_name;
     const doctorLastName = appointment.user_availability.user.last_name;
@@ -14,6 +55,8 @@ export const useFetchAppointments = (
       appointment.user_availability.user.second_last_name;
     const doctorName = `${doctorFirstName} ${doctorMiddleName} ${doctorLastName} ${doctorSecondLastName}`;
 
+    const estado = getEstado(appointment);
+    console.log("appointments", appointment);
     return {
       id: appointment.id.toString(),
       patientName: `${appointment.patient.first_name} ${appointment.patient.last_name}`,
@@ -30,8 +73,10 @@ export const useFetchAppointments = (
       stateKey: appointment.appointment_state?.name,
       attentionType: appointment.attention_type,
       productId: appointment.product_id,
+      stateDescription: estado,// Nuevo campo agregado
     };
   };
+
   const mapper = customMapper || defaultMapper;
   const [appointments, setAppointments] = useState<AppointmentTableItem[]>([]);
 
@@ -57,6 +102,8 @@ export const useFetchAppointments = (
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  // console.log('appointmentsxx', appointments);
 
   return { appointments, fetchAppointments };
 };

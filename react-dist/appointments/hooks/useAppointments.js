@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { appointmentService } from "../../../services/api/index.js";
+import { useState, useEffect } from "react";
+import { appointmentService } from "../../../services/api.js";
 export const useAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const fetchAppointments = async () => {
@@ -18,8 +18,8 @@ export const useAppointments = () => {
         date: appointment.appointment_date,
         time: appointment.appointment_time,
         doctorName,
-        entity: appointment.patient.social_security?.eps || '',
-        status: appointment.is_active ? 'Activo' : 'Inactivo'
+        entity: appointment.patient.social_security?.eps || "",
+        status: appointment.is_active ? "Activo" : "Inactivo"
       };
     }));
   };

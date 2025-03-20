@@ -60,7 +60,7 @@ async function guardarDatos(url, datos) {
 
     const resultado = await respuesta.json();
 
-    console.log(resultado);
+    // console.log(resultado);
 
     Swal.fire({
       icon: "success",
@@ -402,6 +402,13 @@ async function convertirDatosVariables(
         patient_id
       );
       break;
+    case "Historia":
+      mensaje = await reemplazarVariablesHistoria(
+        template,
+        object_id,
+        patient_id
+      );
+      break;
 
     default:
       mensaje = "No definido";
@@ -496,40 +503,45 @@ async function reemplazarVariablesTurno(template, object_id) {
 }
 
 async function reemplazarVariablesFactura(template, object_id, patient_id) {
-  console.log(template);
-  console.log(object_id);
-
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
 
   let nombrePaciente = datosPaciente.nombre;
 
-  console.log(nombrePaciente);
-  
+  let urlFactura =
+    obtenerRutaPrincipal() + `/api/v1/admin/invoices/${object_id}`;
+  const datosFactura = await obtenerDatos(urlFactura);
 
-  // let urlCita = obtenerRutaPrincipal() + `/medical/appointments/${object_id}`;
-  // const datosCita = await obtenerDatos(urlCita);
+  let fechaFactura = formatearFechaQuitarHora(datosFactura.created_at);
 
-  // let fechaCita = datosCita.appointment_date;
-  // let HoraCita = datosCita.appointment_time;
+  let montoFacturado = datosFactura.total_amount;
 
-  // let especialista = [
-  //   datosCita.user_availability.user.first_name,
-  //   datosCita.user_availability.user.middle_name,
-  //   datosCita.user_availability.user.last_name,
-  //   datosCita.user_availability.user.second_last_name,
-  // ];
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[FECHA_FACTURA\]\]/g, fechaFactura || "")
+    .replace(/\[\[MONTO_FACTURADO\]\]/g, montoFacturado || "");
+}
 
-  // let especilidad = await getSpecialtyName(
-  //   datosCita.user_availability.user.user_specialty_id
-  // );
+async function reemplazarVariablesHistoria(template, object_id, patient_id) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
 
-  // return template
-  //   .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-  //   .replace(/\[\[FECHA_CITA\]\]/g, fechaCita || "")
-  //   .replace(/\[\[HORA_CITA\]\]/g, HoraCita || "")
-  //   .replace(/\[\[ESPECIALISTA\]\]/g, unirTextos(especialista) || "")
-  //   .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
-  //   .replace(/\[\[MOTIVO_REAGENDAMIENTO\]\]/g, "Motivo Motivo" || "")
-  //   .replace(/\[\[MOTIVO_CANCELACION\]\]/g, "Motivo Cancelacion" || "");
-  return "debug";
+  let nombrePaciente = datosPaciente.nombre;
+
+  let url = obtenerRutaPrincipal() + `/medical/clinical-records/${object_id}`;
+  let datosConsulta = await obtenerDatos(url);
+
+  let datosDoctor = await consultarDatosDoctor(
+    datosConsulta.created_by_user_id
+  );
+
+  let fechaHistoria = formatearFechaQuitarHora(datosConsulta.created_at);
+
+  let especialista = datosDoctor.nombre;
+
+  let especilidad = datosDoctor.especialidad;
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[FECHA_HISTORIA\]\]/g, fechaHistoria || "")
+    .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
+    .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "");
 }

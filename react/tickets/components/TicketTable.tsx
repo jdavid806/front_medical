@@ -155,6 +155,9 @@ export const TicketTable = () => {
                 statusView: ticketStatus[status],
             } : item
         ));
+
+        // @ts-ignore
+        callShiftMessage(id)
     }
 
     const slots = {

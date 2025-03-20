@@ -2,18 +2,20 @@ import React from 'react';
 import { useEffect } from 'react';
 import { citiesSelect, countriesSelect, departmentsSelect } from "../../services/selects.js";
 import { countryService, departmentService } from "../../services/api/index.js";
+import { genders, maritalStatus } from "../../services/commons.js";
+import UserManager from "../../services/userManager.js";
 export const PatientInfo = ({
   patient
 }) => {
-  console.log(patient);
+  const [validatedPatientInfo, setValidatedPatientInfo] = React.useState(null);
   useEffect(() => {
+    validatePermissions();
     const modalElement = document.getElementById('modalCrearPaciente');
     if (!modalElement || !patient) return;
 
     // @ts-ignore
     const modal = new bootstrap.Modal(modalElement);
     const fillForm = async () => {
-      console.log("Rellenando el formulario...", patient);
       const form = document.getElementById('formNuevoPaciente');
 
       // Datos básicos
@@ -82,6 +84,24 @@ export const PatientInfo = ({
       cleanSelect('nationality');
     };
   }, [patient]);
+  const validatePermissions = () => {
+    UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
+      if (userPermissions) {
+        const permissions = userPermissions.map(permission => permission.key);
+        if (!permissions.includes('patients_view_sensitive')) {
+          setValidatedPatientInfo({
+            email: "*".repeat(8),
+            whatsapp: "*".repeat(8)
+          });
+        } else {
+          setValidatedPatientInfo({
+            email: patient.email,
+            whatsapp: patient.whatsapp
+          });
+        }
+      }
+    });
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-3 justify-content-between align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("h3", {
@@ -112,19 +132,19 @@ export const PatientInfo = ({
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Genero:"), " ", patient.gender), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
+  }, "Genero:"), " ", genders[patient.gender]), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
   }, "Fecha Nacimiento:"), " ", patient.date_of_birth)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Whatsapp:"), " ", patient.whatsapp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
+  }, "Whatsapp:"), " ", validatedPatientInfo?.whatsapp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Correo:"), " ", patient.email)), /*#__PURE__*/React.createElement("div", {
+  }, "Correo:"), " ", validatedPatientInfo?.email)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Estado Civil:"), " ", patient.civil_status)), /*#__PURE__*/React.createElement("div", {
+  }, "Estado Civil:"), " ", maritalStatus[patient.civil_status])), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"

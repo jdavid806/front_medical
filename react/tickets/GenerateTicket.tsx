@@ -197,7 +197,7 @@ export const GenerateTicket = () => {
                                 <div className="mb-3">
                                     <label className="form-label">Nombre del paciente *</label>
                                     <input
-                                        type="tel"
+                                        type="text"
                                         className="form-control"
                                         name="phone"
                                         value={formData.patient_name}

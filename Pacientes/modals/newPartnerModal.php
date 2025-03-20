@@ -1,5 +1,6 @@
 <?php
 $documentType = array("DNI", "RUC", "CEDULA", "PASAPORTE", "OTRO");
+$relations = array("Padre", "Madre", "Hermano", "Hermana", "Tio", "Tia", "Abuelo", "Abuela", "Primo", "Prima", "Amigo", "Amiga", "Otro");
 ?>
 
 <div class="modal fade" id="newPartnerModal" tabindex="-1" aria-hidden="true">
@@ -41,7 +42,7 @@ $documentType = array("DNI", "RUC", "CEDULA", "PASAPORTE", "OTRO");
                         <select class="form-select" id="relationSelect" aria-label="Default select example">
                             <option selected="">Seleccionar</option>
                             <?php foreach ($relations as $key => $value) { ?>
-                                <option value="<?= $key ?>"><?= $value ?></option>
+                                <option value="<?= $value ?>"><?= $value ?></option>
                             <?php } ?>
                         </select>
                     </div>
@@ -90,9 +91,6 @@ $documentType = array("DNI", "RUC", "CEDULA", "PASAPORTE", "OTRO");
         <td class="align-middle">${idNumber}</td>
         <td class="align-middle">${whatsapp}</td>
         <td class="align-middle text-end">
-            <button class="btn btn-success btn-sm me-1 mb-1" type="button" data-bs-toggle="modal" data-bs-target="#editPartnerModal">
-                <i class="fa-solid fa-pencil"></i>
-            </button>
             <button class="btn btn-danger btn-sm me-1 mb-1" type="button" onclick="deleteRow(this)">
                 <i class="fa-solid fa-trash"></i>
             </button>

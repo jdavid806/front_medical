@@ -236,3 +236,6 @@ RewriteRule ^historialConsultasEspecialidad$  Consultas/historialConsultasEspeci
 RewriteRule ^detalleConsulta$  Consultas/detalleConsulta.php
 
 RewriteRule ^plantillasMensajes$  Marketing/plantillasMensajes.php
+RewriteRule ^configMensajes$  Marketing/configMensajes.php
+
+RewriteRule ^controlCaja$ ControlCaja/controlCajaForm.php

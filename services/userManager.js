@@ -4,6 +4,7 @@ const UserManager = (() => {
     let userData = null;
     let permissions = null;
     let menus = null;
+    let role = null;
     let authListeners = [];
 
     const decodeToken = (token) => {
@@ -28,10 +29,12 @@ const UserManager = (() => {
         try {
             const decoded = decodeToken(token);
             const data = await userService.getByExternalId(decoded.sub);
-            const { role, ...rest } = data;
+            const { role: roleData, ...rest } = data;
+
             userData = rest;
-            permissions = role.permissions;
-            menus = role.menus;
+            permissions = roleData.permissions;
+            menus = roleData.menus;
+            role = roleData;
             localStorage.setItem('userData', JSON.stringify(data));
             notifyAuthChange(true);
             return data;
@@ -43,7 +46,7 @@ const UserManager = (() => {
     };
 
     const notifyAuthChange = (isAuthenticated) => {
-        authListeners.forEach(callback => callback(isAuthenticated, userData, permissions, menus));
+        authListeners.forEach(callback => callback(isAuthenticated, userData, permissions, menus, role));
     };
 
     return {
@@ -73,7 +76,7 @@ const UserManager = (() => {
 
         onAuthChange: (callback) => {
             authListeners.push(callback);
-            callback(!!userData, userData);
+            callback(!!userData, userData, permissions, menus, role);
         }
     };
 })();

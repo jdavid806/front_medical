@@ -3,6 +3,9 @@ import CustomDataTable from "../../components/CustomDataTable.js";
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { examOrderStateColors, examOrderStates } from "../../../services/commons.js";
+import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
+import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
+import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
 export const ExamTable = ({
   exams,
   onLoadExamResults
@@ -57,7 +60,27 @@ export const ExamTable = ({
       style: {
         width: '20px'
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Cargar resultados")))))))
+    }), /*#__PURE__*/React.createElement("span", null, "Cargar resultados")))), /*#__PURE__*/React.createElement(PrintTableAction, {
+      onTrigger: () => {
+        //@ts-ignore
+        crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+      }
+    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
+      onTrigger: () => {
+        //@ts-ignore
+        crearDocumento(id, "Impresion", "Examen", "Completa", "Examen de prueba");
+      }
+    }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
+      className: "dropdown-divider"
+    })), /*#__PURE__*/React.createElement("li", {
+      className: "dropdown-header"
+    }, "Compartir"), /*#__PURE__*/React.createElement(ShareTableAction, {
+      shareType: "whatsapp",
+      onTrigger: () => {
+        //@ts-ignore
+        enviarDocumento(id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title);
+      }
+    }))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"

@@ -22,118 +22,120 @@ export interface RemissionsFormProps {
   ref?: React.RefObject<any>;
 }
 
-export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(({ }, ref) => {
-  const [note, setNote] = useState("");
-  const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] =
-    useState([]);
-  const [selectedService, setSelectedService] = useState<any>([]);
-  const [selectedUser, setSelectedUser] = useState<any>([]);
-  const [mappedServiceUsers, setMappedServiceUsers] = useState([]);
-  const [checked, setChecked] = useState<boolean>(false);
-  const [mappedServiceUserSpecialty, setMappedServiceUserSpecialty] = useState(
-    []
-  );
-  const [selectedUserSpecialty, setSelectedUserSpecialty] = useState<any>([]);
+export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
+  ({}, ref) => {
+    const [note, setNote] = useState("");
+    const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] =
+      useState([]);
+    const [selectedService, setSelectedService] = useState<any>([]);
+    const [selectedUser, setSelectedUser] = useState<any>([]);
+    const [mappedServiceUsers, setMappedServiceUsers] = useState([]);
+    const [checked, setChecked] = useState<boolean>(false);
+    const [mappedServiceUserSpecialty, setMappedServiceUserSpecialty] =
+      useState([]);
+    const [selectedUserSpecialty, setSelectedUserSpecialty] = useState<any>([]);
 
-  useEffect(() => {
-    fetchClinicalRecords();
-    fetchDoctors();
-    fetchUserSpecialties();
-  }, []);
+    useEffect(() => {
+      fetchClinicalRecords();
+      fetchDoctors();
+      fetchUserSpecialties();
+    }, []);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const newremission: Remission = {
-      receiver_user_id: !checked ? selectedUser : null,
-      remitter_user_id: 1,
-      clinical_record_id: selectedService,
-      receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
-      note: note,
-    };
-    console.log(newremission, checked);
-    remissionService
-      .createRemission(newremission, newremission.clinical_record_id)
-      .then((response) => {
-        console.log("saved:", response);
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  useImperativeHandle(ref, () => ({
-    getFormData: () => {
-      return {
+    const handleSubmit = (event: React.FormEvent) => {
+      event.preventDefault();
+      const newremission: Remission = {
         receiver_user_id: !checked ? selectedUser : null,
         remitter_user_id: 1,
-        //clinical_record_id: selectedService,
+        clinical_record_id: selectedService,
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
-        note: note
-      }
-    }
-  }));
-
-  const fetchClinicalRecords = async () => {
-    const url: any = new URLSearchParams(window.location.search).get(
-      "patient_id"
-    );
-
-    const data = await clinicalRecordService.ofParent(url);
-    console.log(data);
-    const mappedData = data.map((item: any) => {
-      return {
-        value: item.id,
-        label:
-          item.clinical_record_type.name + " - " + formatDate(item.created_at),
+        note: note,
       };
-    });
+      console.log(newremission, checked);
+      remissionService
+        .createRemission(newremission, newremission.clinical_record_id)
+        .then((response) => {
+          console.log("saved:", response);
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    };
 
-    setMappedServiceClinicalRecord(mappedData);
-  };
+    useImperativeHandle(ref, () => ({
+      getFormData: () => {
+        return {
+          receiver_user_id: !checked ? selectedUser : null,
+          remitter_user_id: 1,
+          //clinical_record_id: selectedService,
+          receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
+          note: note,
+        };
+      },
+    }));
 
-  const fetchDoctors = async () => {
-    const data = await userService.getAll();
-    console.log(data);
-    const mappedData = data.map((item: any) => {
-      return {
-        value: item.id,
-        label: item.first_name + " " + item.last_name,
-      };
-    });
+    const fetchClinicalRecords = async () => {
+      const url: any = new URLSearchParams(window.location.search).get(
+        "patient_id"
+      );
 
-    setMappedServiceUsers(mappedData);
-  };
+      const data = await clinicalRecordService.ofParent(url);
+      console.log(data);
+      const mappedData = data.map((item: any) => {
+        return {
+          value: item.id,
+          label:
+            item.clinical_record_type.name +
+            " - " +
+            formatDate(item.created_at),
+        };
+      });
 
-  const fetchUserSpecialties = async () => {
-    const data = await userSpecialtyService.getAllItems();
-    console.log(data);
-    const mappedData = data.map((item: any) => {
-      return {
-        value: item.id,
-        label: item.name,
-      };
-    });
+      setMappedServiceClinicalRecord(mappedData);
+    };
 
-    setMappedServiceUserSpecialty(mappedData);
-  };
+    const fetchDoctors = async () => {
+      const data = await userService.getAll();
+      console.log(data);
+      const mappedData = data.map((item: any) => {
+        return {
+          value: item.id,
+          label: item.first_name + " " + item.last_name + " - " + item.id,
+        };
+      });
 
-  const formatDate = (isoDate) => {
-    if (!isoDate) return "";
-    return new Date(isoDate).toISOString().split("T")[0];
-  };
+      setMappedServiceUsers(mappedData);
+    };
 
-  return (
-    <PrimeReactProvider
-      value={{
-        appendTo: "self",
-        zIndex: {
-          overlay: 100000,
-        },
-      }}
-    >
-      <form onSubmit={handleSubmit}>
-        {/* {mappedServiceClinicalRecord.length > 0 && (
+    const fetchUserSpecialties = async () => {
+      const data = await userSpecialtyService.getAllItems();
+      console.log(data);
+      const mappedData = data.map((item: any) => {
+        return {
+          value: item.id,
+          label: item.name + " - " + item.id,
+        };
+      });
+
+      setMappedServiceUserSpecialty(mappedData);
+    };
+
+    const formatDate = (isoDate) => {
+      if (!isoDate) return "";
+      return new Date(isoDate).toISOString().split("T")[0];
+    };
+
+    return (
+      <PrimeReactProvider
+        value={{
+          appendTo: "self",
+          zIndex: {
+            overlay: 100000,
+          },
+        }}
+      >
+        <form onSubmit={handleSubmit}>
+          {/* {mappedServiceClinicalRecord.length > 0 && (
           <div className="form-group">
             <label htmlFor="clinicalRecords" className="form-label">
               Historias
@@ -157,66 +159,69 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(({ }, re
             />
           </div>
         )} */}
-        {!checked && (
-          <div className="form-group">
-            <label htmlFor="user" className="form-label">
-              Doctores
+          {!checked && (
+            <div className="form-group">
+              <label htmlFor="user" className="form-label">
+                Doctores
+              </label>
+              <Dropdown
+                inputId="user"
+                value={selectedUser}
+                onChange={(e: DropdownChangeEvent) => setSelectedUser(e.value)}
+                options={mappedServiceUsers}
+                optionLabel="label"
+                optionValue="value"
+                filter
+                className="w-100"
+                appendTo="self"
+              />
+            </div>
+          )}
+          {checked && (
+            <div className="form-group">
+              <label htmlFor="userSpecialty" className="form-label">
+                Especialista
+              </label>
+              <Dropdown
+                inputId="userSpecialty"
+                value={selectedUserSpecialty}
+                onChange={(e: DropdownChangeEvent) =>
+                  setSelectedUserSpecialty(e.value)
+                }
+                options={mappedServiceUserSpecialty}
+                optionLabel="label"
+                optionValue="value"
+                filter
+                className="w-100"
+                appendTo="self"
+              />
+            </div>
+          )}
+          <div className="m-3 d-flex align-items-center gap-2">
+            <Checkbox
+              onChange={(e: any) => setChecked(e.checked)}
+              checked={checked}
+            ></Checkbox>
+            <label
+              className="form-check-label"
+              htmlFor="seleccionarEspecialista"
+            >
+              Desea remitir a un especialista?
             </label>
-            <Dropdown
-              inputId="user"
-              value={selectedUser}
-              onChange={(e: DropdownChangeEvent) => setSelectedUser(e.value)}
-              options={mappedServiceUsers}
-              optionLabel="label"
-              optionValue="value"
-              filter
-              className="w-100"
-              appendTo="self"
-            />
           </div>
-        )}
-        {checked && (
           <div className="form-group">
-            <label htmlFor="userSpecialty" className="form-label">
-              Especialista
+            <label htmlFor="note" className="form-label">
+              Nota
             </label>
-            <Dropdown
-              inputId="userSpecialty"
-              value={selectedUserSpecialty}
-              onChange={(e: DropdownChangeEvent) =>
-                setSelectedUserSpecialty(e.value)
-              }
-              options={mappedServiceUserSpecialty}
-              optionLabel="label"
-              optionValue="value"
-              filter
-              className="w-100"
-              appendTo="self"
-            />
+            <textarea
+              id="note"
+              className="form-control"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              required
+            ></textarea>
           </div>
-        )}
-        <div className="m-3 d-flex align-items-center gap-2">
-          <Checkbox
-            onChange={(e: any) => setChecked(e.checked)}
-            checked={checked}
-          ></Checkbox>
-          <label className="form-check-label" htmlFor="seleccionarEspecialista">
-            Desea remitir a un especialista?
-          </label>
-        </div>
-        <div className="form-group">
-          <label htmlFor="note" className="form-label">
-            Nota
-          </label>
-          <textarea
-            id="note"
-            className="form-control"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            required
-          ></textarea>
-        </div>
-        {/* <div className="d-flex justify-content-end mt-3">
+          {/* <div className="d-flex justify-content-end mt-3">
           <button
             onClick={handleSubmit}
             className="btn btn-outline-info"
@@ -225,7 +230,8 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(({ }, re
             Guardar Remisión
           </button>
         </div> */}
-      </form>
-    </PrimeReactProvider>
-  );
-});
+        </form>
+      </PrimeReactProvider>
+    );
+  }
+);

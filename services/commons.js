@@ -149,3 +149,21 @@ export const appointmentTypes = [
         "name": "Domiciliaria"
     }
 ]
+
+export const maritalStatus = {
+    "SINGLE": "Soltero",
+    "MARRIED": "Casado",
+    "DIVORCED": "Divorciado",
+    "WIDOWED": "Viudo"
+}
+
+export const bloodType = {
+    "O_POSITIVE": "O Positivo",
+    "O_NEGATIVE": "O Negativo",
+    "A_POSITIVE": "A Positivo",
+    "A_NEGATIVE": "A Negativo",
+    "B_POSITIVE": "B Positivo",
+    "B_NEGATIVE": "B Negativo",
+    "AB_POSITIVE": "AB Positivo",
+    "AB_NEGATIVE": "AB Negativo"
+}

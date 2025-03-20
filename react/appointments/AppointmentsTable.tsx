@@ -46,17 +46,16 @@ export const AppointmentsTable: React.FC = () => {
   });
 
   useEffect(() => {
-    let filtered = [...appointments];
-    console.log("appointments", { ...appointments });
-    // Filtro por estado
+    let filtered: AppointmentTableItem[] = [];
+
+    filtered = [...appointments]
+
     if (selectedBranch) {
       filtered = filtered?.filter(
         (appointment) => appointment.stateKey === selectedBranch
       );
-      console.log("selectedBranch", selectedBranch);
     }
 
-    // Filtro por rango de fechas
     if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
       const startDate = new Date(
         Date.UTC(
@@ -84,7 +83,6 @@ export const AppointmentsTable: React.FC = () => {
       });
     }
 
-    // Ordenar por fecha de consulta
     filtered.sort((a, b) => {
       return b.date.localeCompare(a.date);
     });
@@ -105,7 +103,7 @@ export const AppointmentsTable: React.FC = () => {
 
   //objecto de filtrado 
   const appointmentStatesByKey = {
-    'Pendiente': 'Pendiente',
+    'pending': 'Pendiente',
     'pending_consultation': 'En espera de consulta',
     'pending_consultation.PROCEDURE': 'En espera de examen',
     'in_consultation': 'En consulta',

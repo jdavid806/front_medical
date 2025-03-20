@@ -33,7 +33,7 @@ $tabs = [
   ['icono' => 'wheelchair', 'titulo' => 'Incapacidades clínicas', 'texto' => 'Consulta todas las incapacidades clínicas para este paciente', 'url' => 'verIncapacidades?patient_id=' . $_GET['id']],
   ['icono' => 'hospital', 'titulo' => 'Antecedentes personales', 'texto' => 'Revisa todos los antecedentes personales registrados para este paciente', 'url' => 'verAntecedentes?patient_id=' . $_GET['id']],
   ['icono' => 'book-medical', 'titulo' => 'Consentimientos', 'texto' => 'Genera y revisa todos los consentimientos y certificados registrados para este paciente', 'url' => 'verConcentimientos?patient_id=' . $_GET['id']],
-  ['icono' => 'file-invoice-dollar', 'titulo' => 'Presupuestos', 'texto' => 'Genera y revisa todos los presupuestos elaborados para este paciente', 'url' => 'registros-presupuestos?patient_id=' . $_GET['id']],
+  // ['icono' => 'file-invoice-dollar', 'titulo' => 'Presupuestos', 'texto' => 'Genera y revisa todos los presupuestos elaborados para este paciente', 'url' => 'registros-presupuestos?patient_id=' . $_GET['id']],
   // ['icono' => 'syringe', 'titulo' => 'Esquema de vacunación', 'texto' => 'Revisa el esquema de vacunación o genera un nuevo esquema', 'url' => 'esquemaVacunacion?patient_id=' . $_GET['id']],
   //['icono' => 'book-medical', 'titulo' => 'Exámenes de laboratorio', 'texto' => 'Revisa los exámenes de laboratorio', 'url' => 'laboratorio'],
   ['icono' => 'fas fa-user-nurse', 'titulo' => 'Notas de Enfermeria', 'texto' => 'Revisa las notas de enfermeria del paciente', 'url' => 'enfermeria?patient_id=' . $_GET['id']],

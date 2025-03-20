@@ -63,12 +63,12 @@
             <i class="fa-solid fa-envelopes-bulk"></i> Comunicaciones
           </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <!-- <li class="nav-item" role="presentation">
           <button class="nav-link" id="sedes-tab" data-bs-toggle="tab" data-bs-target="#sedes-tab-pane" type="button"
             role="tab" aria-controls="sedes-tab-pane" aria-selected="false">
             <i class="fa-solid fa-location-dot"></i> Sedes
           </button>
-        </li>
+        </li> -->
       </ul>
 
       <!-- Contenido de los tabs -->

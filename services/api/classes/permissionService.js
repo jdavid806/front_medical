@@ -11,6 +11,7 @@ export class PermissionService extends BaseApiService {
                     { name: 'Crear pacientes', key_: 'patients_create' },
                     { name: 'Editar pacientes', key_: 'patients_edit' },
                     { name: 'Eliminar pacientes', key_: 'patients_delete' },
+                    { name: 'Ver información sensible de pacientes', key_: 'patients_view_sensitive' },
                 ]
             },
             {

@@ -6,12 +6,13 @@ let formValues = {};
 document.addEventListener("DOMContentLoaded", async function () {
   const params = new URLSearchParams(window.location.search);
   const jsonPath = `../../ConsultasJson/${params.get("tipo_historia")}.json`;
+  const dataHistoryPreaddmission = await historyPreadmission();
+  console.log(dataHistoryPreaddmission);
   // const timerElement = document.getElementById('timer');
   // const finishBtn = document.getElementById('finishBtn');
   // const modalTimer = document.getElementById('modalTimer');
   // let startTime = new Date();
 
-  console.log("Cargado", jsonPath);
   try {
     const response = await fetch(jsonPath);
     const formData = await response.json();
@@ -48,6 +49,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const pesoInput = document.getElementById("peso");
   const alturaInput = document.getElementById("altura");
+  pesoInput.value = dataHistoryPreaddmission.weight;
+  alturaInput.value = dataHistoryPreaddmission.size;
 
   if (pesoInput && alturaInput) {
     pesoInput.addEventListener("input", actualizarIMC);
@@ -56,15 +59,28 @@ document.addEventListener("DOMContentLoaded", async function () {
     actualizarIMC();
   }
   const sistolicaInput = document.getElementById("presionArterialSistolica");
-    const diastolicaInput = document.getElementById("presionArterialDiastolica");
-    
-    if (sistolicaInput && diastolicaInput) {
-      sistolicaInput.addEventListener("input", actualizarTensionArterialMedia);
-      diastolicaInput.addEventListener("input", actualizarTensionArterialMedia);
-      
-      actualizarTensionArterialMedia();
-    }
+  const diastolicaInput = document.getElementById("presionArterialDiastolica");
+
+  if (sistolicaInput && diastolicaInput) {
+    sistolicaInput.addEventListener("input", actualizarTensionArterialMedia);
+    diastolicaInput.addEventListener("input", actualizarTensionArterialMedia);
+
+    actualizarTensionArterialMedia();
+  }
 });
+
+async function historyPreadmission() {
+  const params = new URLSearchParams(window.location.search);
+  let historyPreadmissionHttp =
+    obtenerRutaPrincipal() +
+    "/medical/history-preadmissions/last-history/" +
+    params.get("patient_id") +
+    "/1";
+
+  let historyPreadmission = await obtenerDatos(historyPreadmissionHttp);
+
+  return historyPreadmission;
+}
 
 function createSelect(field) {
   const div = document.createElement("div");
@@ -230,8 +246,6 @@ function createDropzone(field) {
     init: function () {
       // Manejar la eliminación de archivos
       this.on("removedfile", function (file) {
-        console.log("Archivo eliminado:", file.name);
-
         // Lógica opcional para eliminar del servidor
         if (file.serverFileName) {
           fetch("/delete-file", {
@@ -242,9 +256,7 @@ function createDropzone(field) {
             body: JSON.stringify({ filename: file.serverFileName }),
           })
             .then((response) => response.json())
-            .then((data) => {
-              console.log("Archivo eliminado del servidor:", data);
-            })
+            .then((data) => {})
             .catch((error) => {
               console.error("Error al eliminar el archivo:", error);
             });
@@ -916,7 +928,6 @@ function captureFormValues(formData) {
       }
     });
   });
-  console.log("funcion" + formValues);
   return formValues;
 }
 
@@ -948,30 +959,40 @@ function actualizarIMC() {
   }
 }
 
+function calcularGrasaCorporal(edad, sexo, imc) {
+  let factorSexo = sexo.toLowerCase() === "hombre" ? 1 : 0;
+  // Calcular el porcentaje de grasa corporal
+  let grasaCorporal = 1.2 * imc + 0.23 * edad - 10.8 * factorSexo - 5.4;
+
+  // Redondear a dos decimales
+  return grasaCorporal.toFixed(2) + "%";
+}
+
 function calcularTensionArterialMedia(sistolica, diastolica) {
-    const tam = ((2 * diastolica) + sistolica) / 3;
-    
-    return Math.round(tam * 100) / 100;
-  }
-  
-  function actualizarTensionArterialMedia() {
-    const sistolicaInput = document.getElementById("presionArterialSistolica");
-    const diastolicaInput = document.getElementById("presionArterialDiastolica");
-    const tamInput = document.getElementById("tensionArterialMedia");
-    
-    if (sistolicaInput && diastolicaInput && tamInput) {
-      const sistolica = parseFloat(sistolicaInput.value);
-      const diastolica = parseFloat(diastolicaInput.value);
-      
-      if (!isNaN(sistolica) && !isNaN(diastolica) && sistolica > 0 && diastolica > 0) {
-        const tam = calcularTensionArterialMedia(sistolica, diastolica);
-        tamInput.value = tam;
-      } else {
-        tamInput.value = "";
-      }
+  const tam = (2 * diastolica + sistolica) / 3;
+
+  return Math.round(tam * 100) / 100;
+}
+
+function actualizarTensionArterialMedia() {
+  const sistolicaInput = document.getElementById("presionArterialSistolica");
+  const diastolicaInput = document.getElementById("presionArterialDiastolica");
+  const tamInput = document.getElementById("tensionArterialMedia");
+
+  if (sistolicaInput && diastolicaInput && tamInput) {
+    const sistolica = parseFloat(sistolicaInput.value);
+    const diastolica = parseFloat(diastolicaInput.value);
+
+    if (
+      !isNaN(sistolica) &&
+      !isNaN(diastolica) &&
+      sistolica > 0 &&
+      diastolica > 0
+    ) {
+      const tam = calcularTensionArterialMedia(sistolica, diastolica);
+      tamInput.value = tam;
+    } else {
+      tamInput.value = "";
     }
   }
-
-  
-  
- 
+}

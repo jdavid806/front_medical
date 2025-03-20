@@ -155,23 +155,18 @@ include "./modalPacientes.php";
     import {
         formatDate
     } from "../../services/utilidades.js";
+    import {
+        bloodType
+    } from "../../services/commons.js";
+
+    const patientId = new URLSearchParams(window.location.search).get("id") || new URLSearchParams(window.location.search).get("patient_id");
 
     document.addEventListener("DOMContentLoaded", async () => {
         try {
-            // Obtener todos los pacientes
-            const pacientesData = await patientService.getAll();
-            console.log("Todos los pacientes:", pacientesData);
-
-            const id = new URLSearchParams(window.location.search).get("id") || new URLSearchParams(window.location.search).get("patient_id");
-            console.log(id);
-
-
             if (id) {
                 // Filtrar el paciente por ID
-                const paciente = filterPatientById(pacientesData, id);
-                console.log("Paciente encontrado:", paciente);
+                const paciente = await patientService.get(patientId);
 
-                // Si encuentras al paciente, puedes mostrar los datos en la página
                 displayPatientData(paciente);
             }
 
@@ -191,12 +186,10 @@ include "./modalPacientes.php";
             return;
         }
 
-        console.log(paciente);
-
         document.getElementById("id").textContent = paciente.document_number;
         document.getElementById("name").textContent = `${paciente.first_name} ${paciente.last_name}`;
-        document.getElementById("phone").textContent = paciente.whatsapp || "No disponible"; // Si tienes el campo de teléfono
-        document.getElementById("email").textContent = paciente.email || "No disponible";
+        document.getElementById("phone").textContent = paciente.validated_data?.whatsapp || "No disponible"; // Si tienes el campo de teléfono
+        document.getElementById("email").textContent = paciente.validated_data?.email || "No disponible";
         document.getElementById("allergies").textContent = paciente.has_allergies ? paciente.allergies || "No especificado" : "No tiene alergias";
         document.getElementById("chronic-diseases").textContent = paciente.has_special_condition ? paciente.special_condition || "No especificado" : "No tiene enfermedades crónicas";
 
@@ -213,7 +206,7 @@ include "./modalPacientes.php";
         document.getElementById("last-visit").textContent = lastClinicalRecord ? formatDate(lastClinicalRecord.created_at) : "Fecha no disponible";
         document.getElementById("last-visit-reason").textContent = lastClinicalRecord && lastClinicalRecord.description ? lastClinicalRecord.description : "No especificado";
 
-        document.getElementById("rh").textContent = paciente.blood_type || "No especificado";
+        document.getElementById("rh").textContent = bloodType[paciente.blood_type] || "No especificado";
 
         const nameBreadcumb = document.getElementById("nameBradcumb");
 

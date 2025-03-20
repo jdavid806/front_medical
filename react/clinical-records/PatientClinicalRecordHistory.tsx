@@ -33,9 +33,13 @@ export const PatientClinicalRecordHistory: React.FC<PatientClinicalRecordHistory
 
     useEffect(() => {
         if (specializables) {
-            const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && record.specializable_type === 'Historia Clínica').map(record => record.specializable_id.toString());
+            UserManager.onAuthChange((isAuthenticated, user, permissions, menus, role) => {
+                if (role) {
+                    const specialtyClinicalRecordIds = specializables.filter(record => record.specialty_id === specialtyId && record.specializable_type === 'Historia Clínica').map(record => record.specializable_id.toString());
 
-            setTableClinicalRecords(clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString())));
+                    setTableClinicalRecords(clinicalRecords.filter(record => specialtyClinicalRecordIds.includes(record.clinical_record_type_id.toString()) || role.group == 'ADMIN'));
+                }
+            })
         }
     }, [specializables, clinicalRecords]);
 
