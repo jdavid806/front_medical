@@ -44,7 +44,7 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -166,6 +166,19 @@
                 "label": "Temperatura Corporal [°C]",
                 "type": "number",
                 "name": "temperatura"
+              }
+            ]
+          }
+        ],
+        "card5":[
+          {
+            "title": "",
+            "fields":[
+              {
+                "id": "glucemia",
+                "label": "Glucemia",
+                "type": "number",
+                "name": "glucemia"
               }
             ]
           }

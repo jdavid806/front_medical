@@ -100,20 +100,22 @@ $examenes = [
     })
 
     const examOrder = examOrders.find(e => {
+        console.log(e, e.created_at.slice(0, 10), new Date().toISOString().slice(0, 10));
+
         return e.patient_id == patientId &&
             e.exam_type_id == product.exam_type_id &&
-            examOrderStates.find(es => es.name == 'generated').id == e.exam_order_state_id &&
-            e.created_at.slice(0, 10) >= new Date().toISOString().slice(0, 10)
+            examOrderStates.find(es => es.name.toLowerCase() == 'generated').id == e.exam_order_state_id &&
+            e.created_at.slice(0, 10) == new Date().toISOString().slice(0, 10)
     });
 
-    if (!examOrder) {
-        AlertManager.error({
-            text: 'No hay exámenes disponibles para este paciente'
-        })
-        setTimeout(() => {
-            history.back()
-        }, 1000);
-    }
+    // if (!examOrder) {
+    //     AlertManager.error({
+    //         text: 'No hay exámenes disponibles para este paciente'
+    //     })
+    //     setTimeout(() => {
+    //         history.back()
+    //     }, 1000);
+    // }
 
     document.getElementById('productName').textContent = product.name
 

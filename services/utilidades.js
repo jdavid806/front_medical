@@ -129,7 +129,7 @@ export const objectToArray = (obj) => {
 };
 
 export const getJWTPayload = () => {
-  const token = localStorage.getItem("auth_token");
+  const token = sessionStorage.getItem("auth_token");
 
   if (token) {
     const payloadBase64 = token.split(".")[1];

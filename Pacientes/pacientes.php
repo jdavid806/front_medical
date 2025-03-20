@@ -217,7 +217,7 @@ include "../header.php";
 
     document.addEventListener("DOMContentLoaded", async () => {
 
-        let pacientesData = await patientService.getAll();
+        let pacientesData = await patientService.getByUser();
         const appointmentStates = await appointmentStateService.getAll();
 
         function procesarPacientes(pacientes) {
@@ -271,7 +271,6 @@ include "../header.php";
 
         pacientesData = procesarPacientes(pacientesData);
 
-        console.log('PACIENTES', pacientesData);
 
 
         var pusher = new Pusher('5e57937071269859a439', {
@@ -292,7 +291,6 @@ include "../header.php";
         });
 
         channel.bind('appointment.state.updated', function(data) {
-            console.log(data, pacientesData);
 
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
@@ -355,8 +353,6 @@ include "../header.php";
                 // }
                 // Filtro por status
 
-                console.log(status, paciente.estado);
-
 
                 if (status && paciente.estado != status) {
                     isMatch = false;
@@ -372,8 +368,6 @@ include "../header.php";
         // Función para renderizar las tarjetas de pacientes
         const renderPacientes = (pacientes) => {
             const pacientesReestructurados = reestructurarPacientes(pacientes);
-
-            console.log('Pacientes reestructurados', pacientesReestructurados);
 
 
             const pacientesList = document.getElementById("pacientesList");

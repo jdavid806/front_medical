@@ -183,7 +183,8 @@ export const AppointmentsTable: React.FC = () => {
                 </li>
               )}
             {(data.stateId === "2" ||
-              data.stateKey === "pending_consultation") &&
+              data.stateKey === "pending_consultation" ||
+              data.stateKey === "in_consultation") &&
               data.attentionType === "PROCEDURE" && (
                 <>
                   <li>

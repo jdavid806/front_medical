@@ -85,8 +85,7 @@
                 "id": "porcentajeGrasaCorporal",
                 "label": "Porcentaje de Grasa Corporal [%]",
                 "type": "number",
-                "name": "porcentajeGrasaCorporal",
-                "readonly": true
+                "name": "porcentajeGrasaCorporal"
               }
             ]
           }

@@ -44,27 +44,13 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
                 "label": "",
                 "type": "textarea",
                 "name": "manejoSintoma"
-              }
-            ]
-          }
-        ],
-        "card5": [
-          {
-            "title": "Resumen IA",
-            "class": "col-12",
-            "fields": [
-              {
-                "id": "resuemnIA",
-                "label": "",
-                "type": "textarea",
-                "name": "resuemnIA"
               }
             ]
           }
@@ -92,7 +78,8 @@
                 "id": "imc",
                 "label": "Índice de Masa Corporal (IMC)",
                 "type": "number",
-                "name": "imc"
+                "name": "imc",
+                "readonly": true
               },
               {
                 "id": "porcentajeGrasaCorporal",
@@ -114,16 +101,16 @@
                 "name": "presionArterialDiastolica"
               },
               {
-                "id": "tensionArterialMedia",
-                "label": "Tensión Arterial Media [mmHg]",
-                "type": "number",
-                "name": "tensionArterialMedia"
-              },
-              {
                 "id": "presionArterialSistolica",
                 "label": "Presión Arterial Sistólica [mmHg]",
                 "type": "number",
                 "name": "presionArterialSistolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
               },
               {
                 "id": "saturacion",
@@ -180,6 +167,19 @@
                 "label": "Temperatura Corporal [°C]",
                 "type": "number",
                 "name": "temperatura"
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "glucemia",
+                "label": "Glucemia",
+                "type": "number",
+                "name": "glucemia"
               }
             ]
           }

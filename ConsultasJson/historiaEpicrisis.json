@@ -134,7 +134,7 @@
         ],
         "card9": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -190,16 +190,17 @@
                 "name": "presionArterialDiastolica"
               },
               {
-                "id": "tensionArterialMedia",
-                "label": "Tensión Arterial Media [mmHg]",
-                "type": "number",
-                "name": "tensionArterialMedia"
-              },
-              {
                 "id": "presionArterialSistolica",
                 "label": "Presión Arterial Sistólica [mmHg]",
                 "type": "number",
                 "name": "presionArterialSistolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia",
+                "readonly": true
               },
               {
                 "id": "saturacion",
