@@ -1,6 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 import React from 'react';
-import { Dropdown } from 'primereact/dropdown';
 import { useBranchesForSelect } from "../../branches/hooks/useBranchesForSelect.js";
 import { InputText } from 'primereact/inputtext';
 import { Controller, useForm } from 'react-hook-form';
@@ -24,7 +23,7 @@ export const ModuleForm = ({
   } = useForm({
     defaultValues: initialData || {
       name: '',
-      branch_id: '',
+      branch_id: '1',
       allowed_reasons: []
     }
   });
@@ -41,7 +40,7 @@ export const ModuleForm = ({
   useEffect(() => {
     reset(initialData || {
       name: '',
-      branch_id: '',
+      branch_id: '1',
       allowed_reasons: []
     });
   }, [initialData, reset]);
@@ -74,30 +73,6 @@ export const ModuleForm = ({
       })
     }))
   }), getFormErrorMessage('name')), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "branch_id",
-    control: control,
-    rules: {
-      required: 'Este campo es requerido'
-    },
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Sucursal *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
-      inputId: field.name,
-      options: branches,
-      optionLabel: "label",
-      optionValue: "value",
-      filter: true,
-      placeholder: "Seleccione una sucursal",
-      className: classNames('w-100', {
-        'p-invalid': errors.branch_id
-      })
-    }, field)))
-  }), getFormErrorMessage('branch_id')), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "allowed_reasons",

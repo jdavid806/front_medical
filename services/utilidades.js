@@ -170,3 +170,43 @@ export function convertHHMMSSToDate(timeString) {
   // Return the Date object with the specified time
   return currentDate;
 }
+
+export function ordenarPorFecha(array, key) {
+  return array.sort((a, b) => {
+    const fechaA = new Date(a[key]).getTime();
+    const fechaB = new Date(b[key]).getTime();
+
+    return fechaA - fechaB;
+  });
+}
+
+export function sortSpaghettiArray(array) {
+  array.sort((a, b) => {
+    const parseCustomDate = (dateString) => {
+      const [datePart, timePart] = dateString.split(", ");
+      const [dayStr, monthStr, yearStr] = datePart.split(" de ");
+      const months = [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+      ];
+      const day = parseInt(dayStr, 10);
+      const month = months.indexOf(monthStr.toLowerCase());
+      const year = parseInt(yearStr, 10);
+      const [hours, minutes, seconds] = timePart.split(":").map(Number);
+      return new Date(year, month, day, hours, minutes, seconds);
+    };
+    const dateA = parseCustomDate(a.createdAt);
+    const dateB = parseCustomDate(b.createdAt);
+    return dateB.getTime() - dateA.getTime();
+  });
+}

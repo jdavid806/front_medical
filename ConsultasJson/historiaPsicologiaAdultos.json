@@ -44,7 +44,7 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -58,11 +58,11 @@
       },
       {
         "tab": "Exámen mental",
-        "card":[
+        "card": [
           {
             "title": "Problematica",
             "class": "col-12",
-            "fields":[
+            "fields": [
               {
                 "id": "descripciónProblematica",
                 "label": "",

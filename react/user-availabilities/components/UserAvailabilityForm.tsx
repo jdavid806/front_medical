@@ -57,7 +57,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
             user_id: '',
             appointment_type_id: '',
             appointment_duration: 0,
-            branch_id: '',
+            branch_id: '1',
             office: '',
             module_id: '',
             days_of_week: [],
@@ -96,7 +96,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
             user_id: '',
             appointment_type_id: '',
             appointment_duration: 0,
-            branch_id: '',
+            branch_id: '1',
             office: '',
             module_id: '',
             days_of_week: [],
@@ -274,7 +274,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                             {getFormErrorMessage('appointment_duration')}
                         </div>
 
-                        <div className="mb-3">
+                        {/* <div className="mb-3">
                             <Controller
                                 name='branch_id'
                                 control={control}
@@ -298,7 +298,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                                 }
                             />
                             {getFormErrorMessage('branch_id')}
-                        </div>
+                        </div> */}
 
                         <div className="mb-3">
                             <Controller

@@ -78,8 +78,8 @@ export const ExamForm = /*#__PURE__*/forwardRef(({}, ref) => {
   }, "Ex\xE1menes"), /*#__PURE__*/React.createElement("select", {
     className: "form-select",
     value: selectedExamType,
-    onChange: e => setSelectedExamType(e.target.value),
-    disabled: selectedExamTypes.length >= 1
+    onChange: e => setSelectedExamType(e.target.value)
+    // disabled={selectedExamTypes.length >= 1}
   }, /*#__PURE__*/React.createElement("option", {
     value: ""
   }, "Seleccione un examen"), examTypes.map(examType => /*#__PURE__*/React.createElement("option", {
@@ -89,8 +89,7 @@ export const ExamForm = /*#__PURE__*/forwardRef(({}, ref) => {
     className: "col-12 text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: handleAddExam,
-    disabled: selectedExamTypes.length >= 1
+    onClick: handleAddExam
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-plus"
   })))))), activeCard === 'paquetes' && /*#__PURE__*/React.createElement("div", {

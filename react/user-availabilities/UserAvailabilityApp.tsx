@@ -54,7 +54,7 @@ export const UserAvailabilityApp = () => {
                 office: userAvailability?.office ?? '',
                 module_id: userAvailability?.module_id ?? '',
                 appointment_type_id: userAvailability?.appointment_type_id.toString() ?? '',
-                branch_id: userAvailability?.branch_id?.toString() ?? '',
+                branch_id: userAvailability?.branch_id?.toString() ?? '1',
                 appointment_duration: userAvailability?.appointment_duration ?? 0,
                 days_of_week: Array.isArray(userAvailability?.days_of_week)
                     ? userAvailability.days_of_week.map(day => parseInt(day))

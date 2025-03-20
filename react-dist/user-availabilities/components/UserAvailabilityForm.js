@@ -38,7 +38,7 @@ const UserAvailabilityForm = ({
       user_id: '',
       appointment_type_id: '',
       appointment_duration: 0,
-      branch_id: '',
+      branch_id: '1',
       office: '',
       module_id: '',
       days_of_week: [],
@@ -87,7 +87,7 @@ const UserAvailabilityForm = ({
       user_id: '',
       appointment_type_id: '',
       appointment_duration: 0,
-      branch_id: '',
+      branch_id: '1',
       office: '',
       module_id: '',
       days_of_week: [],
@@ -247,31 +247,6 @@ const UserAvailabilityForm = ({
       })
     }))
   }), getFormErrorMessage('appointment_duration')), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "branch_id",
-    control: control,
-    rules: {
-      required: 'Este campo es requerido'
-    },
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Sucursal *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
-      inputId: field.name,
-      options: branches,
-      optionLabel: "label",
-      optionValue: "value",
-      filter: true,
-      placeholder: "Seleccione una sucursal",
-      className: classNames('w-100', {
-        'p-invalid': errors.branch_id
-      }),
-      defaultValue: field.value
-    }, field)))
-  }), getFormErrorMessage('branch_id')), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "days_of_week",

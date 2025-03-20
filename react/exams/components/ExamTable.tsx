@@ -9,12 +9,15 @@ import { EditTableAction } from '../../components/table-actions/EditTableAction'
 import { PrintTableAction } from '../../components/table-actions/PrintTableAction';
 import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
 import { ShareTableAction } from '../../components/table-actions/ShareTableAction';
+import { formatDate, ordenarPorFecha } from '../../../services/utilidades';
 
 type ExamTableItem = {
     id: string
     examName: string
     status: string
     statusColor: string
+    created_at: string
+    dateTime: string
 }
 
 type ExamTableProps = {
@@ -30,10 +33,15 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
             return {
                 id: exam.id,
                 examName: exam.exam_type?.name ?? '--',
-                status: examOrderStates[exam.exam_order_state?.name] ?? '--',
-                statusColor: examOrderStateColors[exam.exam_order_state?.name] ?? '--'
+                status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+                statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+                created_at: exam.created_at,
+                dateTime: formatDate(exam.created_at)
             }
         })
+
+        ordenarPorFecha(mappedExams, 'created_at')
+
         console.log('Mapped exams', mappedExams);
 
         setTableExams(mappedExams);
@@ -42,6 +50,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
     const columns: ConfigColumns[] = [
         { data: 'examName', },
         { data: 'status' },
+        { data: 'dateTime' },
         { orderable: false, searchable: false }
     ]
 
@@ -49,7 +58,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
         1: (cell, data: ExamTableItem) => (
             <span className={`badge badge-phoenix badge-phoenix-${data.statusColor}`}>{data.status}</span>
         ),
-        2: (cell, data: ExamTableItem) => (
+        3: (cell, data: ExamTableItem) => (
             <div className="d-flex justify-content-end">
                 <div className="dropdown">
                     <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -99,6 +108,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                             <tr>
                                 <th className="border-top custom-th">Tipo de Examen</th>
                                 <th className="border-top custom-th">Estado</th>
+                                <th className="border-top custom-th">Fecha y hora de creación</th>
                                 <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
                             </tr>
                         </thead>

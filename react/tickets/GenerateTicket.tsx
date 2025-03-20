@@ -100,7 +100,7 @@ export const GenerateTicket = () => {
             setPatient(response.data);
             setFormData(prev => ({
                 ...prev,
-                patient_name: response.first_name + ' ' + response.middle_name + ' ' + response.last_name + ' ' + response.second_last_name,
+                patient_name: response.first_name || '' + ' ' + response.middle_name || '' + ' ' + response.last_name || '' + ' ' + response.second_last_name || '',
                 phone: response.whatsapp
             }));
             setShowPatientInputs(true);
@@ -199,7 +199,7 @@ export const GenerateTicket = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        name="phone"
+                                        name="patient_name"
                                         value={formData.patient_name}
                                         onChange={handleChange}
                                         required={showPatientInputs}

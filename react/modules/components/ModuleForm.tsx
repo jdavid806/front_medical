@@ -32,7 +32,7 @@ export const ModuleForm: React.FC<ModuleFormProps> = ({ formId, onHandleSubmit, 
     } = useForm<ModuleFormInputs>({
         defaultValues: initialData || {
             name: '',
-            branch_id: '',
+            branch_id: '1',
             allowed_reasons: []
         }
     })
@@ -48,7 +48,7 @@ export const ModuleForm: React.FC<ModuleFormProps> = ({ formId, onHandleSubmit, 
     useEffect(() => {
         reset(initialData || {
             name: '',
-            branch_id: '',
+            branch_id: '1',
             allowed_reasons: []
         });
     }, [initialData, reset]);
@@ -77,7 +77,7 @@ export const ModuleForm: React.FC<ModuleFormProps> = ({ formId, onHandleSubmit, 
                     />
                     {getFormErrorMessage('name')}
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                     <Controller
                         name='branch_id'
                         control={control}
@@ -100,7 +100,7 @@ export const ModuleForm: React.FC<ModuleFormProps> = ({ formId, onHandleSubmit, 
                         }
                     />
                     {getFormErrorMessage('branch_id')}
-                </div>
+                </div> */}
                 <div className="mb-3">
                     <Controller
                         name='allowed_reasons'

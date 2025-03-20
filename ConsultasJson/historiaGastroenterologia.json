@@ -44,7 +44,7 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -78,7 +78,8 @@
                 "id": "imc",
                 "label": "Índice de Masa Corporal (IMC)",
                 "type": "number",
-                "name": "imc"
+                "name": "imc",
+                "readonly": true
               },
               {
                 "id": "porcentajeGrasaCorporal",
@@ -100,16 +101,16 @@
                 "name": "presionArterialDiastolica"
               },
               {
-                "id": "tensionArterialMedia",
-                "label": "Tensión Arterial Media [mmHg]",
-                "type": "number",
-                "name": "tensionArterialMedia"
-              },
-              {
                 "id": "presionArterialSistolica",
                 "label": "Presión Arterial Sistólica [mmHg]",
                 "type": "number",
                 "name": "presionArterialSistolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia"
               },
               {
                 "id": "saturacion",

@@ -6,6 +6,7 @@ import { examOrderStateColors, examOrderStates } from "../../../services/commons
 import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
 import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
 import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
+import { formatDate, ordenarPorFecha } from "../../../services/utilidades.js";
 export const ExamTable = ({
   exams,
   onLoadExamResults
@@ -16,10 +17,13 @@ export const ExamTable = ({
       return {
         id: exam.id,
         examName: exam.exam_type?.name ?? '--',
-        status: examOrderStates[exam.exam_order_state?.name] ?? '--',
-        statusColor: examOrderStateColors[exam.exam_order_state?.name] ?? '--'
+        status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+        statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+        created_at: exam.created_at,
+        dateTime: formatDate(exam.created_at)
       };
     });
+    ordenarPorFecha(mappedExams, 'created_at');
     console.log('Mapped exams', mappedExams);
     setTableExams(mappedExams);
   }, [exams]);
@@ -28,6 +32,8 @@ export const ExamTable = ({
   }, {
     data: 'status'
   }, {
+    data: 'dateTime'
+  }, {
     orderable: false,
     searchable: false
   }];
@@ -35,7 +41,7 @@ export const ExamTable = ({
     1: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix badge-phoenix-${data.statusColor}`
     }, data.status),
-    2: (cell, data) => /*#__PURE__*/React.createElement("div", {
+    3: (cell, data) => /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-end"
     }, /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
@@ -95,6 +101,8 @@ export const ExamTable = ({
   }, "Tipo de Examen"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "Estado"), /*#__PURE__*/React.createElement("th", {
+    className: "border-top custom-th"
+  }, "Fecha y hora de creaci\xF3n"), /*#__PURE__*/React.createElement("th", {
     className: "text-end align-middle pe-0 border-top mb-2",
     scope: "col"
   })))))));

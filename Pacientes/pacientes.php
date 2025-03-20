@@ -280,6 +280,8 @@ include "../header.php";
         var channel = pusher.subscribe('waiting-room.' + hostname);
 
         channel.bind('appointment.created', function(data) {
+            console.log('Cita creada', data);
+
             pacientesData.forEach(paciente => {
                 if (paciente.id === data.appointment.patient_id) {
                     paciente.appointments.push(data.appointment);
@@ -291,7 +293,6 @@ include "../header.php";
         });
 
         channel.bind('appointment.state.updated', function(data) {
-
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
@@ -489,7 +490,7 @@ include "../header.php";
 
         // Función para renderizar los controles de paginación
         const renderPagination = (pacientes) => {
-            const totalPages = Math.ceil(pacientes.length / itemsPerPage);
+            const totalPages = Math.ceil(pacientes.filter(paciente => paciente.appointments.length).length / itemsPerPage);
             const paginationControls = document.getElementById("paginationControls");
             paginationControls.innerHTML = ""; // Limpiar los controles anteriores
 

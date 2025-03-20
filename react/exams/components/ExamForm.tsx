@@ -127,7 +127,7 @@ export const ExamForm = forwardRef(({ }, ref) => {
                                     className="form-select"
                                     value={selectedExamType}
                                     onChange={(e) => setSelectedExamType(e.target.value)}
-                                    disabled={selectedExamTypes.length >= 1}
+                                // disabled={selectedExamTypes.length >= 1}
                                 >
                                     <option value="">Seleccione un examen</option>
                                     {examTypes.map(examType => (
@@ -136,7 +136,7 @@ export const ExamForm = forwardRef(({ }, ref) => {
                                 </select>
                             </div>
                             <div className="col-12 text-end">
-                                <button className="btn btn-primary" onClick={handleAddExam} disabled={selectedExamTypes.length >= 1}>
+                                <button className="btn btn-primary" onClick={handleAddExam}>
                                     <i className="fa-solid fa-plus"></i>
                                 </button>
                             </div>

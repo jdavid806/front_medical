@@ -29,7 +29,7 @@ export const TicketTable = () => {
         });
 
         var hostname = window.location.hostname.split('.')[0];
-        const channel = pusher.subscribe(`tickets.${hostname}.3`);
+        const channel = pusher.subscribe(`tickets.${hostname}`);
 
         channel.bind('ticket.generated', function (data: { ticket: TicketDto }) {
             console.log('ticket.generated', data);

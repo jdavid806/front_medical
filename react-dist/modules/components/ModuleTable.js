@@ -23,16 +23,16 @@ export const ModuleTable = ({
   }, [modules]);
   const columns = [{
     data: 'moduleName'
-  }, {
-    data: 'branchName'
-  }, {
+  },
+  // { data: 'branchName' },
+  {
     data: 'allowedReasons'
   }, {
     orderable: false,
     searchable: false
   }];
   const slots = {
-    3: (cell, data) => /*#__PURE__*/React.createElement(TableBasicActions, {
+    2: (cell, data) => /*#__PURE__*/React.createElement(TableBasicActions, {
       onEdit: () => onEditItem(data.id),
       onDelete: () => onDeleteItem(data.id)
     })
@@ -48,8 +48,6 @@ export const ModuleTable = ({
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Sucursal"), /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "Motivos de visita a atender"), /*#__PURE__*/React.createElement("th", {
     className: "text-end align-middle pe-0 border-top mb-2",

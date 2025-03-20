@@ -30,7 +30,7 @@ export const TicketTable = () => {
       cluster: 'us2'
     });
     var hostname = window.location.hostname.split('.')[0];
-    const channel = pusher.subscribe(`tickets.${hostname}.3`);
+    const channel = pusher.subscribe(`tickets.${hostname}`);
     channel.bind('ticket.generated', function (data) {
       console.log('ticket.generated', data);
       const newTicketData = {
@@ -130,6 +130,9 @@ export const TicketTable = () => {
       status,
       statusView: ticketStatus[status]
     } : item));
+
+    // @ts-ignore
+    callShiftMessage(id);
   };
   const slots = {
     3: (cell, data) => /*#__PURE__*/React.createElement("span", {

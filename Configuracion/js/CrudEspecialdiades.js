@@ -80,6 +80,8 @@ function cargarSelectsFuncionesEspecialidades() {
       const elementos = obtenerElementosTabla();
       const productId = document.getElementById("speciality_id")?.value;
 
+      console.log(elementos);
+
       try {
         if (productId) {
           updateEspecilidad(productId, elementos);
@@ -130,7 +132,7 @@ function obtenerElementosTabla() {
     elementos.push({
       specializable_type: tipo,
       specializable_id: id,
-      specialty_id: productId,
+      specialty_id: nameSpecialty,
       description: description,
     });
   });
@@ -143,9 +145,12 @@ function rellenarElementos() {
   tabla.innerHTML = "";
 }
 
+let nameSpecialty;
+
 async function abrirModal(id, name) {
   let hiddenInput = document.getElementById("speciality_id");
   let hiddenName = document.getElementById("speciality_name");
+  nameSpecialty = name;
 
   let rutaSpecializables =
     obtenerRutaPrincipal() + "/medical/specializables/by-specialty/" + id;

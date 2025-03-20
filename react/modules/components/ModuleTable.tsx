@@ -37,13 +37,13 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ modules, onEditItem, o
 
     const columns: ConfigColumns[] = [
         { data: 'moduleName', },
-        { data: 'branchName' },
+        // { data: 'branchName' },
         { data: 'allowedReasons' },
         { orderable: false, searchable: false }
     ]
 
     const slots = {
-        3: (cell, data: ModuleTableItem) => (
+        2: (cell, data: ModuleTableItem) => (
             <TableBasicActions
                 onEdit={() => onEditItem(data.id)}
                 onDelete={() => onDeleteItem(data.id)}
@@ -64,7 +64,7 @@ export const ModuleTable: React.FC<ModuleTableProps> = ({ modules, onEditItem, o
                         <thead>
                             <tr>
                                 <th className="border-top custom-th">Nombre</th>
-                                <th className="border-top custom-th">Sucursal</th>
+                                {/* <th className="border-top custom-th">Sucursal</th> */}
                                 <th className="border-top custom-th">Motivos de visita a atender</th>
                                 <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
                             </tr>

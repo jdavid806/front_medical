@@ -145,10 +145,14 @@ include "../header.php";
     });
 
     channelTickets.bind('ticket.generated', function(data) {
+        console.log(data, tickets);
+
         tickets.push(data.ticket);
     });
 
     channelTickets.bind('ticket.state.updated', function(data) {
+        console.log(data, tickets);
+
         const ticket = tickets.find(t => t.id == data.ticketId);
         ticket.status = data.newState;
         ticket.module_id = data.moduleId;

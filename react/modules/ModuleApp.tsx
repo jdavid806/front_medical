@@ -49,7 +49,7 @@ export const ModuleApp = () => {
     useEffect(() => {
         setInitialData({
             name: module?.name || '',
-            branch_id: module?.branch_id.toString() || '',
+            branch_id: module?.branch_id.toString() || '1',
             allowed_reasons: module?.allowed_reasons || []
         })
     }, [module])

@@ -1,6 +1,8 @@
 <?php
 include "../menu.php";
 include "../header.php";
+
+
 $arraytest = [
     [
         "Nombre" => "Juan Pérez",
@@ -134,6 +136,7 @@ foreach ($estados as $estado) {
         color: #000;
     }
 </style>
+<?php include "./modalCitas.php"; ?>
 
 <div class="componente">
     <div class="content">
@@ -163,9 +166,9 @@ foreach ($estados as $estado) {
                             <i class="fas fa-chair"></i> Sala de espera
                         </a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="salaDeEspera-tab" data-bs-toggle="tab" href="#" role="tab">
-                            <i class="fas fa-chair"></i> Agregar Citas
+                    <li class="nav-item  ms-auto" role="presentation">
+                        <a class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearCita">
+                            <i class="fas fa-calendar-plus"></i></i> Nueva Cita
                         </a>
                     </li>
 

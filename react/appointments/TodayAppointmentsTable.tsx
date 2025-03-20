@@ -91,7 +91,12 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
     <>
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable columns={columns} data={appointments} slots={slots}>
+          <CustomDataTable columns={columns} data={appointments} slots={slots} customOptions={{
+              ordering: false,
+              columnDefs: [
+                { targets: 0, orderable: false }, // Desactiva el ordenamiento para la primera columna (name)
+                 ],
+               }}>
             <thead>
               <tr>
                 <th className="border-top custom-th text-start">Nombre</th>

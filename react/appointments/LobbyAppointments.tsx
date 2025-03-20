@@ -25,17 +25,16 @@ const stateColors: Record<string, { backgroundColor: string; color: string }> = 
   "Consulta Finalizada": { backgroundColor: "#28A745", color: "#fff" }, // Verde
   "Cancelada": { backgroundColor: "#DC3545", color: "#fff" }, // Rojo
   "Reprogramada": { backgroundColor: "#6610F2", color: "#fff" }, // Violeta
-  "Desconocido": { backgroundColor: "#6C757D", color: "#fff" } // Gris para estados desconocidos
+  "Sin Cita": { backgroundColor: "#6C757D", color: "#fff" } // Gris para estados desconocidos
 };
 
 export const LobbyAppointments: React.FC = () => {
   const { appointments } = useFetchAppointments(appointmentService.active());
-console.log("Appointments_LobbyAppointments",appointments);
   // Agrupar citas por estado
   const groupedAppointments = appointments.reduce((acc, appointment) => {
     const stateKey = appointment.stateDescription;
 
-    const stateLabel = appointmentStatesByKey[stateKey] || "Desconocido";
+    const stateLabel = appointmentStatesByKey[stateKey] || "Sin Cita";
 
     if (!acc[stateLabel]) acc[stateLabel] = [];
     acc[stateLabel].push(appointment);

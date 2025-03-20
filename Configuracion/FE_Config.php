@@ -97,6 +97,12 @@ include "../header.php";
             </a>
           </li>
           <li class="nav-item" role="presentation">
+            <a class="nav-link" id="modulos-tab" data-bs-toggle="tab" href="#tab-modulos" role="tab"
+              aria-controls="tab-modulos" aria-selected="false">
+              <i class="fas fa-clinic-medical"></i> Modulos
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
             <a class="nav-link" id="user-absences-tab" data-bs-toggle="tab" href="#tab-user-absences" role="tab"
               aria-controls="tab-user-absences" aria-selected="false">
               <i class="fas fa-calendar-alt"></i> Ausencias Programadas
@@ -168,6 +174,9 @@ include "../header.php";
             <?php //esto esta generando error en consola
             include "./includes/userAvailabilities.php"; ?>
           </div>
+          <div class="tab-pane fade" id="tab-modulos" role="tabpanel" aria-labelledby="modulos-tab">
+            <div id="gestionarModulosReact"></div>
+          </div>
           <div class="tab-pane fade" id="tab-user-absences" role="tabpanel" aria-labelledby="user-absences-tab">
             <?php include "./tabs/tab_userAbsencesConfiguration.php"; ?>
           </div>
@@ -213,6 +222,16 @@ include "../header.php";
     font-size: 16px;
   }
 </style>
+
+<script type="module">
+  import React from "react"
+  import ReactDOMClient from "react-dom/client"
+  import {
+    ModuleApp
+  } from './react-dist/modules/ModuleApp.js';
+
+  ReactDOMClient.createRoot(document.getElementById('gestionarModulosReact')).render(React.createElement(ModuleApp));
+</script>
 
 <?php
 include "./modales/modalAgregarSede.php";

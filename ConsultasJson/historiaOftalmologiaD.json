@@ -44,7 +44,7 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -274,17 +274,17 @@
                 "name": "presionArterialDiastolica"
               },
               {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
                 "id": "tensionArterialMedia",
                 "label": "Tensión Arterial Media [mmHg]",
                 "type": "number",
                 "name": "tensionArterialMedia",
                 "readonly": true
-              },
-              {
-                "id": "presionArterialSistolica",
-                "label": "Presión Arterial Sistólica [mmHg]",
-                "type": "number",
-                "name": "presionArterialSistolica"
               },
               {
                 "id": "saturacion",
@@ -316,7 +316,7 @@
                 "id": "perimetroCefalico",
                 "label": "Perímetro Cefálico [cm]",
                 "type": "number",
-                "name": "number"
+                "name": "perimetroCefalico"
               }
             ]
           }

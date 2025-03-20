@@ -59,7 +59,15 @@ export const TodayAppointmentsTable = ({
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
     data: appointments,
-    slots: slots
+    slots: slots,
+    customOptions: {
+      ordering: false,
+      columnDefs: [{
+        targets: 0,
+        orderable: false
+      } // Desactiva el ordenamiento para la primera columna (name)
+      ]
+    }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {

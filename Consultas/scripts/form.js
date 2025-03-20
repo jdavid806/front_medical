@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const pesoInput = document.getElementById("peso");
   const alturaInput = document.getElementById("altura");
-  pesoInput.value = dataHistoryPreaddmission.weight;
-  alturaInput.value = dataHistoryPreaddmission.size;
+  pesoInput.value = dataHistoryPreaddmission?.weight || 0;
+  alturaInput.value = dataHistoryPreaddmission?.size || 0;
 
   if (pesoInput && alturaInput) {
     pesoInput.addEventListener("input", actualizarIMC);
@@ -77,7 +77,13 @@ async function historyPreadmission() {
     params.get("patient_id") +
     "/1";
 
-  let historyPreadmission = await obtenerDatos(historyPreadmissionHttp);
+  let historyPreadmission;
+  try {
+    historyPreadmission = await obtenerDatos(historyPreadmissionHttp);
+  } catch (error) {
+    console.error("Error fetching history preadmission:", error);
+    historyPreadmission = null;
+  }
 
   return historyPreadmission;
 }

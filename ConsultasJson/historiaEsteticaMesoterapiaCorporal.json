@@ -44,7 +44,7 @@
         ],
         "card4": [
           {
-            "title": "Manejo de los sintomas",
+            "title": "¿Qué ha tomado?",
             "fields": [
               {
                 "id": "manejoSintoma",
@@ -191,7 +191,8 @@
                 "id": "imc",
                 "label": "Índice de Masa Corporal (IMC)",
                 "type": "number",
-                "name": "imc"
+                "name": "imc",
+                "readonly": true
               },
               {
                 "id": "porcentajeGrasaCorporal",

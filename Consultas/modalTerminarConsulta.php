@@ -256,7 +256,6 @@ include "../ConsultasJson/dataPaciente.php";
   document.addEventListener('DOMContentLoaded', function() {
 
     let userLogged = getUserLogged();
-    console.log("user logged:", userLogged);
     const cie11 = userLogged.specialty.specializables.filter(item => item.specializable_type == "CIE-11")
     cargarCie11(cie11)
     cargarTipoDiagnostico();
@@ -297,7 +296,6 @@ include "../ConsultasJson/dataPaciente.php";
   }
 
   function cargarCie11(cie11) {
-    console.log("Cie11: ", cie11);
 
     // Obtenemos referencias a todos los selects
     const selects = [
@@ -434,9 +432,7 @@ include "../ConsultasJson/dataPaciente.php";
   ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
     ref: prescriptionFormRef,
     formId: 'createPrescription',
-    handleSubmit: (medicines) => {
-      console.log(medicines);
-    }
+    handleSubmit: (medicines) => {}
   }));
   ReactDOMClient.createRoot(document.getElementById('remisionFormReact')).render(React.createElement(remissionsForm, {
     ref: remissionFormRef,
@@ -448,7 +444,6 @@ include "../ConsultasJson/dataPaciente.php";
   function obtenerEstadoRecetas() {
     if (prescriptionFormRef.current) {
       const estado = prescriptionFormRef.current.getFormData();
-      console.log("Estado de recetas:", estado);
       return estado;
     }
   }
@@ -456,7 +451,6 @@ include "../ConsultasJson/dataPaciente.php";
   function obtenerEstadoRemisiones() {
     if (remissionFormRef.current) {
       const estado = remissionFormRef.current.getFormData();
-      console.log("Estado de remisiones:", estado);
       return estado;
     }
   }
@@ -464,7 +458,6 @@ include "../ConsultasJson/dataPaciente.php";
   function obtenerEstadoExamenes() {
     if (examFormRef.current) {
       const estado = examFormRef.current.getFormData();
-      console.log("Estado de examenes:", estado);
       return estado;
     }
   }
@@ -477,8 +470,6 @@ include "../ConsultasJson/dataPaciente.php";
   ]);
   const urlClinicalRecordType = new URLSearchParams(window.location.search).get("tipo_historia");
   const currentClinicalRecordType = clinicalRecordTypes.find((type) => type.key_ === urlClinicalRecordType);
-
-  console.log('Paquetes y tipos de historia', packages, clinicalRecordTypes, urlClinicalRecordType, currentClinicalRecordType, UserManager.getUser());
 
   const formIncapacidad = document.getElementById('formCrearIncapacidad');
   const getDataFromFormIncapacidad = () => {
@@ -500,8 +491,6 @@ include "../ConsultasJson/dataPaciente.php";
 
   document.getElementById("finalizarConsulta").addEventListener("click", function() {
     captureFormValues(formData.form1);
-    //console.log("Valores capturados:", formValues);
-    console.log(getDataFromFormIncapacidad());
     const dataIncapacidad = getDataFromFormIncapacidad();
     const dataRecetas = obtenerEstadoRecetas();
     const dataRemisiones = obtenerEstadoRemisiones();
@@ -526,12 +515,12 @@ include "../ConsultasJson/dataPaciente.php";
     }
 
     if (!hasDisplayNone('examsFormReact')) {
-      data['exam_order'] = {
+      data['exam_order'] = dataExamenes.map(examen => ({
         "patient_id": patientId,
         "exam_order_state_id": 1,
-        "exam_order_item_id": dataExamenes[0]?.id,
+        "exam_order_item_id": examen.id,
         "exam_order_item_type": "exam_type"
-      };
+      }));
     }
 
     if (!hasDisplayNone('prescriptionFormReact')) {
@@ -547,7 +536,6 @@ include "../ConsultasJson/dataPaciente.php";
       data['remission'] = dataRemisiones;
     }
 
-    console.log(data);
     clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
       .then(async () => {
         await appointmentService.changeStatus(appointmentId, 'consultation_completed')
@@ -570,8 +558,6 @@ include "../ConsultasJson/dataPaciente.php";
         }
       });
   });
-
-  console.log('Paquetes', packages);
 
   function captureFormValues(formData) {
     formData.tabs.forEach(tab => {
@@ -641,38 +627,44 @@ include "../ConsultasJson/dataPaciente.php";
         }
       });
     });
-    console.log("funcion" + formValues);
     return formValues;
   }
 
   document.getElementById('diagnosticoPrincipal').addEventListener('change', async function() {
-    document.getElementById("btnAgregarReceta").click();
-    document.getElementById("btnAgregarIncapacidad").click();
     let packageByCie11 = await packagesService.getPackageByCie11(this.value);
-
     console.log("cie11: ", packageByCie11);
-    const incapacidad = packageByCie11.data[0].package_items.filter(item => item.item_type == 'Incapacidad')[0];
 
-    document.getElementById('dias').value = incapacidad.prescription.days_incapacity;
-    document.getElementById('reason').value = incapacidad.prescription.reason;
-    const today = new Date();
-    const daysIncapacity = incapacidad.prescription.days_incapacity;
-    const endDate = new Date(today);
-    endDate.setDate(today.getDate() + daysIncapacity);
-    const formattedEndDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-    document.getElementById('hasta').value = formattedEndDate;
+    if (packageByCie11.data.length) {
 
-    console.log("incapacidad: ", incapacidad);
+      document.getElementById("btnAgregarReceta").click();
+      document.getElementById("btnAgregarIncapacidad").click();
+      document.getElementById("btnAgregarRemision").click();
 
-    const mappedData = packageByCie11.data[0].package_items.filter(item => item.item_type == 'medicamento' || item.item_type == 'Vacunas').map(item => item.prescription);
+      const incapacidad = packageByCie11.data[0].package_items.filter(item => item.item_type == 'Incapacidad')[0];
+      const remision = packageByCie11.data[0].package_items.filter(item => item.item_type == "Remision")[0];
 
-    ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
-      ref: prescriptionFormRef,
-      initialData: {
-        medicines: mappedData
-      },
-      formId: 'createPrescription',
-      handleSubmit: () => {}
-    }));
+      console.log(remision);
+
+      document.getElementById('dias').value = incapacidad.prescription.days_incapacity;
+      document.getElementById('reason').value = incapacidad.prescription.reason;
+      const today = new Date();
+      const daysIncapacity = incapacidad.prescription.days_incapacity;
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + daysIncapacity);
+      const formattedEndDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      document.getElementById('hasta').value = formattedEndDate;
+
+      const mappedData = packageByCie11.data[0].package_items.filter(item => item.item_type == 'medicamento' || item.item_type == 'Vacunas').map(item => item.prescription);
+
+      ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
+        ref: prescriptionFormRef,
+        initialData: {
+          medicines: mappedData
+        },
+        formId: 'createPrescription',
+        handleSubmit: () => {}
+      }));
+    }
+
   });
 </script>

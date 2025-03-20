@@ -19,7 +19,7 @@ export class PatientService extends BaseApiService {
                 appointment.user_availability.user_id === user.id
             ),
           };
-        }).filter((patient) => patient.appointments.length > 0);
+        });
 
         return filteredPatients;
       }
@@ -32,19 +32,25 @@ export class PatientService extends BaseApiService {
 
   async get(id) {
     const res = await super.get(id);
-    const user = await userService.getByExternalId(getJWTPayload().sub);
+    try {
+      const user = await userService.getByExternalId(getJWTPayload().sub);
+      const permissions = user.role.permissions.map((permission) => permission.key);
 
-    const permissions = user.role.permissions.map((permission) => permission.key);
-
-    if (!permissions.includes("patients_view_sensitive")) {
+      if (!permissions.includes("patients_view_sensitive")) {
+        res.validated_data = {
+          email: "*".repeat(8),
+          whatsapp: "*".repeat(8),
+        };
+      } else {
+        res.validated_data = {
+          email: res.email,
+          whatsapp: res.whatsapp,
+        };
+      }
+    } catch (error) {
       res.validated_data = {
-        email: "*".repeat(8),
-        whatsapp: "*".repeat(8),
-      };
-    } else {
-      res.validated_data = {
-        email: patient.email,
-        whatsapp: patient.whatsapp,
+        email: res.email,
+        whatsapp: res.whatsapp,
       };
     }
 
