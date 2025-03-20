@@ -17,8 +17,8 @@ export const useUserCreate = () => {
             }, 2000);
         } catch (error) {
             console.log(error);
-
             ErrorHandler.generic(error)
+            throw error
         } finally {
             setLoading(false)
         }

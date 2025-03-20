@@ -35,13 +35,22 @@ export const UserAvailabilityApp = () => {
     setShowFormModal(true);
   };
   const handleSubmit = async data => {
-    if (userAvailability) {
-      await updateUserAvailability(userAvailability.id, data);
-    } else {
-      await createUserAvailability(data);
+    const finalData = {
+      ...data,
+      appointment_type_id: data.appointment_type_id.toString() || '1',
+      appointment_duration: data.appointment_duration || 1
+    };
+    try {
+      if (userAvailability) {
+        await updateUserAvailability(userAvailability.id, finalData);
+      } else {
+        await createUserAvailability(finalData);
+      }
+      fetchAvailabilities();
+      setShowFormModal(false);
+    } catch (error) {
+      console.error(error);
     }
-    fetchAvailabilities();
-    setShowFormModal(false);
   };
   const handleTableEdit = id => {
     fetchUserAvailability(id);

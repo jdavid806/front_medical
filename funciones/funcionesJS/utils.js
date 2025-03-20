@@ -409,6 +409,13 @@ async function convertirDatosVariables(
         patient_id
       );
       break;
+    case "Receta":
+      mensaje = await reemplazarVariablesReceta(
+        template,
+        object_id,
+        patient_id
+      );
+      break;
 
     default:
       mensaje = "No definido";
@@ -544,4 +551,32 @@ async function reemplazarVariablesHistoria(template, object_id, patient_id) {
     .replace(/\[\[FECHA_HISTORIA\]\]/g, fechaHistoria || "")
     .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
     .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "");
+}
+
+async function reemplazarVariablesReceta(template, object_id, patient_id) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let nombrePaciente = datosPaciente.nombre;
+
+  let url = obtenerRutaPrincipal() + `/medical/recipes/${object_id}`;
+  let datosReceta = await obtenerDatos(url);
+
+  let data = datosReceta.data;
+
+  let datosDoctor = await consultarDatosDoctor(data.prescriber.id);
+
+  let fechaHistoria = formatearFechaQuitarHora(data.created_at);
+
+  let especialista = datosDoctor.nombre;
+
+  let especilidad = datosDoctor.especialidad;
+
+  let recomendaciones = data.recipe_items.observations;
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[FECHA_RECETA\]\]/g, fechaHistoria || "")
+    .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
+    .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
+    .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
 }

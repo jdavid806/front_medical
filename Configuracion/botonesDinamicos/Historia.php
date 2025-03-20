@@ -4,6 +4,7 @@ $campos = [
   "FECHA_HISTORIA",
   "ESPECIALIDAD",
   "ESPECIALISTA",
+  "ENLACE DOCUMENTO",
 ];
 ?>
 

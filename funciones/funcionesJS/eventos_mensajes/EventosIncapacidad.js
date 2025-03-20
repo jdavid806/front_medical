@@ -19,11 +19,11 @@ async function createInabilityMessage(inability_id, patient_id) {
 
   let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
 
-  // if (await enviarArchivoWhatssap(datosMensaje)) {
-  //   console.log("Archivo enviado");
-  // } else {
-  //   enviarTexto(mensajeFinal, numero_paciente);
-  // }
+  if (await enviarArchivoWhatssap(datosMensaje)) {
+    console.log("Archivo enviado");
+  } else {
+    enviarTexto(mensajeFinal, numero_paciente);
+  }
 }
 
 async function shareInabilityMessage(inability_id, patient_id) {
@@ -48,9 +48,9 @@ async function shareInabilityMessage(inability_id, patient_id) {
   let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
   console.log(mensajeFinal);
 
-  // if (await enviarArchivoWhatssap(datosMensaje)) {
-  //   console.log("Archivo enviado");
-  // } else {
-  //   enviarTexto(mensajeFinal, numero_paciente);
-  // }
+  if (await enviarArchivoWhatssap(datosMensaje)) {
+    console.log("Archivo enviado");
+  } else {
+    enviarTexto(mensajeFinal, numero_paciente);
+  }
 }

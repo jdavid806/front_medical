@@ -212,6 +212,8 @@ export interface UserDto {
     role: UserRoleDto;
     specialty: UserSpecialtyDto | null;
     availabilities: UserAvailability[]
+    today_module_name?: string
+    today_module_id?: string
 }
 
 export interface UserTableItem {

@@ -5,6 +5,7 @@ $campos = [
   "ESPECIALIDAD",
   "ESPECIALISTA",
   "RECOMENDACIONES",
+  "ENLACE DOCUMENTO",
 ];
 ?>
 

@@ -389,6 +389,8 @@
               </div>
               <h6 class="mt-2 text-body-emphasis username"></h6>
               <b class="mt-2 text-body-emphasis"><span class="user-role"></span><span class="user-specialty"></span></b>
+              <div id="admin-container" style="display: none;"></div>
+              <div id="doctor-container" style="display: none;"></div>
             </div>
             <!-- <div class="mb-3 mx-3">
                       <input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" />
@@ -416,25 +418,59 @@
 </nav>
 
 <script type="module">
+  import {
+    userService
+  } from './services/api/index.js';
+  import {
+    getJWTPayload
+  } from "./services/utilidades.js";
   import UserManager from './services/userManager.js';
 
-  document.addEventListener('DOMContentLoaded', function() {
-    UserManager.onAuthChange((isAuthenticated, user, permissions, menus, role) => {
+  document.addEventListener('DOMContentLoaded', async function() {
 
-      if (user && role) {
-        document.querySelectorAll('.username').forEach(element => {
-          element.textContent = `${user.first_name} ${user.middle_name} ${user.last_name} ${user.second_last_name}`;
-        })
-        document.querySelectorAll('.user-role').forEach(element => {
-          element.textContent = role.name;
-        })
-        document.querySelectorAll('.user-specialty').forEach(element => {
-          if (role.group == 'DOCTOR') {
-            element.textContent = ' | ' + user.specialty.name;
-          }
-        })
+    const user = await userService.getByExternalId(getJWTPayload().sub);
+
+    if (user) {
+      document.querySelectorAll('.username').forEach(element => {
+        element.textContent = `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`;
+      })
+      document.querySelectorAll('.user-role').forEach(element => {
+        element.textContent = user.role.name;
+      })
+      document.querySelectorAll('.user-specialty').forEach(element => {
+        if (user.role.group == 'DOCTOR') {
+          element.textContent = ' | ' + user.specialty.name;
+        }
+      })
+
+      const adminContainer = document.getElementById('admin-container');
+      const doctorContainer = document.getElementById('doctor-container');
+
+      if (user.role.group == 'ADMIN') {
+
+        adminContainer.style.display = 'block';
+        const adminContent = document.createElement('p');
+
+        const dayModule = user.availabilities.find(availability => {
+          return availability.days_of_week.includes(new Date().getDay())
+        }).module.name
+
+        adminContent.textContent = 'Modulo: ' + dayModule;
+        adminContainer.appendChild(adminContent);
+
+      } else if (user.role.group == 'DOCTOR') {
+
+        doctorContainer.style.display = 'block';
+        const doctorContent = document.createElement('p');
+
+        const dayOffice = user.availabilities.find(availability => {
+          return availability.days_of_week.includes(new Date().getDay())
+        })?.office
+
+        doctorContent.textContent = 'Consultorio: ' + (dayOffice || 'Sin consultorio');
+        doctorContainer.appendChild(doctorContent);
       }
-    })
+    }
   })
 </script>
 

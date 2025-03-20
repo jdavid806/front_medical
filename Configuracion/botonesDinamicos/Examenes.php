@@ -3,6 +3,7 @@ $campos = [
   "NOMBRE_PACIENTE",
   "FECHA_EXAMEN",
   "NOMBRE_EXAMEN",
+  "ENLACE DOCUMENTO",
 ];
 ?>
 

@@ -6,8 +6,10 @@ import CustomDataTable from '../../components/CustomDataTable';
 import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from '../../../services/commons';
 import { ticketService } from '../../../services/api';
 import 'https://js.pusher.com/8.2.0/pusher.min.js';
+import { useLoggedUser } from '../../users/hooks/useLoggedUser';
 
 export const TicketTable = () => {
+    const { loggedUser } = useLoggedUser()
     const { tickets } = useAllTableTickets();
     const [data, setData] = useState<TicketTableItemDto[]>([]);
     const [filteredData, setFilteredData] = useState<TicketTableItemDto[]>([]);
@@ -21,8 +23,6 @@ export const TicketTable = () => {
     ];
 
     useEffect(() => {
-        localStorage.setItem('module_id', '1');
-
         // @ts-ignore
         const pusher = new Pusher('5e57937071269859a439', {
             cluster: 'us2'
@@ -79,8 +79,6 @@ export const TicketTable = () => {
             });
         });
 
-        console.log('module_id', localStorage.getItem('module_id'));
-
         return () => {
             channel.unbind_all(); // Eliminar todos los listeners
             channel.unsubscribe(); // Desuscribirse del canal
@@ -116,7 +114,7 @@ export const TicketTable = () => {
                         item.status == 'PENDING' ||
                         (
                             item.status == 'CALLED' &&
-                            item.module_id == localStorage.getItem('module_id')
+                            item.module_id == loggedUser?.today_module_id
                         )
                     ) &&
                     item.branch_id == "3"
@@ -144,7 +142,7 @@ export const TicketTable = () => {
 
         await ticketService.update(id, {
             status,
-            module_id: localStorage.getItem('module_id')
+            module_id: loggedUser?.today_module_id
         });
 
         setData(prevData => prevData.map(item =>
@@ -206,7 +204,7 @@ export const TicketTable = () => {
                             <span className="badge badge-phoenix badge-phoenix-success">
                                 Completados: {data.filter(item => (
                                     item.status === "COMPLETED" &&
-                                    item.module_id == localStorage.getItem('module_id')
+                                    item.module_id == loggedUser?.today_module_id
                                 )).length}
                             </span>
                             <span className="badge badge-phoenix badge-phoenix-danger">

@@ -195,7 +195,7 @@ const UserAvailabilityForm = ({
         'p-invalid': errors.user_id
       })
     }, field)))
-  })), /*#__PURE__*/React.createElement("div", {
+  })), selectedUser && selectedUser.role.group === 'DOCTOR' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "appointment_type_id",
@@ -246,7 +246,7 @@ const UserAvailabilityForm = ({
         'p-invalid': errors.appointment_duration
       })
     }))
-  }), getFormErrorMessage('appointment_duration')), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('appointment_duration'))), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "days_of_week",

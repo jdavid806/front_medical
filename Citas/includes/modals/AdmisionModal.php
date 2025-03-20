@@ -1889,7 +1889,7 @@ include '../modals/NewCompanionModal.php';
                 const rowData = {
                     payment_method_id: Number(cells[0]?.innerText.trim()), // Ajusta según el índice de las columnas
                     payment_date: "<?php echo date('Y-m-d'); ?>",
-                    amount: Number(cells[2]?.innerText.trim()),
+                    amount: Number(cells[2]?.innerText.replace('.', '').trim()),
                     notes: "xxxxxxx",
                 };
                 dataPaymentMthods.push(rowData);
@@ -1926,11 +1926,11 @@ include '../modals/NewCompanionModal.php';
             .then(async response => {
                 console.log(response);
                 let contenidoResumen = `
-                    <div style="margin-bottom: 15px;">
-                        <ul style="margin-top: 5px; padding-left: 20px;">
-                        <li>Documento #: ${response.data.invoice_code}</li>
-                        </div>
-                `;
+                <div style="margin-bottom: 15px;">
+                    <ul style="margin-top: 5px; padding-left: 20px;">
+                    <li>Documento #: ${response.data.invoice_code}</li>
+                    </div>
+            `;
                 await sendInvoice(response.admission_data.appointment_id, response.admission_data.patient_id);
                 Swal.fire({
                     title: 'Admision creada',

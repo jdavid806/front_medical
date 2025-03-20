@@ -4,7 +4,11 @@ import CustomDataTable from "../../components/CustomDataTable.js";
 import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
 import { ticketService } from "../../../services/api/index.js";
 import 'https://js.pusher.com/8.2.0/pusher.min.js';
+import { useLoggedUser } from "../../users/hooks/useLoggedUser.js";
 export const TicketTable = () => {
+  const {
+    loggedUser
+  } = useLoggedUser();
   const {
     tickets
   } = useAllTableTickets();
@@ -23,8 +27,6 @@ export const TicketTable = () => {
     searchable: false
   }];
   useEffect(() => {
-    localStorage.setItem('module_id', '1');
-
     // @ts-ignore
     const pusher = new Pusher('5e57937071269859a439', {
       cluster: 'us2'
@@ -76,7 +78,6 @@ export const TicketTable = () => {
         return newData;
       });
     });
-    console.log('module_id', localStorage.getItem('module_id'));
     return () => {
       channel.unbind_all(); // Eliminar todos los listeners
       channel.unsubscribe(); // Desuscribirse del canal
@@ -104,7 +105,7 @@ export const TicketTable = () => {
   }, [tickets]);
   useEffect(() => {
     setFilteredData(data.filter(item => {
-      return (item.status == 'PENDING' || item.status == 'CALLED' && item.module_id == localStorage.getItem('module_id')) && item.branch_id == "3";
+      return (item.status == 'PENDING' || item.status == 'CALLED' && item.module_id == loggedUser?.today_module_id) && item.branch_id == "3";
     }));
   }, [data]);
   const updateStatus = async (id, status) => {
@@ -122,7 +123,7 @@ export const TicketTable = () => {
     const status = 'CALLED';
     await ticketService.update(id, {
       status,
-      module_id: localStorage.getItem('module_id')
+      module_id: loggedUser?.today_module_id
     });
     setData(prevData => prevData.map(item => item.id === id ? {
       ...item,
@@ -171,7 +172,7 @@ export const TicketTable = () => {
     className: "badge badge-phoenix badge-phoenix-warning"
   }, "Pendientes: ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-success"
-  }, "Completados: ", data.filter(item => item.status === "COMPLETED" && item.module_id == localStorage.getItem('module_id')).length), /*#__PURE__*/React.createElement("span", {
+  }, "Completados: ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-danger"
   }, "Perdidos: ", data.filter(item => item.status === "MISSED").length)), /*#__PURE__*/React.createElement(CustomDataTable, {
     data: filteredData,

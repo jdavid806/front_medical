@@ -1,20 +1,20 @@
-async function createHistoryMessage(history_id, patient_id) {
+async function createPrescriptionMessage(prescription_id, patient_id) {
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
   let numero_paciente = datosPaciente.telefono;
 
   const datosMensaje = {
     tenant_id: "1",
     type: "whatsapp",
-    belongs_to: "historia_clinica-creacion",
+    belongs_to: "recetas-creacion",
   };
 
   let template = await obtenerTemplate(datosMensaje);
 
   let mensaje = await convertirDatosVariables(
     template,
-    "Historia",
+    "Receta",
     patient_id,
-    history_id
+    prescription_id
   );
 
   let mensajeFinal = convertirHtmlAWhatsapp(mensaje);
@@ -26,23 +26,23 @@ async function createHistoryMessage(history_id, patient_id) {
   }
 }
 
-async function shareHistoryMessage(history_id, patient_id) {
+async function sharePrescriptionMessage(prescription_id, patient_id) {
   const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
   let numero_paciente = datosPaciente.telefono;
 
   const datosMensaje = {
     tenant_id: "1",
     type: "whatsapp",
-    belongs_to: "historia_clinica-compartir",
+    belongs_to: "recetas-creacion",
   };
 
   let template = await obtenerTemplate(datosMensaje);
 
   let mensaje = await convertirDatosVariables(
     template,
-    "Historia",
+    "Receta",
     patient_id,
-    history_id
+    prescription_id
   );
 
   let mensajeFinal = convertirHtmlAWhatsapp(mensaje);

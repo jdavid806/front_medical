@@ -43,9 +43,13 @@ async function enviarMensaje(tipoUrl, data) {
     const result = await response.json();
     if (result) {
       Swal.fire({
+        toast: true,
+        position: "top-end",
         icon: "success",
-        title: "Mensaje enviado",
-        text: "El mensaje se ha enviado correctamente.",
+        title: "Mensaje Enviado: ",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
       });
     }
   } catch (error) {

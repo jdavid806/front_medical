@@ -256,7 +256,7 @@ $baner = "";
     }
 
     const appointmentsCount = await appointmentService.activeCount();
-    console.log('citas activas:', appointmentsCount);
+
 
     document.getElementById('appointmentsActiveCount').textContent = appointmentsCount;
 
@@ -361,7 +361,6 @@ $baner = "";
               const externalCause = externalCauses[external_cause];
               const consultationPurpose = purposeConsultations[consultation_purpose];
               const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${attentionType} de tipo ${consultationPurpose} por ${externalCause}`
-
               return {
                 title: patientName,
                 start: `${appointment_date}T${appointment_time}`,
@@ -378,7 +377,7 @@ $baner = "";
 
         eventClick: function(info) {
 
-          console.log(info.event.extendedProps);
+          console.log("infoCalendar", info);
 
           const titulo = info.event.title || "Título no disponible";
           const descripcion = info.event.extendedProps?.description || "Descripción no disponible";
@@ -409,6 +408,7 @@ $baner = "";
           var horaInicio = fechaInicioInicial.format('HH:mm');
           var fechaFinal = fechaFinalInicial.format('YYYY-MM-DD');
           var horaFinal = fechaFinalInicial.format('HH:mm');
+          console.log("fechaFinal", fechaFinal);
 
           // Asignar datos a los campos del modal
           document.getElementById('fechaCita').value = fechaInicio; // Asignar la fecha de inicio

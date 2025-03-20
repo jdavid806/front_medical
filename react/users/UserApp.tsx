@@ -37,13 +37,17 @@ export const UserApp = () => {
             ...data,
             user_specialty_id: data.user_specialty_id === null || data.user_specialty_id === 0 ? 1 : data.user_specialty_id
         }
-        if (user) {
-            await updateUser(user.id, finalData)
-        } else {
-            await createUser(finalData)
+        try {
+            if (user) {
+                await updateUser(user.id, finalData)
+            } else {
+                await createUser(finalData)
+            }
+            fetchUsers()
+            setShowUserFormModal(false)
+        } catch (error) {
+            console.error(error);
         }
-        fetchUsers()
-        setShowUserFormModal(false)
     };
 
     const handleHideUserFormModal = () => {

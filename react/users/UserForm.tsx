@@ -12,6 +12,7 @@ import { Divider } from 'primereact/divider';
 import { Password } from 'primereact/password';
 import { useCitiesByCountry } from '../cities/hooks/useCitiesByCountry';
 import { CountryDto } from '../models/models';
+import { useLoggedUser } from './hooks/useLoggedUser';
 
 export type UserFormInputs = {
     username: string;

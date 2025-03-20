@@ -25,6 +25,7 @@ export const useUserAvailabilityUpdate = () => {
             SwalManager.success();
         } catch (error) {
             ErrorHandler.generic(error);
+            throw error
         } finally {
             setLoading(false);
         }

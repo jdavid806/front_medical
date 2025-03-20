@@ -223,56 +223,60 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                             </div>
                         )}
 
-                        <div className="mb-3">
-                            <Controller
-                                name='appointment_type_id'
-                                control={control}
-                                rules={{ required: 'Este campo es requerido' }}
-                                render={({ field }) =>
-                                    <>
-                                        <label htmlFor={field.name} className="form-label">Tipo de cita *</label>
-                                        <Dropdown
-                                            inputId={field.name}
-                                            options={appointmentTypes}
-                                            optionLabel='label'
-                                            optionValue='value'
-                                            filter
-                                            placeholder="Seleccione un tipo de cita"
-                                            className={classNames('w-100', { 'p-invalid': errors.appointment_type_id })}
-                                            defaultValue={field.value}
-                                            {...field}
-                                        >
-                                        </Dropdown>
-                                    </>
-                                }
-                            />
-                            {getFormErrorMessage('appointment_type_id')}
-                        </div>
+                        {selectedUser && selectedUser.role.group === 'DOCTOR' && (
+                            <>
+                                <div className="mb-3">
+                                    <Controller
+                                        name='appointment_type_id'
+                                        control={control}
+                                        rules={{ required: 'Este campo es requerido' }}
+                                        render={({ field }) =>
+                                            <>
+                                                <label htmlFor={field.name} className="form-label">Tipo de cita *</label>
+                                                <Dropdown
+                                                    inputId={field.name}
+                                                    options={appointmentTypes}
+                                                    optionLabel='label'
+                                                    optionValue='value'
+                                                    filter
+                                                    placeholder="Seleccione un tipo de cita"
+                                                    className={classNames('w-100', { 'p-invalid': errors.appointment_type_id })}
+                                                    defaultValue={field.value}
+                                                    {...field}
+                                                >
+                                                </Dropdown>
+                                            </>
+                                        }
+                                    />
+                                    {getFormErrorMessage('appointment_type_id')}
+                                </div>
 
-                        <div className="mb-3">
-                            <Controller
-                                name='appointment_duration'
-                                control={control}
-                                rules={{ required: 'Este campo es requerido' }}
-                                render={({ field }) =>
-                                    <>
-                                        <label htmlFor={field.name} className="form-label">Duración de la cita (minutos)</label>
-                                        <InputNumber
-                                            inputId={field.name}
-                                            min={1}
-                                            placeholder="Ingrese la duración"
-                                            ref={field.ref}
-                                            value={field.value}
-                                            onBlur={field.onBlur}
-                                            onValueChange={(e) => field.onChange(e)}
-                                            className='w-100'
-                                            inputClassName={classNames('w-100', { 'p-invalid': errors.appointment_duration })}
-                                        />
-                                    </>
-                                }
-                            />
-                            {getFormErrorMessage('appointment_duration')}
-                        </div>
+                                <div className="mb-3">
+                                    <Controller
+                                        name='appointment_duration'
+                                        control={control}
+                                        rules={{ required: 'Este campo es requerido' }}
+                                        render={({ field }) =>
+                                            <>
+                                                <label htmlFor={field.name} className="form-label">Duración de la cita (minutos)</label>
+                                                <InputNumber
+                                                    inputId={field.name}
+                                                    min={1}
+                                                    placeholder="Ingrese la duración"
+                                                    ref={field.ref}
+                                                    value={field.value}
+                                                    onBlur={field.onBlur}
+                                                    onValueChange={(e) => field.onChange(e)}
+                                                    className='w-100'
+                                                    inputClassName={classNames('w-100', { 'p-invalid': errors.appointment_duration })}
+                                                />
+                                            </>
+                                        }
+                                    />
+                                    {getFormErrorMessage('appointment_duration')}
+                                </div>
+                            </>
+                        )}
 
                         {/* <div className="mb-3">
                             <Controller

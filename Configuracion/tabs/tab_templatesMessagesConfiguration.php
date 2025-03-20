@@ -26,7 +26,7 @@ $tabs = [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
     ],
-    'anexo' => true
+    'anexo' => false
   ],
   'recetas' => [
     'title' => 'Recetas',
@@ -35,7 +35,7 @@ $tabs = [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
     ],
-    'anexo' => true
+    'anexo' => false
   ],
   'incapacidades' => [
     'title' => 'Incapacidades',
@@ -44,7 +44,7 @@ $tabs = [
       'creacion' => 'Creación',
       'compartir' => 'Compartir'
     ],
-    'anexo' => true
+    'anexo' => false
   ],
   'facturacion' => [
     'title' => 'Facturación',
@@ -54,7 +54,7 @@ $tabs = [
       'anulacion' => 'Anulación',
       'compartir' => 'Compartir'
     ],
-    'anexo' => true
+    'anexo' => false
   ],
   'examenes' => [
     'title' => 'Exámenes',
@@ -64,7 +64,7 @@ $tabs = [
       'cargue' => 'Cargue de resultados',
       'compartir' => 'Compartir'
     ],
-    'anexo' => true
+    'anexo' => false
   ]
 ];
 ?>

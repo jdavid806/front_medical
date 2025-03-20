@@ -3,7 +3,6 @@ import { ErrorHandler } from '../../../services/errorHandler'
 import { SwalManager } from '../../../services/alertManagerImported'
 import { UserAvailabilityFormInputs } from '../components/UserAvailabilityForm'
 import { userAvailabilityService } from '../../../services/api'
-import { UserAvailability } from '../../models/models'
 import { formatTime } from '../../../services/utilidades'
 
 export const useUserAvailabilityCreate = () => {
@@ -26,6 +25,7 @@ export const useUserAvailabilityCreate = () => {
             SwalManager.success()
         } catch (error) {
             ErrorHandler.generic(error)
+            throw error
         } finally {
             setLoading(false)
         }

@@ -5,9 +5,6 @@ import { ConfigColumns } from "datatables.net-bs5";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
 import { admissionService } from "../../services/api";
 import { useEffect } from "react";
-import { PrintTableAction } from "../components/table-actions/PrintTableAction";
-import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
-import { ShareTableAction } from "../components/table-actions/ShareTableAction";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -55,32 +52,6 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
             >
               Generar admisión
             </a>
-            {/* <a className="dropdown-item" href="#">
-              Generar link de pago
-            </a>
-            <a className="dropdown-item" href="#">
-              Descargar Factura
-            </a>
-            <a className="dropdown-item" href="#">
-              Imprimir factura
-            </a>
-            <a className="dropdown-item" href="#">
-              Compartir por whatsapp y correo
-            </a>
-            <a className="dropdown-item" href="#">
-              Nota credito
-            </a>
-            <hr />
-            <PrintTableAction onTrigger={() => {
-              //@ts-ignore
-              generateInvoice(data.id, false);
-            }}></PrintTableAction>
-            <DownloadTableAction onTrigger={() => {
-              //@ts-ignore
-              generateInvoice(data.id, true);
-            }}></DownloadTableAction>
-            <ShareTableAction shareType="whatsapp" onTrigger={() => console.log("compartir por whatsapp")}></ShareTableAction>
-            <ShareTableAction shareType="email" onTrigger={() => console.log("compartir por correo")}></ShareTableAction> */}
           </div>
         </div>
       </div>
@@ -91,12 +62,7 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
     <>
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable columns={columns} data={appointments} slots={slots} customOptions={{
-              ordering: false,
-              columnDefs: [
-                { targets: 0, orderable: false }, // Desactiva el ordenamiento para la primera columna (name)
-                 ],
-               }}>
+          <CustomDataTable columns={columns} data={appointments} slots={slots}>
             <thead>
               <tr>
                 <th className="border-top custom-th text-start">Nombre</th>

@@ -239,3 +239,8 @@ RewriteRule ^plantillasMensajes$  Marketing/plantillasMensajes.php
 RewriteRule ^configMensajes$  Marketing/configMensajes.php
 
 RewriteRule ^controlCaja$ ControlCaja/controlCajaForm.php
+
+#Login
+RewriteRule ^forgotPassword$ login/forgotPassword.php
+
+RewriteRule ^visualizarDocumento$ funciones/visualizarDocumento.php

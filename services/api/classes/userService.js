@@ -9,6 +9,16 @@ export class UserService extends BaseApiService {
     }
 
     async getByExternalId(id) {
-        return await this.httpClient.get(`${this.microservice}/users/search/${id}`);
+        const user = await this.httpClient.get(`${this.microservice}/users/search/${id}`);
+
+        const todayAvailability = user.availabilities.find(availability => {
+            return availability.days_of_week.includes(new Date().getDay())
+        })
+
+        return {
+            ...user,
+            today_module_name: todayAvailability?.module?.name,
+            today_module_id: todayAvailability?.module_id,
+        };
     }
 }

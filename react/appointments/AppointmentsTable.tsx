@@ -370,11 +370,6 @@ export const AppointmentsTable: React.FC = () => {
             columns={columns}
             data={filteredAppointments}
             slots={slots}
-            customOptions={{
-              order: [[1, 'asc'], [2, "asc"]],
-              ordering: true,
-              columnDefs: [{ orderable: false, targets: [7] }],
-            }}
           >
             <thead>
               <tr>

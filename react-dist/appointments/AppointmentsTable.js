@@ -300,15 +300,7 @@ export const AppointmentsTable = () => {
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
     data: filteredAppointments,
-    slots: slots,
-    customOptions: {
-      order: [[1, 'asc'], [2, "asc"]],
-      ordering: true,
-      columnDefs: [{
-        orderable: false,
-        targets: [7]
-      }]
-    }
+    slots: slots
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {

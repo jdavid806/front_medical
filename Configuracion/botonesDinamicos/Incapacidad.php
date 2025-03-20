@@ -8,6 +8,7 @@ $campos = [
   "FECHA_FIN",
   "DIAS_INCAPACIDAD",
   "RECOMENDACIONES",
+  "ENLACE DOCUMENTO",
 ];
 ?>
 
