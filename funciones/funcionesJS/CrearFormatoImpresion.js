@@ -17,7 +17,7 @@ async function generarFormato(objecto, nombreObjecto) {
     case "Receta":
       formatoAImprimir = await generarFormatoReceta(objecto);
       break;
-    case "ordenMedica":
+    case "Examen":
       formatoAImprimir = await generarFormatoOrden(objecto);
       break;
 
@@ -102,33 +102,118 @@ async function generarFormatoConsulta(consulta_id) {
   <hr>
   <h4 class="text-secondary">Descripción:</h4>
   <p>${datosConsulta.description || "Sin descripción"}</p>
-  <hr>
-  <h4 class="text-secondary mb-3">Detalles de la historia clínica:</h4>
-`;
+  <hr>`;
 
-  let tieneContenido = false;
+  const estructura = {
+    "Información de la Consulta": [
+      { titulo: "Motivo de la consulta", campos: ["motivoConsulta"] },
+      { titulo: "Evolución de los síntomas", campos: ["evolucionSintomas"] },
+      { titulo: "Contexto de los síntomas", campos: ["contextoSintoma"] },
+      { titulo: "¿Qué ha tomado?", campos: ["manejoSintoma"] },
+    ],
+    "Signos vitales": [
+      {
+        titulo: "Medidas corporales",
+        campos: ["peso", "altura", "imc", "porcentajeGrasaCorporal"],
+      },
+      {
+        titulo: "Presión y saturación",
+        campos: [
+          "presionArterialDiastolica",
+          "presionArterialSistolica",
+          "tensionArterialMedia",
+          "saturacion",
+        ],
+      },
+      {
+        titulo: "Circunferencias",
+        campos: [
+          "circunferenciaAbdominal",
+          "circunferenciaCintura",
+          "perimetroCefalico",
+        ],
+      },
+      {
+        titulo: "Frecuencia y temperatura",
+        campos: ["frecuenciaRespiratoria", "frecuenciaCardiaca", "temperatura"],
+      },
+    ],
+  };
 
-  for (let clave in datosConsulta.data) {
-    let valor = datosConsulta.data[clave];
-    if (valor !== null && valor !== "") {
-      tieneContenido = true;
+  // Función para capitalizar la primera letra de cada palabra
+  const capitalizar = (str) => {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  // Función para verificar si un campo ya está en la estructura
+  const campoEnEstructura = (campo) => {
+    for (let seccion in estructura) {
+      for (let grupo of estructura[seccion]) {
+        if (grupo.campos.includes(campo)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Recorrer la estructura y generar el contenido
+  for (let seccion in estructura) {
+    contenido += `<h3 class="text-primary mt-2">${seccion}</h3><hr>`;
+    estructura[seccion].forEach((grupo) => {
+      contenido += `<h4 class="fw-bold text-secondary">${grupo.titulo}</h4><div class="row">`;
+      grupo.campos.forEach((campo) => {
+        let valor = datosConsulta.data[campo];
+        // Omitir campos con valor null
+        if (valor === null || valor === undefined) {
+          return;
+        }
+        let tituloCampo = capitalizar(
+          campo.replace(/([A-Z])/g, " $1").toLowerCase()
+        );
+        // Evitar mostrar el título redundante
+        // if (grupo.titulo.toLowerCase() === tituloCampo.toLowerCase()) {
+        if (
+          grupo.titulo == "Motivo de la consulta" ||
+          grupo.titulo == "Evolución de los síntomas" ||
+          grupo.titulo == "Contexto de los síntomas"
+        ) {
+          contenido += `
+            <div class="col-md-6">
+              ${valor}
+            </div>`;
+        } else {
+          contenido += `
+            <div class="col-md-6">
+              <strong>${tituloCampo}</strong>: ${valor}
+            </div>`;
+        }
+      });
+      contenido += `</div>`;
+    });
+  }
+
+  // Mostrar datos adicionales no mapeados
+  // contenido += `<h3 class="text-primary mt-4">Datos Adicionales</h3><hr><div class="row">`;
+  for (let campo in datosConsulta.data) {
+    if (!campoEnEstructura(campo)) {
+      let valor = datosConsulta.data[campo];
+      // Omitir campos con valor null
+      if (valor === null || valor === undefined) {
+        continue;
+      }
+      let tituloCampo = capitalizar(
+        campo.replace(/([A-Z])/g, " $1").toLowerCase()
+      );
       contenido += `
-    <div class="">
-      <h4 class="fw-bold text-capitalize">${clave
-        .replace(/([A-Z])/g, " $1")
-        .toLowerCase()}</h4>
-      <p>${valor}</p>
-    </div>`;
+        <div class="col-md-6">
+          <strong>${tituloCampo}</strong>: ${valor}
+        </div>`;
     }
   }
+  contenido += `</div>`;
 
-  if (!tieneContenido) {
-    contenido += `
-  <p class="text-muted fst-italic">Historia creada sin contenido</p>`;
-  }
-
-  contenido += `
-</div>`;
+  contenido += `</div>`;
 
   let datosPaciente = await consultarDatosPaciente(
     datosConsulta.patient_id,
@@ -207,25 +292,49 @@ async function generarFormatoReceta(recetaId) {
 
 async function generarFormatoOrden(ordenId) {
   let url = obtenerRutaPrincipal() + `/medical/exam-orders/${ordenId}`;
-  let resultado = await obtenerDatos(url);
+  let datosOrden = await obtenerDatos(url);
 
-  // console.log(resultado);
+  let contenido = `
+  <div class="container border rounded shadow-sm text-start">
+    <h3 class="text-primary text-center">Orden de Examen Médico</h3>
+    <h4 class="text-secondary">Detalles del examen:</h4>
+    <p><strong>Tipo de examen:</strong> ${datosOrden.exam_type.name}</p>
+    <p><strong>Estado:</strong> ${datosOrden.exam_order_state.name}</p>
+    <hr>
+  `;
 
-  // let contenido = `
-  // <div>
-  // </div>`;
+  // Iteramos por las tarjetas y campos dinámicos del examen
+  datosOrden.exam_type.form_config.tabs.forEach((tab) => {
+    contenido += `<h4 class="text-secondary">${tab.tab}</h4>`;
 
-  // let datosPaciente = await consultarDatosPaciente(
-  //   datosReceta.patient_id,
-  //   formatearFechaQuitarHora(datosReceta.created_at)
-  // );
-  // let datosEmpresa = await consultarDatosEmpresa();
-  // let datosDoctor = await consultarDatosDoctor(datosReceta.prescriber.id);
+    tab.cards.forEach((card) => {
+      contenido += `<h5 class="text-primary">${card.title}</h5>`;
 
-  // return {
-  //   consultorio: datosEmpresa,
-  //   paciente: datosPaciente,
-  //   contenido,
-  //   doctor: datosDoctor,
-  // };
+      card.fields.forEach((field) => {
+        contenido += `
+        <p><strong>${field.label}</strong></p>
+        <div>${
+          datosOrden.exam_type.form_config.values[field.id] || "Sin datos"
+        }</div>
+        `;
+      });
+    });
+    contenido += "<hr>";
+  });
+
+  contenido += `</div>`;
+
+  let datosPaciente = await consultarDatosPaciente(
+    datosOrden.patient_id,
+    formatearFechaQuitarHora(datosOrden.created_at)
+  );
+  let datosEmpresa = await consultarDatosEmpresa();
+  let datosDoctor = await consultarDatosDoctor(1);
+
+  return {
+    consultorio: datosEmpresa,
+    paciente: datosPaciente,
+    contenido,
+    doctor: datosDoctor,
+  };
 }

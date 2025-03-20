@@ -31,7 +31,8 @@ include "../header.php";
                 <h2 class="mb-4">Panel de Encuestas</h2>
               </div>
               <div class="col-6">
-                <button class="btn btn-primary" onclick="shareInabilityMessage(38,9)">
+                <button class="btn btn-primary"
+                  onclick='crearDocumento(38, "Impresion", "Consulta", "Completa", "Examen de prueba")'>
                   <i class="fa-solid fa-plus"></i> Testing</button>
               </div>
             </div>
