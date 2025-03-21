@@ -6,7 +6,7 @@ interface TableActionsWrapperProps {
 
 const TableActionsWrapper: React.FC<TableActionsWrapperProps> = ({ children }) => {
     return (
-        <div className="dropdown">
+        <div className="dropdown" style={{ marginBottom: '10px' , marginTop: '10px'}}>
             <button
                 className="btn btn-primary dropdown-toggle"
                 type="button"

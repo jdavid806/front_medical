@@ -20,15 +20,14 @@ document.getElementById("finishStep").addEventListener("click", function () {
   appointmentService
     .createForParent(data.patient_id || data.selectPaciente, data)
     .then(async (response) => {
-      console.log(response);
+      await createAppointmentMessage(response.id, response.patient_id);
       AlertManager.success({
         text: "Se ha creado el registro exitosamente",
       });
-      await createAppointmentMessage(response.id, response.patient_id);
       setTimeout(() => {
         $("#modalCrearCita").modal("hide");
         window.location.reload();
-      }, 3000);
+      }, 2000);
     })
     .catch((err) => {
       if (err.data?.errors) {

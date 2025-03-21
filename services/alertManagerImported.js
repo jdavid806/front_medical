@@ -53,12 +53,31 @@ export class SwalManager {
     static confirmDelete(onConfirm, onCancel = null) {
         return Swal.fire({
             title: '¿Estás seguro?',
-            text: "No podrás revertir esto!",
+            text: "¡No podrás revertir esto!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await onConfirm();
+            } else {
+                if (onCancel) onCancel();
+            }
+        });
+    }
+
+    static confirmCancel(onConfirm, onCancel = null) {
+        return Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cancelar',
             cancelButtonText: 'Cancelar'
         }).then(async (result) => {
             if (result.isConfirmed) {

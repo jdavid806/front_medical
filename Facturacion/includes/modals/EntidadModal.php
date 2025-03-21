@@ -62,10 +62,6 @@
                     <div class="col-6">
                       <label class="form-label" for="centroCosto">Centro de costo</label>
                       <select class="form-select" id="centroCosto">
-                        <option selected="">Seleccione</option>
-                        <option value="1">Centro de costo 1</option>
-                        <option value="2">Centro de costo 2</option>
-                        <option value="3">Centro de costo 3</option>
                       </select>
                     </div>
                   </div>
@@ -319,7 +315,8 @@
     entityService,
     productService,
     userService,
-    patientService
+    patientService,
+    costCenterService
   } from "../../services/api/index.js";
 
 
@@ -329,6 +326,7 @@
     cargarProcedimientos();
     cargarEspecialistas();
     cargarPacientes();
+    cargarCentrosCosto();
   })
 
   async function createSelectEntities() {
@@ -353,6 +351,40 @@
   function configurarSelectEntites() {
     // Obtenemos la referencia al select
     const select = document.getElementById('entity');
+
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(select, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  async function cargarCentrosCosto() {
+    const centrosCosto = await costCenterService.getCostCenterAll();
+
+
+    console.log("Centros de costo: ", centrosCosto);
+
+    const select = document.getElementById("centroCosto");
+    select.innerHTML = '<option selected disabled>Seleccione</option>';
+
+    if (centrosCosto.data.length) {
+
+      centrosCosto.data.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name + ' - ' + item.code;
+        select.appendChild(option);
+      });
+
+    }
+    configurarSelectCentroCosto();
+  }
+
+  function configurarSelectCentroCosto() {
+    // Obtenemos la referencia al select
+    const select = document.getElementById('centroCosto');
 
     if (typeof Choices !== 'undefined') {
       const choices = new Choices(select, {
@@ -418,11 +450,9 @@
     const selectPacientes = document.getElementById('patients');
     const pacientes = await patientService.getAll();
 
-    console.log(pacientes);
+    console.log("Pacientes: ", pacientes);
 
     selectPacientes.innerHTML = '<option selected disabled>Seleccione</option>';
-
-    selectPacientes.appendChild(placeholderOption);
 
     pacientes.forEach(paciente => {
       const optionPac = document.createElement('option');
@@ -432,6 +462,7 @@
 
       selectPacientes.appendChild(optionPac);
     });
+    console.log("Select pacientes: ", selectPacientes);
     configurarSelectPacientesMultiple();
   }
 

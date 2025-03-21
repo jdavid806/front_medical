@@ -2,7 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get("email");
     const firstTime = urlParams.get("first_time");
-
+    document.getElementById("forgotPasswordLink").addEventListener("click", function () {
+      $("#forgotPasswordModal").modal("show"); // Muestra el modal
+  });
+  
 
     if (firstTime === "true" && email) {
         localStorage.setItem("complete_registration", "true");
@@ -11,75 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
-function toggleForm() {
-    let flipper = document.getElementById('flipper');
-    flipper.style.transform = (flipper.style.transform === 'rotateY(180deg)') ? 'rotateY(0deg)' : 'rotateY(180deg)';
-}
-
-function completarRegistro() {
-    let form = document.getElementById("registroForm");
-    if (!form.checkValidity()) {
-        form.classList.add("was-validated");
-        return;
-    }
-
-    let username = document.getElementById("username").value;
-    let firstName = document.getElementById("first_name").value;
-    let middleName = document.getElementById("middle_name").value;
-    let lastName = document.getElementById("last_name").value;
-    let secondLastName = document.getElementById("second_last_name").value;
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-    let phone = document.getElementById("phone").value;
-    let gender = document.getElementById("gender").value;
-    let address = document.getElementById("address").value;
-
-    let userRoleId = 1;
-    let userSpecialtyId = 1;
-    let countryId = 1;
-    let cityId = 1;
-
-    const baseDomain = window.location.hostname;
-    const apiUrl = `http://${baseDomain}/api/auth/register`;
-
-    fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            username,
-            email,
-            password,
-            first_name: firstName,
-            middle_name: middleName,
-            last_name: lastName,
-            second_last_name: secondLastName,
-            user_role_id: userRoleId,
-            user_specialty_id: userSpecialtyId,
-            country_id: countryId,
-            city_id: cityId,
-            gender,
-            address,
-            phone
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 200) { // <-- AQUÍ SE CORRIGE
-                Swal.fire("Registro exitoso", "Bienvenido a MedicalSoft", "success").then(() => {
-                    const modal = new bootstrap.Modal(document.getElementById("registroModal"));
-                    modal.hide();
-                    form.reset();
-                    form.classList.remove("was-validated");
-                });
-            } else {
-                Swal.fire("Error", data.message || "No se pudo completar el registro", "error");
-            }
-        })
-        .catch(error => {
-            console.error("Error en el registro:", error);
-            Swal.fire("Error", "Ocurrió un problema en el servidor", "error");
-        });
-}
 
 
 function validarUsuario() {
@@ -97,7 +31,8 @@ function validarUsuario() {
         return;
     }
 
-    const apiUrl = "https://dev.monaros.co/api/auth/login";
+   let apiUrl = `${window.location.origin}/api/auth/login`;
+   
 
     fetch(apiUrl, {
         method: 'POST',
@@ -144,8 +79,7 @@ function validarUsuario() {
 
 
 function validarOTP(otp, token) {
-    const otpApiUrl = "https://dev.monaros.co/api/auth/otp/validate-otp";
-
+    let otpApiUrl = `${window.location.origin}/api/auth/otp/validate-otp"`;
     return fetch(otpApiUrl, {
         method: 'POST',
         headers: {
@@ -177,74 +111,6 @@ function validarOTP(otp, token) {
         });
 }
 
-registrarUsuario = () => {
-    let boton = document.getElementById("btn-enter");
-    boton.innerHTML = `<div class="spinner-border text-light" role="status"></div>`;
-    boton.disabled = true;
-
-    let email = document.getElementById("email").value;
-    let domain = document.getElementById("domain").value;
-
-    if (email === '' || domain === '') {
-        Swal.fire('Error', 'Por favor ingrese el email y el dominio', 'error');
-        boton.innerHTML = `Acceder`;
-        boton.disabled = false;
-        return false;
-    }
-
-    const baseUrl = "http://dev.monaros.co";
-    const apiUrl = `${baseUrl}/api/create/tenant`;
-
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            tenant_name: domain,
-            email: email
-        })
-    })
-        .then(async response => {
-            let data;
-            try {
-                data = await response.json();
-            } catch (error) {
-                throw new Error("La respuesta del servidor no es un JSON válido.");
-            }
-
-            boton.innerHTML = `Acceder`;
-            boton.disabled = false;
-
-            if (response.ok && data.message === "Tenant creado exitosamente" && data.domain) {
-                console.log("➡️ Redirigiendo a:", `http://${data.domain}:8080`);
-
-                Swal.fire({
-                    title: 'Éxito',
-                    text: 'Redirigiendo a su dominio',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                setTimeout(() => {
-                    window.location.href = `http://${data.domain}:8080?email=${encodeURIComponent(email)}&first_time=true`;
-                }, 1500);
-            } else {
-                throw new Error(data.message || "Error desconocido al crear el tenant");
-            }
-        })
-        .catch(error => {
-            console.error('❌ Error:', error.message);
-
-            Swal.fire({
-                title: 'Error',
-                text: error.message || 'Ocurrió un error en la solicitud',
-                icon: 'error'
-            });
-
-            boton.innerHTML = `Acceder`;
-            boton.disabled = false;
-        });
-};
 
 
 

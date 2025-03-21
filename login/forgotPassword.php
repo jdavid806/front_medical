@@ -64,94 +64,90 @@
     <!--    Main Content-->
     <!-- ===============================================-->
     <main class="main" id="top">
-    <div class="container-fluid bg-body-tertiary dark__bg-gray-1200">
-        <div class="row flex-center position-relative min-vh-100 g-0 py-5">
-            <div class="col-11 col-sm-10 col-xl-8">
-                <div class="card border border-translucent auth-card shadow-lg"
-                    style="border-radius: 1rem; overflow: hidden;">
+        <div class="container-fluid bg-body-tertiary dark__bg-gray-1200">
+            <div class="row flex-center position-relative min-vh-100 g-0 py-5">
+                <div class="col-11 col-sm-10 col-xl-8">
+                    <div class="card border border-translucent auth-card shadow-lg"
+                        style="border-radius: 1rem; overflow: hidden;">
 
-                    <div class="row g-0 w-100 h-100">
-                        <!-- Contenedor izquierdo con la imagen -->
-                        <div class="col-md-6 col-lg-7 d-none d-md-flex align-items-center">
-                            <img src="../medical_index.jpg" alt="login form" class="img-fluid"
-                                style="border-radius: 1rem 0 0 1rem; width: 100%; height: 100%; object-fit: cover;">
-                        </div>
-
-                        <!-- Contenedor derecho con el formulario -->
-                        <div class="col-md-6 col-lg-5 d-flex align-items-center justify-content-center p-4">
-                            <div class="auth-form-box text-center w-100">
-                                <img src="../logo_monaros_sinbg_light.png" style="width: 50%;" alt="Logo Medicalsoft"
-                                    class="mb-3" />
-                                <h4 class="text-body-highlight">Recuperar password</h4>
-                                <p class="text-body-tertiary">Escribe tu password nuevo</p>
-
-                                <form class="mt-4">
-                                    <div class="position-relative mb-3">
-                                        <input class="form-control form-icon-input pe-6" id="password"
-                                            type="password" placeholder="Type new password"
-                                            data-password-input="data-password-input" />
-                                        <button class="btn px-3 py-0 h-100 position-absolute top-0 end-0 fs-7 text-body-tertiary"
-                                            data-password-toggle="data-password-toggle">
-                                            <span class="uil uil-eye show"></span>
-                                            <span class="uil uil-eye-slash hide"></span>
-                                        </button>
-                                    </div>
-                                    <div class="position-relative mb-3">
-                                        <input class="form-control form-icon-input pe-6" id="confirmPassword"
-                                            type="password" placeholder="Confirm new password"
-                                            data-password-input="data-password-input" />
-                                        <button class="btn px-3 py-0 h-100 position-absolute top-0 end-0 fs-7 text-body-tertiary"
-                                            data-password-toggle="data-password-toggle">
-                                            <span class="uil uil-eye show"></span>
-                                            <span class="uil uil-eye-slash hide"></span>
-                                        </button>
-                                    </div>
-                                    <button class="btn btn-outline-dark w-100" type="submit">Reiniciar contraseña</button>
-                                </form>
+                        <div class="row g-0 w-100 h-100">
+                            <!-- Contenedor izquierdo con la imagen -->
+                            <div class="col-md-6 col-lg-7 d-none d-md-flex align-items-center">
+                                <img src="../medical_index.jpg" alt="login form" class="img-fluid"
+                                    style="border-radius: 1rem 0 0 1rem; width: 100%; height: 100%; object-fit: cover;">
                             </div>
-                        </div>
-                    </div> <!-- Fin de row g-0 w-100 h-100 -->
 
+                            <!-- Contenedor derecho con el formulario -->
+                            <div class="col-md-6 col-lg-5 d-flex align-items-center justify-content-center p-4">
+                                <div class="auth-form-box text-center w-100">
+                                    <img src="../logo_monaros_sinbg_light.png" style="width: 50%;"
+                                        alt="Logo Medicalsoft" class="mb-3" />
+                                    <h4 class="text-body-highlight">Recuperar tu</h4>
+                                    <p class="text-body-tertiary">Escribe tu contraseña nueva</p>
+
+                                    <form class="mt-4">
+                                        <input type="hidden" id="username" value="">
+
+                                        <div class="position-relative mb-3">
+                                            <input class="form-control form-icon-input pe-6" id="password"
+                                                type="password" placeholder="Nueva contraseña"
+                                                data-password-input="data-password-input" />
+                                            <button type="button"
+                                                class="btn px-3 py-0 h-100 position-absolute top-0 end-0 fs-7 text-body-tertiary"
+                                                data-password-toggle="data-password-toggle">
+                                                <span class="uil uil-eye show"></span>
+                                                <span class="uil uil-eye-slash hide"></span>
+                                            </button>
+                                        </div>
+                                        <div class="position-relative mb-3">
+                                            <input class="form-control form-icon-input pe-6" id="confirmPassword"
+                                                type="password" placeholder="Confirmar nueva contraseña"
+                                                data-password-input="data-password-input" />
+                                            <button type="button"
+                                                class="btn px-3 py-0 h-100 position-absolute top-0 end-0 fs-7 text-body-tertiary"
+                                                data-password-toggle="data-password-toggle">
+                                                <span class="uil uil-eye show"></span>
+                                                <span class="uil uil-eye-slash hide"></span>
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-outline-dark w-100" id="btnForgotPass"
+                                            type="submit">Reiniciar contraseña</button>
+                                    </form>
+                                    <ul class="list-unstyled mt-2" id="password-requirements">
+                                        <li id="requirement-length" style="color: red;"> Mínimo 8 caracteres</li>
+                                        <li id="requirement-uppercase" style="color: red;"> Al menos 1 mayúscula</li>
+                                        <li id="requirement-special" style="color: red;"> Al menos 1 caracter especial
+                                            (!@#$...)</li>
+                                    </ul>
+
+
+                                </div>
+                            </div>
+                        </div> <!-- Fin de row g-0 w-100 h-100 -->
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
-
-
-
-        <script>
-            var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
-            var navbarTop = document.querySelector('.navbar-top');
-            if (navbarTopStyle === 'darker') {
-                navbarTop.setAttribute('data-navbar-appearance', 'darker');
-            }
-
-            var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
-            var navbarVertical = document.querySelector('.navbar-vertical');
-            if (navbarVertical && navbarVerticalStyle === 'darker') {
-                navbarVertical.setAttribute('data-navbar-appearance', 'darker');
-            }
-        </script>
     </main>
-    <!-- ===============================================-->
-    <!--    End of Main Content-->
-    <!-- ===============================================-->
 
 
-    <!-- ===============================================-->
-    <!--    JavaScripts-->
-    <!-- ===============================================-->
-    <script src="../../../vendors/popper/popper.min.js"></script>
-    <script src="../../../vendors/bootstrap/bootstrap.min.js"></script>
-    <script src="../../../vendors/anchorjs/anchor.min.js"></script>
-    <script src="../../../vendors/is/is.min.js"></script>
-    <script src="../../../vendors/fontawesome/all.min.js"></script>
-    <script src="../../../vendors/lodash/lodash.min.js"></script>
-    <script src="../../../vendors/list.js/list.min.js"></script>
-    <script src="../../../vendors/feather-icons/feather.min.js"></script>
-    <script src="../../../vendors/dayjs/dayjs.min.js"></script>
-    <script src="../../../assets/js/phoenix.js"></script>
+
+    <script>
+        var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
+        var navbarTop = document.querySelector('.navbar-top');
+        if (navbarTopStyle === 'darker') {
+            navbarTop.setAttribute('data-navbar-appearance', 'darker');
+        }
+
+        var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
+        var navbarVertical = document.querySelector('.navbar-vertical');
+        if (navbarVertical && navbarVerticalStyle === 'darker') {
+            navbarVertical.setAttribute('data-navbar-appearance', 'darker');
+        }
+    </script>
+    </main>
+    <script src="login/forgotPassword.js"></script>
 
 </body>
 

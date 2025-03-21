@@ -836,11 +836,12 @@ include '../modals/NewCompanionModal.php';
                                                     </div>
                                                 </div> -->
                                                 <div class="btn-group me-1">
-                                                    <button class="btn dropdown-toggle mb-1 btn-success" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finalizar factura</button>
+                                                    <button id="finishInvoiceParent" class="btn dropdown-toggle mb-1 btn-success" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finalizar factura</button>
                                                     <div class="dropdown-menu">
 
-                                                        <a id="saveAndCast" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar y emitir</a>
-                                                        <a id="saveDraft" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i> Guardar en borrador</a>
+                                                        <a id="finish" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i>Finalizar</a>
+                                                        <a id="downloadInvoice" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i>Descargar factura</a>
+                                                        <a id="printInvoice" class="dropdown-item" href="#"><i class="fas fa-save me-2"></i>Imprimir factura</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1838,13 +1839,16 @@ include '../modals/NewCompanionModal.php';
         calculatedAmountToPaid();
     }
 
-    document.getElementById('next_step').addEventListener('click', function() {
+    document.getElementById('next_step').addEventListener('click', async function() {
         const activeStep = document.querySelector('.nav-link.active'); // Selecciona el paso activo
 
         if (activeStep) {
             switch (activeStep.dataset.wizardStep) {
                 case "1":
                     this.disabled = true; // Deshabilita el botón
+                    break;
+                case "3":
+                    await guardarAdmision();
                     break;
                 default:
                     break;
@@ -1857,7 +1861,11 @@ include '../modals/NewCompanionModal.php';
         document.getElementById('next_step').disabled = false;
     })
 
-    document.getElementById('saveAndCast').addEventListener('click', async function() {
+    let dataAdmissionSaved;
+
+    async function guardarAdmision() {
+        dataAdmissionSaved = null;
+
         const tableBody = document.getElementById('productsTableBody');
         const rowsProducts = tableBody.getElementsByTagName('tr');
         const tableBodyPaymentsmethod = document.getElementById('paymentsTableBody');
@@ -1889,7 +1897,7 @@ include '../modals/NewCompanionModal.php';
                 const rowData = {
                     payment_method_id: Number(cells[0]?.innerText.trim()), // Ajusta según el índice de las columnas
                     payment_date: "<?php echo date('Y-m-d'); ?>",
-                    amount: Number(cells[2]?.innerText.replace('.', '').trim()),
+                    amount: Number(cells[2]?.innerText.trim()),
                     notes: "xxxxxxx",
                 };
                 dataPaymentMthods.push(rowData);
@@ -1920,44 +1928,46 @@ include '../modals/NewCompanionModal.php';
             payments: dataPaymentMthods
         }
 
-        console.log(requestData);
+        document.getElementById('finishInvoiceParent').disabled = true;
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
-            .then(async response => {
-                console.log(response);
-                let contenidoResumen = `
-                <div style="margin-bottom: 15px;">
-                    <ul style="margin-top: 5px; padding-left: 20px;">
-                    <li>Documento #: ${response.data.invoice_code}</li>
-                    </div>
-            `;
-                await sendInvoice(response.admission_data.appointment_id, response.admission_data.patient_id);
-                Swal.fire({
-                    title: 'Admision creada',
-                    html: contenidoResumen,
-                    icon: 'success',
-                    width: '600px',
-                    confirmButtonText: 'Finalizar',
-                    showCancelButton: true,
-                    cancelButtonText: 'Imprimir factura',
-                    confirmButtonColor: '#4CAF50'
-                }).then((result) => {
-                    console.log(result);
-                    if (result.isConfirmed) {
-
-                        window.location.href = 'citasControl'; // Redireccionar a la página de éxito
-                    } else {
-                        generateInvoice(response.admission_data.appointment_id, true);
-                        setTimeout(function() {
-                            window.location.href = 'citasControl';
-                        }, 3000);
-                    }
-                });
+            .then(response => {
+                if (response) {
+                    dataAdmissionSaved = response;
+                    obtenerDatosAdmision();
+                }
             })
             .catch(error => {
                 console.error('Error al crear la admisión:', error);
             });
 
+    }
+
+    async function obtenerDatosAdmision() {
+        console.log("data saved: ", dataAdmissionSaved);
+
+        await sendInvoice(dataAdmissionSaved.admission_data.appointment_id, dataAdmissionSaved.admission_data.patient_id);
+
+        document.getElementById('finishInvoiceParent').disabled = false;
+
+    }
+
+    document.getElementById('finish').addEventListener('click', function() {
+        window.location.href = 'citasControl';
+    })
+
+    document.getElementById('printInvoice').addEventListener('click', async function() {
+        await generateInvoice(dataAdmissionSaved.admission_data.appointment_id, false);
+
+        setTimeout(() => {
+            window.location.href = 'citasControl';
+        }, 1000);
+    })
+    document.getElementById('downloadInvoice').addEventListener('click', async function() {
+        await generateInvoice(dataAdmissionSaved.admission_data.appointment_id, true);
+        setTimeout(() => {
+            window.location.href = 'citasControl';
+        }, 1000);
     })
 </script>
 

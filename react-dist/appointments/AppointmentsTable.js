@@ -12,6 +12,7 @@ import { appointmentService } from "../../services/api/index.js";
 import UserManager from "../../services/userManager.js";
 import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStateFilters, appointmentStatesByKeyTwo } from "../../services/commons.js";
 import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
 export const AppointmentsTable = () => {
   const {
     appointments
@@ -20,6 +21,10 @@ export const AppointmentsTable = () => {
   const [selectedBranch, setSelectedBranch] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState(null);
   const [filteredAppointments, setFilteredAppointments] = React.useState([]);
+  const [pdfFile, setPdfFile] = useState(null); // Para almacenar el archivo PDF
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null); // Para la previsualización del PDF
+  const [showPdfModal, setShowPdfModal] = useState(false); // Para controlar la visibilidad del modal de PDF
+
   const columns = [{
     data: "patientName",
     className: "text-start",
@@ -80,7 +85,17 @@ export const AppointmentsTable = () => {
       label: label
     }));
   };
-  const handleCancelAppointment = appointmentId => {};
+  const handleCancelAppointment = async appointmentId => {
+    SwalManager.confirmCancel(async () => {
+      await appointmentService.changeStatus(appointmentId, "cancelled");
+      SwalManager.success({
+        text: "Cita cancelada exitosamente"
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    });
+  };
   const handleHideFormModal = () => {
     setShowFormModal({
       isShow: false,
@@ -160,7 +175,22 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen"))), /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      onClick: () => setShowPdfModal(true) // Abre el modal de PDF
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-pdf",
+      style: {
+        width: "20px",
+        cursor: "pointer"
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        cursor: "pointer"
+      }
+    }, "Subir Examen")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -175,27 +205,21 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Subir resultados"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null)
-    // <li>
-    //   <a
-    //     className="dropdown-item"
-    //     href="#"
-    //     onClick={(e) => {
-    //       e.preventDefault();
-    //       handleCancelAppointment(data.id);
-    //     }}
-    //     data-column="realizar-consulta"
-    //   >
-    //     <div className="d-flex gap-2 align-items-center">
-    //       <i
-    //         className="fa-solid fa-ban"
-    //         style={{ width: "20px" }}
-    //       ></i>
-    //       <span>Cancelar cita</span>
-    //     </div>
-    //   </a>
-    // </li>
-    , /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
+    }), /*#__PURE__*/React.createElement("span", null, "Subir resultados"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
+      onClick: e => {
+        e.preventDefault();
+        handleCancelAppointment(data.id);
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-ban",
+      style: {
+        width: "20px"
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
       className: "dropdown-header"
     }, "Cita"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -209,7 +233,7 @@ export const AppointmentsTable = () => {
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-brands fa-whatsapp",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Compartir cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
       className: "dropdown-header"
@@ -318,7 +342,66 @@ export const AppointmentsTable = () => {
   }, "Estado"), /*#__PURE__*/React.createElement("th", {
     className: "text-end align-middle pe-0 border-top mb-2",
     scope: "col"
-  })))))), /*#__PURE__*/React.createElement(CustomFormModal, {
+  })))))), showPdfModal && /*#__PURE__*/React.createElement("div", {
+    className: "modal fade show",
+    style: {
+      display: 'block',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-dialog modal-dialog-centered modal-lg"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/React.createElement("h5", {
+    className: "modal-title"
+  }, "Previsualizaci\xF3n de PDF"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn-close",
+    onClick: () => {
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body"
+  }, pdfPreviewUrl ? /*#__PURE__*/React.createElement("embed", {
+    src: pdfPreviewUrl,
+    width: "100%",
+    height: "500px",
+    type: "application/pdf"
+  }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")), /*#__PURE__*/React.createElement("div", {
+    className: "modal-footer"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: ".pdf",
+    onChange: e => {
+      const file = e.target.files?.[0] || null;
+      if (file) {
+        setPdfFile(file);
+        setPdfPreviewUrl(URL.createObjectURL(file));
+      }
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-secondary",
+    onClick: () => {
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  }, "Cancelar"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    onClick: () => {
+      // Aquí puedes agregar la lógica para guardar el PDF
+      console.log("PDF cargado:", pdfFile);
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  }, "Confirmar"))))), /*#__PURE__*/React.createElement(CustomFormModal, {
     formId: "createPreadmission",
     show: showFormModal.isShow,
     onHide: handleHideFormModal,

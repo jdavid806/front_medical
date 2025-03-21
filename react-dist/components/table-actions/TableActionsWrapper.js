@@ -3,7 +3,11 @@ const TableActionsWrapper = ({
   children
 }) => {
   return /*#__PURE__*/React.createElement("div", {
-    className: "dropdown"
+    className: "dropdown",
+    style: {
+      marginBottom: '10px',
+      marginTop: '10px'
+    }
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary dropdown-toggle",
     type: "button",

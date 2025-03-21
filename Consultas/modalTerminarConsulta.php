@@ -537,7 +537,8 @@ include "../ConsultasJson/dataPaciente.php";
     }
 
     clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
-      .then(async () => {
+      .then(async (response) => {
+        console.log("response guardar historia: ", response);
         await appointmentService.changeStatus(appointmentId, 'consultation_completed')
         AlertManager.success({
           text: 'Se ha creado el registro exitosamente'

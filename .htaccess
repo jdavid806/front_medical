@@ -243,4 +243,5 @@ RewriteRule ^controlCaja$ ControlCaja/controlCajaForm.php
 #Login
 RewriteRule ^forgotPassword$ login/forgotPassword.php
 
-RewriteRule ^visualizarDocumento$ funciones/visualizarDocumento.php
+# RewriteRule ^visualizarDocumento$ funciones/visualizarDocumento.php
+RewriteRule ^visualizarDocumento/([^/]+)/([^/]+)/?$ funciones/visualizarDocumento.php?id=$1&tipo=$2 [L,QSA]

@@ -264,6 +264,8 @@ $baner = "";
       calendar.refetchEvents();
     }
 
+
+
     function initCalendar() {
       var todayDate = moment().startOf('day');
       var YM = todayDate.format('YYYY-MM');
@@ -351,6 +353,9 @@ $baner = "";
               consultation_type,
               external_cause
             }) => {
+
+
+
               const patientName = `${patient.first_name} ${patient.last_name}`
               const date = moment(appointment_date).format('D-MM-YYYY')
               const time = moment(appointment_time, 'HH:mm:ss').format('h:mm a')
@@ -358,9 +363,15 @@ $baner = "";
               const start = `${appointment_date}T${appointment_time}`
               const attentionType = rips[attention_type];
               const consultationType = typeConsults[consultation_type];
+
+
               const externalCause = externalCauses[external_cause];
               const consultationPurpose = purposeConsultations[consultation_purpose];
-              const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${attentionType} de tipo ${consultationPurpose} por ${externalCause}`
+
+              console.log("externalCause", externalCauses, "", external_cause);
+
+
+              const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${attentionType} de tipo ${consultationPurpose} por ${externalCause}`;
               return {
                 title: patientName,
                 start: `${appointment_date}T${appointment_time}`,
@@ -377,13 +388,19 @@ $baner = "";
 
         eventClick: function(info) {
 
-          console.log("infoCalendar", info);
 
           const titulo = info.event.title || "Título no disponible";
           const descripcion = info.event.extendedProps?.description || "Descripción no disponible";
           const url = info.event.url || "";
           const start = moment(info.event.start).format('D-MM-YYYY, h:mm a');
-          const end = moment(info.event.end).format('D-MM-YYYY, h:mm a');
+          const endDate = info.event.extendedProps?.end || "Fecha no disponible";
+          // Parse the input date string
+          const parsedDate = moment(endDate, "YYYY-MM-DD[T]ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
+          // Format it into the desired output
+          const formattedDate = parsedDate.format("YYYY-MM-DDTHH:mm:ssZ");
+          const end = moment(formattedDate).format('D-MM-YYYY, h:mm a');
+
+
 
           // Inserta los valores en el modal
           $('#tituloEvento').text(titulo);

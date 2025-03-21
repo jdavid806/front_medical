@@ -1,4 +1,4 @@
-o
+A
 <?php
 session_start();
 include "../globalesMN.php";
@@ -110,35 +110,11 @@ include "../globalesMN.php";
                           </div>
                           <button class="btn btn-dark w-100 mb-2" id="btn-enter" onclick="validarUsuario()"
                             type="button">Iniciar sesión</button>
-                          <button class="btn btn-outline-dark w-100" onclick="toggleForm()" type="button">Crear
-                            cuenta</button>
+
+                            <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has olvidado tu contraseña?</a>
                         </form>
                       </div>
-                    </div>
-                    <!-- Formulario de Registro -->
-                    <div
-                      class="back w-100 h-100 bg-white position-absolute d-flex flex-column align-items-center justify-content-center"
-                      style="backface-visibility: hidden; transform: rotateY(180deg);">
-                      <div class="p-4 text-black w-100 text-center">
-                        <img src="/logo_monaros_sinbg_light.png" style="width: 50%;" alt="Logo Medicalsoft"
-                          class="mb-3">
-                        <h5 class="fw-bold mb-3">Regístrate</h5>
-                        <form>
-                          <div class="form-outline mb-3">
-                            <input type="email" id="email" class="form-control" placeholder="Ej:KdV2A@example.com" />
-                            <label class="form-label" for="email">Email</label>
-                          </div>
-                          <div class="form-outline mb-3">
-                            <input type="domain" id="domain" class="form-control" placeholder="Ej:onsultorio1" />
-                            <label class="form-label" for="domain">Dominio</label>
-                          </div>
-                          <button class="btn btn-dark w-100 mb-2" id="btn-register" onclick="registrarUsuario()"
-                            type="button">Registrarse</button>
-                          <button class="btn btn-outline-dark w-100" onclick="toggleForm()" type="button">Iniciar
-                            sesión</button>
-                        </form>
-                      </div>
-                    </div>
+                    </div>                 
                   </div>
                 </div>
               </div>
@@ -153,111 +129,6 @@ include "../globalesMN.php";
       </div>
     </div>
   </section>
-
-  <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registroModal">
-    Registrar Usuario
-  </button> -->
-
-  <!-- Modal -->
-  <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title" id="registroModalLabel">Registro de Usuario</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <form id="registroForm" class="needs-validation" novalidate>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="username" name="username" required>
-                <label for="username">Nombre de Usuario</label>
-                <div class="invalid-feedback">Ingrese un nombre de usuario.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="first_name" name="first_name" required>
-                <label for="first_name">Primer Nombre</label>
-                <div class="invalid-feedback">Ingrese su primer nombre.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="middle_name" name="middle_name">
-                <label for="middle_name">Segundo Nombre</label>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="last_name" name="last_name" required>
-                <label for="last_name">Apellido</label>
-                <div class="invalid-feedback">Ingrese su apellido.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="second_last_name" name="second_last_name">
-                <label for="second_last_name">Segundo Apellido</label>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="email" class="form-control" id="emailNuevo" name="emailNuevo" required>
-                <label for="email">Correo Electrónico</label>
-                <div class="invalid-feedback">Ingrese un correo válido.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="password" class="form-control" id="password" name="password" required>
-                <label for="password">Contraseña</label>
-                <div class="invalid-feedback">Ingrese una contraseña.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="tel" class="form-control" id="phone" name="phone" required>
-                <label for="phone">Teléfono</label>
-                <div class="invalid-feedback">Ingrese un número de teléfono.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <select class="form-select" id="gender" name="gender" required>
-                  <option value="" disabled selected>Seleccione su género</option>
-                  <option value="MALE">Hombre</option>
-                  <option value="FEMALE">Mujer</option>
-                </select>
-                <label for="gender">Género</label>
-                <div class="invalid-feedback">Seleccione su género.</div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="address" name="address" required>
-                <label for="address">Dirección</label>
-                <div class="invalid-feedback">Ingrese su dirección.</div>
-              </div>
-            </div>
-
-            <button type="button" class="btn btn-success w-100" onclick="completarRegistro()">Registrar</button>
-
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 
 
   <script src="./login/login.js"></script>
@@ -277,3 +148,7 @@ include "../globalesMN.php";
 </script>
 
 <script src="./login/particles.min.js"></script>
+
+<?php
+include_once('./login/modalOTP.php');
+?>

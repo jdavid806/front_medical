@@ -415,6 +415,8 @@ async function convertirDatosVariables(
         object_id,
         patient_id
       );
+    case "Orden":
+      mensaje = await reemplazarVariablesOrden(template, object_id, patient_id);
       break;
 
     default:
@@ -579,4 +581,22 @@ async function reemplazarVariablesReceta(template, object_id, patient_id) {
     .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
     .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
     .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
+}
+
+async function reemplazarVariablesOrden(template, object_id, patient_id) {
+  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
+
+  let nombrePaciente = datosPaciente.nombre;
+
+  let url = obtenerRutaPrincipal() + `/medical/exam-orders/${object_id}`;
+  let datosOrden = await obtenerDatos(url);
+
+  let fechaOrden = formatearFechaQuitarHora(datosOrden.created_at);
+
+  let nombreExamen = datosOrden.exam_type.name;
+
+  return template
+    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
+    .replace(/\[\[FECHA_EXAMEN\]\]/g, fechaOrden || "")
+    .replace(/\[\[NOMBRE_EXAMEN\]\]/g, nombreExamen || "");
 }

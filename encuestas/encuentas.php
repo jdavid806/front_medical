@@ -32,7 +32,7 @@ include "../header.php";
               </div>
               <div class="col-6">
                 <button class="btn btn-primary"
-                  onclick='createPrescriptionMessage(38, 9)'>
+                  onclick='createOrdenMessage(2, 9)'>
                   <i class="fa-solid fa-plus"></i> Testing</button>
               </div>
             </div>
