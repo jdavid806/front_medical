@@ -18,6 +18,7 @@ export const CashControlForm = ({
     users
   } = useUsersForSelect();
   const [mappedPaymentMethods, setMappedPaymentMethods] = useState([]);
+  const [total, setTotal] = useState(0);
   const {
     control,
     handleSubmit,
@@ -29,8 +30,8 @@ export const CashControlForm = ({
     setValue
   } = useForm({
     defaultValues: {
-      user_id: '',
-      total: 0
+      who_delivers: '',
+      payments: []
     }
   });
   const onSubmit = data => onHandleSubmit(data);
@@ -41,7 +42,7 @@ export const CashControlForm = ({
   };
   useEffect(() => {
     reset({
-      user_id: ''
+      who_delivers: ''
     });
   }, [reset]);
   useEffect(() => {
@@ -54,8 +55,11 @@ export const CashControlForm = ({
     setMappedPaymentMethods(prev => {
       const newPaymentMethods = [...prev];
       newPaymentMethods[index].amount = e.value;
-      const total = newPaymentMethods?.reduce((acc, pm) => acc + pm.amount, 0);
-      setValue('total', total);
+      setValue('payments', newPaymentMethods.map(paymentMethod => ({
+        payment_method_id: paymentMethod.id,
+        amount: paymentMethod.amount
+      })));
+      setTotal(newPaymentMethods.reduce((acc, paymentMethod) => acc + paymentMethod.amount, 0));
       return newPaymentMethods;
     });
   };
@@ -67,7 +71,7 @@ export const CashControlForm = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
-    name: "user_id",
+    name: "who_delivers",
     control: control,
     rules: {
       required: 'Este campo es requerido'
@@ -80,15 +84,16 @@ export const CashControlForm = ({
     }, "Usuario que entrega el dinero *"), /*#__PURE__*/React.createElement(Dropdown, {
       options: users,
       optionLabel: "label",
-      optionValue: "value",
+      optionValue: "external_id",
       placeholder: "Seleccione al usuario que entrega el dinero",
+      filter: true,
       value: field.value,
       onChange: field.onChange,
       className: classNames('w-100', {
-        'p-invalid': errors.user_id
+        'p-invalid': errors.who_delivers
       })
     }))
-  }), getFormErrorMessage('user_id')), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('who_delivers')), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("table", {
     className: "table"
@@ -109,5 +114,5 @@ export const CashControlForm = ({
     className: "text-end"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "m-0"
-  }, "Total: ", isNaN(getValues('total')) ? 0 : getValues('total'))))));
+  }, "Total: ", isNaN(total) ? 0 : total)))));
 };

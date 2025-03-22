@@ -8,9 +8,7 @@ export const CashControlApp = () => {
     createCashControl
   } = useCashControlCreate();
   const handleSubmit = async data => {
-    console.log(data);
-
-    //await createCashControl(data)
+    await createCashControl(data);
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {

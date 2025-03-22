@@ -80,7 +80,6 @@ $baner = "";
         </div>
 
         <div class="col-12 col-md-auto" id="appointmentsSummaryCardReact"></div>
-
         <div class="col-12 col-md-auto">
           <div class="card" style="max-width:18rem;">
             <div class="card-body">
@@ -205,6 +204,7 @@ $baner = "";
 <script type="module">
   import {
     appointmentService,
+    inventoryService,
     userSpecialtyService,
     patientService,
     userService
@@ -334,27 +334,45 @@ $baner = "";
           const selectedSpecialty = specialtySelect.value;
           const selectedDoctor = doctorSelect.value;
 
+          // Obtener los nombres de los productos para todas las citas
+          const appointmentsWithProducts = await Promise.all(
+            appointments.map(async (appointment) => {
+              const productName = appointment.product_id ?
+                (await inventoryService.getById(appointment.product_id))?.name :
+                'No especificado';
+              return {
+                ...appointment,
+                productName
+              };
+            })
+          );
+
+          // console.log("appointmentsWithProducts", appointmentsWithProducts);
+
+
           successCallback(
-            appointments
+            appointmentsWithProducts
             .filter(appointment => {
+
               return appointment.is_active &&
+
                 (
                   (selectedDoctor ? appointment.user_availability.user_id == selectedDoctor : true) &&
                   (selectedSpecialty ? appointment.user_availability.user.user_specialty_id == selectedSpecialty : true)
                 )
             })
-            .map(({
-              appointment_date,
-              appointment_time,
-              user_availability,
-              patient,
-              attention_type,
-              consultation_purpose,
-              consultation_type,
-              external_cause
-            }) => {
-
-
+            .map((appointment) => {
+              const {
+                appointment_date,
+                appointment_time,
+                user_availability,
+                patient,
+                attention_type,
+                consultation_purpose,
+                consultation_type,
+                external_cause,
+                productName
+              } = appointment
 
               const patientName = `${patient.first_name} ${patient.last_name}`
               const date = moment(appointment_date).format('D-MM-YYYY')
@@ -368,10 +386,9 @@ $baner = "";
               const externalCause = externalCauses[external_cause];
               const consultationPurpose = purposeConsultations[consultation_purpose];
 
-              console.log("externalCause", externalCauses, "", external_cause);
+              // console.log("externalCause", externalCauses, "", external_cause);
 
-
-              const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${attentionType} de tipo ${consultationPurpose} por ${externalCause}`;
+              const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${productName}`;
               return {
                 title: patientName,
                 start: `${appointment_date}T${appointment_time}`,
@@ -380,6 +397,7 @@ $baner = "";
                 extendedProps: {
                   doctor_name: user_availability.user.first_name + " " + user_availability.user.last_name,
                   end: `${appointment_date}T${appointmentTimeEnd}`,
+                  appointment: appointment
                 }
               }
             })
@@ -387,7 +405,7 @@ $baner = "";
         },
 
         eventClick: function(info) {
-
+          // console.log("infoPacient", info);
 
           const titulo = info.event.title || "Título no disponible";
           const descripcion = info.event.extendedProps?.description || "Descripción no disponible";
@@ -409,7 +427,6 @@ $baner = "";
           $('#endEvento').text(end);
           $('#medicoEvento').text(info.event.extendedProps.doctor_name);
 
-
           // Muestra el modal
           $('#modalEvento').modal('show');
 
@@ -425,7 +442,7 @@ $baner = "";
           var horaInicio = fechaInicioInicial.format('HH:mm');
           var fechaFinal = fechaFinalInicial.format('YYYY-MM-DD');
           var horaFinal = fechaFinalInicial.format('HH:mm');
-          console.log("fechaFinal", fechaFinal);
+          // console.log("fechaFinal", fechaFinal);
 
           // Asignar datos a los campos del modal
           document.getElementById('fechaCita').value = fechaInicio; // Asignar la fecha de inicio
@@ -454,7 +471,7 @@ $baner = "";
             cancelButtonText: 'Cancelar'
           }).then((result) => {
             if (result.isConfirmed) {
-              console.log("se reagndo");
+              // console.log("se reagndo");
             } else {
               arg.revert();
             }

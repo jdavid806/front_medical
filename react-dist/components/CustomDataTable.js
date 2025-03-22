@@ -19,7 +19,8 @@ const CustomDataTable = ({
     data: data,
     slots: slots,
     options: options,
-    columns: columns
+    columns: columns,
+    className: "text-body-emphasis"
   }, children);
 };
 export default CustomDataTable;

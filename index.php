@@ -1,8 +1,5 @@
 A
-<?php
-session_start();
-include "../globalesMN.php";
-?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +9,10 @@ include "../globalesMN.php";
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $NAME_PRODUCTO ?></title>
   <link rel="icon" href="<?= $URL_FAVICON ?>" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
   <!-- Latest compiled and minified CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,7 +35,7 @@ include "../globalesMN.php";
   <!-- OPEN SANS -->
 
   <!-- ANIMATE.CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
   <!-- ANIMATE.CSS -->
 
   <style>
@@ -100,33 +101,35 @@ include "../globalesMN.php";
                             <input type="email" id="user" class="form-control" />
                             <label class="form-label" for="user">Usuario</label>
                           </div>
-                          <div class="form-outline mb-3 position-relative">
-                            <input type="password" id="pass" class="form-control" />
-                            <label class="form-label" for="pass">Contraseña</label>
-                            <span class="position-absolute end-0 top-50 translate-middle-y me-3"
-                              style="cursor: pointer;" onclick="togglePassword()">
-                              <i id="togglePasswordIcon" class="fas fa-eye"></i>
-                            </span>
-                          </div>
-                          <button class="btn btn-dark w-100 mb-2" id="btn-enter" onclick="validarUsuario()"
-                            type="button">Iniciar sesión</button>
-
-                            <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has olvidado tu contraseña?</a>
-                        </form>
+                          <div class="position-relative mb-3">
+                            <input class="form-control form-icon-input pe-6" id="pass" type="password"
+                              placeholder="Contraseña" />
+                            <button type="button"
+                              class="btn px-3 py-0 h-100 position-absolute top-0 end-0 fs-7 text-body-tertiary"
+                              onclick="togglePassword()">
+                              <i id="togglePasswordIcon" class="bi bi-eye"></i>
+                            </button>
                       </div>
-                    </div>                 
+                      <button class="btn btn-dark w-100 mb-2" id="btn-enter" onclick="validarUsuario()"
+                        type="button">Iniciar sesión</button>
+
+                      <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has
+                        olvidado tu contraseña?</a>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
-              <!-- Contenedor derecho con la imagen -->
-              <div class="col-md-6 col-lg-8 d-flex justify-content-center align-items-center position-relative">
-                <img src="/medical_index.jpg" alt="login form" class="img-fluid"
-                  style="border-radius: 0 1rem 1rem 0; width: 100%; height: 100%; object-fit: cover;" />
-              </div>
+            </div>
+            <!-- Contenedor derecho con la imagen -->
+            <div class="col-md-6 col-lg-8 d-flex justify-content-center align-items-center position-relative">
+              <img src="/medical_index.jpg" alt="login form" class="img-fluid"
+                style="border-radius: 0 1rem 1rem 0; width: 100%; height: 100%; object-fit: cover;" />
             </div>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </section>
 

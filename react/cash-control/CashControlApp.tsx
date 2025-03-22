@@ -9,7 +9,6 @@ export const CashControlApp = () => {
     const { createCashControl } = useCashControlCreate();
 
     const handleSubmit = async (data: CashControlInputs) => {
-        console.log(data);
         await createCashControl(data)
     };
 

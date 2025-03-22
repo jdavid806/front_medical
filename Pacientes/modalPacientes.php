@@ -52,9 +52,12 @@ require "./modals/editPartnerModal.php";
                             <label class="form-label" for="document_type">Tipo de documento</label>
                             <select class="form-select" name="patient[document_type]" id="document_type" required>
                               <option value="" disabled selected>Seleccione un tipo de documento</option>
-                              <option value="CC">CC - Cedula de Ciudadania</option>
-                              <option value="CE">CE - Cedula de Extranejeria</option>
-                              <option value="TI">TI - Tarjeta de Identidad</option>
+                              <option value="CI">CI - Cédula de Identidad</option>
+                              <option value="CR">CR - Carnet de Residencia</option>
+                              <option value="CM">CM - Carnet de Menor de Edad</option>
+                              <option value="AN">AN - Acta de Nacimiento</option>
+                              <option value="LC">LC - Licencia de Conducción</option>
+                              <option value="OT">OT - Otros</option>
                             </select>
                             <div class="invalid-feedback">Por favor seleccione un tipo de documento.</div>
                           </div>
@@ -154,8 +157,11 @@ require "./modals/editPartnerModal.php";
                             <label for="ethnicity" class="form-label">Etnía</label>
                             <select class="form-select" id="ethnicity" name="patient[ethnicity]">
                               <option selected disabled value="">Seleccione</option>
-                              <option value="Campesino">Campesino</option>
+                              <option value="Afrodesendiente">Afrodesendiente</option>
                               <option value="Indigena">Indigena</option>
+                              <option value="Caucásica">Caucásica</option>
+                              <option value="Asiática">Asiática</option>
+                              <option value="Mestiza">Mestiza</option>
                             </select>
                             <div class="invalid-feedback">El campo es obligatorio.</div>
                           </div>
@@ -165,6 +171,7 @@ require "./modals/editPartnerModal.php";
                             <label for="ethnicity" class="form-label">Tipo de sangre</label>
                             <select class="form-select" id="blood_type" name="patient[blood_type]" required>
                               <option selected disabled value="">Seleccione</option>
+                              <option value="NO_REFIERE">No Refiere</option>
                               <option value="O_POSITIVE">O Positivo</option>
                               <option value="O_NEGATIVE">O Negativo</option>
                               <option value="A_POSITIVE">A Positivo</option>
@@ -432,12 +439,14 @@ require "./modals/editPartnerModal.php";
                     </div>
                   </div>
 
+
                 </div>
               </div>
 
             </div>
           </div>
           <input type="hidden" id="modalPacientesPatientId" name="patient_id" value="<?php echo $_GET['patient_id'] ?? $_GET['id']; ?>">
+
         </form>
       </div>
 

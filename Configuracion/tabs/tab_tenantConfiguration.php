@@ -181,11 +181,17 @@
             <div class="tab-pane fade" id="tab-consumidor" role="tabpanel" aria-labelledby="consumidor-tab">
               <form class="row g-3 needs-validation" novalidate id="form-consumidor">
                 <input type="hidden" name="" id="idFacturaConsumidor" value="">
-                <div class="col-12">
+                <div class="col-6">
                   <label class="form-label" for="prefijoConsumidor">Prefijo DGII</label>
                   <input class="form-control" id="prefijoConsumidor" name="prefijoConsumidor" type="text"
                     placeholder="Ej: ABC" required>
                   <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label" for="cuentaConsumidor">Cuenta Contable</label>
+                  <input class="form-control" id="cuentaConsumidor" name="cuentaConsumidor" type="text"
+                    placeholder="Ej: 1-0001-0001" required>
+                  <div class="invalid-feedback">Favor ingrese la cuenta contable.</div>
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionConsumidor">Número Resolución</label>
@@ -226,11 +232,17 @@
             <div class="tab-pane fade show active" id="tab-fiscal" role="tabpanel" aria-labelledby="fiscal-tab">
               <form class="row g-3 needs-validation" novalidate id="form-fiscal">
                 <input type="hidden" id="idFacturaFiscal" value="">
-                <div class="col-12">
+                <div class="col-6">
                   <label class="form-label" for="prefijoFiscal">Prefijo DGII</label>
                   <input class="form-control" id="prefijoFiscal" name="prefijoFiscal" type="text" placeholder="Ej: ABC"
                     required>
                   <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label" for="cuentaFiscal">Cuenta Contable</label>
+                  <input class="form-control" id="cuentaFiscal" name="cuentaFiscal" type="text"
+                    placeholder="Ej: 1-0001-0001" required>
+                  <div class="invalid-feedback">Favor ingrese la cuenta contable.</div>
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionFiscal">Número Resolución</label>
@@ -271,10 +283,16 @@
 
               <form class="row g-3 needs-validation" novalidate id="form-gubernamental">
                 <input type="hidden" name="" id="idFacturaGubernamental" value="">
-                <div class="col-12">
+                <div class="col-6">
                   <label class="form-label" for="prefijoGubernamental">Prefijo DGII</label>
                   <input class="form-control" id="prefijoGubernamental" name="prefijoGubernamental" type="text"
                     placeholder="Ej: ABC" required>
+                  <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label" for="cuentaGubernamental">Cuenta Contable</label>
+                  <input class="form-control" id="cuentaGubernamental" name="cuentaGubernamental" type="text"
+                    placeholder="Ej: 1-0001-0001" required>
                   <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
                 </div>
                 <div class="col-12">
@@ -316,11 +334,17 @@
 
               <form class="row g-3 needs-validation" novalidate id="form-notaCredito">
                 <input type="hidden" name="" id="idNotaCredito" value="">
-                <div class="col-12">
+                <div class="col-6">
                   <label class="form-label" for="prefijoNotaCredito">Prefijo DGII</label>
                   <input class="form-control" id="prefijoNotaCredito" name="prefijoNotaCredito" type="text"
                     placeholder="Ej: ABC" required>
                   <div class="invalid-feedback">Favor ingrese el prefijo DGII.</div>
+                </div>
+                <div class="col-6">
+                  <label class="form-label" for="cuentaNotaCredito">Cuenta Contable</label>
+                  <input class="form-control" id="cuentaNotaCredito" name="cuentaNotaCredito" type="text"
+                    placeholder="Ej: 1-0001-0001" required>
+                  <div class="invalid-feedback">Favor ingresar la cuenta contable.</div>
                 </div>
                 <div class="col-12">
                   <label class="form-label" for="numeroResolucionNotaCredito">Número Resolución</label>

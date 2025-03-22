@@ -82,6 +82,7 @@ include "../header.php";
 
   <?php include "../footer.php"; ?>
   <?php include "./modalCitas.php"; ?>
+
 </div>
 
 <template id="appointment-template">

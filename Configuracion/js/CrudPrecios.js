@@ -40,15 +40,13 @@ async function cargarContenido() {
             <td class="salePrice">${producto.sale_price || "N/A"}</td>
             <td class="copayment">${producto.copayment || "N/A"}</td>
             <td>
-                <button class="btn btn-primary btn-sm" onclick="editarProducto(${
-                  producto.id
-                })" 
+                <button class="btn btn-primary btn-sm" onclick="editarProducto(${producto.id
+            })" 
                 data-bs-toggle="modal" data-bs-target="#modalPrice">
                     <i class="fa-solid fa-pen"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
-                  producto.id
-                })">
+                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
+            })">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
@@ -86,6 +84,43 @@ async function cargarContenido() {
   }
 }
 
+async function cargarEntidades(entidades) {
+  // const entities = await 
+  entidades.forEach(entidad => {
+    let entidadId = entidad.id;
+    let entidadNombre = entidad.name || "N/A";
+
+    let precio = entidad.price;
+
+    let impuestoNombre = document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
+    let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
+
+    // Guardar en el array para futuras referencias
+    preciosEntidades.push({
+      entity_id: entidadId,
+      price: precio,
+      tax_charge_id: impuestoId,
+      withholding_tax_id: retencionId,
+    });
+
+    // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
+    let tabla = document.getElementById("tablaPreciosEntidades");
+    let fila = `<tr>
+                <td>${entidadNombre}</td>
+                <td>${precio}</td>
+                <td>${impuestoNombre}</td>
+                <td>${retencionNombre}</td>
+                <td>
+                    <button class='btn btn-danger btn-sm' onclick='eliminarFila(${preciosEntidades.length - 1})'>
+                        Eliminar
+                    </button>
+                </td>
+            </tr>`;
+
+    tabla.innerHTML += fila;
+  });
+}
+
 async function eliminarPrecio(id) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
   EliminarDatos(url);
@@ -99,8 +134,12 @@ async function updateProduct(id, productData) {
 }
 
 async function createProduct(product) {
-  let url = obtenerRutaPrincipal() + `/api/v1/admin/product-create-entities`;
-  guardarDatos(url, product);
+  try {
+    let url = obtenerRutaPrincipal() + `/api/v1/admin/product-create-entities`;
+    await guardarDatos(url, product);
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function editarProducto(id) {

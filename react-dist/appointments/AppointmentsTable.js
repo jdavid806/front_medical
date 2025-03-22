@@ -17,6 +17,8 @@ export const AppointmentsTable = () => {
   const {
     appointments
   } = useFetchAppointments(appointmentService.active());
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState(null);
@@ -55,6 +57,27 @@ export const AppointmentsTable = () => {
     isShow: false,
     data: {}
   });
+  const handleSubmit = async () => {
+    try {
+      // Llamar a la función guardarArchivoExamen  
+      const enviarPDf = await guardarArchivoExamen('inputPdf', 2);
+
+      // Acceder a la PromiseResult  
+      if (enviarPDf !== undefined) {
+        console.log("PDF de prueba:", enviarPDf);
+        console.log("Resultado de la promesa:", enviarPDf);
+      } else {
+        console.error("No se obtuvo un resultado válido.");
+      }
+    } catch (error) {
+      console.error("Error al guardar el archivo:", error);
+    } finally {
+      // Limpiar el estado después de la operación  
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  };
   useEffect(() => {
     let filtered = [...appointments];
     if (selectedBranch) {
@@ -84,6 +107,9 @@ export const AppointmentsTable = () => {
       value: key,
       label: label
     }));
+  };
+  const handleRescheduleAppointment = async appointmentId => {
+    console.log('Reagendando', appointmentId);
   };
   const handleCancelAppointment = async appointmentId => {
     SwalManager.confirmCancel(async () => {
@@ -177,7 +203,10 @@ export const AppointmentsTable = () => {
       }
     }), /*#__PURE__*/React.createElement("span", null, "Realizar examen"))), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
-      onClick: () => setShowPdfModal(true) // Abre el modal de PDF
+      onClick: () => {
+        setShowPdfModal(true);
+        setSelectedAppointmentId(data.id);
+      }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
     }, /*#__PURE__*/React.createElement("i", {
@@ -190,22 +219,21 @@ export const AppointmentsTable = () => {
       style: {
         cursor: "pointer"
       }
-    }, "Subir Examen")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }, "Subir Examen"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
         e.preventDefault();
-        handleLoadExamResultsFile();
-      },
-      "data-column": "realizar-consulta"
+        handleRescheduleAppointment(data.id);
+      }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
     }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-stethoscope",
+      className: "fa-solid fa-ban",
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Subir resultados"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Reagendar cita")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -219,7 +247,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
+    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita"))))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
       className: "dropdown-header"
     }, "Cita"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -317,10 +345,11 @@ export const AppointmentsTable = () => {
     onChange: e => setSelectedDate(e.value),
     className: "w-100",
     placeholder: "Seleccione un rango"
-  }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+  }))))))))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: '300px'
+    }
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
     data: filteredAppointments,
@@ -360,7 +389,6 @@ export const AppointmentsTable = () => {
     type: "button",
     className: "btn-close",
     onClick: () => {
-      setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);
     }
@@ -376,6 +404,7 @@ export const AppointmentsTable = () => {
   }, /*#__PURE__*/React.createElement("input", {
     type: "file",
     accept: ".pdf",
+    id: "inputPdf",
     onChange: e => {
       const file = e.target.files?.[0] || null;
       if (file) {
@@ -395,8 +424,7 @@ export const AppointmentsTable = () => {
     type: "button",
     className: "btn btn-primary",
     onClick: () => {
-      // Aquí puedes agregar la lógica para guardar el PDF
-      console.log("PDF cargado:", pdfFile);
+      handleSubmit();
       setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);

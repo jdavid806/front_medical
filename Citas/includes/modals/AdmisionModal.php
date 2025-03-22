@@ -1534,6 +1534,7 @@ include '../modals/NewCompanionModal.php';
     function getProductId(productId, admission) {
         return productService.getProductById(productId) // 👈 Ahora retornamos la promesa
             .then(response => {
+                console.log(response);
                 const product = response; // Asegúrate de que la estructura de la respuesta sea correcta
                 addProductToTable(product, admission); // Agregar el producto a la tabla
                 populateProductInput(product); // Llenar el input con la información del producto
@@ -1929,6 +1930,8 @@ include '../modals/NewCompanionModal.php';
         }
 
         document.getElementById('finishInvoiceParent').disabled = true;
+
+        console.log(requestData);
 
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {

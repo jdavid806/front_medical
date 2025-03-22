@@ -76,20 +76,19 @@
     </div>
 </div>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const secondModal = document.getElementById('editPartnerModal');
-    const firstModal = document.getElementById('modalCrearPaciente'); // Asegúrate de que este ID es correcto
+    document.addEventListener("DOMContentLoaded", function() {
+        const secondModal = document.getElementById('editPartnerModal');
+        const firstModal = document.getElementById('modalCrearPaciente'); // Asegúrate de que este ID es correcto
 
-    // Función para cerrar el segundo modal y abrir el primero
-    const switchToFirstModal = () => {
-        $('#editPartnerModal').modal('hide'); // Cierra el segundo modal
-        $('#modalCrearPaciente').modal('show'); // Abre el primer modal
-    };
+        // Función para cerrar el segundo modal y abrir el primero
+        const switchToFirstModal = () => {
+            $('#editPartnerModal').modal('hide'); // Cierra el segundo modal
+            $('#modalCrearPaciente').modal('show'); // Abre el primer modal
+        };
 
-    // Asigna la función a todos los botones con la clase "closet-btn"
-    document.querySelectorAll('.closet-btn').forEach(button => {
-        button.addEventListener('click', switchToFirstModal);
+        // Asigna la función a todos los botones con la clase "closet-btn"
+        document.querySelectorAll('.closet-btn').forEach(button => {
+            button.addEventListener('click', switchToFirstModal);
+        });
     });
-});
-
 </script>

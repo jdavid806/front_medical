@@ -57,17 +57,23 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert("✅ Contraseña cambiada correctamente.");
+                if (data.status === 200) {
+                    Swal.fire({
+                        title: "Contraseña cambiada",
+                        text: "Tu contraseña ha sido actualizada correctamente.",
+                        icon: "success",
+                        confirmButtonText: "Continuar",
+                        confirmButtonClass: "btn btn-phoenix-primary",
+                    });
                     localStorage.removeItem("username");
                     window.location.href = "/Dashboard";
                 } else {
-                    alert("❌ Error al cambiar contraseña.");
+                    alert("Error al cambiar contraseña.");
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("❌ Ocurrió un error.");
+                alert("Ocurrió un error.");
             });
     });
 

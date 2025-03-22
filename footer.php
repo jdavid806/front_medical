@@ -187,65 +187,59 @@
         <div class="btn-reveal-trigger">
           <button class="btn btn-link p-0 dropdown-toggle dropdown-caret-none transition-none d-flex" type="button"
             id="support-chat-dropdown" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true"
-            aria-expanded="false" data-bs-reference="parent"><span class="fas fa-ellipsis-h text-body"></span></button>
-          <div class="dropdown-menu dropdown-menu-end py-2" aria-labelledby="support-chat-dropdown"><a
-              class="dropdown-item" href="#!">Request a callback</a><a class="dropdown-item" href="#!">Search in
-              chat</a><a class="dropdown-item" href="#!">Show history</a><a class="dropdown-item" href="#!">Report to
-              Admin</a><a class="dropdown-item btn-support-chat" href="#!">Close Support</a></div>
+            aria-expanded="false" data-bs-reference="parent">
+            <span class="fas fa-ellipsis-h text-body"></span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end py-2" aria-labelledby="support-chat-dropdown">
+            <a class="dropdown-item" href="#!">Request a callback</a>
+            <a class="dropdown-item" href="#!">Search in chat</a>
+            <a class="dropdown-item" href="#!">Show history</a>
+            <a class="dropdown-item" href="#!">Report to Admin</a>
+            <a class="dropdown-item btn-support-chat" href="#!">Close Support</a>
+          </div>
         </div>
       </div>
+
       <div class="card-body chat p-0">
         <div class="d-flex flex-column-reverse scrollbar h-100 p-3">
-          <div class="text-end mt-6"><a
-              class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3"
-              href="#!">
-              <p class="mb-0 fw-semibold fs-9">I need help with something</p><span
-                class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-            </a><a
-              class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3"
-              href="#!">
-              <p class="mb-0 fw-semibold fs-9">I can’t reorder a product I previously ordered</p><span
-                class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-            </a><a
-              class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3"
-              href="#!">
-              <p class="mb-0 fw-semibold fs-9">How do I place an order?</p><span
-                class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-            </a><a
-              class="false d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3"
-              href="#!">
-              <p class="mb-0 fw-semibold fs-9">My payment method not working</p><span
-                class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-            </a>
-          </div>
           <div class="text-center mt-auto">
-            <div class="avatar avatar-3xl status-online"><img class="rounded-circle border border-3 border-light-subtle"
-                src="assets/img/team/30.webp" alt="" /></div>
+            <div class="avatar avatar-3xl status-online">
+              <img class="rounded-circle border border-3 border-light-subtle"
+                   src="assets/img/team/30.webp" alt="" />
+            </div>
             <h5 class="mt-2 mb-3">Eric</h5>
-            <p class="text-center text-body-emphasis mb-0">Ask us anything – we’ll get back to you here or by email
-              within 24 hours.</p>
+            <p class="text-center text-body-emphasis mb-0">
+              Pregúntenos cualquier cosa - nos pondremos en contacto con usted aquí o por correo electrónico dentro de las 24 horas.
+            </p>
           </div>
         </div>
       </div>
+
       <div class="card-footer d-flex align-items-center gap-2 border-top border-translucent ps-3 pe-4 py-3">
         <div class="d-flex align-items-center flex-1 gap-3 border border-translucent rounded-pill px-4">
           <input class="form-control outline-none border-0 flex-1 fs-9 px-0" type="text" placeholder="Write message" />
-          <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatPhotos"><span
-              class="fa-solid fa-image"></span></label>
+          <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatPhotos">
+            <span class="fa-solid fa-image"></span>
+          </label>
           <input class="d-none" type="file" accept="image/*" id="supportChatPhotos" />
-          <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatAttachment"> <span
-              class="fa-solid fa-paperclip"></span></label>
+          <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatAttachment">
+            <span class="fa-solid fa-paperclip"></span>
+          </label>
           <input class="d-none" type="file" id="supportChatAttachment" />
         </div>
-        <button class="btn p-0 border-0 send-btn"><span class="fa-solid fa-paper-plane fs-9"></span></button>
+        <button class="btn p-0 border-0 send-btn">
+          <span class="fa-solid fa-paper-plane fs-9"></span>
+        </button>
       </div>
     </div>
   </div>
+
   <button class="btn btn-support-chat m-0 p-0 border border-translucent"
-    style="left: 3rem; max-width:50px; opacity: 0.8"><span
-      class="fs-6 btn-text text-primary text-nowrap fa-solid fa-headset"></span><span
-      class="fa-solid fa-headset text-primary fs-8 d-sm-none"></span><span
-      class="fa-solid fa-chevron-down text-primary fs-7"></span></button>
+    style="left: 3rem; max-width:50px; opacity: 0.8">
+    <span class="fs-6 btn-text text-primary text-nowrap fa-solid fa-headset"></span>
+    <span class="fa-solid fa-headset text-primary fs-8 d-sm-none"></span>
+    <span class="fa-solid fa-chevron-down text-primary fs-7"></span>
+  </button>
 </div>
 </main>
 <!-- ===============================================-->
@@ -473,7 +467,7 @@
 
 
 <script>
-  $(document).ready(function () {
+  $(document).ready(function() {
     $('.tableDataTableSearch').DataTable({
       paging: true, // Habilita la paginación
       pageLength: 5, // Número de filas por página
@@ -504,7 +498,7 @@
           "sSortDescending": ": activar para ordenar la columna de manera descendente"
         }
       },
-      "drawCallback": function (settings) {
+      "drawCallback": function(settings) {
         // Personaliza los botones de paginación después de que DataTables se haya inicializado
         $('.dataTables_paginate .paginate_button').addClass('btn btn-primary');
         $('.dataTables_paginate .paginate_button.disabled').addClass('btn btn-primary');
@@ -539,7 +533,7 @@
         'columnWhere': columnWhere,
         'idWhere': idWhere
       },
-      success: function (response) {
+      success: function(response) {
         response = response.trim();
         if (response == "ok") {
           if (toast) {
@@ -567,14 +561,13 @@
           }
         }
       },
-      error: function (xhr, status, error) {
-      }
+      error: function(xhr, status, error) {}
     })
   }
 </script>
 <script>
   // Definir la función selectMaster
-  $.fn.selectMaster = function (config = null) {
+  $.fn.selectMaster = function(config = null) {
     this.select2();
     this.empty();
     this.append('<option value="0" >-- Seleccione --</option>');
@@ -594,7 +587,7 @@
           valorInput: btoa(config['valorInput']),
           selected: (config['selected'] != '0' ? btoa(config['selected']) : '0'),
         },
-        success: function (response) {
+        success: function(response) {
           let data = JSON.parse(response);
 
 
@@ -634,7 +627,7 @@
     // Definir una función de debouncing
     function debounce(func, delay) {
       let timer;
-      return function () {
+      return function() {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
@@ -644,13 +637,13 @@
       };
     }
 
-    this.on('select2:open', function (e) {
+    this.on('select2:open', function(e) {
       // Verificar que todos los datos de config existan
       if (config && config['campoValue'] && config['campoTexto'] && config['tabla']) {
         // buscarDatos(true);
         var $searchField = $select.data('select2').dropdown.$search || $select.data('select2').dropdown.$searchbox;
         // Evento input para el campo de búsqueda con debouncing
-        $searchField.off('input').on('input', debounce(function () {
+        $searchField.off('input').on('input', debounce(function() {
           var searchText = $(this).val();
           config['valorInput'] = searchText;
           $select.empty();
@@ -689,7 +682,7 @@
 </div>
 
 <script>
-  window.createDoughnutChart = function (
+  window.createDoughnutChart = function(
     elementId,
     titleText,
     titleSubtext,
@@ -738,7 +731,7 @@
           position: "outside",
           formatter: "{b}: {d}%",
         },
-      },],
+      }, ],
     };
 
     // Usar la configuración para inicializar el gráfico
@@ -779,7 +772,7 @@
       visible,
       callback = false
     } = JSON.parse(atob(jsonB64));
-    $("#contentOffCanvasMaster").find("textarea, input, select").each(function () {
+    $("#contentOffCanvasMaster").find("textarea, input, select").each(function() {
       let idElemento = $(this).attr("id");
       if (idElemento) {
         data[idElemento] = $(this).val();
@@ -791,7 +784,7 @@
       type: "POST",
       url: atob(ajaxB64),
       data,
-      success: function (response) {
+      success: function(response) {
         const dataJson = JSON.parse(response);
         const {
           icon,
@@ -820,7 +813,7 @@
 
         }
       },
-      error: function (xhr, status, error) {
+      error: function(xhr, status, error) {
 
       }
     })
@@ -851,6 +844,261 @@
   }
 </script>
 
+<script type="module">
+  import {
+    userService
+  } from "./services/api/index.js";
+  import {
+    getJWTPayload
+  } from "./services/utilidades.js";
+  // Script para integrar el chat con webhook de Medical
+  document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Script de chat cargado correctamente');
+    const user = await userService.getByExternalId(getJWTPayload().sub);
+    var hostname = window.location.hostname.split('.')[0];
+
+    // 1. Identificar elementos del chat
+    const chatContainer = document.querySelector('.support-chat .d-flex.flex-column-reverse.scrollbar');
+    const inputField = document.querySelector('.support-chat .form-control.outline-none');
+    const sendButton = document.querySelector('.support-chat .send-btn');
+    const predefinedQuestions = document.querySelectorAll('.support-chat .d-inline-flex.align-items-center.text-decoration-none');
+
+    // Comprobar si los elementos se encontraron correctamente
+    if (!chatContainer || !inputField || !sendButton) {
+      console.error('No se pudieron encontrar todos los elementos del chat');
+      return;
+    } else {
+      console.log('Elementos del chat encontrados correctamente');
+    }
+
+    // 2. URL del webhook
+    const webhookUrl = 'https://hooks.medicalsoft.ai/webhook/chat_medical';
+
+    // 3. Función para enviar mensaje al webhook
+    async function sendMessageToWebhook(message) {
+      try {
+        console.log('Enviando mensaje:', message);
+
+        // Mostrar mensaje del usuario en el chat
+        addUserMessageToChat(message);
+
+        // Mostrar indicador de carga
+        const loadingId = addLoadingIndicator();
+
+        // Enviar mensaje al webhook
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message,
+            username: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`,
+            tenant: hostname
+          })
+        });
+
+        // Procesar respuesta
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Respuesta recibida:', data);
+
+          // Remover indicador de carga
+          removeLoadingIndicator(loadingId);
+
+          // Mostrar las tres respuestas
+          if (data.respuesta_1) addBotMessageToChat(data.respuesta_1);
+          if (data.respuesta_2) addBotMessageToChat(data.respuesta_2);
+          if (data.respuesta_3) addBotMessageToChat(data.respuesta_3);
+        } else {
+          console.error('Error en la respuesta del servidor:', response.status);
+
+          // Remover indicador de carga
+          removeLoadingIndicator(loadingId);
+
+          // Mostrar mensaje de error
+          addBotMessageToChat('Lo siento, hubo un problema al procesar tu mensaje.');
+        }
+      } catch (error) {
+        console.error('Error al enviar mensaje:', error);
+        addBotMessageToChat('Lo siento, ocurrió un error al comunicarse con el servidor.');
+      }
+    }
+
+    // 4. Función para añadir mensaje del usuario al chat
+    function addUserMessageToChat(message) {
+      console.log('Añadiendo mensaje del usuario al chat');
+      const userMessageHTML = `
+      <div class="text-end mb-3">
+        <div class="d-inline-block p-3 rounded-3 bg-primary text-white">
+          <p class="mb-0">${escapeHtml(message)}</p>
+        </div>
+      </div>
+    `;
+      chatContainer.insertAdjacentHTML('afterbegin', userMessageHTML);
+    }
+
+    // 5. Función para añadir mensaje del bot al chat
+    function addBotMessageToChat(message) {
+      console.log('Añadiendo mensaje del bot al chat');
+      const botMessageHTML = `
+      <div class="mb-3">
+        <div class="d-flex align-items-center mb-2">
+          <div class="avatar avatar-l me-2">
+            <img class="rounded-circle border border-2 border-white" src="assets/img/team/30.webp" alt="Eric" />
+          </div>
+          <h6 class="mb-0">Eric</h6>
+        </div>
+        <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
+          <p class="mb-0">${escapeHtml(message)}</p>
+        </div>
+      </div>
+    `;
+      chatContainer.insertAdjacentHTML('afterbegin', botMessageHTML);
+    }
+
+    // 6. Función para añadir indicador de carga
+    function addLoadingIndicator() {
+      console.log('Añadiendo indicador de carga');
+      const id = 'loading-' + Date.now();
+      const loadingHTML = `
+      <div id="${id}" class="mb-3">
+        <div class="d-flex align-items-center mb-2">
+          <div class="avatar avatar-l me-2">
+            <img class="rounded-circle border border-2 border-white" src="assets/img/team/30.webp" alt="Eric" />
+          </div>
+          <h6 class="mb-0">Eric</h6>
+        </div>
+        <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
+          <p class="mb-0">
+            <span class="typing-indicator">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </span>
+          </p>
+        </div>
+      </div>
+    `;
+      chatContainer.insertAdjacentHTML('afterbegin', loadingHTML);
+      return id;
+    }
+
+    // 7. Función para remover indicador de carga
+    function removeLoadingIndicator(id) {
+      console.log('Removiendo indicador de carga:', id);
+      const loadingElement = document.getElementById(id);
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+    }
+
+    // 8. Función para escape de HTML (seguridad)
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // 9. Añadir estilos para el indicador de carga
+    function addStyles() {
+      console.log('Añadiendo estilos CSS');
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+      }
+      
+      .typing-indicator .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #888;
+        border-radius: 50%;
+        opacity: 0.6;
+        animation: dot-pulse 1.5s infinite ease-in-out;
+      }
+      
+      .typing-indicator .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      
+      .typing-indicator .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      .typing-indicator .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes dot-pulse {
+        0%, 60%, 100% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        30% {
+          transform: scale(1.5);
+          opacity: 1;
+        }
+      }
+    `;
+      document.head.appendChild(styleElement);
+    }
+
+    // 10. Event listener para el botón de enviar
+    if (sendButton) {
+      console.log('Agregando evento al botón de enviar');
+      sendButton.addEventListener('click', function() {
+        const message = inputField.value.trim();
+        if (message) {
+          sendMessageToWebhook(message);
+          inputField.value = '';
+        }
+      });
+    }
+
+    // 11. Event listener para la tecla Enter en el campo de entrada
+    if (inputField) {
+      console.log('Agregando evento de tecla Enter al campo de entrada');
+      inputField.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const message = inputField.value.trim();
+          if (message) {
+            sendMessageToWebhook(message);
+            inputField.value = '';
+          }
+          e.preventDefault();
+        }
+      });
+    }
+
+    // 12. Event listeners para las preguntas predefinidas
+    if (predefinedQuestions && predefinedQuestions.length > 0) {
+      console.log('Agregando eventos a preguntas predefinidas');
+      predefinedQuestions.forEach(question => {
+        question.addEventListener('click', function(e) {
+          e.preventDefault();
+          const messageElement = this.querySelector('p');
+          if (messageElement) {
+            const message = messageElement.textContent;
+            sendMessageToWebhook(message);
+          }
+        });
+      });
+    }
+
+    // 13. Mensaje inicial del bot (opcional)
+    setTimeout(() => {
+      addBotMessageToChat('¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+    }, 1000);
+
+    // Inicializar estilos
+    addStyles();
+
+    console.log('Inicialización del chat completada');
+  });
+</script>
+
 <!-- PARA HACER UN GUARDADO RAPIDO -->
 
 
@@ -863,16 +1111,21 @@ M. Castro c:
 <script type="module">
   import React from "react";
   import ReactDOMClient from "react-dom/client";
-  import { Editor } from "primereact/editor";
+  import {
+    Editor
+  } from "primereact/editor";
 
   document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".rich-text-react").forEach((element) => {
       ReactDOMClient.createRoot(element).render(
-        React.createElement(Editor, { style: { height: "400px" } })
+        React.createElement(Editor, {
+          style: {
+            height: "400px"
+          }
+        })
       );
     });
   });
-
 </script>
 
 <script>
@@ -924,6 +1177,9 @@ M. Castro c:
 <script src="Configuracion/js/CrudRecargos.js"></script>
 <script src="Configuracion/js/CrudTenant.js"></script>
 
+<!-- funciones Imagenes -->
+<script src="funciones/funcionesJS/FuncionesImagenes.js"></script>
+
 <!-- funcionex textarea -->
 <!-- <script src="apiVoz_4.0.js"></script> -->
 
@@ -937,8 +1193,7 @@ M. Castro c:
 <script src="Documentos/js/UtilsConsentimientos.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", async function () {
-  });
+  document.addEventListener("DOMContentLoaded", async function() {});
 </script>
 <!--
 hasta aca construyo

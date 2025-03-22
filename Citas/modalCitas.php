@@ -70,10 +70,13 @@ $externalCause = array(
 
       // Event listener para actualizar los campos de Whatsapp y Correo Electrónico
       selectPatient.addEventListener("change", () => {
+        console.log("Event listener triggered");
 
         const selectedPatientId = selectPatient.value;
+        console.log("Select Patient ID:", selectPatient.value);
 
         const selectedPatient = patientsData.find(patient => patient.id == selectedPatientId);
+        console.log("Selected Patient Data:", selectedPatient);
 
         if (selectedPatient) {
           document.getElementById("telefonoPaciente").value = selectedPatient.whatsapp ||
@@ -281,11 +284,10 @@ $externalCause = array(
           <input type="hidden" name="patient_id" value="<?= $_GET['patient_id'] ?>">
         </form>
       </div>
-
       <div class="modal-footer">
         <button class="btn btn-secondary" id="prevStep" type="button" disabled>Anterior</button>
         <button class="btn btn-primary" id="nextStep" type="button">Siguiente</button>
-        <button class="btn btn-secondary d-none" id="finishStep" type="submit" form="wizardForm">Finalizar</button>
+        <button class="btn btn-secondary d-none" id="finishStep" type="button">Finalizar</button>
       </div>
     </div>
   </div>
@@ -319,14 +321,58 @@ $externalCause = array(
     line-height: 30px;
     border-radius: 50%;
     background-color: #e9ecef;
-    color: #0d6efd;
+    color: #a1cbdf;
     font-weight: bold;
     margin-bottom: 0.5rem;
   }
 
   .step.active .step-number {
-    background-color: #0d6efd;
+    background-color: #a1cbdf;
     color: #fff;
+  }
+
+  .was-validated .form-check-input:valid~.form-check-label,
+  .form-check-input.is-valid~.form-check-label {
+    color: #0c0d19;
+  }
+
+  .was-validated .form-check-input:valid:checked,
+  .form-check-input.is-valid:checked {
+    background-color: #132030;
+  }
+
+
+  .was-validated .form-check-input:valid,
+  .form-check-input.is-valid {
+    border-color: #132030 !important;
+  }
+
+  .was-validated .form-select:valid,
+  .form-select.is-valid {
+    border-color: #0c0d19 !important;
+  }
+
+  .choices .choices__list--dropdown .choices__item--selectable {
+    background-color: rgb(238, 238, 238);
+  }
+
+  .flatpickr-months .flatpickr-month .flatpickr-current-month .flatpickr-monthDropdown-months {
+    font-size: 20px;
+  }
+
+  .flatpickr-day.today {
+    background-color: #cfd9e5 !important;
+  }
+
+  .flatpickr-months .flatpickr-month {
+    height: auto !important;
+  }
+
+  .flatpickr-day.flatpickr-disabled,
+  .flatpickr-day.flatpickr-disabled:hover {
+    cursor: not-allowed;
+    color: rgb(255 17 17 / 55%);
+
   }
 
   .wizard-step {
@@ -359,6 +405,7 @@ $externalCause = array(
   async function getProducts() {
     try {
       const response = await productService.getAllProducts(); // ya retorna JSON
+      console.log("Respuesta completa: ", response); // Log adicional para verificar la respuesta completa
 
       let products;
       if (response.data && Array.isArray(response.data)) {
@@ -369,7 +416,9 @@ $externalCause = array(
         console.error("Estructura de respuesta desconocida");
       }
 
-      if (Array.isArray(products)) {} else {
+      if (Array.isArray(products)) {
+        console.log("Es un array de productos"); // Confirma que es un array
+      } else {
         console.error("No es un array de productos");
       }
       populateProductSelect(products);
@@ -558,6 +607,7 @@ $externalCause = array(
   });
 
   function filtrarDoctores(availableBlocks, selectedDate, selectedTime) {
+    console.log(availableBlocks, selectedDate, selectedTime);
 
     let availableAvailabilities = [];
 
@@ -609,6 +659,7 @@ $externalCause = array(
       document.getElementById("assigned_user_availability_id")
     );
 
+    console.log(usersSelectChoices, doctorOptions);
   }
 
   function editarCita(id) {

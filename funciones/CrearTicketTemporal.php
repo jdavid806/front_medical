@@ -35,9 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $datails = $datos['detalles'];
 
   $empresa_nombre = $empresa['nombre_consultorio'];
-  $empresa_direccion = $empresa['datos_consultorio'][0]['Dirección'];
-  $empresa_telefono = $empresa['datos_consultorio'][1]['Teléfono'];
-  $empresa_correo = $empresa['datos_consultorio'][2]['Correo'];
+  $empresa_direccion = $empresa['datos_consultorio'][1]['Dirección'];
+  $empresa_telefono = $empresa['datos_consultorio'][2]['Teléfono'];
+  $empresa_correo = $empresa['datos_consultorio'][3]['Correo'];
 
   $paciente_nombre = $patient['paciente_nombre'][0] . ' ' . $patient['paciente_nombre'][1] . ' ' . $patient['paciente_nombre'][2] . ' ' . $patient['paciente_nombre'][3];
   $paciente_documento = $patient['paciente_documento'];

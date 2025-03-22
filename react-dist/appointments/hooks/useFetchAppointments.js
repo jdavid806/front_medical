@@ -24,16 +24,16 @@ const getEstado = appointment => {
     case isInConsultation():
       return "En Consulta";
     default:
-      return "SIN CITA";
+      return "Sin Cita";
     // Estado por defecto
   }
 };
 export const useFetchAppointments = (fetchPromise, customMapper) => {
   const defaultMapper = appointment => {
-    const doctorFirstName = appointment.user_availability.user.first_name;
-    const doctorMiddleName = appointment.user_availability.user.middle_name;
-    const doctorLastName = appointment.user_availability.user.last_name;
-    const doctorSecondLastName = appointment.user_availability.user.second_last_name;
+    const doctorFirstName = appointment.user_availability.user.first_name || "";
+    const doctorMiddleName = appointment.user_availability.user.middle_name || "";
+    const doctorLastName = appointment.user_availability.user.last_name || "";
+    const doctorSecondLastName = appointment.user_availability.user.second_last_name || "";
     const doctorName = `${doctorFirstName} ${doctorMiddleName} ${doctorLastName} ${doctorSecondLastName}`;
     const estado = getEstado(appointment);
     return {

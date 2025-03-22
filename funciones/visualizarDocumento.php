@@ -1,67 +1,86 @@
 <?php
 require_once '../dompdf/autoload.inc.php';
+include "./formatos.php";
+
 $id = $_GET['id'] ?? 'desconocido';
 $tipo = $_GET['tipo'] ?? 'ninguno';
-$host = $_SERVER['HTTP_HOST'];
 
+use Dompdf\Dompdf;
+$dompdf = new Dompdf();
+
+$resultado = "";
+$titulo = "";
 switch ($tipo) {
     case 'receta':
-        $urlApi = $host."/medical/recipes/{$id}";
+        $resultado = generarFormatoReceta($id);
+        $titulo = "Receta Medica";
         break;
-    
+    case 'incapacidad':
+        $resultado = generarFormatoIncapacidad($id);
+        $titulo = "Incapacidad";
+        break;
+    case 'consulta':
+        $resultado = generarFormatoConsulta($id);
+        $titulo = "Consulta";
+        break;
     default:
         # code...
         break;
 }
+// var_dump($resultado);
+$data = json_decode($resultado, true);
 
-try {
-    $context = stream_context_create([
-        "http" => ["ignore_errors" => true]
-    ]);
-    $response = file_get_contents($urlApi, false, $context);
-    if ($response === false) {
-        throw new Exception("Error al obtener la respuesta.");
-    }
-    $data = json_decode($response, true);
-    var_dump($data);
-    if (!$data) {
-        throw new Exception("Error al decodificar la respuesta.");
-    }
-    echo "Título: " . $data['title'];
-} catch (Exception $e) {
-    echo ":advertencia: Error: " . $e->getMessage();
+$consultorio = $data['consultorio'];
+// $logo_consultorio = $consultorio['logo_consultorio'];
+$logo_consultorio = "https://monaros.co/sistema/p/cenode.jpeg";
+$nombre_consultorio = $consultorio['nombre_consultorio'];
+// $marca_agua = $consultorio['marca_agua'];
+$marca_agua = "https://monaros.co/sistema/p/cenode.jpeg";
+$datos_consultorio = $consultorio['datos_consultorio'];
+
+$datos_paciente = $data['paciente'];
+
+$contenido = $data['contenido'];
+
+$doctor = $data['doctor'];
+$nombre_doctor = $doctor['nombre'];
+$especialidad_doctor = $doctor['especialidad'];
+$firma_doctor = $doctor['firma'];
+
+$sin_logo = empty($logo_consultorio) || in_array(strtolower(trim($logo_consultorio)), ["vacío", "No especificado", "null", ""]);
+$sin_marca_agua = empty($marca_agua) || in_array(strtolower(trim($marca_agua)), ["vacío", "No especificado", "null", ""]);
+$sin_firma = empty($firma_doctor) || in_array(strtolower(trim($firma_doctor)), ["vacío", "No especificado", "null", ""]);
+
+if (!$sin_firma) {
+    $firmaDigital = "<p><strong>Firmado Digitalmente</strong></p>";
+} else {
+    $firmaDigital = "";
 }
-use Dompdf\Dompdf;
-use Dompdf\Options;
 
-// Configuramos opciones para Dompdf
-$options = new Options();
-$options->set('isRemoteEnabled', true);
-$options->set('isHtml5ParserEnabled', true);
+$contraseña = $datos_paciente['datos_basicos']['password'];
+$nombrePdf = $titulo . "_" . $datos_paciente['datos_basicos']['documento'] . "_" . $datos_paciente['datos_generales']['fecha_consulta'] . ".pdf";
+
+ob_start();
+include "../PlantillasImpresion/PDescargaCarta.php";
+$html = ob_get_clean();
+
+$options = $dompdf->getOptions();
+$options->set(array('isRemoteEnabled' => true));
 $options->set('defaultPaperSize', 'letter');
+$options->set('isHtml5ParserEnabled', true);
+$dompdf->setOptions($options);
 
-// Creamos la instancia de Dompdf con las opciones configuradas
-$dompdf = new Dompdf($options);
+$dompdf->loadHtml($html);
 
-// Capturamos el contenido HTML de la plantilla
-$html = '<h1>Documento Privado</h1><p>Acceso restringido. Solo lectura.</p>';
+$dompdf->render();
 
-// $dompdf->loadHtml($html);
-
-// // Configuramos el formato carta y las orientaciones
-// $dompdf->setPaper('letter', 'portrait'); // 'portrait' o 'landscape'
-
-// Renderizamos el PDF
-// $dompdf->render();
-
-// // Configurar contraseñas y permisos
 // $canvas = $dompdf->getCanvas();
 // $canvas->get_cpdf()->setEncryption(
-//     'admin2025',     // Contraseña maestra (desbloquea todo)
+//     $contraseña,     // Contraseña maestra (desbloquea todo)
 //     '',     // Contraseña de usuario (abre el PDF)
 //     ['copy', 'print'] // Bloquea copiar e imprimir
 // );
 
-// // Enviamos el PDF al navegador para visualizar (sin descargar)
-// header('Content-Type: application/pdf');
-// $dompdf->stream("Factura.pdf", array("Attachment" => false));
+// Enviamos el PDF al navegador para visualizar (sin descargar)
+header('Content-Type: application/pdf');
+$dompdf->stream($nombrePdf, array("Attachment" => false));

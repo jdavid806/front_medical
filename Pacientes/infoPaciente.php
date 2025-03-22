@@ -3,16 +3,18 @@
         id="productFilterColumn">
         <div class="d-flex justify-content-between align-items-center mb-2 d-md-none">
             <h3 class="mb-0">Información del Paciente</h3>
-            <button class="btn p-0" data-phoenix-dismiss="offcanvas"><span
-                    class="uil uil-times fs-7"></span></button>
+            <button class="btn p-0" data-phoenix-dismiss="offcanvas"><span class="uil uil-times fs-7"></span></button>
         </div>
         <div class="card mb-3">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
                     <!-- Imagen del avatar -->
                     <div class="avatar avatar-5xl">
-                        <img class="rounded-circle" src="https://i.pravatar.cc/150?img=52" alt="Avatar">
+                        <img class="rounded-circle img-fluid"
+                            src="http://5.78.129.143:9000/dev-monaros/App/Model/User/1742500750VkCzwt1vqzpng"
+                            alt="Avatar">
                     </div>
+
                     <!-- Información personal -->
                     <div class="flex-grow-1 text-center">
                         <!-- Nombre -->

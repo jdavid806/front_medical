@@ -136,7 +136,7 @@
                                 <th class="sort text-end align-middle pe-0 border-top" scope="col"></th>
                               </tr>
                             </thead>
-                            <tbody class="list">
+                            <tbody class="list-billing">
                               <tr>
                                 <td class="align-middle ps-3 name">Anna</td>
                                 <td class="align-middle email">2025-10-05</td>
@@ -155,20 +155,6 @@
 
                             </tbody>
                           </table>
-                        </div>
-                        <div class="d-flex justify-content-between mt-3"><span class="d-none d-sm-inline-block" data-list-info="data-list-info">1 to 5 <span class="text-body-tertiary"> Items of </span>43</span>
-                          <div class="d-flex"><button class="page-link disabled" data-list-pagination="prev" disabled=""><svg class="svg-inline--fa fa-chevron-left" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                                <path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"></path>
-                              </svg><!-- <span class="fas fa-chevron-left"></span> Font Awesome fontawesome.com --></button>
-                            <ul class="mb-0 pagination">
-                              <li class="active"><button class="page" type="button" data-i="1" data-page="5">1</button></li>
-                              <li><button class="page" type="button" data-i="2" data-page="5">2</button></li>
-                              <li><button class="page" type="button" data-i="3" data-page="5">3</button></li>
-                              <li class="disabled"><button class="page" type="button">...</button></li>
-                            </ul><button class="page-link pe-0" data-list-pagination="next"><svg class="svg-inline--fa fa-chevron-right" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg="">
-                                <path fill="currentColor" d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"></path>
-                              </svg><!-- <span class="fas fa-chevron-right"></span> Font Awesome fontawesome.com --></button>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -316,12 +302,12 @@
     productService,
     userService,
     patientService,
-    costCenterService
+    costCenterService,
+    billingService
   } from "../../services/api/index.js";
 
 
   document.addEventListener('DOMContentLoaded', function() {
-    console.log("hola");
     createSelectEntities();
     cargarProcedimientos();
     cargarEspecialistas();
@@ -363,9 +349,6 @@
   async function cargarCentrosCosto() {
     const centrosCosto = await costCenterService.getCostCenterAll();
 
-
-    console.log("Centros de costo: ", centrosCosto);
-
     const select = document.getElementById("centroCosto");
     select.innerHTML = '<option selected disabled>Seleccione</option>';
 
@@ -400,7 +383,6 @@
 
     procedimientos = procedimientos.data.filter(item => item.attributes.attention_type === "PROCEDURE");
 
-    selectProcedimientos.innerHTML = '<option selected disabled>Seleccione</option>';
 
     if (procedimientos.length) {
 
@@ -433,8 +415,6 @@
     const selectEspecialistas = document.getElementById('especialistas');
     const especialistas = await userService.getAllUsers();
 
-    selectEspecialistas.innerHTML = '<option selected disabled>Seleccione</option>';
-
     especialistas.forEach(especialista => {
       const optionEsp = document.createElement('option');
 
@@ -450,9 +430,6 @@
     const selectPacientes = document.getElementById('patients');
     const pacientes = await patientService.getAll();
 
-    console.log("Pacientes: ", pacientes);
-
-    selectPacientes.innerHTML = '<option selected disabled>Seleccione</option>';
 
     pacientes.forEach(paciente => {
       const optionPac = document.createElement('option');
@@ -462,7 +439,6 @@
 
       selectPacientes.appendChild(optionPac);
     });
-    console.log("Select pacientes: ", selectPacientes);
     configurarSelectPacientesMultiple();
   }
 
@@ -494,6 +470,80 @@
         placeholder: true
       });
     }
+  }
+
+  document.getElementById('nextStep').addEventListener('click', async function() {
+    const activeStep = document.querySelector('.nav-link.active'); // Selecciona el paso activo
+
+    if (activeStep) {
+      switch (activeStep.dataset.wizardStep) {
+        case "1":
+          const paramsFilter = obtenerFiltros();
+          await queryBillingReport(paramsFilter);
+          break;
+        default:
+          break;
+      }
+    }
+
+  });
+
+  function obtenerFiltros() {
+    const procedureSelect = document.getElementById('procedure');
+    const selectedProcedures = Array.from(procedureSelect.selectedOptions).map(option => option.value);
+    const especialistasSelect = document.getElementById('especialistas');
+    const selectedEspecialistas = Array.from(especialistasSelect.selectedOptions).map(option => option.value);
+    const pacientesSelect = document.getElementById('patients');
+    const selectedPacientes = Array.from(pacientesSelect.selectedOptions).map(option => option.value);
+    const fechasProcedimientos = document.getElementById('fechasProcedimiento').value;
+    const [fechaInicio, fechaFin] = fechasProcedimientos.split(' to ').map(fecha => {
+      const [dia, mes, año] = fecha.split('/');
+      return `20${año}-${mes}-${dia}`;
+    });
+
+    const paramsFilter = {
+      end_date: fechaFin,
+      start_date: fechaInicio,
+      patient_ids: selectedPacientes,
+      product_ids: selectedProcedures,
+      user_ids: selectedEspecialistas,
+    }
+
+    return paramsFilter;
+  }
+
+  async function queryBillingReport(paramsFilter) {
+    let dataBillingReport = await billingService.getBillingReport(paramsFilter);
+    dataBillingReport = dataBillingReport.filter(item => item.type == "entity" && item.authorization_number != null);
+
+
+    populateBillingTable(dataBillingReport);
+  }
+
+  function populateBillingTable(data) {
+    const tbody = document.querySelector('.list-billing');
+    tbody.innerHTML = ''; // Limpiar tabla existente
+
+    data.forEach(item => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+            <td class="align-middle ps-3 name">${item.patient.first_name} ${item.patient.last_name}</td>
+            <td class="align-middle email">${item.authorization_date}</td>
+            <td class="align-middle email">${item.billed_procedure[0].product.name}</td>
+            <td class="align-middle age">${item.authorization_number}</td>
+            <td class="align-middle age">${item.billed_procedure[0].unit_price}</td>
+            <td class="align-middle age">${item.billed_procedure[0].amount}</td>
+            <td class="align-middle age">$${item.billed_procedure[0].amount}</td>
+            <td class="align-middle white-space-nowrap text-end pe-0">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                </div>
+            </td>
+        `;
+
+      tbody.appendChild(tr);
+    });
   }
 </script>
 
@@ -803,8 +853,6 @@
       }
     });
 
-    console.log('Datos capturados:', datos);
-
     return datos;
   }
   const finishStep = document.getElementById('finishStep');
@@ -1106,9 +1154,6 @@
     // seleccionarNadaCheckbox("checkbox_multiple_empresa");
     seleccionarCheckboxMultiple(false, "checkbox_multiple_empresa");
 
-    console.log(filtroEmpresapaciente);
-    console.log(filtroEmpresaprocedimiento);
-
 
     $('#modalNuevaFacturaEmpresa #tbody-modal-facturacion tr').each(function() {
       const fila = $(this);
@@ -1132,10 +1177,6 @@
           mostrarFila = false;
         }
       }
-
-      // console.log(`filtroEmpresapaciente.length > 0 => ` + (filtroEmpresapaciente.length > 0));
-      // console.log(`!filtroEmpresapaciente.includes("0") => ` + !filtroEmpresapaciente.includes("0"));
-      // console.log(`!filtroEmpresapaciente.includes("") => ` + !filtroEmpresapaciente.includes(""));
 
       // Filtrar por paciente
       if (filtroEmpresapaciente.length > 0 && !filtroEmpresapaciente.includes("0") && !filtroEmpresapaciente.includes("")) {

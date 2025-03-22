@@ -1,6 +1,6 @@
 <?php
-$documentType = array("DNI", "RUC", "CEDULA", "PASAPORTE", "OTRO");
-$relations = array("Padre", "Madre", "Hermano", "Hermana", "Tio", "Tia", "Abuelo", "Abuela", "Primo", "Prima", "Amigo", "Amiga", "Otro");
+$documentType = array("CI - Cédula de Identidad", "CR - Carnet de Residencia", "CM - Carnet de Menor de Edad", "AN - Acta de Nacimiento", "LC - Licencia de Conducción", "Otros");
+$relations = array("Padre", "Madre", "Hermano (a)", "Tio (a)", "Abuelo (a)", "Primo (a)", "Amigo (a)", "Esposo (a)", "Otro");
 ?>
 
 <div class="modal fade" id="newPartnerModal" tabindex="-1" aria-hidden="true">

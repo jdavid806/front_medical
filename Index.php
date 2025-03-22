@@ -9,7 +9,7 @@ include "../globalesMN.php";
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title><?= $NAME_PRODUCTO ?></title>
   <link rel="icon" href="<?= $URL_FAVICON ?>" type="image/x-icon">
 
@@ -111,10 +111,10 @@ include "../globalesMN.php";
                           <button class="btn btn-dark w-100 mb-2" id="btn-enter" onclick="validarUsuario()"
                             type="button">Iniciar sesión</button>
 
-                            <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has olvidado tu contraseña?</a>
+                          <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has olvidado tu contraseña?</a>
                         </form>
                       </div>
-                    </div>                 
+                    </div>
                   </div>
                 </div>
               </div>
@@ -138,8 +138,8 @@ include "../globalesMN.php";
 
 
 <script>
-  $(document).ready(function () {
-    document.addEventListener('keydown', function (event) {
+  $(document).ready(function() {
+    document.addEventListener('keydown', function(event) {
       if (event.code === 'Enter') {
         validarUsuario()
       }

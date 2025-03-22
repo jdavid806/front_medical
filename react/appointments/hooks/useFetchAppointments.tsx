@@ -48,11 +48,11 @@ export const useFetchAppointments = (
   customMapper?: (dto: AppointmentDto) => AppointmentTableItem
 ) => {
   const defaultMapper = (appointment: AppointmentDto): AppointmentTableItem => {
-    const doctorFirstName = appointment.user_availability.user.first_name;
-    const doctorMiddleName = appointment.user_availability.user.middle_name;
-    const doctorLastName = appointment.user_availability.user.last_name;
+    const doctorFirstName = appointment.user_availability.user.first_name || "";
+    const doctorMiddleName = appointment.user_availability.user.middle_name || "";
+    const doctorLastName = appointment.user_availability.user.last_name || "";
     const doctorSecondLastName =
-      appointment.user_availability.user.second_last_name;
+      appointment.user_availability.user.second_last_name || "";
     const doctorName = `${doctorFirstName} ${doctorMiddleName} ${doctorLastName} ${doctorSecondLastName}`;
 
     const estado = getEstado(appointment);
@@ -82,21 +82,21 @@ export const useFetchAppointments = (
   const fetchAppointments = async () => {
     const data = (await fetchPromise) as AppointmentDto[];
 
-     // Ordenar por fecha descendente y hora ascendente
-     data.sort((a, b) => {
+    // Ordenar por fecha descendente y hora ascendente
+    data.sort((a, b) => {
       const fechaA = new Date(a.appointment_date).getTime();
       const fechaB = new Date(b.appointment_date).getTime();
       if (fechaA > fechaB) return -1;
       if (fechaA < fechaB) return 1;
-  
+
       const [horaA, minutoA, segundoA] = a.appointment_time.split(":").map(Number);
       const [horaB, minutoB, segundoB] = b.appointment_time.split(":").map(Number);
-  
+
       if (horaA !== horaB) return horaA - horaB;
       if (minutoA !== minutoB) return minutoA - minutoB;
       return segundoA - segundoB;
-  });
-    
+    });
+
 
 
     const patientId = +(

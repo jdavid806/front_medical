@@ -115,13 +115,19 @@ function validarOTP(otp, token) {
 
 
 function togglePassword() {
-    const passwordInput = document.getElementById('pass');
-    const toggleIcon = document.getElementById('togglePasswordIcon');
-    passwordInput.type = (passwordInput.type === 'password') ? 'text' : 'password';
-    toggleIcon.classList.toggle('fa-eye');
-    toggleIcon.classList.toggle('fa-eye-slash');
-}
+  const passwordInput = document.getElementById("pass");
+  const toggleIcon = document.getElementById("togglePasswordIcon");
 
+  if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      toggleIcon.classList.remove("bi-eye");
+      toggleIcon.classList.add("bi-eye-slash");
+  } else {
+      passwordInput.type = "password";
+      toggleIcon.classList.remove("bi-eye-slash");
+      toggleIcon.classList.add("bi-eye");
+  }
+}
 
 particlesJS({
     "particles": {

@@ -7,6 +7,7 @@ export const useUsersForSelect = () => {
       const data = await userService.getAll();
       const mappedData = data.map(user => {
         return {
+          external_id: user.external_id,
           value: user.id.toString(),
           label: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`
         };

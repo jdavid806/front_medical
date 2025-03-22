@@ -5,7 +5,8 @@ include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
     ['icono' => 'ban', 'titulo' => 'Anulaciones', 'texto' => 'Ver las solicitudes de anulaciones', 'url' => 'consultas-anulacion-pendiente'],
-    
+    ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Generar el cierre de Caja', 'url' => 'controlCaja'],
+    ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Auditoria de cierres de caja', 'url' => 'reporteCaja'],
 ];
 
 ?>

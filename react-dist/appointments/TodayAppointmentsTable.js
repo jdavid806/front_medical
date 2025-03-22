@@ -53,13 +53,24 @@ export const TodayAppointmentsTable = ({
     }, "Generar admisi\xF3n"))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "mb-3 text-primary   rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: '300px'
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
     data: appointments,
-    slots: slots
+    slots: slots,
+    customOptions: {
+      ordering: false,
+      columnDefs: [{
+        targets: 0,
+        orderable: false
+      } // Desactiva el ordenamiento para la primera columna (name)
+      ]
+    }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th text-start"
   }, "Nombre"), /*#__PURE__*/React.createElement("th", {

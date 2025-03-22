@@ -80,8 +80,6 @@ function cargarSelectsFuncionesEspecialidades() {
       const elementos = obtenerElementosTabla();
       const productId = document.getElementById("speciality_id")?.value;
 
-      console.log(elementos);
-
       try {
         if (productId) {
           updateEspecilidad(productId, elementos);
@@ -148,12 +146,13 @@ function rellenarElementos() {
 let nameSpecialty;
 
 async function abrirModal(id, name) {
+  rellenarElementos();
   let hiddenInput = document.getElementById("speciality_id");
   let hiddenName = document.getElementById("speciality_name");
   nameSpecialty = name;
 
   let rutaSpecializables =
-    obtenerRutaPrincipal() + "/medical/specializables/by-specialty/" + id;
+    obtenerRutaPrincipal() + "/medical/specializables/by-specialty/" + name;
 
   let dataEspecializables = await obtenerDatos(rutaSpecializables);
 
@@ -188,8 +187,8 @@ async function abrirModal(id, name) {
       .getElementById("formVincularHistoriasClinicas")
       .appendChild(hiddenInput);
   }
-  hiddenInput.value = id;
-  hiddenName.value = name;
+  // hiddenInput.value = id;
+  // hiddenName.value = name || "";
 }
 
 async function updateEspecilidad(id, especialidad) {

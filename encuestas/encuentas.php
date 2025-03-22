@@ -30,11 +30,10 @@ include "../header.php";
               <div class="col-6">
                 <h2 class="mb-4">Panel de Encuestas</h2>
               </div>
-              <div class="col-6">
-                <button class="btn btn-primary"
-                  onclick='createOrdenMessage(2, 9)'>
+              <!-- <div class="col-6">
+                <button class="btn btn-primary" onclick='cargarDAtosTEST(30)'>
                   <i class="fa-solid fa-plus"></i> Testing</button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

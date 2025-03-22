@@ -102,7 +102,7 @@ async function consultarDatosDoctor(doctorId) {
 
   return {
     nombre: "Dr(a). " + unirTextos(nombre),
-    especialidad: data.specialty.name,
+    especialidad: data.user_specialty_id,
     firma: "",
   };
 }

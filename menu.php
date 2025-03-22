@@ -160,6 +160,10 @@ $_SESSION["ID"] = 1;
     .breadcrumb-item a {
       color: rgb(56 116 255 / 66%);
     }
+
+    /* .dropdown-menu {
+      background-color: red !important;
+    } */
   </style>
 
 
@@ -239,49 +243,38 @@ $_SESSION["ID"] = 1;
   </style>
 
   <script type="module">
-    import UserManager from "./services/userManager.js";
     import {
       menuService,
-      permissionService
+      permissionService,
+      userService
     } from "./services/api/index.js";
+    import {
+      getJWTPayload
+    } from "./services/utilidades.js";
 
-    UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
-      console.log(isAuthenticated, user, userPermissions, userMenus);
-      const menusFromService = await menuService.getAll()
+    const [user, menus] = await Promise.all([
+      userService.getByExternalId(getJWTPayload().sub),
+      menuService.getAll()
+    ]);
 
-      if (user && userPermissions && userMenus) {
-        const loadingScreen = document.getElementById('loading-screen');
-        loadingScreen.classList.add('d-none');
+    const fullPath = window.location.pathname;
+    const parts = fullPath.split('/').filter(part => part !== '');
+    const firstPart = (parts[0] || '').trim();
 
-        const checkPermission = (key) => userPermissions.map(p => p.key).includes(key);
-        const checkMenu = (key) => userMenus.map(m => m.key).includes(key);
+    const validateRoute = async () => {
+      const menuFromService = menus.find(menu => menu.route === firstPart);
 
-        document.querySelectorAll('[data-permission-role]').forEach(element => {
-          const permissionKey = element.dataset.permissionRole;
+      if (!menuFromService) return;
 
-          if (permissionKey && !checkPermission(permissionKey)) {
-            element.remove()
-          }
-        })
+      console.log(menuFromService, user.role.menus);
 
-        document.querySelectorAll('[data-menu-role]').forEach(element => {
-          const menuKey = element.dataset.menuRole;
 
-          if (menuKey && !checkMenu(menuKey)) {
-            //element.remove()
-          };
-        })
-
-        const fullPath = window.location.pathname;
-        const parts = fullPath.split('/').filter(part => part !== '');
-        const firstPart = parts[0] || '';
-        const menuRouteFromService = menusFromService.find(menu => menu.route === firstPart)?.route;
-
-        if (!userMenus.find(menu => menu.route === firstPart || !menuRouteFromService)) {
-          //window.location.href = 'noAutorizado';
-        }
+      if (!user.role.menus.find(menu => menu.key === menuFromService.key_)) {
+        window.location.href = 'noAutorizado';
       }
-    });
+    }
+
+    validateRoute();
   </script>
 </head>
 

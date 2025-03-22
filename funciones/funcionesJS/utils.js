@@ -54,13 +54,11 @@ async function guardarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    // if (!respuesta.ok) {
-    //   throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
-    // }
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
+    }
 
     const resultado = await respuesta.json();
-
-    // console.log(resultado);
 
     Swal.fire({
       icon: "success",
@@ -80,7 +78,7 @@ async function guardarDatos(url, datos) {
       confirmButtonText: "Aceptar",
     });
 
-    return null;
+    throw error;
   }
 }
 
@@ -94,12 +92,15 @@ async function actualizarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
+    if (!respuesta.ok) {
+      throw new Error(`Error en la red: ${response.statusText}`);
+    }
+
     const contentType = respuesta.headers.get("content-type");
     let resultado = {};
     if (contentType && contentType.includes("application/json")) {
       resultado = await respuesta.json();
     }
-    console.log(resultado);
 
     // Notificación de éxito
     Swal.fire({
@@ -305,6 +306,12 @@ function obtenerRutaPrincipal() {
   let url = window.location.origin;
   let rutaBase = url.replace(/:\d+$/, "");
   return rutaBase;
+}
+
+function obtenerTenant() {
+  let url = window.location.hostname;
+  let subdominio = url.split(".")[0];
+  return subdominio;
 }
 
 function consultarTipoMensaje(nombreObjecto) {

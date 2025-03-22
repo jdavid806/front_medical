@@ -107,7 +107,7 @@
 
     <div class="d-flex">
       <span>Subtotal:</span>
-      <span>$<?php echo $subtotal; ?></span>
+      <span>$<?php echo number_format($subtotal, 2); ?></span>
     </div>
     <!-- <div class="d-flex">
       <span>IVA (10%):</span>
@@ -119,7 +119,7 @@
     </div>
     <div class="d-flex fw-bold">
       <span>TOTAL:</span>
-      <span>$<?php echo $subtotal; ?></span>
+      <span>$<?php echo number_format($subtotal, 2); ?></span>
     </div>
 
     <hr>

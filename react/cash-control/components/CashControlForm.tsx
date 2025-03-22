@@ -9,8 +9,12 @@ import { useUsersForSelect } from "../../users/hooks/useUsersForSelect";
 import { Dropdown } from 'primereact/dropdown';
 
 export type CashControlInputs = {
-    user_id: string
-    total: number
+    who_delivers: string
+    who_validate: string
+    payments: {
+        payment_method_id: number;
+        amount: number;
+    }[]
 }
 
 interface ExamCategoryFormProps {
@@ -23,6 +27,7 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
     const { paymentMethods } = usePaymentMethods();
     const { users } = useUsersForSelect()
     const [mappedPaymentMethods, setMappedPaymentMethods] = useState<any[]>([]);
+    const [total, setTotal] = useState(0);
 
     const {
         control,
@@ -33,8 +38,8 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
         setValue
     } = useForm<CashControlInputs>({
         defaultValues: {
-            user_id: '',
-            total: 0
+            who_delivers: '',
+            payments: []
         }
     })
     const onSubmit: SubmitHandler<CashControlInputs> = (data) => onHandleSubmit(data)
@@ -45,7 +50,7 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
 
     useEffect(() => {
         reset({
-            user_id: ''
+            who_delivers: ''
         });
     }, [reset]);
 
@@ -58,8 +63,8 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
             const newPaymentMethods = [...prev];
             newPaymentMethods[index].amount = e.value;
 
-            const total = newPaymentMethods?.reduce((acc, pm) => acc + pm.amount, 0)
-            setValue('total', total)
+            setValue('payments', newPaymentMethods.map(paymentMethod => ({ payment_method_id: paymentMethod.id, amount: paymentMethod.amount })))
+            setTotal(newPaymentMethods.reduce((acc, paymentMethod) => acc + paymentMethod.amount, 0))
 
             return newPaymentMethods
         })
@@ -70,7 +75,7 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
             <form id={formId} className="needs-validation" noValidate onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <Controller
-                        name='user_id'
+                        name='who_delivers'
                         control={control}
                         rules={{ required: 'Este campo es requerido' }}
                         render={({ field }) =>
@@ -79,17 +84,17 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
                                 <Dropdown
                                     options={users}
                                     optionLabel="label"
-                                    optionValue='value'
+                                    optionValue='external_id'
                                     placeholder="Seleccione al usuario que entrega el dinero"
                                     filter
                                     value={field.value}
                                     onChange={field.onChange}
-                                    className={classNames('w-100', { 'p-invalid': errors.user_id })}
+                                    className={classNames('w-100', { 'p-invalid': errors.who_delivers })}
                                 />
                             </>
                         }
                     />
-                    {getFormErrorMessage('user_id')}
+                    {getFormErrorMessage('who_delivers')}
                 </div>
                 <div className="mb-3">
                     <table className="table">
@@ -118,7 +123,7 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
                         </tbody>
                     </table>
                     <div className="text-end">
-                        <h4 className="m-0">Total: {isNaN(getValues('total')) ? 0 : getValues('total')}</h4>
+                        <h4 className="m-0">Total: {isNaN(total) ? 0 : total}</h4>
                     </div>
                 </div>
             </form>

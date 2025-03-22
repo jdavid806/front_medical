@@ -292,7 +292,7 @@ include "../ConsultasJson/dataPaciente.php";
       if (optionData.selected) option.selected = true;
       tipoDiagnostico.appendChild(option);
     });
-    configurarSelectCie11();
+    console.log(tipoDiagnostico);
   }
 
   function cargarCie11(cie11) {
@@ -343,7 +343,6 @@ include "../ConsultasJson/dataPaciente.php";
       document.getElementById('diagnosticoRel1'),
       document.getElementById('diagnosticoRel2'),
       document.getElementById('diagnosticoRel3'),
-      document.getElementById('tipoDiagnostico')
     ];
 
     // Verificamos una sola vez si Choices está definido

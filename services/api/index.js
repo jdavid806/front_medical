@@ -38,6 +38,7 @@ import { UserRoleService } from "./classes/userRoleService.js";
 import { HistoryPreadmissionService } from "./classes/historyPreadmissionService.js";
 import { CashControlService } from "./classes/cashControlService.js";
 import { CostCenterService } from "./classes/costCentersService.js";
+import { BillingService } from "./classes/billingService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -226,3 +227,5 @@ export const historyPreadmission = new HistoryPreadmissionService(
 );
 
 export const costCenterService = new CostCenterService();
+
+export const billingService = new BillingService();

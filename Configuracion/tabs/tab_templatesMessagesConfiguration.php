@@ -15,6 +15,7 @@ $tabs = [
     'title' => 'Turnos',
     'botones' => 'Turnos',
     'subtabs' => [
+      'creacion' => 'Creación de Turno',
       'llamado' => 'Llamado a Turno',
     ],
     'anexo' => false

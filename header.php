@@ -24,6 +24,25 @@
   .choices__list--dropdown .choices__placeholder {
     color: #999;
   }
+
+  .navbar .dropdown-menu.dropdown-menu-end.navbar-dropdown-caret {
+    /* Tus estilos existentes */
+    width: auto !important;
+    right: 0 !important;
+  }
+
+  /* Ajustar el espaciado entre elementos */
+  .row-custom {
+    gap: 30px;
+    /* Espacio entre elementos */
+  }
+
+  /* Asegurar que el texto no se desborde */
+  .text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 
 
@@ -142,8 +161,13 @@
               </div>
             </a>
           </li>
-          <li><a class="dropdown-item" href="Estimates">
+          <li><a class="dropdown-item" href="Invoices">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Facturas
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="InvoicesDoctors">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Especialistas
               </div>
             </a>
           </li>
@@ -265,10 +289,10 @@
           <circle cx="14" cy="2" r="2" fill="currentColor"></circle>
         </svg></a>
 
-      <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-nine-dots shadow border"
-        style="width:23vw !important" aria-labelledby="navbarDropdownNindeDots">
+      <div class="dropdown-menu-container dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-nine-dots shadow border"
+        aria-labelledby="navbarDropdownNindeDots">
         <div class="card bg-body-emphasis position-relative border-0">
-          <div class="card-body pt-3 px-3 pb-0 overflow-auto scrollbar" style="height: 11rem;">
+          <div class="card-body pt-3 px-4 pb-0 overflow-auto scrollbar">
             <div class="row text-center align-items-center gx-0 gy-0">
               <!-- <div class="col-4">
                 <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
@@ -276,12 +300,16 @@
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Facturación</p>
                 </a>
               </div> -->
-              <div class="col-4">
-                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="FE_Config">
-                  <img src="assets/img/nav-icons/CashButton.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Configuración</p>
-                </a>
+              <div class="row">
+                <!-- Cada columna se ajustará automáticamente según el tamaño de la pantalla -->
+                <div class="mb-3">
+                  <a class="d-flex flex-column align-items-center justify-content-center bg-body-secondary-hover p-2 rounded-3 text-decoration-none h-100" href="FE_Config">
+                    <img src="assets/img/nav-icons/CashButton.png" alt="" width="30" />
+                    <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Configuración</p>
+                  </a>
+                </div>
+
+                <!-- Agrega más bloques según sea necesario -->
               </div>
 
               <!-- <div class="col-4"><a

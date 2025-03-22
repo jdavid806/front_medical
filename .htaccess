@@ -42,6 +42,7 @@ RewriteRule ^Clients$ Reportes/Report_details/Clients_report.php
 RewriteRule ^Schedule$ Reportes/Report_details/Schedule_report.php
 RewriteRule ^Dates_by_status$ Reportes/Report_details/Dates_by_status_report.php
 RewriteRule ^Invoices$ Reportes/Report_details/Invoices_report.php
+RewriteRule ^InvoicesDoctors$ Reportes/Report_details/Invoices_doctors_report.php
 RewriteRule ^Estimates$ Reportes/Report_details/Estimates_report.php
 RewriteRule ^Accounts_receivable$ Reportes/Report_details/Accounts_receivable_report.php
 RewriteRule ^Sales_commission_by_user$ Reportes/Report_details/Sales_commission_by_user_report.php
@@ -240,8 +241,12 @@ RewriteRule ^configMensajes$  Marketing/configMensajes.php
 
 RewriteRule ^controlCaja$ ControlCaja/controlCajaForm.php
 
+RewriteRule ^reporteCaja$ ReporteCaja/reporteCaja.php
+
 #Login
 RewriteRule ^forgotPassword$ login/forgotPassword.php
 
 # RewriteRule ^visualizarDocumento$ funciones/visualizarDocumento.php
 RewriteRule ^visualizarDocumento/([^/]+)/([^/]+)/?$ funciones/visualizarDocumento.php?id=$1&tipo=$2 [L,QSA]
+
+RewriteRule ^test$ TEST/test.php

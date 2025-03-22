@@ -27,6 +27,7 @@ const CustomDataTable: React.FC<CustomDataTableProps> = ({ children, data, slots
             slots={slots}
             options={options}
             columns={columns}
+            className="text-body-emphasis"
         >
             {children}
         </DataTable>

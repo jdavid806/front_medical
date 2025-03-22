@@ -122,10 +122,8 @@ $patientsJson = json_encode($patients);
             <div class="pb-9">
                 <h2 class="mb-4">Facturas</h2>
                 <div class="row g-3 justify-content-between align-items-start mb-4">
-                    <div class="col-auto">
+                    <!-- <div class="col-auto">
                         <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-primary"><span class="fas fa-envelope me-2"></span>Enviar email</button>
-                            <button class="btn btn-success"><span class="fab fa-whatsapp me-2"></span>Enviar por whatsapp</button>
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-phoenix-secondary text-body dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     Exportar
@@ -137,14 +135,14 @@ $patientsJson = json_encode($patients);
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-auto">
+                    </div> -->
+                    <div class="col-12">
                         <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
-                            <li class="nav-item"><a class="nav-link active" id="search-tab" data-bs-toggle="tab" href="#tab-search" role="tab" aria-controls="tab-search" aria-selected="true">Buscador</a></li>
-                            <li class="nav-item"><a class="nav-link" id="range-dates-tab" data-bs-toggle="tab" href="#tab-range-dates" role="tab" aria-controls="tab-range-dates" aria-selected="false">Rango de fechas</a></li>
+                            <!-- <li class="nav-item"><a class="nav-link active" id="search-tab" data-bs-toggle="tab" href="#tab-search" role="tab" aria-controls="tab-search" aria-selected="true">Buscador</a></li> -->
+                            <li class="nav-item"><a class="nav-link" id="range-dates-tab" data-bs-toggle="tab" href="#tab-range-dates" role="tab" aria-controls="tab-range-dates" aria-selected="false">Filtros</a></li>
                         </ul>
                         <div class="tab-content mt-3" id="myTabContent">
-                            <div class="tab-pane fade show active" id="tab-search" role="tabpanel" aria-labelledby="search-tab">
+                            <!-- <div class="tab-pane fade show active" id="tab-search" role="tabpanel" aria-labelledby="search-tab">
                                 <div class="d-flex">
                                     <div class="search-box me-2 d-none d-xl-block">
                                         <form class="position-relative">
@@ -154,62 +152,46 @@ $patientsJson = json_encode($patients);
                                         </form>
                                     </div>
                                     <button class="btn px-3 btn-phoenix-secondary me-2 d-xl-none"><span class="fa-solid fa-search"></span></button>
-                                    <button class="btn px-3 btn-phoenix-primary" type="button" data-bs-toggle="modal" data-bs-target="#filterModal" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fa-solid fa-filter" data-fa-transform="down-3"></span></button>
-                                    <div class="modal fade" id="filterModal" tabindex="-1">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content border border-translucent">
-                                                <form id="addEventForm" autocomplete="off">
-                                                    <div class="modal-header justify-content-between border-translucent p-4">
-                                                        <h5 class="modal-title text-body-highlight fs-6 lh-sm">Filter</h5>
-                                                        <button class="btn p-1 text-danger" type="button" data-bs-dismiss="modal" aria-label="Close"><span class="fas fa-times fs-9"></span></button>
-                                                    </div>
-                                                    <div class="modal-body pt-4 pb-2 px-4">
-                                                        <div class="mb-3">
-                                                            <label class="fw-bold mb-2 text-body-highlight" for="leadStatus">Lead Status</label>
-                                                            <select class="form-select" id="leadStatus">
-                                                                <option value="newLead" selected="selected">New Lead</option>
-                                                                <option value="coldLead">Cold Lead</option>
-                                                                <option value="wonLead">Won Lead</option>
-                                                                <option value="canceled">Canceled</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="fw-bold mb-2 text-body-highlight" for="createDate">Create Date</label>
-                                                            <select class="form-select" id="createDate">
-                                                                <option value="today" selected="selected">Today</option>
-                                                                <option value="last7Days">Last 7 Days</option>
-                                                                <option value="last30Days">Last 30 Days</option>
-                                                                <option value="chooseATimePeriod">Choose a time period</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="fw-bold mb-2 text-body-highlight" for="designation">Designation</label>
-                                                            <select class="form-select" id="designation">
-                                                                <option value="VPAccounting" selected="selected">VP Accounting</option>
-                                                                <option value="ceo">CEO</option>
-                                                                <option value="creativeDirector">Creative Director</option>
-                                                                <option value="accountant">Accountant</option>
-                                                                <option value="executiveManager">Executive Manager</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer d-flex justify-content-end align-items-center px-4 pb-4 border-0 pt-3">
-                                                        <button class="btn btn-sm btn-phoenix-primary px-4 fs-10 my-0" type="submit"> <span class="fas fa-arrows-rotate me-2 fs-10"></span>Reset</button>
-                                                        <button class="btn btn-sm btn-primary px-9 fs-10 my-0" type="submit">Done</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="tab-range-dates" role="tabpanel" aria-labelledby="range-dates-tab">
+                            </div> -->
+                            <div class="tab-pane fade show active" id="tab-range-dates" role="tabpanel" aria-labelledby="range-dates-tab">
                                 <div class="d-flex">
-                                    <div style="width: 25rem;">
+                                    <div style="width: 100%;">
                                         <div class="row">
-                                            <div class="col-fixed">
-                                                <label class="form-label" for="fechaCita">Rango de fechas</label>
-                                                <input class="form-control datetimepicker" id="timepicker2" type="text" placeholder="d/m/y to d/m/y" data-options='{"mode":"range","dateFormat":"d/m/y","disableMobile":true}' />
+                                            <div class="col-12 mb-3">
+                                                <div class="card border border-light">
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <label class="form-label" for="patients">procedimientos</label>
+                                                                <select class="form-select" id="procedure">
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label" for="especialistas">Especialistas</label>
+                                                                <select class="form-select" id="especialistas">
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label" for="patients">Pacientes</label>
+                                                                <select class="form-select" id="patients">
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label" for="fechasProcedimiento">Fecha incio - fin Procedimiento</label>
+                                                                <input class="form-control datetimepicker flatpickr-input" id="fechasProcedimiento" type="text" placeholder="dd/mm/yyyy - dd/mm/yyyy" data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;d/m/y&quot;,&quot;disableMobile&quot;:true}" readonly="readonly">
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label" for="entity">Entidad</label>
+                                                                <select class="form-select" id="entity">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end m-2">
+                                                            <button type="button" class="btn btn-primary" id="filterButton">Filtrar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -221,11 +203,11 @@ $patientsJson = json_encode($patients);
                 </div>
                 <div class="row gy-5">
 
-                    <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                    <!-- <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
                         <li class="nav-item"><a class="nav-link active" id="income-tab" data-bs-toggle="tab" href="#tab-income" role="tab" aria-controls="tab-income" aria-selected="true">Ingresos</a></li>
                         <li class="nav-item"><a class="nav-link" id="age-tab" data-bs-toggle="tab" href="#tab-age" role="tab" aria-controls="tab-age" aria-selected="false">Edades</a></li>
-                    </ul>
-                    <div class="col-xl-5 col-xxl-4 tab-content mt-3" id="myTabContent">
+                    </ul> -->
+                    <!-- <div class="col-xl-5 col-xxl-4 tab-content mt-3" id="myTabContent">
                         <div class="tab-pane fade show active" id="tab-income" role="tabpanel" aria-labelledby="income-tab">
                             <div class="col-fixed">
                                 <div class="card">
@@ -316,201 +298,229 @@ $patientsJson = json_encode($patients);
                                 </div>
                             </div>
                         </div>
+                    </div> -->
+                    <div class="col-12 col-xxl-8">
+                        <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
+                            <li class="nav-item"><a class="nav-link active" id="procedures-tab" data-bs-toggle="tab" href="#tab-procedures" role="tab" aria-controls="tab-procedures" aria-selected="true">Procedimientos</a></li>
+                            <li class="nav-item"><a class="nav-link" id="entities-tab" data-bs-toggle="tab" href="#tab-entities" role="tab" aria-controls="tab-entities" aria-selected="false">Entidades</a></li>
+                            <li class="nav-item"><a class="nav-link" id="paymentsMethods-tab" data-bs-toggle="tab" href="#tab-paymentsMethods" role="tab" aria-controls="tab-paymentsMethods" aria-selected="false">Metodos de pago</a></li>
+                        </ul>
+
+                        <div class="col-12 col-xxl-4 tab-content mt-3" id="myTabContent">
+                            <div class="tab-pane fade show active" id="tab-procedures" role="tabpanel" aria-labelledby="procedures-tab">
+                                <div class="border-top border-translucent">
+                                    <div id="purchasersSellersTable" data-list='{"valueNames":["deals_name","deal_owner","account_name","stage","amount"],"page":10,"pagination":true}'>
+                                        <div class="table-responsive scrollbar mx-n1 px-1">
+                                            <table class="table table-sm fs-9 leads-table">
+                                                <thead>
+
+                                                </thead>
+                                                <tbody id="list-billing">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="row align-items-center justify-content-between pe-0 fs-9">
+                                            <div class="col-auto d-flex">
+                                                <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+                                            </div>
+                                            <div class="col-auto d-flex">
+                                                <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                                <ul class="mb-0 pagination"></ul>
+                                                <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tab-entities" role="tabpanel" aria-labelledby="entities-tab">
+                                <div class="border-top border-translucent">
+                                    <div id="purchasersSellersTable" data-list='{"valueNames":["deals_name","deal_owner","account_name","stage","amount"],"page":10,"pagination":true}'>
+                                        <div class="table-responsive scrollbar mx-n1 px-1">
+                                            <table class="table table-sm fs-9 leads-table">
+                                                <thead>
+
+                                                </thead>
+                                                <tbody id="list-entities" class="row">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="row align-items-center justify-content-between pe-0 fs-9">
+                                            <div class="col-auto d-flex">
+                                                <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+                                            </div>
+                                            <div class="col-auto d-flex">
+                                                <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                                <ul class="mb-0 pagination"></ul>
+                                                <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tab-paymentsMethods" role="tabpanel" aria-labelledby="paymentsMethods-tab">
+                                <div class="border-top border-translucent">
+                                    <div id="purchasersSellersTable" data-list='{"valueNames":["deals_name","deal_owner","account_name","stage","amount"],"page":10,"pagination":true}'>
+                                        <div class="table-responsive scrollbar mx-n1 px-1">
+                                            <table class="table table-sm fs-9 leads-table">
+                                                <thead>
+
+                                                </thead>
+                                                <tbody id="list-payments-methods" class="row">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="row align-items-center justify-content-between pe-0 fs-9">
+                                            <div class="col-auto d-flex">
+                                                <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
+                                            </div>
+                                            <div class="col-auto d-flex">
+                                                <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
+                                                <ul class="mb-0 pagination"></ul>
+                                                <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <div class="col-xl-7 col-xxl-8">
-                        <div class="border-top border-translucent">
-                            <div id="purchasersSellersTable" data-list='{"valueNames":["deals_name","deal_owner","account_name","stage","amount"],"page":10,"pagination":true}'>
-                                <div class="table-responsive scrollbar mx-n1 px-1">
-                                    <table class="table table-sm fs-9 leads-table">
-                                        <thead>
-                                            <tr>
-                                                <th class="white-space-nowrap fs-9 align-middle ps-0" style="max-width:20px; width:18px;">
-                                                    <div class="form-check mb-0 fs-8">
-                                                        <input class="form-check-input" type="checkbox" data-bulk-select='{"body":"purchasers-sellers-body"}' />
+                </div>
+            </div>
+            <div class="modal fade" id="searchBoxModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal" style="--phoenix-backdrop-opacity: 1;">
+                <div class="modal-dialog">
+                    <div class="modal-content mt-15 rounded-pill">
+                        <div class="modal-body p-0">
+                            <div class="search-box navbar-top-search-box" data-list='{"valueNames":["title"]}' style="width: auto;">
+                                <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
+                                    <input class="form-control search-input fuzzy-search rounded-pill form-control-lg" type="search" placeholder="Search..." aria-label="Search" />
+                                    <span class="fas fa-search search-box-icon"></span>
+
+                                </form>
+                                <div class="btn-close position-absolute end-0 top-50 translate-middle cursor-pointer shadow-none" data-bs-dismiss="search">
+                                    <button class="btn btn-link p-0" aria-label="Close"></button>
+                                </div>
+                                <div class="dropdown-menu border start-0 py-0 overflow-hidden w-100">
+                                    <div class="scrollbar-overlay" style="max-height: 30rem;">
+                                        <div class="list pb-3">
+                                            <h6 class="dropdown-header text-body-highlight fs-10 py-2">24 <span class="text-body-quaternary">results</span></h6>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Recently Searched </h6>
+                                            <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> Store Macbook</div>
                                                     </div>
-                                                </th>
-                                                <th class="sort align-middle ps-0 pe-5 text-uppercase text-nowrap" scope="col" data-sort="deals_name" style="min-width:120px;">Nombre</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="deal_owner" style="min-width:50px;">Telefono</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="account_name" style="min-width:250px;">País</th>
-                                                <th class="sort align-middle pe-5 text-uppercase text-nowrap" scope="col" data-sort="stage" style="min-width:160px;">Correo</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="amount" style="min-width:50px;">Fecha de registro</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="amount" style="min-width:50px;">Género</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="amount" style="min-width:50px;">Dirección</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="amount" style="min-width:50px;">Teléfono</th>
-                                                <th class="sort align-middle ps-4 pe-5 text-uppercase text-nowrap" scope="col" data-sort="amount" style="min-width:50px;">Profesión</th>
-                                                <th class="sort text-end align-middle pe-0 ps-4" scope="col"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list" id="purchasers-sellers-body">
-                                            <?php foreach ($patients as $patient): ?>
-                                                <tr>
-                                                    <td class="fs-9 align-middle py-0">
-                                                        <div class="form-check mb-0 fs-8">
-                                                            <input class="form-check-input" type="checkbox" data-bulk-select-row='' />
-                                                        </div>
-                                                    </td>
-                                                    <td><?= htmlspecialchars($patient["nombre"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["telefono"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["pais"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["correo"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["fecha_registro"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["genero"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["direccion"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["telefono_alt"]) ?></td>
-                                                    <td><?= htmlspecialchars($patient["profesion"]) ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="row align-items-center justify-content-between pe-0 fs-9">
-                                    <div class="col-auto d-flex">
-                                        <p class="mb-0 d-none d-sm-block me-3 fw-semibold text-body" data-list-info="data-list-info"></p><a class="fw-semibold" href="#!" data-list-view="*">View all<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a><a class="fw-semibold d-none" href="#!" data-list-view="less">View Less<span class="fas fa-angle-right ms-1" data-fa-transform="down-1"></span></a>
-                                    </div>
-                                    <div class="col-auto d-flex">
-                                        <button class="page-link" data-list-pagination="prev"><span class="fas fa-chevron-left"></span></button>
-                                        <ul class="mb-0 pagination"></ul>
-                                        <button class="page-link pe-0" data-list-pagination="next"><span class="fas fa-chevron-right"></span></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="searchBoxModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-phoenix-modal="data-phoenix-modal" style="--phoenix-backdrop-opacity: 1;">
-            <div class="modal-dialog">
-                <div class="modal-content mt-15 rounded-pill">
-                    <div class="modal-body p-0">
-                        <div class="search-box navbar-top-search-box" data-list='{"valueNames":["title"]}' style="width: auto;">
-                            <form class="position-relative" data-bs-toggle="search" data-bs-display="static">
-                                <input class="form-control search-input fuzzy-search rounded-pill form-control-lg" type="search" placeholder="Search..." aria-label="Search" />
-                                <span class="fas fa-search search-box-icon"></span>
+                                                </a>
+                                                <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
 
-                            </form>
-                            <div class="btn-close position-absolute end-0 top-50 translate-middle cursor-pointer shadow-none" data-bs-dismiss="search">
-                                <button class="btn btn-link p-0" aria-label="Close"></button>
-                            </div>
-                            <div class="dropdown-menu border start-0 py-0 overflow-hidden w-100">
-                                <div class="scrollbar-overlay" style="max-height: 30rem;">
-                                    <div class="list pb-3">
-                                        <h6 class="dropdown-header text-body-highlight fs-10 py-2">24 <span class="text-body-quaternary">results</span></h6>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Recently Searched </h6>
-                                        <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
+                                                        <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> MacBook Air - 13″</div>
+                                                    </div>
+                                                </a>
 
-                                                    <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> Store Macbook</div>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
+                                            </div>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Products</h6>
+                                            <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="file-thumbnail me-2"><img class="h-100 w-100 object-fit-cover rounded-3" src="../assets/img/products/60x60/3.png" alt="" /></div>
+                                                    <div class="flex-1">
+                                                        <h6 class="mb-0 text-body-highlight title">MacBook Air - 13″</h6>
+                                                        <p class="fs-10 mb-0 d-flex text-body-tertiary"><span class="fw-medium text-body-tertiary text-opactity-85">8GB Memory - 1.6GHz - 128GB Storage</span></p>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item py-2 d-flex align-items-center" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="file-thumbnail me-2"><img class="img-fluid" src="../assets/img/products/60x60/3.png" alt="" /></div>
+                                                    <div class="flex-1">
+                                                        <h6 class="mb-0 text-body-highlight title">MacBook Pro - 13″</h6>
+                                                        <p class="fs-10 mb-0 d-flex text-body-tertiary"><span class="fw-medium text-body-tertiary text-opactity-85">30 Sep at 12:30 PM</span></p>
+                                                    </div>
+                                                </a>
 
-                                                    <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-clock-rotate-left" data-fa-transform="shrink-2"></span> MacBook Air - 13″</div>
-                                                </div>
-                                            </a>
+                                            </div>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Quick Links</h6>
+                                            <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
 
+                                                        <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-link text-body" data-fa-transform="shrink-2"></span> Support MacBook House</div>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-link text-body" data-fa-transform="shrink-2"></span> Store MacBook″</div>
+                                                    </div>
+                                                </a>
+
+                                            </div>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Files</h6>
+                                            <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-file-zipper text-body" data-fa-transform="shrink-2"></span> Library MacBook folder.rar</div>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-file-lines text-body" data-fa-transform="shrink-2"></span> Feature MacBook extensions.txt</div>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-image text-body" data-fa-transform="shrink-2"></span> MacBook Pro_13.jpg</div>
+                                                    </div>
+                                                </a>
+
+                                            </div>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Members</h6>
+                                            <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="../pages/members.html">
+                                                    <div class="avatar avatar-l status-online  me-2 text-body">
+                                                        <img class="rounded-circle " src="../assets/img/team/40x40/10.webp" alt="" />
+
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <h6 class="mb-0 text-body-highlight title">Carry Anna</h6>
+                                                        <p class="fs-10 mb-0 d-flex text-body-tertiary">anna@technext.it</p>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item py-2 d-flex align-items-center" href="../pages/members.html">
+                                                    <div class="avatar avatar-l  me-2 text-body">
+                                                        <img class="rounded-circle " src="../assets/img/team/40x40/12.webp" alt="" />
+
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <h6 class="mb-0 text-body-highlight title">John Smith</h6>
+                                                        <p class="fs-10 mb-0 d-flex text-body-tertiary">smith@technext.it</p>
+                                                    </div>
+                                                </a>
+
+                                            </div>
+                                            <hr class="my-0" />
+                                            <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Related Searches</h6>
+                                            <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"><span class="fa-brands fa-firefox-browser text-body" data-fa-transform="shrink-2"></span> Search in the Web MacBook</div>
+                                                    </div>
+                                                </a>
+                                                <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
+                                                    <div class="d-flex align-items-center">
+
+                                                        <div class="fw-normal text-body-highlight title"> <span class="fa-brands fa-chrome text-body" data-fa-transform="shrink-2"></span> Store MacBook″</div>
+                                                    </div>
+                                                </a>
+
+                                            </div>
                                         </div>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Products</h6>
-                                        <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="file-thumbnail me-2"><img class="h-100 w-100 object-fit-cover rounded-3" src="../assets/img/products/60x60/3.png" alt="" /></div>
-                                                <div class="flex-1">
-                                                    <h6 class="mb-0 text-body-highlight title">MacBook Air - 13″</h6>
-                                                    <p class="fs-10 mb-0 d-flex text-body-tertiary"><span class="fw-medium text-body-tertiary text-opactity-85">8GB Memory - 1.6GHz - 128GB Storage</span></p>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item py-2 d-flex align-items-center" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="file-thumbnail me-2"><img class="img-fluid" src="../assets/img/products/60x60/3.png" alt="" /></div>
-                                                <div class="flex-1">
-                                                    <h6 class="mb-0 text-body-highlight title">MacBook Pro - 13″</h6>
-                                                    <p class="fs-10 mb-0 d-flex text-body-tertiary"><span class="fw-medium text-body-tertiary text-opactity-85">30 Sep at 12:30 PM</span></p>
-                                                </div>
-                                            </a>
-
+                                        <div class="text-center">
+                                            <p class="fallback fw-bold fs-7 d-none">No Result Found.</p>
                                         </div>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Quick Links</h6>
-                                        <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-link text-body" data-fa-transform="shrink-2"></span> Support MacBook House</div>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-link text-body" data-fa-transform="shrink-2"></span> Store MacBook″</div>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Files</h6>
-                                        <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"><span class="fa-solid fa-file-zipper text-body" data-fa-transform="shrink-2"></span> Library MacBook folder.rar</div>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-file-lines text-body" data-fa-transform="shrink-2"></span> Feature MacBook extensions.txt</div>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"> <span class="fa-solid fa-image text-body" data-fa-transform="shrink-2"></span> MacBook Pro_13.jpg</div>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Members</h6>
-                                        <div class="py-2"><a class="dropdown-item py-2 d-flex align-items-center" href="../pages/members.html">
-                                                <div class="avatar avatar-l status-online  me-2 text-body">
-                                                    <img class="rounded-circle " src="../assets/img/team/40x40/10.webp" alt="" />
-
-                                                </div>
-                                                <div class="flex-1">
-                                                    <h6 class="mb-0 text-body-highlight title">Carry Anna</h6>
-                                                    <p class="fs-10 mb-0 d-flex text-body-tertiary">anna@technext.it</p>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item py-2 d-flex align-items-center" href="../pages/members.html">
-                                                <div class="avatar avatar-l  me-2 text-body">
-                                                    <img class="rounded-circle " src="../assets/img/team/40x40/12.webp" alt="" />
-
-                                                </div>
-                                                <div class="flex-1">
-                                                    <h6 class="mb-0 text-body-highlight title">John Smith</h6>
-                                                    <p class="fs-10 mb-0 d-flex text-body-tertiary">smith@technext.it</p>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                        <hr class="my-0" />
-                                        <h6 class="dropdown-header text-body-highlight fs-9 border-bottom border-translucent py-2 lh-sm">Related Searches</h6>
-                                        <div class="py-2"><a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"><span class="fa-brands fa-firefox-browser text-body" data-fa-transform="shrink-2"></span> Search in the Web MacBook</div>
-                                                </div>
-                                            </a>
-                                            <a class="dropdown-item" href="../apps/e-commerce/landing/product-details.html">
-                                                <div class="d-flex align-items-center">
-
-                                                    <div class="fw-normal text-body-highlight title"> <span class="fa-brands fa-chrome text-body" data-fa-transform="shrink-2"></span> Store MacBook″</div>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                    </div>
-                                    <div class="text-center">
-                                        <p class="fallback fw-bold fs-7 d-none">No Result Found.</p>
                                     </div>
                                 </div>
                             </div>
@@ -518,63 +528,62 @@ $patientsJson = json_encode($patients);
                     </div>
                 </div>
             </div>
-        </div>
-        <script>
-            var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
-            var navbarTop = document.querySelector('.navbar-top');
-            if (navbarTopStyle === 'darker') {
-                navbarTop.setAttribute('data-navbar-appearance', 'darker');
-            }
+            <script>
+                var navbarTopStyle = window.config.config.phoenixNavbarTopStyle;
+                var navbarTop = document.querySelector('.navbar-top');
+                if (navbarTopStyle === 'darker') {
+                    navbarTop.setAttribute('data-navbar-appearance', 'darker');
+                }
 
-            var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
-            var navbarVertical = document.querySelector('.navbar-vertical');
-            if (navbarVertical && navbarVerticalStyle === 'darker') {
-                navbarVertical.setAttribute('data-navbar-appearance', 'darker');
-            }
-        </script>
-        <div class="support-chat-container">
-            <div class="container-fluid support-chat">
-                <div class="card bg-body-emphasis">
-                    <div class="card-header d-flex flex-between-center px-4 py-3 border-bottom border-translucent">
-                        <h5 class="mb-0 d-flex align-items-center gap-2">Demo widget<span class="fa-solid fa-circle text-success fs-11"></span></h5>
-                        <div class="btn-reveal-trigger">
-                            <button class="btn btn-link p-0 dropdown-toggle dropdown-caret-none transition-none d-flex" type="button" id="support-chat-dropdown" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fas fa-ellipsis-h text-body"></span></button>
-                            <div class="dropdown-menu dropdown-menu-end py-2" aria-labelledby="support-chat-dropdown"><a class="dropdown-item" href="#!">Request a callback</a><a class="dropdown-item" href="#!">Search in chat</a><a class="dropdown-item" href="#!">Show history</a><a class="dropdown-item" href="#!">Report to Admin</a><a class="dropdown-item btn-support-chat" href="#!">Close Support</a></div>
-                        </div>
-                    </div>
-                    <div class="card-body chat p-0">
-                        <div class="d-flex flex-column-reverse scrollbar h-100 p-3">
-                            <div class="text-end mt-6"><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
-                                    <p class="mb-0 fw-semibold fs-9">I need help with something</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-                                </a><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
-                                    <p class="mb-0 fw-semibold fs-9">I can’t reorder a product I previously ordered</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-                                </a><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
-                                    <p class="mb-0 fw-semibold fs-9">How do I place an order?</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-                                </a><a class="false d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
-                                    <p class="mb-0 fw-semibold fs-9">My payment method not working</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
-                                </a>
-                            </div>
-                            <div class="text-center mt-auto">
-                                <div class="avatar avatar-3xl status-online"><img class="rounded-circle border border-3 border-light-subtle" src="../assets/img/team/30.webp" alt="" /></div>
-                                <h5 class="mt-2 mb-3">Eric</h5>
-                                <p class="text-center text-body-emphasis mb-0">Ask us anything – we’ll get back to you here or by email within 24 hours.</p>
+                var navbarVerticalStyle = window.config.config.phoenixNavbarVerticalStyle;
+                var navbarVertical = document.querySelector('.navbar-vertical');
+                if (navbarVertical && navbarVerticalStyle === 'darker') {
+                    navbarVertical.setAttribute('data-navbar-appearance', 'darker');
+                }
+            </script>
+            <div class="support-chat-container">
+                <div class="container-fluid support-chat">
+                    <div class="card bg-body-emphasis">
+                        <div class="card-header d-flex flex-between-center px-4 py-3 border-bottom border-translucent">
+                            <h5 class="mb-0 d-flex align-items-center gap-2">Demo widget<span class="fa-solid fa-circle text-success fs-11"></span></h5>
+                            <div class="btn-reveal-trigger">
+                                <button class="btn btn-link p-0 dropdown-toggle dropdown-caret-none transition-none d-flex" type="button" id="support-chat-dropdown" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="fas fa-ellipsis-h text-body"></span></button>
+                                <div class="dropdown-menu dropdown-menu-end py-2" aria-labelledby="support-chat-dropdown"><a class="dropdown-item" href="#!">Request a callback</a><a class="dropdown-item" href="#!">Search in chat</a><a class="dropdown-item" href="#!">Show history</a><a class="dropdown-item" href="#!">Report to Admin</a><a class="dropdown-item btn-support-chat" href="#!">Close Support</a></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center gap-2 border-top border-translucent ps-3 pe-4 py-3">
-                        <div class="d-flex align-items-center flex-1 gap-3 border border-translucent rounded-pill px-4">
-                            <input class="form-control outline-none border-0 flex-1 fs-9 px-0" type="text" placeholder="Write message" />
-                            <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatPhotos"><span class="fa-solid fa-image"></span></label>
-                            <input class="d-none" type="file" accept="image/*" id="supportChatPhotos" />
-                            <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatAttachment"> <span class="fa-solid fa-paperclip"></span></label>
-                            <input class="d-none" type="file" id="supportChatAttachment" />
+                        <div class="card-body chat p-0">
+                            <div class="d-flex flex-column-reverse scrollbar h-100 p-3">
+                                <div class="text-end mt-6"><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
+                                        <p class="mb-0 fw-semibold fs-9">I need help with something</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
+                                    </a><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
+                                        <p class="mb-0 fw-semibold fs-9">I can’t reorder a product I previously ordered</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
+                                    </a><a class="mb-2 d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
+                                        <p class="mb-0 fw-semibold fs-9">How do I place an order?</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
+                                    </a><a class="false d-inline-flex align-items-center text-decoration-none text-body-emphasis bg-body-hover rounded-pill border border-primary py-2 ps-4 pe-3" href="#!">
+                                        <p class="mb-0 fw-semibold fs-9">My payment method not working</p><span class="fa-solid fa-paper-plane text-primary fs-9 ms-3"></span>
+                                    </a>
+                                </div>
+                                <div class="text-center mt-auto">
+                                    <div class="avatar avatar-3xl status-online"><img class="rounded-circle border border-3 border-light-subtle" src="../assets/img/team/30.webp" alt="" /></div>
+                                    <h5 class="mt-2 mb-3">Eric</h5>
+                                    <p class="text-center text-body-emphasis mb-0">Ask us anything – we’ll get back to you here or by email within 24 hours.</p>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn p-0 border-0 send-btn"><span class="fa-solid fa-paper-plane fs-9"></span></button>
+                        <div class="card-footer d-flex align-items-center gap-2 border-top border-translucent ps-3 pe-4 py-3">
+                            <div class="d-flex align-items-center flex-1 gap-3 border border-translucent rounded-pill px-4">
+                                <input class="form-control outline-none border-0 flex-1 fs-9 px-0" type="text" placeholder="Write message" />
+                                <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatPhotos"><span class="fa-solid fa-image"></span></label>
+                                <input class="d-none" type="file" accept="image/*" id="supportChatPhotos" />
+                                <label class="btn btn-link d-flex p-0 text-body-quaternary fs-9 border-0" for="supportChatAttachment"> <span class="fa-solid fa-paperclip"></span></label>
+                                <input class="d-none" type="file" id="supportChatAttachment" />
+                            </div>
+                            <button class="btn p-0 border-0 send-btn"><span class="fa-solid fa-paper-plane fs-9"></span></button>
+                        </div>
                     </div>
                 </div>
+                <button class="btn btn-support-chat p-0 border border-translucent"><span class="fs-8 btn-text text-primary text-nowrap">Chat demo</span><span class="ping-icon-wrapper mt-n4 ms-n6 mt-sm-0 ms-sm-2 position-absolute position-sm-relative"><span class="ping-icon-bg"></span><span class="fa-solid fa-circle ping-icon"></span></span><span class="fa-solid fa-headset text-primary fs-8 d-sm-none"></span><span class="fa-solid fa-chevron-down text-primary fs-7"></span></button>
             </div>
-            <button class="btn btn-support-chat p-0 border border-translucent"><span class="fs-8 btn-text text-primary text-nowrap">Chat demo</span><span class="ping-icon-wrapper mt-n4 ms-n6 mt-sm-0 ms-sm-2 position-absolute position-sm-relative"><span class="ping-icon-bg"></span><span class="fa-solid fa-circle ping-icon"></span></span><span class="fa-solid fa-headset text-primary fs-8 d-sm-none"></span><span class="fa-solid fa-chevron-down text-primary fs-7"></span></button>
-        </div>
     </main>
     <!-- ===============================================-->
     <!--    End of Main Content-->
@@ -719,7 +728,6 @@ $patientsJson = json_encode($patients);
 
             const ctx = document.getElementById(elementId);
             if (charts[elementId]) {
-                console.log(charts[elementId]);
                 charts[elementId].destroy();
             }
             charts[elementId] = new Chart(ctx, {
@@ -806,7 +814,6 @@ $patientsJson = json_encode($patients);
         }
 
         document.getElementById("exportPDF").addEventListener("click", function(e) {
-            console.log(<?= $patientsJson ?>); // Verificar los datos antes de enviarlos
 
             const jsonData = JSON.stringify({
                 data: <?= $patientsJson ?>, // Se envía la variable PHP convertida a JSON
@@ -821,7 +828,6 @@ $patientsJson = json_encode($patients);
                     body: jsonData,
                 })
                 .then((response) => {
-                    console.log(response);
                     if (!response.ok) {
                         throw new Error('Error al generar el PDF');
                     }
@@ -854,3 +860,425 @@ $patientsJson = json_encode($patients);
 <?php
 include '../../footer.php';
 ?>
+
+<script type="module">
+    import {
+        productService,
+        userService,
+        patientService,
+        billingService,
+        entityService
+    } from "../../services/api/index.js";
+
+    let rangeDates;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        const today = new Date();
+        const fiveDaysAgo = new Date();
+        fiveDaysAgo.setDate(today.getDate() - 5);
+        const formattedToday = today.toLocaleDateString('en-GB').split('/').map((part, index) => index === 2 ? part.slice(-2) : part).join('/');
+        const formattedFiveDaysAgo = fiveDaysAgo.toLocaleDateString('en-GB').split('/').map((part, index) => index === 2 ? part.slice(-2) : part).join('/');
+        document.getElementById('fechasProcedimiento').value = `${formattedFiveDaysAgo} to ${formattedToday}`;
+        await cargarProcedimientos();
+        await cargarEspecialistas();
+        await cargarPacientes();
+        await createSelectEntities();
+        await obtenerDatos();
+    })
+
+    async function createSelectEntities() {
+        const entities = await entityService.getAll();
+
+        const select = document.getElementById("entity");
+        select.innerHTML = '<option selected disabled value="0">Seleccione</option>';
+
+        if (entities.data.length) {
+
+            entities.data.forEach(entity => {
+                const option = document.createElement("option");
+                option.value = entity.id;
+                option.textContent = entity.name;
+                select.appendChild(option);
+            });
+
+        }
+        configurarSelectEntites();
+    }
+
+    function configurarSelectEntites() {
+        // Obtenemos la referencia al select
+        const select = document.getElementById('entity');
+
+        if (typeof Choices !== 'undefined') {
+            const choices = new Choices(select, {
+                removeItemButton: true,
+                placeholder: true
+            });
+        }
+    }
+
+    async function cargarProcedimientos() {
+        const selectProcedimientos = document.getElementById('procedure');
+        let procedimientos = await productService.getAllProducts();
+
+        selectProcedimientos.innerHTML = '';
+
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = 'Seleccione procedimientos...';
+        placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
+        selectProcedimientos.appendChild(placeholderOption);
+
+
+        if (procedimientos.length) {
+
+            procedimientos.forEach(procedure => {
+                const option = document.createElement("option");
+                option.value = procedure.id;
+                option.textContent = procedure.attributes.name;
+                selectProcedimientos.appendChild(option);
+            });
+
+        }
+        configurarSelectProcedimientosMultiple();
+    }
+
+    function configurarSelectProcedimientosMultiple() {
+        const procedure = document.getElementById('procedure');
+
+        procedure.setAttribute('multiple', 'multiple');
+
+        // Choices.js
+        if (typeof Choices !== 'undefined') {
+            const choices = new Choices(procedure, {
+                removeItemButton: true,
+                placeholder: true,
+            });
+        }
+    }
+
+    async function cargarEspecialistas() {
+        const selectEspecialistas = document.getElementById('especialistas');
+        const especialistas = await userService.getAllUsers();
+
+        selectEspecialistas.innerHTML = '';
+
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = 'Seleccione especialistas...';
+        placeholderOption.setAttribute('placeholder', '');
+        selectEspecialistas.appendChild(placeholderOption);
+
+        especialistas.forEach(especialista => {
+            const optionEsp = document.createElement('option');
+
+            optionEsp.value = especialista.id;
+            optionEsp.textContent = especialista.first_name + " " + especialista.last_name + " - " + especialista.specialty.name;
+
+            selectEspecialistas.appendChild(optionEsp);
+        });
+        configurarSelectEspecialistasMultiple();
+    }
+
+    async function cargarPacientes() {
+        const selectPacientes = document.getElementById('patients');
+        const pacientes = await patientService.getAll();
+
+        selectPacientes.innerHTML = '';
+
+        const placeholderOption = document.createElement('option');
+        placeholderOption.value = '';
+        placeholderOption.textContent = 'Seleccione pacientes...';
+        placeholderOption.setAttribute('placeholder', '');
+        selectPacientes.appendChild(placeholderOption);
+
+        pacientes.forEach(paciente => {
+            const optionPac = document.createElement('option');
+
+            optionPac.value = paciente.id;
+            optionPac.textContent = paciente.first_name + " " + paciente.last_name;
+
+            selectPacientes.appendChild(optionPac);
+        });
+        configurarSelectPacientesMultiple();
+    }
+
+
+
+    function configurarSelectEspecialistasMultiple() {
+        const especialistas = document.getElementById('especialistas');
+
+        especialistas.setAttribute('multiple', 'multiple');
+
+        // Choices.js
+        if (typeof Choices !== 'undefined') {
+            const choices = new Choices(especialistas, {
+                removeItemButton: true,
+                placeholder: true
+            });
+        }
+    }
+
+    function configurarSelectPacientesMultiple() {
+        const patients = document.getElementById('patients');
+
+        patients.setAttribute('multiple', 'multiple');
+
+        // Choices.js
+        if (typeof Choices !== 'undefined') {
+            const choices = new Choices(patients, {
+                removeItemButton: true,
+                placeholder: true
+            });
+        }
+    }
+
+    async function obtenerDatos(filterParams = {}) {
+
+        let data = await billingService.getBillingReport(filterParams);
+        generarTablaProcedimientos(data);
+        generateEntitiesTable(data);
+        generatePaymentsTable(data);
+
+    }
+
+    function generarTablaProcedimientos(data) {
+        const tbody = document.getElementById('list-billing');
+        const thead = document.querySelector('.table thead');
+
+        // Limpiar tabla
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        // Obtener datos únicos
+        const usuariosUnicos = [...new Set(data.map(item => item.billing_user))];
+        const procedimientosUnicos = [...new Set(data.flatMap(item =>
+            item.billed_procedure?.map(p => p.product.name) || []
+        ))];
+
+        // Crear estructura de datos para la tabla
+        const datosTabla = procedimientosUnicos.map(proc => {
+            const fila = {
+                procedimiento: proc
+            };
+            usuariosUnicos.forEach(usuario => {
+                fila[usuario] = data
+                    .filter(item => item.billing_user === usuario)
+                    .flatMap(item => item.billed_procedure)
+                    .filter(p => p?.product.name === proc)
+                    .reduce((sum, p) => sum + parseFloat(p.amount), 0);
+            });
+            return fila;
+        });
+
+        // Crear cabecera de la tabla
+        const trHead = document.createElement('tr');
+        trHead.innerHTML = `
+        <th class="text-start">Procedimiento</th>
+        ${usuariosUnicos.map(usuario => `<th>${usuario}</th>`).join('')}
+    `;
+        thead.appendChild(trHead);
+
+        // Crear cuerpo de la tabla
+        datosTabla.forEach(fila => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td class="align-middle ps-3 name">${fila.procedimiento}</td>
+            ${usuariosUnicos.map(usuario => `
+                <td class="align-middle text-center">
+                    ${fila[usuario] ? `$${fila[usuario].toFixed(2)}` : '-'}
+                </td>
+            `).join('')}
+        `;
+            tbody.appendChild(tr);
+        });
+
+        // Añadir fila de totales
+        const trTotal = document.createElement('tr');
+        trTotal.classList.add('fw-bold'); // Añadir estilo para resaltar
+        trTotal.innerHTML = `
+        <td class="align-middle ps-3">Total</td>
+        ${usuariosUnicos.map(usuario => {
+            const total = datosTabla.reduce((sum, fila) => sum + fila[usuario], 0);
+            return `
+                <td class="align-middle text-center">
+                    $${total.toFixed(2)}
+                </td>
+            `;
+        }).join('')}
+    `;
+
+        tbody.appendChild(trTotal);
+    }
+
+    function generateEntitiesTable(data) {
+
+        data = data.filter(item => item.insurance);
+
+        const entities = new Set();
+        const billingUsers = new Set();
+        const groupedData = {};
+        const totals = {};
+
+        data.forEach(entry => {
+            const {
+                billing_user,
+                insurance,
+                billed_procedure
+            } = entry;
+            const insuranceName = insurance?.name;
+
+            entities.add(insuranceName);
+            billingUsers.add(billing_user);
+
+            if (!groupedData[insuranceName]) {
+                groupedData[insuranceName] = {};
+            }
+
+            if (!groupedData[insuranceName][billing_user]) {
+                groupedData[insuranceName][billing_user] = 0;
+            }
+
+            if (!totals[billing_user]) {
+                totals[billing_user] = 0;
+            }
+
+            billed_procedure.forEach(proc => {
+                const amount = parseFloat(proc.amount);
+                groupedData[insuranceName][billing_user] += amount;
+                totals[billing_user] += amount;
+            });
+        });
+
+        const table = document.getElementById("list-entities");
+        table.innerHTML = "";
+
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        headerRow.classList.add("row", "col-12");
+        headerRow.innerHTML = `<th class="col">Entidad</th>` + [...billingUsers].map(user => `<th class="col">${user}</th>`).join("");
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        entities.forEach(entity => {
+            const row = document.createElement("tr");
+            row.classList.add("row");
+            row.innerHTML = `<td class="col">${entity}</td>` + [...billingUsers].map(user => `<td class="col">${groupedData[entity][user] ? groupedData[entity][user].toFixed(2) : "0.00"}</td>`).join("");
+            tbody.appendChild(row);
+        });
+
+        // Add total row
+        const totalRow = document.createElement("tr");
+        totalRow.classList.add("row");
+        totalRow.innerHTML = `<td class="col"><strong>Total</strong></td>` + [...billingUsers].map(user => `<td class="col"><strong>${totals[user].toFixed(2)}</strong></td>`).join("");
+        tbody.appendChild(totalRow);
+
+        table.appendChild(tbody);
+    }
+
+    function generatePaymentsTable(data) {
+        const paymentMethods = new Set();
+        const billingUsers = new Set();
+        const groupedData = {};
+        const totals = {};
+
+        // Procesar datos
+        data.forEach(entry => {
+            const {
+                billing_user,
+                payment_methods
+            } = entry;
+
+            billingUsers.add(billing_user);
+
+            payment_methods.forEach(pm => {
+                const method = pm.payment_method.method;
+                const amount = parseFloat(pm.amount);
+
+                paymentMethods.add(method);
+
+                // Inicializar estructura
+                if (!groupedData[method]) {
+                    groupedData[method] = {};
+                }
+
+                if (!groupedData[method][billing_user]) {
+                    groupedData[method][billing_user] = 0;
+                }
+
+                if (!totals[billing_user]) {
+                    totals[billing_user] = 0;
+                }
+
+                // Acumular montos
+                groupedData[method][billing_user] += amount;
+                totals[billing_user] += amount;
+            });
+        });
+
+        // Generar tabla
+        const table = document.getElementById('list-payments-methods');
+        table.innerHTML = '';
+
+        // Crear headers
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        headerRow.classList.add("row", "col-12");
+        headerRow.innerHTML = `<th class="col">Método de Pago</th>` + [...billingUsers].map(user => `<th class="col">${user}</th>`).join("");
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Crear body
+        const tbody = document.createElement("tbody");
+        [...paymentMethods].forEach(method => {
+            const row = document.createElement("tr");
+            row.classList.add("row");
+            row.innerHTML = `<td class="col">${method}</td>` + [...billingUsers].map(user =>
+                `<td class="col">${groupedData[method][user]?.toFixed(2) || "0.00"}</td>`
+            ).join("");
+            tbody.appendChild(row);
+        });
+
+        // Fila de totales
+        const totalRow = document.createElement("tr");
+        totalRow.classList.add("row");
+        totalRow.innerHTML = `<td class="col"><strong>Total</strong></td>` + [...billingUsers].map(user =>
+            `<td class="col"><strong>${totals[user]?.toFixed(2) || "0.00"}</strong></td>`
+        ).join("");
+        tbody.appendChild(totalRow);
+
+        table.appendChild(tbody);
+    }
+
+    function obtenerFiltros() {
+        const entity = document.getElementById('entity').value;
+        const procedureSelect = document.getElementById('procedure');
+        const selectedProcedures = Array.from(procedureSelect.selectedOptions).map(option => option.value);
+        const especialistasSelect = document.getElementById('especialistas');
+        const selectedEspecialistas = Array.from(especialistasSelect.selectedOptions).map(option => option.value);
+        const pacientesSelect = document.getElementById('patients');
+        const selectedPacientes = Array.from(pacientesSelect.selectedOptions).map(option => option.value);
+        const fechasProcedimientos = document.getElementById('fechasProcedimiento').value;
+        const [fechaInicio, fechaFin] = fechasProcedimientos.split(' to ').map(fecha => {
+            const [dia, mes, año] = fecha.split('/');
+            return `20${año}-${mes}-${dia}`;
+        });
+
+        const paramsFilter = {
+            end_date: fechaFin,
+            start_date: fechaInicio,
+            patient_ids: selectedPacientes.filter(item => item != ''),
+            product_ids: selectedProcedures.filter(item => item != ''),
+            user_ids: selectedEspecialistas.filter(item => item != ''),
+            entity_id: entity === "0" ? "" : entity
+        }
+
+        return paramsFilter;
+    }
+
+    document.getElementById('filterButton').addEventListener('click', async () => {
+        const paramsFilter = await obtenerFiltros();
+        await obtenerDatos(paramsFilter);
+    });
+</script>
