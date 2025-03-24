@@ -4,11 +4,6 @@ include "../header.php";
 ?>
 
 <style type="text/css">
-    .card-paciente .info-paciente {
-        display: flex;
-        column-gap: 15px;
-    }
-
     .custom-btn {
         width: 150px;
         height: 40px;
@@ -23,6 +18,7 @@ include "../header.php";
         margin-right: 5px;
     }
 
+    /* Estilos para las tarjetas */
     .card-paciente {
         display: flex;
         flex-direction: column;
@@ -66,9 +62,11 @@ include "../header.php";
         font-size: 14px;
         white-space: normal;
         overflow: visible;
+
     }
 
     .card-paciente .btn-ver {
+        width: 100%;
         margin-top: auto;
         font-size: 14px;
     }
@@ -85,45 +83,8 @@ include "../header.php";
         min-width: 45%;
     }
 
-    /* Responsive para tablets (768px - 1024px) */
-    @media (max-width: 1024px) {
-        .card-paciente .card-body {
-            width: 220px !important;
-        }
-
-        .d-flex.align-items-center {
-            align-items: center !important;
-        }
-
-        .card-paciente .avatar {
-            width: 70px;
-            height: 70px;
-        }
-
-        .card-paciente .info-paciente {
-            width: auto !important;
-        }
-
-        .card-paciente .info-paciente p {
-            font-size: 13px;
-        }
-
-        .card-paciente .btn-ver {
-            font-size: 13px;
-        }
-
-        .info-paciente .col-6 {
-            flex: 1 1 48%;
-            width: 213px !important;
-        }
-    }
-
-    /* Responsive para móviles (menos de 768px) */
+    /* Responsive */
     @media (max-width: 768px) {
-        .d-flex.align-items-center {
-            align-items: center !important;
-        }
-
         .card-paciente .avatar {
             width: 60px;
             height: 60px;
@@ -131,7 +92,6 @@ include "../header.php";
 
         .card-paciente .info-paciente p {
             font-size: 12px;
-            text-align: center;
         }
 
         .card-paciente .btn-ver {
@@ -140,49 +100,12 @@ include "../header.php";
 
         .info-paciente .col-6 {
             flex: 1 1 100%;
+            /* En móviles, una columna por fila */
             min-width: 100%;
         }
     }
-
-    /* Responsive para pantallas pequeñas (menos de 480px) */
-    @media (max-width: 480px) {
-        .card-container-pacient {
-            margin-left: 40px;
-        }
-
-        .btn-pacient {
-            width: 50% !important;
-        }
-
-        .d-flex.align-items-center {
-            justify-items: center !important;
-            align-items: center !important;
-        }
-
-        .card-paciente .avatar {
-            width: 50px;
-            height: 50px;
-        }
-
-        .card-paciente .info-paciente p {
-            font-size: 11px;
-        }
-
-        .card-paciente .btn-ver {
-            font-size: 11px;
-        }
-
-        .custom-btn {
-            width: 120px;
-            height: 35px;
-            font-size: 12px;
-        }
-
-        .custom-btn i {
-            margin-right: 3px;
-        }
-    }
 </style>
+
 
 
 <div class="componente">
@@ -357,7 +280,6 @@ include "../header.php";
         var channel = pusher.subscribe('waiting-room.' + hostname);
 
         channel.bind('appointment.created', function(data) {
-            console.log('Cita creada', data);
 
             pacientesData.forEach(paciente => {
                 if (paciente.id === data.appointment.patient_id) {
@@ -407,7 +329,7 @@ include "../header.php";
                 let isMatch = true;
 
                 // Filtro de búsqueda por nombre o documento
-                if (searchText && !paciente.first_name.toLowerCase().includes(searchText) && !
+                if (searchText && !paciente.fullName?.toLowerCase().includes(searchText) && !
                     paciente.document_number.includes(searchText)) {
                     isMatch = false;
                 }
@@ -483,7 +405,7 @@ include "../header.php";
             <!-- Información del paciente en columnas -->
             <div class="info-paciente row">
                 <div class="col-6">
-                    <div class="card-container-pacient d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <span class="fa-solid fa-id-card me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
                         <p class="fw-bold mb-0">Documento</p>
                     </div>
@@ -493,7 +415,7 @@ include "../header.php";
              
 
                 <div class="col-6">
-                    <div class="card-container-pacient d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <span class="fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
                         <p class="fw-bold mb-0">Edad</p>
                     </div>
@@ -501,7 +423,7 @@ include "../header.php";
                 </div>
 
                 <div class="col-6">
-                    <div class="card-container-pacient d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <span class="far fa-calendar-check me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
                         <p class="fw-bold mb-0">Fecha</p>
                     </div>
@@ -511,7 +433,7 @@ include "../header.php";
                 </div>
 
                 <div class="col-6">
-                    <div class="card-container-pacient d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <span class="far fa-clock me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
                         <p class="fw-bold mb-0">Hora</p>
                     </div>
@@ -522,7 +444,7 @@ include "../header.php";
 
 
                    <div class="col-6">
-                    <div class="card-container-pacient d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <span class="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></span>
                         <p class="fw-bold mb-0">Nombre</p>
                     </div>
@@ -539,7 +461,7 @@ include "../header.php";
 
 
             <!-- Botón para ver el paciente -->
-            <button class="btn-pacient btn btn-primary btn-ver" onclick="window.location.href='verPaciente?id=${paciente.id}'">
+            <button class="btn btn-primary btn-ver" onclick="window.location.href='verPaciente?id=${paciente.id}'">
                 Ver Paciente
             </button>
         </div>

@@ -54,7 +54,7 @@ async function guardarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    const resultado = await respuesta.json(); // Leer la respuesta JSON
+    const resultado = await respuesta.json(); 
 
     if (!respuesta.ok) {
       throw new Error(resultado.message || `Error ${respuesta.status}: ${respuesta.statusText}`);
@@ -96,15 +96,7 @@ async function actualizarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`Error en la red: ${response.statusText}`);
-    }
-
-    const contentType = respuesta.headers.get("content-type");
-    let resultado = {};
-    if (contentType && contentType.includes("application/json")) {
-      resultado = await respuesta.json();
-    }
+    const resultado = await respuesta.json();
 
     // Notificación de éxito
     Swal.fire({
@@ -113,6 +105,8 @@ async function actualizarDatos(url, datos) {
       text: "Los datos se han actualizado correctamente.",
       timer: 2000,
       showConfirmButton: false,
+    }).then(() => {
+      location.reload();
     });
     return resultado;
   } catch (error) {
@@ -155,6 +149,8 @@ async function EliminarDatos(url) {
           title: "¡Éxito!",
           text: "El recurso se eliminó correctamente.",
           confirmButtonText: "Aceptar",
+        }).then(() => {
+          location.reload();
         });
       } catch (error) {
         console.error("Error al eliminar el recurso:", error);
@@ -202,17 +198,6 @@ function traducirGenero(genero) {
   };
 
   return mapaGeneros[genero.toUpperCase()] || "Desconocido";
-}
-
-function getOrdenState(state) {
-  const statesMap = {
-    PENDING: "Pendiente",
-    CANCELED: "Cancelado",
-    UPLOADED: "Subido",
-    GENERATED: "Generado",
-  };
-
-  return statesMap[state.toUpperCase()] || "Desconocido";
 }
 
 function formatearFechaQuitarHora(fechaISO) {
@@ -274,26 +259,16 @@ async function getSpecialtyName(value) {
 }
 
 function convertirHtmlAWhatsapp(html) {
-  return (
-    html
-      // **Negritas**: convierte <strong> y <b> a *texto*
-      .replace(/<strong>(.*?)<\/strong>/gi, "*$1*")
-      .replace(/<b>(.*?)<\/b>/gi, "*$1*")
-      // _Cursiva_: convierte <em> y <i> a _texto_
-      .replace(/<em>(.*?)<\/em>/gi, "_$1_")
-      .replace(/<i>(.*?)<\/i>/gi, "_$1_")
-      // ~Tachado~: convierte <s> y <del> a ~texto~
-      .replace(/<s>(.*?)<\/s>/gi, "~$1~")
-      .replace(/<del>(.*?)<\/del>/gi, "~$1~")
-      // Saltos de línea: convierte <br> a una nueva línea
-      .replace(/<br\s*\/?>/gi, "\n")
-      // Párrafos: convierte <p> en texto con salto de línea
-      .replace(/<p>(.*?)<\/p>/gi, "$1\n")
-      // Elimina cualquier otra etiqueta HTML restante
-      .replace(/<[^>]+>/g, "")
-      // Elimina los saltos de línea sobrantes al final del texto
-      .replace(/\n+$/, "")
-  );
+  return html
+    .replace(/<strong>(.*?)<\/strong>/gi, "*$1*") // Negritas
+    .replace(/<b>(.*?)<\/b>/gi, "*$1*") // También para <b>
+    .replace(/<em>(.*?)<\/em>/gi, "_$1_") // Cursiva
+    .replace(/<i>(.*?)<\/i>/gi, "_$1_") // También para <i>
+    .replace(/<s>(.*?)<\/s>/gi, "~$1~") // Tachado
+    .replace(/<del>(.*?)<\/del>/gi, "~$1~") // También para <del>
+    .replace(/<br\s*\/?>/gi, "\n") // Saltos de línea
+    .replace(/<p>(.*?)<\/p>/gi, "$1\n") // Párrafos con doble salto de línea
+    .replace(/<[^>]+>/g, ""); // Elimina cualquier otra etiqueta HTML
 }
 
 function cargarSelect(id, datos, placeholder) {
@@ -321,12 +296,6 @@ function obtenerRutaPrincipal() {
   let url = window.location.origin;
   let rutaBase = url.replace(/:\d+$/, "");
   return rutaBase;
-}
-
-function obtenerTenant() {
-  let url = window.location.hostname;
-  let subdominio = url.split(".")[0];
-  return subdominio;
 }
 
 function consultarTipoMensaje(nombreObjecto) {
@@ -393,6 +362,7 @@ function calcularDiferenciaDias(start_date, end_date) {
   return diferenciaDias;
 }
 
+
 //datos variables
 
 async function convertirDatosVariables(
@@ -413,32 +383,6 @@ async function convertirDatosVariables(
       break;
     case "Cita":
       mensaje = await reemplazarVariablesCita(template, object_id, patient_id);
-      break;
-    case "Turno":
-      mensaje = await reemplazarVariablesTurno(template, object_id);
-      break;
-    case "Factura":
-      mensaje = await reemplazarVariablesFactura(
-        template,
-        object_id,
-        patient_id
-      );
-      break;
-    case "Historia":
-      mensaje = await reemplazarVariablesHistoria(
-        template,
-        object_id,
-        patient_id
-      );
-      break;
-    case "Receta":
-      mensaje = await reemplazarVariablesReceta(
-        template,
-        object_id,
-        patient_id
-      );
-    case "Orden":
-      mensaje = await reemplazarVariablesOrden(template, object_id, patient_id);
       break;
 
     default:
@@ -478,10 +422,6 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
 
   let recomendaciones = datosIncapacidad.reason;
 
-  let enlace =
-  obtenerRutaPrincipal() +
-  `/visualizarDocumento/${encryptData(object_id)}/${encryptData("incapacidad")}`;
-
   return template
     .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
     .replace(/\[\[FECHA_INCAPACIDAD\]\]/g, fechaIncapacidad || "")
@@ -489,7 +429,6 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
     .replace(/\[\[ESPECIALIDAD\]\]/g, Especialidad || "")
     .replace(/\[\[FECHA_INCIO\]\]/g, fechaInicio || "")
     .replace(/\[\[FECHA_FIN\]\]/g, fechaFin || "")
-    .replace(/\[\[ENLACE DOCUMENTO\]\]/g, enlace || "")
     .replace(/\[\[DIAS_INCAPACIDAD\]\]/g, dias || "")
     .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
 }
@@ -524,121 +463,4 @@ async function reemplazarVariablesCita(template, object_id, patient_id) {
     .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
     .replace(/\[\[MOTIVO_REAGENDAMIENTO\]\]/g, "Motivo Motivo" || "")
     .replace(/\[\[MOTIVO_CANCELACION\]\]/g, "Motivo Cancelacion" || "");
-}
-
-async function reemplazarVariablesTurno(template, object_id) {
-  let urlTurno = obtenerRutaPrincipal() + `/medical/tickets/${object_id}`;
-  const datosTurno = await obtenerDatos(urlTurno);
-
-  let nombrePaciente = datosTurno.patient_name;
-  let ticket = datosTurno.ticket_number;
-
-  return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-    .replace(/\[\[TICKET\]\]/g, ticket || "");
-}
-
-async function reemplazarVariablesFactura(template, object_id, patient_id) {
-  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
-
-  let nombrePaciente = datosPaciente.nombre;
-
-  let urlFactura =
-    obtenerRutaPrincipal() + `/api/v1/admin/invoices/${object_id}`;
-  const datosFactura = await obtenerDatos(urlFactura);
-
-  let fechaFactura = formatearFechaQuitarHora(datosFactura.created_at);
-
-  let montoFacturado = datosFactura.total_amount;
-
-  return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-    .replace(/\[\[FECHA_FACTURA\]\]/g, fechaFactura || "")
-    .replace(/\[\[MONTO_FACTURADO\]\]/g, montoFacturado || "");
-}
-
-async function reemplazarVariablesHistoria(template, object_id, patient_id) {
-  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
-
-  let nombrePaciente = datosPaciente.nombre;
-
-  let url = obtenerRutaPrincipal() + `/medical/clinical-records/${object_id}`;
-  let datosConsulta = await obtenerDatos(url);
-
-  let datosDoctor = await consultarDatosDoctor(
-    datosConsulta.created_by_user_id
-  );
-
-  let fechaHistoria = formatearFechaQuitarHora(datosConsulta.created_at);
-
-  let especialista = datosDoctor.nombre;
-
-  let especilidad = datosDoctor.especialidad;
-
-  let enlace =
-    obtenerRutaPrincipal() +
-    `/visualizarDocumento/${encryptData(object_id)}/${encryptData("consulta")}`;
-
-  return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-    .replace(/\[\[FECHA_HISTORIA\]\]/g, fechaHistoria || "")
-    .replace(/\[\[ENLACE DOCUMENTO\]\]/g, enlace || "")
-    .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
-    .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "");
-}
-
-async function reemplazarVariablesReceta(template, object_id, patient_id) {
-  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
-
-  let nombrePaciente = datosPaciente.nombre;
-
-  let url = obtenerRutaPrincipal() + `/medical/recipes/${object_id}`;
-  let datosReceta = await obtenerDatos(url);
-
-  let data = datosReceta.data;
-
-  let datosDoctor = await consultarDatosDoctor(data.prescriber.id);
-
-  let fechaHistoria = formatearFechaQuitarHora(data.created_at);
-
-  let especialista = datosDoctor.nombre;
-
-  let especilidad = datosDoctor.especialidad;
-
-  let recomendaciones = data.recipe_items.observations;
-  
-  let enlace =
-    obtenerRutaPrincipal() +
-    `/visualizarDocumento/${encryptData(object_id)}/${encryptData("receta")}`;
-
-  return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-    .replace(/\[\[FECHA_RECETA\]\]/g, fechaHistoria || "")
-    .replace(/\[\[ESPECIALISTA\]\]/g, especialista || "")
-    .replace(/\[\[ESPECIALIDAD\]\]/g, especilidad || "")
-    .replace(/\[\[ENLACE DOCUMENTO\]\]/g, enlace || "")
-    .replace(/\[\[RECOMENDACIONES\]\]/g, recomendaciones || "");
-}
-
-async function reemplazarVariablesOrden(template, object_id, patient_id) {
-  const datosPaciente = await consultarDatosEnvioPaciente(patient_id);
-
-  let nombrePaciente = datosPaciente.nombre;
-
-  let url = obtenerRutaPrincipal() + `/medical/exam-orders/${object_id}`;
-  let datosOrden = await obtenerDatos(url);
-
-  let fechaOrden = formatearFechaQuitarHora(datosOrden.created_at);
-
-  let nombreExamen = datosOrden.exam_type.name;
-
-  let enlace =
-  obtenerRutaPrincipal() +
-  `/visualizarDocumento/${encryptData(object_id)}/${encryptData("orden")}`;
-
-  return template
-    .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
-    .replace(/\[\[FECHA_EXAMEN\]\]/g, fechaOrden || "")
-    .replace(/\[\[ENLACE DOCUMENTO\]\]/g, enlace || "")
-    .replace(/\[\[NOMBRE_EXAMEN\]\]/g, nombreExamen || "");
 }

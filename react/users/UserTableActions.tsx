@@ -44,7 +44,7 @@ export const UserTableActions = () => {
                         <a className="dropdown-item" href="#" data-column="firma">
                             <div className="d-flex gap-2 align-items-center">
                                 <i className="fas fa-file-signature" style={{ width: '20px' }}></i>
-                                <span>Añadir firma</span>
+                                <span>Añadir firmas</span>
                             </div>
                         </a>
                     </li>

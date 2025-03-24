@@ -184,9 +184,8 @@ export const PastMedicalHistoryForm = () => {
       branch_id: 1,
       data: formData["data"]
     };
-    console.log(selectedClinicalRecord, patientId);
     if (selectedClinicalRecord) {
-      clinicalRecordService.updateForParent(patientId, requestData).then(response => {
+      clinicalRecordService.updateForParent(selectedClinicalRecord.id, requestData).then(response => {
         window.location.href = "/verPaciente?id=" + patientId;
       }).catch(error => {
         console.error("Error:", error);

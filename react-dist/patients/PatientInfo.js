@@ -3,13 +3,10 @@ import { useEffect } from 'react';
 import { citiesSelect, countriesSelect, departmentsSelect } from "../../services/selects.js";
 import { countryService, departmentService } from "../../services/api/index.js";
 import { genders, maritalStatus } from "../../services/commons.js";
-import UserManager from "../../services/userManager.js";
 export const PatientInfo = ({
   patient
 }) => {
-  const [validatedPatientInfo, setValidatedPatientInfo] = React.useState(null);
   useEffect(() => {
-    validatePermissions();
     const modalElement = document.getElementById('modalCrearPaciente');
     if (!modalElement || !patient) return;
 
@@ -84,24 +81,6 @@ export const PatientInfo = ({
       cleanSelect('nationality');
     };
   }, [patient]);
-  const validatePermissions = () => {
-    UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
-      if (userPermissions) {
-        const permissions = userPermissions.map(permission => permission.key);
-        if (!permissions.includes('patients_view_sensitive')) {
-          setValidatedPatientInfo({
-            email: "*".repeat(8),
-            whatsapp: "*".repeat(8)
-          });
-        } else {
-          setValidatedPatientInfo({
-            email: patient.email,
-            whatsapp: patient.whatsapp
-          });
-        }
-      }
-    });
-  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-3 justify-content-between align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("h3", {
@@ -138,9 +117,9 @@ export const PatientInfo = ({
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Whatsapp:"), " ", validatedPatientInfo?.whatsapp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
+  }, "Whatsapp:"), " ", patient.validated_data.whatsapp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Correo:"), " ", validatedPatientInfo?.email)), /*#__PURE__*/React.createElement("div", {
+  }, "Correo:"), " ", patient.validated_data.email)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
@@ -213,25 +192,13 @@ export const PatientInfo = ({
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Tipo de regimen:"), " ", patient.social_security.type_scheme), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Categoria:"), " ", patient.social_security.category)), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
     className: "fw-bold"
-  }, "Tipo de afiliado:"), " ", patient.social_security.affiliate_type)), /*#__PURE__*/React.createElement("div", {
+  }, "Entidad Aseguradora (ARS):"), " ", patient.social_security.eps)), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Entidad prestadora de salud (EPS):"), " ", patient.social_security.eps), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Administradora de riesgos laborales (ARL):"), " ", patient.social_security.arl)), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Administradora de fondos de pensiones (AFP):"), " ", patient.social_security.afp), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("span", {
-    className: "fw-bold"
-  }, "Sucursal:"), " Medellin"))));
+  })));
 };

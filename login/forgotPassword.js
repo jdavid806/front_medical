@@ -55,12 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
+            .then(response => response.json()) // Convertir la respuesta a JSON
             .then(data => {
-                if (data.status === 200) {
+                if (data.status === 200) { // Acceder a "status" correctamente
                     Swal.fire({
-                        title: "Contraseña cambiada",
-                        text: "Tu contraseña ha sido actualizada correctamente.",
+                        title: "Éxito",
+                        text: data.message, // Usar el mensaje del backend
                         icon: "success",
                         confirmButtonText: "Continuar",
                         confirmButtonClass: "btn btn-phoenix-primary",
@@ -68,13 +68,24 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.removeItem("username");
                     window.location.href = "/Dashboard";
                 } else {
-                    alert("Error al cambiar contraseña.");
+                    Swal.fire({
+                        title: "Error",
+                        text: data.message, // Mostrar mensaje del backend en caso de error
+                        icon: "error",
+                        confirmButtonText: "Intentar de nuevo",
+                    });
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Ocurrió un error.");
+                Swal.fire({
+                    title: "Error",
+                    text: "Ocurrió un error en la solicitud.",
+                    icon: "error",
+                    confirmButtonText: "Cerrar",
+                });
             });
+        
     });
 
     // 🟢 FUNCIONALIDAD PARA MOSTRAR/OCULTAR CONTRASEÑA 🟢

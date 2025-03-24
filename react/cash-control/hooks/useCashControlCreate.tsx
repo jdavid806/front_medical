@@ -20,6 +20,7 @@ export const useCashControlCreate = () => {
             SwalManager.success()
         } catch (error) {
             ErrorHandler.generic(error)
+            throw error
         } finally {
             setLoading(false)
         }

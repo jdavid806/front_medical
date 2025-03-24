@@ -13,15 +13,19 @@ import UserManager from "../../services/userManager.js";
 import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStateFilters, appointmentStatesByKeyTwo } from "../../services/commons.js";
 import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
+import { getUserLogged } from "../../services/utilidades.js";
 export const AppointmentsTable = () => {
+  const userLogged = getUserLogged();
+  const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const {
-    appointments
+    appointments,
+    fetchAppointments
   } = useFetchAppointments(appointmentService.active());
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
   const [selectedBranch, setSelectedBranch] = React.useState(null);
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [selectedDate, setSelectedDate] = React.useState([new Date(new Date().setDate(new Date().getDate())), new Date()]);
   const [filteredAppointments, setFilteredAppointments] = React.useState([]);
   const [pdfFile, setPdfFile] = useState(null); // Para almacenar el archivo PDF
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null); // Para la previsualización del PDF
@@ -59,27 +63,36 @@ export const AppointmentsTable = () => {
   });
   const handleSubmit = async () => {
     try {
-      // Llamar a la función guardarArchivoExamen  
-      const enviarPDf = await guardarArchivoExamen('inputPdf', 2);
+      // Llamar a la función guardarArchivoExamen
+      //@ ts-ignore
+      const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
 
-      // Acceder a la PromiseResult  
+      // Acceder a la PromiseResult
       if (enviarPDf !== undefined) {
         console.log("PDF de prueba:", enviarPDf);
         console.log("Resultado de la promesa:", enviarPDf);
+        await appointmentService.changeStatus(selectedAppointmentId, "consultation_completed");
+        SwalManager.success({
+          text: "Resultados guardados exitosamente"
+        });
       } else {
         console.error("No se obtuvo un resultado válido.");
       }
     } catch (error) {
       console.error("Error al guardar el archivo:", error);
     } finally {
-      // Limpiar el estado después de la operación  
+      // Limpiar el estado después de la operación
       setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);
+      fetchAppointments();
     }
   };
   useEffect(() => {
     let filtered = [...appointments];
+    if (userLogged.role.group === "DOCTOR") {
+      filtered = filtered.filter(appointment => appointment?.user_availability?.user?.id === userLogged.id);
+    }
     if (selectedBranch) {
       filtered = filtered.filter(appointment => `${appointment.stateKey}` === selectedBranch);
     }
@@ -109,7 +122,7 @@ export const AppointmentsTable = () => {
     }));
   };
   const handleRescheduleAppointment = async appointmentId => {
-    console.log('Reagendando', appointmentId);
+    console.log("Reagendando", appointmentId);
   };
   const handleCancelAppointment = async appointmentId => {
     SwalManager.confirmCancel(async () => {
@@ -171,7 +184,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -186,7 +199,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "in_consultation") && data.attentionType === "PROCEDURE" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "in_consultation") && data.attentionType === "PROCEDURE" && patientId && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -204,8 +217,8 @@ export const AppointmentsTable = () => {
     }), /*#__PURE__*/React.createElement("span", null, "Realizar examen"))), /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       onClick: () => {
-        setShowPdfModal(true);
         setSelectedAppointmentId(data.id);
+        setShowPdfModal(true);
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
@@ -220,20 +233,6 @@ export const AppointmentsTable = () => {
         cursor: "pointer"
       }
     }, "Subir Examen"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: e => {
-        e.preventDefault();
-        handleRescheduleAppointment(data.id);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-ban",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Reagendar cita")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -348,7 +347,7 @@ export const AppointmentsTable = () => {
   }))))))))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      minHeight: '300px'
+      minHeight: "300px"
     }
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
@@ -374,8 +373,8 @@ export const AppointmentsTable = () => {
   })))))), showPdfModal && /*#__PURE__*/React.createElement("div", {
     className: "modal fade show",
     style: {
-      display: 'block',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      display: "block",
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "modal-dialog modal-dialog-centered modal-lg"

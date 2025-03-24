@@ -31,7 +31,7 @@ $relations = array("Padre", "Madre", "Hermano (a)", "Tio (a)", "Abuelo (a)", "Pr
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-body" for="document_number">Número de identificación*</label>
-                        <input class="form-control" type="number" name="document_number" placeholder="Número de identificación" id="document_number">
+                        <input class="form-control" type="text" name="document_number" placeholder="Número de identificación" id="document_number">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="mobile">WhatsApp*</label>
@@ -39,7 +39,7 @@ $relations = array("Padre", "Madre", "Hermano (a)", "Tio (a)", "Abuelo (a)", "Pr
                     </div>
                     <div class="col-md-6">
                         <label for="relationSelect" class="form-label">Parentesco</label>
-                        <select class="form-select" id="relationSelect" aria-label="Default select example">
+                        <select class="form-select" id="relationSelect" name="relationship" aria-label="Default select example">
                             <option selected="">Seleccionar</option>
                             <?php foreach ($relations as $key => $value) { ?>
                                 <option value="<?= $value ?>"><?= $value ?></option>

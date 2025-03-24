@@ -29,10 +29,9 @@ document.getElementById('finishStep').addEventListener('click', function () {
         }
     });
 
-    // Asegurar que companionsTemp tenga la estructura correcta y convertir valores
     data.companions = companionsTemp.map(companion => ({
         document_type: companion.typeDocument,
-        document_number: parseInt(companion.numberIdentification, 10) || null,
+        document_number: companion.numberIdentification.toString(),
         first_name: companion.firstName,
         middle_name: companion.secondName || null,
         last_name: companion.lastName,
@@ -58,7 +57,7 @@ document.getElementById('finishStep').addEventListener('click', function () {
                     const modalInstance = bootstrap.Modal.getInstance(modal);
                     modalInstance.hide();
 
-                    window.location.reload();
+                    //window.location.reload();
                 }, 4000);
             })
             .catch(err => {
@@ -73,7 +72,7 @@ document.getElementById('finishStep').addEventListener('click', function () {
     } else {
         console.log('Actualizando', id, data);
 
-        patientService.update(id, data)
+        patientService.updatePatient(id, data)
             .then(() => {
                 AlertManager.success({
                     text: 'Se ha actualizado el registro exitosamente'

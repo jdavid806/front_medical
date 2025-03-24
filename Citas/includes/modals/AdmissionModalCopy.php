@@ -161,21 +161,14 @@ include '../modals/NewCompanionModal.php';
                                                 <div class="col-sm-6">
                                                     <div class="mb-2 mb-sm-0">
                                                         <label class="form-label text-body" for="typeDocumentPatient">Tipo de documento</label>
-                                                        <select class="form-select" name="typeDocumentPatient" id="typeDocumentPatient" required>
-                                                            <option value="" disabled selected>Seleccione un tipo de documento</option>
-                                                            <option value="CI">CI - Cédula de Identidad</option>
-                                                            <option value="CR">CR - Carnet de Residencia</option>
-                                                            <option value="CM">CM - Carnet de Menor de Edad</option>
-                                                            <option value="AN">AN - Acta de Nacimiento</option>
-                                                            <option value="LC">LC - Licencia de Conducción</option>
-                                                            <option value="OT">OT - Otros</option>
-                                                        </select>
+
+                                                        <input class="form-control" type="text" name="typeDocumentPatient" placeholder="Número de identificación" id="typeDocumentPatient" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="mb-2">
                                                         <label class="form-label text-body text-body" for="numberIdentificationPatient">Número de identificación*</label>
-                                                        <input class="form-control" type="number" name="numberIdentificationPatient" id="numberIdentificationPatient">
+                                                        <input class="form-control" type="number" name="numberIdentificationPatient" id="numberIdentificationPatient" readonly>
 
                                                     </div>
                                                 </div>
@@ -184,13 +177,13 @@ include '../modals/NewCompanionModal.php';
                                                 <div class="col-sm-6">
                                                     <div class="mb-2 mb-sm-0">
                                                         <label class="form-label text-body text-body" for="firstNamePatient">Primer Nombre*</label>
-                                                        <input class="form-control" type="text" name="firstNamePatient" id="firstNamePatient" placeholder="Primer Nombre">
+                                                        <input class="form-control" type="text" name="firstNamePatient" id="firstNamePatient" placeholder="Primer Nombre" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="mb-2">
                                                         <label class="form-label text-body text-body" for="middleNamePatient">Segundo Nombre</label>
-                                                        <input class="form-control" type="text" name="middleNamePatient" placeholder="Segundo Nombre" id="middleNamePatient">
+                                                        <input class="form-control" type="text" name="middleNamePatient" placeholder="Segundo Nombre" id="middleNamePatient" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -198,13 +191,13 @@ include '../modals/NewCompanionModal.php';
                                                 <div class="col-sm-6">
                                                     <div class="mb-2 mb-sm-0">
                                                         <label class="form-label text-body text-body" for="lastNamePatient">Primer Apellido*</label>
-                                                        <input class="form-control" type="text" name="lastNamePatient" placeholder="Primer apellido" id="lastNamePatient" value="<?php echo $patient['last_name']; ?>">
+                                                        <input class="form-control" type="text" name="lastNamePatient" placeholder="Primer apellido" id="lastNamePatient" value="<?php echo $patient['last_name']; ?>" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="mb-2">
                                                         <label class="form-label text-body text-body" for="secondLastNamePatient">Segundo Apellido</label>
-                                                        <input class="form-control" type="text" name="secondLastNamePatient" placeholder="Segundo Apellido" id="secondLastNamePatient">
+                                                        <input class="form-control" type="text" name="secondLastNamePatient" placeholder="Segundo Apellido" id="secondLastNamePatient" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -212,14 +205,14 @@ include '../modals/NewCompanionModal.php';
                                                 <div class="col-sm-6">
                                                     <div class="mb-2 mb-sm-0">
                                                         <label class="form-label text-body" for="dateBirthPatient">Fecha de nacimiento*</label>
-                                                        <input class="form-control datetimepicker flatpickr-input" id="dateBirthPatient" name="dateBirthPatient" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" value="<?php echo $patient['date_of_birth']; ?>">
+                                                        <input class="form-control datetimepicker flatpickr-input" id="dateBirthPatient" name="dateBirthPatient" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly" readonly value="<?php echo $patient['date_of_birth']; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="mb-2">
                                                         <label class="form-label text-body" for="genderPatient">Género</label>
 
-                                                        <input class="form-control" type="text" name="genderPatient" placeholder="Género" id="genderPatient">
+                                                        <input class="form-control" type="text" name="genderPatient" placeholder="Género" id="genderPatient" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -240,12 +233,14 @@ include '../modals/NewCompanionModal.php';
                                                         </select>
                                                     </div>
                                                 </div>
+
                                                 <!-- <div class="col-sm-6">
                                         <div class="mb-2 mb-sm-0">
                                             <label class="form-label text-body" for="deparmentPatient">Departamento o Estado</label>
                                             <input class="form-control" type="text" name="deparmentPatient" id="deparmentPatient" required="required">
                                         </div>
                                     </div> -->
+
                                             </div>
                                             <div class="row g-3 mb-3">
                                                 <div class="col-sm-6">
@@ -262,14 +257,14 @@ include '../modals/NewCompanionModal.php';
                                                         <input class="form-control" type="text" name="addressPatient" id="addressPatient" required="required">
                                                     </div>
                                                 </div>
-
                                             </div>
                                             <div class="row g-3 mb-3">
 
                                                 <div class="col-sm-6">
-                                                    <div class="mb-2">
-                                                        <label class="form-label text-body" for="emailPatient">Correo electrónico*</label>
-                                                        <input class="form-control" type="email" id="emailPatient" name="emailPatient" placeholder="Correo electronico" id="email">
+                                                    <div class="mb-2 mb-sm-0">
+                                                        <label class="form-label text-body" for="emailPatient">Correo Electronico*</label>
+                                                        <input class="form-control" type="text" name="emailPatient" placeholder="Whatsapp" id="emailPatient" value="<?php echo $patient['email']; ?>" required="required">
+                                                        <div class="invalid-feedback">El campo es requerido.</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
@@ -282,6 +277,7 @@ include '../modals/NewCompanionModal.php';
 
                                             </div>
                                             <div class="row g-3 mb-3">
+
                                                 <div class="col-sm-6">
                                                     <div class="mb-2 mb-sm-0">
                                                         <label class="form-label text-body text-body" for="bloodTypePatient">Tipo de sangre*</label>
@@ -307,143 +303,134 @@ include '../modals/NewCompanionModal.php';
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" id="patientIdForUpdate" name="patientIdForUpdate">
-                                            </div>
-                                            <div class="row g-3 mb-3">
-                                                <div class="d-flex justify-content-end">
-                                                    <button class="btn btn-primary px-6 px-sm-6" type="button" id="btnUpdatePatient" disabled>
-                                                        Actualizar información del paciente
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="card mt-4">
-
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="form-check form-switch d-flex align-items-center gap-1">
-                                                    <input class="form-check-input" id="flexSwitchCheckDefault" type="checkbox">
-                                                    <label class="form-check-label text-primary" for="flexSwitchCheckDefault">Acompañante</label>
-                                                </div>
-                                                <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
-                                                    <input class="form-check-input mt-1" id="entitySwitch" type="checkbox">
-                                                    <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturación Entidad</label>
-                                                </div>
-                                                <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
-                                                    <input class="form-check-input mt-1" id="consumidorSwitch" type="checkbox">
-                                                    <label class="form-check-label text-primary mt-1" for="consumidorSwitch">Facturar consumidor</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    <!-- Información del acompañante -->
-                                    <div class="card mt-4" id="infoAcompanante" style="display: none;">
-
-                                        <div class="card-body">
-                                            <label for="companionsPatients">Acompañantes</label>
-                                            <select class="form-select" id="companionsPatients" name="companionsPatients" aria-label="Default select example">
-                                                <option selected="">Seleccionar</option>
-
-                                            </select>
-
-                                        </div>
-
-                                        <div class="card-body" id="companionForm">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h5 class="card-title mb-0">Información del acompañante</h5>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-success" onclick="saveCompanion()"><i class="fa-solid fa-floppy-disk"></i> Confirmar</button>
-                                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#newCompanionModal"><i class="fa-solid fa-pen-to-square"></i> Nuevo</button>
-
-                                                </div>
-                                            </div>
-
-
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2 mb-sm-0">
-                                                        <label class="form-label text-body" for="typeDocumentAcompanion">Tipo de documento</label>
-                                                        <input class="form-control" type="text" name="typeDocumentAcompanion" id="typeDocumentAcompanion" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2">
-                                                        <label class="form-label text-body" for="numberIdentificationAcompanion">Número de identificación*</label>
-                                                        <input class="form-control" type="number" name="numberIdentificationAcompanion" id="numberIdentificationAcompanion" readonly>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2 mb-sm-0">
-                                                        <label class="form-label text-body" for="firstNameAcompanion">Primer Nombre*</label>
-                                                        <input class="form-control" type="text" name="firstNameAcompanion" placeholder="Primer Nombre" id="firstNameAcompanion" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2 mb-sm-0">
-                                                        <label class="form-label text-body" for="lastNameAcompanion">Primer Apellido*</label>
-                                                        <input class="form-control" type="text" name="lastNameAcompanion" placeholder="Primer apellido" id="lastNameAcompanion" readonly>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row g-3 mb-3">
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2">
-                                                        <label class="form-label" for="whatsappAcompanion">WhatsApp*</label>
-                                                        <input class="form-control" type="text" name="whatsappAcompanion" placeholder="Whatsapp" id="whatsappAcompanion" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="mb-2">
-                                                        <label class="form-label" for="relationshipAcompanion">Parentesco*</label>
-                                                        <input class="form-control" type="text" name="relationshipAcompanion" placeholder="Parentesco" id="relationshipAcompanion" readonly>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
 
 
-                                    </div>
+                                        <div class="card mt-4">
 
-                                    <!-- Entidad -->
-                                    <div class="card mt-4" id="infoEntidad" style="display: none;">
-                                        <form class="" id="formEntityInvoice" data-wizard-form="">
-                                            <div class=" card-body">
-                                                <h5 class="card-title">Información de la entidad</h5>
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="form-check form-switch d-flex align-items-center gap-1">
+                                                        <input class="form-check-input" id="flexSwitchCheckDefault" type="checkbox">
+                                                        <label class="form-check-label text-primary" for="flexSwitchCheckDefault">Acompañante</label>
+                                                    </div>
+                                                    <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
+                                                        <input class="form-check-input mt-1" id="entitySwitch" type="checkbox">
+                                                        <label class="form-check-label text-primary mt-1" for="entitySwitch">Facturación Entidad</label>
+                                                    </div>
+                                                    <div class="form-check form-switch me-3 d-flex align-items-center gap-1">
+                                                        <input class="form-check-input mt-1" id="consumidorSwitch" type="checkbox">
+                                                        <label class="form-check-label text-primary mt-1" for="consumidorSwitch">Facturar consumidor</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Información del acompañante -->
+                                        <div class="card mt-4" id="infoAcompanante" style="display: none;">
+
+                                            <div class="card-body">
+                                                <label for="companionsPatients">Acompañantes</label>
+                                                <select class="form-select" id="companionsPatients" name="companionsPatients" aria-label="Default select example">
+                                                    <option selected="">Seleccionar</option>
+
+                                                </select>
+
+                                            </div>
+
+                                            <div class="card-body" id="companionForm">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h5 class="card-title mb-0">Información del acompañante</h5>
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-success" onclick="saveCompanion()"><i class="fa-solid fa-floppy-disk"></i> Confirmar</button>
+                                                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#newCompanionModal"><i class="fa-solid fa-pen-to-square"></i> Nuevo</button>
+
+                                                    </div>
+                                                </div>
+
 
                                                 <div class="row g-3 mb-3">
-
                                                     <div class="col-sm-6">
-                                                        <div class="mb-2">
-                                                            <label class="form-label" for="entity">Entidad*</label>
-                                                            <input class="form-control" type="text" name="entity" id="entity" readonly>
+                                                        <div class="mb-2 mb-sm-0">
+                                                            <label class="form-label text-body" for="typeDocumentAcompanion">Tipo de documento</label>
+                                                            <input class="form-control" type="text" name="typeDocumentAcompanion" id="typeDocumentAcompanion" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="mb-2">
-                                                            <label class="form-label" for="authorisationNumberEntity">Número de autorización*</label>
-                                                            <input class="form-control" type="number" name="authorisationNumberEntity" id="authorisationNumberEntity">
+                                                            <label class="form-label text-body" for="numberIdentificationAcompanion">Número de identificación*</label>
+                                                            <input class="form-control" type="number" name="numberIdentificationAcompanion" id="numberIdentificationAcompanion" readonly>
                                                         </div>
                                                     </div>
-
+                                                </div>
+                                                <div class="row g-3 mb-3">
+                                                    <div class="col-sm-6">
+                                                        <div class="mb-2 mb-sm-0">
+                                                            <label class="form-label text-body" for="firstNameAcompanion">Primer Nombre*</label>
+                                                            <input class="form-control" type="text" name="firstNameAcompanion" placeholder="Primer Nombre" id="firstNameAcompanion" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="mb-2 mb-sm-0">
+                                                            <label class="form-label text-body" for="lastNameAcompanion">Primer Apellido*</label>
+                                                            <input class="form-control" type="text" name="lastNameAcompanion" placeholder="Primer apellido" id="lastNameAcompanion" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-3 mb-3">
                                                     <div class="col-sm-6">
                                                         <div class="mb-2">
-
-                                                            <label class="form-label" for="dateAuthorisation">Fecha de autorización</label>
-                                                            <input class="form-control datetimepicker flatpickr-input" id="dateAuthorisation" name="date_authorisation" type="text" placeholder="Fecha de autorización" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
-
+                                                            <label class="form-label" for="whatsappAcompanion">WhatsApp*</label>
+                                                            <input class="form-control" type="text" name="whatsappAcompanion" placeholder="Whatsapp" id="whatsappAcompanion" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="mb-2">
+                                                            <label class="form-label" for="relationshipAcompanion">Parentesco*</label>
+                                                            <input class="form-control" type="text" name="relationshipAcompanion" placeholder="Parentesco" id="relationshipAcompanion" readonly>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+
+
+                                        </div>
+
+                                        <!-- Entidad -->
+                                        <div class="card mt-4" id="infoEntidad" style="display: none;">
+                                            <form class="" id="formEntityInvoice" data-wizard-form="">
+                                                <div class=" card-body">
+                                                    <h5 class="card-title">Información de la entidad</h5>
+
+                                                    <div class="row g-3 mb-3">
+
+                                                        <div class="col-sm-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label" for="entity">Entidad*</label>
+                                                                <input class="form-control" type="text" name="entity" id="entity" readonly>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="mb-2">
+                                                                <label class="form-label" for="authorisationNumberEntity">Número de autorización*</label>
+                                                                <input class="form-control" type="number" name="authorisationNumberEntity" id="authorisationNumberEntity">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-sm-6">
+                                                            <div class="mb-2">
+
+                                                                <label class="form-label" for="dateAuthorisation">Fecha de autorización</label>
+                                                                <input class="form-control datetimepicker flatpickr-input" id="dateAuthorisation" name="date_authorisation" type="text" placeholder="Fecha de autorización" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
 
                                 </form>
 
@@ -937,8 +924,7 @@ include '../modals/NewCompanionModal.php';
         countryService,
         departmentService,
         cityService,
-        entityService,
-        patientService
+        entityService
     } from './services/api/index.js';
     import {
         countriesSelect,
@@ -951,54 +937,7 @@ include '../modals/NewCompanionModal.php';
         getUserLogged
     } from './services/utilidades.js';
 
-    import AlertManager from './services/alertManager.js';
-
     document.addEventListener('DOMContentLoaded', function() {
-
-        document.getElementById('btnUpdatePatient').addEventListener('click', function() {
-            const updateData = {
-                patient: {
-                    document_type: document.getElementById('typeDocumentPatient').value,
-                    document_number: document.getElementById('numberIdentificationPatient').value,
-                    first_name: document.getElementById('firstNamePatient').value,
-                    middle_name: document.getElementById('middleNamePatient').value,
-                    last_name: document.getElementById('lastNamePatient').value,
-                    second_last_name: document.getElementById('secondLastNamePatient').value,
-                    gender: document.getElementById('genderPatient').value,
-                    date_of_birth: document.getElementById('dateBirthPatient').value,
-                    country_id: document.getElementById('countryPatient').value,
-                    department_id: document.getElementById('departmentPatient').value,
-                    city_id: document.getElementById('cityPatient').value,
-                    address: document.getElementById('addressPatient').value,
-                    email: document.getElementById('emailPatient').value,
-                    whatsapp: document.getElementById('whatsappPatient').value,
-                    blood_type: document.getElementById('bloodTypePatient').value,
-                },
-                social_security: {
-                    entity_id: document.getElementById('epsPatient').value
-                }
-            }
-
-            const id = document.getElementById('patientIdForUpdate').value;
-
-            console.log(id, updateData);
-
-            patientService.updatePatient(id, updateData)
-                .then(() => {
-                    AlertManager.success({
-                        text: 'Se ha actualizado el registro exitosamente'
-                    });
-                })
-                .catch(err => {
-                    if (err.data?.errors) {
-                        AlertManager.formErrors(err.data.errors);
-                    } else {
-                        AlertManager.error({
-                            text: err.message || 'Ocurrió un error inesperado'
-                        });
-                    }
-                });
-        });
 
         flatpickr("#datepicker", {
             dateFormat: "d/m/Y",
@@ -1742,7 +1681,7 @@ include '../modals/NewCompanionModal.php';
             if (admission && admission.patient && admission.patient.companions && admission.user_availability && admission.appointment_date && admission.appointment_time) {
 
                 /* Información del paciente */
-                setElementValue('select[name="typeDocumentPatient"]', admission.patient.document_type);
+                setElementValue('input[name="typeDocumentPatient"]', admission.patient.document_type);
                 setElementValue('input[name="numberIdentificationPatient"]', admission.patient.document_number);
                 setElementValue('input[name="firstNamePatient"]', admission.patient.first_name);
                 setElementValue('input[name="middleNamePatient"]', admission.patient.middle_name);
@@ -1757,7 +1696,9 @@ include '../modals/NewCompanionModal.php';
                 setElementValue('select[name="bloodTypePatient"]', admission.patient.blood_type);
                 setElementValue('select[name="epsPatient"]', admission.patient.social_security?.entity_id);
                 setElementValue('input[name="whatsappPatient"]', admission.patient.whatsapp);
-                setElementValue('input[name="patientIdForUpdate"]', admission.patient.id);
+
+                console.log('INFO DEL PACIENTE', admission.patient);
+
 
                 const countrySelect = document.getElementById('countryPatient');
                 const deptSelect = document.getElementById('departmentPatient');
@@ -1785,8 +1726,6 @@ include '../modals/NewCompanionModal.php';
                 }, admission.patient.department_id);
 
                 await citiesSelect(citySelect, departmentId, () => {}, admission.patient.city_id);
-
-                document.getElementById('btnUpdatePatient').removeAttribute('disabled');
 
                 /* Información de los acompañantes */
                 const companionsSelect = document.querySelector('select[name="companionsPatients"]');

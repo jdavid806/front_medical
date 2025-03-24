@@ -930,9 +930,9 @@ include '../../footer.php';
         selectProcedimientos.appendChild(placeholderOption);
 
 
-        if (procedimientos.length) {
+        if (procedimientos.data.length) {
 
-            procedimientos.forEach(procedure => {
+            procedimientos.data.forEach(procedure => {
                 const option = document.createElement("option");
                 option.value = procedure.id;
                 option.textContent = procedure.attributes.name;

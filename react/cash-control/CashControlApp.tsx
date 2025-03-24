@@ -2,14 +2,21 @@ import React from 'react';
 import { PrimeReactProvider } from 'primereact/api';
 import { useCashControlCreate } from './hooks/useCashControlCreate';
 import { CashControlForm, CashControlInputs } from './components/CashControlForm';
-import { CustomFormModal } from "../components/CustomFormModal";
+import { Card } from 'primereact/card';
 
 export const CashControlApp = () => {
 
     const { createCashControl } = useCashControlCreate();
 
     const handleSubmit = async (data: CashControlInputs) => {
-        await createCashControl(data)
+        try {
+            await createCashControl(data)
+            setTimeout(() => {
+                window.location.href = 'homeAuditoria';
+            }, 2000);
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     return (
@@ -20,16 +27,20 @@ export const CashControlApp = () => {
                     overlay: 100000
                 }
             }}>
-                <CustomFormModal
-                    formId='createCashControlForm'
-                    show={true}
-                    title='Control de caja'
-                >
+                <Card title="Cierre de Caja">
                     <CashControlForm
                         formId="createCashControlForm"
                         onHandleSubmit={handleSubmit}
                     ></CashControlForm>
-                </CustomFormModal>
+                    <div className="d-flex justify-content-end">
+                        <button
+                            type='submit'
+                            form='createCashControlForm'
+                            className="btn btn-primary my-0">
+                            <i className="fas fa-bookmark"></i> Guardar
+                        </button>
+                    </div>
+                </Card>
             </PrimeReactProvider>
         </>
     )

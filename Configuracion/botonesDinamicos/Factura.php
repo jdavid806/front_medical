@@ -3,7 +3,6 @@ $campos = [
   "NOMBRE_PACIENTE",
   "FECHA_FACTURA",
   "MONTO_FACTURADO",
-  "ENLACE DOCUMENTO",
 ];
 ?>
 

@@ -3,6 +3,7 @@ import CustomDataTable from "../components/CustomDataTable.js";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { admissionService } from "../../services/api/index.js";
 import { useEffect } from "react";
+import { useState } from "react";
 export const TodayAppointmentsTable = ({
   onPrintItem,
   onDownloadItem,
@@ -11,8 +12,10 @@ export const TodayAppointmentsTable = ({
   const {
     appointments
   } = useFetchAppointments(admissionService.getAdmisionsAll());
+  const [filterAppointments, setFilterAppointments] = useState([]);
   useEffect(() => {
-    console.log('ADMISIONES DE HOY', appointments);
+    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
+    setFilterAppointments(appointments.filter(appointment => appointment.stateKey === "pending" && appointment.date === today));
   }, [appointments]);
   const columns = [{
     data: "patientName",
@@ -53,15 +56,15 @@ export const TodayAppointmentsTable = ({
     }, "Generar admisi\xF3n"))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3 text-primary   rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    className: "mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      minHeight: '300px'
+      minHeight: "300px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement(CustomDataTable, {
     columns: columns,
-    data: appointments,
+    data: filterAppointments,
     slots: slots,
     customOptions: {
       ordering: false,

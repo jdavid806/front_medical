@@ -39,13 +39,26 @@ function formatearFechaQuitarHora($fechaISO)
   return date('Y-m-d', strtotime($fechaISO));
 }
 
+function getSpecialtyName($value)
+{
+  $url = getHost() . "/medical/specialties";
+  $especialidades = consultarApi($url);
+
+  foreach ($especialidades as $especialidad) {
+    if ($value === $especialidad['id']) {
+      return $especialidad['name'];
+    }
+  }
+
+  return null; // Retorna null si no encuentra coincidencia
+}
 
 function consultarDatosPaciente($id, $fechaConsulta = null)
 {
   $url = getHost() . "/medical/patients/{$id}";
   $datosPaciente = consultarApi($url);
 
-  $nombreEntida = $datosPaciente['social_security']['entity_id'];
+  // $nombreEntida = $datosPaciente['social_security']['entity_id'];
 
   $primerNombre = $datosPaciente["first_name"];
   $segundoNombre = $datosPaciente["middle_name"];
@@ -56,7 +69,6 @@ function consultarDatosPaciente($id, $fechaConsulta = null)
     'datos_basicos' => [
       'nombre' => trim("$primerNombre $segundoNombre $apellido $segundoApellido"),
       'documento' => $datosPaciente['document_type'] . "-" . $datosPaciente['document_number'],
-      'password' => $datosPaciente['document_number'],
       'edad' => calcularEdad($datosPaciente['date_of_birth']),
       'telefono' => $datosPaciente['whatsapp'],
       'correo' => $datosPaciente['email'],
@@ -64,7 +76,7 @@ function consultarDatosPaciente($id, $fechaConsulta = null)
     'datos_generales' => [
       'direccion' => $datosPaciente['address'],
       'genero' => traducirGenero($datosPaciente['gender']),
-      'entidad' => $nombreEntida,
+      // 'entidad' => $nombreEntida,
       'tipo afiliado' => $datosPaciente['social_security']['affiliate_type'],
       'fecha Consulta' => $fechaConsulta,
     ],
@@ -82,7 +94,7 @@ function consultarDatosDoctor($id)
   $apellido = $datosDoctor["last_name"];
   $segundoApellido = $datosDoctor["second_last_name"];
 
-  $especialidad = $datosDoctor['user_specialty_id'];
+  $especialidad = getSpecialtyName($datosDoctor['user_specialty_id']);
   $firma = $datosDoctor['firma_minio_id'];
 
   $resultado = [

@@ -7,7 +7,8 @@ const getEstado = (appointment: AppointmentDto): string => {
 
   // Función auxiliar para simplificar las condiciones
   const isPending = () =>
-    stateId === "1" || (stateKey === "pending" && attentionType === "PROCEDURE");
+    stateId === "1" ||
+    (stateKey === "pending" && attentionType === "PROCEDURE");
 
   const isWaitingForConsultation = () =>
     (stateId === "2" ||
@@ -40,7 +41,7 @@ const getEstado = (appointment: AppointmentDto): string => {
     case isInConsultation():
       return "En Consulta";
     default:
-      return "Sin Cita"; // Estado por defecto
+      return "Sin Cita";
   }
 };
 export const useFetchAppointments = (
@@ -49,7 +50,8 @@ export const useFetchAppointments = (
 ) => {
   const defaultMapper = (appointment: AppointmentDto): AppointmentTableItem => {
     const doctorFirstName = appointment.user_availability.user.first_name || "";
-    const doctorMiddleName = appointment.user_availability.user.middle_name || "";
+    const doctorMiddleName =
+      appointment.user_availability.user.middle_name || "";
     const doctorLastName = appointment.user_availability.user.last_name || "";
     const doctorSecondLastName =
       appointment.user_availability.user.second_last_name || "";
@@ -72,7 +74,8 @@ export const useFetchAppointments = (
       stateKey: appointment.appointment_state?.name,
       attentionType: appointment.attention_type,
       productId: appointment.product_id,
-      stateDescription: estado,// Nuevo campo agregado
+      stateDescription: estado, // Nuevo campo agregado
+      user_availability: appointment?.user_availability,
     };
   };
 
@@ -89,15 +92,17 @@ export const useFetchAppointments = (
       if (fechaA > fechaB) return -1;
       if (fechaA < fechaB) return 1;
 
-      const [horaA, minutoA, segundoA] = a.appointment_time.split(":").map(Number);
-      const [horaB, minutoB, segundoB] = b.appointment_time.split(":").map(Number);
+      const [horaA, minutoA, segundoA] = a.appointment_time
+        .split(":")
+        .map(Number);
+      const [horaB, minutoB, segundoB] = b.appointment_time
+        .split(":")
+        .map(Number);
 
       if (horaA !== horaB) return horaA - horaB;
       if (minutoA !== minutoB) return minutoA - minutoB;
       return segundoA - segundoB;
     });
-
-
 
     const patientId = +(
       new URLSearchParams(window.location.search).get("patient_id") || "0"

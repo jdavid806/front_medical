@@ -129,6 +129,8 @@ async function eliminarPrecio(id) {
 
 async function updateProduct(id, productData) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
+  //const ruta = obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
+  
   actualizarDatos(url, productData);
   cargarContenido();
 }
@@ -143,9 +145,11 @@ async function createProduct(product) {
 }
 
 async function editarProducto(id) {
-  const ruta = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
+   //const ruta = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
+  const ruta = obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
+  const rutaProducts = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
 
-  let producto = await obtenerDatos(ruta);
+  let producto = await obtenerDatos(rutaProducts);
 
   if (!producto) {
     console.error("Error: No se pudo obtener el producto.");

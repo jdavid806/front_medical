@@ -292,19 +292,21 @@ async function generarFormatoReceta(recetaId) {
 
 async function generarFormatoOrden(ordenId) {
   let url = obtenerRutaPrincipal() + `/medical/exam-orders/${ordenId}`;
-  let datosOrden = await obtenerDatos(url);
+  let dataState = await obtenerDatos(url);
+
+  let state = getOrdenState(dataState.exam_order_state.name);
 
   let contenido = `
   <div class="container border rounded shadow-sm text-start">
     <h3 class="text-primary text-center">Orden de Examen Médico</h3>
     <h4 class="text-secondary">Detalles del examen:</h4>
-    <p><strong>Tipo de examen:</strong> ${datosOrden.exam_type.name}</p>
-    <p><strong>Estado:</strong> ${datosOrden.exam_order_state.name}</p>
+    <p><strong>Tipo de examen:</strong> ${dataState.exam_type.name}</p>
+    <p><strong>Estado:</strong> ${state}</p>
     <hr>
   `;
 
   // Iteramos por las tarjetas y campos dinámicos del examen
-  datosOrden.exam_type.form_config.tabs.forEach((tab) => {
+  dataState.exam_type.form_config.tabs.forEach((tab) => {
     contenido += `<h4 class="text-secondary">${tab.tab}</h4>`;
 
     tab.cards.forEach((card) => {
@@ -314,7 +316,7 @@ async function generarFormatoOrden(ordenId) {
         contenido += `
         <p><strong>${field.label}</strong></p>
         <div>${
-          datosOrden.exam_type.form_config.values[field.id] || "Sin datos"
+          dataState.exam_type.form_config.values[field.id] || "Sin datos"
         }</div>
         `;
       });
@@ -325,8 +327,8 @@ async function generarFormatoOrden(ordenId) {
   contenido += `</div>`;
 
   let datosPaciente = await consultarDatosPaciente(
-    datosOrden.patient_id,
-    formatearFechaQuitarHora(datosOrden.created_at)
+    dataState.patient_id,
+    formatearFechaQuitarHora(dataState.created_at)
   );
   let datosEmpresa = await consultarDatosEmpresa();
   let datosDoctor = await consultarDatosDoctor(1);

@@ -22,19 +22,28 @@ import {
 import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm";
 import { SwalManager } from "../../services/alertManagerImported";
 import { RescheduleAppointmentModal } from "./RescheduleAppointmentModal";
+import { getUserLogged } from "../../services/utilidades";
 
 export const AppointmentsTable: React.FC = () => {
-  const { appointments } = useFetchAppointments(appointmentService.active());
+  const userLogged = getUserLogged();
+  const patientId =
+    new URLSearchParams(window.location.search).get("patient_id") || null;
+  const { appointments, fetchAppointments } = useFetchAppointments(
+    appointmentService.active()
+  );
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    string | null
+  >(null);
 
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] =
     useState(false);
   const [selectedBranch, setSelectedBranch] = React.useState<string | null>(
     null
   );
-  const [selectedDate, setSelectedDate] =
-    React.useState<Nullable<(Date | null)[]>>(null);
+  const [selectedDate, setSelectedDate] = React.useState<
+    Nullable<(Date | null)[]>
+  >([new Date(new Date().setDate(new Date().getDate())), new Date()]);
   const [filteredAppointments, setFilteredAppointments] = React.useState<
     AppointmentTableItem[]
   >([]);
@@ -58,31 +67,44 @@ export const AppointmentsTable: React.FC = () => {
     data: {},
   });
 
+  const handleSubmit = async () => {
+    try {
+      // Llamar a la función guardarArchivoExamen
+      //@ ts-ignore
+      const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
 
-  const handleSubmit = async () => {  
-    try {  
-      // Llamar a la función guardarArchivoExamen  
-      const enviarPDf = await guardarArchivoExamen('inputPdf', 2);  
-
-      // Acceder a la PromiseResult  
-      if (enviarPDf !== undefined) {  
-        console.log("PDF de prueba:", enviarPDf);  
-        console.log("Resultado de la promesa:", enviarPDf); 
-      } else {  
-        console.error("No se obtuvo un resultado válido.");  
-      }  
-    } catch (error) {  
-      console.error("Error al guardar el archivo:", error);  
-    } finally {  
-      // Limpiar el estado después de la operación  
-      setShowPdfModal(false);  
-      setPdfFile(null);  
-      setPdfPreviewUrl(null);  
-    }  
-  };  
+      // Acceder a la PromiseResult
+      if (enviarPDf !== undefined) {
+        console.log("PDF de prueba:", enviarPDf);
+        console.log("Resultado de la promesa:", enviarPDf);
+        await appointmentService.changeStatus(
+          selectedAppointmentId,
+          "consultation_completed"
+        );
+        SwalManager.success({ text: "Resultados guardados exitosamente" });
+      } else {
+        console.error("No se obtuvo un resultado válido.");
+      }
+    } catch (error) {
+      console.error("Error al guardar el archivo:", error);
+    } finally {
+      // Limpiar el estado después de la operación
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+      fetchAppointments();
+    }
+  };
 
   useEffect(() => {
     let filtered: AppointmentTableItem[] = [...appointments];
+
+    if (userLogged.role.group === "DOCTOR") {
+      filtered = filtered.filter(
+        (appointment) =>
+          appointment?.user_availability?.user?.id === userLogged.id
+      );
+    }
 
     if (selectedBranch) {
       filtered = filtered.filter(
@@ -140,8 +162,7 @@ export const AppointmentsTable: React.FC = () => {
   };
 
   const handleRescheduleAppointment = async (appointmentId: string) => {
-    console.log('Reagendando', appointmentId);
-
+    console.log("Reagendando", appointmentId);
   };
 
   const handleCancelAppointment = async (appointmentId: string) => {
@@ -219,7 +240,8 @@ export const AppointmentsTable: React.FC = () => {
             {(data.stateId === "2" ||
               data.stateKey === "pending_consultation" ||
               data.stateKey === "in_consultation") &&
-              data.attentionType === "CONSULTATION" && (
+              data.attentionType === "CONSULTATION" &&
+              patientId && (
                 <li>
                   <a
                     className="dropdown-item"
@@ -243,7 +265,8 @@ export const AppointmentsTable: React.FC = () => {
             {(data.stateId === "2" ||
               data.stateKey === "pending_consultation" ||
               data.stateKey === "in_consultation") &&
-              data.attentionType === "PROCEDURE" && (
+              data.attentionType === "PROCEDURE" &&
+              patientId && (
                 <>
                   <li>
                     <a
@@ -270,9 +293,10 @@ export const AppointmentsTable: React.FC = () => {
 
                     <a
                       className="dropdown-item"
-                      onClick={() => {setShowPdfModal(true)
-                        setSelectedAppointmentId(data.id)
-                      } }
+                      onClick={() => {
+                        setSelectedAppointmentId(data.id);
+                        setShowPdfModal(true);
+                      }}
                     >
                       <div className="d-flex gap-2 align-items-center">
                         <i
@@ -288,7 +312,7 @@ export const AppointmentsTable: React.FC = () => {
             {data.stateId === "1" ||
               (data.stateKey === "pending" && (
                 <>
-                  <li>
+                  {/* <li>
                     <a
                       className="dropdown-item"
                       href="#"
@@ -305,7 +329,7 @@ export const AppointmentsTable: React.FC = () => {
                         <span>Reagendar cita</span>
                       </div>
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <a
                       className="dropdown-item"
@@ -444,8 +468,11 @@ export const AppointmentsTable: React.FC = () => {
           </div>
         </div>
       </div>
-      <div >
-        <div className="mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto" style={{ minHeight: '300px' }}>
+      <div>
+        <div
+          className="mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "300px" }}
+        >
           <CustomDataTable
             columns={columns}
             data={filteredAppointments}
@@ -478,7 +505,10 @@ export const AppointmentsTable: React.FC = () => {
         </div>
       </div>
       {showPdfModal && (
-        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <div
+          className="modal fade show"
+          style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
               <div className="modal-header">
@@ -494,7 +524,12 @@ export const AppointmentsTable: React.FC = () => {
               </div>
               <div className="modal-body">
                 {pdfPreviewUrl ? (
-                  <embed src={pdfPreviewUrl} width="100%" height="500px" type="application/pdf" />
+                  <embed
+                    src={pdfPreviewUrl}
+                    width="100%"
+                    height="500px"
+                    type="application/pdf"
+                  />
                 ) : (
                   <p>Por favor, seleccione un archivo PDF.</p>
                 )}

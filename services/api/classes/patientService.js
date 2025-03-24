@@ -4,26 +4,34 @@ import { userService } from "../index.js";
 import { getJWTPayload } from "../../utilidades.js";
 
 export class PatientService extends BaseApiService {
-
   async getByUser() {
     const res = await super.getAll();
     const user = await userService.getByExternalId(getJWTPayload().sub);
+    const today = new Date().toISOString().split("T")[0];
 
     try {
       if (user.role.group === "DOCTOR") {
         const filteredPatients = res.map((patient) => {
           return {
             ...patient,
+            fullName: `${patient.first_name} ${patient.middle_name} ${patient.last_name} ${patient.second_last_name}`,
             appointments: patient.appointments.filter(
               (appointment) =>
-                appointment.user_availability.user_id === user.id
+                appointment.user_availability.user_id === user.id &&
+                appointment.appointment_date === today
             ),
           };
         });
 
         return filteredPatients;
       }
-      return res;
+      const resFilter = res.map((patient) => {
+        return {
+          ...patient,
+          fullName: `${patient.first_name} ${patient.middle_name} ${patient.last_name} ${patient.second_last_name}`,
+        };
+      });
+      return resFilter;
     } catch (error) {
       console.error("Error al cargar los datos del usuario:", error);
       throw error;
@@ -34,7 +42,9 @@ export class PatientService extends BaseApiService {
     const res = await super.get(id);
     try {
       const user = await userService.getByExternalId(getJWTPayload().sub);
-      const permissions = user.role.permissions.map((permission) => permission.key);
+      const permissions = user.role.permissions.map(
+        (permission) => permission.key
+      );
 
       if (!permissions.includes("patients_view_sensitive")) {
         res.validated_data = {
@@ -66,6 +76,18 @@ export class PatientService extends BaseApiService {
   async storePatient(data) {
     return await this.httpClient.post(
       this.microservice + "/" + "patients-companion-social-security",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  async updatePatient(id, data) {
+    return await this.httpClient.put(
+      this.microservice + "/" + "patients-companion-social-security" + "/" + id,
       data,
       {
         headers: {

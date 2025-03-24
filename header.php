@@ -129,38 +129,6 @@
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-archive"></span>Reportes</a>
         <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-          <li><a class="dropdown-item" href="RIPS_Report">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>RIPS
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Registered_patients">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="users"></span>Pacientes
-                Registrados
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Clinical_histories_general">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="heart"></span>Historias
-                Clinicas
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Clients">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="user-check"></span>Clientes
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Schedule">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="book-open"></span>Agendas
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Invoices">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>Citas
-              </div>
-            </a>
-          </li>
           <li><a class="dropdown-item" href="Invoices">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Facturas
               </div>
@@ -168,17 +136,6 @@
           </li>
           <li><a class="dropdown-item" href="InvoicesDoctors">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Especialistas
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="RIPS_Report">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="columns"></span>Presupuestos
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="Accounts_receivable">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="credit-card"></span>Cuentas a
-                Cobrar
               </div>
             </a>
           </li>

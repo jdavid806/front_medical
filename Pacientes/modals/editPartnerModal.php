@@ -9,7 +9,7 @@
                     <div class="col-sm-6">
                         <div class="mb-2 mb-sm-0">
                             <label for="relationSelect" class="form-label">Parentesco</label>
-                            <select class="form-select" id="relationSelect" aria-label="Default select example">
+                            <select class="form-select" id="relationSelect" name="relationship" aria-label="Default select example">
                                 <option selected="">Seleccionar</option>
                                 <?php foreach ($relations as $key => $value) { ?>
                                     <option value="<?= $key ?>"><?= $value ?></option>

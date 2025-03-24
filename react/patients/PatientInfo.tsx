@@ -178,19 +178,21 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({ patient }) => {
             <h3 className="fw-bold mb-3"><i className="fa-solid fa-book-medical fa-lg"></i> Seguridad Social y Afiliación</h3>
             <div className="row">
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Tipo de regimen:</span> {patient.social_security.type_scheme}</p>
-                    <p><span className="fw-bold">Categoria:</span> {patient.social_security.category}</p>
+                    {/* <p><span className="fw-bold">Tipo de regimen:</span> {patient.social_security.type_scheme}</p> */}
+                    {/* <p><span className="fw-bold">Categoria:</span> {patient.social_security.category}</p> */}
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Tipo de afiliado:</span> {patient.social_security.affiliate_type}</p>
+                    {/* <p><span className="fw-bold">Tipo de afiliado:</span> {patient.social_security.affiliate_type}</p> */}
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Entidad prestadora de salud (EPS):</span> {patient.social_security.eps}</p>
-                    <p><span className="fw-bold">Administradora de riesgos laborales (ARL):</span> {patient.social_security.arl}</p>
+                    {/* <p><span className="fw-bold">Entidad prestadora de salud (EPS):</span> {patient.social_security.eps}</p> */}
+                    <p><span className="fw-bold">Entidad Aseguradora (ARS):</span> {patient.social_security.eps}</p>
+
+                    {/* <p><span className="fw-bold">Administradora de riesgos laborales (ARL):</span> {patient.social_security.arl}</p> */}
                 </div>
                 <div className="col-md-6">
-                    <p><span className="fw-bold">Administradora de fondos de pensiones (AFP):</span> {patient.social_security.afp}</p>
-                    <p><span className="fw-bold">Sucursal:</span> Medellin</p>
+                    {/* <p><span className="fw-bold">Administradora de fondos de pensiones (AFP):</span> {patient.social_security.afp}</p> */}
+                    {/* <p><span className="fw-bold">Sucursal:</span> Medellin</p> */}
                 </div>
             </div>
         </>

@@ -54,7 +54,9 @@ export const CashControlForm = ({
   const handlePaymentMethodsAmountChange = (e, index) => {
     setMappedPaymentMethods(prev => {
       const newPaymentMethods = [...prev];
-      newPaymentMethods[index].amount = e.value;
+      console.log(e.value);
+      const newAmount = !e.value || e.value <= 0 || isNaN(e.value) ? 0 : e.value;
+      newPaymentMethods[index].amount = newAmount;
       setValue('payments', newPaymentMethods.map(paymentMethod => ({
         payment_method_id: paymentMethod.id,
         amount: paymentMethod.amount
@@ -109,6 +111,7 @@ export const CashControlForm = ({
     className: "w-100",
     inputClassName: "w-100",
     prefix: "$",
+    min: 0,
     useGrouping: false
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "text-end"

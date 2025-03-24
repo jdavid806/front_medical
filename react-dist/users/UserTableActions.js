@@ -71,5 +71,5 @@ export const UserTableActions = () => {
     style: {
       width: '20px'
     }
-  }), /*#__PURE__*/React.createElement("span", null, "A\xF1adir firma")))))));
+  }), /*#__PURE__*/React.createElement("span", null, "A\xF1adir firmas")))))));
 };

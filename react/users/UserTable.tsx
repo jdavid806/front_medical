@@ -44,6 +44,10 @@ const UserTable: React.FC<UserTableProps> = ({
     };
 
     const handleConfirm = () => {
+  
+        const id_inputUsuario = guardarArchivoUsuario("fileInput", 40)
+
+        console.log("id_inputUsuario",id_inputUsuario);
         if (selectedFile && currentUserId && actionType) {
             if (actionType === 'signature' && onAddSignature) {
                 onAddSignature(selectedFile, currentUserId);
@@ -51,6 +55,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 onAddStamp(selectedFile, currentUserId);
             }
         }
+
         setSelectedFile(null);
         setPreviewUrl(null);
         setCurrentUserId(null);
@@ -142,7 +147,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <input
                 id="fileInput"
                 type="file"
-                accept="image/*" // Solo acepta imágenes
+                accept="image/*"
                 style={{ display: 'none' }}
                 onChange={(e) => {
                     if (actionType === 'signature') {

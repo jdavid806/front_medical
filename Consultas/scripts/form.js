@@ -6,6 +6,7 @@ let formValues = {};
 document.addEventListener("DOMContentLoaded", async function () {
   const params = new URLSearchParams(window.location.search);
   const jsonPath = `../../ConsultasJson/${params.get("tipo_historia")}.json`;
+  console.log("Historia: ", jsonPath);
   const dataHistoryPreaddmission = await historyPreadmission();
   console.log(dataHistoryPreaddmission);
   // const timerElement = document.getElementById('timer');
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   try {
     const response = await fetch(jsonPath);
     const formData = await response.json();
+    console.log("Formdata: ", formData);
 
     generateForm(formData.form1);
     // updateTimer();

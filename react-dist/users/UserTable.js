@@ -28,6 +28,11 @@ const UserTable = ({
     }
   };
   const handleConfirm = () => {
+    console.log("selectedFile:", selectedFile);
+    console.log("currentUserId:", currentUserId);
+    console.log("actionType:", actionType);
+    const id_inputUsuario = guardarArchivoUsuario("fileInput", 2);
+    console.log("id_inputUsuario", id_inputUsuario);
     if (selectedFile && currentUserId && actionType) {
       if (actionType === 'signature' && onAddSignature) {
         onAddSignature(selectedFile, currentUserId);
@@ -131,12 +136,12 @@ const UserTable = ({
   })))))), /*#__PURE__*/React.createElement("input", {
     id: "fileInput",
     type: "file",
-    accept: "image/*" // Solo acepta imágenes
-    ,
+    accept: "image/*",
     style: {
       display: 'none'
     },
     onChange: e => {
+      console.log("File selected:", e.target.files?.[0]);
       if (actionType === 'signature') {
         handleFileChange(e, 'signature');
       } else if (actionType === 'stamp') {

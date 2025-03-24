@@ -211,11 +211,9 @@ export const PastMedicalHistoryForm: React.FC = () => {
       data: formData["data"],
     };
 
-    console.log(selectedClinicalRecord, patientId);
-
     if (selectedClinicalRecord) {
       clinicalRecordService
-        .updateForParent(patientId, requestData)
+        .updateForParent(selectedClinicalRecord.id, requestData)
         .then((response) => {
           window.location.href = "/verPaciente?id=" + patientId;
         })

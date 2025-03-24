@@ -25,7 +25,6 @@ const getEstado = appointment => {
       return "En Consulta";
     default:
       return "Sin Cita";
-    // Estado por defecto
   }
 };
 export const useFetchAppointments = (fetchPromise, customMapper) => {
@@ -52,7 +51,9 @@ export const useFetchAppointments = (fetchPromise, customMapper) => {
       stateKey: appointment.appointment_state?.name,
       attentionType: appointment.attention_type,
       productId: appointment.product_id,
-      stateDescription: estado // Nuevo campo agregado
+      stateDescription: estado,
+      // Nuevo campo agregado
+      user_availability: appointment?.user_availability
     };
   };
   const mapper = customMapper || defaultMapper;

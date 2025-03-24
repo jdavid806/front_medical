@@ -61,7 +61,7 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     datos_generales: {
       direccion: data.address,
       genero: traducirGenero(data.gender),
-      entidad: nombrEntidad,
+      // entidad: nombrEntidad,
       "tipo afiliado": data.social_security.affiliate_type,
       "fecha Consulta": fechaConsulta,
     },
@@ -97,12 +97,13 @@ async function consultarDatosDoctor(doctorId) {
     data.second_last_name,
   ];
 
+  let especialidad = getSpecialtyName(data.user_specialty_id);
   // pendiente consultar
   // Datos firma
 
   return {
     nombre: "Dr(a). " + unirTextos(nombre),
-    especialidad: data.user_specialty_id,
+    especialidad,
     firma: "",
   };
 }

@@ -1,9 +1,10 @@
 <?php
 require_once '../dompdf/autoload.inc.php';
 include "./formatos.php";
+include "./funcionesEncrypt/encriptar.php";
 
-$id = $_GET['id'] ?? 'desconocido';
-$tipo = $_GET['tipo'] ?? 'ninguno';
+$id = decryptData($_GET['id']) ?? 'desconocido';
+$tipo = decryptData($_GET['tipo']) ?? 'ninguno';
 
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();
@@ -22,6 +23,9 @@ switch ($tipo) {
     case 'consulta':
         $resultado = generarFormatoConsulta($id);
         $titulo = "Consulta";
+        break;
+    case 'orden':
+        // logica de orden emdica que te falto c;
         break;
     default:
         # code...
@@ -57,7 +61,8 @@ if (!$sin_firma) {
     $firmaDigital = "";
 }
 
-$contraseña = $datos_paciente['datos_basicos']['password'];
+$documento = $datos_paciente['datos_basicos']['documento'];
+$contraseña = strpos($documento, '-') !== false ? substr($documento, strpos($documento, '-') + 1) : $documento;
 $nombrePdf = $titulo . "_" . $datos_paciente['datos_basicos']['documento'] . "_" . $datos_paciente['datos_generales']['fecha_consulta'] . ".pdf";
 
 ob_start();
@@ -74,13 +79,12 @@ $dompdf->loadHtml($html);
 
 $dompdf->render();
 
-// $canvas = $dompdf->getCanvas();
-// $canvas->get_cpdf()->setEncryption(
-//     $contraseña,     // Contraseña maestra (desbloquea todo)
-//     '',     // Contraseña de usuario (abre el PDF)
-//     ['copy', 'print'] // Bloquea copiar e imprimir
-// );
+$canvas = $dompdf->getCanvas();
+$canvas->get_cpdf()->setEncryption(
+    $contraseña,     // Contraseña maestra (desbloquea todo)
+    '',     // Contraseña de usuario (abre el PDF)
+    ['copy', 'print'] // Bloquea copiar e imprimir
+);
 
-// Enviamos el PDF al navegador para visualizar (sin descargar)
 header('Content-Type: application/pdf');
 $dompdf->stream($nombrePdf, array("Attachment" => false));

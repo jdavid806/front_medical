@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { PrintTableAction } from "../components/table-actions/PrintTableAction";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction";
+import { useState } from "react";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -15,13 +16,26 @@ interface TodayAppointmentsTableProps {
   onShareItem?: (id: string, title: string, type: string) => void;
 }
 
-export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ onPrintItem, onDownloadItem, onShareItem }) => {
+export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({
+  onPrintItem,
+  onDownloadItem,
+  onShareItem,
+}) => {
   const { appointments } = useFetchAppointments(
     admissionService.getAdmisionsAll()
   );
+  const [filterAppointments, setFilterAppointments] = useState<
+    AppointmentTableItem[]
+  >([]);
 
   useEffect(() => {
-    console.log('ADMISIONES DE HOY', appointments);
+    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
+    setFilterAppointments(
+      appointments.filter(
+        (appointment) =>
+          appointment.stateKey === "pending" && appointment.date === today
+      )
+    );
   }, [appointments]);
 
   const columns: ConfigColumns[] = [
@@ -89,15 +103,23 @@ export const TodayAppointmentsTable: React.FC<TodayAppointmentsTableProps> = ({ 
 
   return (
     <>
-  <div className="mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto" style={{ minHeight: '300px' }}>
-  <div className="card-body h-100 w-100 d-flex flex-column">
-          <CustomDataTable  columns={columns} data={appointments} slots={slots} customOptions={{
+      <div
+        className="mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "300px" }}
+      >
+        <div className="card-body h-100 w-100 d-flex flex-column">
+          <CustomDataTable
+            columns={columns}
+            data={filterAppointments}
+            slots={slots}
+            customOptions={{
               ordering: false,
               columnDefs: [
                 { targets: 0, orderable: false }, // Desactiva el ordenamiento para la primera columna (name)
-                 ],
-               }}>
-            <thead className="text-secondary-lighter">
+              ],
+            }}
+          >
+            <thead>
               <tr>
                 <th className="border-top custom-th text-start">Nombre</th>
                 <th className="border-top custom-th text-start">

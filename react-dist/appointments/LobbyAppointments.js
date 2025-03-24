@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
@@ -6,18 +6,18 @@ import { appointmentService } from "../../services/api/index.js";
 import { Panel } from "primereact/panel";
 import { ScrollPanel } from "primereact/scrollpanel";
 const appointmentStatesByKey = {
-  "Pendiente": "Pendiente",
+  Pendiente: "Pendiente",
   "En espera de consulta": "En espera de consulta",
   "En espera de examen": "En espera de examen",
   "En consulta": "En consulta",
   "Consulta Finalizada": "Consulta Finalizada",
-  "Cancelada": "Cancelada",
-  "Reprogramada": "Reprogramada"
+  Cancelada: "Cancelada",
+  Reprogramada: "Reprogramada"
 };
 
 // Definir colores directamente en el componente
 const stateColors = {
-  "Pendiente": {
+  Pendiente: {
     backgroundColor: "rgb(255, 239, 202)",
     color: "#000"
   },
@@ -42,31 +42,33 @@ const stateColors = {
     color: "#fff"
   },
   // Verde
-  "Cancelada": {
+  Cancelada: {
     backgroundColor: "#DC3545",
     color: "#fff"
   },
   // Rojo
-  "Reprogramada": {
+  Reprogramada: {
     backgroundColor: "#6610F2",
     color: "#fff"
-  },
-  // Violeta
-  "Sin Cita": {
-    backgroundColor: "#6C757D",
-    color: "#fff"
-  } // Gris para estados desconocidos
+  } // Violeta
 };
 export const LobbyAppointments = () => {
   const {
     appointments
   } = useFetchAppointments(appointmentService.active());
+  const [filterAppointments, setFilterAppointments] = useState([]);
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
+    setFilterAppointments(appointments.filter(appointment => appointment.date === today));
+  }, [appointments]);
   // Agrupar citas por estado
-  const groupedAppointments = appointments.reduce((acc, appointment) => {
+  const groupedAppointments = filterAppointments.reduce((acc, appointment) => {
     const stateKey = appointment.stateDescription;
     const stateLabel = appointmentStatesByKey[stateKey] || "Sin Cita";
-    if (!acc[stateLabel]) acc[stateLabel] = [];
-    acc[stateLabel].push(appointment);
+    if (stateLabel !== "Sin Cita") {
+      if (!acc[stateLabel]) acc[stateLabel] = [];
+      acc[stateLabel].push(appointment);
+    }
     return acc;
   }, {});
   return /*#__PURE__*/React.createElement("div", {

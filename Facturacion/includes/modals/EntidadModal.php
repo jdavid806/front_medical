@@ -211,22 +211,11 @@
                     <div class="col-6">
                       <label class="form-label" for="taxCharge">Impuesto cargo</label>
                       <select class="form-control" id="taxCharge" name="taxCharge">
-                        <option value="" disabled selected>Selecciona un impuesto</option>
-                        <option value="1">IVA 21%</option>
-                        <option value="2">IVA 10%</option>
-                        <option value="3">IVA 4%</option>
                       </select>
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxWithholding">Impuesto retencion</label>
                       <select class="form-control" name="taxWithholding" id="taxWithholding">
-                        <option value="" disabled selected>Seleccione una retención de impuesto</option>
-                        <option value="10">10% - Retención general</option>
-                        <option value="15">15% - Retención profesionales</option>
-                        <option value="19">19% - Retención empresarial</option>
-                        <option value="24">24% - Retención especial</option>
-                        <option value="5">5% - Retención reducida</option>
-                        <option value="0">0% - Sin retención</option>
                       </select>
                     </div>
                   </div>
@@ -307,12 +296,13 @@
   } from "../../services/api/index.js";
 
 
-  document.addEventListener('DOMContentLoaded', function() {
-    createSelectEntities();
-    cargarProcedimientos();
-    cargarEspecialistas();
-    cargarPacientes();
-    cargarCentrosCosto();
+  document.addEventListener('DOMContentLoaded', async function() {
+    await cargarImpuestos();
+    await createSelectEntities();
+    await cargarProcedimientos();
+    await cargarEspecialistas();
+    await cargarPacientes();
+    await cargarCentrosCosto();
   })
 
   async function createSelectEntities() {
@@ -381,7 +371,13 @@
     const selectProcedimientos = document.getElementById('procedure');
     let procedimientos = await productService.getAllProducts();
 
-    procedimientos = procedimientos.data.filter(item => item.attributes.attention_type === "PROCEDURE");
+    selectProcedimientos.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione procedimientos...';
+    placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
+    selectProcedimientos.appendChild(placeholderOption);
 
 
     if (procedimientos.length) {
@@ -415,6 +411,14 @@
     const selectEspecialistas = document.getElementById('especialistas');
     const especialistas = await userService.getAllUsers();
 
+    selectEspecialistas.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione especialistas...';
+    placeholderOption.setAttribute('placeholder', '');
+    selectEspecialistas.appendChild(placeholderOption);
+
     especialistas.forEach(especialista => {
       const optionEsp = document.createElement('option');
 
@@ -430,6 +434,13 @@
     const selectPacientes = document.getElementById('patients');
     const pacientes = await patientService.getAll();
 
+    selectPacientes.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione pacientes...';
+    placeholderOption.setAttribute('placeholder', '');
+    selectPacientes.appendChild(placeholderOption);
 
     pacientes.forEach(paciente => {
       const optionPac = document.createElement('option');
@@ -504,9 +515,9 @@
     const paramsFilter = {
       end_date: fechaFin,
       start_date: fechaInicio,
-      patient_ids: selectedPacientes,
-      product_ids: selectedProcedures,
-      user_ids: selectedEspecialistas,
+      patient_ids: selectedPacientes.filter(item => item != ''),
+      product_ids: selectedProcedures.filter(item => item != ''),
+      user_ids: selectedEspecialistas.filter(item => item != ''),
     }
 
     return paramsFilter;
@@ -544,6 +555,63 @@
 
       tbody.appendChild(tr);
     });
+  }
+
+  // async function cargarSelectsPrecios() {
+  //   let rutaPaymentmethods = obtenerRutaPrincipal() + "/api/v1/admin/payment-methods";
+  //   let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
+  //   let rutaRetenciones =
+  //     obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
+
+  //   let paymentmethods = await obtenerDatos(rutaPaymentmethods);
+  //   let impuestos = await obtenerDatos(rutaImpuestos);
+  //   let retenciones = await obtenerDatos(rutaRetenciones);
+
+  //   console.log("Selects", impuestos, retenciones, paymentmethods);
+
+  //   cargarImpuestosCargo("taxCharge", impuestos.data, "Seleccione un impuesto");
+  //   cargarSelect("taxWithholding", retenciones.data, "Seleccione una retención");
+  // }
+
+  async function cargarImpuestos() {
+    const selectProcedimientos = document.getElementById('taxCharge');
+    let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
+    let impuestos = await obtenerDatos(rutaImpuestos);
+
+    selectProcedimientos.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione impuestos...';
+    placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
+    selectProcedimientos.appendChild(placeholderOption);
+
+
+    if (impuestos.data.length) {
+
+      impuestos.data.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        selectProcedimientos.appendChild(option);
+      });
+
+    }
+    configurarSelectImpuestos();
+  }
+
+  function configurarSelectImpuestos() {
+    const procedure = document.getElementById('procedure');
+
+    procedure.setAttribute('multiple', 'multiple');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(procedure, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
   }
 </script>
 
@@ -669,30 +737,6 @@
       nombre: "Impuesto 3"
     }
   ];
-
-  function cargarImpuestosCargo() {
-    const selectImpuestosCargo = document.getElementById('taxCharge');
-
-    selectImpuestosCargo.innerHTML = '';
-
-    const placeholderOption = document.createElement('option');
-    placeholderOption.value = "";
-    placeholderOption.textContent = "Seleccione los impuestos";
-    placeholderOption.disabled = true;
-    placeholderOption.selected = true;
-
-    selectImpuestosCargo.appendChild(placeholderOption);
-
-    impuestos.forEach(impuesto => {
-      const optionPro = document.createElement('option');
-
-      optionPro.value = impuesto.id;
-
-      optionPro.textContent = impuesto.nombre;
-
-      selectImpuestosCargo.appendChild(optionPro);
-    });
-  }
 
   const metodoPagoCheck = document.getElementById('metodoPagoCheck');
 
@@ -858,9 +902,9 @@
   const finishStep = document.getElementById('finishStep');
   finishStep.addEventListener("click", capturarDatos);
 
-  document.addEventListener("DOMContentLoaded", function() {
-    cargarImpuestosCargo();
-  });
+  // document.addEventListener("DOMContentLoaded", function() {
+  //   cargarImpuestosCargo();
+  // });
 </script>
 
 

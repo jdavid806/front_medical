@@ -509,6 +509,9 @@ export interface CashControlReportItem {
     created_at: string;
     updated_at: string;
     details: CashControlReportItemDetail[];
+    who_delivers_name: string;
+    who_validate_name: string;
+    method_payment_name: string;
 }
 
 export interface CashControlReportItemDetail {
@@ -520,4 +523,5 @@ export interface CashControlReportItemDetail {
     remaining_amount: number;
     created_at: string;
     updated_at: string;
+    payment_method_name: string;
 }
