@@ -232,3 +232,11 @@ function generarFormatoConsulta($consulta_id)
 
   return json_encode($resultado);
 }
+
+function generarFormatoOrden($ordenId){
+  $urlApi = getHost() . "/medical/exam-orders/{$ordenId}";
+  $dataOrden = consultarApi($urlApi);
+  var_dump($dataOrden);
+  $orderState = $dataOrden['exam_order_state']['name'];
+  echo "<br>".$orderState;
+}

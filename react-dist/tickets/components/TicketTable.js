@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAllTableTickets } from "../hooks/useAllTableTickets.js";
 import CustomDataTable from "../../components/CustomDataTable.js";
 import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
-import { ticketService } from "../../../services/api/index.js";
+import { ticketService, userService } from "../../../services/api/index.js";
 import 'https://js.pusher.com/8.2.0/pusher.min.js';
 import { useLoggedUser } from "../../users/hooks/useLoggedUser.js";
+import { getJWTPayload } from "../../../services/utilidades.js";
 export const TicketTable = () => {
   const {
     loggedUser
@@ -121,9 +122,11 @@ export const TicketTable = () => {
   };
   const callTicket = async id => {
     const status = 'CALLED';
+    const user = await userService.getByExternalId(getJWTPayload().sub);
+    console.log(user);
     await ticketService.update(id, {
       status,
-      module_id: loggedUser?.today_module_id
+      module_id: user?.today_module_id
     });
     setData(prevData => prevData.map(item => item.id === id ? {
       ...item,

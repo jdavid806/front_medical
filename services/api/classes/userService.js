@@ -1,3 +1,4 @@
+import { getJWTPayload } from "../../utilidades";
 import BaseApiService from "./baseApiService";
 
 export class UserService extends BaseApiService {
@@ -20,5 +21,9 @@ export class UserService extends BaseApiService {
             today_module_name: todayAvailability?.module?.name,
             today_module_id: todayAvailability?.module_id,
         };
+    }
+
+    async getLoggedUser() {
+        return await this.getByExternalId(getJWTPayload().sub);
     }
 }

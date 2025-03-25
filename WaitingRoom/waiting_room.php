@@ -42,7 +42,7 @@ include "../header.php";
                         <thead class="thead-dark">
                             <tr>
                                 <th>Paciente</th>
-                                <th>Consultorio</th>
+                                <th>Consultorio #</th>
                             </tr>
                         </thead>
                         <tbody id="waiting-body"><!-- Única tabla con datos -->
@@ -59,16 +59,25 @@ include "../header.php";
     import {
         admissionService,
         moduleService,
-        ticketService
+        ticketService,
+        appointmentStateService
     } from "./services/api/index.js";
     // Datos de ejemplo
-    let appointments = await admissionService.getAdmisionsAll();
-    appointments = appointments.filter(appointment => appointment.user_availability.appointment_type_id === 1);
+
+    let [appointmentStates, appointments, modules, tickets] = await Promise.all([
+        appointmentStateService.getAll(),
+        admissionService.getAdmisionsAll(),
+        moduleService.active(),
+        ticketService.getAll()
+    ]);
+    appointments = appointments.filter(appointment => {
+        return appointment.user_availability.appointment_type_id === 1 && appointment.appointment_date == new Date().toISOString().split('T')[0];
+    });
+
+    console.log(appointments);
 
     let filteredAppointments = appointments;
 
-    let modules = await moduleService.active();
-    let tickets = await ticketService.getAll();
 
     // Función para actualizar solo la tabla de pacientes/consultorios
     function updateTables() {
@@ -76,11 +85,11 @@ include "../header.php";
         waitingBody.innerHTML = "";
 
         filteredAppointments.forEach(appointment => {
-            if (appointment.appointment_state_id === 2) {
+            if (['called'].includes(appointment.appointment_state.name)) {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${appointment.patient.first_name} ${appointment.patient.last_name}</td>
-                    <td>${appointment.user_availability.office}</td>
+                    <td>${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}</td>
+                    <td>${appointment.user_availability.office || '--'}</td>
                 `;
                 waitingBody.appendChild(row);
             }
@@ -121,19 +130,18 @@ include "../header.php";
             status: data.appointment.appointment_state_id
         }
 
-        appointments.unshift(appointment);
+        filteredAppointments.unshift(appointment);
         updateTables();
     });
 
     channel.bind('appointment.state.updated', function(data) {
         const appointment = appointments.find(app => app.id == data.appointmentId);
+        const newState = appointmentStates.find(state => state.id == data.newState);
 
-        if (data.newState == 2) {
+        if (['pending', 'called'].includes(newState.name)) {
             filteredAppointments.unshift(appointment);
         } else {
-            if ([1, 3, 4].includes(data.newState)) {
-                filteredAppointments = appointments.filter(app => app.id != data.appointmentId);
-            }
+            filteredAppointments = appointments.filter(app => app.id != data.appointmentId);
         }
 
         updateTables();

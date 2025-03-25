@@ -40,6 +40,8 @@
     <link href="../../../assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
     <link href="../../../assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">
     <link href="../../../assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
         if (phoenixIsRTL) {
@@ -65,7 +67,8 @@
     <!-- ===============================================-->
     <main class="main" id="top">
         <div class="container-fluid bg-body-tertiary dark__bg-gray-1200">
-            <div class="row flex-center position-relative min-vh-100 g-0 py-5">
+        
+            <div class="row flex-center position-relative min-vh-100 g-0 py-5" id="particles-js" >
                 <div class="col-11 col-sm-10 col-xl-8">
                     <div class="card border border-translucent auth-card shadow-lg"
                         style="border-radius: 1rem; overflow: hidden;">
@@ -147,8 +150,9 @@
         }
     </script>
     </main>
+ 
     <script src="login/forgotPassword.js"></script>
-
+        
 </body>
 
 </html>

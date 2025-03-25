@@ -1792,6 +1792,8 @@ include '../modals/NewCompanionModal.php';
                 const companionsSelect = document.querySelector('select[name="companionsPatients"]');
                 companionsSelect.innerHTML = '<option selected="">Seleccionar</option>'; // Limpiar opciones previas
 
+                console.log("data admision: ", admission);
+
                 admission.patient.companions.forEach(companion => {
                     const option = document.createElement('option');
                     option.value = companion.id; // Suponiendo que cada acompañante tiene un id único

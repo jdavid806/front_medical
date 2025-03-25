@@ -7,7 +7,7 @@ include "../ConsultasJson/dataPaciente.php";
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="finishModalLabel">Finalizar consulta</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" id="btnCloseFinish" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="d-flex gap-4 mb-3">
@@ -41,6 +41,13 @@ include "../ConsultasJson/dataPaciente.php";
                   href="#remisionesTab" role="tab" aria-controls="remisionesTab"
                   aria-selected="false">
                   <span class="text-primary uil-sync"></span> Remisión
+                </a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" id="cita-tab" data-bs-toggle="tab"
+                  href="#citaTab" role="tab" aria-controls="citaTab"
+                  aria-selected="false">
+                  <span class="text-primary uil-sync"></span> Cita
                 </a>
               </li>
             </ul>
@@ -104,6 +111,25 @@ include "../ConsultasJson/dataPaciente.php";
                 <hr>
                 <div id="remisionFormReact" style="display: none;"></div>
               </div>
+
+              <div class="tab-pane fade" id="citaTab" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h4>Cita</h4>
+                  <button id="btnCrearCita" class="btn btn-primary" type="button">
+                    <span class="fa-solid fa-plus me-2 fs-9"></span> Crear cita
+                  </button>
+                  <button id="btnCancelarCita" class="btn btn-danger" type="button" style="display: none;">
+                    <span class="fa-solid fa-times me-2 fs-9"></span> Cancelar cita
+                  </button>
+                </div>
+                <hr>
+                <div id="contenidoCita" style="display: none;">
+                  <?php
+                  include '../Citas/disponibilidadCitas.php';
+                  ?>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -218,6 +244,7 @@ include "../ConsultasJson/dataPaciente.php";
     <div class="modal-footer d-flex justify-content-between">
       <!-- <span class="timer text-danger">Tiempo en consulta: <span id="modalTimerDisplay">00:00:00</span></span> -->
 
+
       <script>
         let startTime = 0;
         let intervalId = 0;
@@ -242,16 +269,18 @@ include "../ConsultasJson/dataPaciente.php";
         });
       </script>
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
-      <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar</button>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar consulta</button>
+      </div>
     </div>
   </div>
 </div>
 </div>
-
 <script type="module">
   import {
     getUserLogged
   } from './services/utilidades.js';
+
 
   document.addEventListener('DOMContentLoaded', function() {
 
@@ -292,7 +321,6 @@ include "../ConsultasJson/dataPaciente.php";
       if (optionData.selected) option.selected = true;
       tipoDiagnostico.appendChild(option);
     });
-    console.log(tipoDiagnostico);
   }
 
   function cargarCie11(cie11) {
@@ -401,6 +429,17 @@ include "../ConsultasJson/dataPaciente.php";
     document.getElementById('btnCancelarExamenes').style.display = 'none';
     document.getElementById('btnAgregarExamenes').style.display = 'block';
   });
+
+  document.getElementById('btnCrearCita').addEventListener('click', function() {
+    document.getElementById('contenidoCita').style.display = 'block';
+    document.getElementById('btnCrearCita').style.display = 'none';
+    document.getElementById('btnCancelarCita').style.display = 'block';
+  });
+  document.getElementById('btnCancelarCita').addEventListener('click', function() {
+    document.getElementById('contenidoCita').style.display = 'none';
+    document.getElementById('btnCancelarCita').style.display = 'none';
+    document.getElementById('btnCrearCita').style.display = 'block';
+  });
 </script>
 
 <script type="module">
@@ -427,6 +466,12 @@ include "../ConsultasJson/dataPaciente.php";
   const prescriptionFormRef = React.createRef();
   const remissionFormRef = React.createRef();
   const examFormRef = React.createRef();
+  const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
+  let currentAppointment = null;
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    currentAppointment = await appointmentService.get(appointmentId);
+  });
 
   ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
     ref: prescriptionFormRef,
@@ -535,9 +580,61 @@ include "../ConsultasJson/dataPaciente.php";
       data['remission'] = dataRemisiones;
     }
 
+    function getPurpuse(purpuse) {
+
+      switch (purpuse) {
+        case "Tratamiento":
+          return "TREATMENT";
+          break;
+        case "Promoción":
+          return "PROMOTION";
+          break;
+        case "Rehabilitación":
+          return "REHABILITATION";
+          break;
+        case "Prevención":
+          return "PREVENTION";
+          break;
+      }
+
+    }
+
+    const requestDataAppointments = {
+      assigned_user_specialty_id: currentAppointment.user_availability.user.user_specialty_id,
+      appointment_date: document.getElementById('fechaCita').value,
+      appointment_time: document.getElementById('appointment_time').value + ':00',
+      assigned_user_availability_id: currentAppointment.assigned_user_availability_id,
+      attention_type: currentAppointment.attention_type,
+      product_id: currentAppointment.product_id,
+      consultation_purpose: getPurpuse(currentAppointment.consultation_purpose),
+      consultation_type: "FOLLOW_UP",
+      external_cause: "OTHER",
+      frecuenciaCita: "",
+      numRepeticiones: 0,
+      selectPaciente: currentAppointment.patient_id,
+      telefonoPaciente: currentAppointment.patient.whatsapp,
+      correoPaciente: currentAppointment.patient.email,
+      patient_id: currentAppointment.patient_id,
+      appointment_state_id: currentAppointment.appointment_state_id,
+      assigned_user_id: document.getElementById('assigned_user_availability_id').value,
+      created_by_user_id: currentAppointment.created_by_user_id,
+      duration: currentAppointment.user_availability.appointment_duration,
+      branch_id: currentAppointment.user_availability.branch_id,
+      phone: currentAppointment.patient.whatsapp,
+      email: currentAppointment.patient.email
+    };
+
+    if (!hasDisplayNone('contenidoCita')) {
+      appointmentService
+        .createForParent(requestDataAppointments.patient_id, requestDataAppointments)
+        .then((response) => {})
+        .catch((err) => {
+
+        });
+    }
+
     clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
       .then(async (response) => {
-        console.log("response guardar historia: ", response);
         await appointmentService.changeStatus(appointmentId, 'consultation_completed')
         AlertManager.success({
           text: 'Se ha creado el registro exitosamente'
@@ -632,7 +729,6 @@ include "../ConsultasJson/dataPaciente.php";
 
   document.getElementById('diagnosticoPrincipal').addEventListener('change', async function() {
     let packageByCie11 = await packagesService.getPackageByCie11(this.value);
-    console.log("cie11: ", packageByCie11);
 
     if (packageByCie11.data.length) {
 
@@ -642,8 +738,6 @@ include "../ConsultasJson/dataPaciente.php";
 
       const incapacidad = packageByCie11.data[0].package_items.filter(item => item.item_type == 'Incapacidad')[0];
       const remision = packageByCie11.data[0].package_items.filter(item => item.item_type == "Remision")[0];
-
-      console.log(remision);
 
       document.getElementById('dias').value = incapacidad.prescription.days_incapacity;
       document.getElementById('reason').value = incapacidad.prescription.reason;

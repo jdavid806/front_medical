@@ -41,9 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $descargar = $datos['descargar'];
 
   $empresa_nombre = $empresa['nombre_consultorio'];
-  $empresa_direccion = $empresa['datos_consultorio'][0]['Dirección'];
-  $empresa_telefono = $empresa['datos_consultorio'][1]['Teléfono'];
-  $empresa_correo = $empresa['datos_consultorio'][2]['Correo'];
+  $empresa_direccion = $empresa['datos_consultorio'][1]['Dirección'];
+  $empresa_telefono = $empresa['datos_consultorio'][2]['Teléfono'];
+  $empresa_correo = $empresa['datos_consultorio'][3]['Correo'];
 
   $paciente_nombre = $patient['paciente_nombre'][0] . ' ' . $patient['paciente_nombre'][1] . ' ' . $patient['paciente_nombre'][2] . ' ' . $patient['paciente_nombre'][3];
   $paciente_documento = $patient['paciente_documento'];
@@ -52,6 +52,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   $numero_comprobante = $related_invoice['numero_comprobante'];
   $numero_autorizacion = $related_invoice['numero_autorizacion'];
+
+  if ($numero_autorizacion) {
+    $tipo_factura = "RECIBO DE CAJA";
+    $agregar_autorizacion = true;
+  } else {
+    $tipo_factura = "RECIBO DE VENTA";
+    $agregar_autorizacion = false;
+  }
+
   $fecha_autorizacion = date('d-m-Y h:i A', strtotime($related_invoice['fecha_autorizacion']));
   $fecha_impresion = date('Y-m-d H:i:s');
   $fecha_factura = date('d-m-Y h:i A', strtotime($related_invoice['fecha_factura']));
@@ -60,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $iva = $related_invoice['iva'];
   $total = $related_invoice['total'];
   $descuento = $related_invoice['descuento'];
+
+  $nombre_pdf = strtolower(str_replace(' ', '_', $tipo_factura)) . "_" . date('Ymd', strtotime($related_invoice['fecha_factura'])) . "_" . $paciente_documento . ".pdf";
 
   $detalles_ticket_html = "<ul style='list-style-type: none; padding-left: 0;'>";
   foreach ($datails as $detalle) {
@@ -111,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $dompdf->render();
 
   header('Content-Type: application/pdf');
-  $dompdf->stream("ticket.pdf", array("Attachment" => $descargar));
+  $dompdf->stream($nombre_pdf, array("Attachment" => $descargar));
 } else {
   http_response_code(405);
   echo "Acceso no permitido.";

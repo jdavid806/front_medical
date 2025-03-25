@@ -165,6 +165,7 @@ include "../header.php";
                                                     <option value="">Seleccione Estado</option>
                                                     <option value="pending">Pendiente</option>
                                                     <option value="pending_consultation">En espera</option>
+                                                    <option value="called">Llamado</option>
                                                     <option value="in_consultation">En proceso</option>
                                                     <option value="consultation_completed">Finalizada</option>
                                                     <option value="cancelled">Cancelada</option>
@@ -230,7 +231,7 @@ include "../header.php";
                         .sort((a, b) => {
                             const fechaHoraA = new Date(`${a.appointment_date}T${a.appointment_time}`);
                             const fechaHoraB = new Date(`${b.appointment_date}T${b.appointment_time}`);
-                            return fechaHoraA - fechaHoraB;
+                            return fechaHoraB - fechaHoraA;
                         });
 
                     // Obtener la primera cita

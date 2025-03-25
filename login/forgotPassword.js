@@ -64,28 +64,42 @@ document.addEventListener("DOMContentLoaded", function () {
                         icon: "success",
                         confirmButtonText: "Continuar",
                         confirmButtonClass: "btn btn-phoenix-primary",
+                    }).then(() => {
+                        localStorage.removeItem("username");
+                        window.location.href = "index.php";
                     });
-                    localStorage.removeItem("username");
-                    window.location.href = "/Dashboard";
                 } else {
                     Swal.fire({
                         title: "Error",
-                        text: data.message, // Mostrar mensaje del backend en caso de error
+                        text: data.message || "Ocurrió un error desconocido.",
                         icon: "error",
                         confirmButtonText: "Intentar de nuevo",
                     });
                 }
             })
-            .catch(error => {
+            .catch(async error => {
                 console.error("Error:", error);
+
+                let errorMessage = "Ocurrió un error en la solicitud.";
+
+                // Intentar obtener el mensaje del backend si la respuesta tiene un cuerpo JSON
+                if (error.response) {
+                    try {
+                        const errorData = await error.response.json();
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (jsonError) {
+                        console.error("Error al convertir la respuesta en JSON:", jsonError);
+                    }
+                }
+
                 Swal.fire({
                     title: "Error",
-                    text: "Ocurrió un error en la solicitud.",
+                    text: errorMessage,
                     icon: "error",
                     confirmButtonText: "Cerrar",
                 });
             });
-        
+
     });
 
     // 🟢 FUNCIONALIDAD PARA MOSTRAR/OCULTAR CONTRASEÑA 🟢

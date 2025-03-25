@@ -126,12 +126,12 @@ include "../header.php";
               <i class="fas fa-file-import"></i> Importar Datos
             </a>
           </li>
-          <li class="nav-item" role="presentation">
+          <!-- <li class="nav-item" role="presentation">
             <a class="nav-link" id="plantillas-mensajes-tab" data-bs-toggle="tab" href="#tab-plantillas-mensajes"
               role="tab" aria-controls="tab-plantillas-mensajes" aria-selected="false">
               <i class="fas fa-envelope"></i> Plantillas Mensajes
             </a>
-          </li>
+          </li> -->
           <li class="nav-item" role="presentation">
             <a class="nav-link" id="examenes-tab" data-bs-toggle="tab" href="#tab-examenes" role="tab"
               aria-controls="tab-examenes" aria-selected="false">
@@ -189,10 +189,10 @@ include "../header.php";
           <div class="tab-pane fade" id="tab-importar-datos" role="tabpanel" aria-labelledby="importar-datos-tab">
             <?php include "./tabs/tab_importDataConfigruation.php"; ?>
           </div>
-          <div class="tab-pane fade" id="tab-plantillas-mensajes" role="tabpanel"
+          <!-- <div class="tab-pane fade" id="tab-plantillas-mensajes" role="tabpanel"
             aria-labelledby="plantillas-mensajes-tab">
-            <?php include "./tabs/tab_templatesMessagesConfiguration.php"; ?>
-          </div>
+            <?php //include "./tabs/tab_templatesMessagesConfiguration.php"; ?>
+          </div> -->
           <div class="tab-pane fade" id="tab-examenes" role="tabpanel" aria-labelledby="examenes-tab">
             <?php include "./tabs/tab_examsConfiguration.php"; ?>
           </div>

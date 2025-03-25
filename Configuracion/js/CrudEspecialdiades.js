@@ -43,12 +43,7 @@ function cargarSelectsFuncionesEspecialidades() {
       const texto = select.options[select.selectedIndex]?.text;
 
       if (id) {
-        agregarFilaTablaEspecialidad(
-          "Historia Clínica",
-          texto,
-          id,
-          "historia clinica"
-        );
+        agregarFilaTablaEspecialidad("Historia Clínica", texto, id, texto);
         select.value = ""; // Reiniciar selección
       }
     });
@@ -79,6 +74,8 @@ function cargarSelectsFuncionesEspecialidades() {
 
       const elementos = obtenerElementosTabla();
       const productId = document.getElementById("speciality_id")?.value;
+
+      console.log(elementos);
 
       try {
         if (productId) {
@@ -156,12 +153,14 @@ async function abrirModal(id, name) {
 
   let dataEspecializables = await obtenerDatos(rutaSpecializables);
 
+  console.log("data especializable: ", dataEspecializables);
+
   if (dataEspecializables.length) {
     dataEspecializables.forEach((element) => {
       agregarFilaTablaEspecialidad(
         element.specializable_type,
         element.specializable_id + " - " + element.description,
-        element.specialty_id,
+        element.specializable_id,
         element.description
       );
     });

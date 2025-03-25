@@ -1,10 +1,12 @@
 <?php
 require_once '../dompdf/autoload.inc.php';
 include "./formatos.php";
-include "./funcionesEncrypt/encriptar.php";
+// include "./funcionesEncrypt/encriptar.php";
 
-$id = decryptData($_GET['id']) ?? 'desconocido';
-$tipo = decryptData($_GET['tipo']) ?? 'ninguno';
+$id = $_GET['id'] ?? 'desconocido';
+$tipo = $_GET['tipo'] ?? 'ninguno';
+// $id = decryptData($_GET['id']) ?? 'desconocido';
+// $tipo = decryptData($_GET['tipo']) ?? 'ninguno';
 
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();
@@ -25,7 +27,8 @@ switch ($tipo) {
         $titulo = "Consulta";
         break;
     case 'orden':
-        // logica de orden emdica que te falto c;
+        $resultado = generarFormatoOrden($id);
+        $titulo = "Orden medica";
         break;
     default:
         # code...
@@ -75,16 +78,16 @@ $options->set('defaultPaperSize', 'letter');
 $options->set('isHtml5ParserEnabled', true);
 $dompdf->setOptions($options);
 
-$dompdf->loadHtml($html);
+// $dompdf->loadHtml($html);
 
-$dompdf->render();
+// $dompdf->render();
 
-$canvas = $dompdf->getCanvas();
-$canvas->get_cpdf()->setEncryption(
-    $contraseña,     // Contraseña maestra (desbloquea todo)
-    '',     // Contraseña de usuario (abre el PDF)
-    ['copy', 'print'] // Bloquea copiar e imprimir
-);
+// $canvas = $dompdf->getCanvas();
+// $canvas->get_cpdf()->setEncryption(
+//     $contraseña,     // Contraseña maestra (desbloquea todo)
+//     '',     // Contraseña de usuario (abre el PDF)
+//     ['copy', 'print'] // Bloquea copiar e imprimir
+// );
 
-header('Content-Type: application/pdf');
-$dompdf->stream($nombrePdf, array("Attachment" => false));
+// header('Content-Type: application/pdf');
+// $dompdf->stream($nombrePdf, array("Attachment" => false));

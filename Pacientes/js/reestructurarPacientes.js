@@ -1,4 +1,4 @@
-import { appointmentStateColorsByKey } from '../../services/commons.js';
+import { appointmentStateColorsByKey, appointmentStatesByKeyTwo } from '../../services/commons.js';
 
 export function reestructurarPacientes(pacientes) {
     return pacientes.map(paciente => {
@@ -11,23 +11,6 @@ export function reestructurarPacientes(pacientes) {
 
         // Determinar el estado actual de la cita
         const estadoActual = (() => {
-            const statesMap = {
-                "pending": "Pendiente",
-                "pending_consultation": {
-                    "CONSULTATION": "En espera de consulta",
-                    "PROCEDURE": "En espera de examen"
-                },
-                "in_consultation": {
-                    "CONSULTATION": "En Consulta",
-                    "PROCEDURE": "En Examen"
-                },
-                "consultation_completed": {
-                    "CONSULTATION": "Consulta Finalizada",
-                    "PROCEDURE": "Examen Finalizado"
-                },
-                "cancelled": "Cancelada",
-                "rescheduled": "Reprogramada"
-            };
 
             const stateKey = paciente.primeraCita.appointment_state?.name?.toString();
             const attentionType = paciente.primeraCita.attention_type;
@@ -36,7 +19,7 @@ export function reestructurarPacientes(pacientes) {
                 return "SIN CITA";
             }
 
-            return statesMap[stateKey]?.[attentionType] || statesMap[stateKey] || "SIN CITA";
+            return appointmentStatesByKeyTwo[stateKey]?.[attentionType] || appointmentStatesByKeyTwo[stateKey] || "SIN CITA";
         })();
 
         const colorEstado = (() => appointmentStateColorsByKey[stateKey])();

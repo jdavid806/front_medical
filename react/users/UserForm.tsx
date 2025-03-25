@@ -401,7 +401,7 @@ const UserForm: React.FC<UserFormProps> = ({ formId, onHandleSubmit, initialData
                                 />
                                 {getFormErrorMessage('user_role_id')}
                             </div>
-                            {selectedRole && selectedRole.group === 'DOCTOR' && (
+                            {selectedRole && ['ADMIN', 'DOCTOR'].includes(selectedRole.group) && (
                                 <div className="col-md-6 mb-1">
                                     <Controller
                                         name='user_specialty_id'

@@ -4,9 +4,10 @@ import { TicketDto, TicketTableItemDto } from '../../models/models';
 import { useAllTableTickets } from '../hooks/useAllTableTickets';
 import CustomDataTable from '../../components/CustomDataTable';
 import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from '../../../services/commons';
-import { ticketService } from '../../../services/api';
+import { ticketService, userService } from '../../../services/api';
 import 'https://js.pusher.com/8.2.0/pusher.min.js';
 import { useLoggedUser } from '../../users/hooks/useLoggedUser';
+import { getJWTPayload } from '../../../services/utilidades';
 
 export const TicketTable = () => {
     const { loggedUser } = useLoggedUser()
@@ -139,10 +140,14 @@ export const TicketTable = () => {
 
     const callTicket = async (id: string) => {
         const status = 'CALLED';
+        const user = await userService.getByExternalId(getJWTPayload().sub);
+
+        console.log(user);
+
 
         await ticketService.update(id, {
             status,
-            module_id: loggedUser?.today_module_id
+            module_id: user?.today_module_id
         });
 
         setData(prevData => prevData.map(item =>

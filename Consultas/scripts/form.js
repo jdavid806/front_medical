@@ -712,70 +712,72 @@ function generateForm(formData) {
           cardTitle.innerText = card.title;
           cardBody.appendChild(cardTitle);
 
-          card.fields.forEach((field) => {
-            let fieldDiv;
+          if (card.fields && card.fields.length) {
+            card.fields.forEach((field) => {
+              let fieldDiv;
 
-            if (field.type === "select") {
-              fieldDiv = createSelect(field);
-            } else if (field.type === "checkbox") {
-              fieldDiv = createCheckboxWithSubfields(field);
-            } else if (field.type === "textarea") {
-              fieldDiv = createTextareaField(field);
-              fieldDiv.querySelector("textarea").classList.add("rich-text");
-            } else if (field.type === "image") {
-              fieldDiv = createImageField(field);
-            } else if (field.type === "file") {
-              fieldDiv = createDropzone(field);
-            } else if (field.type === "fileS") {
-              fieldDiv = createSingleFileDropzone(field);
-            } else if (field.type === "label") {
-              fieldDiv = document.createElement("div");
-              if (field.class) {
-                fieldDiv.classList.add("mb-2", field.class, "mt-4");
+              if (field.type === "select") {
+                fieldDiv = createSelect(field);
+              } else if (field.type === "checkbox") {
+                fieldDiv = createCheckboxWithSubfields(field);
+              } else if (field.type === "textarea") {
+                fieldDiv = createTextareaField(field);
+                fieldDiv.querySelector("textarea").classList.add("rich-text");
+              } else if (field.type === "image") {
+                fieldDiv = createImageField(field);
+              } else if (field.type === "file") {
+                fieldDiv = createDropzone(field);
+              } else if (field.type === "fileS") {
+                fieldDiv = createSingleFileDropzone(field);
+              } else if (field.type === "label") {
+                fieldDiv = document.createElement("div");
+                if (field.class) {
+                  fieldDiv.classList.add("mb-2", field.class, "mt-4");
+                } else {
+                  fieldDiv.classList.add("mb-2");
+                }
+                const label = document.createElement("label");
+                label.htmlFor = field.id;
+                label.innerText = field.label;
+                label.className = "form-label";
+                if (field.class) {
+                  label.style.marginLeft = "20px";
+                } else {
+                  label.style.marginLeft = "0px";
+                }
+
+                fieldDiv.appendChild(label);
               } else {
-                fieldDiv.classList.add("mb-2");
-              }
-              const label = document.createElement("label");
-              label.htmlFor = field.id;
-              label.innerText = field.label;
-              label.className = "form-label";
-              if (field.class) {
-                label.style.marginLeft = "20px";
-              } else {
-                label.style.marginLeft = "0px";
-              }
+                fieldDiv = document.createElement("div");
+                if (field.class) {
+                  fieldDiv.classList.add("mb-2", field.class);
+                } else {
+                  fieldDiv.classList.add("mb-2");
+                }
+                const input = document.createElement("input");
+                input.type = field.type;
+                input.id = field.id;
+                input.name = field.id;
+                input.className = "form-control";
+                if (field.readonly) input.readOnly = true;
 
-              fieldDiv.appendChild(label);
-            } else {
-              fieldDiv = document.createElement("div");
-              if (field.class) {
-                fieldDiv.classList.add("mb-2", field.class);
-              } else {
-                fieldDiv.classList.add("mb-2");
-              }
-              const input = document.createElement("input");
-              input.type = field.type;
-              input.id = field.id;
-              input.name = field.id;
-              input.className = "form-control";
-              if (field.readonly) input.readOnly = true;
+                const label = document.createElement("label");
+                label.htmlFor = field.id;
+                label.innerText = field.label;
+                label.className = "form-label";
+                if (field.class) {
+                  label.style.marginLeft = "20px";
+                } else {
+                  label.style.marginLeft = "0px";
+                }
 
-              const label = document.createElement("label");
-              label.htmlFor = field.id;
-              label.innerText = field.label;
-              label.className = "form-label";
-              if (field.class) {
-                label.style.marginLeft = "20px";
-              } else {
-                label.style.marginLeft = "0px";
+                fieldDiv.appendChild(label);
+                fieldDiv.appendChild(input);
               }
 
-              fieldDiv.appendChild(label);
-              fieldDiv.appendChild(input);
-            }
-
-            cardBody.appendChild(fieldDiv);
-          });
+              cardBody.appendChild(fieldDiv);
+            });
+          }
 
           cardElement.appendChild(cardBody);
           cardDiv.appendChild(cardElement);

@@ -177,7 +177,7 @@ include "../header.php";
                             <div class="row align-items-center">
                                 <div class="col-6">
                                     <div class="timer">
-                                        <!-- Tiempo en consulta: <span id="timer">00:00:00</span> -->
+                                        Tiempo en consulta: <span id="timer">00:00:00</span>
                                         <script>
                                             let start = new Date().getTime();
                                             setInterval(function() {
@@ -185,7 +185,7 @@ include "../header.php";
                                                 let diff = (now - start) / 1000;
                                                 let minutes = Math.floor(diff / 60);
                                                 let seconds = Math.floor(diff % 60);
-                                                // document.getElementById("timer").innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                                                document.getElementById("timer").innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                                             }, 1000);
                                         </script>
                                     </div>

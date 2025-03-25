@@ -84,11 +84,15 @@ async function cargarContenido() {
   }
 }
 
-async function cargarEntidades(entidades) {
+async function cargarEntidadesCrudPrecios(entidades) {
+  console.log('Entidades:', entidades);
+
   // const entities = await 
   entidades.forEach(entidad => {
     let entidadId = entidad.id;
     let entidadNombre = entidad.name || "N/A";
+    let impuestoId = entidad.tax_charge_id;
+    let retencionId = entidad.withholding_tax_id;
 
     let precio = entidad.price;
 
@@ -130,7 +134,7 @@ async function eliminarPrecio(id) {
 async function updateProduct(id, productData) {
   let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
   //const ruta = obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
-  
+
   actualizarDatos(url, productData);
   cargarContenido();
 }
@@ -145,7 +149,7 @@ async function createProduct(product) {
 }
 
 async function editarProducto(id) {
-   //const ruta = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
+  //const ruta = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
   const ruta = obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
   const rutaProducts = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
 
@@ -156,7 +160,7 @@ async function editarProducto(id) {
     return;
   }
 
-  console.log("Producto recibido:", producto);
+  cargarEntidadesCrudPrecios(producto.entities);
 
   document.getElementById("name").value = producto.name || "";
   document.getElementById("curp").value = producto.barcode || "";

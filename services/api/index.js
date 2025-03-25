@@ -39,6 +39,7 @@ import { HistoryPreadmissionService } from "./classes/historyPreadmissionService
 import { CashControlService } from "./classes/cashControlService.js";
 import { CostCenterService } from "./classes/costCentersService.js";
 import { BillingService } from "./classes/billingService.js";
+import MSMasivaService from "./classes/msMasivaService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -229,3 +230,5 @@ export const historyPreadmission = new HistoryPreadmissionService(
 export const costCenterService = new CostCenterService();
 
 export const billingService = new BillingService();
+
+export const msMasivaService = new MSMasivaService('api/mensajeria', '');

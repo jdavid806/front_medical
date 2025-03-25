@@ -60,7 +60,7 @@ export const useFetchAppointments = (
     const estado = getEstado(appointment);
     return {
       id: appointment.id.toString(),
-      patientName: `${appointment.patient.first_name} ${appointment.patient.last_name}`,
+      patientName: `${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}`,
       patientDNI: appointment.patient.document_number,
       patientId: appointment.patient_id.toString(),
       date: appointment.appointment_date,

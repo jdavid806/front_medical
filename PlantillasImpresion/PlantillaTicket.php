@@ -61,7 +61,7 @@
 
     <div class="receipt-divider"></div>
 
-    <div class="fw-bold">RECIBO DE CAJA</div>
+    <div class="fw-bold"><?php echo $tipo_factura; ?></div>
     <hr>
     <div><span class="fw-bold">Fecha impresión:</span>
       <div><?php echo $fecha_impresion; ?></div>
@@ -72,13 +72,15 @@
     <div><span class="fw-bold">Nro. Comprobante:</span>
       <div><?php echo $numero_comprobante; ?></div>
     </div>
-    <div><span class="fw-bold">Nro. Autorización:</span>
-      <div><?php echo $numero_autorizacion; ?></div>
-    </div>
-    <div><span class="fw-bold">Fecha autorización:</span>
-      <div><?php echo $fecha_autorizacion; ?></div>
-    </div>
-    <hr>
+    <?php if ($agregar_autorizacion): ?>
+      <div><span class="fw-bold">Nro. Autorización:</span>
+        <div><?php echo $numero_autorizacion; ?></div>
+      </div>
+      <div><span class="fw-bold">Fecha autorización:</span>
+        <div><?php echo $fecha_autorizacion; ?></div>
+      </div>
+      <hr>
+    <?php endif; ?>
 
     <div class="receipt-divider"></div>
 

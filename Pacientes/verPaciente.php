@@ -120,7 +120,7 @@ $tabs = [
                       <?= $tab['texto'] ?>
                     </p>
                     <!-- Botón siempre al fondo -->
-                    <button class="btn btn-primary btn-icon mt-auto" data-url="<?= $tab['url'] ?>" id="<?= $tab['id'] ?>" onclick="handleTabClick(this)">
+                    <button class="btn btn-primary btn-icon mt-auto btn-tab" data-url="<?= $tab['url'] ?>" id="<?= $tab['id'] ?>">
                       <span class="fa-solid fa-chevron-right"></span>
                     </button>
                   </div>
@@ -195,7 +195,13 @@ $tabs = [
   });
 </script>
 
-<script>
+<script type="module">
+  import {
+    patientService,
+    appointmentService,
+    msMasivaService
+  } from './services/api/index.js';
+
   function handleTabClick(element) {
     const url = element.getAttribute('data-url');
     switch (url) {
@@ -208,13 +214,32 @@ $tabs = [
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Sí, llamar'
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            Swal.fire(
-              '¡Paciente llamado!',
-              'Se ha llamado al paciente para que se acerque al consultorio.',
-              'success'
-            )
+            const patientId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('patient_id');
+            const patient = await patientService.get(patientId);
+            const currentAppointment = patient.appointments.find(appointment => appointment.appointment_state.name === 'pending_consultation');
+
+            if (currentAppointment) {
+              console.log(currentAppointment.id, 'called');
+              console.log(patientId, currentAppointment.user_availability.user_id);
+
+              const [changeStatus, sendMessage] = await Promise.all([
+                appointmentService.changeStatus(currentAppointment.id, 'called'),
+                msMasivaService.sendMessageOnPatientCall(patientId, currentAppointment.user_availability.user_id)
+              ]);
+              Swal.fire(
+                '¡Paciente llamado!',
+                'Se ha llamado al paciente para que se acerque al consultorio.',
+                'success'
+              )
+            } else {
+              Swal.fire(
+                'Error',
+                'El paciente no está en espera de consulta.',
+                'error'
+              )
+            }
           }
         });
         break;
@@ -223,6 +248,14 @@ $tabs = [
         break;
     }
   }
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.btn-tab');
+    buttons.forEach(button => {
+      button.addEventListener('click', function() {
+        handleTabClick(button);
+      });
+    });
+  })
 </script>
 
 <style>

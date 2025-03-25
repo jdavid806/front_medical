@@ -58,6 +58,12 @@ RewriteRule ^FERPPrint$ Contabilidad/Impresion/FE_ImprimirReciboPago.php
 RewriteRule ^FERCPrint$ Contabilidad/Impresion/FE_ImprimirReciboCaja.php
 # Contabilidad [FIN]
 
+
+#ContabilidadNueva[INICIO]
+RewriteRule ^FE_ContabilidadNueva$ ContabilidadNueva/vistaContabilidad.php
+
+# ContabilidadNueva [FIN]
+
 # Facturacion [INICIO]
 RewriteRule ^FE_FCE$ Facturacion/FE_Facturacion.php
 RewriteRule ^Imprimir_Factura$ Facturacion/Imprimir_Factura.php
