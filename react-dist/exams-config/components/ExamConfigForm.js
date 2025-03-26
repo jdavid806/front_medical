@@ -5,13 +5,19 @@ import { Controller, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { useExamCategories } from "../../exam-categories/hooks/useExamCategories.js";
+import { Dropdown } from 'primereact/dropdown';
 import { FormBuilder } from "../../components/form-builder/FormBuilder.js";
+import { examTypes } from "../../../services/commons.js";
 export const ExamConfigForm = ({
   formId,
   onHandleSubmit,
   initialData
 }) => {
+  const [showFormBuilder, setShowFormBuilder] = useState(true);
+  const selectableExamTypes = Object.keys(examTypes).map(key => ({
+    value: key,
+    label: examTypes[key]
+  }));
   const {
     control,
     handleSubmit,
@@ -22,6 +28,7 @@ export const ExamConfigForm = ({
   } = useForm({
     defaultValues: initialData || {
       name: '',
+      type: '',
       description: '',
       form_config: {}
     }
@@ -30,10 +37,6 @@ export const ExamConfigForm = ({
     data.form_config = handleGetJSON();
     onHandleSubmit(data);
   };
-  const {
-    examCategories
-  } = useExamCategories();
-  const [dropdownExamCategories, setDropdownExamCategories] = useState([]);
   const [formConfig, setFormConfig] = useState(null);
   const formBuilderRef = useRef(null);
   const handleGetJSON = () => {
@@ -65,17 +68,12 @@ export const ExamConfigForm = ({
     reset(initialData || {
       name: '',
       description: '',
+      type: '',
       form_config: {}
     });
     console.log(initialData);
     setFormConfig(initialData?.form_config || null);
   }, [initialData, reset]);
-  useEffect(() => {
-    setDropdownExamCategories(examCategories.map(item => ({
-      label: item.name,
-      value: item.id
-    })));
-  }, [examCategories]);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("form", {
     id: formId,
     className: "needs-validation",
@@ -121,7 +119,41 @@ export const ExamConfigForm = ({
         'p-invalid': errors.description
       })
     }, field)))
-  }), getFormErrorMessage('description')), formConfig && /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage('description')), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "type",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Tipo de examen *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      inputId: field.name,
+      options: selectableExamTypes,
+      optionLabel: "label",
+      optionValue: "value",
+      placeholder: "Seleccione un tipo de examen",
+      className: classNames('w-100', {
+        'p-invalid': errors.type
+      })
+    }, field)))
+  }), getFormErrorMessage('type')), /*#__PURE__*/React.createElement("div", {
+    className: "form-check form-switch"
+  }, /*#__PURE__*/React.createElement("input", {
+    className: "form-check-input",
+    id: "flexSwitchCheckDefault",
+    type: "checkbox",
+    checked: showFormBuilder,
+    onChange: e => setShowFormBuilder(e.target.checked)
+  }), /*#__PURE__*/React.createElement("label", {
+    className: "form-check-label",
+    htmlFor: "flexSwitchCheckDefault"
+  }, "Maneja formato")), formConfig && showFormBuilder && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header"

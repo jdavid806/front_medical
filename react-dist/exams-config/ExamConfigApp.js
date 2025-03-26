@@ -35,6 +35,7 @@ export const ExamConfigApp = () => {
     setShowExamTypeFormModal(true);
   };
   const handleSubmit = async data => {
+    console.log(data);
     if (examType) {
       await updateExamType(examType.id, data);
     } else {
@@ -55,6 +56,7 @@ export const ExamConfigApp = () => {
     setInitialData({
       name: examType?.name ?? '',
       description: examType?.description ?? '',
+      type: examType?.type ?? '',
       form_config: examType?.form_config ?? null
     });
   }, [examType]);

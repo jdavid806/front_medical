@@ -4,11 +4,14 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Dropdown } from 'primereact/dropdown';
 import { FormBuilder } from '../../components/form-builder/FormBuilder';
+import { examTypes } from '../../../services/commons';
 
 export type ExamTypeInputs = {
     name: string
     description: string | undefined
+    type: string
     form_config: any
 }
 
@@ -20,6 +23,9 @@ interface ExamTypeFormProps {
 
 export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSubmit, initialData }) => {
 
+    const [showFormBuilder, setShowFormBuilder] = useState(true);
+    const selectableExamTypes = Object.keys(examTypes).map(key => ({ value: key, label: examTypes[key] }));
+
     const {
         control,
         handleSubmit,
@@ -28,6 +34,7 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
     } = useForm<ExamTypeInputs>({
         defaultValues: initialData || {
             name: '',
+            type: '',
             description: '',
             form_config: {}
         }
@@ -72,6 +79,7 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
         reset(initialData || {
             name: '',
             description: '',
+            type: '',
             form_config: {}
         });
         console.log(initialData);
@@ -121,7 +129,39 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
                     />
                     {getFormErrorMessage('description')}
                 </div>
-                {formConfig && (
+                <div className="mb-3">
+                    <Controller
+                        name='type'
+                        control={control}
+                        rules={{ required: 'Este campo es requerido' }}
+                        render={({ field }) => (
+                            <>
+                                <label htmlFor={field.name} className="form-label">Tipo de examen *</label>
+                                <Dropdown
+                                    inputId={field.name}
+                                    options={selectableExamTypes}
+                                    optionLabel='label'
+                                    optionValue='value'
+                                    placeholder="Seleccione un tipo de examen"
+                                    className={classNames('w-100', { 'p-invalid': errors.type })}
+                                    {...field}
+                                />
+                            </>
+                        )}
+                    />
+                    {getFormErrorMessage('type')}
+                </div>
+                <div className="form-check form-switch">
+                    <input
+                        className="form-check-input"
+                        id="flexSwitchCheckDefault"
+                        type="checkbox"
+                        checked={showFormBuilder}
+                        onChange={(e) => setShowFormBuilder(e.target.checked)}
+                    />
+                    <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Maneja formato</label>
+                </div>
+                {formConfig && showFormBuilder && (
                     <div className="card">
                         <div className="card-header">
                             <h5 className="card-title">Formato del examen</h5>

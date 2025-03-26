@@ -24,7 +24,7 @@ include "../header.php";
     <nav class="mb-3" aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-        <li class="breadcrumb-item"><a href="homeAuditoria">Auditoría</a></li>
+        <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
         <li class="breadcrumb-item active" onclick="location.reload()">Control de Cierre de Caja</li>
       </ol>
     </nav>

@@ -243,38 +243,49 @@ $_SESSION["ID"] = 1;
   </style>
 
   <script type="module">
+    import UserManager from "./services/userManager.js";
     import {
       menuService,
-      permissionService,
-      userService
+      permissionService
     } from "./services/api/index.js";
-    import {
-      getJWTPayload
-    } from "./services/utilidades.js";
 
-    const [user, menus] = await Promise.all([
-      userService.getByExternalId(getJWTPayload().sub),
-      menuService.getAll()
-    ]);
+    UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
+      console.log(isAuthenticated, user, userPermissions, userMenus);
+      const menusFromService = await menuService.getAll()
 
-    const fullPath = window.location.pathname;
-    const parts = fullPath.split('/').filter(part => part !== '');
-    const firstPart = (parts[0] || '').trim();
+      if (user && userPermissions && userMenus) {
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.add('d-none');
 
-    const validateRoute = async () => {
-      const menuFromService = menus.find(menu => menu.route === firstPart);
+        const checkPermission = (key) => userPermissions.map(p => p.key).includes(key);
+        const checkMenu = (key) => userMenus.map(m => m.key).includes(key);
 
-      if (!menuFromService) return;
+        document.querySelectorAll('[data-permission-role]').forEach(element => {
+          const permissionKey = element.dataset.permissionRole;
 
-      console.log(menuFromService, user.role.menus);
+          if (permissionKey && !checkPermission(permissionKey)) {
+            element.remove()
+          }
+        })
 
+        document.querySelectorAll('[data-menu-role]').forEach(element => {
+          const menuKey = element.dataset.menuRole;
 
-      if (!user.role.menus.find(menu => menu.key === menuFromService.key_)) {
-        window.location.href = 'noAutorizado';
+          if (menuKey && !checkMenu(menuKey)) {
+            //element.remove()
+          };
+        })
+
+        const fullPath = window.location.pathname;
+        const parts = fullPath.split('/').filter(part => part !== '');
+        const firstPart = parts[0] || '';
+        const menuRouteFromService = menusFromService.find(menu => menu.route === firstPart)?.route;
+
+        if (!userMenus.find(menu => menu.route === firstPart || !menuRouteFromService)) {
+          //window.location.href = 'noAutorizado';
+        }
       }
-    }
-
-    validateRoute();
+    });
   </script>
 </head>
 
@@ -332,7 +343,11 @@ $_SESSION["ID"] = 1;
       "primereact/card": "https://esm.sh/primereact/card?dev",
       "primereact/panel": "https://esm.sh/primereact/panel?dev",
       "primereact/tag": "https://esm.sh/primereact/tag?dev",
-      "primereact/scrollpanel": "https://esm.sh/primereact/scrollpanel?dev"
+      "primereact/scrollpanel": "https://esm.sh/primereact/scrollpanel?dev",
+      "primereact/splitbutton": "https://esm.sh/primereact/splitbutton?dev",
+      "primereact/datatable": "https://esm.sh/primereact/datatable?dev",
+      "primereact/column": "https://esm.sh/primereact/column?dev",
+      "primereact/badge": "https://esm.sh/primereact/badge?dev"
     }
   }
 </script>

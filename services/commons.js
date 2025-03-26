@@ -144,6 +144,11 @@ export const appointmentStateColorsByKey = {
     'rescheduled': 'secondary'
 }
 
+export const examTypes = {
+    'LABORATORY': 'Laboratorio',
+    'IMAGING': 'Imagenología',
+}
+
 export const examOrderStates = {
     'generated': 'Pendiente por cargar resultados',
     'uploaded': 'Resultados subidos'

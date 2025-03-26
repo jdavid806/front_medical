@@ -60,8 +60,9 @@ RewriteRule ^FERCPrint$ Contabilidad/Impresion/FE_ImprimirReciboCaja.php
 
 
 #ContabilidadNueva[INICIO]
-RewriteRule ^FE_ContabilidadNueva$ ContabilidadNueva/vistaContabilidad.php
-
+RewriteRule ^CuentasContables$ ContabilidadNueva/vistaContabilidad.php
+RewriteRule ^RecibosDeCajas$ ContabilidadNueva/reciboPago.php
+RewriteRule ^NuevaFormaPago$ ContabilidadNueva/nuevaFormaPago.php
 # ContabilidadNueva [FIN]
 
 # Facturacion [INICIO]
@@ -237,6 +238,8 @@ RewriteRule ^homeMarketing$ Marketing/homeMarketing.php
 RewriteRule ^preadmisiones$ Citas/HistoryPreadmission.php
 
 RewriteRule ^homeAuditoria$ Auditoria/homeAuditoria.php
+
+RewriteRule ^homeContabilidad$ Contabilidad/homeContabilidad.php
 
 RewriteRule ^historialConsultasEspecialidad$  Consultas/historialConsultasEspecialidad.php
 

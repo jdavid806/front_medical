@@ -421,6 +421,7 @@ export interface BranchDto {
 export interface ExamTypeDto {
     id: string;
     name: string;
+    type: string;
     description: string | null;
     form_config: any;
     exam_category_id: string;
@@ -524,4 +525,24 @@ export interface CashControlReportItemDetail {
     created_at: string;
     updated_at: string;
     payment_method_name: string;
+}
+
+export interface ExamRecipeDto {
+    id: string;
+    patient_id: string;
+    user_id: string;
+    deleted_at: null;
+    created_at: string;
+    updated_at: string;
+    details: ExamRecipeDetailDto[];
+    user: UserDto;
+}
+
+export interface ExamRecipeDetailDto {
+    id: string;
+    exam_recipe_id: string;
+    exam_type_id: string;
+    created_at: string;
+    updated_at: string;
+    exam_type: ExamTypeDto;
 }

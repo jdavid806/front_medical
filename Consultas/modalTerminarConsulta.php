@@ -94,8 +94,16 @@ include "../ConsultasJson/dataPaciente.php";
                     <span class="fa-solid fa-times me-2 fs-9"></span> Cancelar
                   </button>
                 </div>
+                <br>
+                <div class="col-12" id="lastRecipe" style="display: none;">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="lastRecipeSwitch" />
+                    <label class="form-check-label" for="lastRecipeSwitch">Agregar última receta</label>
+                  </div>
+                </div>
                 <hr>
-                <div id="prescriptionFormReact" style="display: none;"></div>
+                <div id="prescriptionFormReact" style="display: none;">
+                </div>
               </div>
 
               <div class="tab-pane fade" id="remisionesTab" role="tabpanel">
@@ -400,11 +408,13 @@ include "../ConsultasJson/dataPaciente.php";
 
   document.getElementById('btnAgregarReceta').addEventListener('click', function() {
     document.getElementById('prescriptionFormReact').style.display = 'block';
+    document.getElementById('lastRecipe').style.display = 'block';
     document.getElementById('btnAgregarReceta').style.display = 'none';
     document.getElementById('btnCancelarReceta').style.display = 'block';
   });
   document.getElementById('btnCancelarReceta').addEventListener('click', function() {
     document.getElementById('prescriptionFormReact').style.display = 'none';
+    document.getElementById('lastRecipe').style.display = 'none';
     document.getElementById('btnCancelarReceta').style.display = 'none';
     document.getElementById('btnAgregarReceta').style.display = 'block';
   });
@@ -456,7 +466,8 @@ include "../ConsultasJson/dataPaciente.php";
     packagesService,
     clinicalRecordService,
     clinicalRecordTypeService,
-    appointmentService
+    appointmentService,
+    prescriptionService
   } from "./services/api/index.js";
   import {
     AlertManager
@@ -484,6 +495,35 @@ include "../ConsultasJson/dataPaciente.php";
   ReactDOMClient.createRoot(document.getElementById('examsFormReact')).render(React.createElement(ExamForm, {
     ref: examFormRef
   }));
+
+  document.getElementById('lastRecipeSwitch').addEventListener('change', async function() {
+
+    console.log(this.checked);
+
+    const patientId = new URLSearchParams(window.location.search).get('patient_id');
+
+    if (this.checked) {
+      const lastRecipe = await prescriptionService.getLastByPatientId(patientId);
+      console.log("Ultima receta: ", lastRecipe);
+      ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
+        ref: prescriptionFormRef,
+        initialData: {
+          medicines: lastRecipe.data.recipe_items
+        },
+        formId: 'createPrescription',
+        handleSubmit: () => {}
+      }));
+    } else {
+      ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(PrescriptionForm, {
+        ref: prescriptionFormRef,
+        initialData: {
+          medicines: []
+        },
+        formId: 'createPrescription',
+        handleSubmit: () => {}
+      }));
+    }
+  });
 
   function obtenerEstadoRecetas() {
     if (prescriptionFormRef.current) {
@@ -569,7 +609,7 @@ include "../ConsultasJson/dataPaciente.php";
 
     if (!hasDisplayNone('prescriptionFormReact')) {
       data['recipe'] = {
-        user_id: 1,
+        user_id: UserManager.getUser().id,
         patient_id: patientId,
         medicines: dataRecetas,
         is_active: true

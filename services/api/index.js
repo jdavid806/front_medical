@@ -40,6 +40,7 @@ import { CashControlService } from "./classes/cashControlService.js";
 import { CostCenterService } from "./classes/costCentersService.js";
 import { BillingService } from "./classes/billingService.js";
 import MSMasivaService from "./classes/msMasivaService.js";
+import { ExamRecipeService } from "./classes/examRecipeService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -232,3 +233,5 @@ export const costCenterService = new CostCenterService();
 export const billingService = new BillingService();
 
 export const msMasivaService = new MSMasivaService('api/mensajeria', '');
+
+export const examRecipeService = new ExamRecipeService('medical', 'exam-recipes');

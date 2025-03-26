@@ -101,25 +101,7 @@
           </li>
           <li><a class="dropdown-item" href="homeFarmacia">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="airplay"></span>Farmacia
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="homeInventario">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="folder"></span>Inventario
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="homeMarketing">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="briefcase"></span>Marketing
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="homeAuditoria">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="user-check"></span>Auditoria
+                  data-feather="book-open"></span>Farmacia
               </div>
             </a>
           </li>
@@ -129,13 +111,51 @@
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
             class="uil fs-8 me-2 uil-archive"></span>Reportes</a>
         <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
+          <li><a class="dropdown-item" href="RIPS_Report">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>RIPS
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Registered_patients">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="users"></span>Pacientes
+                Registrados
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Clinical_histories_general">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="heart"></span>Historias
+                Clinicas
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Clients">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="user-check"></span>Clientes
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Schedule">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="book-open"></span>Agendas
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Invoices">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>Citas
+              </div>
+            </a>
+          </li>
           <li><a class="dropdown-item" href="Invoices">
               <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Facturas
               </div>
             </a>
           </li>
-          <li><a class="dropdown-item" href="InvoicesDoctors">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="briefcase"></span>Especialistas
+          <li><a class="dropdown-item" href="RIPS_Report">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="columns"></span>Presupuestos
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="Accounts_receivable">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="credit-card"></span>Cuentas a
+                Cobrar
               </div>
             </a>
           </li>
@@ -144,14 +164,32 @@
     <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="Menu_reports" role="button"
         data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
           class="uil fs-8 me-2 uil-credit-card">
-        </span>Facturación</a>
+        </span>Administración</a>
       <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-        <li><a class="dropdown-item" href="FE_FCE">
-            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="credit-card"></span>Generar
-              Facturas
-            </div>
-          </a>
-        </li>
+        <li><a class="dropdown-item" href="homeMarketing">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="briefcase"></span>Marketing
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeInventario">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="folder"></span>Inventario
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeAuditoria">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="user-check"></span>Auditoria
+              </div>
+            </a>
+          </li>
+          <li><a class="dropdown-item" href="homeContabilidad">
+              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
+                  data-feather="file-text"></span>Contabilidad
+              </div>
+            </a>
+          </li>  
       </ul>
     </li>
     <!-- <ul>
@@ -257,16 +295,26 @@
                   <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Facturación</p>
                 </a>
               </div> -->
-              <div class="row">
-                <!-- Cada columna se ajustará automáticamente según el tamaño de la pantalla -->
-                <div class="mb-3">
-                  <a class="d-flex flex-column align-items-center justify-content-center bg-body-secondary-hover p-2 rounded-3 text-decoration-none h-100" href="FE_Config">
-                    <img src="assets/img/nav-icons/CashButton.png" alt="" width="30" />
-                    <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Configuración</p>
+              <div class="row flex-nowrap overflow-auto py-2">  <!-- Contenedor horizontal scrollable -->
+                <!-- Columna 1 - Configuración -->
+                <div class="col-auto mb-3">  <!-- col-auto para ancho automático -->
+                  <a class="d-flex flex-column align-items-center bg-body-secondary-hover p-3 rounded-3 text-decoration-none h-100" 
+                    href="FE_Config" style="min-width: 100px;">  <!-- Ancho mínimo -->
+                    <img src="assets/img/nav-icons/CashButton.png" alt="Configuración" width="30" />
+                    <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-2">Configuración</p>
                   </a>
                 </div>
-
-                <!-- Agrega más bloques según sea necesario -->
+                
+                <!-- Columna 2 - Contabilidad -->
+                <div class="col-auto mb-3">
+                  <a class="d-flex flex-column align-items-center bg-body-secondary-hover p-3 rounded-3 text-decoration-none h-100" 
+                    href="FE_ContabilidadNueva" style="min-width: 100px;">
+                    <img src="assets/img/nav-icons/Calculator.png" alt="Contabilidad" width="30" />
+                    <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-2">Contabilidad</p>
+                  </a>
+                </div>
+                
+                <!-- Puedes agregar más columnas aquí -->
               </div>
 
               <!-- <div class="col-4"><a

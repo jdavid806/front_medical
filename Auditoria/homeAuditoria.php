@@ -5,8 +5,6 @@ include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
     ['icono' => 'ban', 'titulo' => 'Anulaciones', 'texto' => 'Ver las solicitudes de anulaciones', 'url' => 'consultas-anulacion-pendiente'],
-    ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Generar el cierre de Caja', 'url' => 'controlCaja'],
-    ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Auditoria de cierres de caja', 'url' => 'reporteCaja'],
 ];
 
 ?>
@@ -31,7 +29,7 @@ $tabs = [
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="homeFarmacia">Farmacia</a></li>
+                <li class="breadcrumb-item"><a href="homeAuditoria">Auditoria</a></li>
                 <li class="breadcrumb-item active" onclick="location.reload()" id="nameBradcumb"></li>
             </ol>
         </nav>

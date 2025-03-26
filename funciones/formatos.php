@@ -45,7 +45,9 @@ function generarFormatoReceta($id)
   $contenido .= "
   </div>";
 
-  $datosPaciente = consultarDatosPaciente($dataReceta['data']['patient']['id']);
+  $fechaDataReceta = $dataReceta['data']['created_at'];
+  $fechaReceta = formatearFechaQuitarHora($fechaDataReceta);
+  $datosPaciente = consultarDatosPaciente($dataReceta['data']['patient']['id'], $fechaReceta);
   $datosDoctor = consultarDatosDoctor($dataReceta['data']['prescriber']['id']);
   $datosEmpresa = consultarDatosEmpresa();
   $resultado = [
@@ -82,14 +84,16 @@ function generarFormatoIncapacidad($id)
     </div>
   </div>";
 
-  $datosPaciente = consultarDatosPaciente($dataIncapacidad['data'][0]['patient']['id']);
+  $fechaDataIncapacidad = $dataIncapacidad[0]['created_at'];
+  $fechaIncapacidad = formatearFechaQuitarHora($fechaDataIncapacidad);
+  $datosPaciente = consultarDatosPaciente($dataIncapacidad[0]['patient']['id'], $fechaIncapacidad);
   $datosDoctor = consultarDatosDoctor($dataIncapacidad['data'][0]['user']['id']);
   $datosEmpresa = consultarDatosEmpresa();
   $resultado = [
     'paciente' => $datosPaciente,
     'doctor' => $datosDoctor,
     'consultorio' => $datosEmpresa,
-    'contenido ' => $contenido
+    'contenido' => $contenido
   ];
 
   return json_encode($resultado);
@@ -218,9 +222,13 @@ function generarFormatoConsulta($consulta_id)
   }
   $contenido .= "</div>";
   $contenido .= "</div>";
-
   // echo $contenido;
-  $datosPaciente = consultarDatosPaciente($dataConsulta['patient_id']);
+
+  $fechaDataConsulta = $dataConsulta['created_at'];
+  $fechaConsulta = formatearFechaQuitarHora($fechaDataConsulta);
+
+  $datosPaciente = consultarDatosPaciente($dataConsulta['patient_id'], $fechaConsulta);
+  // var_dump($datosPaciente);
   $datosDoctor = consultarDatosDoctor($dataConsulta['created_by_user_id']);
   $datosEmpresa = consultarDatosEmpresa();
   $resultado = [
@@ -233,10 +241,61 @@ function generarFormatoConsulta($consulta_id)
   return json_encode($resultado);
 }
 
-function generarFormatoOrden($ordenId){
+function generarFormatoOrden($ordenId)
+{
   $urlApi = getHost() . "/medical/exam-orders/{$ordenId}";
   $dataOrden = consultarApi($urlApi);
-  var_dump($dataOrden);
+  // var_dump($dataOrden);
   $orderState = $dataOrden['exam_order_state']['name'];
-  echo "<br>".$orderState;
+  // echo "<br>".$orderState;
+
+  $contenido = '
+<div class="container border rounded shadow-sm text-start">
+    <h3 class="text-primary text-center">Orden de Examen Médico</h3>
+    <h4 class="text-secondary">Detalles del examen:</h4>
+    <p><strong>Tipo de examen:</strong> ' . $dataOrden['exam_type']['name'] . '</p>
+    <p><strong>Estado:</strong> ' . $orderState . '</p>
+    <hr>
+';
+
+  // Iteramos por las pestañas (tabs) del examen
+  foreach ($dataOrden['exam_type']['form_config']['tabs'] as $tab) {
+    $contenido .= '<h4 class="text-secondary">' . $tab['tab'] . '</h4>';
+
+    // Iteramos por las tarjetas (cards) dentro de cada pestaña
+    foreach ($tab['cards'] as $card) {
+      $contenido .= '<h5 class="text-primary">' . $card['title'] . '</h5>';
+
+      // Iteramos por los campos (fields) dentro de cada tarjeta
+      foreach ($card['fields'] as $field) {
+        $fieldValue = isset($dataOrden['exam_type']['form_config']['values'][$field['id']])
+          ? $dataOrden['exam_type']['form_config']['values'][$field['id']]
+          : 'Sin datos';
+
+        $contenido .= '
+            <p><strong>' . $field['label'] . '</strong></p>
+            <div>' . $fieldValue . '</div>
+            ';
+      }
+    }
+
+    $contenido .= '<hr>';
+  }
+
+  $contenido .= '</div>';
+
+  $fechaDataOrden = $dataOrden['created_at'];
+  $fechaOrden = formatearFechaQuitarHora($fechaDataOrden);
+
+  $datosPaciente = consultarDatosPaciente($dataOrden['patient_id'], $fechaOrden);
+  $datosDoctor = consultarDatosDoctor($dataOrden['created_by_user_id']);
+  $datosEmpresa = consultarDatosEmpresa();
+  $resultado = [
+    'paciente' => $datosPaciente,
+    'doctor' => $datosDoctor,
+    'consultorio' => $datosEmpresa,
+    'contenido' => $contenido
+  ];
+
+  return json_encode($resultado);
 }

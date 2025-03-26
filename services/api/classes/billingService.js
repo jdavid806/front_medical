@@ -7,6 +7,13 @@ export class BillingService extends BaseApiService {
       data
     );
   }
+
+  async storeByEntity(data) {
+    return await this.httpClient.post(
+      `medical/admissions/billing/store-by-entity`,
+      data
+    );
+  }
 }
 
 export default BillingService;

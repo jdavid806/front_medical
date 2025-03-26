@@ -1,3 +1,7 @@
+<?php
+$documentType = array("CI - Cédula de Identidad", "CR - Carnet de Residencia", "CM - Carnet de Menor de Edad", "AN - Acta de Nacimiento", "LC - Licencia de Conducción", "Otros");
+$relations = array("Padre", "Madre", "Hermano (a)", "Tio (a)", "Abuelo (a)", "Primo (a)", "Amigo (a)", "Esposo (a)", "Otro");
+?>
 <div class="modal fade" id="newCompanionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -10,21 +14,13 @@
                         <label class="form-label text-body" for="firstName">Primer Nombre*</label>
                         <input class="form-control" type="text" name="firstName" placeholder="Primer Nombre" id="firstName">
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-body" for="secondName">Segundo Nombre</label>
-                        <input class="form-control" type="text" name="secondName" placeholder="Segundo Nombre" id="secondName">
-                    </div>
                     <div class="col-6">
                         <label class="form-label text-body" for="lastName">Primer Apellido*</label>
                         <input class="form-control" type="text" name="lastName" placeholder="Primer apellido" id="lastName">
                     </div>
-                    <div class="col-6">
-                        <label class="form-label text-body" for="secondLastName">Segundo Apellido</label>
-                        <input class="form-control" type="text" name="secondLastName" placeholder="Segundo Apellido" id="secondLastName">
-                    </div>
                     <div class="col-md-6">
                         <label class="form-label" for="type-document">Tipo de documento</label>
-                        <select class="form-select" name="typeDocument" id="type-document">
+                        <select class="form-select" name="typeDocument" id="docuementType">
                             <option value="">Seleccionar</option>
                             <?php foreach ($documentType as $key => $value) { ?>
                                 <option value="<?= $key ?>"><?= $value ?></option>
@@ -44,15 +40,19 @@
                         <select class="form-select" id="relationSelect" aria-label="Default select example">
                             <option selected="">Seleccionar</option>
                             <?php foreach ($relations as $key => $value) { ?>
-                                <option value="<?= $key ?>"><?= $value ?></option>
+                                <option value="<?= $value ?>"><?= $value ?></option>
                             <?php } ?>
                         </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Correo Electronico*</label>
+                        <input class="form-control" type="email" name="email" placeholder="Correo Electronico" id="email">
                     </div>
                 </form>
 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary save-btn" type="button">Guardar</button>
+                <button class="btn btn-primary closet-btn" type="button">Guardar</button>
                 <button class="btn btn-outline-primary" type="button" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
@@ -70,22 +70,31 @@
 </div>
 
 <script>
-    const modalElement = document.getElementById('newCompanionModal');
-    const toastElement = document.querySelector('.toast');
-    const toast = new bootstrap.Toast(toastElement);
-    let saveClicked = false;
+    document.addEventListener('DOMContentLoaded', function() {
 
-    document.querySelector('.save-btn').addEventListener('click', () => {
-        saveClicked = true;
-        modalElement.addEventListener('hidden.bs.modal', () => {
-            if (saveClicked) {
-                toast.show();
-                saveClicked = false;
-            }
-        }, {
-            once: true
-        });
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        modalInstance.hide();
+        // Función para agregar una nueva fila a la tabla del primer modal
+        const addRowToFormAdmission = () => {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const documentType = document.getElementById('docuementType').value;
+            const idNumber = document.getElementById('numberIdentification').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const relation = document.getElementById('relationSelect').value;
+            const email = document.getElementById('email').value;
+
+            document.getElementById('firstNameAcompanion').value = firstName;
+            document.getElementById('lastNameAcompanion').value = lastName;
+            document.getElementById('typeDocumentAcompanion').value = documentType;
+            document.getElementById('numberIdentificationAcompanion').value = idNumber;
+            document.getElementById('whatsappAcompanion').value = whatsapp;
+            document.getElementById('relationshipAcompanion').value = relation;
+            document.getElementById('emailCompanion').value = email;
+
+            $('#newCompanionModal').modal('hide');
+        };
+
+        // Evento para el botón existente de guardar
+        document.querySelector('.modal-footer .btn-primary.closet-btn').addEventListener('click', addRowToFormAdmission);
+
     });
 </script>

@@ -204,12 +204,12 @@
         <div class="d-flex flex-column-reverse scrollbar h-100 p-3">
           <div class="text-center mt-auto">
             <div class="avatar avatar-3xl status-online">
-              <img class="rounded-circle border border-3 border-light-subtle"
-                   src="assets/img/team/30.webp" alt="" />
+              <img class="rounded-circle border border-3 border-light-subtle" src="assets/img/team/30.webp" alt="" />
             </div>
             <h5 class="mt-2 mb-3">Eric</h5>
             <p class="text-center text-body-emphasis mb-0">
-              Pregúntenos cualquier cosa - nos pondremos en contacto con usted aquí o por correo electrónico dentro de las 24 horas.
+              Pregúntenos cualquier cosa - nos pondremos en contacto con usted aquí o por correo electrónico dentro de
+              las 24 horas.
             </p>
           </div>
         </div>
@@ -467,7 +467,7 @@
 
 
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('.tableDataTableSearch').DataTable({
       paging: true, // Habilita la paginación
       pageLength: 5, // Número de filas por página
@@ -498,7 +498,7 @@
           "sSortDescending": ": activar para ordenar la columna de manera descendente"
         }
       },
-      "drawCallback": function(settings) {
+      "drawCallback": function (settings) {
         // Personaliza los botones de paginación después de que DataTables se haya inicializado
         $('.dataTables_paginate .paginate_button').addClass('btn btn-primary');
         $('.dataTables_paginate .paginate_button.disabled').addClass('btn btn-primary');
@@ -533,7 +533,7 @@
         'columnWhere': columnWhere,
         'idWhere': idWhere
       },
-      success: function(response) {
+      success: function (response) {
         response = response.trim();
         if (response == "ok") {
           if (toast) {
@@ -561,13 +561,13 @@
           }
         }
       },
-      error: function(xhr, status, error) {}
+      error: function (xhr, status, error) { }
     })
   }
 </script>
 <script>
   // Definir la función selectMaster
-  $.fn.selectMaster = function(config = null) {
+  $.fn.selectMaster = function (config = null) {
     this.select2();
     this.empty();
     this.append('<option value="0" >-- Seleccione --</option>');
@@ -587,7 +587,7 @@
           valorInput: btoa(config['valorInput']),
           selected: (config['selected'] != '0' ? btoa(config['selected']) : '0'),
         },
-        success: function(response) {
+        success: function (response) {
           let data = JSON.parse(response);
 
 
@@ -627,7 +627,7 @@
     // Definir una función de debouncing
     function debounce(func, delay) {
       let timer;
-      return function() {
+      return function () {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
@@ -637,13 +637,13 @@
       };
     }
 
-    this.on('select2:open', function(e) {
+    this.on('select2:open', function (e) {
       // Verificar que todos los datos de config existan
       if (config && config['campoValue'] && config['campoTexto'] && config['tabla']) {
         // buscarDatos(true);
         var $searchField = $select.data('select2').dropdown.$search || $select.data('select2').dropdown.$searchbox;
         // Evento input para el campo de búsqueda con debouncing
-        $searchField.off('input').on('input', debounce(function() {
+        $searchField.off('input').on('input', debounce(function () {
           var searchText = $(this).val();
           config['valorInput'] = searchText;
           $select.empty();
@@ -682,7 +682,7 @@
 </div>
 
 <script>
-  window.createDoughnutChart = function(
+  window.createDoughnutChart = function (
     elementId,
     titleText,
     titleSubtext,
@@ -731,7 +731,7 @@
           position: "outside",
           formatter: "{b}: {d}%",
         },
-      }, ],
+      },],
     };
 
     // Usar la configuración para inicializar el gráfico
@@ -772,7 +772,7 @@
       visible,
       callback = false
     } = JSON.parse(atob(jsonB64));
-    $("#contentOffCanvasMaster").find("textarea, input, select").each(function() {
+    $("#contentOffCanvasMaster").find("textarea, input, select").each(function () {
       let idElemento = $(this).attr("id");
       if (idElemento) {
         data[idElemento] = $(this).val();
@@ -784,7 +784,7 @@
       type: "POST",
       url: atob(ajaxB64),
       data,
-      success: function(response) {
+      success: function (response) {
         const dataJson = JSON.parse(response);
         const {
           icon,
@@ -813,7 +813,7 @@
 
         }
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
 
       }
     })
@@ -852,8 +852,8 @@
     getJWTPayload
   } from "./services/utilidades.js";
   // Script para integrar el chat con webhook de Medical
-  document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Script de chat cargado correctamente');
+  document.addEventListener('DOMContentLoaded', async function () {
+    // console.log('Script de chat cargado correctamente');
     const user = await userService.getByExternalId(getJWTPayload().sub);
     var hostname = window.location.hostname.split('.')[0];
 
@@ -868,7 +868,7 @@
       console.error('No se pudieron encontrar todos los elementos del chat');
       return;
     } else {
-      console.log('Elementos del chat encontrados correctamente');
+      // console.log('Elementos del chat encontrados correctamente');
     }
 
     // 2. URL del webhook
@@ -877,7 +877,7 @@
     // 3. Función para enviar mensaje al webhook
     async function sendMessageToWebhook(message) {
       try {
-        console.log('Enviando mensaje:', message);
+        // console.log('Enviando mensaje:', message);
 
         // Mostrar mensaje del usuario en el chat
         addUserMessageToChat(message);
@@ -894,31 +894,51 @@
           body: JSON.stringify({
             message,
             username: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`,
-            tenant: hostname
+            tenant: hostname,
+            user_id: user.id,
+            speciality: user.specialty.name,
+            phone: user.phone,
+            email: user.email,
+            profile: user.role.name,
           })
         });
 
-        // Procesar respuesta
+        // console.log("Respuesta recibida:", response);
+
+        // Procesar la respuesta como texto
+        const responseText = await response.text();
+
+        removeLoadingIndicator(loadingId);
+
         if (response.ok) {
-          const data = await response.json();
-          console.log('Respuesta recibida:', data);
-
-          // Remover indicador de carga
-          removeLoadingIndicator(loadingId);
-
-          // Mostrar las tres respuestas
-          if (data.respuesta_1) addBotMessageToChat(data.respuesta_1);
-          if (data.respuesta_2) addBotMessageToChat(data.respuesta_2);
-          if (data.respuesta_3) addBotMessageToChat(data.respuesta_3);
+          // Mostrar la respuesta en el chat
+          addBotMessageToChat(responseText || 'No se recibió respuesta del servidor.');
         } else {
-          console.error('Error en la respuesta del servidor:', response.status);
-
-          // Remover indicador de carga
-          removeLoadingIndicator(loadingId);
-
-          // Mostrar mensaje de error
-          addBotMessageToChat('Lo siento, hubo un problema al procesar tu mensaje.');
+          console.error('Error en la respuesta del servidor:', response.status, responseText);
+          addBotMessageToChat('Hubo un problema al procesar tu mensaje.');
         }
+
+
+        // Procesar respuesta
+        // if (response.ok) {
+
+        //   // Remover indicador de carga
+        //   removeLoadingIndicator(loadingId);
+
+        //   // Mostrar las tres respuestas
+        //   if (data.respuesta_1) addBotMessageToChat(data.respuesta_1);
+        //   // if (data.respuesta
+        // _2) addBotMessageToChat(data.respuesta_2);
+        //   // if (data.respuesta_3) addBotMessageToChat(data.respuesta_3);
+        // } else {
+        //   console.error('Error en la respuesta del servidor:', response.status);
+
+        //   // Remover indicador de carga
+        //   removeLoadingIndicator(loadingId);
+
+        //   // Mostrar mensaje de error
+        //   addBotMessageToChat('Lo siento, hubo un problema al procesar tu mensaje.');
+        // }
       } catch (error) {
         console.error('Error al enviar mensaje:', error);
         addBotMessageToChat('Lo siento, ocurrió un error al comunicarse con el servidor.');
@@ -927,7 +947,7 @@
 
     // 4. Función para añadir mensaje del usuario al chat
     function addUserMessageToChat(message) {
-      console.log('Añadiendo mensaje del usuario al chat');
+      // console.log('Añadiendo mensaje del usuario al chat');
       const userMessageHTML = `
       <div class="text-end mb-3">
         <div class="d-inline-block p-3 rounded-3 bg-primary text-white">
@@ -940,7 +960,7 @@
 
     // 5. Función para añadir mensaje del bot al chat
     function addBotMessageToChat(message) {
-      console.log('Añadiendo mensaje del bot al chat');
+      // console.log('Añadiendo mensaje del bot al chat');
       const botMessageHTML = `
       <div class="mb-3">
         <div class="d-flex align-items-center mb-2">
@@ -950,7 +970,7 @@
           <h6 class="mb-0">Eric</h6>
         </div>
         <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
-          <p class="mb-0">${escapeHtml(message)}</p>
+          <p class="mb-0">${message}</p>
         </div>
       </div>
     `;
@@ -959,7 +979,7 @@
 
     // 6. Función para añadir indicador de carga
     function addLoadingIndicator() {
-      console.log('Añadiendo indicador de carga');
+      // console.log('Añadiendo indicador de carga');
       const id = 'loading-' + Date.now();
       const loadingHTML = `
       <div id="${id}" class="mb-3">
@@ -986,7 +1006,7 @@
 
     // 7. Función para remover indicador de carga
     function removeLoadingIndicator(id) {
-      console.log('Removiendo indicador de carga:', id);
+      // console.log('Removiendo indicador de carga:', id);
       const loadingElement = document.getElementById(id);
       if (loadingElement) {
         loadingElement.remove();
@@ -1002,7 +1022,7 @@
 
     // 9. Añadir estilos para el indicador de carga
     function addStyles() {
-      console.log('Añadiendo estilos CSS');
+      // console.log('Añadiendo estilos CSS');
       const styleElement = document.createElement('style');
       styleElement.textContent = `
       .typing-indicator {
@@ -1047,8 +1067,8 @@
 
     // 10. Event listener para el botón de enviar
     if (sendButton) {
-      console.log('Agregando evento al botón de enviar');
-      sendButton.addEventListener('click', function() {
+      // console.log('Agregando evento al botón de enviar');
+      sendButton.addEventListener('click', function () {
         const message = inputField.value.trim();
         if (message) {
           sendMessageToWebhook(message);
@@ -1059,8 +1079,8 @@
 
     // 11. Event listener para la tecla Enter en el campo de entrada
     if (inputField) {
-      console.log('Agregando evento de tecla Enter al campo de entrada');
-      inputField.addEventListener('keypress', function(e) {
+      // console.log('Agregando evento de tecla Enter al campo de entrada');
+      inputField.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
           const message = inputField.value.trim();
           if (message) {
@@ -1074,9 +1094,9 @@
 
     // 12. Event listeners para las preguntas predefinidas
     if (predefinedQuestions && predefinedQuestions.length > 0) {
-      console.log('Agregando eventos a preguntas predefinidas');
+      // console.log('Agregando eventos a preguntas predefinidas');
       predefinedQuestions.forEach(question => {
-        question.addEventListener('click', function(e) {
+        question.addEventListener('click', function (e) {
           e.preventDefault();
           const messageElement = this.querySelector('p');
           if (messageElement) {
@@ -1095,7 +1115,7 @@
     // Inicializar estilos
     addStyles();
 
-    console.log('Inicialización del chat completada');
+    // console.log('Inicialización del chat completada');
   });
 </script>
 
@@ -1193,7 +1213,7 @@ M. Castro c:
 <script src="Documentos/js/UtilsConsentimientos.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", async function() {});
+  document.addEventListener("DOMContentLoaded", async function () { });
 </script>
 <!--
 hasta aca construyo

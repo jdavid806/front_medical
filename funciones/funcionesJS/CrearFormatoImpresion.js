@@ -13,12 +13,14 @@ async function generarFormato(objecto, nombreObjecto) {
     case "Consulta":
       formatoAImprimir = await generarFormatoConsulta(objecto);
       break;
-      break;
     case "Receta":
       formatoAImprimir = await generarFormatoReceta(objecto);
       break;
     case "Examen":
       formatoAImprimir = await generarFormatoOrden(objecto);
+      break;
+    case "RecetaExamen":
+      formatoAImprimir = await generarFormatoReceta(objecto);
       break;
 
     default:
@@ -332,6 +334,72 @@ async function generarFormatoOrden(ordenId) {
   );
   let datosEmpresa = await consultarDatosEmpresa();
   let datosDoctor = await consultarDatosDoctor(1);
+
+  return {
+    consultorio: datosEmpresa,
+    paciente: datosPaciente,
+    contenido,
+    doctor: datosDoctor,
+  };
+}
+
+async function generarFormatoReceta(ordenId) {
+  let url = obtenerRutaPrincipal() + `/medical/exam-recipes/${ordenId}`;
+  let datosExamen = await obtenerDatos(url);
+
+  console.log(datosExamen);
+  
+
+  // let contenido = `
+  //   <div class="container border rounded shadow-sm text-start">
+  //       <h3 class="text-primary text-center">Solicitud de Exámenes</h3>
+  //       <h4 class="text-secondary">Datos del Paciente:</h4>
+  //       <p><strong>ID:</strong> ${datosExamen.patient_id}</p>
+  //       <p><strong>Nombre:</strong> (Nombre del paciente aquí)</p>
+  //       <h4 class="text-secondary">Datos del Médico:</h4>
+  //       <p><strong>Nombre:</strong> ${datosExamen.user.first_name} ${datosExamen.user.middle_name} ${datosExamen.user.last_name} ${datosExamen.user.second_last_name}</p>
+  //       <p><strong>Email:</strong> ${datosExamen.user.email}</p>
+  //       <p><strong>Teléfono:</strong> ${datosExamen.user.phone}</p>
+        
+  //       <h4 class="text-secondary">Exámenes Solicitados:</h4>
+  //   `;
+
+  // if (datosExamen.details.length > 0) {
+  //   datosExamen.details.forEach((detalle, index) => {
+  //     contenido += `
+  //           <div class="card exam-card mb-2">
+  //               <div class="card-body">
+  //                   <h6 class="card-title">${detalle.exam_type.name}</h6>
+  //                   <p class="card-text">${detalle.exam_type.description}</p>
+  //                   <strong>Detalles:</strong>
+  //                   <p>${
+  //                     detalle.exam_type.form_config.values
+  //                       ? Object.values(
+  //                           detalle.exam_type.form_config.values
+  //                         ).join("<br>")
+  //                       : "Sin detalles"
+  //                   }</p>
+  //               </div>
+  //           </div>`;
+  //   });
+  // } else {
+  //   contenido += `<p class="text-muted fst-italic">No hay exámenes en esta solicitud</p>`;
+  // }
+
+  // contenido += `
+  //   <div class="text-end mt-3">
+  //       <p><small>Fecha de solicitud: ${new Date(
+  //         datosExamen.created_at
+  //       ).toLocaleDateString()}</small></p>
+  //   </div>
+  //   </div>`;
+
+  let datosPaciente = await consultarDatosPaciente(
+    datosExamen.patient_id,
+    formatearFechaQuitarHora(datosExamen.created_at)
+  );
+  let datosEmpresa = await consultarDatosEmpresa();
+  let datosDoctor = await consultarDatosDoctor(datosExamen.user.id);
 
   return {
     consultorio: datosEmpresa,

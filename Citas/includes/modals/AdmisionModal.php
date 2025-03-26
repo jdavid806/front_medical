@@ -357,8 +357,8 @@ include '../modals/NewCompanionModal.php';
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <h5 class="card-title mb-0">Información del acompañante</h5>
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-success" onclick="saveCompanion()"><i class="fa-solid fa-floppy-disk"></i> Confirmar</button>
-                                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#newCompanionModal"><i class="fa-solid fa-pen-to-square"></i> Nuevo</button>
+                                                    <button type="button" class="btn btn-success m-1" id="saveCompanion"><i class="fa-solid fa-floppy-disk"></i> Confirmar</button>
+                                                    <button type="button" class="btn btn-info m-1" data-bs-toggle="modal" data-bs-target="#newCompanionModal"><i class="fa-solid fa-pen-to-square"></i> Nuevo</button>
 
                                                 </div>
                                             </div>
@@ -405,6 +405,10 @@ include '../modals/NewCompanionModal.php';
                                                         <input class="form-control" type="text" name="relationshipAcompanion" placeholder="Parentesco" id="relationshipAcompanion" readonly>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label" for="emailCompanion">Email*</label>
+                                                    <input class="form-control" type="text" name="emailCompanion" placeholder="Correo Electronico" id="emailCompanion" readonly>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -439,6 +443,10 @@ include '../modals/NewCompanionModal.php';
                                                             <input class="form-control datetimepicker flatpickr-input" id="dateAuthorisation" name="date_authorisation" type="text" placeholder="Fecha de autorización" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
 
                                                         </div>
+                                                    </div>
+                                                    <div id="amountAuthorisationContent" class=" col-6 d-none">
+                                                        <label class="form-label" for="amount">Monto autorizado</label>
+                                                        <input class="form-control" id="amountAuthorisation" type="text">
                                                     </div>
                                                 </div>
                                             </div>
@@ -518,7 +526,7 @@ include '../modals/NewCompanionModal.php';
                                                 </div> -->
                                             </div>
 
-                                            <div style="display: none !important;" class="col-sm-12 d-flex justify-content-end align-items-center">
+                                            <div class="col-sm-12 d-flex justify-content-end align-items-center">
                                                 <div class="mb-2">
                                                     <button class="btn btn-primary" type="button" id="addService"><i class="fas fa-plus"></i> Agregar servicio</button>
                                                 </div>
@@ -526,7 +534,7 @@ include '../modals/NewCompanionModal.php';
 
 
 
-                                            <div id="formProduct" style="display: none;">
+                                            <div id="formProduct">
                                                 <h5 class="card-title">Información del procedimiento</h5>
 
                                                 <div class="row g-3 mb-3">
@@ -953,10 +961,13 @@ include '../modals/NewCompanionModal.php';
 
     import AlertManager from './services/alertManager.js';
 
+    let updateData = null;
+    let id = 0;
+
     document.addEventListener('DOMContentLoaded', function() {
 
         document.getElementById('btnUpdatePatient').addEventListener('click', function() {
-            const updateData = {
+            updateData = {
                 patient: {
                     document_type: document.getElementById('typeDocumentPatient').value,
                     document_number: document.getElementById('numberIdentificationPatient').value,
@@ -979,15 +990,16 @@ include '../modals/NewCompanionModal.php';
                 }
             }
 
-            const id = document.getElementById('patientIdForUpdate').value;
-
-            console.log(id, updateData);
+            id = document.getElementById('patientIdForUpdate').value;
 
             patientService.updatePatient(id, updateData)
                 .then(() => {
                     AlertManager.success({
                         text: 'Se ha actualizado el registro exitosamente'
                     });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000)
                 })
                 .catch(err => {
                     if (err.data?.errors) {
@@ -999,6 +1011,66 @@ include '../modals/NewCompanionModal.php';
                     }
                 });
         });
+
+        document.getElementById('saveCompanion').addEventListener('click', function() {
+
+            updateData = {
+                patient: {
+                    document_type: document.getElementById('typeDocumentPatient').value,
+                    document_number: document.getElementById('numberIdentificationPatient').value,
+                    first_name: document.getElementById('firstNamePatient').value,
+                    middle_name: document.getElementById('middleNamePatient').value,
+                    last_name: document.getElementById('lastNamePatient').value,
+                    second_last_name: document.getElementById('secondLastNamePatient').value,
+                    gender: document.getElementById('genderPatient').value,
+                    date_of_birth: document.getElementById('dateBirthPatient').value,
+                    country_id: document.getElementById('countryPatient').value,
+                    department_id: document.getElementById('departmentPatient').value,
+                    city_id: document.getElementById('cityPatient').value,
+                    address: document.getElementById('addressPatient').value,
+                    email: document.getElementById('emailPatient').value,
+                    whatsapp: document.getElementById('whatsappPatient').value,
+                    blood_type: document.getElementById('bloodTypePatient').value,
+                },
+                social_security: {
+                    entity_id: document.getElementById('epsPatient').value
+                },
+                companions: [{
+                    document_type: document.getElementById('typeDocumentAcompanion').value,
+                    document_number: document.getElementById('numberIdentificationAcompanion').value,
+                    first_name: document.getElementById('firstNameAcompanion').value,
+                    middle_name: null,
+                    last_name: document.getElementById('lastNameAcompanion').value,
+                    second_last_name: null,
+                    email: document.getElementById('email').value,
+                    mobile: document.getElementById('whatsappAcompanion').value,
+                    is_active: true,
+                    relationship: document.getElementById('relationshipAcompanion').value
+                }]
+            }
+            id = document.getElementById('patientIdForUpdate').value;
+
+
+            patientService.updatePatient(id, updateData)
+                .then(() => {
+                    AlertManager.success({
+                        text: 'Se ha agregado el acompañante exitosamente'
+                    });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000)
+                })
+                .catch(err => {
+                    if (err.data?.errors) {
+                        AlertManager.formErrors(err.data.errors);
+                    } else {
+                        AlertManager.error({
+                            text: err.message || 'Ocurrió un error inesperado'
+                        });
+                    }
+                });
+        })
+
 
         flatpickr("#datepicker", {
             dateFormat: "d/m/Y",
@@ -1050,6 +1122,7 @@ include '../modals/NewCompanionModal.php';
 
         // Formatea el campo de entrada de monto con separadores de miles
         handleFormatAmountInput('amount');
+        handleFormatAmountInput('amountAuthorisation');
 
         // Maneja el evento de clic del botón "Eliminar"
         handleRemoveRequiredAttribute(['authorisationNumber', 'secondField', 'thirdField']);
@@ -1300,7 +1373,6 @@ include '../modals/NewCompanionModal.php';
             const productId = document.getElementById('services').value;
 
             const product = productDataMap[productId]; // Obtiene los datos del producto del objeto
-            console.log("producto: ", product);
             const productPrice = parseFloat(document.getElementById(productPriceInputId).value);
             const productQuantity = parseFloat(document.getElementById(productQuantityInputId).value);
 
@@ -1364,7 +1436,6 @@ include '../modals/NewCompanionModal.php';
     }
 
     function addRowToProductTable(values, tableBodyId) {
-        console.log("valores:", values);
         const tableBody = document.getElementById(tableBodyId);
         const summaryTableBody = document.getElementById('summaryProductsTableBody'); // Nueva tabla
         const rowCount = tableBody.rows.length + 1;
@@ -1641,10 +1712,13 @@ include '../modals/NewCompanionModal.php';
 
 
     // Obtener la información del producto por ID
+    let globalProduct = null;
+
     function getProductId(productId, admission) {
         return productService.getProductById(productId) // 👈 Ahora retornamos la promesa
             .then(response => {
-                const product = response; // Asegúrate de que la estructura de la respuesta sea correcta
+                const product = response;
+                globalProduct = product; // Asegúrate de que la estructura de la respuesta sea correcta
                 addProductToTable(product, admission); // Agregar el producto a la tabla
                 populateProductInput(product); // Llenar el input con la información del producto
                 return product; // 👈 Retornar el producto por si se necesita en otra parte
@@ -1702,7 +1776,6 @@ include '../modals/NewCompanionModal.php';
     async function getEntities() {
         try {
             const data = await entityService.getAll();
-            console.log('Entidades', data);
 
             populateEntitySelect(data.data);
         } catch (error) {
@@ -1792,8 +1865,6 @@ include '../modals/NewCompanionModal.php';
                 const companionsSelect = document.querySelector('select[name="companionsPatients"]');
                 companionsSelect.innerHTML = '<option selected="">Seleccionar</option>'; // Limpiar opciones previas
 
-                console.log("data admision: ", admission);
-
                 admission.patient.companions.forEach(companion => {
                     const option = document.createElement('option');
                     option.value = companion.id; // Suponiendo que cada acompañante tiene un id único
@@ -1812,6 +1883,7 @@ include '../modals/NewCompanionModal.php';
                         setElementValue('input[name="lastNameAcompanion"]', selectedCompanion.last_name);
                         setElementValue('input[name="whatsappAcompanion"]', selectedCompanion.mobile);
                         setElementValue('input[name="relationshipAcompanion"]', selectedCompanion.pivot.relationship);
+                        setElementValue('input[name="emailCompanion"]', selectedCompanion.email);
                     }
                 });
 
@@ -1880,7 +1952,16 @@ include '../modals/NewCompanionModal.php';
         return globalAdmission;
     }
 
+    let priceByEntity = null;
+
     function addProductToTable(product, admission, isEntityActive) {
+
+        priceByEntity = product.entities.find(entity => entity.entity_id == admission.patient?.social_security?.entity_id) || false;
+
+        if (!priceByEntity) {
+            validateAmountPriceByEntity();
+        }
+
         const tableBody = document.getElementById('productsTableBody');
         const entitySwitch = document.getElementById('entitySwitch');
 
@@ -1971,6 +2052,47 @@ include '../modals/NewCompanionModal.php';
         updateTotal();
     }
 
+    function validateAmountPriceByEntity() {
+
+        document.getElementById('amountAuthorisationContent').classList.remove('d-none');
+
+    }
+
+    function getDataToPrices(product, patient) {
+
+        const entityCreate = {
+            entity_id: patient?.social_security?.entity_id,
+            price: document.getElementById('amountAuthorisation').value,
+            tax_charge_id: null,
+            withholding_tax_id: null
+        }
+
+        const dataProductsEntities = {
+            product: {
+                name: product.name,
+                barcode: product.barcode,
+                attention_type: product.attention_type,
+                sale_price: product.sale_price,
+                copaymen: product.copayment,
+                tax_charge_id: product.tax_charge_id,
+                exam_type_id: product.exam_type_id
+            },
+            entities: [...product.entities, entityCreate]
+        }
+        return dataProductsEntities;
+    }
+
+    function createPricesByEntity(product, patient) {
+        console.log("Producto: ", product);
+        const dataRequestPrices = getDataToPrices(product, patient);
+        let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${product.id}`;
+
+        actualizarDatos(url, dataRequestPrices);
+
+        console.log("data request: ", dataRequestPrices);
+
+    }
+
     function updateTotal() {
         const tableBody = document.getElementById('productsTableBody');
         const rows = tableBody.getElementsByTagName('tr');
@@ -2007,11 +2129,18 @@ include '../modals/NewCompanionModal.php';
 
     document.getElementById('next_step').addEventListener('click', async function() {
         const activeStep = document.querySelector('.nav-link.active'); // Selecciona el paso activo
+        const sumAmount = document.getElementById('totalSum');
+        const entitySwitch = document.getElementById('entitySwitch');
 
         if (activeStep) {
             switch (activeStep.dataset.wizardStep) {
                 case "1":
-                    this.disabled = true; // Deshabilita el botón
+                    if (parseFloat(sumAmount.textContent).toFixed(0) != 0) {
+                        this.disabled = true; // Deshabilita el botón
+                    }
+                    if (!priceByEntity && entitySwitch.checked) {
+                        createPricesByEntity(globalProduct, globalAdmission.patient);
+                    }
                     break;
                 case "3":
                     await guardarAdmision();
@@ -2022,6 +2151,22 @@ include '../modals/NewCompanionModal.php';
         }
 
     });
+
+    document.getElementById('entitySwitch').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('consumidorSwitch').disabled = true;
+        } else {
+            document.getElementById('consumidorSwitch').disabled = false;
+        }
+    })
+
+    document.getElementById('consumidorSwitch').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('entitySwitch').disabled = true;
+        } else {
+            document.getElementById('entitySwitch').disabled = false;
+        }
+    })
 
     document.getElementById('back_step').addEventListener('click', function() {
         document.getElementById('next_step').disabled = false;

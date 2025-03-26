@@ -219,20 +219,12 @@ $baner = "";
     usersSelect,
     userSpecialtiesSelect
   } from "./services/selects.js";
-  import UserManager from './services/userManager.js'
 
   document.addEventListener('DOMContentLoaded', async function() {
 
     const specialtySelect = document.getElementById('specialtyFilter');
     const doctorSelect = document.getElementById('doctorFilter');
 
-    UserManager.onAuthChange(async (isAuthenticated, user, permissions, menus, role) => {
-      // if (role.group === 'DOCTOR') {
-      //   //document.getElementById('accordionFiltros').style.display = 'none'
-
-
-      // }
-    })
     var calendarEl = document.getElementById('calendar');
 
     window.calendarGlobal = initCalendar();

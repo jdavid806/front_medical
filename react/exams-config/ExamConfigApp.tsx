@@ -53,6 +53,7 @@ export const ExamConfigApp = () => {
         setInitialData({
             name: examType?.name ?? '',
             description: examType?.description ?? '',
+            type: examType?.type ?? '',
             form_config: examType?.form_config ?? null
         })
     }, [examType])

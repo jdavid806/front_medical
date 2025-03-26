@@ -612,6 +612,124 @@ function createCheckboxWithSubfields(field) {
   return fieldDiv;
 }
 
+function createDynamicTable(field) {
+  // Crear el contenedor principal de la tabla
+  const tableContainer = document.createElement("div");
+  tableContainer.classList.add("table-responsive");
+
+  // Crear la tabla
+  const table = document.createElement("table");
+  table.classList.add("table", "table-bordered", "table-striped");
+  table.id = field.id;
+
+  // Crear el cuerpo de la tabla
+  const tbody = document.createElement("tbody");
+
+  // Verificar si hay celdas definidas
+  if (field.cells && field.cells.length > 0) {
+    // Determinar el número máximo de columnas
+    const maxColumns = Math.max(...field.cells.map((row) => row.length));
+
+    // Crear filas
+    field.cells.forEach((rowData) => {
+      const tableRow = document.createElement("tr");
+
+      // Iterar sobre las celdas de la fila
+      rowData.forEach((cellConfig) => {
+        const td = document.createElement("td");
+
+        // Manejar diferentes tipos de campos
+        switch (cellConfig.type) {
+          case "text":
+            td.textContent = cellConfig.value || "";
+            break;
+
+          case "textarea":
+            const textarea = document.createElement("textarea");
+            textarea.classList.add("form-control");
+            textarea.value = cellConfig.value || "";
+            textarea.id = cellConfig.id || "";
+            textarea.name = cellConfig.name || "";
+
+            if (cellConfig.placeholder) {
+              textarea.placeholder = cellConfig.placeholder;
+            }
+
+            td.appendChild(textarea);
+            break;
+
+          case "input":
+            const input = document.createElement("input");
+            input.type = cellConfig.inputType || "text";
+            input.classList.add("form-control");
+            input.value = cellConfig.value || "";
+            input.id = cellConfig.id || "";
+            input.name = cellConfig.name || "";
+
+            if (cellConfig.placeholder) {
+              input.placeholder = cellConfig.placeholder;
+            }
+
+            if (cellConfig.readonly) {
+              input.readOnly = true;
+            }
+
+            td.appendChild(input);
+            break;
+
+          case "select":
+            const select = document.createElement("select");
+            select.classList.add("form-select");
+            select.id = cellConfig.id || "";
+            select.name = cellConfig.name || "";
+
+            // Opción por defecto
+            const defaultOption = document.createElement("option");
+            defaultOption.textContent = "Seleccione";
+            defaultOption.value = "";
+            select.appendChild(defaultOption);
+
+            // Agregar opciones
+            if (cellConfig.options) {
+              cellConfig.options.forEach((option) => {
+                const optionElement = document.createElement("option");
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+
+                // Marcar como seleccionada si coincide con el valor
+                if (option.value === cellConfig.value) {
+                  optionElement.selected = true;
+                }
+
+                select.appendChild(optionElement);
+              });
+            }
+
+            td.appendChild(select);
+            break;
+
+          default:
+            td.textContent = cellConfig.value || "";
+        }
+
+        // Aplicar clases personalizadas si se proporcionan
+        if (cellConfig.class) {
+          td.classList.add(cellConfig.class);
+        }
+
+        tableRow.appendChild(td);
+      });
+
+      tbody.appendChild(tableRow);
+    });
+  }
+
+  table.appendChild(tbody);
+  tableContainer.appendChild(table);
+
+  return tableContainer;
+}
+
 function createTextareaField(field) {
   // Crear el contenedor principal para el textarea
   let fieldDiv = document.createElement("div");
@@ -729,6 +847,8 @@ function generateForm(formData) {
                 fieldDiv = createDropzone(field);
               } else if (field.type === "fileS") {
                 fieldDiv = createSingleFileDropzone(field);
+              } else if (field.type === "table") {
+                fieldDiv = createDynamicTable(field);
               } else if (field.type === "label") {
                 fieldDiv = document.createElement("div");
                 if (field.class) {

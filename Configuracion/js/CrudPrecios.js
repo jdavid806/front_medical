@@ -40,13 +40,15 @@ async function cargarContenido() {
             <td class="salePrice">${producto.sale_price || "N/A"}</td>
             <td class="copayment">${producto.copayment || "N/A"}</td>
             <td>
-                <button class="btn btn-primary btn-sm" onclick="editarProducto(${producto.id
-            })" 
+                <button class="btn btn-primary btn-sm" onclick="editarProducto(${
+                  producto.id
+                })" 
                 data-bs-toggle="modal" data-bs-target="#modalPrice">
                     <i class="fa-solid fa-pen"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
-            })">
+                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
+                  producto.id
+                })">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
@@ -85,10 +87,10 @@ async function cargarContenido() {
 }
 
 async function cargarEntidadesCrudPrecios(entidades) {
-  console.log('Entidades:', entidades);
+  console.log("Entidades:", entidades);
 
-  // const entities = await 
-  entidades.forEach(entidad => {
+  // const entities = await
+  entidades.forEach((entidad) => {
     let entidadId = entidad.id;
     let entidadNombre = entidad.name || "N/A";
     let impuestoId = entidad.tax_charge_id;
@@ -96,8 +98,11 @@ async function cargarEntidadesCrudPrecios(entidades) {
 
     let precio = entidad.price;
 
-    let impuestoNombre = document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
-    let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
+    let impuestoNombre =
+      document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
+    let retencionNombre =
+      document.getElementById("retention_type").selectedOptions[0]?.text ||
+      "N/A";
 
     // Guardar en el array para futuras referencias
     preciosEntidades.push({
@@ -115,7 +120,9 @@ async function cargarEntidadesCrudPrecios(entidades) {
                 <td>${impuestoNombre}</td>
                 <td>${retencionNombre}</td>
                 <td>
-                    <button class='btn btn-danger btn-sm' onclick='eliminarFila(${preciosEntidades.length - 1})'>
+                    <button class='btn btn-danger btn-sm' onclick='eliminarFila(${
+                      preciosEntidades.length - 1
+                    })'>
                         Eliminar
                     </button>
                 </td>
@@ -150,7 +157,8 @@ async function createProduct(product) {
 
 async function editarProducto(id) {
   //const ruta = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
-  const ruta = obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
+  const ruta =
+    obtenerRutaPrincipal() + `api/v1/admin/products/${id}/update-with-entities`;
   const rutaProducts = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
 
   let producto = await obtenerDatos(rutaProducts);

@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { ExamOrderDto } from '../../models/models';
 import { examOrderStateColors, examOrderStates } from '../../../services/commons';
-import { EditTableAction } from '../../components/table-actions/EditTableAction';
 import { PrintTableAction } from '../../components/table-actions/PrintTableAction';
 import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
 import { ShareTableAction } from '../../components/table-actions/ShareTableAction';

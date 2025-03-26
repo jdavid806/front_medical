@@ -46,12 +46,11 @@
                       <input class="form-control datetimepicker flatpickr-input" id="fechaVencimiento" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
                     </div> -->
                     <div class="col-6">
-                      <label class="form-label" for="tipoFactura">Tipo factura</label>
-                      <select class="form-select" id="tipoFactura">
+                      <label class="form-label" for="tipoFacturaSelect">Tipo factura</label>
+                      <select class="form-select" id="tipoFacturaSelect">
                         <option selected disabled>Seleccione</option>
-                        <option value="consumidor">Consumidor</option>
-                        <option value="fiscal">Fiscal</option>
-                        <option value="gubernamental">Gubernamental</option>
+                        <option value="tax_invoice">Fiscal</option>
+                        <option value="government_invoice">Gubernamental</option>
                       </select>
                     </div>
                     <div class="col-6">
@@ -133,30 +132,18 @@
                                 <th class="sort border-top" data-sort="valorUnitario">Valor unitario</th>
                                 <th class="sort border-top" data-sort="copago">Copago</th>
                                 <th class="sort border-top" data-sort="valorTotal">Valor total</th>
-                                <th class="sort text-end align-middle pe-0 border-top" scope="col"></th>
                               </tr>
                             </thead>
                             <tbody class="list-billing">
-                              <tr>
-                                <td class="align-middle ps-3 name">Anna</td>
-                                <td class="align-middle email">2025-10-05</td>
-                                <td class="align-middle age">Null</td>
-                                <td class="align-middle age">Null</td>
-                                <td class="align-middle age">2000</td>
-                                <td class="align-middle age">100</td>
-                                <td class="align-middle age">2000</td>
-                                <td class="align-middle white-space-nowrap text-end pe-0">
-
-                                  <div class="form-check">
-                                    <input class="form-check-input" id="flexCheckDefault" type="checkbox" value="" />
-                                  </div>
-                                </td>
-                              </tr>
-
                             </tbody>
                           </table>
                         </div>
                       </div>
+
+                      <div class="pricesTotal d-flex flex-grow gap-3 justify-content-end m-2">
+
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -194,9 +181,6 @@
                     <div class="col-6" id="divMetodoPago" style="display: none;">
                       <label class="form-label" for="metodoPago">Metodo de pago</label>
                       <select class="form-select" id="metodoPago">
-                        <option disabled>Seleccione</option>
-                        <option value="metodo1" selected>Metodo 1</option>
-                        <option value="metodo2">Metodo 2</option>
                       </select>
                     </div>
                     <div class="col-6 mt-3" id="divDiasPlazo">
@@ -210,12 +194,12 @@
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxCharge">Impuesto cargo</label>
-                      <select class="form-control" id="taxCharge" name="taxCharge">
+                      <select class="form-control" id="taxChargeSelect">
                       </select>
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxWithholding">Impuesto retencion</label>
-                      <select class="form-control" name="taxWithholding" id="taxWithholding">
+                      <select class="form-control" name="taxWithholding" id="taxWithholdingSelect">
                       </select>
                     </div>
                   </div>
@@ -295,9 +279,18 @@
     billingService
   } from "../../services/api/index.js";
 
+  import {
+    getUserLogged
+  } from '../../../services/utilidades.js';
+
+  import AlertManager from '../../../services/alertManager.js';
+
+  let userLogged = getUserLogged();
 
   document.addEventListener('DOMContentLoaded', async function() {
-    await cargarImpuestos();
+    await cargarPaymentsmethod();
+    await cargarImpuestosFacturaEntidad();
+    await cargarImpuestosRetFacturaEntidad();
     await createSelectEntities();
     await cargarProcedimientos();
     await cargarEspecialistas();
@@ -380,9 +373,9 @@
     selectProcedimientos.appendChild(placeholderOption);
 
 
-    if (procedimientos.length) {
+    if (procedimientos.data.length) {
 
-      procedimientos.forEach(procedure => {
+      procedimientos.data.forEach(procedure => {
         const option = document.createElement("option");
         option.value = procedure.id;
         option.textContent = procedure.attributes.name;
@@ -500,6 +493,7 @@
   });
 
   function obtenerFiltros() {
+    const entity = document.getElementById('entity').value;
     const procedureSelect = document.getElementById('procedure');
     const selectedProcedures = Array.from(procedureSelect.selectedOptions).map(option => option.value);
     const especialistasSelect = document.getElementById('especialistas');
@@ -518,13 +512,15 @@
       patient_ids: selectedPacientes.filter(item => item != ''),
       product_ids: selectedProcedures.filter(item => item != ''),
       user_ids: selectedEspecialistas.filter(item => item != ''),
+      entity_id: entity === "0" ? "" : entity
     }
 
     return paramsFilter;
   }
 
+  let dataBillingReport = [];
   async function queryBillingReport(paramsFilter) {
-    let dataBillingReport = await billingService.getBillingReport(paramsFilter);
+    dataBillingReport = await billingService.getBillingReport(paramsFilter);
     dataBillingReport = dataBillingReport.filter(item => item.type == "entity" && item.authorization_number != null);
 
 
@@ -532,59 +528,147 @@
   }
 
   function populateBillingTable(data) {
+    console.log("Data billing:  ", data);
     const tbody = document.querySelector('.list-billing');
     tbody.innerHTML = ''; // Limpiar tabla existente
+    let totalValorUnitario = 0;
+    let totalCopago = 0;
+    let totalGeneral = 0;
 
-    data.forEach(item => {
+    data.forEach((item, index) => {
       const tr = document.createElement('tr');
+      const price = Number(item.billed_procedure[0]?.product?.entities[0]?.price || 0);
+      const amount = Number(item.billed_procedure[0]?.amount || 0);
+      const total = price - amount;
+
+      totalValorUnitario += price;
+      totalCopago += amount;
+      totalGeneral += total;
 
       tr.innerHTML = `
             <td class="align-middle ps-3 name">${item.patient.first_name} ${item.patient.last_name}</td>
             <td class="align-middle email">${item.authorization_date}</td>
             <td class="align-middle email">${item.billed_procedure[0].product.name}</td>
             <td class="align-middle age">${item.authorization_number}</td>
-            <td class="align-middle age">${item.billed_procedure[0].unit_price}</td>
-            <td class="align-middle age">${item.billed_procedure[0].amount}</td>
-            <td class="align-middle age">$${item.billed_procedure[0].amount}</td>
-            <td class="align-middle white-space-nowrap text-end pe-0">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox">
-                </div>
-            </td>
+            <td class="align-middle age">$${price.toLocaleString('es-CO')}</td>
+            <td class="align-middle age">$${amount.toLocaleString('es-CO')}</td>
+            <td class="align-middle age">$${total.toLocaleString('es-CO')}</td>
         `;
 
       tbody.appendChild(tr);
     });
+    let pricesTotalDiv = document.querySelector('.pricesTotal');
+    if (!pricesTotalDiv) {
+      pricesTotalDiv = document.createElement('div');
+      pricesTotalDiv.id = 'pricesTotal';
+      const table = tbody.closest('table');
+      if (table) {
+        table.parentNode.insertAdjacentElement('afterend', pricesTotalDiv);
+      } else {
+        document.body.appendChild(pricesTotalDiv);
+      }
+    }
+
+    // Actualizar el contenido del div
+    pricesTotalDiv.innerHTML = `
+        <p><strong>Total valor unitario:</strong> $${totalValorUnitario.toLocaleString('es-CO')}</p>
+        <p><strong>Total copago:</strong> $${totalCopago.toLocaleString('es-CO')}</p>
+        <p><strong>Total:</strong> $${totalGeneral.toLocaleString('es-CO')}</p>
+    `;
   }
 
-  // async function cargarSelectsPrecios() {
-  //   let rutaPaymentmethods = obtenerRutaPrincipal() + "/api/v1/admin/payment-methods";
-  //   let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
-  //   let rutaRetenciones =
-  //     obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
+  async function cargarPaymentsmethod() {
+    const selectPaymentsmethods = document.getElementById('metodoPago');
+    let rutaPaymentmethods = obtenerRutaPrincipal() + "/api/v1/admin/payment-methods";
+    let paymentmethods = await obtenerDatos(rutaPaymentmethods);
 
-  //   let paymentmethods = await obtenerDatos(rutaPaymentmethods);
-  //   let impuestos = await obtenerDatos(rutaImpuestos);
-  //   let retenciones = await obtenerDatos(rutaRetenciones);
+    selectPaymentsmethods.innerHTML = '';
 
-  //   console.log("Selects", impuestos, retenciones, paymentmethods);
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione metodos de pago...';
+    placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
+    selectPaymentsmethods.appendChild(placeholderOption);
 
-  //   cargarImpuestosCargo("taxCharge", impuestos.data, "Seleccione un impuesto");
-  //   cargarSelect("taxWithholding", retenciones.data, "Seleccione una retención");
-  // }
 
-  async function cargarImpuestos() {
-    const selectProcedimientos = document.getElementById('taxCharge');
-    let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
-    let impuestos = await obtenerDatos(rutaImpuestos);
+    if (paymentmethods.length) {
 
-    selectProcedimientos.innerHTML = '';
+      paymentmethods.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.method;
+        selectPaymentsmethods.appendChild(option);
+      });
+
+    }
+
+    configurarSelectPaymentsmethods();
+  }
+
+  function configurarSelectPaymentsmethods() {
+    const taxCharge = document.getElementById('metodoPago');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(taxCharge, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  async function cargarImpuestosRetFacturaEntidad() {
+    const selectTaxes = document.getElementById('taxWithholdingSelect');
+    let rutaImpuestosRet = obtenerRutaPrincipal() + "/api/v1/admin/tax-withholdings";
+    let impuestosRet = await obtenerDatos(rutaImpuestosRet);
+
+    selectTaxes.innerHTML = '';
 
     const placeholderOption = document.createElement('option');
     placeholderOption.value = '';
     placeholderOption.textContent = 'Seleccione impuestos...';
     placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
-    selectProcedimientos.appendChild(placeholderOption);
+    selectTaxes.appendChild(placeholderOption);
+
+
+    if (impuestosRet.data.length) {
+
+      impuestosRet.data.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.textContent = item.name;
+        selectTaxes.appendChild(option);
+      });
+
+    }
+
+    configurarSelectImpuestosRet();
+  }
+
+  function configurarSelectImpuestosRet() {
+    const taxCharge = document.getElementById('taxWithholdingSelect');
+
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(taxCharge, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
+
+  async function cargarImpuestosFacturaEntidad() {
+    const selectTaxesWH = document.getElementById('taxChargeSelect');
+    let rutaImpuestos = obtenerRutaPrincipal() + "/api/v1/admin/tax-charges";
+    let impuestos = await obtenerDatos(rutaImpuestos);
+
+    selectTaxesWH.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Seleccione impuestos...';
+    placeholderOption.setAttribute('placeholder', ''); // Atributo especial para Choices
+    selectTaxesWH.appendChild(placeholderOption);
 
 
     if (impuestos.data.length) {
@@ -593,7 +677,7 @@
         const option = document.createElement("option");
         option.value = item.id;
         option.textContent = item.name;
-        selectProcedimientos.appendChild(option);
+        selectTaxesWH.appendChild(option);
       });
 
     }
@@ -601,18 +685,62 @@
   }
 
   function configurarSelectImpuestos() {
-    const procedure = document.getElementById('procedure');
-
-    procedure.setAttribute('multiple', 'multiple');
+    const taxCharge = document.getElementById('taxChargeSelect');
 
     // Choices.js
     if (typeof Choices !== 'undefined') {
-      const choices = new Choices(procedure, {
+      const choices = new Choices(taxCharge, {
         removeItemButton: true,
         placeholder: true
       });
     }
   }
+
+  function capturarDatos() {
+    const fechaElaboracion = document.getElementById('fechaElaboracion').value;
+    const tipoFactura = document.getElementById('tipoFacturaSelect').value;
+    const metodoPago = document.getElementById('metodoPago').value;
+    const fechaVencimiento = document.getElementById('fechaVencimiento').value;
+    const taxCharge = document.getElementById('taxChargeSelect').value;
+    const taxWithholding = document.getElementById('taxWithholdingSelect').value;
+    const entityId = document.getElementById('entity').value;
+
+    const datos = {
+      child_invoice_ids: dataBillingReport.map(item => item?.billed_procedure[0]?.invoice_id),
+      tax_charge: taxCharge,
+      withholding_tax: taxWithholding,
+      billing_type: tipoFactura,
+      external_id: userLogged.external_id,
+      invoice: {
+        due_date: fechaVencimiento.split('/').reverse().join('-'),
+        type: "entity",
+        entity_id: entityId,
+      },
+      invoice_detail: [],
+      payments: []
+    };
+
+    return datos;
+  }
+
+  document.getElementById('finishStep').addEventListener("click", async function() {
+    const datos = await capturarDatos();
+    await billingService.storeByEntity(datos).then(response => {
+
+        console.log(response);
+
+        // AlertManager.success({
+        //   text: 'Se ha actualizado el registro exitosamente'
+        // });
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1000);
+
+      })
+      .catch(error => {
+        console.error('Error al crear la admisión:', error);
+      });
+  });
 </script>
 
 <script>
@@ -811,97 +939,6 @@
     calcularFechaVencimiento();
   });
 
-  function capturarDatos() {
-    const fechaElaboracion = document.getElementById('fechaElaboracion').value;
-    const tipoFactura = document.getElementById('tipoFactura').value;
-    const entity = document.getElementById('entity').value;
-    const centroCosto = document.getElementById('centroCosto').value;
-
-    // Capturar valores y texto de selects múltiples, filtrando los valores vacíos
-    const procedureSelect = document.getElementById('procedure');
-    const proceduresData = Array.from(procedureSelect.selectedOptions)
-      .filter(option => option.value !== "")
-      .map(option => ({
-        value: option.value,
-        text: option.textContent
-      }));
-
-    const especialistasSelect = document.getElementById('especialistas');
-    const especialistasData = Array.from(especialistasSelect.selectedOptions)
-      .filter(option => option.value !== "")
-      .map(option => ({
-        value: option.value,
-        text: option.textContent
-      }));
-
-    const patientsSelect = document.getElementById('patients');
-    const patientsData = Array.from(patientsSelect.selectedOptions)
-      .filter(option => option.value !== "")
-      .map(option => ({
-        value: option.value,
-        text: option.textContent
-      }));
-
-    const fechasProcedimiento = document.getElementById('fechasProcedimiento').value;
-    const metodoPago = document.getElementById('metodoPago').value;
-    const fechaVencimiento = document.getElementById('fechaVencimiento').value;
-
-    // Extraer solo los valores y textos para usar en datos y visualización
-    const procedures = proceduresData.map(item => item.value);
-    const proceduresText = proceduresData.map(item => item.text);
-
-    const especialistas = especialistasData.map(item => item.value);
-    const especialistasText = especialistasData.map(item => item.text);
-
-    const patients = patientsData.map(item => item.value);
-    const patientsText = patientsData.map(item => item.text);
-
-    const datos = {
-      fechaElaboracion,
-      tipoFactura,
-      entity,
-      centroCosto,
-      procedures,
-      especialistas,
-      patients,
-      fechasProcedimiento,
-      metodoPago,
-      fechaVencimiento
-    };
-
-    let htmlContent = `
-    <div style="text-align: left;">
-      <p><strong>Fecha de Elaboración:</strong> ${fechaElaboracion}</p>
-      <p><strong>Tipo de Factura:</strong> ${tipoFactura}</p>
-      <p><strong>Entidad:</strong> ${entity}</p>
-      <p><strong>Centro de Costo:</strong> ${centroCosto}</p>
-      <p><strong>Procedimientos:</strong> ${proceduresText.join(', ')}</p>
-      <p><strong>Especialistas:</strong> ${especialistasText.join(', ')}</p>
-      <p><strong>Pacientes:</strong> ${patientsText.join(', ')}</p>
-      <p><strong>Fechas de Procedimiento:</strong> ${fechasProcedimiento}</p>
-      <p><strong>Método de Pago:</strong> ${metodoPago}</p>
-      <p><strong>Fecha de Vencimiento:</strong> ${fechaVencimiento}</p>
-    </div>
-  `;
-
-    Swal.fire({
-      title: 'Resumen factura',
-      html: htmlContent,
-      icon: 'info',
-      confirmButtonText: 'Confirmar',
-      confirmButtonColor: '#132030',
-      width: '600px'
-    }).then((res) => {
-      if (res.isConfirmed) {
-        window.location.reload();
-      }
-    });
-
-    return datos;
-  }
-  const finishStep = document.getElementById('finishStep');
-  finishStep.addEventListener("click", capturarDatos);
-
   // document.addEventListener("DOMContentLoaded", function() {
   //   cargarImpuestosCargo();
   // });
@@ -975,10 +1012,6 @@
       const procedimientoId = fila.attr("data-procedimientoid");
 
 
-      console.log("numeroAutorizacion =>" + numeroAutorizacion);
-      console.log("facturaId =>" + facturaId);
-
-
 
       if (facturaId.is(":checked")) {
         if (numeroAutorizacion.val() === '') {
@@ -1004,7 +1037,6 @@
 
   function tabularDatosFacturaEntidad() {
     let datos = <?= $dataJsonSimuladaFacturas ?>;
-    console.log("datos =>" + datos);
     let keysData = Object.keys(datos);
 
 
@@ -1121,8 +1153,6 @@
 
     data.metodosPago = metodosPago;
 
-    console.log("DATA PARA GUARDAR");
-    console.log(data);
     // Swal.fire({ icon: 'success', title: 'Correcto', text: 'Factura generada correctamente'});
     // return data;
     $.ajax({
@@ -1132,7 +1162,6 @@
 
 
       success: function(response) {
-        console.log('Respuesta del servidor:', response);
         Swal.fire({
           icon: 'success',
           title: 'Correcto',
@@ -1159,23 +1188,15 @@
     let checkboxes = $('.checkbox_multiple_empresa');
     let valortotal = 0;
 
-    console.log("checkboxes");
-    console.log(checkboxes);
 
 
     // Usamos each de jQuery para iterar sobre los checkboxes
     checkboxes.each(function() {
       if (this.checked) {
         valortotal += Number($(this).val());
-        console.log("Iterando en calcularTotalSeleccionado" + Number($(this).val()));
-        console.log("valorSumar => " + valortotal);
-        console.log("valortotal => " + valortotal);
 
       }
     });
-
-    console.log("El json es: ");
-    console.log(obtenerJsonFacturasEmpresa());
 
 
     // Actualizar el total y el campo oculto
