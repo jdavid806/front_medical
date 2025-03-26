@@ -23,6 +23,9 @@ export const useExams = (patientId: string) => {
                 examStatesPromise,
             ]);
 
+            console.log('Examenes ordenados: ', data);
+
+
             data = data.filter(item => {
                 return item.is_active && item.patient_id == patientId
             }).map(exam => {

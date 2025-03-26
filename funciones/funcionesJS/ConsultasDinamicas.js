@@ -47,26 +47,22 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  // let nombrEntidad = data.social_security.entity.name;
-  let nombrEntidad = "test";
-
-  console.log("datos_Paciente:", data);
-  
+  let nombrEntidad = data.social_security.entity.name;  
 
   return {
     datos_basicos: {
-      nombre: unirTextos(nombre),
-      documento: data.document_type + "-" + data.document_number,
-      edad: calcularEdad(data.date_of_birth),
-      telefono: data.whatsapp,
-      correo: data.email,
+      nombre: unirTextos(nombre) || "Desconocido",
+      documento: (data.document_type + "-" + data.document_number) || "Desconocido",
+      edad: calcularEdad(data.date_of_birth) || "Desconocido",
+      telefono: data.whatsapp || "Desconocido",
+      correo: data.email || "Desconocido",
     },
     datos_generales: {
-      direccion: data.address,
-      genero: traducirGenero(data.gender),
-      // entidad: nombrEntidad,
-      // "tipo afiliado": data.social_security.affiliate_type,
-      "fecha Consulta": fechaConsulta,
+      direccion: data.address || "Desconocido",
+      genero: traducirGenero(data.gender) || "Desconocido",
+      entidad: nombrEntidad || "Desconocido",
+      "tipo afiliado": data.social_security?.affiliate_type || "Desconocido",
+      "fecha Consulta": fechaConsulta || "Desconocido",
     },
   };
 }

@@ -1385,7 +1385,7 @@ include '../modals/NewCompanionModal.php';
             document.getElementById('productPrice').value = '';
 
             if (productPrice && productQuantity && subtotal) {
-                addRowToProductTable([product.name, productPrice, productQuantity, product.taxes ? product.taxes[0].percentage : 0, subtotal], tableBodyId);
+                addRowToProductTable([productId, product.name, productPrice, productQuantity, product.taxes ? product.taxes[0].percentage : 0, subtotal], tableBodyId);
             } else {
                 alert('Por favor, completa todos los campos correctamente.');
             }
@@ -1436,6 +1436,9 @@ include '../modals/NewCompanionModal.php';
     }
 
     function addRowToProductTable(values, tableBodyId) {
+
+        console.log("add product: ", values);
+
         const tableBody = document.getElementById(tableBodyId);
         const summaryTableBody = document.getElementById('summaryProductsTableBody'); // Nueva tabla
         const rowCount = tableBody.rows.length + 1;
@@ -1447,6 +1450,7 @@ include '../modals/NewCompanionModal.php';
         <td class="small">${values[2]}</td>
         <td class="small">${values[3]}</td>
         <td class="small">${values[4]}</td>
+        <td class="small">${values[5]}</td>
         <td class="small"><i class="far fa-trash-alt text-danger" onclick="removeRow(this)"></i></td>
     `;
         tableBody.appendChild(row);
@@ -1699,7 +1703,7 @@ include '../modals/NewCompanionModal.php';
                     productDataMap[product.id] = {
                         name: attributes.name,
                         price: entitySwitch.checked ? attributes.copayment : attributes.sale_price,
-                        taxes: product.taxes // Suponiendo que 'taxes' está en el objeto product
+                        taxes: product.taxes
                     };
                 } else {
                     console.error('El producto o sus atributos son undefined:', product);

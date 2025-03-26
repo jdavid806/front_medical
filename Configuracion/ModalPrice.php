@@ -27,6 +27,7 @@
                                     <option value="" disabled selected>Seleccionar...</option>
                                     <option value="PROCEDURE">Procedimiento</option>
                                     <option value="CONSULTATION">Consulta</option>
+                                    <option value="LABORATORY">Laboratorio</option>
                                 </select>
                             </div>
                             <div class="col-12" style="display: none;" id="examTypeSection">
@@ -35,21 +36,21 @@
                                     <option value="" disabled selected>Seleccionar...</option>
                                 </select>
                             </div>
-                            <div class="col-6">
+                            <div class="col-6" id="priceSection">
                                 <label class="form-label" for="sale_price">Precio público</label>
                                 <input class="form-control" id="sale_price" type="number" placeholder="Precio público"
-                                    name="sale_price" required>
+                                    name="sale_price">
                             </div>
-                            <div class="col-6">
+                            <div class="col-6" id="copagoSection">
                                 <label class="form-label" for="copago">Precio Copago</label>
                                 <input class="form-control" id="copago" type="number" placeholder="Precio Copago"
-                                    name="copago" required>
+                                    name="copago">
                             </div>
-                            <div class="col-6 form-check form-switch">
+                            <div class="col-6 form-check form-switch" id="toggleEntitiesSection">
                                 <input class="form-check-input" type="checkbox" id="toggleEntities">
                                 <label class="form-check-label" for="toggleEntities">Agregar entidades</label>
                             </div>
-                            <div class="col-6 form-check form-switch">
+                            <div class="col-6 form-check form-switch" id="toggleImpuestoSection">
                                 <input class="form-check-input" type="checkbox" id="toggleImpuesto">
                                 <label class="form-check-label" for="toggleImpuesto">Agregar Impuesto</label>
                             </div>
@@ -130,6 +131,18 @@
             } else {
                 examTypeSection.style.display = "none";
             }
+
+            if (this.value === "LABORATORY") {
+                document.getElementById("priceSection").style.display = "none";
+                document.getElementById("copagoSection").style.display = "none";
+                document.getElementById("toggleEntitiesSection").style.display = "none";
+                document.getElementById("toggleImpuestoSection").style.display = "none";
+            } else {
+                document.getElementById("priceSection").style.display = "block";
+                document.getElementById("copagoSection").style.display = "block";
+                document.getElementById("toggleEntitiesSection").style.display = "block";
+                document.getElementById("toggleImpuestoSection").style.display = "block";
+            }
         });
     });
 
@@ -195,13 +208,17 @@
         e.preventDefault();
 
         const productId = document.getElementById('product_id')?.value;
+        const attentionType = document.getElementById('attention_type').value;
+        const salePrice = attentionType === 'LABORATORY' ? 0 : document.getElementById('sale_price').value || 0;
+        const copayment = attentionType === 'LABORATORY' ? 0 : document.getElementById('copago').value || 0;
+
         let productData = {
             product: {
                 name: document.getElementById("name").value,
                 barcode: document.getElementById("curp").value,
-                attention_type: document.getElementById("attention_type").value,
-                sale_price: document.getElementById("sale_price").value,
-                copayment: document.getElementById("copago").value,
+                attention_type: attentionType,
+                sale_price: salePrice,
+                copayment: copayment,
                 tax_charge_id: document.getElementById("taxProduct_type").value,
                 exam_type_id: document.getElementById("exam_type_id").value,
             },

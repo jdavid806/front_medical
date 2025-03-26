@@ -11,6 +11,7 @@ export const useExams = patientId => {
     try {
       const [dataPromise, examTypesPromise, examStatesPromise] = [examOrderService.getAll(), examTypeService.getAll(), examOrderStateService.getAll()];
       let [data, examTypes, examStates] = await Promise.all([dataPromise, examTypesPromise, examStatesPromise]);
+      console.log('Examenes ordenados: ', data);
       data = data.filter(item => {
         return item.is_active && item.patient_id == patientId;
       }).map(exam => {

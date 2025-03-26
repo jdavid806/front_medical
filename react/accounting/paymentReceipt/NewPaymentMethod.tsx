@@ -1,19 +1,13 @@
 import React, { useState } from "react";
-import {
-    TabView,
-    TabPanel,
-    DataTable,
-    Column,
-    InputText,
-    InputSwitch,
-    Dropdown,
-    Button,
-    Calendar,
-    MultiSelect,
-    FilterMatchMode,
-    FilterOperator
-} from "primereact";
-
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { InputSwitch } from 'primereact/inputswitch';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { MultiSelect } from 'primereact/multiselect';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { TabPanel, TabView } from "primereact/tabview";
 
 interface PaymentMethod {
     id: number;
@@ -31,26 +25,37 @@ interface DropdownOption {
     label: string;
     value: string;
 }
-interface NewMethod {
-    nombre: string;
-    codigo: string;
-    cuentaContable: string;
-    medioPago: string[]; // Cambiado de never[] a string[]
-}
+
 export const NewPaymentMethod: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState(0);
+
+    // Estados para General
     const [editingRow, setEditingRow] = useState<number | null>(null);
     const [editingField, setEditingField] = useState<string | null>(null);
     const [editingValue, setEditingValue] = useState<string>('');
-    const [newMethod, setNewMethod] = useState<NewMethod>({
-        nombre: '',
-        codigo: '',
-        cuentaContable: '',
-        medioPago: [] // Ahora es un string[] vacío en lugar de never[]
+
+    // Estados para Pago en línea
+    const [editingRowOnline, setEditingRowOnline] = useState<number | null>(null);
+    const [editingFieldOnline, setEditingFieldOnline] = useState<string | null>(null);
+    const [editingValueOnline, setEditingValueOnline] = useState<string>('');
+
+    // Filtros para General
+    const [filters, setFilters] = useState<{
+        global: { value: string | null; matchMode: FilterMatchMode };
+        codigo: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
+        nombre: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
+        relacionCon: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
+        cuentaContable: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
+    }>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        codigo: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        nombre: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+        relacionCon: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
+        cuentaContable: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     });
 
-    // Filtros para la tabla
-    const [filters, setFilters] = useState<{
+    // Filtros para Pago en línea
+    const [filtersOnline, setFiltersOnline] = useState<{
         global: { value: string | null; matchMode: FilterMatchMode };
         codigo: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
         nombre: { operator: FilterOperator; constraints: { value: string | null; matchMode: FilterMatchMode }[] };
@@ -82,7 +87,7 @@ export const NewPaymentMethod: React.FC = () => {
         { label: 'Débito automático', value: 'debito_automatico' }
     ];
 
-    // Datos mock
+    // Datos mock para General
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
         {
             id: 1,
@@ -103,20 +108,34 @@ export const NewPaymentMethod: React.FC = () => {
             medioPago: ["tarjeta_credito"],
             enUso: true,
             fechaCreacion: "2023-02-20"
-        },
-        {
-            id: 3,
-            codigo: "TD",
-            nombre: "Tarjeta Débito",
-            relacionCon: "cliente",
-            cuentaContable: "1110501 - Billetera privada",
-            medioPago: ["tarjeta_debito", "transferencia"],
-            enUso: false,
-            fechaCreacion: "2023-03-10"
         }
     ]);
 
-    // Funciones para edición de celdas
+    // Datos mock para Pago en línea
+    const [paymentMethodsOnline, setPaymentMethodsOnline] = useState<PaymentMethod[]>([
+        {
+            id: 1,
+            codigo: "PAY",
+            nombre: "PayPal",
+            relacionCon: "cliente",
+            cuentaContable: "11050502 - Cuentas en línea",
+            medioPago: ["transferencia"],
+            enUso: true,
+            fechaCreacion: "2023-04-15"
+        },
+        {
+            id: 2,
+            codigo: "MP",
+            nombre: "Mercado Pago",
+            relacionCon: "cliente",
+            cuentaContable: "13050502 - Clientes en línea",
+            medioPago: ["tarjeta_credito", "tarjeta_debito"],
+            enUso: true,
+            fechaCreacion: "2023-05-20"
+        }
+    ]);
+
+    // Funciones para edición de celdas (General)
     const onCellClick = (rowIndex: number, field: string, value: any) => {
         setEditingRow(rowIndex);
         setEditingField(field);
@@ -131,6 +150,22 @@ export const NewPaymentMethod: React.FC = () => {
         setEditingField(null);
     };
 
+    // Funciones para edición de celdas (Pago en línea)
+    const onCellClickOnline = (rowIndex: number, field: string, value: any) => {
+        setEditingRowOnline(rowIndex);
+        setEditingFieldOnline(field);
+        setEditingValueOnline(value);
+    };
+
+    const onCellEditCompleteOnline = (e: { rowIndex: number, field: string, value: any }) => {
+        const updatedData = [...paymentMethodsOnline];
+        updatedData[e.rowIndex][e.field] = e.value;
+        setPaymentMethodsOnline(updatedData);
+        setEditingRowOnline(null);
+        setEditingFieldOnline(null);
+    };
+
+    // Renderizado de celdas editables (General)
     const renderCellEditor = (rowData: PaymentMethod, field: string, rowIndex: number) => {
         if (editingRow === rowIndex && editingField === field) {
             return (
@@ -146,6 +181,23 @@ export const NewPaymentMethod: React.FC = () => {
         return <span onClick={() => onCellClick(rowIndex, field, rowData[field])}>{rowData[field]}</span>;
     };
 
+    // Renderizado de celdas editables (Pago en línea)
+    const renderCellEditorOnline = (rowData: PaymentMethod, field: string, rowIndex: number) => {
+        if (editingRowOnline === rowIndex && editingFieldOnline === field) {
+            return (
+                <InputText
+                    autoFocus
+                    value={editingValueOnline}
+                    onChange={(e) => setEditingValueOnline(e.target.value)}
+                    onBlur={() => onCellEditCompleteOnline({ rowIndex, field, value: editingValueOnline })}
+                    onKeyPress={(e) => e.key === 'Enter' && onCellEditCompleteOnline({ rowIndex, field, value: editingValueOnline })}
+                />
+            );
+        }
+        return <span onClick={() => onCellClickOnline(rowIndex, field, rowData[field])}>{rowData[field]}</span>;
+    };
+
+    // Templates comunes para ambas tablas
     const relacionConBodyTemplate = (rowData: PaymentMethod) => {
         const option = relacionOptions.find(opt => opt.value === rowData.relacionCon);
         return option ? option.label : rowData.relacionCon;
@@ -166,44 +218,18 @@ export const NewPaymentMethod: React.FC = () => {
         return new Date(rowData.fechaCreacion).toLocaleDateString('es-CO');
     };
 
+    // Handlers para switches (General)
     const onEnUsoChange = (rowIndex: number, value: boolean) => {
         const updatedData = [...paymentMethods];
         updatedData[rowIndex].enUso = value;
         setPaymentMethods(updatedData);
     };
 
-    // Funciones para el formulario de nuevo método
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setNewMethod(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleMultiSelectChange = (e: { value: string[] }) => {
-        setNewMethod(prev => ({
-            ...prev,
-            medioPago: e.value
-        }));
-    };
-    const handleAddMethod = () => {
-        const newId = Math.max(...paymentMethods.map(p => p.id), 0) + 1;
-        const newPaymentMethod: PaymentMethod = {
-            id: newId,
-            codigo: newMethod.codigo,
-            nombre: newMethod.nombre,
-            relacionCon: "proveedor",
-            cuentaContable: newMethod.cuentaContable,
-            medioPago: newMethod.medioPago,
-            enUso: true,
-            fechaCreacion: new Date().toISOString().split('T')[0]
-        };
-
-        setPaymentMethods([...paymentMethods, newPaymentMethod]);
-        setNewMethod({
-            nombre: '',
-            codigo: '',
-            cuentaContable: '',
-            medioPago: []
-        });
+    // Handlers para switches (Pago en línea)
+    const onEnUsoChangeOnline = (rowIndex: number, value: boolean) => {
+        const updatedData = [...paymentMethodsOnline];
+        updatedData[rowIndex].enUso = value;
+        setPaymentMethodsOnline(updatedData);
     };
 
     return (
@@ -215,8 +241,8 @@ export const NewPaymentMethod: React.FC = () => {
 
                 <div className="card-body">
                     <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-                        {/* Pestaña de Métodos Existentes */}
-                        <TabPanel header="Métodos de Pago" leftIcon="pi pi-list me-2">
+                        {/* Pestaña General */}
+                        <TabPanel header="General" leftIcon="pi pi-list me-2">
                             <div className="mb-4">
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <span className="p-input-icon-left w-100">
@@ -297,7 +323,7 @@ export const NewPaymentMethod: React.FC = () => {
 
                                     <Column
                                         field="medioPago"
-                                        header="Medio de Pago"
+                                        header="Medio de pago D. Electrónico"
                                         body={medioPagoBodyTemplate}
                                     />
 
@@ -311,71 +337,99 @@ export const NewPaymentMethod: React.FC = () => {
                             </div>
                         </TabPanel>
 
-                        {/* Pestaña para agregar nuevo método */}
-                        <TabPanel header="Nuevo Método" leftIcon="pi pi-plus me-2">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="mb-3">
-                                        <label htmlFor="nombre" className="form-label">Nombre del Método</label>
+                        {/* Pestaña Pago en línea */}
+                        <TabPanel header="Pago en línea" leftIcon="pi pi-globe me-2">
+                            <div className="mb-4">
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <span className="p-input-icon-left w-100">
+                                        <i className="pi pi-search" />
                                         <InputText
-                                            id="nombre"
-                                            name="nombre"
-                                            value={newMethod.nombre}
-                                            onChange={handleInputChange}
+                                            placeholder="Buscar en todos los campos..."
                                             className="w-100"
-                                            placeholder="Ej: Transferencia Bancaria"
+                                            onInput={(e) => {
+                                                const target = e.target as HTMLInputElement;
+                                                setFiltersOnline({
+                                                    ...filtersOnline,
+                                                    global: { value: target.value, matchMode: FilterMatchMode.CONTAINS }
+                                                });
+                                            }}
                                         />
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <label htmlFor="codigo" className="form-label">Código</label>
-                                        <InputText
-                                            id="codigo"
-                                            name="codigo"
-                                            value={newMethod.codigo}
-                                            onChange={handleInputChange}
-                                            className="w-100"
-                                            placeholder="Ej: TRF"
-                                        />
-                                    </div>
+                                    </span>
                                 </div>
 
-                                <div className="col-md-6">
-                                    <div className="mb-3">
-                                        <label htmlFor="cuentaContable" className="form-label">Cuenta Contable</label>
-                                        <InputText
-                                            id="cuentaContable"
-                                            name="cuentaContable"
-                                            value={newMethod.cuentaContable}
-                                            onChange={handleInputChange}
-                                            className="w-100"
-                                            placeholder="Ej: 11050501 - Caja general"
-                                        />
-                                    </div>
+                                <DataTable
+                                    value={paymentMethodsOnline}
+                                    paginator
+                                    rows={5}
+                                    rowsPerPageOptions={[5, 10, 25]}
+                                    filters={filtersOnline}
+                                    globalFilterFields={['codigo', 'nombre', 'relacionCon', 'cuentaContable']}
+                                    emptyMessage="No se encontraron métodos de pago en línea"
+                                    editMode="cell"
+                                    responsiveLayout="scroll"
+                                    className="border-0"
+                                >
+                                    <Column
+                                        field="enUso"
+                                        header="En Uso"
+                                        body={(rowData, { rowIndex }) => (
+                                            <InputSwitch
+                                                checked={rowData.enUso}
+                                                onChange={(e) => onEnUsoChangeOnline(rowIndex, e.value)}
+                                            />
+                                        )}
+                                        style={{ width: '90px' }}
+                                    />
 
-                                    <div className="mb-3">
-                                        <label htmlFor="medioPago" className="form-label">Medios de Pago</label>
-                                        <MultiSelect
-                                            id="medioPago"
-                                            value={newMethod.medioPago}
-                                            options={medioPagoOptions}
-                                            onChange={handleMultiSelectChange}
-                                            placeholder="Seleccione medios"
-                                            className="w-100"
-                                            filter
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                                    <Column
+                                        field="codigo"
+                                        header="Código"
+                                        filter
+                                        filterPlaceholder="Buscar código"
+                                        body={(rowData, { rowIndex }) => renderCellEditorOnline(rowData, 'codigo', rowIndex)}
+                                        sortable
+                                    />
 
-                            <div className="d-flex justify-content-end">
-                                <Button
-                                    label="Agregar Método"
-                                    icon="pi pi-check"
-                                    className="p-button-primary"
-                                    onClick={handleAddMethod}
-                                    disabled={!newMethod.nombre || !newMethod.codigo}
-                                />
+                                    <Column
+                                        field="nombre"
+                                        header="Nombre"
+                                        filter
+                                        filterPlaceholder="Buscar nombre"
+                                        body={(rowData, { rowIndex }) => renderCellEditorOnline(rowData, 'nombre', rowIndex)}
+                                        sortable
+                                    />
+
+                                    <Column
+                                        field="relacionCon"
+                                        header="Relación con"
+                                        filter
+                                        filterPlaceholder="Buscar relación"
+                                        body={relacionConBodyTemplate}
+                                        sortable
+                                    />
+
+                                    <Column
+                                        field="cuentaContable"
+                                        header="Cuenta Contable"
+                                        filter
+                                        filterPlaceholder="Buscar cuenta"
+                                        body={(rowData, { rowIndex }) => renderCellEditorOnline(rowData, 'cuentaContable', rowIndex)}
+                                        sortable
+                                    />
+
+                                    <Column
+                                        field="medioPago"
+                                        header="Medio de pago D. Electrónico"
+                                        body={medioPagoBodyTemplate}
+                                    />
+
+                                    <Column
+                                        field="fechaCreacion"
+                                        header="Fecha Creación"
+                                        body={fechaBodyTemplate}
+                                        sortable
+                                    />
+                                </DataTable>
                             </div>
                         </TabPanel>
                     </TabView>
@@ -383,7 +437,10 @@ export const NewPaymentMethod: React.FC = () => {
 
                 <div className="card-footer bg-light">
                     <div className="d-flex justify-content-between align-items-center">
-                        <small className="text-muted">Total métodos: {paymentMethods.length}</small>
+                        <small className="text-muted">
+                            Total métodos: {paymentMethods.length} |
+                            Total métodos en línea: {paymentMethodsOnline.length}
+                        </small>
                     </div>
                 </div>
             </div>

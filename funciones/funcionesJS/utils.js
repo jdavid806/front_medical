@@ -54,11 +54,11 @@ async function guardarDatos(url, datos) {
       body: JSON.stringify(datos),
     });
 
-    const resultado = await respuesta.json(); // Leer la respuesta JSON
-
     if (!respuesta.ok) {
-      throw new Error(resultado.message || `Error ${respuesta.status}: ${respuesta.statusText}`);
+      throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
     }
+
+    const resultado = await respuesta.json();
 
     Swal.fire({
       icon: "success",
@@ -66,10 +66,7 @@ async function guardarDatos(url, datos) {
       text: "Los datos se han guardado correctamente.",
       timer: 2000,
       showConfirmButton: false,
-    }).then(() => {
-      location.reload();
     });
-
     return resultado;
   } catch (error) {
     console.error("Error al guardar los datos:", error);
@@ -77,14 +74,13 @@ async function guardarDatos(url, datos) {
     Swal.fire({
       icon: "error",
       title: "Error al guardar",
-      text: error.message || "Hubo un problema al guardar los datos.",
+      text: "Hubo un problema al guardar los datos.",
       confirmButtonText: "Aceptar",
     });
 
-    return null;
+    throw error;
   }
 }
-
 
 async function actualizarDatos(url, datos) {
   try {
@@ -202,6 +198,15 @@ function traducirGenero(genero) {
   };
 
   return mapaGeneros[genero.toUpperCase()] || "Desconocido";
+}
+
+function traducirTipoExamene(examen) {
+  const mapaTiposExamenes = {
+    LABORATORY: "Laboratorio",
+    IMAGING: "Imagenología",
+  };
+
+  return mapaTiposExamenes[examen.toUpperCase()] || "Desconocido";
 }
 
 function getOrdenState(state) {

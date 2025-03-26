@@ -347,52 +347,45 @@ async function generarFormatoReceta(ordenId) {
   let url = obtenerRutaPrincipal() + `/medical/exam-recipes/${ordenId}`;
   let datosExamen = await obtenerDatos(url);
 
-  console.log(datosExamen);
-  
-
-  // let contenido = `
-  //   <div class="container border rounded shadow-sm text-start">
-  //       <h3 class="text-primary text-center">Solicitud de Exámenes</h3>
-  //       <h4 class="text-secondary">Datos del Paciente:</h4>
-  //       <p><strong>ID:</strong> ${datosExamen.patient_id}</p>
-  //       <p><strong>Nombre:</strong> (Nombre del paciente aquí)</p>
-  //       <h4 class="text-secondary">Datos del Médico:</h4>
-  //       <p><strong>Nombre:</strong> ${datosExamen.user.first_name} ${datosExamen.user.middle_name} ${datosExamen.user.last_name} ${datosExamen.user.second_last_name}</p>
-  //       <p><strong>Email:</strong> ${datosExamen.user.email}</p>
-  //       <p><strong>Teléfono:</strong> ${datosExamen.user.phone}</p>
-        
-  //       <h4 class="text-secondary">Exámenes Solicitados:</h4>
-  //   `;
-
-  // if (datosExamen.details.length > 0) {
-  //   datosExamen.details.forEach((detalle, index) => {
-  //     contenido += `
-  //           <div class="card exam-card mb-2">
-  //               <div class="card-body">
-  //                   <h6 class="card-title">${detalle.exam_type.name}</h6>
-  //                   <p class="card-text">${detalle.exam_type.description}</p>
-  //                   <strong>Detalles:</strong>
-  //                   <p>${
-  //                     detalle.exam_type.form_config.values
-  //                       ? Object.values(
-  //                           detalle.exam_type.form_config.values
-  //                         ).join("<br>")
-  //                       : "Sin detalles"
-  //                   }</p>
-  //               </div>
-  //           </div>`;
-  //   });
-  // } else {
-  //   contenido += `<p class="text-muted fst-italic">No hay exámenes en esta solicitud</p>`;
-  // }
-
-  // contenido += `
-  //   <div class="text-end mt-3">
-  //       <p><small>Fecha de solicitud: ${new Date(
-  //         datosExamen.created_at
-  //       ).toLocaleDateString()}</small></p>
-  //   </div>
-  //   </div>`;
+  let contenido = `
+  <div class="container border rounded shadow-sm p-3">
+    <h4 class="text-secondary text-start mb-3">Exámenes Solicitados:</h4>
+    <div class="card exam-card mb-3 p-2">
+      <table style="border-collapse: collapse; width: 100%;">
+        <thead style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+          <tr>
+            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: left;">Nombre</th>
+            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: left;">Tipo</th>
+            <th style="border: 1px solid #dee2e6; padding: 8px; text-align: left;">Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            datosExamen.details.length > 0
+              ? datosExamen.details
+                  .map(
+                    (detalle) => `
+              <tr>
+                <td style="border: 1px black; padding: 8px;">${
+                  detalle.exam_type.name
+                }</td>
+                <td style="border: 1px black; padding: 8px;">${traducirTipoExamene(
+                  detalle.exam_type.type
+                )}</td>
+                <td style="border: 1px black; padding: 8px;">${
+                  detalle.exam_type.description
+                }</td>
+              </tr>
+            `
+                  )
+                  .join("")
+              : `<tr><td colspan="3" style="border: 1px solid #dee2e6; padding: 8px; text-align: center; color: #6c757d; font-style: italic;">No hay exámenes en esta solicitud</td></tr>`
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+`;
 
   let datosPaciente = await consultarDatosPaciente(
     datosExamen.patient_id,
