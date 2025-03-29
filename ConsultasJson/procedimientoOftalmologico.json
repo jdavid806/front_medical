@@ -58,15 +58,17 @@
       },
       {
         "tab": "Verificación",
-        "card":[
+        "card": [
           {
-            "title":"Pre anestesia",
-            "fields":[
+            "title": "Pre anestesia",
+            "class": "col-12",
+            "fields": [
               {
                 "id": "confirmacionIdentidad",
                 "label": "¿Se ha confirmado la identidad del paciente?",
                 "type": "select",
                 "name": "confirmacionIdentidad",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -87,6 +89,7 @@
                 "label": "¿Se ha marcado el sitio quirurgico?",
                 "type": "select",
                 "name": "marcadoSitioQuirurgico",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -107,6 +110,7 @@
                 "label": "¿Se ha comprobado la disponibilidad de anestesia y medicación?",
                 "type": "select",
                 "name": "disponibilidadAnestesiaMedicacion",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -127,6 +131,7 @@
                 "label": "¿Se ha colocado el pulsioximetro al paciente?",
                 "type": "select",
                 "name": "pulsioximetro",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -147,6 +152,7 @@
                 "label": "¿El paciente tiene alergias conocidas?",
                 "type": "select",
                 "name": "alergiasConocidas",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -167,6 +173,7 @@
                 "label": "Vía aérea dificil/riesgo de aspiración",
                 "type": "select",
                 "name": "viaAspiracion",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -187,6 +194,7 @@
                 "label": "¿En este caso, hay instrumental y equipos de ayuda disponible?",
                 "type": "select",
                 "name": "instrumentalAyudaDisponible",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -207,6 +215,7 @@
                 "label": "Riesgo de hemorragia > 500 ml",
                 "type": "select",
                 "name": "riesgoHemorragia",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -227,6 +236,7 @@
                 "label": "¿En este caso, se ha previsto la disponibilidad de sangre, plasma u otros fluidos?",
                 "type": "select",
                 "name": "disponibilidadSangre",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -245,15 +255,17 @@
             ]
           }
         ],
-        "card2":[
+        "card2": [
           {
             "title": "Pre Procedimiento",
-            "fields":[
+            "class": "col-12",
+            "fields": [
               {
                 "id": "presentacionEquipo",
                 "label": "Confirmar que todos los miembros del equipo programados se hayan presentado por su nombre y funcion",
                 "type": "select",
                 "name": "presentacionEquipo",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -274,6 +286,7 @@
                 "label": "Confirmar indentidad del paciente, procedimiento y sitio quirurgico",
                 "type": "select",
                 "name": "confirmarIdentidadProcedimientoSitio",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -294,6 +307,7 @@
                 "label": "Confirmar que todos los miembros del equipo han cumplido correctamente con el",
                 "type": "select",
                 "name": "cumplimiento",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -314,6 +328,7 @@
                 "label": "Se ha administrado profilaxis con antibioticos",
                 "type": "select",
                 "name": "administracionProfilaxis",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -334,6 +349,7 @@
                 "label": "¿Cuales son los pasos criticos o inesperados?",
                 "type": "select",
                 "name": "pasosCriticos",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -354,6 +370,7 @@
                 "label": "Duracion de la operacion",
                 "type": "select",
                 "name": "duracionOperacion",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -374,6 +391,7 @@
                 "label": "Perdida de sangre prevista",
                 "type": "select",
                 "name": "perdidaSangrePrevista",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -394,6 +412,7 @@
                 "label": "¿El paciente presenta algún problema en especifico?",
                 "type": "select",
                 "name": "problemaEspecifico",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -414,6 +433,7 @@
                 "label": "Se ha confirmado la esterilidad de la ropa",
                 "type": "select",
                 "name": "esterilidadRopa",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -434,6 +454,7 @@
                 "label": "¿Hay dudas o problemas relacionados con ellos?",
                 "type": "select",
                 "name": "dudasProblemas",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -454,6 +475,7 @@
                 "label": "Pueden visualizarse las imagenes diagnosticas esenciales?",
                 "type": "select",
                 "name": "imagenesDiagnosticas",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -475,12 +497,14 @@
         "card3": [
           {
             "title": "Pre salida Quirofano",
+            "class": "col-12",
             "fields": [
               {
                 "id": "nombreProcedimiento",
                 "label": "El nombre del procedimiento",
                 "type": "select",
                 "name": "nombreProcedimiento",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -501,6 +525,7 @@
                 "label": "El recuento de instrumentos",
                 "type": "select",
                 "name": "recuentoInstrumentos",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -521,6 +546,7 @@
                 "label": "El etiquetado de las muestras (lectura de etiquetas en voz alta, incluido el nombre del paciente)",
                 "type": "select",
                 "name": "etiquetadoMuestras",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -541,6 +567,7 @@
                 "label": "Problemas que resolver relacionados al instrumental y/o equipos",
                 "type": "select",
                 "name": "problemasInstrumentalEquipos",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "si",
@@ -570,7 +597,115 @@
         "tab": "Escala aldrete",
         "card": [
           {
-            "title": ""
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "actividadMuscular",
+                "label": "Actividad Muscular",
+                "type": "select",
+                "name": "actividadMuscular",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "2",
+                    "text": "Movimiento Vohmtaño de 4 extremidades"
+                  },
+                  {
+                    "value": "1",
+                    "text": "Movimiento Vohmtaño de 2 extremidades"
+                  },
+                  {
+                    "value": "0",
+                    "text": "Inmovil"
+                  }
+                ]
+              },
+              {
+                "id": "respiratorios",
+                "label": "Respiratorios",
+                "type": "select",
+                "name": "respiratorios",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "2",
+                    "text": "Respiración amplia capaz de toser"
+                  },
+                  {
+                    "value": "1",
+                    "text": "Respiración limitada"
+                  },
+                  {
+                    "value": "0",
+                    "text": "Apnea"
+                  }
+                ]
+              },
+              {
+                "id": "circulatorios",
+                "label": "Circulatorios",
+                "type": "select",
+                "name": "circulatorios",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "2",
+                    "text": "Ta +20 mmhg del nivel"
+                  },
+                  {
+                    "value": "1",
+                    "text": "Ta entre 20 - 50 mmhg del nivel"
+                  },
+                  {
+                    "value": "0",
+                    "text": "Ta +50 mmhg del nivel"
+                  }
+                ]
+              },
+              {
+                "id": "estadoConciencia",
+                "label": "Estado de Conciencia",
+                "type": "select",
+                "name": "estadoConciencia",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "2",
+                    "text": "Completamente despierto"
+                  },
+                  {
+                    "value": "1",
+                    "text": "Responde si llamado"
+                  },
+                  {
+                    "value": "0",
+                    "text": "No responde"
+                  }
+                ]
+              },
+              {
+                "id": "colorMucosas",
+                "label": "Color de mucosas",
+                "type": "select",
+                "name": "colorMucosas",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "2",
+                    "text": "Rosadas"
+                  },
+                  {
+                    "value": "1",
+                    "text": "Pálido, Icénico"
+                  },
+                  {
+                    "value": "0",
+                    "text": "Cianótico"
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -628,7 +763,7 @@
               {
                 "id": "descripcionCirugia",
                 "label": "Descripción de la cirugía",
-                "type": "number",
+                "type": "textarea",
                 "name": "descripcionCirugia"
               }
             ]
@@ -646,21 +781,21 @@
                 "label": "",
                 "type": "number",
                 "name": "tensionA",
-                "class": "col-6"
+                "class": "col-4"
               },
               {
                 "id": "tensionB",
                 "label": "",
                 "type": "number",
                 "name": "tensionB",
-                "class": "col-6"
+                "class": "col-4"
               },
               {
                 "id": "pass",
                 "label": "",
                 "type": "number",
                 "name": "pass",
-                "class": "col-6"
+                "class": "col-4"
               }
             ]
           }
@@ -688,36 +823,22 @@
         ],
         "card3": [
           {
-            "title": "Ayuno",
+            "title": "",
+            "class": "col-12",
             "fields": [
               {
                 "id": "ayuno",
                 "label": "Ayuno",
-                "type": "select",
+                "type": "checkbox",
                 "name": "ayuno",
-                "options": [
-                  {
-                    "value": "si",
-                    "text": "Si"
-                  },
-                  {
-                    "value": "no",
-                    "text": "No"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card4": [
-          {
-            "title": "",
-            "fields": [
+                "class": "col-12"
+              },
               {
                 "id": "anestesia",
                 "label": "Anestesia",
                 "type": "select",
                 "name": "anestesia",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "local",
@@ -742,6 +863,7 @@
                 "label": "Respiracion",
                 "type": "select",
                 "name": "respiracion",
+                "class": "col-6",
                 "options": [
                   {
                     "value": "espontanea",
@@ -760,7 +882,7 @@
             ]
           }
         ],
-        "card5": [
+        "card4": [
           {
             "title": "",
             "class": "col-12",
@@ -809,7 +931,7 @@
                   },
                   {
                     "id": "calibreVenosa1",
-                    "label": "Descripción",
+                    "label": "Calibre",
                     "type": "numer",
                     "name": "calibreVenosa1"
                   }
@@ -830,7 +952,7 @@
                   },
                   {
                     "id": "calibreVenosa2",
-                    "label": "Descripción",
+                    "label": "Calibre",
                     "type": "numer",
                     "name": "calibreVenosa2"
                   }
@@ -851,7 +973,7 @@
                   },
                   {
                     "id": "calibrePvc",
-                    "label": "Descripción",
+                    "label": "Calibre",
                     "type": "numer",
                     "name": "calibrePvc"
                   }
@@ -872,7 +994,7 @@
                   },
                   {
                     "id": "calibreLArterial",
-                    "label": "Descripción",
+                    "label": "Calibre",
                     "type": "numer",
                     "name": "calibreLArterial"
                   }
@@ -893,7 +1015,7 @@
                   },
                   {
                     "id": "calibreSwanGanz",
-                    "label": "Descripción",
+                    "label": "Calibre",
                     "type": "numer",
                     "name": "calibreSwanGanz"
                   }
@@ -947,25 +1069,29 @@
                 "id": "posicion",
                 "label": "Posición",
                 "type": "textarea",
-                "name": "posicion"
+                "name": "posicion",
+                "class": "col-6"
               },
               {
                 "id": "ekg",
                 "label": "EKG",
                 "type": "textarea",
-                "name": "ekg"
+                "name": "ekg",
+                "class": "col-6"
               },
               {
                 "id": "temp",
                 "label": "Temp",
                 "type": "textarea",
-                "name": "temp"
+                "name": "temp",
+                "class": "col-6"
               },
               {
                 "id": "cam",
                 "label": "Cam",
                 "type": "textarea",
-                "name": "cam"
+                "name": "cam",
+                "class": "col-6"
               }
             ]
           }
@@ -1021,296 +1147,6 @@
                 "label": "",
                 "type": "textarea",
                 "name": "tratamiento"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Signos vitales",
-        "card": [
-          {
-            "title": "",
-            "fields": [
-              {
-                "id": "peso",
-                "label": "Peso Corporal [Kg]",
-                "type": "number",
-                "name": "peso"
-              },
-              {
-                "id": "altura",
-                "label": "Altura [cm]",
-                "type": "number",
-                "name": "altura"
-              },
-              {
-                "id": "imc",
-                "label": "Índice de Masa Corporal (IMC)",
-                "type": "number",
-                "name": "imc"
-              },
-              {
-                "id": "porcentajeGrasaCorporal",
-                "label": "Porcentaje de Grasa Corporal [%]",
-                "type": "number",
-                "name": "porcentajeGrasaCorporal"
-              }
-            ]
-          }
-        ],
-        "card2": [
-          {
-            "title": "",
-            "fields": [
-              {
-                "id": "presionArterialDiastolica",
-                "label": "Presión Arterial Diastólica [mmHg]",
-                "type": "number",
-                "name": "presionArterialDiastolica"
-              },
-              {
-                "id": "tensionArterialMedia",
-                "label": "Tensión Arterial Media [mmHg]",
-                "type": "number",
-                "name": "tensionArterialMedia"
-              },
-              {
-                "id": "presionArterialSistolica",
-                "label": "Presión Arterial Sistólica [mmHg]",
-                "type": "number",
-                "name": "presionArterialSistolica"
-              },
-              {
-                "id": "saturacion",
-                "label": "Saturación de Oxígeno [%]",
-                "type": "number",
-                "name": "saturacion"
-              }
-            ]
-          }
-        ],
-        "card3": [
-          {
-            "title": "",
-            "fields": [
-              {
-                "id": "circunferenciaAbdominal",
-                "label": "Circunferencia Abdominal [cm]",
-                "type": "number",
-                "name": "circunferenciaAbdominal"
-              },
-              {
-                "id": "circunferenciaCintura",
-                "label": "Circunferencia de Cintura [cm]",
-                "type": "number",
-                "name": "circunferenciaCintura"
-              },
-              {
-                "id": "perimetroCefalico",
-                "label": "Perímetro Cefálico [cm]",
-                "type": "number",
-                "name": "perimetroCefalico"
-              }
-            ]
-          }
-        ],
-        "card4": [
-          {
-            "title": "",
-            "fields": [
-              {
-                "id": "frecuenciaRespiratoria",
-                "label": "Frecuencia Respiratoria [rpm]",
-                "type": "number",
-                "name": "frecuenciaRespiratoria"
-              },
-              {
-                "id": "frecuenciaCardiaca",
-                "label": "Frecuencia Cardíaca [lpm]",
-                "type": "number",
-                "name": "frecuenciaCardiaca"
-              },
-              {
-                "id": "temperatura",
-                "label": "Temperatura Corporal [°C]",
-                "type": "number",
-                "name": "temperatura"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Examen Físico",
-        "card": [
-          {
-            "title": "",
-            "class": "col-12",
-            "fields": [
-              {
-                "id": "cabezaCheck",
-                "class": "col-6",
-                "label": "Cabeza",
-                "type": "checkbox",
-                "name": "cabezaCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "cabezaText",
-                    "name": "cabezaText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "ojosCheck",
-                "class": "col-6",
-                "label": "Ojos",
-                "type": "checkbox",
-                "name": "ojosCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "ojosText",
-                    "name": "ojosText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "oidosCheck",
-                "class": "col-6",
-                "label": "Oídos",
-                "type": "checkbox",
-                "name": "oidosCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "oidosText",
-                    "name": "oidosText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "narizCheck",
-                "class": "col-6",
-                "label": "Nariz",
-                "type": "checkbox",
-                "name": "narizCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "narizText",
-                    "name": "narizText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "bocaFaringeCheck",
-                "class": "col-6",
-                "label": "Boca y Faringe",
-                "type": "checkbox",
-                "name": "bocaFaringeCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "bocaFaringeText",
-                    "name": "bocaFaringeText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "cuelloCheck",
-                "class": "col-6",
-                "label": "Cuello",
-                "type": "checkbox",
-                "name": "cuelloCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "cuelloText",
-                    "name": "cuelloText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "pielCheck",
-                "class": "col-6",
-                "label": "Piel",
-                "type": "checkbox",
-                "name": "pielCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "pielText",
-                    "name": "pielText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "sistemaNeurologicoCheck",
-                "class": "col-6",
-                "label": "Sistema Neurológico",
-                "type": "checkbox",
-                "name": "sistemaNeurologicoCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "sistemaNeurologicoText",
-                    "name": "sistemaNeurologicoText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "extremidadesSuperioresCheck",
-                "class": "col-6",
-                "label": "Extremidades Superiores",
-                "type": "checkbox",
-                "name": "extremidadesSuperioresCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "extremidadesSuperioresText",
-                    "name": "extremidadesSuperioresText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "extremidadesInferioresCheck",
-                "class": "col-6",
-                "label": "Extremidades Inferiores",
-                "type": "checkbox",
-                "name": "extremidadesInferioresCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "extremidadesInferioresText",
-                    "name": "extremidadesInferioresText",
-                    "label": ""
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card2": [
-          {
-            "title": "Observaciones",
-            "class": "col-12",
-            "fields": [
-              {
-                "id": "observacionesExamenFisico",
-                "label": "",
-                "type": "textarea",
-                "name": "observacionesExamenFisico"
               }
             ]
           }

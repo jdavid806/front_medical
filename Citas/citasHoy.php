@@ -164,12 +164,12 @@ foreach ($estados as $estado) {
                         </a>
                     </li>
 
-
                     <li class="nav-item ms-auto" role="presentation">
                         <a class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearCita">
                             <i class="fas fa-calendar-plus"></i> Nueva Cita
                         </a>
                     </li>
+
                     <!-- <li class="nav-item" role="presentation">
             <a class="nav-link" id="turnos-tab" data-bs-toggle="tab" href="#turnos" role="tab">
               <i class="fas fa-random"></i> Generar turno

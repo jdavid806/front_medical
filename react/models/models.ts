@@ -448,6 +448,17 @@ export interface ExamOrderDto {
     updated_at: string;
     exam_type?: ExamTypeDto;
     exam_order_state?: ExamOrderStateDto;
+    minio_id?: string;
+    items: ExamOrderItemDto[]
+}
+
+export interface ExamOrderItemDto {
+    id: string;
+    exam_order_id: string;
+    exam_type_id: string;
+    created_at: string;
+    updated_at: string;
+    exam: ExamTypeDto;
 }
 
 export interface ExamOrderStateDto {

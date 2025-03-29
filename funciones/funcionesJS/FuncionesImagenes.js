@@ -50,7 +50,7 @@ async function guardarArchivoUsuario(id_input, user_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "AppModelsUser");
+  formData.append("model_type", "App\Models\User");
   formData.append("model_id", user_id);
   return guardarArchivo(formData);
 }
@@ -70,7 +70,7 @@ async function guardarArchivoPaciente(id_input, patient_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "AppModelsPatient");
+  formData.append("model_type", "App\Models\Patient");
   formData.append("model_id", patient_id);
   return guardarArchivo(formData);
 }
@@ -90,7 +90,7 @@ async function guardarArchivoExamen(id_input, examen_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "AppModelsExamOrder");
+  formData.append("model_type", "App\Models\ExamOrder");
   formData.append("model_id", examen_id);
   return guardarArchivo(formData);
 }
@@ -110,7 +110,7 @@ async function guardarArchivoClinico(id_input, record_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "AppModelsClinicalRecord");
+  formData.append("model_type", "App\Models\ClinicalRecord");
   formData.append("model_id", record_id);
   return guardarArchivo(formData);
 }

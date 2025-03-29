@@ -74,25 +74,22 @@ include "../header.php";
         return appointment.user_availability.appointment_type_id === 1 && appointment.appointment_date == new Date().toISOString().split('T')[0];
     });
 
-    console.log(appointments);
-
-    let filteredAppointments = appointments;
-
+    let calledAppointments = appointments.filter(appointment => ['called'].includes(appointment.appointment_state.name));
 
     // Función para actualizar solo la tabla de pacientes/consultorios
     function updateTables() {
         const waitingBody = document.getElementById("waiting-body");
         waitingBody.innerHTML = "";
+        console.log('calledAppointments', calledAppointments);
 
-        filteredAppointments.forEach(appointment => {
-            if (['called'].includes(appointment.appointment_state.name)) {
-                const row = document.createElement("tr");
-                row.innerHTML = `
+
+        calledAppointments.forEach(appointment => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
                     <td>${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}</td>
                     <td>${appointment.user_availability.office || '--'}</td>
                 `;
-                waitingBody.appendChild(row);
-            }
+            waitingBody.appendChild(row);
         });
     }
 
@@ -123,44 +120,33 @@ include "../header.php";
     var channelTickets = pusher.subscribe(`tickets.${hostname}`);
 
     channel.bind('appointment.created', function(data) {
-        const appointment = {
-            id: data.appointment.id,
-            consultorio: data.appointment.user_availability.office,
-            paciente: data.appointment.patient_id,
-            status: data.appointment.appointment_state_id
-        }
-
-        filteredAppointments.unshift(appointment);
-        updateTables();
+        appointments.push(data.appointment);
     });
 
     channel.bind('appointment.state.updated', function(data) {
         const appointment = appointments.find(app => app.id == data.appointmentId);
         const newState = appointmentStates.find(state => state.id == data.newState);
+        appointment.appointment_state = newState;
 
-        if (['pending', 'called'].includes(newState.name)) {
-            filteredAppointments.unshift(appointment);
+        if (['called'].includes(newState.name)) {
+            calledAppointments.unshift(appointment);
         } else {
-            filteredAppointments = appointments.filter(app => app.id != data.appointmentId);
+            calledAppointments = calledAppointments.filter(app => app.id != data.appointmentId);
         }
 
         updateTables();
     });
 
     channel.bind('appointment.inactivated', function(data) {
-        filteredAppointments = appointments.filter(app => app.id != parseInt(data.appointmentId));
+        calledAppointments = calledAppointments.filter(app => app.id != parseInt(data.appointmentId));
         updateTables();
     });
 
     channelTickets.bind('ticket.generated', function(data) {
-        console.log(data, tickets);
-
         tickets.push(data.ticket);
     });
 
     channelTickets.bind('ticket.state.updated', function(data) {
-        console.log(data, tickets);
-
         const ticket = tickets.find(t => t.id == data.ticketId);
         ticket.status = data.newState;
         ticket.module_id = data.moduleId;

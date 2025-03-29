@@ -219,7 +219,12 @@ include '../modals/NewCompanionModal.php';
                                                     <div class="mb-2">
                                                         <label class="form-label text-body" for="genderPatient">Género</label>
 
-                                                        <input class="form-control" type="text" name="genderPatient" placeholder="Género" id="genderPatient">
+                                                        <select class="form-control" name="genderPatient" placeholder="Género" id="genderPatient">
+                                                            <option value="MALE">Masculino</option>
+                                                            <option value="FEMALE">Femenino</option>
+                                                            <option value="OTHER">Otro</option>
+                                                        </select>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -444,7 +449,7 @@ include '../modals/NewCompanionModal.php';
 
                                                         </div>
                                                     </div>
-                                                    <div id="amountAuthorisationContent" class=" col-6 d-none">
+                                                    <div id="amountAuthorisationContent" class="col-6">
                                                         <label class="form-label" for="amount">Monto autorizado</label>
                                                         <input class="form-control" id="amountAuthorisation" type="text">
                                                     </div>
@@ -526,15 +531,15 @@ include '../modals/NewCompanionModal.php';
                                                 </div> -->
                                             </div>
 
-                                            <div class="col-sm-12 d-flex justify-content-end align-items-center">
+                                            <!-- <div class="col-sm-12 d-flex justify-content-end align-items-center">
                                                 <div class="mb-2">
                                                     <button class="btn btn-primary" type="button" id="addService"><i class="fas fa-plus"></i> Agregar servicio</button>
                                                 </div>
-                                            </div>
+                                            </div> -->
 
 
 
-                                            <div id="formProduct">
+                                            <div id="formProduct" class="d-none">
                                                 <h5 class="card-title">Información del procedimiento</h5>
 
                                                 <div class="row g-3 mb-3">
@@ -874,7 +879,7 @@ include '../modals/NewCompanionModal.php';
                                     <div class="col-12 col-sm-auto">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h5 class="mb-3">Felicidades!</h5>
-                                            <p class="text-body-emphasis fs-9">La admisión medica a sido completada exitosamente </p>
+                                            <p class="text-body-emphasis fs-9">La admisión medica ha sido completada exitosamente </p>
 
                                             <div class="btn-group me-1 justify-content-center">
                                                 <!-- <div class="btn-group me-1">
@@ -1104,6 +1109,7 @@ include '../modals/NewCompanionModal.php';
         // Maneja el cambio del interruptor "Autorización"
         toggleAuthorizationField();
 
+        getProducts();
 
         // Maneja el cambio del producto seleccionado
         handleProductChange('product', 'productPrice', 'tax', 'taxValue');
@@ -1127,11 +1133,9 @@ include '../modals/NewCompanionModal.php';
         // Maneja el evento de clic del botón "Eliminar"
         handleRemoveRequiredAttribute(['authorisationNumber', 'secondField', 'thirdField']);
 
-        // Consultar los productos
-        getProducts();
 
         //mostar el formulario de agregar producto
-        showFormAddProduct();
+        // showFormAddProduct();
 
         // Consultar los métodos de pago
         getPaymentMethods();
@@ -1152,6 +1156,10 @@ include '../modals/NewCompanionModal.php';
         });
 
     });
+
+    document.getElementById('entitySwitch').addEventListener('change', function() {
+        getProducts();
+    })
 
     // Observer para productos
     const productsObserver = new MutationObserver(() => syncTables());
@@ -1279,23 +1287,23 @@ include '../modals/NewCompanionModal.php';
         });
     }
 
-    function showFormAddProduct() {
-        const addProductButton = document.getElementById('addService');
-        const formProduct = document.getElementById('formProduct');
-        const infoFactura = document.getElementById('infoFactura');
+    // function showFormAddProduct() {
+    //     const addProductButton = document.getElementById('addService');
+    //     const formProduct = document.getElementById('formProduct');
+    //     const infoFactura = document.getElementById('infoFactura');
 
-        addProductButton.addEventListener('click', function() {
-            // Verifica el estado de display del formulario y lo alterna
-            if (formProduct.style.display === 'block') {
-                formProduct.style.display = 'none'; // Oculta el formulario
-                infoFactura.style.display = 'none'; // Muestra la información de la factura
+    //     addProductButton.addEventListener('click', function() {
+    //         // Verifica el estado de display del formulario y lo alterna
+    //         if (formProduct.style.display === 'block') {
+    //             formProduct.style.display = 'none'; // Oculta el formulario
+    //             infoFactura.style.display = 'none'; // Muestra la información de la factura
 
-            } else {
-                formProduct.style.display = 'none'; // Muestra el formulario
-                infoFactura.style.display = 'block'; // Oculta la información de la factura
-            }
-        });
-    }
+    //         } else {
+    //             formProduct.style.display = 'none'; // Muestra el formulario
+    //             infoFactura.style.display = 'block'; // Oculta la información de la factura
+    //         }
+    //     });
+    // }
 
 
 
@@ -1305,17 +1313,15 @@ include '../modals/NewCompanionModal.php';
 
         // Obtener los elementos que deben mostrarse solo si la entidad está activa
         const formProduct = document.getElementById('formProduct');
-        const addService = document.getElementById('addService');
+        // const addService = document.getElementById('addService');
 
         switchElement.addEventListener('change', function() {
             if (this.checked) {
                 targetElement.style.display = 'block';
-                formProduct.style.display = 'none';
-                addService.style.display = 'none';
+                // addService.style.display = 'none';
             } else {
                 targetElement.style.display = 'none';
-                formProduct.style.display = 'none';
-                addService.style.display = 'block';
+                // addService.style.display = 'block';
             }
 
             // Ejecutar el callback si se proporciona
@@ -1384,7 +1390,7 @@ include '../modals/NewCompanionModal.php';
             document.getElementById('subtotal').value = '';
             document.getElementById('productPrice').value = '';
 
-            if (productPrice && productQuantity && subtotal) {
+            if (productQuantity) {
                 addRowToProductTable([productId, product.name, productPrice, productQuantity, product.taxes ? product.taxes[0].percentage : 0, subtotal], tableBodyId);
             } else {
                 alert('Por favor, completa todos los campos correctamente.');
@@ -1402,7 +1408,7 @@ include '../modals/NewCompanionModal.php';
             calculatedAmountToPaid();
 
 
-            if (methodPayment !== 'Seleccionar' && amount) {
+            if (methodPayment !== 'Seleccionar') {
                 const formattedAmount = new Intl.NumberFormat('es-CO').format(amount); // Formatear el monto con puntos
                 addRowToPaymentTable([methodPayment, formattedAmount], tableBodyId);
 
@@ -1436,8 +1442,6 @@ include '../modals/NewCompanionModal.php';
     }
 
     function addRowToProductTable(values, tableBodyId) {
-
-        console.log("add product: ", values);
 
         const tableBody = document.getElementById(tableBodyId);
         const summaryTableBody = document.getElementById('summaryProductsTableBody'); // Nueva tabla
@@ -1644,6 +1648,8 @@ include '../modals/NewCompanionModal.php';
             } else {
                 console.error("Estructura de respuesta desconocida");
             }
+            // let productsFilter = products.filter(product => product.attributes.attention_type == "LABORATORY");
+            // console.log("productos: ", productsFilter);
 
             populateProductSelect(products);
             handleProductChange('services', 'productPrice'); // Llamada a handleProductChange después de llenar el select
@@ -1685,10 +1691,12 @@ include '../modals/NewCompanionModal.php';
     function populateProductSelect(products) {
         const entitySwitch = document.getElementById('entitySwitch');
         const productSelect = document.getElementById('services');
+        productSelect.innerHTML = '';
+
         if (Array.isArray(products)) {
             products.forEach(product => {
                 const attributes = product.attributes;
-                if (attributes && attributes.name && attributes.sale_price) {
+                if (attributes && attributes.name) {
                     const option = document.createElement('option');
                     option.value = product.id;
                     option.textContent = attributes.name;
@@ -1723,6 +1731,7 @@ include '../modals/NewCompanionModal.php';
             .then(response => {
                 const product = response;
                 globalProduct = product; // Asegúrate de que la estructura de la respuesta sea correcta
+
                 addProductToTable(product, admission); // Agregar el producto a la tabla
                 populateProductInput(product); // Llenar el input con la información del producto
                 return product; // 👈 Retornar el producto por si se necesita en otra parte
@@ -1817,7 +1826,6 @@ include '../modals/NewCompanionModal.php';
 
             // Verificar si se recibió la información correctamente
             if (admission && admission.patient && admission.patient.companions && admission.user_availability && admission.appointment_date && admission.appointment_time) {
-
                 /* Información del paciente */
                 setElementValue('select[name="typeDocumentPatient"]', admission.patient.document_type);
                 setElementValue('input[name="numberIdentificationPatient"]', admission.patient.document_number);
@@ -1826,7 +1834,7 @@ include '../modals/NewCompanionModal.php';
                 setElementValue('input[name="lastNamePatient"]', admission.patient.last_name);
                 setElementValue('input[name="secondLastNamePatient"]', admission.patient.second_last_name);
                 setElementValue('input[name="dateBirthPatient"]', admission.patient.date_of_birth);
-                setElementValue('input[name="genderPatient"]', admission.patient.gender);
+                setElementValue('select[name="genderPatient"]', admission.patient.gender);
                 setElementValue('input[name="countryPatient"]', admission.patient.country_id);
                 setElementValue('input[name="cityPatient"]', admission.patient.city_id);
                 setElementValue('input[name="addressPatient"]', admission.patient.address);
@@ -1960,10 +1968,13 @@ include '../modals/NewCompanionModal.php';
 
     function addProductToTable(product, admission, isEntityActive) {
 
+
         priceByEntity = product.entities.find(entity => entity.entity_id == admission.patient?.social_security?.entity_id) || false;
 
-        if (!priceByEntity) {
-            validateAmountPriceByEntity();
+
+
+        if (globalProduct.attention_type == "LABORATORY") {
+            showMultipleProducts();
         }
 
         const tableBody = document.getElementById('productsTableBody');
@@ -2056,9 +2067,12 @@ include '../modals/NewCompanionModal.php';
         updateTotal();
     }
 
+    function showMultipleProducts() {
+        document.getElementById('formProduct').classList.remove('d-none');
+    }
+
     function validateAmountPriceByEntity() {
 
-        document.getElementById('amountAuthorisationContent').classList.remove('d-none');
 
     }
 
@@ -2087,13 +2101,10 @@ include '../modals/NewCompanionModal.php';
     }
 
     function createPricesByEntity(product, patient) {
-        console.log("Producto: ", product);
         const dataRequestPrices = getDataToPrices(product, patient);
         let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${product.id}`;
 
         actualizarDatos(url, dataRequestPrices);
-
-        console.log("data request: ", dataRequestPrices);
 
     }
 
@@ -2202,7 +2213,6 @@ include '../modals/NewCompanionModal.php';
                 discount: 0,
                 subtotal: Number(cells[2]?.innerText.trim()),
             };
-
             dataProducts.push(rowData);
         }
         for (let row of rowsPaymentsmethod) {
@@ -2223,6 +2233,8 @@ include '../modals/NewCompanionModal.php';
             external_id: `${userLogged.external_id}`,
             public_invoice: consumidorSwitch.checked,
             admission: {
+                entity_id: globalAdmission.patient?.social_security?.entity_id,
+                entity_authorized_amount: document.getElementById('amountAuthorisation').value.replace('.', '') || 0,
                 authorization_number: entitySwitch.checked ? document.getElementById('authorisationNumberEntity').value : "",
                 authorization_date: entitySwitch.checked ? document.getElementById('dateAuthorisation').value.split('/').reverse().join('-') : "",
                 appointment_id: globalAdmission.id,
@@ -2245,6 +2257,7 @@ include '../modals/NewCompanionModal.php';
 
         document.getElementById('finishInvoiceParent').disabled = true;
 
+        console.log("Data request: ", requestData);
         await admissionService.createAdmission(requestData, globalAdmission.patient_id)
             .then(response => {
                 if (response) {

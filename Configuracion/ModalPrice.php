@@ -90,7 +90,7 @@
                                         </div>
                                         <div class="col-12 text-end">
                                             <button class="btn btn-primary" type="button"
-                                                onclick="agregarFilaPrecio()">Agregar</button>
+                                                onclick="agregarFilaEntidad()">Agregar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -153,56 +153,6 @@
     document.getElementById("toggleImpuesto").addEventListener("change", function() {
         document.getElementById("taxSection").style.display = this.checked ? "block" : "none";
     });
-
-    let preciosEntidades = [];
-
-    function agregarFilaPrecio() {
-        let entidadId = document.getElementById("entity-product").value;
-        let entidadNombre = document.getElementById("entity-product").selectedOptions[0].text;
-
-        let precio = document.getElementById("entity-product_price").value;
-
-        let impuestoId = document.getElementById("tax_type").value;
-        let impuestoNombre = document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
-
-        let retencionId = document.getElementById("retention_type").value;
-        let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
-
-        // Guardar en el array para futuras referencias
-        preciosEntidades.push({
-            entity_id: entidadId,
-            price: precio,
-            tax_charge_id: impuestoId,
-            withholding_tax_id: retencionId,
-        });
-
-        // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
-        let tabla = document.getElementById("tablaPreciosEntidades");
-        let fila = `<tr>
-                    <td>${entidadNombre}</td>
-                    <td>${precio}</td>
-                    <td>${impuestoNombre}</td>
-                    <td>${retencionNombre}</td>
-                    <td>
-                        <button class='btn btn-danger btn-sm' onclick='eliminarFila(${preciosEntidades.length - 1})'>
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>`;
-
-        tabla.innerHTML += fila;
-
-        // Limpiar los campos después de agregar la fila
-        document.getElementById("entity-product_price").value = "";
-        document.getElementById("tax_type").value = "";
-        document.getElementById("retention_type").value = "";
-    }
-
-
-    function eliminarFila(index) {
-        preciosEntidades.splice(index, 1);
-        document.getElementById("tablaPreciosEntidades").deleteRow(index);
-    }
 
     document.getElementById("createProductForm").addEventListener("submit", async function(e) {
         e.preventDefault();

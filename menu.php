@@ -348,7 +348,8 @@ $_SESSION["ID"] = 1;
       "primereact/datatable": "https://esm.sh/primereact/datatable?dev",
       "primereact/column": "https://esm.sh/primereact/column?dev",
       "primereact/badge": "https://esm.sh/primereact/badge?dev",
-      "primereact/inputswitch":"https://esm.sh/primereact/inputswitch?dev"
+      "primereact/inputswitch":"https://esm.sh/primereact/inputswitch?dev",
+      "primereact/toolbar":"https://esm.sh/primereact/toolbar?dev"
     }
   }
 </script>

@@ -676,15 +676,34 @@ include "../ConsultasJson/dataPaciente.php";
     clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
       .then(async (response) => {
         await appointmentService.changeStatus(appointmentId, 'consultation_completed')
-        AlertManager.success({
-          text: 'Se ha creado el registro exitosamente'
-        })
-        $("#finishModal").modal('hide');
-        setTimeout(() => {
-          const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0;
-          const especialidad = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general';
-          window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
-        }, 1000);
+          .then((res) => {
+            createHistoryMessage(response.id, response.patient_id).then(() => {
+              Swal.fire({
+                icon: "success",
+                title: "Se ha creado el registro exitosamente",
+                text: "Por favor espere un momento mientras se envía el mensaje",
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              }).then(() => {
+                $("#modalCrearCita").modal("hide");
+                const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0;
+                const especialidad = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general';
+                window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
+              });
+            })
+          })
+        // AlertManager.success({
+        //   text: 'Se ha creado el registro exitosamente'
+        // })
+        // $("#finishModal").modal('hide');
+        // console.log("response: ", response);
+        // console.log("data: ", data);
+        // setTimeout(() => {
+        //   const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0;
+        //   const especialidad = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general';
+        //   window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
+        // }, 1000);
       }).catch(err => {
         if (err.data?.errors) {
           AlertManager.formErrors(err.data.errors);
@@ -711,48 +730,48 @@ include "../ConsultasJson/dataPaciente.php";
                   }
                 });
               } else if (field.type !== "checkbox") {
-                formValues[field.name] = document.getElementById(field.id).value;
+                formValues[field.name] = document.getElementById(field.id)?.value;
                 if (field.id === "peso") {
-                  formValues[field.name] = document.getElementById('peso').value + " Lbs";
+                  formValues[field.name] = document.getElementById('peso')?.value + " Lbs";
                 }
                 if (field.id === "altura") {
-                  formValues[field.name] = document.getElementById('altura').value + " cm";
+                  formValues[field.name] = document.getElementById('altura')?.value + " cm";
                 }
                 if (field.id === "imc") {
-                  formValues[field.name] = document.getElementById('imc').value + " kg/m²";
+                  formValues[field.name] = document.getElementById('imc')?.value + " kg/m²";
                 }
                 if (field.id === "porcentajeGrasaCorporal") {
-                  formValues[field.name] = document.getElementById('porcentajeGrasaCorporal').value + " %";
+                  formValues[field.name] = document.getElementById('porcentajeGrasaCorporal')?.value + " %";
                 }
                 if (field.id === "presionArterialDiastolica") {
-                  formValues[field.name] = document.getElementById('presionArterialDiastolica').value + " mmHg";
+                  formValues[field.name] = document.getElementById('presionArterialDiastolica')?.value + " mmHg";
                 }
                 if (field.id === "presionArterialSistolica") {
-                  formValues[field.name] = document.getElementById('presionArterialSistolica').value + " mmHg";
+                  formValues[field.name] = document.getElementById('presionArterialSistolica')?.value + " mmHg";
                 }
                 if (field.id === "tensionArterialMedia") {
-                  formValues[field.name] = document.getElementById('tensionArterialMedia').value + " mmHg";
+                  formValues[field.name] = document.getElementById('tensionArterialMedia')?.value + " mmHg";
                 }
                 if (field.id === "saturacion") {
-                  formValues[field.name] = document.getElementById('saturacion').value + " %";
+                  formValues[field.name] = document.getElementById('saturacion')?.value + " %";
                 }
                 if (field.id === "circunferenciaAbdominal") {
-                  formValues[field.name] = document.getElementById('circunferenciaAbdominal').value + " cm";
+                  formValues[field.name] = document.getElementById('circunferenciaAbdominal')?.value + " cm";
                 }
                 if (field.id === "circunferenciaCintura") {
-                  formValues[field.name] = document.getElementById('circunferenciaCintura').value + " cm";
+                  formValues[field.name] = document.getElementById('circunferenciaCintura')?.value + " cm";
                 }
                 if (field.id === "perimetroCefalico") {
-                  formValues[field.name] = document.getElementById('perimetroCefalico').value + " cm";
+                  formValues[field.name] = document.getElementById('perimetroCefalico')?.value + " cm";
                 }
                 if (field.id === "frecuenciaRespiratoria") {
-                  formValues[field.name] = document.getElementById('frecuenciaRespiratoria').value + " rpm";
+                  formValues[field.name] = document.getElementById('frecuenciaRespiratoria')?.value + " rpm";
                 }
                 if (field.id === "frecuenciaCardiaca") {
-                  formValues[field.name] = document.getElementById('frecuenciaCardiaca').value + " lpm";
+                  formValues[field.name] = document.getElementById('frecuenciaCardiaca')?.value + " lpm";
                 }
                 if (field.id === "temperatura") {
-                  formValues[field.name] = document.getElementById('temperatura').value + " °Celsius";
+                  formValues[field.name] = document.getElementById('temperatura')?.value + " °Celsius";
                 }
                 const editor = tinymce.get(field.id);
                 if (editor) {

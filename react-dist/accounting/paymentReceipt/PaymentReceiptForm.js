@@ -272,16 +272,20 @@ export const PaymentReceiptForm = () => {
   }))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end gap-3"
+    className: "col-12 d-flex justify-content-center gap-3"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
     icon: "pi pi-times",
-    className: "p-button-secondary p-button-rounded",
+    className: "p-button-secondary",
     onClick: onCancel
   }), /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar y descargar",
-    icon: "pi pi-check",
+    label: "Guardar y Descargar",
+    icon: "pi pi-save",
     type: "submit",
-    className: "p-button-primary p-button-rounded"
+    className: "p-button-primary"
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Guardar",
+    icon: "pi pi-download",
+    className: "p-button-success"
   })))))))));
 };

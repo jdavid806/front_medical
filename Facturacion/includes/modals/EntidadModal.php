@@ -30,77 +30,92 @@
         </div>
 
         <div class="wizard-content">
-          <div class="wizard-step active" data-step="1">
-            <div class="col-12 mb-3">
-              <div class="card border border-light">
-                <div class="card-body">
-                  <h5 class="card-title">Información básica </h5>
-                  <div class="row">
-                    <div class="col-6">
-                      <label class="form-label" for="fechaElaboracion">Fecha de elaboración</label>
-                      <input class="form-control datetimepicker flatpickr-input" id="fechaElaboracion" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" value="" onchange="updateDate()" />
 
+          <form class="needs-validation" id="wizardValidationForm1" novalidate data-wizard-form="1">
+            <div class="wizard-step active" data-step="1">
+              <div class="col-12 mb-3">
+                <div class="card border border-light">
+                  <div class="card-body">
+                    <h5 class="card-title">Información básica </h5>
+                    <div class="row">
+                      <div class="col-6">
+                        <label class="form-label" for="fechaElaboracion">Fecha de elaboración</label>
+                        <input class="form-control datetimepicker flatpickr-input" id="fechaElaboracion" type="text"
+                          placeholder="dd/mm/yyyy"
+                          data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}"
+                          value="" onchange="updateDate()" required />
+                        <div class="invalid-feedback">Campo obligatorio.</div>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="tipoFacturaSelect">Tipo factura</label>
+                        <select class="form-select" id="tipoFacturaSelect" required>
+                          <option selected disabled value="">Seleccione</option>
+                          <option value="tax_invoice">Fiscal</option>
+                          <option value="government_invoice">Gubernamental</option>
+                        </select>
+                        <div class="invalid-feedback">Seleccione un tipo de factura.</div>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="entity">Entidad</label>
+                        <select class="form-select" id="entity" required>
+                        </select>
+                        <div class="invalid-feedback entityRequired">Seleccione una entidad.</div>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="centroCosto">Centro de costo</label>
+                        <select class="form-select" id="centroCosto">
+                          <option value="">Seleccione (opcional)</option>
+                        </select>
+                      </div>
                     </div>
-                    <!-- <div class="col-6">
-                      <label class="form-label" for="fechaVencimiento">Fecha de vencimiento</label>
-                      <input class="form-control datetimepicker flatpickr-input" id="fechaVencimiento" type="text" placeholder="dd/mm/yyyy" data-options="{&quot;disableMobile&quot;:true,&quot;dateFormat&quot;:&quot;d/m/Y&quot;}" readonly="readonly">
-                    </div> -->
-                    <div class="col-6">
-                      <label class="form-label" for="tipoFacturaSelect">Tipo factura</label>
-                      <select class="form-select" id="tipoFacturaSelect">
-                        <option selected disabled>Seleccione</option>
-                        <option value="tax_invoice">Fiscal</option>
-                        <option value="government_invoice">Gubernamental</option>
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label" for="entity">Entidad</label>
-                      <select class="form-select" id="entity">
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label" for="centroCosto">Centro de costo</label>
-                      <select class="form-select" id="centroCosto">
-                      </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 mb-3">
+                <div class="card border border-light">
+                  <div class="card-body">
+                    <h5 class="card-title">Filtrar </h5>
+                    <div class="row">
+                      <div class="col-6">
+                        <label class="form-label" for="procedure">Procedimientos</label>
+                        <select class="form-select" id="procedure">
+                          <option value="">Seleccione (opcional)</option>
+                        </select>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="especialistas">Especialistas</label>
+                        <select class="form-select" id="especialistas">
+                          <option value="">Seleccione (opcional)</option>
+                        </select>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="patients">Pacientes</label>
+                        <select class="form-select" id="patients">
+                          <option value="">Seleccione (opcional)</option>
+                        </select>
+                      </div>
+
+                      <div class="col-6">
+                        <label class="form-label" for="fechasProcedimiento">Fecha inicio - fin Procedimiento</label>
+                        <input class="form-control datetimepicker flatpickr-input" id="fechasProcedimiento" type="text"
+                          placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                          data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;d/m/y&quot;,&quot;disableMobile&quot;:true}"
+                          readonly="readonly" required>
+                        <div class="invalid-feedback">Seleccione un rango de fechas válido.</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </form>
 
-            <div class="col-12 mb-3">
-              <div class="card border border-light">
-                <div class="card-body">
-                  <h5 class="card-title">Filtrar </h5>
-                  <div class="row">
-                    <div class="col-6">
-                      <label class="form-label" for="patients">procedimientos</label>
-                      <select class="form-select" id="procedure">
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label" for="especialistas">Especialistas</label>
-                      <select class="form-select" id="especialistas">
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label" for="patients">Pacientes</label>
-                      <select class="form-select" id="patients">
-                        <!-- <option selected="">Seleccione</option>
-                        <option value="1">Paciente 1</option>
-                        <option value="2">Paciente 2</option>
-                        <option value="3">Paciente 3</option> -->
-                      </select>
-                    </div>
-                    <div class="col-6">
-                      <label class="form-label" for="fechasProcedimiento">Fecha incio - fin Procedimiento</label>
-                      <input class="form-control datetimepicker flatpickr-input" id="fechasProcedimiento" type="text" placeholder="dd/mm/yyyy - dd/mm/yyyy" data-options="{&quot;mode&quot;:&quot;range&quot;,&quot;dateFormat&quot;:&quot;d/m/y&quot;,&quot;disableMobile&quot;:true}" readonly="readonly">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="wizard-content">
@@ -129,7 +144,7 @@
                                 <th class="sort border-top" data-sort="email">Fecha</th>
                                 <th class="sort border-top" data-sort="procedimiento">Procedimiento</th>
                                 <th class="sort border-top" data-sort="autorizacion">Autorización</th>
-                                <th class="sort border-top" data-sort="valorUnitario">Valor unitario</th>
+                                <th class="sort border-top" data-sort="valorUnitario">Monto autorizado</th>
                                 <th class="sort border-top" data-sort="copago">Copago</th>
                                 <th class="sort border-top" data-sort="valorTotal">Valor total</th>
                               </tr>
@@ -180,7 +195,7 @@
 
                     <div class="col-6" id="divMetodoPago" style="display: none;">
                       <label class="form-label" for="metodoPago">Metodo de pago</label>
-                      <select class="form-select" id="metodoPago">
+                      <select class="form-select" id="metodoPago" required>
                       </select>
                     </div>
                     <div class="col-6 mt-3" id="divDiasPlazo">
@@ -194,11 +209,11 @@
                     </div>
                     <div class="col-6">
                       <label class="form-label" for="taxCharge">Impuesto cargo</label>
-                      <select class="form-control" id="taxChargeSelect">
+                      <select class="form-control" id="taxChargeSelect" required>
                       </select>
                     </div>
                     <div class="col-6">
-                      <label class="form-label" for="taxWithholding">Impuesto retencion</label>
+                      <label class="form-label" for="taxWithholding" required>Impuesto retencion</label>
                       <select class="form-control" name="taxWithholding" id="taxWithholdingSelect">
                       </select>
                     </div>
@@ -302,7 +317,7 @@
     const entities = await entityService.getAll();
 
     const select = document.getElementById("entity");
-    select.innerHTML = '<option selected disabled>Seleccione</option>';
+    select.innerHTML = '<option selected disabled value="">Seleccione</option>';
 
     if (entities.data.length) {
 
@@ -482,6 +497,7 @@
     if (activeStep) {
       switch (activeStep.dataset.wizardStep) {
         case "1":
+          validatedForm();
           const paramsFilter = obtenerFiltros();
           await queryBillingReport(paramsFilter);
           break;
@@ -492,6 +508,29 @@
 
   });
 
+  function validatedForm() {
+    const form = document.getElementById('wizardValidationForm1');
+    form.classList.add('was-validated'); // Activa estilos de validación
+
+    // Verifica validez del formulario
+    if (form.checkValidity()) {
+      return true;
+    } else {
+      // Enfoca el primer campo inválido
+      const invalidField = form.querySelector(':invalid');
+      const divEntityRequired = document.querySelector('.entityRequired');
+      if (divEntityRequired) {
+        divEntityRequired.style.display = 'block';
+      }
+
+      if (invalidField) {
+        invalidField.focus();
+      }
+      return false;
+    }
+  }
+
+
   function obtenerFiltros() {
     const entity = document.getElementById('entity').value;
     const procedureSelect = document.getElementById('procedure');
@@ -500,7 +539,9 @@
     const selectedEspecialistas = Array.from(especialistasSelect.selectedOptions).map(option => option.value);
     const pacientesSelect = document.getElementById('patients');
     const selectedPacientes = Array.from(pacientesSelect.selectedOptions).map(option => option.value);
-    const fechasProcedimientos = document.getElementById('fechasProcedimiento').value;
+    const today = new Date();
+    const formattedToday = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getFullYear()).slice(-2)}`;
+    const fechasProcedimientos = document.getElementById('fechasProcedimiento').value || `${formattedToday} to ${formattedToday}`;
     const [fechaInicio, fechaFin] = fechasProcedimientos.split(' to ').map(fecha => {
       const [dia, mes, año] = fecha.split('/');
       return `20${año}-${mes}-${dia}`;
@@ -528,7 +569,6 @@
   }
 
   function populateBillingTable(data) {
-    console.log("Data billing:  ", data);
     const tbody = document.querySelector('.list-billing');
     tbody.innerHTML = ''; // Limpiar tabla existente
     let totalValorUnitario = 0;
@@ -537,9 +577,10 @@
 
     data.forEach((item, index) => {
       const tr = document.createElement('tr');
-      const price = Number(item.billed_procedure[0]?.product?.entities[0]?.price || 0);
-      const amount = Number(item.billed_procedure[0]?.amount || 0);
+      const price = Number(item.entity_authorized_amount || 0);
+      const amount = item.billed_procedure.reduce((sum, procedure) => sum + Number(procedure.product.copayment || 0), 0);
       const total = price - amount;
+      const products = item.billed_procedure.map(procedure => procedure.product.name).join(', ') || 'Sin nombre del producto';
 
       totalValorUnitario += price;
       totalCopago += amount;
@@ -548,7 +589,7 @@
       tr.innerHTML = `
             <td class="align-middle ps-3 name">${item.patient.first_name} ${item.patient.last_name}</td>
             <td class="align-middle email">${item.authorization_date}</td>
-            <td class="align-middle email">${item.billed_procedure[0].product.name}</td>
+            <td class="align-middle email">${products}</td>
             <td class="align-middle age">${item.authorization_number}</td>
             <td class="align-middle age">$${price.toLocaleString('es-CO')}</td>
             <td class="align-middle age">$${amount.toLocaleString('es-CO')}</td>
@@ -715,6 +756,7 @@
         due_date: fechaVencimiento.split('/').reverse().join('-'),
         type: "entity",
         entity_id: entityId,
+        entity_type: tipoFactura
       },
       invoice_detail: [],
       payments: []
@@ -727,14 +769,12 @@
     const datos = await capturarDatos();
     await billingService.storeByEntity(datos).then(response => {
 
-        console.log(response);
-
-        // AlertManager.success({
-        //   text: 'Se ha actualizado el registro exitosamente'
-        // });
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 1000);
+        AlertManager.success({
+          text: 'Factura creada correctamente'
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
 
       })
       .catch(error => {

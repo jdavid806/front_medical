@@ -41,6 +41,7 @@ import { CostCenterService } from "./classes/costCentersService.js";
 import { BillingService } from "./classes/billingService.js";
 import MSMasivaService from "./classes/msMasivaService.js";
 import { ExamRecipeService } from "./classes/examRecipeService.js";
+import ExamOrderService from "./classes/examOrderService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -52,7 +53,7 @@ export const examCategoryService = new BaseApiService(
   "exam-categories"
 );
 export const examTypeService = new BaseApiService("medical", "exam-types");
-export const examOrderService = new BaseApiService("medical", "exam-orders");
+export const examOrderService = new ExamOrderService("medical", "exam-orders");
 export const examOrderStateService = new BaseApiService(
   "medical",
   "exam-order-states"

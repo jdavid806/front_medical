@@ -1,0 +1,175 @@
+<div class="accounting-form-container">
+  <form class="accounting-form" [formGroup]="form">
+    <!-- Basic Information Section -->
+    <section class="form-section">
+      <h3 class="section-title">Información básica</h3>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Tipo de comprobante</label>
+          <p-dropdown
+            class="form-select"
+            formControlName="receiptType"
+            [options]="receiptTypes"
+            optionLabel="name"
+            placeholder="Seleccionar">
+          </p-dropdown>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label">Número de factura</label>
+          <small class="form-hint">(Numeración manual y/o automática)</small>
+          <input
+            class="form-input"
+            type="text"
+            pInputText
+            formControlName="invoiceNumber"
+            placeholder="Ingrese número" />
+
+        </div>
+
+        <div class="form-field full-width">
+          <label class="form-label">Fecha de elaboración</label>
+          <p-calendar
+            class="form-datepicker"
+            formControlName="date"
+            [showIcon]="true"
+            dateFormat="dd/mm/yy">
+          </p-calendar>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transaction Information Section -->
+    <section class="form-section">
+      <h3 class="section-title">Información de transacción</h3>
+
+      <div class="transaction-card">
+        @for(item of productsArray; track $index; let i = $index) {
+          <div class="transaction-item">
+            <div class="transaction-grid">
+              <div class="transaction-field">
+                <label class="form-label">Cuenta contable</label>
+                <p-dropdown
+                  class="form-select"
+                  [(ngModel)]="item.account"
+                  [options]="accounts"
+                  optionLabel="name"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Selecciona">
+                </p-dropdown>
+              </div>
+
+              <div class="transaction-field">
+                <label class="form-label">Tercero</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="item.thirdParty"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Ingrese tercero" />
+              </div>
+
+              <div class="transaction-field">
+                <label class="form-label">Detalle contable</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="item.detail"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Ingrese detalle" />
+              </div>
+
+              <div class="transaction-field">
+                <label class="form-label">Descripción</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="item.description"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Ingrese descripción" />
+              </div>
+
+              <div class="transaction-field">
+                <label class="form-label">Centro de costo</label>
+                <p-dropdown
+                  class="form-select"
+                  [(ngModel)]="item.costCenter"
+                  [options]="costCenters"
+                  optionLabel="name"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Selecciona">
+                </p-dropdown>
+              </div>
+
+              <div class="transaction-field amount-field">
+                <label class="form-label">Débito</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  pInputText
+                  [(ngModel)]="item.debit"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="0.00" />
+              </div>
+
+              <div class="transaction-field amount-field">
+                <label class="form-label">Crédito</label>
+                <input
+                  class="form-input"
+                  type="number"
+                  pInputText
+                  [(ngModel)]="item.credit"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="0.00" />
+              </div>
+
+              <div class="transaction-actions">
+                <p-button
+                  class="delete-button"
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  (onClick)="removeProduct(i)"
+                  [disabled]="productsArray.length <= 1">
+                </p-button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <button type="button" class="add-item-button" (click)="addProduct()">
+          <i class="pi pi-plus"></i> Añadir línea
+        </button>
+
+        <div class="transaction-total">
+          <h4 class="total-label">Total</h4>
+          <span class="total-amount">${{totalValue}}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Observations Section -->
+    <section class="form-section">
+      <h3 class="section-title">Observaciones</h3>
+      <textarea
+        class="form-textarea"
+        rows="5"
+        pTextarea
+        formControlName="observations"
+        placeholder="Ingrese observaciones relevantes...">
+      </textarea>
+    </section>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <p-button class="cancel-button" label="Cancelar" severity="secondary" />
+      <p-button class="submit-button" label="Guardar" />
+      <p-button class="submit-send-button" label="Guardar y enviar" severity="success" />
+    </div>
+  </form>
+</div>

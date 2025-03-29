@@ -9,31 +9,46 @@ import { PrintTableAction } from '../../components/table-actions/PrintTableActio
 import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
 import { ShareTableAction } from '../../components/table-actions/ShareTableAction';
 import { formatDate, ordenarPorFecha } from '../../../services/utilidades';
+import { CustomModal } from '../../components/CustomModal';
+import { examOrderService, userService } from '../../../services/api';
+import { SwalManager } from '../../../services/alertManagerImported';
 
 type ExamTableItem = {
     id: string
     examName: string
     status: string
     statusColor: string
+    state: string
     created_at: string
     dateTime: string
+    patientId: string
+    minioId?: string
 }
 
 type ExamTableProps = {
     exams: ExamOrderDto[]
     onLoadExamResults: (id: string) => void
+    onViewExamResults: (minioId?: string) => void
+    onReload: () => void
 }
 
-export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }) => {
+export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults, onViewExamResults, onReload }) => {
     const [tableExams, setTableExams] = useState<ExamTableItem[]>([]);
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+    const [showPdfModal, setShowPdfModal] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
     useEffect(() => {
         const mappedExams: ExamTableItem[] = exams.map(exam => {
             return {
                 id: exam.id,
-                examName: exam.exam_type?.name ?? '--',
+                examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(', ') : exam.exam_type?.name) || '--',
                 status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
                 statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+                minioId: exam.minio_id,
+                patientId: exam.patient_id,
+                state: exam.exam_order_state?.name || 'pending',
                 created_at: exam.created_at,
                 dateTime: formatDate(exam.created_at)
             }
@@ -45,6 +60,37 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
 
         setTableExams(mappedExams);
     }, [exams])
+
+    const onUploadExamsFile = (examOrderId) => {
+        setSelectedOrderId(examOrderId);
+        setShowPdfModal(true);
+    }
+
+    const handleUploadExamsFile = async () => {
+        try {
+            // Llamar a la función guardarArchivoExamen
+            //@ts-ignore
+            const enviarPDf = await guardarArchivoExamen("inputPdf", selectedOrderId);
+
+            // Acceder a la PromiseResult
+            if (enviarPDf !== undefined) {
+                console.log("PDF de prueba:", enviarPDf);
+                console.log("Resultado de la promesa:", enviarPDf);
+                await examOrderService.updateMinioFile(selectedOrderId, enviarPDf);
+                SwalManager.success({ text: "Resultados guardados exitosamente" });
+            } else {
+                console.error("No se obtuvo un resultado válido.");
+            }
+        } catch (error) {
+            console.error("Error al guardar el archivo:", error);
+        } finally {
+            // Limpiar el estado después de la operación
+            setShowPdfModal(false);
+            setPdfFile(null);
+            setPdfPreviewUrl(null);
+            onReload()
+        }
+    }
 
     const columns: ConfigColumns[] = [
         { data: 'examName', },
@@ -64,29 +110,50 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                         <i data-feather="settings"></i> Acciones
                     </button>
                     <ul className="dropdown-menu">
-                        <li>
-                            <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onLoadExamResults(data.id)}>
-                                <div className="d-flex gap-2 align-items-center">
-                                    <i className="fa-solid fa-upload" style={{ width: '20px' }}></i>
-                                    <span>Cargar resultados</span>
-                                </div>
-                            </a>
-                        </li>
+                        {data.state === 'generated' && <>
+                            <li>
+                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onLoadExamResults(data.id)}>
+                                    <div className="d-flex gap-2 align-items-center">
+                                        <i className="fa-solid fa-stethoscope" style={{ width: '20px' }}></i>
+                                        <span>Realizar examen</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onUploadExamsFile(data.id)}>
+                                    <div className="d-flex gap-2 align-items-center">
+                                        <i className="fa-solid fa-file-pdf" style={{ width: '20px' }}></i>
+                                        <span>Subir examen</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </>}
+                        {data.state === 'uploaded' && <>
+                            <li>
+                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onViewExamResults(data.minioId)}>
+                                    <div className="d-flex gap-2 align-items-center">
+                                        <i className="fa-solid fa-eye" style={{ width: '20px' }}></i>
+                                        <span>Visualizar resultados</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </>}
                         <PrintTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
+                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
                         }} />
                         <DownloadTableAction onTrigger={() => {
                             //@ts-ignore
-                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Examen");
+                            crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
                         }} />
                         <li>
                             <hr className="dropdown-divider" />
                         </li>
                         <li className="dropdown-header">Compartir</li>
-                        <ShareTableAction shareType='whatsapp' onTrigger={() => {
+                        <ShareTableAction shareType='whatsapp' onTrigger={async () => {
+                            const user = await userService.getLoggedUser()
                             //@ts-ignore
-                            enviarDocumento(data.id, "Descarga", "Consulta", "Completa", patient_id, UserManager.getUser().id, title)
+                            enviarDocumento(data.id, "Descarga", "Examen", "Completa", data.patientId, user.id, "Orden de examen");
                         }} />
                     </ul>
                 </div>
@@ -105,7 +172,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                     >
                         <thead>
                             <tr>
-                                <th className="border-top custom-th">Tipo de Examen</th>
+                                <th className="border-top custom-th">Exámenes ordenados</th>
                                 <th className="border-top custom-th">Estado</th>
                                 <th className="border-top custom-th">Fecha y hora de creación</th>
                                 <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
@@ -114,6 +181,59 @@ export const ExamTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults }
                     </CustomDataTable>
                 </div>
             </div>
+            <CustomModal
+                title='Subir examen'
+                show={showPdfModal}
+                onHide={() => setShowPdfModal(false)}
+                footerTemplate={<>
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        id="inputPdf"
+                        onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            if (file) {
+                                setPdfFile(file);
+                                setPdfPreviewUrl(URL.createObjectURL(file));
+                            }
+                        }}
+                    />
+                    <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                            setShowPdfModal(false);
+                            setPdfFile(null);
+                            setPdfPreviewUrl(null);
+                        }}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => {
+                            handleUploadExamsFile();
+                            setShowPdfModal(false);
+                            setPdfFile(null);
+                            setPdfPreviewUrl(null);
+                        }}
+                    >
+                        Confirmar
+                    </button>
+                </>}
+            >
+                {pdfPreviewUrl ? (
+                    <embed
+                        src={pdfPreviewUrl}
+                        width="100%"
+                        height="500px"
+                        type="application/pdf"
+                    />
+                ) : (
+                    <p>Por favor, seleccione un archivo PDF.</p>
+                )}
+            </CustomModal>
         </>
     )
 }

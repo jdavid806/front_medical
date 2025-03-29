@@ -19,14 +19,22 @@ document.getElementById("finishStep").addEventListener("click", function () {
 
   appointmentService
     .createForParent(data.patient_id || data.selectPaciente, data)
-    .then(() => {
-      AlertManager.success({
-        text: "Se ha creado el registro exitosamente",
+    .then((response) => {
+      createAppointmentMessage(response.id, response.patient_id).then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Se ha creado el registro exitosamente",
+          text: "Por favor espere un momento mientras se envía el mensaje",
+          showConfirmButton: false,
+          // confirmButtonText: "Aceptar",
+          // confirmButtonColor: '#3085d6',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(() => {
+          $("#modalCrearCita").modal("hide");
+          window.location.reload();
+        });
       });
-      $("#modalCrearCita").modal("hide");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     })
     .catch((err) => {
       if (err.data?.errors) {

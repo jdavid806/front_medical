@@ -255,20 +255,25 @@ export const PaymentReceiptForm: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Botones de acción */}
+                                {/* Botones de acción - Centrados */}
                                 <div className="row">
-                                    <div className="col-12 d-flex justify-content-end gap-3">
+                                    <div className="col-12 d-flex justify-content-center gap-3">
                                         <Button
                                             label="Cancelar"
                                             icon="pi pi-times"
-                                            className="p-button-secondary p-button-rounded"
+                                            className="p-button-secondary"
                                             onClick={onCancel}
                                         />
                                         <Button
-                                            label="Guardar y descargar"
-                                            icon="pi pi-check"
+                                            label="Guardar y Descargar"
+                                            icon="pi pi-save"
                                             type="submit"
-                                            className="p-button-primary p-button-rounded"
+                                            className="p-button-primary"
+                                        />
+                                        <Button
+                                            label="Guardar"
+                                            icon="pi pi-download"
+                                            className="p-button-success"
                                         />
                                     </div>
                                 </div>

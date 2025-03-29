@@ -22,7 +22,7 @@ Options -Indexes
 
 
 # Generales [INICIO]
-RewriteRule ^portada$ portada.php
+RewriteRule portada$ portada.php
 RewriteRule ^inicio$ index.php
 RewriteRule ^validarKeys$ login/verificarLogin.php
 RewriteRule ^validarKeys_Dom$ login/verificarLoginDom.php
@@ -61,8 +61,11 @@ RewriteRule ^FERCPrint$ Contabilidad/Impresion/FE_ImprimirReciboCaja.php
 
 #ContabilidadNueva[INICIO]
 RewriteRule ^CuentasContables$ ContabilidadNueva/vistaContabilidad.php
-RewriteRule ^RecibosDeCajas$ ContabilidadNueva/reciboPago.php
+RewriteRule ^RecibosDePagos$ ContabilidadNueva/reciboPago.php
+RewriteRule ^RecibosDeCajas$ ContabilidadNueva/reciboCaja.php
 RewriteRule ^NuevaFormaPago$ ContabilidadNueva/nuevaFormaPago.php
+RewriteRule ^CuentasCobrarPagar$ ContabilidadNueva/cuentasCobrarPagar.php
+
 # ContabilidadNueva [FIN]
 
 # Facturacion [INICIO]
@@ -258,6 +261,6 @@ RewriteRule ^forgotPassword$ login/forgotPassword.php
 # RewriteRule ^visualizarDocumento$ funciones/visualizarDocumento.php
 RewriteRule ^visualizarDocumento/([^/]+)/([^/]+)/?$ funciones/visualizarDocumento.php?id=$1&tipo=$2 [L,QSA]
 
-RewriteRule ^test$ TEST/test.php
-
 RewriteRule ^verOrdenesExamenes$ Examenes/verOrdenesExamenes.php
+
+RewriteRule ^test$ TEST/test.php

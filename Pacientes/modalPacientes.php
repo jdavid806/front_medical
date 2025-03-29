@@ -148,6 +148,7 @@ require "./modals/editPartnerModal.php";
                               <option value="MARRIED">Casado</option>
                               <option value="DIVORCED">Divorciado</option>
                               <option value="WIDOWED">Viudo</option>
+                              <option value="FREE_UNION">Unión Libre</option>
                             </select>
                             <div class="invalid-feedback">El campo es obligatorio.</div>
                           </div>
@@ -157,6 +158,7 @@ require "./modals/editPartnerModal.php";
                             <label for="ethnicity" class="form-label">Etnía</label>
                             <select class="form-select" id="ethnicity" name="patient[ethnicity]">
                               <option selected disabled value="">Seleccione</option>
+                              <option value="No Refiere">No Refiere</option>
                               <option value="Afrodesendiente">Afrodesendiente</option>
                               <option value="Indigena">Indigena</option>
                               <option value="Caucásica">Caucásica</option>

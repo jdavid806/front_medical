@@ -233,12 +233,14 @@
         "card3": [
           {
             "title": "Queratometría Ojo derecho",
+            "class": "col-12",
             "fields": [
               {
                 "id": "queratometriaOjoDerechoCheck",
                 "label": "Queratometría",
                 "type": "checkbox",
                 "name": "queratometriaOjoDerechoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "queratometriaOjoDerechoInfo",
@@ -249,74 +251,46 @@
                 ]
               },
               {
-                "id": "esferaOjoDerechoCheck",
+                "id": "esferaOjoDerecho",
                 "label": "Esfera",
-                "type": "checkbox",
-                "name": "esferaOjoDerechoCheck",
-                "toggleFields": [
-                  {
-                    "id": "esferaOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "esferaOjoDerechoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "esferaOjoDerecho",
+                "class": "col-2"
               },
               {
-                "id": "cilindroOjoDerechoCheck",
+                "id": "cilindroOjoDerecho",
                 "label": "Cilindro",
-                "type": "checkbox",
-                "name": "cilindroOjoDerechoCheck",
-                "toggleFields": [
-                  {
-                    "id": "cilindroOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "cilindroOjoDerechoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "cilindroOjoDerecho",
+                "class": "col-2"
               },
               {
-                "id": "ejeOjoDerechoCheck",
+                "id": "ejeOjoDerecho",
                 "label": "Eje",
-                "type": "checkbox",
-                "name": "ejeOjoDerechoCheck",
-                "toggleFields": [
-                  {
-                    "id": "ejeOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "ejeOjoDerechoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "ejeOjoDerecho",
+                "class": "col-2"
               },
               {
-                "id": "addOjoDerechoCheck",
+                "id": "addOjoDerecho",
                 "label": "ADD",
-                "type": "checkbox",
-                "name": "addOjoDerechoCheck",
-                "toggleFields": [
-                  {
-                    "id": "addOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "addOjoDerechoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "addOjoDerecho",
+                "class": "col-2"
               },
               {
-                "id": "dnpOjoDerechoCheck",
+                "id": "AlturaOjoDerecho",
+                "label": "Altura",
+                "type": "input",
+                "name": "AlturaOjoDerecho",
+                "class": "col-2"
+              },
+              {
+                "id": "dnpOjoDerecho",
                 "label": "DNP",
-                "type": "checkbox",
-                "name": "dnpOjoDerechoCheck",
-                "toggleFields": [
-                  {
-                    "id": "dnpOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "dnpOjoDerechoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "dnpOjoDerecho",
+                "class": "col-2"
               }
             ]
           }
@@ -324,12 +298,14 @@
         "card4": [
           {
             "title": "Queratometría Ojo izquierdo",
+            "class": "col-12",
             "fields": [
               {
                 "id": "queratomiaOjoIzquierdoCheck",
                 "label": "Queratometría",
                 "type": "checkbox",
                 "name": "queratomiaOjoIzquierdoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "queratomiaOjoIzquierdoInfo",
@@ -340,74 +316,46 @@
                 ]
               },
               {
-                "id": "esferaOjoIzquierdoCheck",
+                "id": "esferaOjoIzquierdo",
                 "label": "Esfera",
-                "type": "checkbox",
-                "name": "esferaOjoIzquierdoCheck",
-                "toggleFields": [
-                  {
-                    "id": "esferaOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "esferaOjoIzquierdoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "esferaOjoIzquierdo",
+                "class": "col-2"
               },
               {
-                "id": "cilindroOjoIzquierdoCheck",
+                "id": "cilindroOjoIzquierdo",
                 "label": "Cilindro",
-                "type": "checkbox",
-                "name": "cilindroOjoIzquierdoCheck",
-                "toggleFields": [
-                  {
-                    "id": "cilindroOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "cilindroOjoIzquierdoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "cilindroOjoIzquierdo",
+                "class": "col-2"
               },
               {
-                "id": "ejeOjoIzquierdoCheck",
+                "id": "ejeOjoIzquierdo",
                 "label": "Eje",
-                "type": "checkbox",
-                "name": "ejeOjoIzquierdoCheck",
-                "toggleFields": [
-                  {
-                    "id": "ejeOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "ejeOjoIzquierdoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "ejeOjoIzquierdo",
+                "class": "col-2"
               },
               {
-                "id": "addOjoIzquierdoCheck",
+                "id": "addOjoIzquierdo",
                 "label": "ADD",
-                "type": "checkbox",
-                "name": "addOjoIzquierdoCheck",
-                "toggleFields": [
-                  {
-                    "id": "addOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "addOjoIzquierdoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "addOjoIzquierdo",
+                "class": "col-2"
               },
               {
-                "id": "dnpOjoIzquierdoCheck",
+                "id": "AlturaOjoIzquierdo",
+                "label": "Altura",
+                "type": "input",
+                "name": "AlturaOjoIzquierdo",
+                "class": "col-2"
+              },
+              {
+                "id": "dnpOjoIzquierdo",
                 "label": "DNP",
-                "type": "checkbox",
-                "name": "dnpOjoIzquierdoCheck",
-                "toggleFields": [
-                  {
-                    "id": "dnpOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "dnpOjoIzquierdoInfo"
-                  }
-                ]
+                "type": "input",
+                "name": "dnpOjoIzquierdo",
+                "class": "col-2"
               }
             ]
           }
@@ -700,7 +648,99 @@
             ]
           }
         ],
-        "card14": [
+        "card14":[
+          {
+            "title": "Cristal Recomendado",
+            "class": "col-12",
+            "fields":[
+              {
+                "id": "labelVisionSencilla",
+                "label": "Vision sencilla",
+                "type": "label",
+                "name": "labelVisionSencilla",
+                "class": "col-4"
+              },
+              {
+                "id": "inputVisionSencilla",
+                "label": "",
+                "type": "input",
+                "name": "inputVisionSencilla",
+                "class": "col-4"
+              },
+              {
+                "id": "inputVisionSencillaV",
+                "label": "V",
+                "type": "input",
+                "name": "inputVisionSencillaV",
+                "class": "col-4"
+              },
+              {
+                "id": "labelBifocalFlttop",
+                "label": "Bifocal FLTTOP",
+                "type": "label",
+                "name": "labelBifocalFlttop",
+                "class": "col-4"
+              },
+              {
+                "id": "inputBifocalFlttop",
+                "label": "",
+                "type": "input",
+                "name": "inputBifocalFlttop",
+                "class": "col-4"
+              },
+              {
+                "id": "inputBifocalFlttopH",
+                "label": "H",
+                "type": "input",
+                "name": "inputBifocalFlttopH",
+                "class": "col-4"
+              },
+              {
+                "id": "labelBifocalInvisible",
+                "label": "Bifocal Invisible",
+                "type": "label",
+                "name": "labelBifocalInvisible",
+                "class": "col-4"
+              },
+              {
+                "id": "inputBifocalInvisible",
+                "label": "",
+                "type": "input",
+                "name": "inputBifocalInvisible",
+                "class": "col-4"
+              },
+              {
+                "id": "inputBifocalInvisibleD",
+                "label": "D",
+                "type": "input",
+                "name": "inputBifocalInvisibleD",
+                "class": "col-4"
+              },
+              {
+                "id": "labelProgresivo",
+                "label": "Progresivo",
+                "type": "label",
+                "name": "labelProgresivo",
+                "class": "col-4"
+              },
+              {
+                "id": "inputProgresivo",
+                "label": "",
+                "type": "input",
+                "name": "inputProgresivo",
+                "class": "col-4"
+              },
+              {
+                "id": "inputProgresivoP",
+                "label": "P",
+                "type": "input",
+                "name": "inputProgresivoP",
+                "class": "col-4"
+              }
+            ]
+          }
+        ],
+        "card15": [
           {
             "title": "Otros",
             "class": "col-12",

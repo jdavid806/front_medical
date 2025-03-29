@@ -1,4 +1,50 @@
 let listInstance;
+let preciosEntidades = [];
+
+function agregarFilaEntidad() {
+  let entidadId = document.getElementById("entity-product").value;
+  let entidadNombre = document.getElementById("entity-product").selectedOptions[0].text;
+
+  let precio = document.getElementById("entity-product_price").value;
+
+  let impuestoId = document.getElementById("tax_type").value;
+  let impuestoNombre = document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
+
+  let retencionId = document.getElementById("retention_type").value;
+  let retencionNombre = document.getElementById("retention_type").selectedOptions[0]?.text || "N/A";
+
+  preciosEntidades.push({
+    entity_id: entidadId,
+    price: precio,
+    tax_charge_id: impuestoId,
+    withholding_tax_id: retencionId,
+  });
+
+  let tabla = document.getElementById("tablaPreciosEntidades");
+  let fila = `<tr>
+                    <td>${entidadNombre}</td>
+                    <td>${precio}</td>
+                    <td>${impuestoNombre}</td>
+                    <td>${retencionNombre}</td>
+                    <td>
+                        <button type='button' class='btn btn-danger btn-sm' onclick='eliminarFilaEntidad(${preciosEntidades.length - 1})'>
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>`;
+
+  tabla.innerHTML += fila;
+
+  // Limpiar los campos después de agregar la fila
+  document.getElementById("entity-product_price").value = "";
+  document.getElementById("tax_type").value = "";
+  document.getElementById("retention_type").value = "";
+}
+
+function eliminarFilaEntidad(index) {
+  preciosEntidades.splice(index, 1);
+  document.getElementById("tablaPreciosEntidades").deleteRow(index);
+}
 
 async function cargarContenido() {
   const ruta = obtenerRutaPrincipal() + "/api/v1/admin/products/servicios";
@@ -6,6 +52,7 @@ async function cargarContenido() {
   const attentionTypeMap = {
     PROCEDURE: "Procedimiento",
     CONSULTATION: "Consulta",
+    LABORATORY: "Laboratorio",
   };
 
   try {
@@ -40,15 +87,13 @@ async function cargarContenido() {
             <td class="salePrice">${producto.sale_price || "N/A"}</td>
             <td class="copayment">${producto.copayment || "N/A"}</td>
             <td>
-                <button class="btn btn-primary btn-sm" onclick="editarProducto(${
-                  producto.id
-                })" 
+                <button class="btn btn-primary btn-sm" onclick="editarProducto(${producto.id
+            })" 
                 data-bs-toggle="modal" data-bs-target="#modalPrice">
                     <i class="fa-solid fa-pen"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="eliminarPrecio(${
-                  producto.id
-                })">
+                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarPrecio(${producto.id
+            })">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </td>
@@ -86,50 +131,54 @@ async function cargarContenido() {
   }
 }
 
-async function cargarEntidadesCrudPrecios(entidades) {
-  console.log("Entidades:", entidades);
+async function cargarEntidadesCrudPrecios(entidadesProducto) {
+  preciosEntidades = [];
 
-  // const entities = await
-  entidades.forEach((entidad) => {
-    let entidadId = entidad.id;
-    let entidadNombre = entidad.name || "N/A";
-    let impuestoId = entidad.tax_charge_id;
-    let retencionId = entidad.withholding_tax_id;
+  let rutaEntidades = obtenerRutaPrincipal() + "/medical/entities";
 
-    let precio = entidad.price;
+  try {
+    const responseEntidades = await fetch(rutaEntidades);
+    if (!responseEntidades.ok) throw new Error("Error en la solicitud");
 
-    let impuestoNombre =
-      document.getElementById("tax_type").selectedOptions[0]?.text || "N/A";
-    let retencionNombre =
-      document.getElementById("retention_type").selectedOptions[0]?.text ||
-      "N/A";
+    const entidades = await responseEntidades.json();
 
-    // Guardar en el array para futuras referencias
-    preciosEntidades.push({
-      entity_id: entidadId,
-      price: precio,
-      tax_charge_id: impuestoId,
-      withholding_tax_id: retencionId,
+    entidadesProducto.forEach((entidad) => {
+      let entidadId = entidad.entity_id;
+      let entidadNombre = entidades.data.find((e) => e.id == entidad.entity_id).name || "N/A";
+      let impuestoId = entidad.tax_charge_id;
+      let retencionId = entidad.withholding_tax_id;
+
+      let precio = entidad.price;
+
+      let impuestoNombre = entidad.tax_charge?.name || "N/A";
+      let retencionNombre = entidad.withholding_tax?.name || "N/A";
+
+      preciosEntidades.push({
+        entity_id: entidadId,
+        price: precio,
+        tax_charge_id: impuestoId,
+        withholding_tax_id: retencionId,
+      });
+
+      let tabla = document.getElementById("tablaPreciosEntidades");
+      let fila = `<tr>
+                  <td>${entidadNombre}</td>
+                  <td>${precio}</td>
+                  <td>${impuestoNombre}</td>
+                  <td>${retencionNombre}</td>
+                  <td>
+                      <button type='button' class='btn btn-danger btn-sm' onclick='eliminarFilaEntidad(${preciosEntidades.length - 1
+        })'>
+                          Eliminar
+                      </button>
+                  </td>
+              </tr>`;
+
+      tabla.innerHTML += fila;
     });
-
-    // Agregar fila a la tabla mostrando los nombres en lugar de los IDs
-    let tabla = document.getElementById("tablaPreciosEntidades");
-    let fila = `<tr>
-                <td>${entidadNombre}</td>
-                <td>${precio}</td>
-                <td>${impuestoNombre}</td>
-                <td>${retencionNombre}</td>
-                <td>
-                    <button class='btn btn-danger btn-sm' onclick='eliminarFila(${
-                      preciosEntidades.length - 1
-                    })'>
-                        Eliminar
-                    </button>
-                </td>
-            </tr>`;
-
-    tabla.innerHTML += fila;
-  });
+  } catch (error) {
+    console.error("Hubo un problema con la solicitud:", error);
+  }
 }
 
 async function eliminarPrecio(id) {
@@ -168,7 +217,27 @@ async function editarProducto(id) {
     return;
   }
 
+  let tabla = document.getElementById("tablaPreciosEntidades");
+  tabla.innerHTML = "";
+
   cargarEntidadesCrudPrecios(producto.entities);
+
+  if (producto.attention_type === "LABORATORY") {
+    document.getElementById("priceSection").style.display = "none";
+    document.getElementById("copagoSection").style.display = "none";
+    document.getElementById("toggleEntitiesSection").style.display = "none";
+    document.getElementById("toggleImpuestoSection").style.display = "none";
+  } else {
+    document.getElementById("priceSection").style.display = "block";
+    document.getElementById("copagoSection").style.display = "block";
+    document.getElementById("toggleEntitiesSection").style.display = "block";
+    document.getElementById("toggleImpuestoSection").style.display = "block";
+  }
+
+  if (producto.entities.length > 0) {
+    document.getElementById("toggleEntities").checked = true;
+    document.getElementById("entity-productSection").style.display = "block";
+  }
 
   document.getElementById("name").value = producto.name || "";
   document.getElementById("curp").value = producto.barcode || "";

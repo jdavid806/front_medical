@@ -13,14 +13,14 @@ async function generarFormato(objecto, nombreObjecto) {
     case "Consulta":
       formatoAImprimir = await generarFormatoConsulta(objecto);
       break;
+    case "RecetaExamen":
+      formatoAImprimir = await generarFormatoRecetaOrden(objecto);
+      break;
     case "Receta":
       formatoAImprimir = await generarFormatoReceta(objecto);
       break;
     case "Examen":
       formatoAImprimir = await generarFormatoOrden(objecto);
-      break;
-    case "RecetaExamen":
-      formatoAImprimir = await generarFormatoReceta(objecto);
       break;
 
     default:
@@ -92,6 +92,7 @@ async function generarFormatoConsentimiento(consentimeinto) {
 async function generarFormatoConsulta(consulta_id) {
   let url = obtenerRutaPrincipal() + `/medical/clinical-records/${consulta_id}`;
   let datosConsulta = await obtenerDatos(url);
+  console.log(datosConsulta);
 
   let urlTipoHistoria =
     obtenerRutaPrincipal() +
@@ -343,7 +344,7 @@ async function generarFormatoOrden(ordenId) {
   };
 }
 
-async function generarFormatoReceta(ordenId) {
+async function generarFormatoRecetaOrden(ordenId) {
   let url = obtenerRutaPrincipal() + `/medical/exam-recipes/${ordenId}`;
   let datosExamen = await obtenerDatos(url);
 

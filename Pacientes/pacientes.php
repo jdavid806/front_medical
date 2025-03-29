@@ -227,15 +227,29 @@ include "../header.php";
             return pacientes
                 .map(paciente => {
                     // Ordenar citas por fecha y hora
-                    const citasOrdenadas = paciente.appointments
+                    const hoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+                    const citasHoy = paciente.appointments
+                        .filter(c => c.appointment_date === hoy)
                         .sort((a, b) => {
                             const fechaHoraA = new Date(`${a.appointment_date}T${a.appointment_time}`);
                             const fechaHoraB = new Date(`${b.appointment_date}T${b.appointment_time}`);
-                            return fechaHoraB - fechaHoraA;
+                            return fechaHoraA - fechaHoraB;
                         });
 
-                    // Obtener la primera cita
-                    const primeraCita = citasOrdenadas[0];
+                    let citaAMostrar;
+
+                    if (citasHoy.length === 1) {
+                        citaAMostrar = citasHoy[0];
+                    } else {
+                        citaAMostrar = citasHoy.find(c => c.appointment_state.name !== "consultation_completed");
+                    }
+
+                    if (!citaAMostrar && citasHoy.length > 0) {
+                        citaAMostrar = citasHoy[citasHoy.length - 1];
+                    }
+
+                    const primeraCita = citaAMostrar;
 
                     // Determinar el estado de la primera cita
                     const estado = primeraCita ? primeraCita.appointment_state.name : null;

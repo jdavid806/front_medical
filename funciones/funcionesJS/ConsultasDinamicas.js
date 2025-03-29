@@ -47,7 +47,8 @@ async function consultarDatosPaciente(pacienteId, fechaConsulta) {
     data.second_last_name,
   ];
 
-  let nombrEntidad = data.social_security.entity.name;  
+  // let nombrEntidad = data.social_security.entity.name;  
+  let nombrEntidad = "Desconocido";  
 
   return {
     datos_basicos: {

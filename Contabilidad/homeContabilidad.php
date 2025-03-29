@@ -9,7 +9,7 @@ $tabs = [
     ['icono' => 'file-contract', 'titulo' => 'Recibos de Caja', 'texto' => 'Contabiliza los pagos recibidos y realizados', 'url' => 'RecibosDeCajas'],
     ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Generar el cierre de Caja', 'url' => 'controlCaja'],
     ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Auditoria de cierres de caja', 'url' => 'reporteCaja'],
-    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Visualiza reporte de facturas con sus vencimientos', 'url' => 'FE_ContabilidadNueva'],
+    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Visualiza reporte de facturas con sus vencimientos', 'url' => 'CuentasCobrarPagar'],
     ['icono' => 'chart-simple', 'titulo' => 'Reportes Contables', 'texto' => 'Visualiza reportes financieros', 'url' => 'FE_ContabilidadNueva'],
     ['icono' => 'check-double', 'titulo' => 'Auditoria Contable', 'texto' => 'Visualiza historico de registros y acciones del sistema', 'url' => 'FE_ContabilidadNueva'],
 ];

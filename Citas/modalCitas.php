@@ -433,7 +433,7 @@ $externalCause = array(
     if (Array.isArray(products)) { // Verifica si products es un array
       products.forEach(product => {
         const attributes = product.attributes;
-        if (attributes && attributes.name && attributes.sale_price) {
+        if (attributes && attributes.name) {
           const option = document.createElement('option');
           option.value = product.id;
           option.textContent = attributes.name; // Accede al nombre del producto desde attributes
@@ -447,9 +447,20 @@ $externalCause = array(
     } else {
       console.error('No se encontró un array de productos');
     }
+    configurarSelectProducts();
   }
 
+  function configurarSelectProducts() {
+    const product = document.getElementById('product_id');
 
+    // Choices.js
+    if (typeof Choices !== 'undefined') {
+      const choices = new Choices(product, {
+        removeItemButton: true,
+        placeholder: true
+      });
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
 

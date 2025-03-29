@@ -219,7 +219,10 @@ $tabs = [
           if (result.isConfirmed) {
             const patientId = new URLSearchParams(window.location.search).get('id') || new URLSearchParams(window.location.search).get('patient_id');
             const patient = await patientService.get(patientId);
-            const currentAppointment = patient.appointments.find(appointment => appointment.appointment_state.name === 'pending_consultation');
+            const currentAppointment = patient.appointments.find(appointment => (
+              appointment.appointment_state.name === 'pending_consultation' &&
+              appointment.appointment_date == new Date().toISOString().split('T')[0]
+            ));
 
             if (currentAppointment) {
               console.log(currentAppointment.id, 'called');

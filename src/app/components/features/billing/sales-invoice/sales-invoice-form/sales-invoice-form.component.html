@@ -1,0 +1,127 @@
+<div class="form-container">
+  <form form-group="form">
+    <h3>Información básica</h3>
+    <div class="form-grid-basic">
+      <div class="form-inputElement">
+        <p>Tipo de comprobante</p>
+        <p-select placeholder="Seleccionar" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Numero de factura</p>
+        <input type="text" pInputText placeholder="Ingresar Numero Factura" />
+      </div>
+      <div class="form-inputElement">
+        <p>Cliente</p>
+        <p-select placeholder="Selecciona cliente" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Destinatario</p>
+        <p-select placeholder="Selecciona destinatario" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Vendedor</p>
+        <p-select placeholder="Selecciona vendedor" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Centro de costo</p>
+        <p-select placeholder="Selecciona centro" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement full-width">
+        <p>Fecha seleccionada</p>
+        <p-datepicker class="date-picker-id" [iconDisplay]="'input'" [showIcon]="true" dateFormat="dd/mm/yy" [(ngModel)]="formattedDate" placeholder="dd/mm/aaaa"  />
+      </div>
+    </div>
+
+    <h3>Información de facturación</h3>
+    <p-card class="parent-card">
+      <!-- Encabezado de la tabla -->
+      <table class="product-table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Valor unitario</th>
+            <th>% Dscto</th>
+            <th>IVA</th>
+            <th>Impuesto retención</th>
+            <th>Valor Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(product of productsArray; track product; let i = $index) {
+          <tr>
+            <td>
+              <p-select placeholder="Selecciona producto" [editable]="true" optionLabel="name"></p-select>
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="Cantidad" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="Valor unitario" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="% Dscto" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="IVA" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="0.00" />
+            </td>
+            <td>
+              <p-button icon="pi pi-trash"  [text]="true" severity="danger" (click)="removeProduct(i)" />
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Botón para añadir producto -->
+      <p class="add-text" (click)="addProduct()">
+        <i class="pi pi-plus"></i> Añadir
+      </p>
+
+      <!-- Total -->
+      <p-card class="total-card">
+        <h4>Total Neto: {{totalValue}}</h4>
+      </p-card>
+    </p-card>
+
+    <h3>Medio de pago</h3>
+    <div class="payment-array">
+      @for(paymentMethods of paymentMethodsArray; track paymentMethods; let i = $index) {
+      <div class="payment-container">
+        <div>
+          <p>Selecciona medio de pago</p>
+          <p-select placeholder="Seleccionar" [editable]="true" optionLabel="name" />
+        </div>
+        <div>
+          <p>Número de autorización</p>
+          <input type="text" pInputText placeholder="" />
+        </div>
+        <div>
+          <p>Valor</p>
+          <input type="text" pInputText placeholder="0.00" />
+        </div>
+        <div class="icon">
+          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="removePayment(i)" />
+        </div>
+      </div>
+      }
+      <p class="add-text" (click)="addPayment()"><i class="pi pi-plus"></i> Añadir</p>
+    </div>
+    <div class="total-pagar-container">
+      <h3>Total a pagar</h3>
+      <p class="total-amount">0.00</p>
+      <div class="button-container">
+        <p-button label="Cancelar" (click)="cancel()" class="cancel-button"></p-button>
+        <p-button label="Guardar" (click)="save()" class="save-button"></p-button>
+        <p-button label="Guardar y Enviar" (click)="saveAndSend()" class="save-send-button"></p-button>
+      </div>
+    </div>
+  </form>
+</div>

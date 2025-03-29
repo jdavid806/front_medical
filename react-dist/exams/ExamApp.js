@@ -5,13 +5,15 @@ import { CustomModal } from "../components/CustomModal.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { useExams } from "./hooks/useExams.js";
 import { ExamResultsForm } from "./components/ExamResultsForm.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
 const ExamApp = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showResultsFormModal, setShowResultsFormModal] = useState(false);
   const [patientId, setPatientId] = useState('');
   const [selectedExamId, setSelectedExamId] = useState('');
   const {
-    exams
+    exams,
+    fetchExams
   } = useExams(patientId);
   useEffect(() => {
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
@@ -34,6 +36,21 @@ const ExamApp = () => {
     setSelectedExamId(examId);
     setShowResultsFormModal(true);
   };
+  const handleViewExamResults = async minioId => {
+    if (minioId) {
+      //@ts-ignore
+      const url = await getFileUrl(minioId);
+      console.log('Archivo URL: ', url);
+      window.open(url, '_blank');
+    } else {
+      SwalManager.error({
+        text: 'No se pudo obtener la URL del archivo'
+      });
+    }
+  };
+  const handleReload = () => {
+    fetchExams(patientId);
+  };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "row mb-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -42,15 +59,11 @@ const ExamApp = () => {
     className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
     className: "mb-0"
-  }, "Ex\xE1menes")), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary",
-    type: "button",
-    onClick: () => setShowFormModal(true)
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-plus me-2"
-  }), " Nuevo examen")))), /*#__PURE__*/React.createElement(ExamTable, {
+  }, "Ex\xE1menes"))))), /*#__PURE__*/React.createElement(ExamTable, {
     exams: exams,
-    onLoadExamResults: handleLoadExamResults
+    onLoadExamResults: handleLoadExamResults,
+    onViewExamResults: handleViewExamResults,
+    onReload: handleReload
   }), /*#__PURE__*/React.createElement(CustomFormModal, {
     formId: 'createExam',
     show: showFormModal,
