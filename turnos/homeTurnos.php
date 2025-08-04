@@ -4,8 +4,9 @@ include "../header.php";
 include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
-    ['icono' => 'receipt', 'titulo' => 'Turnos', 'texto' => 'Ir a gestión de turnos', 'url' => 'gestion-turnos'],
+    ['icono' => 'check-to-slot', 'titulo' => 'Turnos', 'texto' => 'Ir a gestión de turnos', 'url' => 'gestion-turnos'],
     ['icono' => 'chalkboard-teacher', 'titulo' => 'Sala de espera', 'texto' => 'Visualizar sala de espera', 'url' => 'waiting-room'],
+    ['icono' => 'receipt', 'titulo' => 'Solicitud de Turnos', 'texto' => 'Ir a Solicitar turnos', 'url' => 'solicitud-turnos'],
   
 ];
 
@@ -32,7 +33,7 @@ $tabs = [
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="homeTurnos">Turnos</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()" id="nameBradcumb"></li>
+                <li class="breadcrumb-item active" onclick="location.reload()">Dashboard Turnos</li>
             </ol>
         </nav>
         <div class="row g-0 g-md-4 g-xl-6 p-5 justify-content-center">

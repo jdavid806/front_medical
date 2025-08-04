@@ -1,4 +1,4 @@
-import {
+ import {
   Component,
   Input,
 } from '@angular/core';
@@ -202,14 +202,14 @@ export class MovementsListComponent {
         label: 'Recibo caja',
         icon: 'pi pi-money-bill',
         command: () => {
-          this.onNewReceipt('caja');
+          this.onNewReceipt('pago');
         }
       },
       {
         label: 'Recibo pago',
         icon: 'pi pi-credit-card',
         command: () => {
-          this.onNewReceipt('pago');
+          this.onNewReceipt('caja');
         }
       }
     ];
@@ -217,7 +217,14 @@ export class MovementsListComponent {
 
 
   onNewReceipt(type: string): void {
-    console.log(`Nuevo recibo de ${type} seleccionado`);
+    switch (type) {
+      case 'caja':
+        this.router.navigate(['causations/credit-note/new']);
+        break;
+      case 'pago':
+        this.router.navigate(['causations/debit-note/new']);
+        break;
+    }
   }
 
   onNewSelected() {

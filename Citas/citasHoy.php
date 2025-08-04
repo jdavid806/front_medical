@@ -38,6 +38,16 @@ $consultasPorEstado = [];
 foreach ($estados as $estado) {
     $consultasPorEstado[$estado] = array_filter($consultas, fn($consulta) => $consulta['estado'] === $estado);
 }
+
+
+$tabs = [
+    ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturación', 'texto' => 'Crear facturas para admisionar al paciente', 'url' => 'facturacionAdmisiones'],
+    ['icono' => 'person-walking-arrow-right', 'titulo' => 'Pacientes', 'texto' => 'Visualiza los pacientes y accede a su información', 'url' => 'pacientescontrol'],
+    ['icono' => 'calendar-days', 'titulo' => 'Citas', 'texto' => 'Gestión y control de citas', 'url' => 'gestioncitas'],
+    ['icono' => 'hospital', 'titulo' => 'Sala de Espera', 'texto' => 'Visualiza los pacientes por el estado de su cita', 'url' => 'salaEspera'],
+    ['icono' => 'file-prescription', 'titulo' => 'Post - Consulta', 'texto' => 'Visualiza los pacientes que finalizarón consulta', 'url' => 'postconsultaControl'],
+    ['icono' => 'house-chimney-medical', 'titulo' => 'Admisiones', 'texto' => 'Visualiza el historial de adminisiones', 'url' => 'controlAdmisiones']
+];
 ?>
 
 <link rel="stylesheet" href="./assets/css/styles.css">
@@ -144,519 +154,39 @@ foreach ($estados as $estado) {
                     <li class="breadcrumb-item active" onclick="location.reload()">Control de citas</li>
                 </ol>
             </nav>
-            <div class="row mt-4">
-                <!-- Pestañas -->
-                <ul class="nav nav-underline fs-9 p-3" id="antecedentesTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="personales-tab" data-bs-toggle="tab" href="#personales"
-                            role="tab">
-                            <i class="fas fa-hospital-user"></i> Admisiones
-                        </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="citas-tab" data-bs-toggle="tab" href="#citas" role="tab">
-                            <i class="fas fa-hospital"></i> Citas
-                        </a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="salaDeEspera-tab" data-bs-toggle="tab" href="#salaDeEspera" role="tab">
-                            <i class="fas fa-chair"></i> Sala de espera
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-auto" role="presentation">
-                        <a class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearCita">
-                            <i class="fas fa-calendar-plus"></i> Nueva Cita
-                        </a>
-                    </li>
-
-                    <!-- <li class="nav-item" role="presentation">
-            <a class="nav-link" id="turnos-tab" data-bs-toggle="tab" href="#turnos" role="tab">
-              <i class="fas fa-random"></i> Generar turno
-            </a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="turnosGestion-tab" data-bs-toggle="tab" href="#turnosGestion" role="tab">
-              <i class="fas fa-ticket-alt"></i> Turnos
-            </a>
-          </li> -->
-                    <!-- <li class="nav-item" role="presentation">
-            <a class="nav-link" id="entidades-tab" data-bs-toggle="tab" href="#entidades" role="tab">
-              <i class="fas fa-ticket-alt"></i> Entidades
-            </a>
-          </li> -->
-                </ul>
-
-                <div class="tab-content mt-3" id="antecedentesTabsContent">
-                    <!-- Tab de antecedentes personales -->
-                    <div class="tab-pane fade show active" id="personales" role="tabpanel">
-                        <div id="admissionsTableReact"></div>
+            <div class="row g-0 g-md-4 g-xl-6 p-5 justify-content-center">
+                <div class="col-md-9">
+                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-3 mt-2">
+                        <?php foreach ($tabs as $tab) { ?>
+                            <div class="col">
+                                <div class="card text-center" style="min-height: 15em;">
+                                    <div class="card-body d-flex flex-column justify-content-between align-items-center"
+                                        style="height: 100%;">
+                                        <!-- Icono en la parte superior -->
+                                        <div class="mb-2">
+                                            <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
+                                        </div>
+                                        <!-- Título -->
+                                        <h5 class="card-title"><?= $tab['titulo'] ?></h5>
+                                        <!-- Texto -->
+                                        <p class="card-text fs-9 text-center">
+                                            <?= $tab['texto'] ?>
+                                        </p>
+                                        <!-- Botón -->
+                                        <a href="<?= $tab['url'] ?>" class="btn btn-primary mt-auto">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
-
-                    <!-- Tab de antecedentes ginecoobstétricos -->
-                    <div class="tab-pane fade" id="salaDeEspera" role="tabpanel">
-                        <div class="pb-9">
-                            <!-- <div class="board" id="board2"></div> -->
-                            <div id="LobbyAppointments"></div>
-
-                            <!-- <div class="board" id="board">
-                <?php foreach ($consultasPorEstado as $estado => $consultas): ?>
-                  <div class="column-wrapper">
-                    <div class="column-title">
-                      <h3><?= $estado ?></h3>
-                    </div>
-                    <div class="column" data-status="<?= $estado ?>">
-                      <?php foreach ($consultas as $consulta): ?>
-                        <div class="task" data-id="<?= $consulta['id'] ?>">
-                          <strong><?= $consulta['fecha'] ?></strong>
-                          <p><?= $consulta['descripcion'] ?></p>
-                          <?php if ($estado === 'En consulta'): ?>
-                            <a href="verPaciente?1" class="btn btn-primary flex-shrink-0" target="_blank">Ver paciente <span
-                                class="fa-solid fa-chevron-right"></span></a>
-                          <?php endif; ?>
-
-
-                        </div>
-                      <?php endforeach; ?>
-                    </div>
-                  </div>
-                <?php endforeach; ?>
-              </div> -->
-
-                        </div>
-                    </div>
-
-                    <!-- Tab de antecedentes familiares -->
-                    <div class="tab-pane fade" id="familiares" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th class="sort" data-sort="fecha">Fecha</th>
-                                        <th class="sort" data-sort="doctor">Doctor(a)</th>
-                                        <th class="sort" data-sort="motivo">Motivo</th>
-                                        <th class="sort" data-sort="detalles">Detalles</th>
-                                        <th class="text-end">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list">
-                                    <?php foreach ($antecedentesFamiliares as $antecedente) { ?>
-                                        <tr>
-                                            <td class="fecha align-middle"><?= $antecedente['fecha'] ?></td>
-                                            <td class="doctor align-middle"><?= $antecedente['doctor'] ?></td>
-                                            <td class="motivo align-middle"><?= $antecedente['motivo'] ?></td>
-                                            <td class="detalles align-middle"><?= $antecedente['detalles'] ?></td>
-                                            <td class="text-end align-middle">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <button class="btn text-primary p-0" title="Editar antecedente"
-                                                        onclick="editarAntecedente(<?= $receta['recetaId'] ?>)">
-                                                        <i class="fa-solid fa-pencil"></i>
-                                                    </button>
-                                                    <button class="btn text-primary p-0" title="Eliminar antecedente"
-                                                        onclick="eliminarAntecedente(<?= $receta['recetaId'] ?>)">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="citas" role="tabpanel">
-
-                        <div id="appointmentsTableReact"></div>
-
-                    </div>
-
-                    <!-- Tab de turnos -->
-                    <div class="tab-pane fade" id="turnos" role="tabpanel">
-
-                        <div id="generateTicketReact"></div>
-
-                    </div>
-
-                    <div class="tab-pane fade" id="turnosGestion" role="tabpanel">
-
-                        <div id="gestionarTicketsReact"></div>
-
-                    </div>
-
-                    <!-- Tab entidades -->
-                    <!-- <div class="tab-pane fade" id="entidades" role="tabpanel">
-
-          <div class="tab-pane fade show active" id="personales" role="tabpanel">
-            
-            <table class="table table-sm fs-9 mb-0 tableDataTableSearch">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Cédula</th>
-                  <th>Fecha Consulta</th>
-                  <th>Hora Consulta</th>
-                  <th>Profesional asignado</th>
-                  <th>Entidad</th>
-                  <th>Estado</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody class="list">
-                <?php foreach ($arraytest as $value) { ?>
-                  <tr>
-                    <td class="align-middle custom-td"><?= $value["Nombre"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Cédula"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Fecha Consulta"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Hora Consulta"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Profesional asignado"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Entidad"] ?></td>
-                    <td class="align-middle custom-td"><?= $value["Estado"] ?></td>
-                    <td class="align-middle white-space-nowrap pe-0 p-3">
-
-                      <a href="Factura_entidad" class="btn btn-primary">
-                        <i class="fas fa-file-invoice success"></i> Facturar por entidad
-                      </a>
-                    </td>
-                  </tr>
-                <?php } ?>
-              </tbody>
-            </table>
-          </div>
-          </div> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<template id="template-consulta">
-    <tr>
-        <td id="nombre" class="align-middle custom-td"></td>
-        <td id="documento" class="align-middle custom-td"></td>
-        <td id="fecha-consulta" class="align-middle custom-td"></td>
-        <td id="hora-consulta" class="align-middle custom-td"></td>
-        <td id="profesional" class="align-middle custom-td"></td>
-        <td id="entidad" class="align-middle custom-td"></td>
-        <td id="estado" class="align-middle custom-td"></td>
-        <td class="align-middle white-space-nowrap pe-0 p-3">
-
-            <div class="btn-group me-1">
-                <button class="btn dropdown-toggle mb-1 btn-primary" type="button" data-bs-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">Acciones</button>
-                <div class="dropdown-menu">
-
-                    <a href="#" class="dropdown-item" id="generar-admision"> Generar admisión
-                    </a>
-                    <a class="dropdown-item" href="#"> Generar link de pago</a>
-
-                </div>
-            </div>
-        </td>
-    </tr>
-</template>
-
-<template id="template-all-citas">
-    <tr>
-        <td class="fs-9 align-middle">
-            <div class="form-check mb-0 fs-8">
-                <input class="form-check-input" type="checkbox">
-            </div>
-        </td>
-        <td id="nombre" class="align-middle custom-td"></td>
-        <td id="documento" class="align-middle custom-td"></td>
-        <td id="fecha-consulta" class="align-middle custom-td"></td>
-        <td id="hora-consulta" class="align-middle custom-td"></td>
-        <td id="profesional" class="align-middle custom-td"></td>
-        <td id="entidad" class="align-middle custom-td"></td>
-        <td id="estado" class="align-middle custom-td"></td>
-        <td class="align-middle white-space-nowrap pe-0 p-3">
-        </td>
-    </tr>
-</template>
-
-<?php include "./modalCitas.php"; ?>
-
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-<script type="module">
-    import {
-        admissionService,
-        appointmentService
-    } from './services/api/index.js';
-    import {
-        appointmentStatesColors
-    } from "./services/commons.js";
-
-    // Variables globales
-    let admissions = [];
-    let sortableInstances = [];
-    const admissionsGroupedLabels = {
-        1: 'Pendientes',
-        2: 'En espera de consulta',
-        3: 'En consulta',
-        4: 'Consulta finalizada'
-    };
-
-    // Configuración de Pusher
-    const pusher = new Pusher('5e57937071269859a439', {
-        cluster: 'us2'
-    });
-    const channel = pusher.subscribe('waiting-room.consultorio2.3');
-
-    // Función principal de renderizado
-    async function renderBoard() {
-        const appointmentsStatusBoard = document.getElementById('board2');
-
-        // Limpiar instancias anteriores
-        sortableInstances.forEach(instance => instance.destroy());
-        sortableInstances = [];
-        appointmentsStatusBoard.innerHTML = '';
-
-        // Agrupar admisiones por estado
-        const groupedAdmissions = groupAdmissionsByStatus(admissions);
-
-        // Crear columnas
-        Object.keys(groupedAdmissions).forEach(statusKey => {
-            const columnWrapper = document.createElement('div');
-            columnWrapper.classList.add('column-wrapper');
-
-            // Titulo de columna
-            const columnTitle = document.createElement('div');
-            columnTitle.classList.add('column-title');
-            const title = document.createElement('h3');
-            title.textContent = admissionsGroupedLabels[statusKey];
-            columnTitle.appendChild(title);
-            columnWrapper.appendChild(columnTitle);
-
-            // Contenedor de tareas
-            const column = document.createElement('div');
-            column.classList.add('column');
-            column.setAttribute('data-status', statusKey);
-
-            // Crear elementos de tarea
-            groupedAdmissions[statusKey].forEach(admission => {
-                const task = document.createElement('div');
-                task.classList.add('task', `bg-${appointmentStatesColors[statusKey]}-subtle`);
-                task.setAttribute('data-id', admission.id);
-
-                // Contenido de la tarea
-                const timeElement = document.createElement('strong');
-                timeElement.textContent =
-                    `${admission.appointment_date} ${moment(admission.appointment_time, 'HH:mm:ss').format('HH:mm')}`;
-
-                const patientInfo = document.createElement('p');
-                patientInfo.textContent =
-                    `Paciente: ${admission.patient.first_name} ${admission.patient.last_name}, ${admission.patient.document_type} ${admission.patient.document_number}`;
-
-                const link = document.createElement('a');
-                link.href = `verPaciente?id=${admission.patient.id}`;
-                link.classList.add('btn', 'btn-primary', 'flex-shrink-0', 'd-none');
-                link.setAttribute('target', '_blank');
-                link.setAttribute('data-toggle-link', '');
-                link.innerHTML = 'Ver paciente <span class="fa-solid fa-chevron-right"></span>';
-
-                // Estado inicial del enlace
-                if (statusKey === '3') link.classList.remove('d-none');
-
-                // Ensamblar elementos
-                task.appendChild(timeElement);
-                task.appendChild(patientInfo);
-                task.appendChild(link);
-                column.appendChild(task);
-            });
-
-            columnWrapper.appendChild(column);
-            appointmentsStatusBoard.appendChild(columnWrapper);
-        });
-
-        // Inicializar Sortable en nuevas columnas
-        // initializeSortable();
-    }
-
-    // Función para agrupar admisiones
-    function groupAdmissionsByStatus(admissionsList) {
-        const grouped = {
-            1: [],
-            2: [],
-            3: [],
-            4: []
-        };
-
-        admissionsList.forEach(admission => {
-            if (admission.is_active && grouped[admission.appointment_state_id]) {
-                grouped[admission.appointment_state_id].push(admission);
-            }
-        });
-
-        // Ordenar por hora de cita
-        Object.keys(grouped).forEach(status => {
-            grouped[status].sort((a, b) =>
-                a.appointment_time.localeCompare(b.appointment_time)
-            );
-        });
-
-        return grouped;
-    }
-
-    // Inicializar funcionalidad de arrastre
-    function initializeSortable() {
-        document.querySelectorAll('.column').forEach(column => {
-            const sortable = new Sortable(column, {
-                group: 'shared',
-                animation: 150,
-                onAdd: async (evt) => {
-                    const task = evt.item;
-                    const newStatus = evt.to.dataset.status;
-                    const taskId = task.dataset.id;
-
-                    // Actualizar estilos
-                    updateTaskStyles(task, newStatus);
-
-                    // Confirmar movimiento
-                    const confirmation = await Swal.fire({
-                        title: '¿Confirmar cambio?',
-                        text: `Mover cita a: ${admissionsGroupedLabels[newStatus]}`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Confirmar',
-                        cancelButtonText: 'Cancelar'
-                    });
-
-                    if (confirmation.isConfirmed) {
-                        try {
-                            await appointmentService.updateAppointmentStatus(taskId, newStatus);
-                            await refreshAdmissionsData();
-                        } catch (error) {
-                            console.error('Error updating appointment:', error);
-                            evt.from.appendChild(task);
-                            updateTaskStyles(task, evt.from.dataset.status);
-                        }
-                    } else {
-                        evt.from.appendChild(task);
-                        updateTaskStyles(task, evt.from.dataset.status);
-                    }
-                }
-            });
-            sortableInstances.push(sortable);
-        });
-    }
-
-    // Actualizar estilos de la tarea
-    function updateTaskStyles(taskElement, newStatus) {
-        // Limpiar clases de color anteriores
-        Object.values(appointmentStatesColors).forEach(color => {
-            taskElement.classList.remove(`bg-${color}-subtle`);
-        });
-
-        // Añadir nueva clase
-        taskElement.classList.add(`bg-${appointmentStatesColors[newStatus]}-subtle`);
-
-        // Manejar visibilidad del enlace
-        const link = taskElement.querySelector('[data-toggle-link]');
-        link.classList.toggle('d-none', newStatus !== '3');
-    }
-
-    // Actualizar datos desde el servidor
-    async function refreshAdmissionsData() {
-        const response = await admissionService.getAdmisionsAll();
-        admissions = response.filter(a =>
-            a.user_availability?.appointment_type_id === 1
-        );
-        console.log("renderizando data");
-
-        await renderBoard();
-    }
-
-    // Configurar eventos de Pusher con debounce
-    const debouncedRefresh = debounce(refreshAdmissionsData, 300);
-
-    channel.bind('appointment.created', debouncedRefresh);
-    channel.bind('appointment.state.updated', debouncedRefresh);
-    channel.bind('appointment.inactivated', debouncedRefresh);
-
-    // Función debounce
-    function debounce(func, wait) {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', async () => {
-        await refreshAdmissionsData();
-        // document.getElementById('generarTurnoBtn').addEventListener('click', generarTurno);
-    });
-
-    // Función de ejemplo para generar turno (mantener tu implementación)
-    function generarTurno() {
-        // Tu implementación existente
-    }
-</script>
-<script>
-    function generarTurno() {
-        const identificacion = document.getElementById('identificacion').value;
-        const motivo = document.getElementById('motivo').value;
-        const asistenciaPreferencial = document.getElementById('asistenciaPreferencial').value;
-        const turno = 'G' + Math.floor(Math.random() * 100);
-        const fecha = new Date().toLocaleDateString();
-
-        // Verificar si se ingresó asistencia preferencial
-        const asistenciaHtml = asistenciaPreferencial ? `<p><strong>Preferencial:</strong> ${asistenciaPreferencial}</p>` :
-            '';
-
-        const ticketHtml = `
-        <div class="card ticket">
-            <div class="card-body">
-                <h4 class="text-center mb-2">Turno: ${turno}</h4>
-                <p><strong>ID:</strong> ${identificacion}</p>
-                <p><strong>Motivo:</strong> ${motivo}</p>
-                ${asistenciaHtml} <!-- Se agrega solo si tiene valor -->
-                <h6 class="w-100 text-end">${fecha}</h6>
-            </div>
-        </div>
-    `;
-
-        document.getElementById('ticket-container').innerHTML = ticketHtml;
-    }
-</script>
-
 <?php
-include "./modalReagendar.php";
 include "../footer.php";
 ?>
-
-<script src="./assets/js/main.js"></script>
-
-<script type="module">
-    import React from "react"
-    import ReactDOMClient from "react-dom/client"
-    import {
-        TodayAppointmentsTable
-    } from './react-dist/appointments/TodayAppointmentsTable.js';
-    import {
-        AppointmentsTable
-    } from './react-dist/appointments/AppointmentsTable.js';
-    import {
-        GenerateTicket
-    } from './react-dist/tickets/GenerateTicket.js';
-    import {
-        TicketApp
-    } from './react-dist/tickets/TicketApp.js';
-    import {
-        LobbyAppointments
-    } from './react-dist/appointments/LobbyAppointments.js';
-
-
-
-
-    ReactDOMClient.createRoot(document.getElementById('LobbyAppointments')).render(React.createElement(
-        LobbyAppointments));
-    ReactDOMClient.createRoot(document.getElementById('admissionsTableReact')).render(React.createElement(
-        TodayAppointmentsTable));
-    ReactDOMClient.createRoot(document.getElementById('appointmentsTableReact')).render(React.createElement(
-        AppointmentsTable));
-    ReactDOMClient.createRoot(document.getElementById('generateTicketReact')).render(React.createElement(GenerateTicket));
-    ReactDOMClient.createRoot(document.getElementById('gestionarTicketsReact')).render(React.createElement(TicketApp));
-</script>

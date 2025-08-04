@@ -142,9 +142,11 @@ export const ExamConfigForm: React.FC<ExamTypeFormProps> = ({ formId, onHandleSu
                                     options={selectableExamTypes}
                                     optionLabel='label'
                                     optionValue='value'
+                                    filter
                                     placeholder="Seleccione un tipo de examen"
                                     className={classNames('w-100', { 'p-invalid': errors.type })}
                                     {...field}
+                                    appendTo={'self'}
                                 />
                             </>
                         )}

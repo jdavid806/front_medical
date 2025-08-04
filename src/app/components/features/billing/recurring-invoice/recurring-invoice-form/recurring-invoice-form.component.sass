@@ -1,0 +1,151 @@
+:host
+  ::ng-deep
+    .form-container
+      display: flex
+      justify-content: center
+      padding: 1rem
+      width: 100%
+      box-sizing: border-box
+
+      .invoice-form
+        width: 100%
+        padding: 0
+
+        .alert
+          background: #f8f9fa
+          border-left: 4px solid #3b82f6
+          padding: 1rem
+          border-radius: 0 6px 6px 0
+          margin-bottom: 1.5rem
+
+          p
+            margin-bottom: 0.5rem
+
+          ul
+            padding-left: 1.25rem
+            margin: 0
+
+        .section-title
+          font-size: 1.25rem
+          font-weight: 600
+          color: #374151
+          margin-bottom: 1.5rem
+          padding-bottom: 0.5rem
+          border-bottom: 1px solid #e5e7eb
+
+        .grid
+          display: grid
+          gap: 1.5rem
+          margin-bottom: 1.5rem
+
+        label
+          display: block
+          margin-bottom: 0.5rem
+          font-weight: 500
+          color: #4b5563
+          font-size: 0.875rem
+
+        .p-dropdown
+          width: 100%
+          border-radius: 6px
+          border: 1px solid #d1d5db
+          transition: all 0.3s ease
+
+          &:hover
+            border-color: #9ca3af
+
+          &:focus, &:focus-within
+            border-color: #3b82f6
+            box-shadow: 0 0 0 1px #3b82f6
+
+        textarea
+          width: 100%
+          border-radius: 6px
+          border: 1px solid #d1d5db
+          padding: 0.75rem
+          font-family: inherit
+          font-size: 0.875rem
+          transition: all 0.3s ease
+          min-height: 100px
+          resize: vertical
+
+          &:hover
+            border-color: #9ca3af
+
+          &:focus
+            border-color: #01e31b
+            box-shadow: 0 0 0 1px #3b82f6
+            outline: none
+
+        .checkbox-container
+          display: flex
+          align-items: center
+          margin: 1.5rem 0
+
+          label
+            margin-bottom: 0
+            font-size: 0.875rem
+            cursor: pointer
+
+        .button-container
+          display: flex
+          justify-content: space-between
+          gap: 1rem
+          margin-top: 2rem
+
+          .p-button
+            flex: 1
+
+
+
+
+    /* Tablet */
+    @media (max-width: 992px)
+      .grid
+        grid-template-columns: repeat(2, 1fr)
+
+      .form-container
+        .invoice-form
+          .alert
+            padding: 0.75rem
+
+          .section-title
+            font-size: 1.1rem
+
+          textarea
+            min-height: 80px
+
+    /* Mobile */
+    @media (max-width: 768px)
+      .grid
+        grid-template-columns: 1fr
+        gap: 1rem
+
+      .form-container
+        padding: 0.75rem
+
+        .invoice-form
+          .alert
+            ul
+              padding-left: 1rem
+
+          .button-container
+            flex-direction: column
+
+          textarea
+            min-height: 70px
+
+    /* Small mobile */
+    @media (max-width: 480px)
+      .form-container
+        .invoice-form
+          .section-title
+            font-size: 1rem
+            margin-bottom: 1rem
+
+          .alert
+            font-size: 0.875rem
+            padding: 0.5rem 0.75rem
+
+          textarea
+            min-height: 60px

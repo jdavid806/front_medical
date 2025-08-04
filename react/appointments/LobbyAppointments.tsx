@@ -6,6 +6,7 @@ import { appointmentService } from "../../services/api";
 import { Panel } from "primereact/panel";
 import { ScrollPanel } from "primereact/scrollpanel";
 import { AppointmentTableItem } from "../models/models";
+import { Paginator } from "primereact/paginator";
 
 const appointmentStatesByKey: Record<string, string> = {
   Pendiente: "Pendiente",
@@ -30,19 +31,25 @@ const stateColors: Record<string, { backgroundColor: string; color: string }> =
   };
 
 export const LobbyAppointments: React.FC = () => {
-  const { appointments } = useFetchAppointments(appointmentService.active());
-  const [filterAppointments, setFilterAppointments] = useState<
-    AppointmentTableItem[]
-  >([]);
+  const getCustomFilters = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return {
+      sort: "-appointment_date,appointment_time",
+      appointmentDate: today,
+    };
+  };
+  const {
+    appointments,
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+    totalRecords,
+    first,
+    loading: loadingAppointments,
+    perPage,
+  } = useFetchAppointments(getCustomFilters);
 
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
-    setFilterAppointments(
-      appointments.filter((appointment) => appointment.date === today)
-    );
-  }, [appointments]);
-  // Agrupar citas por estado
-  const groupedAppointments = filterAppointments.reduce((acc, appointment) => {
+  const groupedAppointments = appointments.reduce((acc, appointment) => {
     const stateKey = appointment.stateDescription;
 
     const stateLabel = appointmentStatesByKey[stateKey] || "Sin Cita";
@@ -52,7 +59,7 @@ export const LobbyAppointments: React.FC = () => {
       acc[stateLabel].push(appointment);
     }
     return acc;
-  }, {} as Record<string, typeof filterAppointments>);
+  }, {} as Record<string, typeof appointments>);
 
   return (
     <div style={{ padding: "1rem" }}>
@@ -81,7 +88,13 @@ export const LobbyAppointments: React.FC = () => {
                 {stateAppointments?.map((appointment) => (
                   <Card
                     key={appointment.id}
-                    title={appointment.patientName}
+                    title={
+                      <h5>
+                        <a href={`verPaciente?id=${appointment.patientId}`}>
+                          {appointment.patientName}
+                        </a>
+                      </h5>
+                    }
                     style={{
                       flex: "1 1 300px", // Las tarjetas ocupan el mismo ancho mínimo de 300px
                       maxWidth: "400px", // Evita que sean demasiado grandes
@@ -122,6 +135,13 @@ export const LobbyAppointments: React.FC = () => {
           </Panel>
         )
       )}
+      <Paginator
+        first={first}
+        rows={perPage}
+        rowsPerPageOptions={[10, 20, 30]}
+        totalRecords={totalRecords}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

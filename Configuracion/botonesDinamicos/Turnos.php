@@ -2,6 +2,9 @@
 $campos = [
   "NOMBRE_PACIENTE",
   "TICKET",
+  "MODULO",
+  "ESPECIALISTA",
+  "CONSULTORIO"
 ];
 ?>
 

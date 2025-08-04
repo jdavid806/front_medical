@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAllTableTickets } from "../hooks/useAllTableTickets.js";
 import CustomDataTable from "../../components/CustomDataTable.js";
 import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
 import { ticketService, userService } from "../../../services/api/index.js";
-import 'https://js.pusher.com/8.2.0/pusher.min.js';
+import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useLoggedUser } from "../../users/hooks/useLoggedUser.js";
 import { getJWTPayload } from "../../../services/utilidades.js";
+import { useMassMessaging } from "../../hooks/useMassMessaging.js";
+import { formatWhatsAppMessage, getIndicativeByCountry } from "../../../services/utilidades.js";
+import { useTemplate } from "../../hooks/useTemplate.js";
+import { templateService } from "../../../services/api/index.js";
 export const TicketTable = () => {
   const {
     loggedUser
@@ -16,26 +20,46 @@ export const TicketTable = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const columns = [{
-    data: 'ticket_number'
+    data: "ticket_number"
   }, {
-    data: 'reason'
+    data: "reason"
   }, {
-    data: 'priority'
+    data: "priority"
   }, {
-    data: 'statusView'
+    data: "statusView"
   }, {
     orderable: false,
     searchable: false
   }];
+  const {
+    sendMessage: sendMessageTickets,
+    responseMsg,
+    loading: loadingMsg,
+    error: errorMsg
+  } = useMassMessaging();
+  const tenant = window.location.hostname.split(".")[0];
+  const dataTemplate = {
+    tenantId: tenant,
+    belongsTo: "turnos-llamado",
+    type: "whatsapp"
+  };
+  const {
+    template,
+    setTemplate,
+    fetchTemplate
+  } = useTemplate(dataTemplate);
+  const sendMessageTicketsRef = useRef(sendMessageTickets);
+  useEffect(() => {
+    sendMessageTicketsRef.current = sendMessageTickets;
+  }, [sendMessageTickets]);
   useEffect(() => {
     // @ts-ignore
-    const pusher = new Pusher('5e57937071269859a439', {
-      cluster: 'us2'
+    const pusher = new Pusher("5e57937071269859a439", {
+      cluster: "us2"
     });
-    var hostname = window.location.hostname.split('.')[0];
+    var hostname = window.location.hostname.split(".")[0];
     const channel = pusher.subscribe(`tickets.${hostname}`);
-    channel.bind('ticket.generated', function (data) {
-      console.log('ticket.generated', data);
+    channel.bind("ticket.generated", function (data) {
       const newTicketData = {
         id: data.ticket.id,
         ticket_number: data.ticket.ticket_number,
@@ -48,12 +72,13 @@ export const TicketTable = () => {
         step: ticketStatusSteps[data.ticket.status],
         created_at: data.ticket.created_at,
         branch_id: data.ticket.branch_id,
-        module_id: data.ticket.module_id
+        module_id: data.ticket.module_id,
+        patient: data?.ticket?.patient
       };
       setData(prevData => {
         const newData = [...prevData];
         const priorityOrder = (a, b) => {
-          const priorities = ['PREGNANT', 'SENIOR', 'DISABILITY', 'CHILDREN_BABY'];
+          const priorities = ["PREGNANT", "SENIOR", "DISABILITY", "CHILDREN_BABY"];
           const priorityA = priorities.indexOf(a.priority);
           const priorityB = priorities.indexOf(b.priority);
           return priorityA - priorityB;
@@ -63,13 +88,11 @@ export const TicketTable = () => {
         return newData;
       });
     });
-    channel.bind('ticket.state.updated', function (data) {
-      console.log('ticket.state.updated', data);
+    channel.bind("ticket.state.updated", function (data) {
       setData(prevData => {
         const newData = [...prevData];
         const index = newData.findIndex(item => item.id == data.ticketId.toString());
         if (index > -1) {
-          console.log(index, newData, data);
           newData[index].status = data.newState;
           newData[index].statusView = ticketStatus[data.newState];
           newData[index].statusColor = ticketStatusColors[data.newState];
@@ -93,22 +116,23 @@ export const TicketTable = () => {
         phone: ticket.phone,
         reason: ticketReasons[ticket.reason],
         priority: ticketPriorities[ticket.priority],
-        module_name: ticket.module?.name || '',
+        module_name: ticket.module?.name || "",
         status: ticket.status,
         statusView: ticketStatus[ticket.status],
         statusColor: ticketStatusColors[ticket.status],
         step: ticketStatusSteps[ticket.status],
         created_at: ticket.created_at,
         branch_id: ticket.branch_id,
-        module_id: ticket.module_id
+        module_id: ticket.module_id,
+        patient: ticket.patient
       };
     }));
   }, [tickets]);
   useEffect(() => {
     setFilteredData(data.filter(item => {
-      return (item.status == 'PENDING' || item.status == 'CALLED' && item.module_id == loggedUser?.today_module_id) && item.branch_id == "3";
+      return item.status == "PENDING" || item.status == "CALLED" && item.module_id == loggedUser?.today_module_id;
     }));
-  }, [data]);
+  }, [data, loggedUser]);
   const updateStatus = async (id, status) => {
     await ticketService.update(id, {
       status
@@ -120,31 +144,49 @@ export const TicketTable = () => {
       statusView: ticketStatus[status]
     } : item));
   };
-  const callTicket = async id => {
-    const status = 'CALLED';
+  const callTicket = async data => {
+    console.log(data);
+    const status = "CALLED";
+    await sendMessageWhatsapp(data);
     const user = await userService.getByExternalId(getJWTPayload().sub);
-    console.log(user);
-    await ticketService.update(id, {
+    await ticketService.update(data.id, {
       status,
       module_id: user?.today_module_id
     });
-    setData(prevData => prevData.map(item => item.id === id ? {
+    setData(prevData => prevData.map(item => item.id === data.id ? {
       ...item,
       step: ticketStatusSteps[status],
       status,
       statusView: ticketStatus[status]
     } : item));
-
-    // @ts-ignore
-    callShiftMessage(id);
   };
+  const sendMessageWhatsapp = useCallback(async data => {
+    const replacements = {
+      NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""} ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""}`,
+      TICKET: `${data?.ticket_number}`
+    };
+    try {
+      const response = await templateService.getTemplate(dataTemplate);
+      const templateFormatted = formatWhatsAppMessage(response.data.template, replacements);
+      const dataMessage = {
+        channel: "whatsapp",
+        message_type: "text",
+        recipients: [getIndicativeByCountry(data?.patient.country_id) + data?.phone],
+        message: templateFormatted,
+        webhook_url: "https://example.com/webhook"
+      };
+      await sendMessageTicketsRef.current(dataMessage);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }, [sendMessageTickets]);
   const slots = {
     3: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
     }, data.statusView),
     4: (cell, data) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
       className: `btn btn-primary ${data.step === 1 ? "" : "d-none"}`,
-      onClick: () => callTicket(data.id)
+      onClick: () => callTicket(data)
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-phone"
     })), /*#__PURE__*/React.createElement("div", {
@@ -173,11 +215,11 @@ export const TicketTable = () => {
     className: "d-flex flex-wrap gap-2 mb-4"
   }, /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-warning"
-  }, "Pendientes: ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
+  }, "Pendientes:", " ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-success"
-  }, "Completados: ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
+  }, "Completados:", " ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-danger"
-  }, "Perdidos: ", data.filter(item => item.status === "MISSED").length)), /*#__PURE__*/React.createElement(CustomDataTable, {
+  }, "Perdidos:", " ", data.filter(item => item.status === "MISSED").length)), /*#__PURE__*/React.createElement(CustomDataTable, {
     data: filteredData,
     slots: slots,
     columns: columns
@@ -219,7 +261,7 @@ export const TicketTable = () => {
     className: "card-text"
   }, "Prioridad: ", ticket.priority), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: () => callTicket(ticket.id)
+    onClick: () => callTicket(ticket)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-phone me-2"
   }), "Llamar nuevamente"))) : /*#__PURE__*/React.createElement("p", {

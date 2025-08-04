@@ -1,0 +1,103 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Evolución",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "especialidad",
+                "label": "Especialidad",
+                "type": "select",
+                "name": "especialidad",
+                "class": "col-6",
+                "options": [
+                  {
+                    "value": "Fonoaudiología",
+                    "text": "Fonoaudiología"
+                  },
+                  {
+                    "value": "Fisioterapia",
+                    "text": "Fisioterapia"
+                  },
+                  {
+                    "value": "Hidroterapia",
+                    "text": "Hidroterapia"
+                  },
+                  {
+                    "value": "Terapia ocupacional",
+                    "text": "Terapia ocupacional"
+                  },
+                  {
+                    "value": "Neurosensorial",
+                    "text": "Neurosensorial"
+                  },
+                  {
+                    "value": "Psicología",
+                    "text": "Psicología"
+                  },
+                  {
+                    "value": "Psicología clínica",
+                    "text": "Psicología clínica"
+                  },
+                  {
+                    "value": "Psicología familiar",
+                    "text": "Psicología familiar"
+                  },
+                  {
+                    "value": "Neuropsicología",
+                    "text": "Neuropsicología"
+                  },
+                  {
+                    "value": "Acompañamiento terapéutico",
+                    "text": "Acompañamiento terapéutico"
+                  },
+                  {
+                    "value": "Musicoterapia",
+                    "text": "Musicoterapia"
+                  },
+                  {
+                    "value": "Equinoterapia",
+                    "text": "Equinoterapia"
+                  },
+                  {
+                    "value": "Psiquiatría",
+                    "text": "Psiquiatría"
+                  },
+                  {
+                    "value": "Rehabilitación cognitiva",
+                    "text": "Rehabilitación cognitiva"
+                  }
+                ]
+              },
+              {
+                "id": "horaInicial",
+                "label": "Hora inicial",
+                "type": "hours",
+                "name": "horaInicial",
+                "class": "col-6"
+              },
+              {
+                "id": "notaEvolucion",
+                "label": "Nota de Evolución",
+                "type": "textarea",
+                "name": "notaEvolucion",
+                "class": "col-12"
+              },
+              {
+                "id": "horaFinal",
+                "label": "Hora Final",
+                "type": "hours",
+                "name": "horaFinal",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

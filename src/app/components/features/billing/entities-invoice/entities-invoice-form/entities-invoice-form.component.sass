@@ -1,0 +1,573 @@
+// Importing global styles and primary color variables
+@use "src/scss/styles.sass"
+@use "../../../../../../scss/variables/color-global-primary" as primary
+
+// Base card component styling
+.p-card
+  &.p-component
+    background: blue
+    overflow: hidden // Prevents child elements from overflowing
+    box-sizing: border-box // Ensures padding doesn't affect total width
+
+    // Mobile adjustments
+    @media (max-width: 767px)
+      margin-left: -0.5rem
+      margin-right: -0.5rem
+      width: calc(100% + 1rem) // Mobile width adjustment
+
+// Form container for basic information
+.form-container
+  display: flex
+  justify-content: center
+  width: 100%
+  padding: 0 0.5rem // Reduced padding on mobile
+
+  // Tablet and desktop padding
+  @media (min-width: 768px)
+    padding: 0 1rem
+
+// Base form styling
+form
+  overflow: hidden
+  width: 100%
+  max-width: 100%
+
+
+  // General form control adjustments
+  ::ng-deep
+    .p-inputtext,
+    .p-dropdown,
+    .p-calendar .p-inputtext
+      width: 100% !important
+      max-width: 100% !important
+      box-sizing: border-box !important
+      font-size: 14px // Tamaño de fuente más pequeño para móviles
+
+      @media (min-width: 768px)
+        font-size: 16px // Tamaño normal para tablets y desktop
+
+    // Dropdown specific styling
+    .p-select
+      .p-select-label
+
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        padding-right: 2rem !important
+
+    // Datepicker adjustments
+    .p-datepicker
+
+
+      // Mobile datepicker positioning
+      @media (max-width: 767px)
+        left: 0.5rem !important
+        right: 0.5rem !important
+        width: calc(100% - 1rem) !important
+
+
+  // Grid layout for form elements
+  .form-grid
+
+    display: grid
+    grid-template-columns: repeat(2, 1fr)
+    gap: 12px
+    width: 100%
+
+    // Tablet grid adjustment - una columna
+    @media (max-width: 1023px)
+      grid-template-columns: 1fr
+      gap: 8px
+
+    // Mobile grid adjustment - misma que tablet
+    @media (max-width: 479px)
+      grid-template-columns: 1fr
+
+    // Form input element styling
+    .form-inputElement
+      display: flex
+      flex-direction: column
+      min-width: 0 // Prevents overflow
+      padding: 0.15rem // Añadir padding interno
+      margin-bottom: 0 // Eliminar margen inferior
+
+      // Mobile adjustments
+      @media (max-width: 767px)
+        padding: 0.5rem
+        width: 85%
+      p
+        margin-bottom: 0.5rem
+        font-weight: bold
+        font-size: 14px // Tamaño más pequeño para móviles
+
+        @media (min-width: 768px)
+          font-size: 16px // Tamaño normal para tablets y desktop
+
+// Ajustes específicos para la tarjeta
+p-card
+  &.mb-2
+    margin-bottom: 1.5rem !important
+
+    // Mobile adjustments
+    @media (max-width: 767px)
+      margin-bottom: 1rem !important
+      padding: 0.5rem !important
+
+  h3
+    &.text-lg
+      font-size: 1.125rem // 18px
+
+      // Mobile adjustments
+      @media (max-width: 767px)
+        font-size: 1rem // 16px
+        margin-bottom: 0.75rem !important
+
+// Ajustes para los espacios entre elementos
+.space-y-4
+  > *
+    margin-bottom: 1rem // 16px
+
+    // Mobile adjustments
+    @media (max-width: 767px)
+      margin-bottom: 0.75rem // 12px
+
+    &:last-child
+      margin-bottom: 0
+
+
+
+
+// Billing section styling
+.parent-card
+  padding: 1.5rem
+  border-radius: 10px
+  background: white
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05)
+  margin-bottom: 2rem
+  width: 100%
+  box-sizing: border-box
+
+  // Mobile adjustments
+  @media (max-width: 767px)
+    padding: 1rem
+    margin-left: 0
+    margin-right: 0
+    width: 100%
+    border-radius: 8px
+
+  // Product table styling
+
+  // Product table styling
+  .product-table
+    width: 100%
+    min-width: 800px   // Prevents table from collapsing too much
+    border-collapse: separate
+    border-spacing: 0 15px
+    background: linear-gradient(to bottom, #ffffff, #f1f5f9)
+    border: 0.2px solid #f0f1f2
+    border-radius: 10px
+    table-layout: auto
+
+    // Tablet adjustments
+    @media (max-width: 1023px)
+      border-spacing: 0 10px
+      background: transparent
+      border: none
+      min-width: 100% // Reset for mobile view
+
+    // Table header and cell styling
+    th, td
+      padding: 1.25rem 0.75rem // Increased side padding
+      text-align: center
+      position: relative
+      word-wrap: break-word
+      vertical-align: middle
+      min-width: 120px
+
+      // Mobile cell styling
+      @media (max-width: 1023px)
+        display: block
+        width: 100% !important
+        text-align: left
+        padding: 1rem !important
+        padding-left: 1.5rem !important // Better left padding
+        border-bottom: 1px solid #f0f0f0
+        min-width: auto
+        // Data label for mobile view
+        &::before
+          content: attr(data-label)
+          position: absolute
+          left: 1.5rem
+          top: 1rem
+          width: auto
+          font-weight: bold
+          color: #4b5563
+          background: #f8fafc
+          padding: 0.25rem 0.5rem
+          border-radius: 4px
+          font-size: 0.8rem
+
+      // Right border for non-last children
+      &:not(:last-child)
+        border-right: 1px solid #f0f0f0
+
+        // Remove right border on mobile
+        @media (max-width: 1023px)
+          border-right: none !important
+
+    // Table header styling
+    thead
+      // Hide header on mobile
+      @media (max-width: 1023px)
+        display: none
+
+      tr
+        border-bottom: 2px solid #e5e7eb
+        position: relative
+        z-index: 1
+
+        &:hover
+          z-index: 2
+
+        th
+          color: #334155
+          font-weight: 600
+          font-size: 0.85rem
+          text-transform: uppercase
+          letter-spacing: 0.5px
+          padding: 1.25rem 1.5rem
+          background: #f8fafc // Better header visibility
+          white-space: nowrap
+    // Table body styling
+    tbody
+      // Mobile table body adjustments
+      @media (max-width: 1023px)
+        display: block
+        width: 100%
+
+      tr
+        background-color: white
+        transition: all 0.2s ease
+        border-bottom: 1px solid #f3f4f6
+        margin-bottom: 15px
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03)
+
+        // Mobile row styling
+        @media (max-width: 1023px)
+          display: block
+          margin-bottom: 1.5rem
+          border-radius: 8px
+          overflow: hidden
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+
+        // Hover state
+        &:hover
+          background-color: #f8fafc
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05)
+
+        // Cell styling
+        td
+          color: #4b5563
+          font-size: 0.9rem
+          padding: 1.25rem 1rem
+
+          // Mobile cell adjustments
+          @media (max-width: 1023px)
+            // First cell styling for mobile
+            &:first-child
+              border-top-left-radius: 8px
+              border-top-right-radius: 8px
+              background: #f8fafc
+              font-weight: 600
+              color: #334155
+
+            // Last cell styling for mobile
+            &:last-child
+              border-bottom-left-radius: 8px
+              border-bottom-right-radius: 8px
+
+          // Form control styling within cells
+          ::ng-deep
+            .p-select,
+            .p-inputtext
+              width: 100% !important
+              max-width: 100% !important
+              background: white !important
+              border: 1px solid #e5e7eb !important
+              border-radius: 6px !important
+              padding: 0.7rem 0.5rem !important
+              font-size: 0.8rem !important
+              transition: all 0.2s
+              margin: 0
+
+              // Mobile form control adjustments
+              @media (max-width: 1023px)
+                width: 100% !important
+                max-width: 100% !important
+                margin-top: 0.5rem
+
+  // Add text button styling
+  .add-text
+    display: inline-flex
+    align-items: center
+    gap: 0.5rem
+    padding: 0.75rem 1.5rem
+    background-color: #f8fafc
+    border: 1px dashed #cbd5e1
+    border-radius: 6px
+    color: primary.$color-primary
+    font-weight: 500
+    cursor: pointer
+    transition: all 0.2s
+    margin-top: 1rem
+
+    // Hover state
+    &:hover
+      background-color: #f1f5f9
+      border-color: primary.$color-primary
+      transform: translateY(-1px)
+
+    i
+      font-size: 0.9rem
+
+  // Total card styling
+  .total-card
+    margin-top: 2rem
+    padding: 1.5rem
+    text-align: right
+    border-radius: 8px
+
+    // Mobile adjustments
+    @media (max-width: 767px)
+      padding: 1.25rem
+      text-align: center
+
+    h4
+      margin: 0
+      font-size: 1.1rem
+      font-weight: 600
+      color: #1e293b
+
+      span
+        font-size: 1.3rem
+        color: primary.$color-primary
+
+// Payment methods section styling
+.payment-array
+  margin-top: 2rem
+
+  // Payment container styling
+  .payment-container
+    display: grid
+    grid-template-columns: repeat(12, 1fr)
+    gap: 1rem
+    margin-bottom: 2.25rem
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9)
+    border: 1px solid #e2e8f0
+    border-radius: 10px
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)
+    transition: all 0.50s cubic-bezier(0.4, 0, 0.2, 1)
+    padding: 1.5rem
+
+    // Tablet adjustment
+    @media (max-width: 1023px)
+      grid-template-columns: 1fr
+      padding: 1rem
+
+    // Hover state
+    &:hover
+      background: linear-gradient(to bottom, #f1f5f9, #e9eff5)
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05)
+
+    // Child element styling
+    > div
+      display: flex
+      flex-direction: column
+      gap: 0.5rem
+      min-width: 0 // Prevents overflow
+
+      // Payment method column (span 4)
+      &:first-child
+        grid-column: span 4
+
+        // Tablet adjustment
+        @media (max-width: 1023px)
+          grid-column: span 1
+
+      // Authorization number column (span 3)
+      &:nth-child(2)
+        grid-column: span 3
+
+        // Tablet adjustment
+        @media (max-width: 1023px)
+          grid-column: span 1
+
+      // Value column (span 3)
+      &:nth-child(3)
+        grid-column: span 3
+
+        // Tablet adjustment
+        @media (max-width: 1023px)
+          grid-column: span 1
+
+      // Delete button column (span 1)
+      &:last-child
+        grid-column: span 1
+        align-self: center
+        margin-top: 2rem
+
+        // Tablet adjustment
+        @media (max-width: 1023px)
+          grid-column: span 1
+          margin-top: 0
+          align-self: flex-end
+
+      p
+        font-size: 0.8125rem
+        font-weight: 600
+        color: #4b5563
+        letter-spacing: 0.3px
+
+    // Form control styling within payment container
+    ::ng-deep
+      .p-dropdown,
+      .p-inputtext
+        width: 100%
+        border: 1px solid #e2e8f0 !important
+        background: white !important
+        border-radius: 8px !important
+        padding: 0.625rem 1rem !important
+        font-size: 0.875rem !important
+        transition: all 0.2s
+
+        // Hover state
+        &:hover
+          border-color: #cbd5e1 !important
+
+        // Focus state
+        &:focus
+          border-color: primary.$color-primary !important
+          box-shadow: 0 0 0 3px rgba(primary.$color-primary, 0.1) !important
+
+      // Dropdown label adjustment
+      .p-dropdown
+        .p-dropdown-label
+          padding: 0 !important
+
+    // Icon container styling
+    .icon
+      display: flex
+      justify-content: flex-end
+
+      // Tablet adjustment
+      @media (max-width: 1023px)
+        justify-content: center
+
+      // Button styling
+      ::ng-deep
+        .p-button
+          height: 2.5rem
+          width: 2.5rem
+          display: flex
+          align-items: center
+          justify-content: center
+          border-radius: 8px
+          transition: all 0.2s
+
+          // Hover state
+          &:hover
+            background-color: rgba(239, 68, 68, 0.1) !important
+
+  // Add payment method button
+  .add-text
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    gap: 0.5rem
+    width: 100%
+    padding: 0.875rem 1.5rem
+    margin-top: 0.75rem
+    background-color: #f8fafc
+    border: 1px dashed #cbd5e1
+    border-radius: 8px
+    color: primary.$color-primary
+    font-size: 0.9375rem
+    font-weight: 500
+    cursor: pointer
+    transition: all 0.25s
+
+    // Hover state
+    &:hover
+      background-color: #f1f5f9
+      border-color: primary.$color-primary
+      transform: translateY(-1px)
+
+    i
+      font-size: 0.9rem
+      transition: transform 0.2s
+
+    // Icon animation on hover
+    &:hover i
+      transform: scale(1.1)
+
+// Total payment and buttons section
+.total-pagar-container
+  display: flex
+  flex-wrap: wrap
+  padding: 1rem
+  background-color: #f8f9fa
+  border-radius: 8px
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+  align-items: center
+  justify-content: space-between
+
+  // Mobile adjustment
+  @media (max-width: 767px)
+    flex-direction: column
+    text-align: center
+    gap: 1rem
+
+  // Heading styling
+  h3
+    font-size: 1.2rem
+    margin: 0
+
+  // Total amount styling
+  .total-amount
+    font-size: 1.5rem
+    font-weight: bold
+    margin-left: 1rem
+
+    // Mobile adjustment
+    @media (max-width: 767px)
+      margin-left: 0
+      margin-top: 0.5rem
+
+// Button container styling
+.button-container
+  display: flex
+  justify-content: space-around
+  align-items: center
+  width: 100%
+  margin-top: 1rem
+  gap: 0.5rem
+
+  // Mobile adjustment
+  @media (max-width: 767px)
+    flex-direction: column
+    gap: 0.75rem
+    justify-content: center
+
+  // Button styling
+  .p-button
+    flex: 1  // Hace que los botones ocupen el espacio disponible por igual
+
+    // Mobile adjustment
+    @media (max-width: 767px)
+      width: 100%
+      max-width: 100%  // Asegura que no excedan el ancho del contenedor
+      margin: 0  // Elimina cualquier margen que pueda afectar
+
+
+
+

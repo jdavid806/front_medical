@@ -16,6 +16,7 @@
             <th>Email</th>
             <th>Teléfono</th>
             <th>Ciudad</th>
+            <th>Koneksi ARS</th>
             <th>Acciones</th>
           </tr>
         </thead>

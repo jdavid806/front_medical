@@ -11,6 +11,7 @@ export class SuppliesService extends BaseApiService {
 
 
     async storeSupply(data) {
+        // console.log(data)
         return await this.httpClient.post(this.microservice + '/medical-supplies/', data, {
             headers: {
                 'Content-Type': 'application/json'

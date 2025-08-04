@@ -73,24 +73,24 @@ $baner = "";
               </p>
               <button class="btn btn-phoenix-secondary me-1 mb-1" type="button"
                 onclick="window.location.href='pacientes'">
-                <span data-feather="users"></span> Ver Pacientes
+                <span data-feather="users"></span> Ver Consultas
               </button>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-md-auto" id="appointmentsSummaryCardReact"></div>
-        <div class="col-12 col-md-auto">
+        <div class="col-12 col-md-auto t-secondary-lighter" id="appointmentsSummaryCardReact"></div>
+        <div class="col-12 col-md-auto t-secondary-lighter">
           <div class="card" style="max-width:18rem;">
             <div class="card-body">
-              <h5 class="card-title"><span data-feather="file-text"></span> Consultas para hoy</h5>
+              <h5 class="card-title"><span data-feather="file-text"></span> Consultas</h5>
               <p class="card-text">
               <h3>0/2</h3>
-              Consultas para hoy
+              Consultas para Hoy
               </p>
               <button class="btn btn-phoenix-secondary me-1 mb-1" type="button"
                 onclick="window.location.href='citasControl'">
-                <span data-feather="file-plus"></span> Ver Consultas
+                <span data-feather="file-plus"></span> Ver Citas
               </button>
             </div>
           </div>
@@ -480,6 +480,6 @@ $baner = "";
 
 <?php
 include "../footer.php";
-include "../Citas/modalCitas.php";
+// include "../Citas/modalCitas.php";
 include "./modalEventos.php";
 ?>

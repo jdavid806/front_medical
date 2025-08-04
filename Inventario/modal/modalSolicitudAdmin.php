@@ -1,4 +1,5 @@
-<div class="modal fade" id="solicitudInsumoAdmin" tabindex="-1" aria-labelledby="solicitudInsumoAdminLabel" aria-hidden="true">
+<div class="modal fade" id="solicitudInsumoAdmin" tabindex="-1" aria-labelledby="solicitudInsumoAdminLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -34,289 +35,133 @@
 </div>
 
 
-<!-- <script type="module">
-    import { inventoryService } from "../../services/api/index.js";
-    import { suppliesService } from "../../services/api/index.js";
-    console.log("entro");
-    document.addEventListener('DOMContentLoaded', function () {
-        fetchProducts(); // Llama a la función para cargar los productos una vez el DOM esté listo
-    });
 
+<script>
+    const productSelect = document.getElementById("productSelect");
+    const addInsumoButton = document.getElementById("addInsumo");
+    const divInsumosAgregados = document.getElementById("divInsumosAgregados");
+    const enviarSolicitudButton = document.getElementById("enviarSolicitudAdmin");
+    const observaciones = document.getElementById("observations");
 
-    let selectedProducts = []; // Array para almacenar los productos seleccionados
+    const addedInsumos = [];
 
+    // Función para obtener los productos y cargar en el select
+    let choicesInstance; // para almacenar y reutilizar el componente
 
-    async function fetchProducts() {
+    const loadProducts = async () => {
         try {
-            const response = await inventoryService.getAll();
-            const products = response.data.filter(product => product.attributes.product_type_id == 6);
+            const res = await fetch("https://dev.monaros.co/api/v1/admin/products/insumos");
+            const products = await res.json();
 
-            console.log("Productos", products);
+            // Limpiar el select
+            productSelect.innerHTML = "";
 
-            const selectElement = document.getElementById("productSelect");
-
-            // Limpiar el select antes de llenarlo
-            selectElement.innerHTML = '<option value="">Seleccionar Producto</option>'; // Opcional: primera opción vacía
-
-            // Agregar las opciones al select
+            // Agregar opciones
             products.forEach(product => {
                 const option = document.createElement("option");
                 option.value = product.id;
-                option.textContent = product.attributes.name; // Asumiendo que el nombre del producto está aquí
-                selectElement.appendChild(option);
+                option.textContent = product.name;
+                productSelect.appendChild(option);
             });
-        } catch (error) {
-            console.error("Error al obtener productos:", error);
-            showError("No se pudieron cargar los productos.");
-        }
-    }
 
-    // Función para añadir productos seleccionados al listado
-    document.getElementById("addInsumo").addEventListener("click", function () {
-        const productId = document.getElementById("productSelect").value;
+            // Inicializar Choices.js
+            if (choicesInstance) {
+                choicesInstance.destroy(); // Destruye la instancia anterior si existe
+            }
+
+            choicesInstance = new Choices(productSelect, {
+                searchEnabled: true,
+                placeholderValue: 'Seleccione un insumo',
+                itemSelectText: ''
+            });
+
+        } catch (error) {
+            console.error("Error cargando productos:", error);
+        }
+    };
+
+
+    // Cargar los productos al abrir el modal
+    const openModal = () => {
+        loadProducts();
+        divInsumosAgregados.style.display = "none";
+        divInsumosAgregados.innerHTML = ""; // Limpiar contenido
+        addedInsumos.length = 0; // Limpiar lista de insumos agregados
+    };
+
+    // Mostrar insumos agregados
+    const showAddedInsumos = (productId, quantity) => {
+        const productOption = productSelect.querySelector(`option[value="${productId}"]`);
+        const productName = productOption ? productOption.text : 'Producto desconocido';
+        const insumoList = document.createElement('li');
+        insumoList.textContent = `${productName} (x${quantity})`;
+
+        if (!divInsumosAgregados.querySelector("ul")) {
+            const ul = document.createElement("ul");
+            divInsumosAgregados.appendChild(ul);
+        }
+        divInsumosAgregados.querySelector("ul").appendChild(insumoList);
+        divInsumosAgregados.style.display = "block";
+    };
+
+    // Event listener para el botón de "Añadir Insumo"
+    addInsumoButton.addEventListener("click", () => {
+        const productId = productSelect.value;
         const quantity = document.getElementById("quantity").value;
 
-        if (productId && quantity > 0) {
-            const selectedProduct = {
-                product_id: productId,
-                quantity: quantity
-            };
-            selectedProducts.push(selectedProduct);
-            displaySelectedProducts();
-
-            document.getElementById("productSelect").value = "";
-            document.getElementById("quantity").value = 1;
+        if (productId && quantity && quantity > 0) {
+            // Evitar duplicados
+            const exists = addedInsumos.find(item => item.product_id === productId);
+            if (!exists) {
+                addedInsumos.push({ product_id: productId, quantity: quantity });
+                showAddedInsumos(productId, quantity);
+            } else {
+                alert("Este insumo ya fue agregado.");
+            }
         } else {
-            alert("Por favor, selecciona un producto y cantidad válida.");
+            alert("Por favor, seleccione un insumo y cantidad válida.");
         }
     });
 
-    // Función para mostrar los productos seleccionados
-    function displaySelectedProducts() {
-        const selectedProductsContainer = document.getElementById("selectedProducts");
-        selectedProductsContainer.innerHTML = ""; // Limpiar la lista antes de mostrarla
+    // Event listener para el botón "Enviar Solicitud"
+    enviarSolicitudButton.addEventListener("click", async () => {
+        if (addedInsumos.length === 0) {
+            alert("No has agregado ningún insumo.");
+            return;
+        }
 
-        selectedProducts.forEach(product => {
-            const productRow = document.createElement("div");
-            productRow.classList.add("d-flex", "justify-content-between", "mb-2");
-
-            const productText = document.createElement("span");
-            productText.textContent = `Producto ID: ${product.product_id}, Cantidad: ${product.quantity}`;
-
-            const removeButton = document.createElement("button");
-            removeButton.classList.add("btn", "btn-sm", "btn-danger");
-            removeButton.textContent = "Eliminar";
-            removeButton.addEventListener("click", function () {
-                removeProduct(product);
-            });
-
-            productRow.appendChild(productText);
-            productRow.appendChild(removeButton);
-            selectedProductsContainer.appendChild(productRow);
-        });
-    }
-
-    // Función para eliminar un producto de la lista
-    function removeProduct(product) {
-        selectedProducts = selectedProducts.filter(p => p !== product);
-        displaySelectedProducts();
-    }
-
-    // Al enviar el formulario, preparar los datos y enviarlos
-    document.getElementById("").addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const requestData = {
+        const payload = {
             status: "pendiente",
             delivery_date: null,
-            observations: document.getElementById("observations").value,
-            products: selectedProducts
+            observations: observaciones.value,
+            products: addedInsumos
         };
 
-        suppliesService.storeSupply(requestData)
-            .then(response => {
-                console.log("Solicitud enviada con éxito", response);
-                alert('Solicitud enviada con éxito');
-                $('#solicitudInsumoAdmin').modal('hide');
-            })
-            .catch(error => {
-                console.error("Error al enviar la solicitud:", error);
-                alert('Hubo un error al enviar la solicitud');
+        try {
+            const res = await fetch("https://dev.monaros.co/api/v1/admin/medical-supplies/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
             });
+
+            if (res.ok) {
+                alert("Solicitud enviada correctamente.");
+                openModal(); // Limpiar formulario
+                bootstrap.Modal.getInstance(document.getElementById("solicitudInsumoAdmin")).hide(); // Cerrar modal
+            } else {
+                const errorData = await res.json();
+                console.error("Error en la respuesta:", errorData);
+                alert("Error al enviar la solicitud.");
+            }
+        } catch (error) {
+            console.error("Error enviando la solicitud:", error);
+            alert("Ocurrió un error al enviar la solicitud.");
+        }
     });
 
-    // Llamar a la función para llenar el select al cargar la página
-    fetchProducts();
-
-
-</script> -->
-
-<script>
-    function cargarOpcionesSelect() {
-        const insumosAdministrativos = [
-            "Papelería",
-            "Carpetas",
-            "Bolígrafos",
-            "Post-it",
-            "Toner",
-            "Papel",
-            "Archivadores",
-            "Plumones",
-            "Grapadoras",
-            "Calculadora",
-            "Reglas",
-            "Cinta adhesiva",
-            "Sillas",
-            "Mesas",
-            "Estanterías",
-            "Pizarras",
-            "Rotuladores",
-            "Papel de impresión"
-        ];
-
-        const selectElement = document.getElementById('productSelect');
-
-        selectElement.innerHTML = '';
-
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Seleccione";
-        defaultOption.disabled = true;
-        defaultOption.selected = true;
-        selectElement.appendChild(defaultOption);
-
-        insumosAdministrativos.forEach((insumo, index) => {
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = insumo;
-            selectElement.appendChild(option);
-        });
-    }
-
-    cargarOpcionesSelect();
-
-    function agregarInsumo() {
-        const productSelect = document.getElementById('productSelect');
-        const quantityInput = document.getElementById('quantity');
-        const divInsumosAgregados = document.getElementById('divInsumosAgregados');
-
-        const productoSeleccionado = productSelect.options[productSelect.selectedIndex].text;
-        const productoValor = productSelect.value;
-        const cantidad = quantityInput.value;
-
-        if (productoValor === "" || cantidad === "" || cantidad <= 0) {
-            alert("Por favor, seleccione un producto y especifique una cantidad válida.");
-            return;
-        }
-
-        let tabla = divInsumosAgregados.querySelector('table');
-
-        if (!tabla) {
-            tabla = document.createElement('table');
-            tabla.className = 'table';
-            tabla.innerHTML = `
-            <thead>
-                <tr>
-                    <th width="50%">Producto</th>
-                    <th width="30%">Cantidad</th>
-                    <th width="20%">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaInsumosBody">
-            </tbody>
-        `;
-            divInsumosAgregados.appendChild(tabla);
-        }
-
-        const tablaBody = document.getElementById('tablaInsumosBody') || tabla.querySelector('tbody');
-
-        const nuevaFila = document.createElement('tr');
-        nuevaFila.innerHTML = `
-        <td width="50%">${productoSeleccionado}</td>
-        <td width="30%">${cantidad}</td>
-        <td width="20%">
-            <button class="btn btn-danger btn-sm eliminar-insumo"><i class="fas fa-trash"></i></button>
-        </td>
-    `;
-
-        nuevaFila.querySelector('.eliminar-insumo').addEventListener('click', function() {
-            nuevaFila.remove();
-
-            if (tablaBody.children.length === 0) {
-                divInsumosAgregados.style.display = 'none';
-            }
-        });
-
-        tablaBody.appendChild(nuevaFila);
-
-        divInsumosAgregados.style.display = 'block';
-
-        productSelect.selectedIndex = 0;
-        quantityInput.value = '';
-    }
-
-    document.getElementById('addInsumo').addEventListener('click', agregarInsumo);
-
-    function enviarSolicitudAdmin() {
-        const tablaBody = document.getElementById('tablaInsumosBody');
-        const observaciones = document.getElementById('observations').value;
-
-        if (!tablaBody || tablaBody.children.length === 0) {
-            alert("No hay insumos agregados para enviar.");
-            return;
-        }
-
-        const insumosSeleccionados = [];
-
-        Array.from(tablaBody.children).forEach((fila, index) => {
-            const celdas = fila.querySelectorAll('td');
-
-            const insumo = {
-                id: index + 1,
-                producto: celdas[0].textContent,
-                cantidad: parseInt(celdas[1].textContent)
-            };
-
-            insumosSeleccionados.push(insumo);
-        });
-
-        const solicitudData = {
-            totalInsumos: insumosSeleccionados.length,
-            insumos: insumosSeleccionados,
-            observaciones: observaciones
-        };
-
-        console.log("Datos de la solicitud de insumos administrativos:");
-        console.log(solicitudData);
-
-        // Crear la lista de insumos para mostrar
-        let listaInsumos = '';
-        insumosSeleccionados.forEach(insumo => {
-            listaInsumos += `<li>${insumo.producto}: ${insumo.cantidad}</li>`;
-        });
-
-        Swal.fire({
-            title: 'Información de Solicitud',
-            html: `
-            <p><strong>Total de insumos:</strong> ${solicitudData.totalInsumos}</p>
-            <div style="text-align: center;">
-                <p><strong>Insumos:</strong></p>
-                <ul style="display: inline-block; text-align: left;">${listaInsumos}</ul>
-            </div>
-            <p><strong>Observaciones:</strong> ${solicitudData.observaciones}</p>
-        `,
-            icon: 'info',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#132030',
-            allowOutsideClick: false,
-            showCancelButton: false
-        }).then((res) => {
-            if (res.isConfirmed) {
-                window.location.reload();
-            }
-        });
-
-        return false;
-    }
-    document.getElementById('enviarSolicitudAdmin').addEventListener('click', enviarSolicitudAdmin);
+    // Inicializar el modal
+    const modal = new bootstrap.Modal(document.getElementById("solicitudInsumoAdmin"));
+    document.getElementById("solicitudInsumoAdmin").addEventListener("show.bs.modal", openModal);
 </script>

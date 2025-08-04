@@ -13,7 +13,11 @@ export function reestructurarPacientes(pacientes) {
         const estadoActual = (() => {
 
             const stateKey = paciente.primeraCita.appointment_state?.name?.toString();
-            const attentionType = paciente.primeraCita.attention_type;
+            let attentionType = paciente.primeraCita.attention_type || 'CONSULTATION';
+
+            if (attentionType === 'REHABILITATION') {
+                attentionType = 'CONSULTATION';
+            }
 
             if (!stateKey) {
                 return "SIN CITA";

@@ -49,15 +49,16 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   }));
   const fetchClinicalRecords = async () => {
     const url = new URLSearchParams(window.location.search).get("patient_id");
-    const data = await clinicalRecordService.ofParent(url);
-    console.log(data);
-    const mappedData = data.map(item => {
-      return {
-        value: item.id,
-        label: item.clinical_record_type.name + " - " + formatDate(item.created_at)
-      };
-    });
-    setMappedServiceClinicalRecord(mappedData);
+    if (url) {
+      const data = await clinicalRecordService.ofParent(url);
+      const mappedData = data.map(item => {
+        return {
+          value: item.id,
+          label: item.clinical_record_type.name + " - " + formatDate(item.created_at)
+        };
+      });
+      setMappedServiceClinicalRecord(mappedData);
+    }
   };
   const fetchDoctors = async () => {
     const data = await userService.getAll();

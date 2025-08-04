@@ -1,484 +1,678 @@
-import React, { useState, useMemo } from 'react';
-import { TabView, TabPanel } from 'primereact/tabview';
-import { MultiSelect } from 'primereact/multiselect';
-import { Calendar } from 'primereact/calendar';
-import { Nullable } from 'primereact/ts-helpers';
-import { Dropdown } from 'primereact/dropdown';
-
-type AccountItem = {
-    id: string;
-    invoice_date: string;
-    due_date: string;
-    supplier_name: string;
-    supplier_id: string;
-    fiscal_number: string;
-    price: number;
-    tax: number;
-    withholdings: number;
-    total: number;
-    days_to_pay: number;
-    status: 'pending' | 'paid' | 'overdue';
-    details: {
-        description: string;
-        quantity: number;
-        unit_price: number;
-        subtotal: number;
-    }[];
-};
-
-type Supplier = {
-    id: string;
-    name: string;
-};
-
-// Datos mock mejorados
-const mockSuppliers: Supplier[] = [
-    { id: '1', name: 'Distribuidora Alimentos S.A.' },
-    { id: '2', name: 'Tecnología Avanzada Ltda.' },
-    { id: '3', name: 'Suministros Médicos Unidos' },
-    { id: '4', name: 'Construcciones Modernas' },
-    { id: '5', name: 'Servicios Corporativos' },
-];
-
-const productDescriptions = [
-    "Materiales de construcción",
-    "Equipos electrónicos",
-    "Suministros de oficina",
-    "Servicios profesionales",
-    "Productos alimenticios",
-    "Insumos médicos",
-    "Herramientas industriales",
-    "Mobiliario",
-    "Software",
-    "Equipos de seguridad"
-];
-
-const randomDate = (start: Date, end: Date): string => {
-    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-    return date.toISOString().split('T')[0];
-};
-
-const randomDays = (): number => Math.floor(Math.random() * 90) + 1;
-
-const generateDetails = () => {
-    const count = Math.floor(Math.random() * 4) + 1;
-    return Array.from({ length: count }, (_, i) => ({
-        description: productDescriptions[Math.floor(Math.random() * productDescriptions.length)],
-        quantity: Math.floor(Math.random() * 10) + 1,
-        unit_price: parseFloat((Math.random() * 1000 + 50).toFixed(2)),
-        subtotal: 0
-    })).map(item => ({
-        ...item,
-        subtotal: parseFloat((item.quantity * item.unit_price).toFixed(2))
-    }));
-};
-
-const generateAccountData = (type: 'receivable' | 'payable'): AccountItem[] => {
-    const items: AccountItem[] = [];
-    const today = new Date();
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-    for (let i = 1; i <= 15; i++) {
-        const invoiceDate = randomDate(oneYearAgo, today);
-        const dueDays = randomDays();
-        const dueDate = new Date(invoiceDate);
-        dueDate.setDate(dueDate.getDate() + dueDays);
-
-        const supplier = mockSuppliers[Math.floor(Math.random() * mockSuppliers.length)];
-        const details = generateDetails();
-        const price = details.reduce((sum, item) => sum + item.subtotal, 0);
-        const tax = type === 'receivable' ? price * 0.18 : price * 0.16;
-        const withholdings = type === 'receivable' ? price * 0.03 : price * 0.02;
-        const total = price + tax - withholdings;
-        const daysToPay = Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        const status = daysToPay < 0 ? 'overdue' : 'pending';
-
-        items.push({
-            id: `${type === 'receivable' ? 'rcv' : 'pay'}-${i}`,
-            invoice_date: invoiceDate,
-            due_date: dueDate.toISOString().split('T')[0],
-            supplier_name: supplier.name,
-            supplier_id: supplier.id,
-            fiscal_number: `FAC-${Math.floor(Math.random() * 10000)}-${new Date(invoiceDate).getFullYear()}`,
-            price: parseFloat(price.toFixed(2)),
-            tax: parseFloat(tax.toFixed(2)),
-            withholdings: parseFloat(withholdings.toFixed(2)),
-            total: parseFloat(total.toFixed(2)),
-            days_to_pay: daysToPay,
-            status,
-            details
-        });
-    }
-
-    return items.sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime());
-};
+import React, { useState } from "react";
+import { TabView, TabPanel } from "primereact/tabview";
+import { MultiSelect } from "primereact/multiselect";
+import { Calendar } from "primereact/calendar";
+import { Nullable } from "primereact/ts-helpers";
+import { Dropdown } from "primereact/dropdown";
+import { Button } from "primereact/button";
+import { useAccountsCollectPay } from "../accountsCollectPay/hooks/useAccountsCollectPay";
+import {
+  InvoiceData,
+  InvoiceDetail,
+} from "../accountsCollectPay/interfaces/accountColletcPayInterface";
+import { Paginator } from "primereact/paginator";
+import { NewReceiptBoxModal } from "../../accounting/paymentReceipt/modals/NewReceiptBoxModal";
+import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF";
+import { useCompany } from "../../hooks/useCompany";
+import { exportToExcel } from "../../accounting/utils/ExportToExcelOptions";
 
 export const AccountsCollectPay = () => {
-    const [activeTab, setActiveTab] = useState<number>(0);
-    const [selectedSupplierIds, setSelectedSupplierIds] = useState<string[]>([]);
-    const [selectedDateRange, setSelectedDateRange] = useState<Nullable<(Date | null)[]>>(null);
-    const [selectedDueDateRange, setSelectedDueDateRange] = useState<Nullable<(Date | null)[]>>(null);
-    const [selectedDaysToPay, setSelectedDaysToPay] = useState<string | null>(null);
-    const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [selectedSupplierIds, setSelectedSupplierIds] = useState<string[]>([]);
+  const [selectedDateRange, setSelectedDateRange] =
+    useState<Nullable<(Date | null)[]>>(null);
+  const [selectedDueDateRange, setSelectedDueDateRange] =
+    useState<Nullable<(Date | null)[]>>(null);
+  const [selectedDaysToPay, setSelectedDaysToPay] = useState<string | null>(
+    null
+  );
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [first, setFirst] = useState<number>(0);
+  const [rows, setRows] = useState<number>(10);
+  const [showReceiptModal, setShowReceiptModal] = useState<boolean>(false);
+  const [invoiceToReceipt, setInvoiceToReceipt] = useState<any>(null);
+  const [invoiceType, setInvoiceType] = useState<any>("");
+  const { company, setCompany, fetchCompany } = useCompany();
 
-    // Generar datos mock
-    const allReceivable = useMemo(() => generateAccountData('receivable'), []);
-    const allPayable = useMemo(() => generateAccountData('payable'), []);
+  const formatDateRange = (range: Nullable<(Date | null)[]>) => {
+    if (!range || !range[0] || !range[1]) return undefined;
+    const from = range[0].toISOString().slice(0, 10);
+    const to = range[1].toISOString().slice(0, 10);
+    return `${from},${to}`;
+  };
 
-    // Filtrar datos
-    const filterItems = (items: AccountItem[]) => {
-        return items.filter(item => {
-            // Filtro por proveedor
-            if (selectedSupplierIds.length > 0 && !selectedSupplierIds.includes(item.supplier_id)) {
-                return false;
-            }
+  const commonFilters = {
+    page: Math.floor(first / rows) + 1, // Calcula el número de página
+    per_page: rows, // Items por página
+    suppliers: selectedSupplierIds.length ? selectedSupplierIds : undefined,
+    createdAt: formatDateRange(selectedDateRange),
+    dueDate: formatDateRange(selectedDueDateRange),
+    days_to_pay: selectedDaysToPay ?? undefined,
+  };
 
-            // Filtro por rango de fechas de factura
-            if (selectedDateRange && selectedDateRange[0] && selectedDateRange[1]) {
-                const invoiceDate = new Date(item.invoice_date);
-                const startDate = new Date(selectedDateRange[0]);
-                const endDate = new Date(selectedDateRange[1]);
-                endDate.setHours(23, 59, 59, 999);
+  const {
+    invoices: accountsReceivable,
+    loading: loadingReceivable,
+    totalRecords: totalReceivable, // Asegúrate que tu hook devuelva este valor
+  } = useAccountsCollectPay({
+    ...commonFilters,
+    type: "sale,entity",
+    status: "pending",
+  });
 
-                if (invoiceDate < startDate || invoiceDate > endDate) {
-                    return false;
-                }
-            }
+  const {
+    invoices: accountsPayable,
+    loading: loadingPayable,
+    totalRecords: totalPayable,
+  } = useAccountsCollectPay({
+    ...commonFilters,
+    type: "purchase",
+    status: "pending",
+  });
 
-            // Filtro por rango de fechas de vencimiento
-            if (selectedDueDateRange && selectedDueDateRange[0] && selectedDueDateRange[1]) {
-                const dueDate = new Date(item.due_date);
-                const startDate = new Date(selectedDueDateRange[0]);
-                const endDate = new Date(selectedDueDateRange[1]);
-                endDate.setHours(23, 59, 59, 999);
+  const daysToPayOptions = [
+    { label: "Todos", value: null },
+    { label: "Próximos a vencer (1-5 días)", value: "1-5" },
+    { label: "6-10 días", value: "6-10" },
+    { label: "11-15 días", value: "11-15" },
+    { label: "16-25 días", value: "16-25" },
+    { label: "26-35 días", value: "26-35" },
+    { label: "36-45 días", value: "36-45" },
+    { label: "Más de 60 días", value: "60+" },
+  ];
 
-                if (dueDate < startDate || dueDate > endDate) {
-                    return false;
-                }
-            }
+  const onPageChange = (event: { first: number; rows: number }) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
 
-            // Filtro por días para pagar
-            if (selectedDaysToPay) {
-                const [min, max] = selectedDaysToPay.split('-').map(Number);
-                if (selectedDaysToPay === '60+') {
-                    if (item.days_to_pay < 60) return false;
-                } else if (max) {
-                    if (item.days_to_pay < min || item.days_to_pay > max) return false;
-                } else {
-                    if (item.days_to_pay !== min) return false;
-                }
-            }
+  const formatoDinero = (cantidad: number | string) => {
+    const amount =
+      typeof cantidad === "string" ? parseFloat(cantidad) : cantidad;
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "DOP",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
 
-            return true;
-        });
-    };
+  const obtenerFechaFormateada = (fechaStr?: string) => {
+    if (!fechaStr) return "—";
+    const fecha = new Date(fechaStr);
+    return fecha.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
-    const accountsReceivable = useMemo(() => filterItems(allReceivable),
-        [allReceivable, selectedSupplierIds, selectedDateRange, selectedDueDateRange, selectedDaysToPay]);
+  const getStatusBadge = (status: string, days: number) => {
+    if (status === "paid")
+      return <span className="badge bg-success">Pagado</span>;
+    if (status === "overdue")
+      return <span className="badge bg-danger">Vencido</span>;
+    if (days <= 5)
+      return (
+        <span className="badge bg-warning text-dark">Por vencer ({days}d)</span>
+      );
+    return <span className="badge bg-primary">Pendiente ({days}d)</span>;
+  };
 
-    const accountsPayable = useMemo(() => filterItems(allPayable),
-        [allPayable, selectedSupplierIds, selectedDateRange, selectedDueDateRange, selectedDaysToPay]);
+  const getStatusBadgeBasic = (status: string, days: number) => {
+    if (status === "paid") return "Pagado";
+    if (status === "overdue") return "Vencido";
+    if (days <= 5) return "Por vencer" + days + "d";
+    return "Pendiente " + days + "d";
+  };
 
-    const loadingReceivable = false;
-    const loadingPayable = false;
+  const limpiarFiltros = () => {
+    setSelectedSupplierIds([]);
+    setSelectedDateRange(null);
+    setSelectedDueDateRange(null);
+    setSelectedDaysToPay(null);
+  };
 
-    const daysToPayOptions = [
-        { label: 'Todos', value: null },
-        { label: 'Próximos a vencer (1-5 días)', value: '1-5' },
-        { label: '6-10 días', value: '6-10' },
-        { label: '11-15 días', value: '11-15' },
-        { label: '16-25 días', value: '16-25' },
-        { label: '26-35 días', value: '26-35' },
-        { label: '36-45 días', value: '36-45' },
-        { label: 'Más de 60 días', value: '60+' }
-    ];
+  const aplicarFiltros = () => {
+    console.log("Aplicando filtros...", {
+      selectedSupplierIds,
+      selectedDateRange,
+      selectedDueDateRange,
+      selectedDaysToPay,
+    });
+  };
 
-    const formatoDinero = (cantidad: number) => {
-        return new Intl.NumberFormat('es-ES', {
-            style: 'currency',
-            currency: 'DOP',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(cantidad);
-    };
+  function generateReceipt(rowData: any) {
+    switch (rowData.type) {
+      case "sale":
+      case "entity":
+        setInvoiceType("sale-invoice");
+        break;
+      case "purchase":
+        setInvoiceType("purchase-invoice");
+        break;
+    }
+    setInvoiceToReceipt(rowData);
+    setShowReceiptModal(true);
+  }
 
-    const obtenerFechaFormateada = (fechaStr: string) => {
-        const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-MX', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
+  function handleGenerarRecibo() {
+    setShowReceiptModal(false);
+    setInvoiceToReceipt(null);
+  }
 
-    const getStatusBadge = (status: string, days: number) => {
-        if (status === 'paid') return <span className="badge bg-success">Pagado</span>;
-        if (status === 'overdue') return <span className="badge bg-danger">Vencido</span>;
-        if (days <= 5) return <span className="badge bg-warning text-dark">Por vencer ({days}d)</span>;
-        return <span className="badge bg-primary">Pendiente ({days}d)</span>;
-    };
-
-    const renderItemDetails = (details: AccountItem['details']) => (
-        <div className="mt-3">
-            <h5 className="mb-3">Detalle de Factura</h5>
-            <div className="table-responsive">
-                <table className="table table-bordered table-sm">
-                    <thead className="table-light">
-                        <tr>
-                            <th style={{ width: '50%' }}>Descripción</th>
-                            <th className="text-center">Cantidad</th>
-                            <th className="text-end">Precio Unitario</th>
-                            <th className="text-end">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {details.map((detail, idx) => (
-                            <tr key={idx}>
-                                <td>{detail.description}</td>
-                                <td className="text-center">{detail.quantity}</td>
-                                <td className="text-end">{formatoDinero(detail.unit_price)}</td>
-                                <td className="text-end">{formatoDinero(detail.subtotal)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  function downloadPdf(item: any) {
+    const today = new Date();
+    const dueDate = new Date(item.due_date);
+    const daysToPay = Math.ceil(
+      (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
-
-    const renderAccountItem = (item: AccountItem) => (
-        <div className="p-3 border-bottom">
-            <div className="d-flex justify-content-between align-items-center flex-wrap">
-                <div className="d-flex align-items-center gap-3 mb-2 mb-md-0">
-                    <span className="fw-bold">{item.fiscal_number}</span>
-                    <span className="badge bg-secondary">{item.supplier_name}</span>
-                </div>
-
-                <div className="d-flex gap-4">
-                    <div className="text-end">
-                        <small className="text-muted d-block">Fecha Factura</small>
-                        <span>{obtenerFechaFormateada(item.invoice_date)}</span>
-                    </div>
-
-                    <div className="text-end">
-                        <small className="text-muted d-block">Fecha Vencimiento</small>
-                        <span className={item.status === 'overdue' ? 'text-danger fw-bold' : ''}>
-                            {obtenerFechaFormateada(item.due_date)}
-                        </span>
-                    </div>
-
-                    <div className="text-end">
-                        <small className="text-muted d-block">Total</small>
-                        <span className="fw-bold">{formatoDinero(item.total)}</span>
-                    </div>
-
-                    <div className="text-center">
-                        <small className="text-muted d-block">Estado</small>
-                        {getStatusBadge(item.status, item.days_to_pay)}
-                    </div>
-                </div>
-            </div>
-
-            {renderItemDetails(item.details)}
-
-            <div className="mt-3 row g-3">
-                <div className="col-md-3">
-                    <div className="p-2 bg-light rounded">
-                        <small className="text-muted d-block">Precio</small>
-                        <span>{formatoDinero(item.price)}</span>
-                    </div>
-                </div>
-
-                <div className="col-md-3">
-                    <div className="p-2 bg-light rounded">
-                        <small className="text-muted d-block">Impuesto</small>
-                        <span>{formatoDinero(item.tax)}</span>
-                    </div>
-                </div>
-
-                <div className="col-md-3">
-                    <div className="p-2 bg-light rounded">
-                        <small className="text-muted d-block">Retenciones</small>
-                        <span>{formatoDinero(item.withholdings)}</span>
-                    </div>
-                </div>
-
-                <div className="col-md-3">
-                    <div className="p-2 bg-light rounded">
-                        <small className="text-muted d-block">Días para pagar</small>
-                        <span className={item.days_to_pay <= 5 ? 'text-danger fw-bold' : ''}>
-                            {item.days_to_pay} días
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderAccordionItems = (items: AccountItem[], loading: boolean) => {
-        if (loading) {
-            return (
-                <div className="d-flex justify-content-center align-items-center py-5">
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            );
-        }
-
-        if (!items || items.length === 0) {
-            return (
-                <div className="d-flex justify-content-center align-items-center py-5">
-                    <p className="text-muted">No se encontraron registros con los filtros aplicados</p>
-                </div>
-            );
-        }
-
-        return (
-            <div className="accordion custom-accordion">
-                {items.map((item) => {
-                    const isExpanded = expandedId === item.id;
-                    return (
-                        <div key={`acc-item-${item.id}`} className="accordion-item">
-                            <h2 className="accordion-header">
-                                <button
-                                    className={`accordion-button ${isExpanded ? '' : 'collapsed'}`}
-                                    type="button"
-                                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                                    aria-expanded={isExpanded}
-                                >
-                                    <div className="d-flex justify-content-between align-items-center w-100 pe-3">
-                                        <span className="fw-bold">{item.fiscal_number} - {item.supplier_name}</span>
-                                        <div className="d-flex gap-4">
-                                            <span>{obtenerFechaFormateada(item.due_date)}</span>
-                                            <span className="fw-bold">{formatoDinero(item.total)}</span>
-                                            {getStatusBadge(item.status, item.days_to_pay)}
-                                        </div>
-                                    </div>
-                                </button>
-                            </h2>
-                            <div
-                                className={`accordion-collapse collapse ${isExpanded ? 'show' : ''}`}
-                                style={{ transition: 'height 0.3s ease' }}
-                            >
-                                <div className="accordion-body p-0">
-                                    {renderAccountItem(item)}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        );
+    const status = daysToPay < 0 ? "overdue" : "pending";
+    const dataExport = {
+      Factura: item.invoice_code,
+      Cliente: item?.third_party?.nombre || "Sin cliente",
+      Fecha: obtenerFechaFormateada(item.created_at),
+      "Fecha vencimiento": obtenerFechaFormateada(item.due_date),
+      "Días para pagar": daysToPay,
+      Total: `$${Number(item.total_amount).toFixed(2)}`,
+      Pendiende: `$${Number(item.remaining_amount).toFixed(2)}`,
+      Estado: getStatusBadgeBasic(status, daysToPay),
     };
+    const table = `
+        <style>
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin-top: 25px;
+          font-size: 12px;
+        }
+        th { 
+          background-color: rgb(66, 74, 81); 
+          color: white; 
+          padding: 10px; 
+          text-align: left;
+          font-weight: normal;
+        }
+        td { 
+          padding: 10px 8px; 
+          border-bottom: 1px solid #eee;
+        }
+        </style>
+        <table>
+      <thead>
+        <tr>
+          ${Object.keys(dataExport)
+            .map((key) => `<th>${key}</th>`)
+            .join("")}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          ${Object.values(dataExport)
+            .map((value) => `<td>${value}</td>`)
+            .join("")}
+        </tr>
+      </tbody>
+    </table>`;
+    const configPDF = {
+      name: "Factura_" + item.invoice_code,
+    };
+    generatePDFFromHTML(table, company, configPDF);
+  }
+
+  function downloadExcelGeneral(items: any, name) {
+    const dataExport = items.map((item) => {
+      const today = new Date();
+      const dueDate = new Date(item.due_date);
+      const daysToPay = Math.ceil(
+        (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const status = daysToPay < 0 ? "overdue" : "pending";
+      return {
+        Factura: item.invoice_code,
+        Cliente: item?.third_party?.nombre || "Sin cliente",
+        Fecha: obtenerFechaFormateada(item.created_at),
+        "Fecha vencimiento": obtenerFechaFormateada(item.due_date),
+        "Días para pagar": daysToPay,
+        Total: `$${Number(item.total_amount).toFixed(2)}`,
+        Pendiende: `$${Number(item.remaining_amount).toFixed(2)}`,
+        Estado: getStatusBadgeBasic(status, daysToPay),
+      };
+    });
+    exportToExcel({
+      data: dataExport,
+      fileName: name,
+    });
+  }
+
+  function downloadPdfGeneral(items: any, name) {
+    const dataExport = items.map((item) => {
+      const today = new Date();
+      const dueDate = new Date(item.due_date);
+      const daysToPay = Math.ceil(
+        (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const status = daysToPay < 0 ? "overdue" : "pending";
+      return {
+        Factura: item.invoice_code,
+        Cliente: item?.third_party?.nombre || "Sin cliente",
+        Fecha: obtenerFechaFormateada(item.created_at),
+        "Fecha vencimiento": obtenerFechaFormateada(item.due_date),
+        "Días para pagar": daysToPay,
+        Total: `$${Number(item.total_amount).toFixed(2)}`,
+        Pendiende: `$${Number(item.remaining_amount).toFixed(2)}`,
+        Estado: getStatusBadgeBasic(status, daysToPay),
+      };
+    });
+    const table = `
+        <style>
+        table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          margin-top: 25px;
+          font-size: 12px;
+        }
+        th { 
+          background-color: rgb(66, 74, 81); 
+          color: white; 
+          padding: 10px; 
+          text-align: left;
+          font-weight: normal;
+        }
+        td { 
+          padding: 10px 8px; 
+          border-bottom: 1px solid #eee;
+        }
+        </style>
+        <table>
+      <thead>
+        <tr>
+          ${Object.keys(dataExport[0])
+            .map((key) => `<th>${key}</th>`)
+            .join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${dataExport
+          .map(
+            (row) => `
+          <tr>
+            ${Object.values(row)
+              .map((value) => `<td>${value}</td>`)
+              .join("")}
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+    </table>`;
+    const configPDF = {
+      name: name,
+    };
+    generatePDFFromHTML(table, company, configPDF);
+  }
+
+  const renderItemDetails = (details: InvoiceDetail[]) => (
+    <div className="mt-3 d-flex align-items-center gap-3">
+      <h5>Detalle de Factura</h5>
+      <div className="d-flex gap-2">
+        <Button
+          className="btn btn-phoenix-secondary mr-2 fas fa-file-pdf"
+          onClick={limpiarFiltros}
+        ></Button>
+        <Button
+          className="btn btn-phoenix-success fas fa-file-excel"
+          onClick={limpiarFiltros}
+        ></Button>
+      </div>
+    </div>
+  );
+
+  const renderAccountItem = (item: InvoiceData) => {
+    const today = new Date();
+    const dueDate = new Date(item.due_date);
+    const daysToPay = Math.ceil(
+      (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const status = daysToPay < 0 ? "overdue" : "pending";
 
     return (
-        <div className="container-fluid py-3">
-            <div className="card shadow-sm">
-                <div className="card-header bg-light">
-                    <h2 className="h5 mb-0">Gestión de Cuentas</h2>
-                </div>
-                <div className="card-body p-0">
-                    <div className="accordion mb-3">
-                        <div className="accordion-item border-0">
-                            <h2 className="accordion-header" id="filters">
-                                <button
-                                    className="accordion-button collapsed"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#filtersCollapse"
-                                    aria-expanded="false"
-                                    aria-controls="filtersCollapse"
-                                >
-                                    <i className="fas fa-filter me-2"></i> Filtros
-                                </button>
-                            </h2>
-                            <div
-                                id="filtersCollapse"
-                                className="accordion-collapse collapse p-3"
-                                aria-labelledby="filters"
-                            >
-                                <div className="row g-3">
-                                    <div className="col-lg-3 col-md-6">
-                                        <label htmlFor="supplierFilter" className="form-label">
-                                            Proveedor
-                                        </label>
-                                        <MultiSelect
-                                            id="supplierFilter"
-                                            options={mockSuppliers}
-                                            optionLabel="name"
-                                            optionValue="id"
-                                            filter
-                                            placeholder="Seleccione proveedores"
-                                            className="w-100"
-                                            value={selectedSupplierIds}
-                                            onChange={(e) => setSelectedSupplierIds(e.value)}
-                                            showClear
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-6">
-                                        <label htmlFor="dateRange" className="form-label">
-                                            Fecha de Factura
-                                        </label>
-                                        <Calendar
-                                            id="dateRange"
-                                            selectionMode="range"
-                                            dateFormat="dd/mm/yy"
-                                            value={selectedDateRange}
-                                            onChange={(e) => setSelectedDateRange(e.value)}
-                                            className="w-100"
-                                            placeholder="Seleccione un rango"
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-6">
-                                        <label htmlFor="dueDateRange" className="form-label">
-                                            Fecha de Vencimiento
-                                        </label>
-                                        <Calendar
-                                            id="dueDateRange"
-                                            selectionMode="range"
-                                            dateFormat="dd/mm/yy"
-                                            value={selectedDueDateRange}
-                                            onChange={(e) => setSelectedDueDateRange(e.value)}
-                                            className="w-100"
-                                            placeholder="Seleccione un rango"
-                                        />
-                                    </div>
-                                    <div className="col-lg-3 col-md-6">
-                                        <label htmlFor="daysToPay" className="form-label">
-                                            Días para pagar
-                                        </label>
-                                        <Dropdown
-                                            id="daysToPay"
-                                            options={daysToPayOptions}
-                                            optionLabel="label"
-                                            optionValue="value"
-                                            value={selectedDaysToPay}
-                                            onChange={(e) => setSelectedDaysToPay(e.value)}
-                                            className="w-100"
-                                            placeholder="Seleccione días"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <div className="p-3 border-bottom">
+        <div className="d-flex justify-content-between align-items-center flex-wrap">
+          <div className="d-flex align-items-center gap-3 mb-2 mb-md-0">
+            <span className="fw-bold">FAC-{item.invoice_code}</span>
+            <span className="badge bg-secondary">
+              {item?.third_party?.name ?? "Sin cliente"}
+            </span>
+          </div>
 
-                    <TabView
-                        activeIndex={activeTab}
-                        onTabChange={(e) => setActiveTab(e.index)}
-                        className="px-3"
-                    >
-                        <TabPanel header="Cuentas por Cobrar" className="p-0">
-                            {renderAccordionItems(accountsReceivable, loadingReceivable)}
-                        </TabPanel>
-                        <TabPanel header="Cuentas por Pagar" className="p-0">
-                            {renderAccordionItems(accountsPayable, loadingPayable)}
-                        </TabPanel>
-                    </TabView>
-                </div>
+          <div className="d-flex gap-4">
+            <div className="text-end">
+              <small className="text-muted d-block">Fecha Factura</small>
+              <span>{obtenerFechaFormateada(item.created_at)}</span>
             </div>
+
+            <div className="text-end">
+              <small className="text-muted d-block">Fecha Vencimiento</small>
+              <span
+                className={status === "overdue" ? "text-danger fw-bold" : ""}
+              >
+                {obtenerFechaFormateada(item.due_date)}
+              </span>
+            </div>
+
+            <div className="text-end">
+              <small className="text-muted d-block">Total</small>
+              <span className="fw-bold">
+                {formatoDinero(item.total_amount)}
+              </span>
+            </div>
+
+            <div className="text-center">
+              <small className="text-muted d-block">Estado</small>
+              {getStatusBadge(status, daysToPay)}
+            </div>
+          </div>
         </div>
+
+        {renderItemDetails(item.details)}
+
+        <div className="mt-3 row g-3">
+          <div className="col-md-4">
+            <div className="p-2 bg-light rounded">
+              <small className="text-muted d-block">Monto Total</small>
+              <span>{formatoDinero(item.total_amount)}</span>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="p-2 bg-light rounded">
+              <small className="text-muted d-block">Monto Pendiente</small>
+              <span>{formatoDinero(item.remaining_amount)}</span>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="p-2 bg-light rounded">
+              <small className="text-muted d-block">Días para pagar</small>
+              <span className={daysToPay <= 5 ? "text-danger fw-bold" : ""}>
+                {daysToPay} días
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     );
+  };
+
+  const renderAccordionItems = (items: InvoiceData[], loading: boolean) => {
+    if (loading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <div className="spinner-border text-primary" role="status" />
+        </div>
+      );
+    }
+
+    if (!items || items.length === 0) {
+      return (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <p className="text-muted">
+            No se encontraron registros con los filtros aplicados
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="accordion custom-accordion">
+        {items.map((item) => {
+          const isExpanded = expandedId === item.id.toString();
+          const dueDate = new Date(item.due_date);
+          const today = new Date();
+          const daysToPay = Math.ceil(
+            (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const status = daysToPay < 0 ? "overdue" : "pending";
+
+          return (
+            <div key={item.id} className="accordion-item">
+              <h2 className="accordion-header">
+                <button
+                  className={`accordion-button ${
+                    isExpanded ? "" : "collapsed"
+                  }`}
+                  type="button"
+                  onClick={() =>
+                    setExpandedId(isExpanded ? null : item.id.toString())
+                  }
+                >
+                  <div className="d-flex justify-content-between align-items-center w-100 pe-3">
+                    <span className="fw-bold">FAC-{item.invoice_code}</span>
+                    <div className="d-flex gap-4">
+                      <span>{obtenerFechaFormateada(item.due_date)}</span>
+                      <span className="fw-bold">
+                        {formatoDinero(item.total_amount)}
+                      </span>
+                      {getStatusBadge(status, daysToPay)}
+                    </div>
+                  </div>
+                </button>
+              </h2>
+              <div
+                className={`accordion-collapse collapse ${
+                  isExpanded ? "show" : ""
+                }`}
+              >
+                <div className="accordion-body p-0">
+                  {renderAccountItem(item)}
+                </div>
+              </div>
+              <div className="d-flex justify-content-end gap-2 mr-3">
+                <Button
+                  type="button"
+                  raised
+                  className="mr-2"
+                  icon={<i className="fas fa-receipt"></i>}
+                  onClick={() => {
+                    generateReceipt(item);
+                  }}
+                ></Button>
+                <Button
+                  type="button"
+                  icon={<i className="fas fa-file-pdf"></i>}
+                  onClick={() => downloadPdf(item)}
+                ></Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <div className="container-fluid py-3">
+      <div className="card shadow-sm">
+        <div className="card-header bg-light">
+          <h2 className="h5 mb-0">Gestión de Cuentas</h2>
+        </div>
+
+        <div className="card-body p-0">
+          <div className="accordion mb-3">
+            <div className="accordion-item border-0">
+              <h2 className="accordion-header">
+                <button
+                  className="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#filtersCollapse"
+                >
+                  <i className="fas fa-filter me-2"></i> Filtros
+                </button>
+              </h2>
+              <div
+                id="filtersCollapse"
+                className="accordion-collapse collapse p-3"
+              >
+                <div className="row g-3">
+                  <div className="col-lg-3 col-md-6">
+                    <label className="form-label">Cliente/Proveedor</label>
+                    <MultiSelect
+                      options={[]} // ← Aquí debes cargar proveedores/clientes reales
+                      optionLabel="name"
+                      optionValue="id"
+                      filter
+                      placeholder="Seleccione clientes/proveedores"
+                      className="w-100"
+                      value={selectedSupplierIds}
+                      onChange={(e) => setSelectedSupplierIds(e.value)}
+                      showClear
+                    />
+                  </div>
+                  <div className="col-lg-3 col-md-6">
+                    <label className="form-label">Fecha de Factura</label>
+                    <Calendar
+                      selectionMode="range"
+                      dateFormat="dd/mm/yy"
+                      value={selectedDateRange}
+                      onChange={(e) => setSelectedDateRange(e.value)}
+                      className="w-100"
+                      placeholder="Seleccione un rango"
+                    />
+                  </div>
+                  <div className="col-lg-3 col-md-6">
+                    <label className="form-label">Fecha de Vencimiento</label>
+                    <Calendar
+                      selectionMode="range"
+                      dateFormat="dd/mm/yy"
+                      value={selectedDueDateRange}
+                      onChange={(e) => setSelectedDueDateRange(e.value)}
+                      className="w-100"
+                      placeholder="Seleccione un rango"
+                    />
+                  </div>
+                  <div className="col-lg-3 col-md-6">
+                    <label className="form-label">Días para pagar</label>
+                    <Dropdown
+                      options={daysToPayOptions}
+                      optionLabel="label"
+                      optionValue="value"
+                      value={selectedDaysToPay}
+                      onChange={(e) => setSelectedDaysToPay(e.value)}
+                      className="w-100"
+                      placeholder="Seleccione días"
+                    />
+                  </div>
+                </div>
+                <div className="d-flex justify-content-end gap-2 mt-3">
+                  <Button
+                    label="Limpiar"
+                    icon="pi pi-trash"
+                    className="btn btn-phoenix-secondary"
+                    onClick={limpiarFiltros}
+                  />
+                  <Button
+                    label="Aplicar Filtros"
+                    icon="pi pi-filter"
+                    className="btn btn-primary"
+                    onClick={aplicarFiltros}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <TabView
+            activeIndex={activeTab}
+            onTabChange={(e) => setActiveTab(e.index)}
+          >
+            <TabPanel header="Cuentas por Cobrar" className="p-0">
+              <div className="d-flex justify-content-end gap-2 me-3">
+                <Button
+                  tooltip="Exportar a excel - general"
+                  tooltipOptions={{ position: "top" }}
+                  type="button"
+                  icon={<i className="fas fa-file-excel"></i>}
+                  onClick={() => {
+                    downloadExcelGeneral(
+                      accountsReceivable,
+                      "Cuentas_por_Cobrar"
+                    );
+                  }}
+                ></Button>
+                <Button
+                  tooltip="Exportar a pdf - general"
+                  tooltipOptions={{ position: "top" }}
+                  type="button"
+                  icon={<i className="fas fa-file-pdf"></i>}
+                  onClick={() =>
+                    downloadPdfGeneral(accountsReceivable, "Cuentas_por_Cobrar")
+                  }
+                ></Button>
+              </div>
+              <hr className="m-2" />
+              {renderAccordionItems(accountsReceivable, loadingReceivable)}
+              <Paginator
+                first={first}
+                rows={rows}
+                totalRecords={totalReceivable}
+                rowsPerPageOptions={[10, 20, 30, 50]}
+                onPageChange={onPageChange}
+              />
+            </TabPanel>
+            <TabPanel header="Cuentas por Pagar" className="p-0">
+              <div className="d-flex justify-content-end gap-2 me-3">
+                <Button
+                  tooltip="Exportar a excel - general"
+                  tooltipOptions={{ position: "top" }}
+                  type="button"
+                  icon={<i className="fas fa-file-excel"></i>}
+                  onClick={() => {
+                    downloadExcelGeneral(accountsPayable, "Cuentas_por_Pagar");
+                  }}
+                ></Button>
+                <Button
+                  tooltip="Exportar a pdf - general"
+                  tooltipOptions={{ position: "top" }}
+                  type="button"
+                  icon={<i className="fas fa-file-pdf"></i>}
+                  onClick={() =>
+                    downloadPdfGeneral(accountsPayable, "Cuentas_por_Pagar")
+                  }
+                ></Button>
+              </div>
+              <hr className="m-2" />
+              {renderAccordionItems(accountsPayable, loadingPayable)}
+              <Paginator
+                first={first}
+                rows={rows}
+                totalRecords={totalPayable}
+                rowsPerPageOptions={[10, 20, 30, 50]}
+                onPageChange={onPageChange}
+              />
+            </TabPanel>
+          </TabView>
+        </div>
+      </div>
+      <NewReceiptBoxModal
+        visible={showReceiptModal}
+        onHide={() => {
+          setShowReceiptModal(false);
+          setInvoiceToReceipt(null);
+        }}
+        onSubmit={handleGenerarRecibo}
+        onSaveAndDownload={handleGenerarRecibo}
+        initialData={{
+          cliente: invoiceToReceipt?.third_party?.id?.toString() || "",
+          idFactura: invoiceToReceipt?.id || 0,
+          numeroFactura: invoiceToReceipt?.invoice_code || "",
+          fechaElaboracion: invoiceToReceipt?.created_at || new Date(),
+          valorPagado: invoiceToReceipt?.remaining_amount || 0,
+          centreCost: invoiceToReceipt?.centre_cost || null,
+          invoiceType: invoiceType || "",
+        }}
+      />
+    </div>
+  );
 };

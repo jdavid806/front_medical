@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $nombre_doctor = $doctor['nombre'];
   $especialidad_doctor = $doctor['especialidad'];
   $firma_doctor = $doctor['firma'];
+  $sello_doctor = $doctor['sello'];
   $tipo_Impresion = $datos['tipo_Impresion'];
 
   ob_start();
@@ -51,4 +52,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   http_response_code(405);
   echo "Acceso no permitido.";
 }
-?>

@@ -5,8 +5,15 @@ export const useUsers = () => {
   const fetchUsers = async () => {
     try {
       const data = await userService.getAll();
-      console.log('users', data);
-      setUsers(data);
+      const mappedData = data.map(user => {
+        const fullName = `${user.first_name || ''} ${user.last_name || ''} ${user.middle_name || ''} ${user.second_last_name || ''}`.trim();
+        return {
+          ...user,
+          full_name: fullName,
+          label: fullName
+        };
+      });
+      setUsers(mappedData);
     } catch (error) {
       console.error('Error fetching users:', error);
     }

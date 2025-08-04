@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import CustomDataTable from "../components/CustomDataTable.js";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
@@ -8,154 +7,101 @@ import { PreadmissionForm } from "./PreadmissionForm.js";
 import { PrintTableAction } from "../components/table-actions/PrintTableAction.js";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction.js";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
-import { appointmentService } from "../../services/api/index.js";
+import { appointmentService, templateService } from "../../services/api/index.js";
 import UserManager from "../../services/userManager.js";
 import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStateFilters, appointmentStatesByKeyTwo } from "../../services/commons.js";
 import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
-import { getUserLogged } from "../../services/utilidades.js";
+import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2.js";
+import { useMassMessaging } from "../hooks/useMassMessaging.js";
+import { useTemplate } from "../hooks/useTemplate.js";
+import { formatWhatsAppMessage, getIndicativeByCountry, formatDate } from "../../services/utilidades.js";
+import { CustomPRTable } from "../components/CustomPRTable.js";
 export const AppointmentsTable = () => {
-  const userLogged = getUserLogged();
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
+  const [selectedBranch, setSelectedBranch] = React.useState(null);
+  const [selectedDate, setSelectedDate] = React.useState([new Date(new Date().setDate(new Date().getDate())), new Date()]);
+  const getCustomFilters = () => {
+    return {
+      patientId,
+      sort: "-appointment_date,appointment_time",
+      appointmentState: selectedBranch,
+      appointmentDate: selectedDate?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(",")
+    };
+  };
   const {
     appointments,
-    fetchAppointments
-  } = useFetchAppointments(appointmentService.active());
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+    totalRecords,
+    first,
+    loading: loadingAppointments,
+    perPage
+  } = useFetchAppointments(getCustomFilters);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
-  const [selectedBranch, setSelectedBranch] = React.useState(null);
-  const [selectedDate, setSelectedDate] = React.useState([new Date(new Date().setDate(new Date().getDate())), new Date()]);
-  const [filteredAppointments, setFilteredAppointments] = React.useState([]);
   const [pdfFile, setPdfFile] = useState(null); // Para almacenar el archivo PDF
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null); // Para la previsualización del PDF
   const [showPdfModal, setShowPdfModal] = useState(false); // Para controlar la visibilidad del modal de PDF
 
-  const columns = [{
-    data: "patientName",
-    className: "text-start",
-    orderable: true
-  }, {
-    data: "patientDNI",
-    className: "text-start",
-    orderable: true
-  }, {
-    data: "date",
-    className: "text-start",
-    orderable: true,
-    type: "date"
-  }, {
-    data: "time",
-    orderable: true
-  }, {
-    data: "doctorName",
-    orderable: true
-  }, {
-    data: "entity",
-    orderable: true
-  }, {
-    data: "status",
-    orderable: true
-  }];
-  const [showFormModal, setShowFormModal] = useState({
-    isShow: false,
-    data: {}
-  });
-  const handleSubmit = async () => {
-    try {
-      // Llamar a la función guardarArchivoExamen
-      //@ ts-ignore
-      const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
-
-      // Acceder a la PromiseResult
-      if (enviarPDf !== undefined) {
-        console.log("PDF de prueba:", enviarPDf);
-        console.log("Resultado de la promesa:", enviarPDf);
-        await appointmentService.changeStatus(selectedAppointmentId, "consultation_completed");
-        SwalManager.success({
-          text: "Resultados guardados exitosamente"
-        });
-      } else {
-        console.error("No se obtuvo un resultado válido.");
-      }
-    } catch (error) {
-      console.error("Error al guardar el archivo:", error);
-    } finally {
-      // Limpiar el estado después de la operación
-      setShowPdfModal(false);
-      setPdfFile(null);
-      setPdfPreviewUrl(null);
-      fetchAppointments();
-    }
+  const {
+    sendMessage: sendMessageAppointmentHook,
+    responseMsg,
+    loading,
+    error
+  } = useMassMessaging();
+  const tenant = window.location.hostname.split(".")[0];
+  const dataTemplateShareAppointment = {
+    tenantId: tenant,
+    belongsTo: "citas-compartir",
+    type: "whatsapp"
   };
+  const {
+    template: templateShareAppointmen,
+    setTemplate,
+    fetchTemplate
+  } = useTemplate(dataTemplateShareAppointment);
+  const sendMessageAppointment = useRef(sendMessageAppointmentHook);
   useEffect(() => {
-    let filtered = [...appointments];
-    if (userLogged.role.group === "DOCTOR") {
-      filtered = filtered.filter(appointment => appointment?.user_availability?.user?.id === userLogged.id);
-    }
-    if (selectedBranch) {
-      filtered = filtered.filter(appointment => `${appointment.stateKey}` === selectedBranch);
-    }
-    if (selectedDate?.length === 2 && selectedDate[0] && selectedDate[1]) {
-      const startDate = new Date(Date.UTC(selectedDate[0].getFullYear(), selectedDate[0].getMonth(), selectedDate[0].getDate()));
-      const endDate = new Date(Date.UTC(selectedDate[1].getFullYear(), selectedDate[1].getMonth(), selectedDate[1].getDate(), 23, 59, 59, 999));
-      filtered = filtered.filter(appointment => {
-        const appointmentDate = new Date(appointment.date);
-        return appointmentDate >= startDate && appointmentDate <= endDate;
-      });
-    }
-    setFilteredAppointments(filtered);
-  }, [appointments, selectedBranch, selectedDate]);
-  const handleMakeClinicalRecord = (patientId, appointmentId) => {
-    UserManager.onAuthChange((isAuthenticated, user) => {
-      if (user) {
-        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
-      }
-    });
-  };
-
-  //filtrar objecto en el select
-  const getAppointmentStates = () => {
-    return Object.entries(appointmentStateFilters).map(([key, label]) => ({
-      value: key,
-      label: label
-    }));
-  };
-  const handleRescheduleAppointment = async appointmentId => {
-    console.log("Reagendando", appointmentId);
-  };
-  const handleCancelAppointment = async appointmentId => {
-    SwalManager.confirmCancel(async () => {
-      await appointmentService.changeStatus(appointmentId, "cancelled");
-      SwalManager.success({
-        text: "Cita cancelada exitosamente"
-      });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    });
-  };
-  const handleHideFormModal = () => {
-    setShowFormModal({
-      isShow: false,
-      data: {}
-    });
-  };
-  const handleLoadExamResults = (appointmentId, patientId, productId) => {
-    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
-  };
-  const handleLoadExamResultsFile = () => {
-    setShowLoadExamResultsFileModal(true);
-  };
-  const slots = {
-    6: (cell, data) => {
+    sendMessageAppointment.current = sendMessageAppointmentHook;
+  }, [sendMessageAppointmentHook]);
+  const columns = [{
+    header: "Paciente",
+    field: "patientName",
+    body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
+      href: `verPaciente?id=${data.patientId}`
+    }, data.patientName))
+  }, {
+    header: "Número de documento",
+    field: "patientDNI"
+  }, {
+    header: "Fecha Consulta",
+    field: "date"
+  }, {
+    header: "Hora Consulta",
+    field: "time"
+  }, {
+    header: "Profesional asignado",
+    field: "doctorName"
+  }, {
+    header: "Entidad",
+    field: "entity"
+  }, {
+    header: "Estado",
+    field: "status",
+    body: data => {
       const color = appointmentStateColorsByKey[data.stateKey] || appointmentStatesColors[data.stateId];
       const text = appointmentStatesByKeyTwo[data.stateKey]?.[data.attentionType] || appointmentStatesByKeyTwo[data.stateKey] || "SIN ESTADO";
       return /*#__PURE__*/React.createElement("span", {
         className: `badge badge-phoenix badge-phoenix-${color}`
       }, text);
-    },
-    7: (cell, data) => /*#__PURE__*/React.createElement("div", {
+    }
+  }, {
+    header: "",
+    field: "",
+    body: data => /*#__PURE__*/React.createElement("div", {
       className: "text-end align-middle"
     }, /*#__PURE__*/React.createElement("div", {
       className: "dropdown"
@@ -184,7 +130,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -235,9 +181,20 @@ export const AppointmentsTable = () => {
     }, "Subir Examen"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
+      onClick: e => openRescheduleAppointmentModal(data.id)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-calendar-alt",
+      style: {
+        width: "20px"
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "Reagendar cita")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
       onClick: e => {
         e.preventDefault();
-        handleCancelAppointment(data.id);
+        handleCancelAppointment(data);
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
@@ -251,9 +208,9 @@ export const AppointmentsTable = () => {
     }, "Cita"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
-      onClick: () => {
-        // @ts-ignore
-        shareAppointmentMessage(data.id, data.patientId);
+      onClick: e => {
+        e.preventDefault();
+        sendMessageWhatsapp(data, "share");
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
@@ -287,6 +244,119 @@ export const AppointmentsTable = () => {
         sendInvoice(data.id, data.patientId);
       }
     }))))
+  }];
+  const [showFormModal, setShowFormModal] = useState({
+    isShow: false,
+    data: {}
+  });
+  const handleSubmit = async () => {
+    try {
+      // Llamar a la función guardarArchivoExamen
+      //@ ts-ignore
+      const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
+
+      // Acceder a la PromiseResult
+      if (enviarPDf !== undefined) {
+        await appointmentService.changeStatus(selectedAppointmentId, "consultation_completed");
+        SwalManager.success({
+          text: "Resultados guardados exitosamente"
+        });
+      } else {
+        console.error("No se obtuvo un resultado válido.");
+      }
+    } catch (error) {
+      console.error("Error al guardar el archivo:", error);
+    } finally {
+      // Limpiar el estado después de la operación
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+      refresh();
+    }
+  };
+  useEffect(() => {
+    refresh();
+  }, [selectedBranch, selectedDate]);
+  const handleMakeClinicalRecord = (patientId, appointmentId) => {
+    UserManager.onAuthChange((isAuthenticated, user) => {
+      if (user) {
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
+      }
+    });
+  };
+
+  //filtrar objecto en el select
+  const getAppointmentStates = () => {
+    return Object.entries(appointmentStateFilters).map(([key, label]) => ({
+      value: key,
+      label: label
+    }));
+  };
+  const handleCancelAppointment = async data => {
+    SwalManager.confirmCancel(async () => {
+      await appointmentService.changeStatus(Number(data.id), "cancelled");
+      sendMessageWhatsapp(data, "cancel");
+      SwalManager.success({
+        text: "Cita cancelada exitosamente"
+      });
+    });
+  };
+  const sendMessageWhatsapp = useCallback(async (appointment, type) => {
+    const appointmentData = await appointmentService.get(Number(appointment.id));
+    const replacements = {
+      NOMBRE_PACIENTE: `${appointmentData?.patient?.first_name ?? ""} ${appointmentData?.patient?.middle_name ?? ""} ${appointmentData?.patient?.last_name ?? ""} ${appointmentData?.patient?.second_last_name ?? ""}`,
+      ESPECIALISTA: `${appointmentData?.user_availability?.user.first_name ?? ""} ${appointmentData?.user_availability?.user?.middle_name ?? ""} ${appointmentData?.user_availability?.user?.last_name ?? ""} ${appointmentData?.user_availability?.user?.second_last_name ?? ""}`,
+      ESPECIALIDAD: `${appointmentData?.user_availability?.user?.specialty?.name ?? ""}`,
+      FECHA_CITA: `${formatDate(appointmentData.appointment_date, true)}`,
+      HORA_CITA: `${appointmentData.appointment_time}`,
+      MOTIVO_REAGENDAMIENTO: "",
+      MOTIVO_CANCELACION: ""
+    };
+    const templateFormatted = await handleSwitchTemplate(type, replacements);
+    const dataMessage = {
+      channel: "whatsapp",
+      message_type: "text",
+      recipients: [getIndicativeByCountry(appointmentData.patient.country_id) + appointmentData.patient.whatsapp],
+      message: templateFormatted,
+      webhook_url: "https://example.com/webhook"
+    };
+    await sendMessageAppointment.current(dataMessage);
+    refresh();
+  }, [sendMessageAppointmentHook]);
+  async function handleSwitchTemplate(type, replacements) {
+    let templateFormatted = null;
+    switch (type) {
+      case "share":
+        templateFormatted = formatWhatsAppMessage(templateShareAppointmen.template, replacements);
+        break;
+      case "cancel":
+        const tenant = window.location.hostname.split(".")[0];
+        const dataTemplateCancelAppointment = {
+          tenantId: tenant,
+          belongsTo: "citas-cancelacion",
+          type: "whatsapp"
+        };
+        const dataTemplateCancel = await templateService.getTemplate(dataTemplateCancelAppointment);
+        templateFormatted = formatWhatsAppMessage(dataTemplateCancel.data.template, replacements);
+        break;
+    }
+    return templateFormatted;
+  }
+  const openRescheduleAppointmentModal = appointmentId => {
+    setSelectedAppointmentId(appointmentId);
+    setShowRescheduleModal(true);
+  };
+  const handleHideFormModal = () => {
+    setShowFormModal({
+      isShow: false,
+      data: {}
+    });
+  };
+  const handleLoadExamResults = (appointmentId, patientId, productId) => {
+    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
+  };
+  const handleLoadExamResultsFile = () => {
+    setShowLoadExamResultsFileModal(true);
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "accordion mb-3"
@@ -344,33 +414,25 @@ export const AppointmentsTable = () => {
     onChange: e => setSelectedDate(e.value),
     className: "w-100",
     placeholder: "Seleccione un rango"
-  }))))))))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3 text-body-emphasis rounded-3 shadow-sm p-3 w-100 w-md-100 w-lg-100 mx-auto",
+  }))))))))), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
       minHeight: "300px"
     }
-  }, /*#__PURE__*/React.createElement(CustomDataTable, {
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
-    data: filteredAppointments,
-    slots: slots
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Nombre"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "N\xFAmero de documento"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Fecha Consulta"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Hora Consulta"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Profesional asignado"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Entidad"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th text-start"
-  }, "Estado"), /*#__PURE__*/React.createElement("th", {
-    className: "text-end align-middle pe-0 border-top mb-2",
-    scope: "col"
-  })))))), showPdfModal && /*#__PURE__*/React.createElement("div", {
+    data: appointments,
+    lazy: true,
+    first: first,
+    rows: perPage,
+    totalRecords: totalRecords,
+    loading: loadingAppointments,
+    onPage: handlePageChange,
+    onSearch: handleSearchChange,
+    onReload: refresh
+  }))), showPdfModal && /*#__PURE__*/React.createElement("div", {
     className: "modal fade show",
     style: {
       display: "block",
@@ -441,5 +503,10 @@ export const AppointmentsTable = () => {
     show: showLoadExamResultsFileModal,
     onHide: () => setShowLoadExamResultsFileModal(false),
     title: "Subir resultados de examen"
-  }, /*#__PURE__*/React.createElement(ExamResultsFileForm, null)));
+  }, /*#__PURE__*/React.createElement(ExamResultsFileForm, null)), /*#__PURE__*/React.createElement(RescheduleAppointmentModalV2, {
+    isOpen: showRescheduleModal,
+    onClose: () => setShowRescheduleModal(false),
+    appointmentId: selectedAppointmentId,
+    onSuccess: () => refresh()
+  }));
 };

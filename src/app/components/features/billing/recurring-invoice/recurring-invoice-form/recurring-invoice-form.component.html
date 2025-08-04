@@ -1,0 +1,122 @@
+<!-- Main Header Section -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-0 mb-4 bg-white p-4 md:p-3 rounded-lg shadow-md">
+  <!-- Back Button -->
+  <div class="w-full md:w-auto md:flex-1 flex justify-start">
+    <p-button
+      label="{{ 'RECURRING_INVOICE' | translate }} - {{ 'NEW_RECURRING_INVOICE' | translate }}"
+      icon="pi pi-arrow-left"
+      styleClass="p-button-text p-button-secondary w-full md:w-auto justify-start"
+      [raised]="true"
+      routerLink="/billing/recurring">
+    </p-button>
+  </div>
+
+  <!-- Centered Title -->
+  <div class="w-full mr-8 md:flex-1 px-0 md:px-4">
+    <h1 class="text-xl md:text-2xl font-bold mb-1 inline-block">
+      {{ "NEW_RECURRING_INVOICE" | translate }}
+      <div class="w-16 md:w-20 h-1 bg-blue-500 mx-auto mt-2 md:mt-1"></div>
+    </h1>
+  </div>
+</div>
+
+<div class="form-container">
+  <p-card header="Nueva Factura Recurrente" [style]="{ 'box-shadow': '0 4px 20px rgba(0, 0, 0, 0.08)' }">
+    <form [formGroup]="form" class="invoice-form">
+      <div class="alert alert-info mb-6">
+        <p class="font-semibold text-primary-600 mb-2">Importante:</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>No se puede crear modelo de factura recurrente a partir de una factura elaborada en moneda extranjera.</li>
+          <li>Si tu factura es de tipo electrónico, la fecha de elaboración de tus documentos deberá ser igual a la fecha de envío a la DIAN.</li>
+        </ul>
+      </div>
+
+      <h3 class="section-title">Número de factura de venta base para crear recurrencia</h3>
+
+      <div class="grid grid-cols-8 md:grid-cols-8 gap-4">
+        <div class="col-12">
+          <label class="block  font-medium">{{ 'INVOICE_NUMBER' | translate }} *</label>
+          <p-select
+            formControlName="invoiceNumber"
+            [options]="invoiceOptions"
+            placeholder="{{ 'SELECT_INVOICE_NUMBER' | translate }}"
+            [ngClass]="{'ng-invalid ng-dirty': form.get('invoiceNumber')?.invalid && form.get('invoiceNumber')?.touched}"
+            [filter]="true"
+            filterBy="name"
+            class="w-full"
+            optionLabel="name"
+            [showClear]="true">
+          </p-select>
+        </div>
+
+        <div class="col-12">
+          <label class="block font-medium">{{ 'DESCRIPTION' | translate }} *</label>
+          <textarea
+            formControlName="descriptions"
+            pInputTextarea
+            placeholder="{{ 'ENTER_DESCRIPTION' | translate }}"
+            [ngClass]="{'ng-invalid ng-dirty': form.get('descriptions')?.invalid && form.get('descriptions')?.touched}"
+            rows="5">
+          </textarea>
+        </div>
+      </div>
+
+
+      <!-- Campos de recurrencia (se muestran solo cuando createNewModel es true) -->
+      <div  class="recurrence-fields mt-4">
+        <div class="grid grid-cols-8 md:grid-cols-8 gap-4">
+          <div class="col-12">
+            <label class="block font-medium">{{ 'PERIODICITY' | translate }} *</label>
+            <p-select
+              formControlName="periodicity"
+              [options]="periodicityOptions"
+              placeholder="{{ 'SELECT_PERIODICITY' | translate }}"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('periodicity')?.invalid && form.get('periodicity')?.touched}"
+              class="w-full"
+              optionLabel="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="col-12" *ngIf="!form.get('repeatIndefinitely')?.value">
+            <label class="block font-medium">{{ 'FREQUENCY' | translate }} *</label>
+            <input
+              type="number"
+              formControlName="frequency"
+              pInputText
+              placeholder="{{ 'ENTER_FREQUENCY' | translate }}"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('frequency')?.invalid && form.get('frequency')?.touched}"
+              min="1"
+              class="w-full">
+          </div>
+
+          <div class="col-12 flex items-center">
+            <p-checkbox
+              [binary]="true"
+              inputId="repeatIndefinitely"
+              formControlName="repeatIndefinitely"
+              (onChange)="toggleFrequencyField()">
+            </p-checkbox>
+            <label for="repeatIndefinitely" class="ml-2 cursor-pointer">Repetir de manera indefinida</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-container mt-4 flex justify-content-around">
+        <p-button
+          label="Cancelar"
+          (click)="cancel()"
+          [raised]="true"
+          severity="secondary">
+        </p-button>
+
+        <p-button
+          label="Guardar"
+          (click)="save()"
+          [raised]="true"
+          [disabled]="form.invalid">
+        </p-button>
+      </div>
+    </form>
+  </p-card>
+</div>

@@ -7,8 +7,8 @@ interface PatientInfoContainerProps {
 }
 
 export const PatientInfoContainer = ({ patientId }: PatientInfoContainerProps) => {
-    const { patient } = usePatient(patientId);
+    const { patient, fetchPatient } = usePatient(patientId);
 
-    return patient ? <PatientInfo patient={patient} /> : <p>Cargando...</p>
+    return patient ? <PatientInfo requestRefresh={() => {fetchPatient();}} patient={patient} /> : <p>Cargando...</p>
 }
 

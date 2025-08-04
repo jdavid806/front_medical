@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import PrescriptionTable from '../prescriptions/components/PrescriptionTable';
 import PrescriptionModal from './components/PrescriptionModal';
-import { useAllPrescriptions } from './hooks/useAllPrescriptions';
 import { usePrescriptionCreate } from './hooks/usePrescriptionCreate';
 import { usePrescription } from './hooks/usePrescription';
 import { usePrescriptionDelete } from './hooks/usePrescriptionDelete';
 import { usePrescriptionUpdate } from './hooks/usePrescriptionUpdate';
 import { PrescriptionFormInputs } from './components/PrescriptionForm';
+import { usePatientPrescriptions } from './hooks/usePatientPrescriptions';
 
+const patientId = ((new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? "0")
 
 export const PrescriptionApp = () => {
     const { createPrescription } = usePrescriptionCreate();
     const { updatePrescription } = usePrescriptionUpdate();
-    const { prescriptions, fetchPrescriptions } = useAllPrescriptions();
+    const { prescriptions, fetchPrescriptions } = usePatientPrescriptions();
     const { deletePrescription } = usePrescriptionDelete();
     const { prescription, setPrescription, fetchPrescription } = usePrescription();
 
@@ -23,7 +24,7 @@ export const PrescriptionApp = () => {
         console.log(data);
         const newData = {
             user_id: 1,
-            patient_id: +((new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? 0),
+            patient_id: +patientId,
             medicines: data,
             is_active: true
         }
@@ -33,7 +34,7 @@ export const PrescriptionApp = () => {
         } else {
             await createPrescription(newData)
         }
-        fetchPrescriptions()
+        fetchPrescriptions(patientId)
         setShowPrescriptionModal(false)
     };
 
@@ -44,7 +45,7 @@ export const PrescriptionApp = () => {
 
     const handleTableDelete = async (id: string) => {
         const confirmed = await deletePrescription(id)
-        if (confirmed) fetchPrescriptions()
+        if (confirmed) fetchPrescriptions(patientId)
     }
 
     const handleOnCreate = () => {
@@ -56,6 +57,10 @@ export const PrescriptionApp = () => {
     const handleHidePrescriptionModal = () => {
         setShowPrescriptionModal(false)
     }
+
+    useEffect(() => {
+        fetchPrescriptions(patientId)
+    }, [])
 
     useEffect(() => {
         console.log('Prescription: ', prescription)

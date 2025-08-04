@@ -60,7 +60,7 @@
         const horaSelect = document.getElementById("appointment_time");
         assignedUserSpecialtyErrorContainer.classList.add('d-none')
 
-        console.log("cita", currentAppointment);
+        // console.log("cita", currentAppointment);
 
 
         fechaInput.value = "";
@@ -70,7 +70,7 @@
             fechaInput._flatpickr.destroy();
         }
 
-        console.log("input de fecha: ", fechaInput);
+        // console.log("input de fecha: ", fechaInput);
 
         const availableBlocks = await userAvailabilityService.availableBlocks({
             user_specialty_id: loggedUser.user_specialty_id,

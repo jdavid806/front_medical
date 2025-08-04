@@ -18,39 +18,13 @@
         ],
         "card2": [
           {
-            "title": "Evolución de los sintomas",
+            "title": "Historia de la enfermedad actual",
             "fields": [
               {
-                "id": "evolucionSintomas",
+                "id": "historiaEnfermedadActual",
                 "label": "",
                 "type": "textarea",
-                "name": "evolucionSintomas"
-              }
-            ]
-          }
-        ],
-        "card3": [
-          {
-            "title": "Contexto de los sintomas",
-            "fields": [
-              {
-                "id": "contextoSintoma",
-                "label": "",
-                "type": "textarea",
-                "name": "contextoSintoma"
-              }
-            ]
-          }
-        ],
-        "card4": [
-          {
-            "title": "¿Qué ha tomado?",
-            "fields": [
-              {
-                "id": "manejoSintoma",
-                "label": "",
-                "type": "textarea",
-                "name": "manejoSintoma"
+                "name": "historiaEnfermedadActual"
               }
             ]
           }
@@ -66,73 +40,133 @@
               {
                 "id": "disminucionVision",
                 "label": "Disminución de la visión",
-                "type": "select",
+                "type": "radio",
                 "name": "disminucionVision",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  { "id": "si", "value": "si", "text": "Sí" },
+                  { "id": "no", "value": "no", "text": "No" },
+                  { "id": "noNiega", "value": "noNiega", "text": "No niega" }
                 ]
               },
               {
                 "id": "estrabismo",
                 "label": "Estrabismo",
-                "type": "select",
+                "type": "radio",
                 "name": "estrabismo",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "glaucoma",
                 "label": "Glaucoma",
-                "type": "select",
+                "type": "radio",
                 "name": "glaucoma",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
-                "id": "amblyopia",
-                "label": "Amblyopia",
-                "type": "select",
-                "name": "amblyopia",
-                "class": "col-6",
+                "id": "ambliopia",
+                "label": "Ambliopia",
+                "type": "radio",
+                "name": "ambliopia",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "usaLentes",
                 "label": "Usa lentes",
-                "type": "select",
+                "type": "radio",
                 "name": "usaLentes",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "fumador",
                 "label": "Fumador",
-                "type": "select",
+                "type": "radio",
                 "name": "fumador",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
@@ -157,6 +191,7 @@
                 "label": "Sin corrección",
                 "type": "checkbox",
                 "name": "sinCorreccionOjoDerechoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "sinCorreccionOjoDerechoInfo",
@@ -171,6 +206,7 @@
                 "label": "Con corrección",
                 "type": "checkbox",
                 "name": "conCorreccionOjoDerechoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "conCorreccionOjoDerecho",
@@ -198,6 +234,7 @@
                 "label": "Sin corrección",
                 "type": "checkbox",
                 "name": "sinCorreccionOjoIzquierdoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "sinCorreccionOjoIzquierdoInfo",
@@ -212,6 +249,7 @@
                 "label": "Con corrección",
                 "type": "checkbox",
                 "name": "conCorreccionOjoIzquierdoCheck",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "conCorreccionOjoIzquierdo",
@@ -232,23 +270,21 @@
         ],
         "card3": [
           {
-            "title": "Queratometría Ojo derecho",
+            "title": "Queratometría",
             "class": "col-12",
             "fields": [
               {
-                "id": "queratometriaOjoDerechoCheck",
-                "label": "Queratometría",
-                "type": "checkbox",
-                "name": "queratometriaOjoDerechoCheck",
-                "class": "col-12",
-                "toggleFields": [
-                  {
-                    "id": "queratometriaOjoDerechoInfo",
-                    "label": "",
-                    "type": "textarea",
-                    "name": "queratometriaOjoDerechoInfo"
-                  }
-                ]
+                "id": "queratometriaLabelOjoDerecho",
+                "label": "Ojo derecho",
+                "type": "label",
+                "name": "queratometriaLabelOjoDerecho"
+              },
+              {
+                "id": "queratometriaOjoDerecho",
+                "label": "Queratometria",
+                "type": "input",
+                "name": "queratometriaOjoDerecho",
+                "class": "col-2"
               },
               {
                 "id": "esferaOjoDerecho",
@@ -272,48 +308,38 @@
                 "class": "col-2"
               },
               {
-                "id": "addOjoDerecho",
-                "label": "ADD",
+                "id": "adicionOjoDerecho",
+                "label": "Adicion",
                 "type": "input",
-                "name": "addOjoDerecho",
+                "name": "adicionOjoDerecho",
                 "class": "col-2"
               },
               {
-                "id": "AlturaOjoDerecho",
+                "id": "alturaOjoDerecho",
                 "label": "Altura",
                 "type": "input",
-                "name": "AlturaOjoDerecho",
+                "name": "alturaOjoDerecho",
                 "class": "col-2"
               },
               {
-                "id": "dnpOjoDerecho",
-                "label": "DNP",
+                "id": "dpOjoDerecho",
+                "label": "DP",
                 "type": "input",
-                "name": "dnpOjoDerecho",
+                "name": "dpOjoDerecho",
                 "class": "col-2"
-              }
-            ]
-          }
-        ],
-        "card4": [
-          {
-            "title": "Queratometría Ojo izquierdo",
-            "class": "col-12",
-            "fields": [
+              },
               {
-                "id": "queratomiaOjoIzquierdoCheck",
-                "label": "Queratometría",
-                "type": "checkbox",
-                "name": "queratomiaOjoIzquierdoCheck",
-                "class": "col-12",
-                "toggleFields": [
-                  {
-                    "id": "queratomiaOjoIzquierdoInfo",
-                    "label": "Valor",
-                    "type": "textarea",
-                    "name": "queratomiaOjoIzquierdoInfo"
-                  }
-                ]
+                "id": "queratometriaLabelOjoIzquierdo",
+                "label": "Ojo izquierdo",
+                "type": "label",
+                "name": "queratometriaLabelOjoIzquierdo"
+              },
+              {
+                "id": "queratometriaOjoIzquierdo",
+                "label": "Queratometria",
+                "type": "input",
+                "name": "queratometriaOjoIzquierdo",
+                "class": "col-2"
               },
               {
                 "id": "esferaOjoIzquierdo",
@@ -337,53 +363,290 @@
                 "class": "col-2"
               },
               {
-                "id": "addOjoIzquierdo",
-                "label": "ADD",
+                "id": "adicionOjoIzquierdo",
+                "label": "Adicion",
                 "type": "input",
-                "name": "addOjoIzquierdo",
+                "name": "adicionOjoIzquierdo",
                 "class": "col-2"
               },
               {
-                "id": "AlturaOjoIzquierdo",
+                "id": "alturaOjoIzquierdo",
                 "label": "Altura",
                 "type": "input",
-                "name": "AlturaOjoIzquierdo",
+                "name": "alturaOjoIzquierdo",
                 "class": "col-2"
               },
               {
-                "id": "dnpOjoIzquierdo",
-                "label": "DNP",
+                "id": "dpOjoIzquierdo",
+                "label": "DP",
                 "type": "input",
-                "name": "dnpOjoIzquierdo",
+                "name": "dpOjoIzquierdo",
                 "class": "col-2"
               }
             ]
           }
         ],
-        "card5": [
+        "card4": [
           {
-            "title": "EMETROPE",
-            "class": "col-4",
+            "title": "",
+            "class": "col-12",
             "fields": [
               {
-                "id": "emetropeSelect",
-                "label": "",
-                "type": "select",
-                "name": "emetropeSelect",
+                "id": "emetrope",
+                "label": "EMETROPE",
+                "type": "radio",
+                "name": "emetrope",
+                "class": "col-4",
                 "options": [
                   {
-                    "value": "oidoDerecho",
-                    "text": "Oído derecho"
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
                   },
                   {
-                    "value": "oidoIzquierdo",
-                    "text": "Oído izquierdo"
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
                   },
                   {
-                    "value": "ambosOidos",
-                    "text": "Ambos oídos"
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
                   },
                   {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "miopia",
+                "label": "MIOPIA",
+                "type": "radio",
+                "name": "miopia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "presbicia",
+                "label": "PRESBICIA",
+                "type": "radio",
+                "name": "presbicia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "hipermetropia",
+                "label": "HIPERMETROPÍA",
+                "type": "radio",
+                "name": "hipermetropia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "astigmatismo",
+                "label": "ASTIGMATISMO",
+                "type": "radio",
+                "name": "astigmatismo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "lagrimeo",
+                "label": "LAGRIMEO",
+                "type": "radio",
+                "name": "lagrimeo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "catarata",
+                "label": "CATARATA",
+                "type": "radio",
+                "name": "catarata",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "pterigion",
+                "label": "PTERIGION",
+                "type": "radio",
+                "name": "pterigion",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
+                    "value": "noAplica",
+                    "text": "No aplica"
+                  }
+                ]
+              },
+              {
+                "id": "glaucoma",
+                "label": "GLAUCOMA",
+                "type": "radio",
+                "name": "glaucoma",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "value": "OD",
+                    "text": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "value": "OI",
+                    "text": "OI"
+                  },
+                  {
+                    "id": "ambos",
+                    "value": "ambos",
+                    "text": "AO"
+                  },
+                  {
+                    "id": "noAplica",
                     "value": "noAplica",
                     "text": "No aplica"
                   }
@@ -393,354 +656,6 @@
           }
         ],
         "card6": [
-          {
-            "title": "MIOPIA",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "miopiaSelect",
-                "label": "",
-                "type": "select",
-                "name": "miopiaSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card7": [
-          {
-            "title": "PRESBICIA",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "presbiciaSelect",
-                "label": "",
-                "type": "select",
-                "name": "presbiciaSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card8": [
-          {
-            "title": "HIPERMETROPIA",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "hipermetropiaSelect",
-                "label": "",
-                "type": "select",
-                "name": "hipermetropiaSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card9": [
-          {
-            "title": "ASTIGMATISMO",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "astigmatismoSelect",
-                "label": "",
-                "type": "select",
-                "name": "astigmatismoSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card10": [
-          {
-            "title": "LAGRIMEO",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "lagrimeoSelect",
-                "label": "",
-                "type": "select",
-                "name": "lagrimeoSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card11": [
-          {
-            "title": "CATARATA",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "catarataSelect",
-                "label": "",
-                "type": "select",
-                "name": "catarataSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card12": [
-          {
-            "title": "PTERIGION",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "pterigionSelect",
-                "label": "",
-                "type": "select",
-                "name": "pterigionSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card13": [
-          {
-            "title": "GLAUCOMA",
-            "class": "col-4",
-            "fields": [
-              {
-                "id": "glaucomaSelect",
-                "label": "",
-                "type": "select",
-                "name": "glaucomaSelect",
-                "options": [
-                  {
-                    "value": "ojoDerecho",
-                    "text": "Ojo derecho"
-                  },
-                  {
-                    "value": "ojoIzquierdo",
-                    "text": "Ojo izquierdo"
-                  },
-                  {
-                    "value": "ambosOjos",
-                    "text": "Ambos ojos"
-                  },
-                  {
-                    "value": "noAplica",
-                    "text": "No aplica"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "card14":[
-          {
-            "title": "Cristal Recomendado",
-            "class": "col-12",
-            "fields":[
-              {
-                "id": "labelVisionSencilla",
-                "label": "Vision sencilla",
-                "type": "label",
-                "name": "labelVisionSencilla",
-                "class": "col-4"
-              },
-              {
-                "id": "inputVisionSencilla",
-                "label": "",
-                "type": "input",
-                "name": "inputVisionSencilla",
-                "class": "col-4"
-              },
-              {
-                "id": "inputVisionSencillaV",
-                "label": "V",
-                "type": "input",
-                "name": "inputVisionSencillaV",
-                "class": "col-4"
-              },
-              {
-                "id": "labelBifocalFlttop",
-                "label": "Bifocal FLTTOP",
-                "type": "label",
-                "name": "labelBifocalFlttop",
-                "class": "col-4"
-              },
-              {
-                "id": "inputBifocalFlttop",
-                "label": "",
-                "type": "input",
-                "name": "inputBifocalFlttop",
-                "class": "col-4"
-              },
-              {
-                "id": "inputBifocalFlttopH",
-                "label": "H",
-                "type": "input",
-                "name": "inputBifocalFlttopH",
-                "class": "col-4"
-              },
-              {
-                "id": "labelBifocalInvisible",
-                "label": "Bifocal Invisible",
-                "type": "label",
-                "name": "labelBifocalInvisible",
-                "class": "col-4"
-              },
-              {
-                "id": "inputBifocalInvisible",
-                "label": "",
-                "type": "input",
-                "name": "inputBifocalInvisible",
-                "class": "col-4"
-              },
-              {
-                "id": "inputBifocalInvisibleD",
-                "label": "D",
-                "type": "input",
-                "name": "inputBifocalInvisibleD",
-                "class": "col-4"
-              },
-              {
-                "id": "labelProgresivo",
-                "label": "Progresivo",
-                "type": "label",
-                "name": "labelProgresivo",
-                "class": "col-4"
-              },
-              {
-                "id": "inputProgresivo",
-                "label": "",
-                "type": "input",
-                "name": "inputProgresivo",
-                "class": "col-4"
-              },
-              {
-                "id": "inputProgresivoP",
-                "label": "P",
-                "type": "input",
-                "name": "inputProgresivoP",
-                "class": "col-4"
-              }
-            ]
-          }
-        ],
-        "card15": [
           {
             "title": "Otros",
             "class": "col-12",

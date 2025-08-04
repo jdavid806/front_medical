@@ -23,8 +23,9 @@ include "../header.php";
         <div class="container">
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mt-5">
-                    <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Inventario</li>
+                <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="homeInventario">Inventario</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Medicamentos</li>
                 </ol>
             </nav>
             <div class="pb-9">
@@ -37,77 +38,11 @@ include "../header.php";
                         </button>
                     </div>
                 </div>
-                <div class="row">
-                    <!-- Tabla de productos -->
-                    <div class="col-lg-8">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr class="bg-body-highlight">
-                                        <th class="ps-3">Nombre</th>
-                                        <th class="text-end">Stock</th>
-                                        <th class="text-end">Peso</th>
-                                        <th class="text-end">Capacidad</th>
-                                        <th class="text-end">Concentración</th>
-                                        <th class="text-end">Fecha de vencimientos</th>
-                                        <th class="text-end pe-3">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list"></tbody>
-                            </table>
-
-                            <!-- 🔹 Controles de paginación -->
-                            <div class="pagination d-flex justify-content-end mt-3">
-                                <button id="prevPage" class="btn btn-sm btn-outline-primary mx-1">Anterior</button>
-                                <span class="mx-2">Página <span id="currentPage">1</span> de <span
-                                        id="totalPages">1</span></span>
-                                <button id="nextPage" class="btn btn-sm btn-outline-primary mx-1">Siguiente</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100 animated-card">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <img id="vacunaImage" src="https://via.placeholder.com/200x150"
-                                        alt="Imagen de medicamento" class="img-fluid rounded"
-                                        style="width: 100%; max-width: 200px; height: auto;">
-                                </div>
-                                <h4 class="card-title">Selecciona un producto</h4>
-                                <div class="card-content">
-                                    <p><strong>Tipo:</strong> <span id="tipoProducto">-</span></p>
-                                    <p><strong>Stock:</strong> <span id="stockProducto">-</span></p>
-                                    <p><strong>Precio:</strong> <span id="precioProducto">-</span></p>
-                                </div>
-                                <button class="btn btn-sm btn-primary dropdown-toggle ver-detalle" type="button"
-                                    data-bs-toggle="modal" data-bs-target="#infoModal" data-id="${product.id}">
-                                    Ver más
-                                </button>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
 
             </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card h-100 animated-card">
-                        <div class="card-body">
-                            <div class="text-center mb-3">
-                                <h4>Los siguientes productos se encuentran próximos a caducar o se encuentran caducados
-                                </h4>
-                            </div>
-                            <ul id="alertaProductos" class="list-group">
-                                <!-- Aquí se agregarán los productos dinámicamente -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <div id="productInventoryAppReact">
+
             </div>
 
         </div>
@@ -117,8 +52,18 @@ include "../header.php";
 
 <script type="module" src="Inventario/js/inventarioMedicamentos.js"></script>
 
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        ProductInventoryApp
+    } from './react-dist/inventory/ProductInventoryApp.js';
 
-
+    ReactDOMClient.createRoot(document.getElementById('productInventoryAppReact')).render(React
+                .createElement(ProductInventoryApp, {
+                    type: 'medications'
+                }));
+</script>
 
 <?php include "../footer.php";
 include "./modal/modalNuevoMedicamento.php";

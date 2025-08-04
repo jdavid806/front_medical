@@ -18,13 +18,13 @@
         ],
         "card2": [
           {
-            "title": "Evolución de los sintomas",
+            "title": "Historia de la enfermedad actual",
             "fields": [
               {
-                "id": "evolucionSintomas",
+                "id": "historiaEnfermedadActual",
                 "label": "",
                 "type": "textarea",
-                "name": "evolucionSintomas"
+                "name": "historiaEnfermedadActual"
               }
             ]
           }
@@ -47,10 +47,10 @@
             "title": "¿Qué ha tomado?",
             "fields": [
               {
-                "id": "manejoSintoma",
+                "id": "haTomado",
                 "label": "",
                 "type": "textarea",
-                "name": "manejoSintoma"
+                "name": "haTomado"
               }
             ]
           }
@@ -64,7 +64,7 @@
             "fields": [
               {
                 "id": "peso",
-                "label": "Peso Corporal [Kg]",
+                "label": "Peso Corporal [Lbs]",
                 "type": "number",
                 "name": "peso"
               },
@@ -78,7 +78,8 @@
                 "id": "imc",
                 "label": "Índice de Masa Corporal (IMC)",
                 "type": "number",
-                "name": "imc"
+                "name": "imc",
+                "readonly": true
               },
               {
                 "id": "porcentajeGrasaCorporal",
@@ -94,22 +95,23 @@
             "title": "",
             "fields": [
               {
-                "id": "presionArterialDiastolica",
+                "id": "tensionDiastólica",
                 "label": "Presión Arterial Diastólica [mmHg]",
                 "type": "number",
-                "name": "presionArterialDiastolica"
+                "name": "tensionDiastólica"
+              },
+              {
+                "id": "tensionSistólica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "tensionSistólica"
               },
               {
                 "id": "tensionArterialMedia",
                 "label": "Tensión Arterial Media [mmHg]",
                 "type": "number",
-                "name": "tensionArterialMedia"
-              },
-              {
-                "id": "presionArterialSistolica",
-                "label": "Presión Arterial Sistólica [mmHg]",
-                "type": "number",
-                "name": "presionArterialSistolica"
+                "name": "tensionArterialMedia",
+                "readonly": true
               },
               {
                 "id": "saturacion",
@@ -170,10 +172,10 @@
             ]
           }
         ],
-        "card5":[
+        "card5": [
           {
             "title": "",
-            "fields":[
+            "fields": [
               {
                 "id": "glucemia",
                 "label": "Glucemia",
@@ -207,16 +209,46 @@
                 ]
               },
               {
-                "id": "ojosCheck",
+                "id": "cuelloCheck",
                 "class": "col-6",
-                "label": "Ojos",
+                "label": "Cuello",
                 "type": "checkbox",
-                "name": "ojosCheck",
+                "name": "cuelloCheck",
                 "toggleFields": [
                   {
                     "type": "textarea",
-                    "id": "ojosText",
-                    "name": "ojosText",
+                    "id": "cuelloText",
+                    "name": "cuelloText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "toraxCheck",
+                "class": "col-6",
+                "label": "Tórax",
+                "type": "checkbox",
+                "name": "toraxCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "toraxText",
+                    "name": "toraxText",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "abdomenCheck",
+                "class": "col-6",
+                "label": "Abdomen",
+                "type": "checkbox",
+                "name": "abdomenCheck",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "abdomenText",
+                    "name": "abdomenText",
                     "label": ""
                   }
                 ]
@@ -237,46 +269,16 @@
                 ]
               },
               {
-                "id": "narizCheck",
+                "id": "mucosaCheck",
                 "class": "col-6",
-                "label": "Nariz",
+                "label": "Mucosa",
                 "type": "checkbox",
-                "name": "narizCheck",
+                "name": "mucosaCheck",
                 "toggleFields": [
                   {
                     "type": "textarea",
-                    "id": "narizText",
-                    "name": "narizText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "bocaFaringeCheck",
-                "class": "col-6",
-                "label": "Boca y Faringe",
-                "type": "checkbox",
-                "name": "bocaFaringeCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "bocaFaringeText",
-                    "name": "bocaFaringeText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "cuelloCheck",
-                "class": "col-6",
-                "label": "Cuello",
-                "type": "checkbox",
-                "name": "cuelloCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "cuelloText",
-                    "name": "cuelloText",
+                    "id": "mucosaText",
+                    "name": "mucosaText",
                     "label": ""
                   }
                 ]
@@ -292,21 +294,6 @@
                     "type": "textarea",
                     "id": "pielText",
                     "name": "pielText",
-                    "label": ""
-                  }
-                ]
-              },
-              {
-                "id": "sistemaNeurologicoCheck",
-                "class": "col-6",
-                "label": "Sistema Neurológico",
-                "type": "checkbox",
-                "name": "sistemaNeurologicoCheck",
-                "toggleFields": [
-                  {
-                    "type": "textarea",
-                    "id": "sistemaNeurologicoText",
-                    "name": "sistemaNeurologicoText",
                     "label": ""
                   }
                 ]
@@ -346,29 +333,113 @@
         ],
         "card2": [
           {
-            "title": "Organos de los sentidos",
+            "title": "Evaluación por sistemas",
             "class": "col-12",
             "fields": [
               {
-                "id": "ojos",
-                "label": "Ojos",
-                "type": "textarea",
-                "name": "ojos",
-                "class": "col-6"
+                "id": "neurologicoCheck",
+                "label": "Neurologico",
+                "type": "checkbox",
+                "name": "neurologicoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "neurologicoInfo",
+                    "name": "neurologicoInfo",
+                    "label": ""
+                  }
+                ]
               },
               {
-                "id": "oidos",
-                "label": "Oídos",
-                "type": "textarea",
-                "name": "oidos",
-                "class": "col-6"
+                "id": "respiratorioCheck",
+                "label": "Respiratorio",
+                "type": "checkbox",
+                "name": "respiratorioCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "extremidadesInferioresInfo",
+                    "name": "extremidadesInferioresInfo",
+                    "label": ""
+                  }
+                ]
               },
               {
-                "id": "lenguaSabores",
-                "label": "Lengua/Sabores",
-                "type": "textarea",
-                "name": "lenguaSabores",
-                "class": "col-6"
+                "id": "cardiovascularCheck",
+                "label": "Cardiovascular",
+                "type": "checkbox",
+                "name": "cardiovascularCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "cardiovascularInfo",
+                    "name": "cardiovascularInfo",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "gastrointestinalCheck",
+                "label": "Gastrointestinal",
+                "type": "checkbox",
+                "name": "gastrointestinalCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "gastrointestinalInfo",
+                    "name": "gastrointestinalInfo",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "endocrinoCheck",
+                "label": "Endocrino",
+                "type": "checkbox",
+                "name": "endocrinoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "endocrinoInfo",
+                    "name": "endocrinoInfo",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "genitoUrinarioChec",
+                "label": "Genito Urinario",
+                "type": "checkbox",
+                "name": "genitoUrinarioChec",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "genitoUrinarioInfo",
+                    "name": "genitoUrinarioInfo",
+                    "label": ""
+                  }
+                ]
+              },
+              {
+                "id": "musculoesqueleticoCheck",
+                "label": "Musculoesquelético",
+                "type": "checkbox",
+                "name": "musculoesqueleticoCheck",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "type": "textarea",
+                    "id": "musculoesqueleticoInfo",
+                    "name": "musculoesqueleticoInfo",
+                    "label": ""
+                  }
+                ]
               }
             ]
           }

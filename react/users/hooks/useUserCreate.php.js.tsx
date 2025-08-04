@@ -10,11 +10,9 @@ export const useUserCreate = () => {
     const createUser = async (userData: Omit<UserFormInputs, 'id'>) => {
         setLoading(true)
         try {
-            await authService.register(userData)
+            const response = await authService.register(userData)
             SwalManager.success()
-            setTimeout(() => {
-                window.location.reload()
-            }, 2000);
+            return response
         } catch (error) {
             console.log(error);
             ErrorHandler.generic(error)

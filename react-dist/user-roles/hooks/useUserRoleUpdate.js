@@ -7,7 +7,15 @@ export const useUserRoleUpdate = () => {
   const updateUserRole = async (id, data) => {
     setLoading(true);
     try {
-      await userRolesService.updateMenusPermissions(id, data);
+      const finalData = {
+        role: {
+          group: data.group,
+          name: data.name
+        },
+        menus: data.menus,
+        permissions: data.permissions
+      };
+      await userRolesService.updateMenusPermissions(id, finalData);
       SwalManager.success();
     } catch (error) {
       ErrorHandler.generic(error);

@@ -23,7 +23,7 @@ export const FormField: React.FC<FormFieldProps> = ({
                     <Editor
                         value={formValues[field.id] || ''}
                         onTextChange={(e) => onEditorChange(e.htmlValue ?? '', field.id)}
-                        style={{ height: '150px' }}
+                        style={{ height: '350px' }}
                     />
                 </>
             );

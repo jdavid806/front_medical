@@ -436,8 +436,8 @@ include '../modals/NewCompanionModal.php';
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="mb-2">
-                                                            <label class="form-label" for="authorisationNumberEntity">Número de autorización*</label>
-                                                            <input class="form-control" type="number" name="authorisationNumberEntity" id="authorisationNumberEntity">
+                                                            <label class="form-label" for="authorisationNumberEntity">Número de autorizaciónn*</label>
+                                                            <input class="form-control" type="text" name="authorisationNumberEntity" id="authorisationNumberEntity">
                                                         </div>
                                                     </div>
 

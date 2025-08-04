@@ -5,9 +5,13 @@ export const PatientInfoContainer = ({
   patientId
 }) => {
   const {
-    patient
+    patient,
+    fetchPatient
   } = usePatient(patientId);
   return patient ? /*#__PURE__*/React.createElement(PatientInfo, {
+    requestRefresh: () => {
+      fetchPatient();
+    },
     patient: patient
   }) : /*#__PURE__*/React.createElement("p", null, "Cargando...");
 };

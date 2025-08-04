@@ -1,0 +1,1508 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Anamnésis",
+        "card": [
+          {
+            "title": "Anamnesis",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "habilidadManual",
+                "label": "Habilidad Manual",
+                "type": "radio",
+                "name": "habilidadManual",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "antecedentesFamiliares",
+                "label": "Antecedentes Familiares",
+                "type": "radio",
+                "name": "antecedentesFamiliares",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "dolorOido",
+                "label": "Dolor Oído",
+                "type": "radio",
+                "name": "dolorOido",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "detCognitivo",
+                "label": "Det. Cognitivo",
+                "type": "radio",
+                "name": "detCognitivo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "trabajoRuidoso",
+                "label": "Trabajo Ruidoso",
+                "type": "radio",
+                "name": "trabajoRuidoso",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "supuracionesOtitis",
+                "label": "Supuraciones/Otitis",
+                "type": "radio",
+                "name": "supuracionesOtitis",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "usaGafas",
+                "label": "Usa Gafas",
+                "type": "radio",
+                "name": "usaGafas",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "molestiaRuidoFuerte",
+                "label": "Molestia Ruido Fuerte",
+                "type": "radio",
+                "name": "molestiaRuidoFuerte",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "perforaciónTimpanica",
+                "label": "Perforación Timpánica",
+                "type": "radio",
+                "name": "perforaciónTimpanica",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "leeLabios",
+                "label": "Lee labios",
+                "type": "radio",
+                "name": "leeLabios",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "constipadosFrecuentes",
+                "label": "Constipados Frecuentes",
+                "type": "radio",
+                "name": "constipadosFrecuentes",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "drenaje",
+                "label": "Drenaje",
+                "type": "radio",
+                "name": "drenaje",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "nervioso",
+                "label": "Nervioso",
+                "type": "radio",
+                "name": "nervioso",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "vertigoMareo",
+                "label": "Vértigo/Mareo",
+                "type": "radio",
+                "name": "vertigoMareo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "acufenos",
+                "label": "Acúfenos",
+                "type": "radio",
+                "name": "acufenos",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "vidaActiva",
+                "label": "Vida Activa",
+                "type": "radio",
+                "name": "vidaActiva",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "ototoxicos",
+                "label": "Ototóxicos",
+                "type": "radio",
+                "name": "ototoxicos",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "mejorAudicion",
+                "label": "Mejor Audición",
+                "type": "radio",
+                "name": "mejorAudicion",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "vidaPasiva",
+                "label": "Vida Pasiva",
+                "type": "radio",
+                "name": "vidaPasiva",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "diabetes",
+                "label": "Diabetes",
+                "type": "radio",
+                "name": "diabetes",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "estrenosisAtresia",
+                "label": "Estenosis/Atresia",
+                "type": "radio",
+                "name": "estrenosisAtresia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+               {
+                "id": "operacion",
+                "label": "Operación",
+                "type": "checkbox",
+                "name": "operacion",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "operacionOD",
+                    "label": "OD",
+                    "type": "text",
+                    "name": "operacionOD"
+                  },
+                  {
+                    "id": "operacionOI",
+                    "label": "OI",
+                    "type": "text",
+                    "name": "operacionOI"
+                  }
+                ]
+              },
+              {
+                "id": "alergias",
+                "label": "Alergias",
+                "type": "radio",
+                "name": "alergias",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "pilosidad",
+                "label": "Pilosidad",
+                "type": "radio",
+                "name": "pilosidad",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              },
+              {
+                "id": "otosocpia",
+                "label": "Otosocpia",
+                "type": "checkbox",
+                "name": "otosocpia",
+                "class": "col-4",
+                "toggleFields": [
+                  {
+                    "id": "otosocpiaOD",
+                    "label": "OD",
+                    "type": "text",
+                    "name": "otosocpiaOD"
+                  },
+                  {
+                    "id": "otosocpiaOI",
+                    "label": "OI",
+                    "type": "text",
+                    "name": "otosocpiaOI"
+                  }
+                ]
+              },
+              {
+                "id": "artritis",
+                "label": "Artritis",
+                "type": "radio",
+                "name": "artritis",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "cerumen",
+                "label": "Cerumen",
+                "type": "radio",
+                "name": "cerumen",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "OD",
+                    "text": "OD",
+                    "value": "OD"
+                  },
+                  {
+                    "id": "OI",
+                    "text": "OI",
+                    "value": "OI"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Anamnesis pediatrica",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "autismo",
+                "label": "Autismo/Descartar Autismo",
+                "type": "radio",
+                "name": "autismo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "antecedentesFamiliares",
+                "label": "Antecedentes Familiares",
+                "type": "radio",
+                "name": "antecedentesFamiliares",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "complicacionesParto",
+                "label": "Complicaciones parto",
+                "type": "radio",
+                "name": "complicacionesParto",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "retrasoDesarrolloLenguaje",
+                "label": "Retraso desarrollo lenguaje",
+                "type": "radio",
+                "name": "retrasoDesarrolloLenguaje",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "prematuridad",
+                "label": "Prematuridad",
+                "type": "radio",
+                "name": "prematuridad",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "hiperbilirrubinemia",
+                "label": "Hiperbilirrubinemia",
+                "type": "radio",
+                "name": "hiperbilirrubinemia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "constipadosFrecuentes",
+                "label": "Constipados Frecuentes",
+                "type": "radio",
+                "name": "constipadosFrecuentes",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "meningitis",
+                "label": "Meningitis",
+                "type": "radio",
+                "name": "meningitis",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "microtriaAtresia",
+                "label": "Microtria/Atresia",
+                "type": "radio",
+                "name": "microtriaAtresia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "sudorAbundante",
+                "label": "Sudor abundante",
+                "type": "radio",
+                "name": "sudorAbundante",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "epilepsia",
+                "label": "Epilepsia",
+                "type": "radio",
+                "name": "epilepsia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              },
+              {
+                "id": "preclampia",
+                "label": "Preclampia",
+                "type": "radio",
+                "name": "preclampia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "si",
+                    "text": "Si",
+                    "value": "si"
+                  },
+                  {
+                    "id": "no",
+                    "text": "No",
+                    "value": "no"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Anamnesis acufeno",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "oidos",
+                "label": "Oidos",
+                "type": "radio",
+                "name": "oidos",
+                "class": "col-5",
+                "options": [
+                  {
+                    "id": "oidoDerecho",
+                    "text": "Oido derecho",
+                    "value": "oidoDerecho"
+                  },
+                  {
+                    "id": "oidoIzquierdo",
+                    "text": "Oido izquierdo",
+                    "value": "oidoIzquierdo"
+                  },
+                  {
+                    "id": "bilateral",
+                    "text": "Bilateral",
+                    "value": "bilateral"
+                  }
+                ]
+              },
+              {
+                "id": "constancia",
+                "label": "Constancia",
+                "type": "radio",
+                "name": "constancia",
+                "class": "col-3",
+                "options": [
+                  {
+                    "id": "constante",
+                    "text": "Constante",
+                    "value": "constante"
+                  },
+                  {
+                    "id": "pulsatil",
+                    "text": "Pulsatil",
+                    "value": "pulsatil"
+                  }
+                ]
+              },
+              {
+                "id": "duracion",
+                "label": "Duracion",
+                "type": "radio",
+                "name": "duracion",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "ocasional",
+                    "text": "Ocasional",
+                    "value": "ocasional"
+                  },
+                  {
+                    "id": "permanente",
+                    "text": "Permanente",
+                    "value": "permanente"
+                  }
+                ]
+              },
+              {
+                "id": "tipo",
+                "label": "Tipo",
+                "type": "radio",
+                "name": "tipo",
+                "options": [
+                  {
+                    "id": "zumbido",
+                    "text": "Zumbido",
+                    "value": "zumbido"
+                  },
+                  {
+                    "id": "pitido",
+                    "text": "Pitido",
+                    "value": "pitido"
+                  },
+                  {
+                    "id": "grillo",
+                    "text": "Grillo",
+                    "value": "grillo"
+                  },
+                  {
+                    "id": "viento",
+                    "text": "Viento",
+                    "value": "viento"
+                  },
+                  {
+                    "id": "aguaCascada",
+                    "text": "Agua/Cascada",
+                    "value": "aguaCascada"
+                  },
+                  {
+                    "id": "radioInterferencia",
+                    "text": "Radio Interferencia",
+                    "value": "radioInterferencia"
+                  },
+                  {
+                    "id": "otro",
+                    "text": "Otro",
+                    "value": "otro"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Sintomas/Complicaciones",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "conferenciaIglesia",
+                "label": "Conferencia/Iglesia",
+                "type": "radio",
+                "name": "conferenciaIglesia",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "volTVRadio",
+                "label": "Vol. TV/Radio",
+                "type": "radio",
+                "name": "volTVRadio",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "aisladoAusente",
+                "label": "Aislado/Ausente",
+                "type": "radio",
+                "name": "aisladoAusente",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "seguridadCoche",
+                "label": "Seguridad coche",
+                "type": "radio",
+                "name": "seguridadCoche",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "ruidoTráfico",
+                "label": "Ruido Tráfico",
+                "type": "radio",
+                "name": "ruidoTráfico",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "vozNiñosNietos",
+                "label": "Voz niños/nietos",
+                "type": "radio",
+                "name": "vozNiñosNietos",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "cineTeatro",
+                "label": "Cine/Teatro",
+                "type": "radio",
+                "name": "cineTeatro",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "excluido",
+                "label": "Excluido",
+                "type": "radio",
+                "name": "excluido",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "dolorCabeza",
+                "label": "Dolor cabeza",
+                "type": "radio",
+                "name": "dolorCabeza",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "enGrupo",
+                "label": "En Grupo",
+                "type": "radio",
+                "name": "enGrupo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "ringTimbre",
+                "label": "Ring del timbre",
+                "type": "radio",
+                "name": "ringTimbre",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "vozBaja",
+                "label": "Voz baja",
+                "type": "radio",
+                "name": "vozBaja",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "cansado",
+                "label": "Cansado",
+                "type": "radio",
+                "name": "cansado",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "confundido",
+                "label": "Confundido",
+                "type": "radio",
+                "name": "confundido",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "dialogo2Pers",
+                "label": "Diálogo 2 pers.",
+                "type": "radio",
+                "name": "dialogo2Pers",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Usuario audifonos",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "aural",
+                "label": "",
+                "type": "radio",
+                "name": "aural",
+                "options": [
+                  {
+                    "id": "monoaural",
+                    "text": "Monoaural",
+                    "value": "monoaural"
+                  },
+                  {
+                    "id": "biaural",
+                    "text": "Biaural",
+                    "value": "biaural"
+                  }
+                ]
+              },
+              {
+                "id": "adquirido",
+                "label": "Adquirido en",
+                "type": "textarea",
+                "name": "adquirido",
+                "class": "col-12"
+              },
+              {
+                "id": "ODdesdecuando",
+                "label": "OD Desde cuando",
+                "type": "text",
+                "name": "ODdesdecuando",
+                "class": "col-6"
+              },
+              {
+                "id": "OIdesdecuando",
+                "label": "OI Desde cuando",
+                "type": "text",
+                "name": "OIdesdecuando",
+                "class": "col-6"
+              },
+              {
+                "id": "tipo",
+                "label": "Tipo",
+                "type": "textarea",
+                "name": "tipo"
+              },
+              {
+                "id": "marca",
+                "label": "Marca",
+                "type": "textarea",
+                "name": "marca"
+              },
+              {
+                "id": "modelo",
+                "label": "Modelo",
+                "type": "textarea",
+                "name": "modelo"
+              },
+              {
+                "id": "repasPeriodicas",
+                "label": "Repas. periodicas",
+                "type": "radio",
+                "name": "repasPeriodicas",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "Si",
+                    "text": "Si",
+                    "value": "Si"
+                  },
+                  {
+                    "id": "No",
+                    "text": "No",
+                    "value": "No"
+                  }
+                ]
+              },
+              {
+                "id": "revisionesPeriodicas",
+                "label": "Revisiones periodicas",
+                "type": "radio",
+                "name": "revisionesPeriodicas",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "Si",
+                    "text": "Si",
+                    "value": "Si"
+                  },
+                  {
+                    "id": "No",
+                    "text": "No",
+                    "value": "No"
+                  }
+                ]
+              },
+              {
+                "id": "duracionPilas",
+                "label": "Duración pilas",
+                "type": "textarea",
+                "name": "duracionPilas"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "resultado",
+                "label": "Resultado",
+                "type": "radio",
+                "name": "resultado",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "auditivo",
+                "label": "Auditivo",
+                "type": "radio",
+                "name": "auditivo",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "estetico",
+                "label": "Estetico",
+                "type": "radio",
+                "name": "estetico",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "aceptacion",
+                "label": "Aceptacion",
+                "type": "radio",
+                "name": "aceptacion",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              },
+              {
+                "id": "servicio",
+                "label": "Servicio",
+                "type": "radio",
+                "name": "servicio",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "B",
+                    "text": "B",
+                    "value": "B"
+                  },
+                  {
+                    "id": "R",
+                    "text": "R",
+                    "value": "R"
+                  },
+                  {
+                    "id": "M",
+                    "text": "M",
+                    "value": "M"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -18,13 +18,13 @@
         ],
         "card2": [
           {
-            "title": "Evolución de los sintomas",
+            "title": "Historia de la enfermedad actual",
             "fields": [
               {
-                "id": "evolucionSintomas",
+                "id": "historiaEnfermedadActual",
                 "label": "",
                 "type": "textarea",
-                "name": "evolucionSintomas"
+                "name": "historiaEnfermedadActual"
               }
             ]
           }
@@ -47,10 +47,10 @@
             "title": "Manejo de los sintomas",
             "fields": [
               {
-                "id": "manejoSintoma",
+                "id": "haTomado",
                 "label": "",
                 "type": "textarea",
-                "name": "manejoSintoma"
+                "name": "haTomado"
               }
             ]
           }

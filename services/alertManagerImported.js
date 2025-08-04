@@ -77,7 +77,7 @@ export class SwalManager {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, cancelar',
+            confirmButtonText: 'Sí, anular',
             cancelButtonText: 'Cancelar'
         }).then(async (result) => {
             if (result.isConfirmed) {

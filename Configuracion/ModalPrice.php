@@ -28,6 +28,8 @@
                                     <option value="PROCEDURE">Procedimiento</option>
                                     <option value="CONSULTATION">Consulta</option>
                                     <option value="LABORATORY">Laboratorio</option>
+                                    <option value="REHABILITATION">Rehabilitación</option>
+                                    <option value="OPTOMETRY">Optometría</option>
                                 </select>
                             </div>
                             <div class="col-12" style="display: none;" id="examTypeSection">
@@ -45,6 +47,11 @@
                                 <label class="form-label" for="copago">Precio Copago</label>
                                 <input class="form-control" id="copago" type="number" placeholder="Precio Copago"
                                     name="copago">
+                            </div>
+                            <div class="col-12" id="purchasePriceSection">
+                                <label class="form-label" for="purchase_price">Costo</label>
+                                <input class="form-control" id="purchase_price" type="number" placeholder="Costo"
+                                    name="purchase_price">
                             </div>
                             <div class="col-6 form-check form-switch" id="toggleEntitiesSection">
                                 <input class="form-check-input" type="checkbox" id="toggleEntities">
@@ -135,11 +142,13 @@
             if (this.value === "LABORATORY") {
                 document.getElementById("priceSection").style.display = "none";
                 document.getElementById("copagoSection").style.display = "none";
+                document.getElementById("purchasePriceSection").style.display = "none";
                 document.getElementById("toggleEntitiesSection").style.display = "none";
                 document.getElementById("toggleImpuestoSection").style.display = "none";
             } else {
                 document.getElementById("priceSection").style.display = "block";
                 document.getElementById("copagoSection").style.display = "block";
+                document.getElementById("purchasePriceSection").style.display = "block";
                 document.getElementById("toggleEntitiesSection").style.display = "block";
                 document.getElementById("toggleImpuestoSection").style.display = "block";
             }
@@ -171,6 +180,7 @@
                 copayment: copayment,
                 tax_charge_id: document.getElementById("taxProduct_type").value,
                 exam_type_id: document.getElementById("exam_type_id").value,
+                purchase_price: document.getElementById("purchase_price").value || 0,
             },
             entities: preciosEntidades
         };

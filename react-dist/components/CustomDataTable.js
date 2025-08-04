@@ -1,6 +1,6 @@
-import React from 'react';
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
+import React from "react";
+import DataTable from "datatables.net-react";
+import DT from "datatables.net-bs5";
 DataTable.use(DT);
 const CustomDataTable = ({
   children,
@@ -20,7 +20,7 @@ const CustomDataTable = ({
     slots: slots,
     options: options,
     columns: columns,
-    className: "text-body-emphasis"
+    className: "p-datatable-striped p-datatable-gridlines"
   }, children);
 };
 export default CustomDataTable;

@@ -1,4 +1,10 @@
 <div class="modal fade modal-xl" id="crearEntidad" tabindex="-1" aria-hidden="true">
+  <div id="spinnerEntidades" class="text-center my-3" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -35,7 +41,8 @@
     </div>
   */ ?>
             <div class="mb-3 col-md-4">
-              <label class="form-label" for="numeroIdentificacion-entidad">Número de Identificación</label>
+              <label class="form-label" for="numeroIdentificacion-entidad">Número de
+                Identificación</label>
               <input class="form-control" id="numeroIdentificacion-entidad" type="number" required>
               <div class="invalid-feedback">Debe ingresar un número de identificación válido</div>
             </div>
@@ -43,8 +50,9 @@
               <label class="form-label" for="tipoIdentificacion-entidad">Tipo de Identificación</label>
               <select class="form-control" id="tipoIdentificacion-entidad" required>
                 <option value="CC">Cédula de Ciudadanía</option>
-                <option value="CE">Cédula de Extranjería</option>
-                <option value="NIT">NIT</option>
+                <option value="RNC">RNC</option>
+                <!-- <option value="CE">Cédula de Extranjería</option> -->
+                <!-- <option value="NIT">NIT</option> -->
               </select>
               <div class="invalid-feedback">Debe seleccionar un tipo de identificación</div>
             </div>
@@ -62,12 +70,27 @@
               <input class="form-control" id="telefono-entidad" type="number">
             </div>
             <div class="mb-3 col-md-4">
+              <label class="form-label" for="ciudad-entidad">Pais</label>
+              <select class="form-control" id="ciudad-entidad">
+                <option value="1">Republica Dominicana</option>
+                <!-- <option value="2">Bogotá</option>
+                <option value="3">Medellín</option>
+                <option value="4">Cali</option> -->
+              </select>
+            </div>
+            <!-- <div class="mb-3 col-md-4">
               <label class="form-label" for="ciudad-entidad">Ciudad</label>
               <select class="form-control" id="ciudad-entidad">
                 <option value="1">Republica Dominicana</option>
                 <option value="2">Bogotá</option>
                 <option value="3">Medellín</option>
                 <option value="4">Cali</option>
+              </select>
+            </div> -->
+            <div class="mb-3 col-md-4">
+              <label class="form-label" for="koneksi_sponsor_slug">Koneksi ARS</label>
+              <select class="form-control" id="koneksi_sponsor_slug">
+                <option value="">Seleccione una opción</option>
               </select>
             </div>
           </div>
@@ -81,10 +104,50 @@
   </div>
 </div>
 
+<script type="module">
+  import {
+    getSponsors as getKoneksiSponsors
+  } from "./services/koneksiService.js";
+
+  const koneksiSponsors = await getKoneksiSponsors();
+
+  console.log(koneksiSponsors);
+
+  const selectKoneksiArs = document.getElementById('koneksi_sponsor_slug');
+
+  koneksiSponsors.content.forEach(ars => {
+    const option = document.createElement('option');
+    option.value = ars.slug;
+    option.textContent = ars.name;
+    selectKoneksiArs.appendChild(option);
+  });
+</script>
 <script>
+  // Función para validar el formulario
+  function validateForm(form) {
+    let isValid = true;
+    form.classList.remove('was-validated');
 
+    // Validar campos requeridos
+    const requiredInputs = form.querySelectorAll('[required]');
+    requiredInputs.forEach(input => {
+      if (!input.value.trim()) {
+        isValid = false;
+        input.classList.add('is-invalid');
+      } else {
+        input.classList.remove('is-invalid');
+      }
+    });
+
+    if (!isValid) {
+      form.classList.add('was-validated');
+    }
+
+    return isValid;
+  }
+
+  // Función principal para manejar el formulario
   function handleEntidadesForm() {
-
     const form = document.getElementById('formAgregarEntidad');
 
     if (!form) {
@@ -92,9 +155,29 @@
       return;
     }
 
-    form.addEventListener('submit', async (e) => {
+    // Resetear validación y datos al abrir el modal
+    $('#crearEntidad').on('show.bs.modal', function() {
+      form.reset(); // Limpiar todos los campos del formulario
+      form.classList.remove('was-validated');
+      form.querySelectorAll('.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+      });
 
+      // Limpiar también el campo de entity_id por si acaso
+      const entityIdField = document.getElementById('entity_id');
+      if (entityIdField) {
+        entityIdField.value = '';
+      }
+    });
+
+    // Manejar el envío del formulario
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      e.stopPropagation();
+
+      if (!validateForm(form)) {
+        return;
+      }
 
       const productId = document.getElementById('entity_id')?.value;
       const productData = {
@@ -105,34 +188,52 @@
         address: document.getElementById("direccion-entidad").value,
         phone: document.getElementById("telefono-entidad").value,
         city_id: document.getElementById("ciudad-entidad").value,
+        koneksi_sponsor_slug: document.getElementById("koneksi_sponsor_slug").value
       };
-      
-
-      // Validación básica
-      /* if (!productData.name || !productData.product_type_id) {
-          alert('Nombre y tipo son campos obligatorios');
-          return;
-      } */
 
       try {
         if (productId) {
-          updateEntidad(productId, productData);
+          await updateEntidad(productId, productData);
         } else {
-          createEntidad(productData);
+          await createEntidad(productData);
         }
 
-        // Limpiar formulario y cerrar modal
         form.reset();
+        form.classList.remove('was-validated');
         $('#crearEntidad').modal('hide');
+
         cargarConsentimientos();
       } catch (error) {
-        alert('Error al crear el producto: ' + error.message);
+        console.error('Error al guardar la entidad:', error);
+
+        let mensaje = 'Ocurrió un error al guardar la entidad.';
+
+        if (error.errors) {
+          // Convertimos los errores en una lista
+          const listaErrores = Object.values(error.errors)
+            .flat()
+            .map(err => `<li>${err}</li>`)
+            .join('');
+
+          mensaje = `<ul style="text-align: left;">${listaErrores}</ul>`;
+        } else if (error.message) {
+          mensaje = error.message;
+        }
+
+        Swal.fire({
+          title: 'Error de validación',
+          html: mensaje, // usamos `html` en lugar de `text`
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        });
       }
+
+
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  // Inicializar cuando el DOM esté listo
+  document.addEventListener("DOMContentLoaded", function() {
     handleEntidadesForm();
   });
-
 </script>

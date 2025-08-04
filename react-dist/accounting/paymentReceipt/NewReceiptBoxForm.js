@@ -1,69 +1,75 @@
-import React, { useState } from 'react';
-import { Button, Dropdown, InputTextarea, Calendar, FileUpload, InputNumber } from 'primereact';
-export const NewReceiptBoxForm = () => {
+import React, { useState } from "react";
+import { Button, Dropdown, InputTextarea, Calendar, FileUpload, InputNumber, Dialog } from "primereact";
+export const NewReceiptBoxModal = ({
+  visible,
+  onHide,
+  onSubmit,
+  onSave,
+  onSaveAndDownload
+}) => {
   const [formData, setFormData] = useState({
-    tipo: '',
-    clientes: '',
-    realizarUn: '',
-    origenDinero: '',
+    tipo: "",
+    clientes: "",
+    realizarUn: "",
+    origenDinero: "",
     numeroFactura: 0,
     fechaElaboracion: null,
-    centroCosto: '',
+    centroCosto: "",
     valorPagado: 0,
-    observaciones: '',
+    observaciones: "",
     archivo: null
   });
 
   // Datos mock para los dropdowns
   const tipoOptions = [{
-    label: 'Opción 1',
-    value: 'opcion1'
+    label: "Opción 1",
+    value: "opcion1"
   }, {
-    label: 'Opción 2',
-    value: 'opcion2'
+    label: "Opción 2",
+    value: "opcion2"
   }, {
-    label: 'Opción 3',
-    value: 'opcion3'
+    label: "Opción 3",
+    value: "opcion3"
   }];
   const clientesOptions = [{
-    label: 'Cliente A',
-    value: 'clienteA'
+    label: "Cliente A",
+    value: "clienteA"
   }, {
-    label: 'Cliente B',
-    value: 'clienteB'
+    label: "Cliente B",
+    value: "clienteB"
   }, {
-    label: 'Cliente C',
-    value: 'clienteC'
+    label: "Cliente C",
+    value: "clienteC"
   }];
   const realizarUnOptions = [{
-    label: 'Acción 1',
-    value: 'accion1'
+    label: "Acción 1",
+    value: "accion1"
   }, {
-    label: 'Acción 2',
-    value: 'accion2'
+    label: "Acción 2",
+    value: "accion2"
   }, {
-    label: 'Acción 3',
-    value: 'accion3'
+    label: "Acción 3",
+    value: "accion3"
   }];
   const origenDineroOptions = [{
-    label: 'Caja menor',
-    value: 'caja_menor'
+    label: "Caja menor",
+    value: "caja_menor"
   }, {
-    label: 'Cuenta corriente',
-    value: 'cuenta_corriente'
+    label: "Cuenta corriente",
+    value: "cuenta_corriente"
   }, {
-    label: 'Fondo de reserva',
-    value: 'fondo_reserva'
+    label: "Fondo de reserva",
+    value: "fondo_reserva"
   }];
   const centroCostoOptions = [{
-    label: 'Administración',
-    value: 'admin'
+    label: "Administración",
+    value: "admin"
   }, {
-    label: 'Ventas',
-    value: 'ventas'
+    label: "Ventas",
+    value: "ventas"
   }, {
-    label: 'Producción',
-    value: 'produccion'
+    label: "Producción",
+    value: "produccion"
   }];
   const onInputChange = e => {
     const {
@@ -101,31 +107,32 @@ export const NewReceiptBoxForm = () => {
       archivo: e.files[0]
     }));
   };
-  const onSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    console.log('Form data submitted: ', formData);
-    // Lógica de envío aquí
+    onSubmit(formData);
   };
-  const onCancel = () => {
-    console.log('Form cancelled');
-    // Lógica de cancelación aquí
+  const handleSave = () => {
+    if (onSave) {
+      onSave(formData);
+    }
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container mt-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row justify-content-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12 col-lg-10"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-primary text-white"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "h4 mb-0"
-  }, "Nuevo recibo de Caja")), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+  const handleSaveAndDownload = () => {
+    if (onSaveAndDownload) {
+      onSaveAndDownload(formData);
+    }
+  };
+  return /*#__PURE__*/React.createElement(Dialog, {
+    header: "Nuevo recibo de Caja",
+    visible: visible,
+    style: {
+      width: "80vw"
+    },
+    onHide: onHide,
+    maximizable: true,
+    modal: true,
+    className: "p-fluid"
   }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: onSubmit
+    onSubmit: handleSubmit
   }, /*#__PURE__*/React.createElement("div", {
     className: "row mb-4"
   }, /*#__PURE__*/React.createElement("div", {
@@ -139,7 +146,7 @@ export const NewReceiptBoxForm = () => {
     id: "tipo",
     value: formData.tipo,
     options: tipoOptions,
-    onChange: e => onDropdownChange(e, 'tipo'),
+    onChange: e => onDropdownChange(e, "tipo"),
     placeholder: "Seleccione...",
     className: "w-100",
     filter: true,
@@ -153,7 +160,7 @@ export const NewReceiptBoxForm = () => {
     id: "clientes",
     value: formData.clientes,
     options: clientesOptions,
-    onChange: e => onDropdownChange(e, 'clientes'),
+    onChange: e => onDropdownChange(e, "clientes"),
     placeholder: "Seleccione...",
     className: "w-100",
     filter: true,
@@ -167,7 +174,7 @@ export const NewReceiptBoxForm = () => {
     id: "realizarUn",
     value: formData.realizarUn,
     options: realizarUnOptions,
-    onChange: e => onDropdownChange(e, 'realizarUn'),
+    onChange: e => onDropdownChange(e, "realizarUn"),
     placeholder: "Seleccione...",
     className: "w-100",
     filter: true,
@@ -181,7 +188,7 @@ export const NewReceiptBoxForm = () => {
     id: "origenDinero",
     value: formData.origenDinero,
     options: origenDineroOptions,
-    onChange: e => onDropdownChange(e, 'origenDinero'),
+    onChange: e => onDropdownChange(e, "origenDinero"),
     placeholder: "Seleccione...",
     className: "w-100",
     filter: true,
@@ -196,7 +203,7 @@ export const NewReceiptBoxForm = () => {
   }, "N\xFAmero de factura (N\xFAmeraci\xF3n autom\xE1tica)"), /*#__PURE__*/React.createElement(InputNumber, {
     id: "numeroFactura",
     value: formData.numeroFactura,
-    onValueChange: e => onNumberChange(e, 'numeroFactura'),
+    onValueChange: e => onNumberChange(e, "numeroFactura"),
     mode: "decimal",
     className: "w-100",
     disabled: true
@@ -222,7 +229,7 @@ export const NewReceiptBoxForm = () => {
     id: "centroCosto",
     value: formData.centroCosto,
     options: centroCostoOptions,
-    onChange: e => onDropdownChange(e, 'centroCosto'),
+    onChange: e => onDropdownChange(e, "centroCosto"),
     placeholder: "Seleccione...",
     className: "w-100",
     filter: true,
@@ -235,7 +242,7 @@ export const NewReceiptBoxForm = () => {
   }, "Valor pagado"), /*#__PURE__*/React.createElement(InputNumber, {
     id: "valorPagado",
     value: formData.valorPagado,
-    onValueChange: e => onNumberChange(e, 'valorPagado'),
+    onValueChange: e => onNumberChange(e, "valorPagado"),
     mode: "currency",
     currency: "USD",
     locale: "en-US",
@@ -270,22 +277,21 @@ export const NewReceiptBoxForm = () => {
     className: "w-100",
     onUpload: onFileUpload
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-center gap-3"
+    className: "flex justify-content-end gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
     icon: "pi pi-times",
     className: "p-button-secondary",
-    onClick: onCancel
-  }), /*#__PURE__*/React.createElement(Button, {
+    onClick: onHide
+  }), onSaveAndDownload && /*#__PURE__*/React.createElement(Button, {
     label: "Guardar y Descargar",
-    icon: "pi pi-save",
-    type: "submit",
-    className: "p-button-primary"
-  }), /*#__PURE__*/React.createElement(Button, {
+    icon: "fa fa-plus",
+    className: "btn btn-phoenix-secondary",
+    onClick: handleSaveAndDownload
+  }), onSave && /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",
-    icon: "pi pi-download",
-    className: "p-button-success"
-  })))))))));
+    icon: "fa fa-plus",
+    className: "btn btn-primary",
+    onClick: handleSave
+  }))));
 };

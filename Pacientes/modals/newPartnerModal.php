@@ -118,24 +118,24 @@ $relations = array("Padre", "Madre", "Hermano (a)", "Tio (a)", "Abuelo (a)", "Pr
         };
     });
 
-    /* document.getElementById('saveCompanionButton').addEventListener('click', function () {
- 
-    const companionForm = document.getElementById('partnerForm');
-    const companionFormData = new FormData(companionForm);
-    const companionData = {};
+    // document.getElementById('saveCompanionButton').addEventListener('click', function() {
 
-    companionFormData.forEach((value, key) => {
-        companionData[key] = value;
-    });
+    //     const companionForm = document.getElementById('partnerForm');
+    //     const companionFormData = new FormData(companionForm);
+    //     const companionData = {};
 
-    // Almacenar los datos temporalmente
-    companionsTemp.push(companionData);
+    //     companionFormData.forEach((value, key) => {
+    //         companionData[key] = value;
+    //     });
 
-    console.log('Companion Data', companionData);
-    console.log('Companions Temp', companionsTemp);
+    //     // Almacenar los datos temporalmente
+    //     companionsTemp.push(companionData);
 
-    // Cerrar el modal de crear acompañante
-    const createCompanionModal = bootstrap.Modal.getInstance(document.getElementById('newPartnerModal'));
-    createCompanionModal.hide(); 
-});*/
+    //     console.log('Companion Data', companionData);
+    //     console.log('Companions Temp', companionsTemp);
+
+    //     // Cerrar el modal de crear acompañante
+    //     const createCompanionModal = bootstrap.Modal.getInstance(document.getElementById('newPartnerModal'));
+    //     createCompanionModal.hide();
+    // });
 </script>

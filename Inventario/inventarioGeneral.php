@@ -126,13 +126,12 @@ include "../header.php";
 </div>
 
 <?php 
-include "./modal/modalNuevoMedicamento.php";
-include "./modal/modalNuevaVacuna.php";
-include "./modal/modalNuevoInsumo.php";
+// include "./modal/modalNuevoMedicamento.php";
+// include "./modal/modalNuevaVacuna.php";
+// include "./modal/modalNuevoInsumo.php";
 ?>
 
 <script type="module" src="Inventario/js/inventarioGeneral.js"></script>
-<script type="module" src="./Inventario/js/inventarioMedicamentos.js"></script>
 
 
 

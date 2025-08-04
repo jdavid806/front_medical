@@ -1,287 +1,399 @@
-import React, { useState } from 'react';
-import {
-    Button,
-    Dropdown,
-    InputText,
-    InputTextarea,
-    Calendar,
-    FileUpload
-} from 'primereact';
+import React, { useState, useEffect } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
+import { Card } from 'primereact/card';
+import { Tag } from 'primereact/tag';
+import { PaymentReceiptModal } from './PaymentReceiptModal';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface FormData {
+interface ReciboPago {
+    id: string;
+    numeroRecibo: string;
     tipo: string;
     proveedor: string;
-    numeroFactura: string;
-    fecha: string | Date | null;
-    centroCosto: string;
+    fecha: Date;
     costo: string;
-    dinero: string;
-    valorPagado: string;
+    origenDinero: string;
+    valorPagado: number;
+    estado: string;
     observaciones: string;
-    archivo: File | null;
 }
 
-interface DropdownOption {
-    label: string;
-    value: string;
+interface FiltrosRecibos {
+    numeroRecibo: string;
+    proveedor: string;
+    tipo: string | null;
+    fechaInicio: Date | null;
+    fechaFin: Date | null;
+    valorMinimo: number | null;
+    valorMaximo: number | null;
+    estado: string | null;
 }
 
-export const PaymentReceiptForm: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        tipo: '',
-        proveedor: '',
-        numeroFactura: '',
-        fecha: null,
-        centroCosto: '',
-        costo: '',
-        dinero: '',
-        valorPagado: '',
-        observaciones: '',
-        archivo: null
+export const RecibosPagos: React.FC = () => {
+    // Estado para los datos
+    const [recibos, setRecibos] = useState<ReciboPago[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    
+    // Estado para el modal
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [reciboEdit, setReciboEdit] = useState<ReciboPago | null>(null);
+    
+    // Estado para los filtros
+    const [filtros, setFiltros] = useState<FiltrosRecibos>({
+        numeroRecibo: "",
+        proveedor: "",
+        tipo: null,
+        fechaInicio: null,
+        fechaFin: null,
+        valorMinimo: null,
+        valorMaximo: null,
+        estado: null
     });
 
-    // Datos mock para los dropdowns
-    const tipoOptions: DropdownOption[] = [
-        { label: 'RP - 1 - Recibo de pago egreso', value: 'RP - 1 - Recibo de pago egreso' },
-        { label: 'RP - 2 - Recibo de pago ingreso', value: 'RP - 2 - Recibo de pago ingreso' },
-        { label: 'RC - 1 - Recibo de caja', value: 'RC - 1 - Recibo de caja' },
-        { label: 'RC - 2 - Comprobante de egreso', value: 'RC - 2 - Comprobante de egreso' }
+    // Opciones para dropdowns
+    const tiposRecibo = [
+        { label: 'RP - 1 - recibo de pago egreso', value: 'RP - 1 - recibo de pago egreso' }
     ];
 
-    const centroCostoOptions: DropdownOption[] = [
-        { label: 'Administración', value: 'admin' },
-        { label: 'Ventas', value: 'ventas' },
-        { label: 'Producción', value: 'produccion' },
-        { label: 'Marketing', value: 'marketing' },
-        { label: 'TI', value: 'ti' }
+    const estadosRecibo = [
+        { label: 'Pendiente', value: 'Pendiente' },
+        { label: 'Pagado', value: 'Pagado' },
+        { label: 'Anulado', value: 'Anulado' },
+        { label: 'Rechazado', value: 'Rechazado' }
     ];
 
-    const costoOptions: DropdownOption[] = [
-        { label: 'Materiales', value: 'materiales' },
-        { label: 'Servicios', value: 'servicios' },
-        { label: 'Nómina', value: 'nomina' },
-        { label: 'Logística', value: 'logistica' },
-        { label: 'Otros', value: 'otros' }
-    ];
+    // Cargar datos iniciales
+    useEffect(() => {
+        setLoading(true);
+        // Simular carga de API
+        setTimeout(() => {
+            const mockData: ReciboPago[] = [
+                {
+                    id: "1",
+                    numeroRecibo: "RP-2023-0001",
+                    tipo: "RP - 1 - recibo de pago egreso",
+                    proveedor: "Proveedor Ejemplo 1",
+                    fecha: new Date(2023, 5, 15),
+                    costo: "opcion1",
+                    origenDinero: "opcion1",
+                    valorPagado: 15000,
+                    estado: "Pagado",
+                    observaciones: "Pago por servicios profesionales"
+                },
+                {
+                    id: "2",
+                    numeroRecibo: "RP-2023-0002",
+                    tipo: "RP - 1 - recibo de pago egreso",
+                    proveedor: "Proveedor Ejemplo 2",
+                    fecha: new Date(2023, 5, 18),
+                    costo: "opcion2",
+                    origenDinero: "opcion2",
+                    valorPagado: 23500,
+                    estado: "Pendiente",
+                    observaciones: "Compra de materiales"
+                }
+            ];
+            setRecibos(mockData);
+            setLoading(false);
+        }, 1000);
+    }, []);
 
-    const dineroOptions: DropdownOption[] = [
-        { label: 'Caja menor', value: 'caja_menor' },
-        { label: 'Cuenta corriente', value: 'cuenta_corriente' },
-        { label: 'Fondo de reserva', value: 'fondo_reserva' },
-        { label: 'Inversiones', value: 'inversiones' },
-        { label: 'Otro origen', value: 'otro' }
-    ];
-
-    const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    // Manejadores de filtros
+    const handleFilterChange = (field: keyof FiltrosRecibos, value: any) => {
+        setFiltros(prev => ({ ...prev, [field]: value }));
     };
 
-    const onDropdownChange = (e: { value: string }, name: string) => {
-        setFormData(prev => ({ ...prev, [name]: e.value }));
+    const aplicarFiltros = () => {
+        setLoading(true);
+        // Aquí iría la llamada a la API con los filtros
+        setTimeout(() => {
+            setLoading(false);
+        }, 500);
     };
 
-    const onDateChange = (e: { value: Date | Date[] | null }) => {
-        if (e.value && !Array.isArray(e.value)) {
-            setFormData(prev => ({ ...prev, fecha: e.value as Date }));
+    const limpiarFiltros = () => {
+        setFiltros({
+            numeroRecibo: "",
+            proveedor: "",
+            tipo: null,
+            fechaInicio: null,
+            fechaFin: null,
+            valorMinimo: null,
+            valorMaximo: null,
+            estado: null
+        });
+    };
+
+    // Formateadores
+    const formatCurrency = (value: number): string => {
+        return value.toLocaleString('es-DO', {
+            style: 'currency',
+            currency: 'DOP'
+        });
+    };
+
+    const formatDate = (value: Date): string => {
+        return value.toLocaleDateString('es-DO');
+    };
+
+    // Estilo para tags de estado
+    const getEstadoSeverity = (estado: string) => {
+        switch(estado) {
+            case 'Pagado': return 'success';
+            case 'Pendiente': return 'warning';
+            case 'Anulado':
+            case 'Rechazado': return 'danger';
+            default: return null;
         }
     };
 
-    const onFileUpload = (e: { files: File[] }) => {
-        setFormData(prev => ({ ...prev, archivo: e.files[0] }));
+    // Acciones para la tabla
+    const accionesBodyTemplate = (rowData: ReciboPago) => {
+        return (
+            <div className="flex gap-2">
+                <Button 
+                    icon="pi pi-pencil" 
+                    className="p-button-rounded p-button-success p-button-text"
+                    tooltip="Editar"
+                    onClick={() => {
+                        setReciboEdit(rowData);
+                        setShowModal(true);
+                    }}
+                />
+                <Button 
+                    icon="pi pi-trash" 
+                    className="p-button-rounded p-button-danger p-button-text"
+                    tooltip="Anular"
+                    onClick={() => anularRecibo(rowData.id)}
+                    disabled={rowData.estado === 'Anulado'}
+                />
+                <Button 
+                    icon="pi pi-download" 
+                    className="p-button-rounded p-button-info p-button-text"
+                    tooltip="Descargar"
+                    onClick={() => descargarRecibo(rowData.id)}
+                />
+            </div>
+        );
     };
 
-    const onSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Form data submitted: ', formData);
-        // Lógica de envío aquí
+    const anularRecibo = (id: string) => {
+        // Lógica para anular recibo
+        setRecibos(recibos.map(r => 
+            r.id === id ? {...r, estado: 'Anulado'} : r
+        ));
     };
 
-    const onCancel = () => {
-        console.log('Form cancelled');
-        // Lógica de cancelación aquí
+    const descargarRecibo = (id: string) => {
+        // Lógica para descargar recibo
+        console.log(`Descargando recibo ${id}`);
+    };
+
+    // Manejar submit del modal
+    const handleSubmitRecibo = (formData: any) => {
+        if (reciboEdit) {
+            // Editar recibo existente
+            setRecibos(recibos.map(r => 
+                r.id === reciboEdit.id ? {...r, ...formData} : r
+            ));
+        } else {
+            // Crear nuevo recibo
+            const nuevoRecibo: ReciboPago = {
+                id: Math.random().toString(36).substring(2, 9),
+                numeroRecibo: `RP-2023-${(recibos.length + 1).toString().padStart(4, '0')}`,
+                estado: 'Pendiente',
+                ...formData
+            };
+            setRecibos([...recibos, nuevoRecibo]);
+        }
+        
+        setShowModal(false);
+        setReciboEdit(null);
     };
 
     return (
-        <div className="container mt-4">
-            <div className="row justify-content-center">
-                <div className="col-md-12 col-lg-10"> {/* Formulario más ancho */}
-                    <div className="card">
-                        <div className="card-header bg-primary text-white">
-                            <h2 className="h4 mb-0">Nuevo recibo de pago</h2>
-                        </div>
+        <div className="container-fluid mt-4">
+            {/* Botón para nuevo recibo */}
+            <div className="mb-3 text-end">
+                <Button 
+                    label="Nuevo Recibo" 
+                    icon="pi pi-plus" 
+                    className="p-button-primary"
+                    onClick={() => {
+                        setReciboEdit(null);
+                        setShowModal(true);
+                    }}
+                />
+            </div>
 
-                        <div className="card-body">
-                            <form onSubmit={onSubmit}>
-                                <div className="row mb-4">
-                                    {/* Columna izquierda */}
-                                    <div className="col-md-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="tipo" className="form-label">Tipo de documento</label>
-                                            <Dropdown
-                                                id="tipo"
-                                                value={formData.tipo}
-                                                options={tipoOptions}
-                                                onChange={(e) => onDropdownChange(e, 'tipo')}
-                                                placeholder="Seleccione el tipo"
-                                                className="w-100"
-                                                filter
-                                                showClear
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="proveedor" className="form-label">Proveedor / Otras entidades</label>
-                                            <InputText
-                                                id="proveedor"
-                                                name="proveedor"
-                                                value={formData.proveedor}
-                                                onChange={onInputChange}
-                                                className="w-100"
-                                                placeholder="Nombre del proveedor"
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="costo" className="form-label">Costo asociado</label>
-                                            <Dropdown
-                                                id="costo"
-                                                value={formData.costo}
-                                                options={costoOptions}
-                                                onChange={(e) => onDropdownChange(e, 'costo')}
-                                                placeholder="Seleccione el costo"
-                                                className="w-100"
-                                                filter
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="dinero" className="form-label">Origen del dinero</label>
-                                            <Dropdown
-                                                id="dinero"
-                                                value={formData.dinero}
-                                                options={dineroOptions}
-                                                onChange={(e) => onDropdownChange(e, 'dinero')}
-                                                placeholder="Seleccione el origen"
-                                                className="w-100"
-                                                filter
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Columna derecha */}
-                                    <div className="col-md-6">
-                                        <div className="mb-3">
-                                            <label htmlFor="numeroFactura" className="form-label">Número de factura</label>
-                                            <InputText
-                                                id="numeroFactura"
-                                                name="numeroFactura"
-                                                value={formData.numeroFactura}
-                                                onChange={onInputChange}
-                                                className="w-100"
-                                                placeholder="Número de documento"
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="fecha" className="form-label">Fecha de elaboración</label>
-                                            <Calendar
-                                                id="fecha"
-                                                value={formData.fecha}
-                                                onChange={onDateChange}
-                                                dateFormat="dd/mm/yy"
-                                                className="w-100"
-                                                showIcon
-                                                placeholder="Seleccione la fecha"
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="centroCosto" className="form-label">Centro de costo</label>
-                                            <Dropdown
-                                                id="centroCosto"
-                                                value={formData.centroCosto}
-                                                options={centroCostoOptions}
-                                                onChange={(e) => onDropdownChange(e, 'centroCosto')}
-                                                placeholder="Seleccione centro"
-                                                className="w-100"
-                                                filter
-                                            />
-                                        </div>
-
-                                        <div className="mb-3">
-                                            <label htmlFor="valorPagado" className="form-label">Valor pagado ($)</label>
-                                            <InputText
-                                                id="valorPagado"
-                                                name="valorPagado"
-                                                value={formData.valorPagado}
-                                                onChange={onInputChange}
-                                                className="w-100"
-                                                placeholder="0.00"
-                                                keyfilter="money"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Observaciones y archivo */}
-                                <div className="row mb-4">
-                                    <div className="col-12">
-                                        <label htmlFor="observaciones" className="form-label">Observaciones</label>
-                                        <InputTextarea
-                                            id="observaciones"
-                                            name="observaciones"
-                                            value={formData.observaciones}
-                                            onChange={onInputChange}
-                                            rows={3}
-                                            className="w-100"
-                                            placeholder="Detalles adicionales..."
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="row mb-4">
-                                    <div className="col-12">
-                                        <label className="form-label">Adjuntar archivo</label>
-                                        <FileUpload
-                                            mode="basic"
-                                            name="archivo"
-                                            accept="image/*,.pdf,.doc,.docx"
-                                            maxFileSize={1000000}
-                                            chooseLabel="Seleccionar archivo"
-                                            className="w-100"
-                                            onUpload={onFileUpload}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Botones de acción - Centrados */}
-                                <div className="row">
-                                    <div className="col-12 d-flex justify-content-center gap-3">
-                                        <Button
-                                            label="Cancelar"
-                                            icon="pi pi-times"
-                                            className="p-button-secondary"
-                                            onClick={onCancel}
-                                        />
-                                        <Button
-                                            label="Guardar y Descargar"
-                                            icon="pi pi-save"
-                                            type="submit"
-                                            className="p-button-primary"
-                                        />
-                                        <Button
-                                            label="Guardar"
-                                            icon="pi pi-download"
-                                            className="p-button-success"
-                                        />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+            {/* Card de filtros */}
+            <Card title="Filtros de Búsqueda" className="mb-4">
+                <div className="grid">
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Número de Recibo</label>
+                        <InputText
+                            value={filtros.numeroRecibo}
+                            onChange={(e) => handleFilterChange('numeroRecibo', e.target.value)}
+                            placeholder="Ej: RP-2023-0001"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Proveedor</label>
+                        <InputText
+                            value={filtros.proveedor}
+                            onChange={(e) => handleFilterChange('proveedor', e.target.value)}
+                            placeholder="Nombre del proveedor"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Tipo</label>
+                        <Dropdown
+                            value={filtros.tipo}
+                            options={tiposRecibo}
+                            onChange={(e) => handleFilterChange('tipo', e.value)}
+                            placeholder="Seleccionar tipo"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Estado</label>
+                        <Dropdown
+                            value={filtros.estado}
+                            options={estadosRecibo}
+                            onChange={(e) => handleFilterChange('estado', e.value)}
+                            placeholder="Seleccionar estado"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Fecha desde</label>
+                        <Calendar
+                            value={filtros.fechaInicio}
+                            onChange={(e) => handleFilterChange('fechaInicio', e.value)}
+                            dateFormat="dd/mm/yy"
+                            className="w-full"
+                            showIcon
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Fecha hasta</label>
+                        <Calendar
+                            value={filtros.fechaFin}
+                            onChange={(e) => handleFilterChange('fechaFin', e.value)}
+                            dateFormat="dd/mm/yy"
+                            className="w-full"
+                            showIcon
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Valor mínimo</label>
+                        <InputText
+                            value={filtros.valorMinimo || ''}
+                            onChange={(e) => handleFilterChange('valorMinimo', parseFloat(e.target.value) || null)}
+                            type="number"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 md:col-6 lg:col-3">
+                        <label className="block mb-2">Valor máximo</label>
+                        <InputText
+                            value={filtros.valorMaximo || ''}
+                            onChange={(e) => handleFilterChange('valorMaximo', parseFloat(e.target.value) || null)}
+                            type="number"
+                            className="w-full"
+                        />
+                    </div>
+                    
+                    <div className="col-12 flex justify-content-end gap-2 mt-3">
+                        <Button
+                            label="Limpiar"
+                            icon="pi pi-filter-slash"
+                            className="p-button-secondary"
+                            onClick={limpiarFiltros}
+                        />
+                        <Button
+                            label="Aplicar Filtros"
+                            icon="pi pi-filter"
+                            className="p-button-primary"
+                            onClick={aplicarFiltros}
+                            loading={loading}
+                        />
                     </div>
                 </div>
-            </div>
+            </Card>
+
+            {/* Tabla de resultados */}
+            <Card title="Recibos de Pago">
+                <DataTable
+                    value={recibos}
+                    loading={loading}
+                    paginator
+                    rows={10}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    emptyMessage="No se encontraron recibos"
+                    responsiveLayout="scroll"
+                >
+                    <Column field="numeroRecibo" header="Número" sortable />
+                    <Column field="proveedor" header="Proveedor" sortable />
+                    <Column field="tipo" header="Tipo" sortable />
+                    <Column 
+                        field="fecha" 
+                        header="Fecha" 
+                        sortable 
+                        body={(rowData) => formatDate(rowData.fecha)} 
+                    />
+                    <Column 
+                        field="valorPagado" 
+                        header="Valor" 
+                        sortable 
+                        body={(rowData) => formatCurrency(rowData.valorPagado)} 
+                    />
+                    <Column 
+                        field="estado" 
+                        header="Estado" 
+                        sortable 
+                        body={(rowData) => (
+                            <Tag 
+                                value={rowData.estado} 
+                                severity={getEstadoSeverity(rowData.estado)} 
+                            />
+                        )} 
+                    />
+                    <Column 
+                        header="Acciones" 
+                        body={accionesBodyTemplate} 
+                        style={{ width: '180px' }}
+                    />
+                </DataTable>
+            </Card>
+
+            {/* Modal para crear/editar recibos */}
+            <PaymentReceiptModal
+                visible={showModal}
+                onHide={() => {
+                    setShowModal(false);
+                    setReciboEdit(null);
+                }}
+                onSubmit={handleSubmitRecibo}
+                initialData={reciboEdit || undefined}
+            />
         </div>
     );
 };

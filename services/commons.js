@@ -159,18 +159,6 @@ export const examOrderStateColors = {
     'uploaded': 'success'
 }
 
-export const clinicalRecordStates = {
-    'cancellation_request_pending': 'Solicitud de cancelación pendiente',
-    'cancellation_request_rejected': 'Solicitud de cancelación rechazada',
-    'cancellation_request_approved': 'Solicitud de cancelación aprobada'
-}
-
-export const clinicalRecordStateColors = {
-    'cancellation_request_pending': 'warning',
-    'cancellation_request_rejected': 'danger',
-    'cancellation_request_approved': 'info'
-}
-
 export const appointmentTypes = [
     {
         "id": '1',
@@ -202,4 +190,56 @@ export const bloodType = {
     "B_NEGATIVE": "B Negativo",
     "AB_POSITIVE": "AB Positivo",
     "AB_NEGATIVE": "AB Negativo"
+}
+
+export const examRecipeStatus = {
+    'pending': 'Pendiente por cargar resultados',
+    'canceled': 'Cancelado',
+    'uploaded': 'Resultados subidos',
+}
+
+export const examRecipeStatusColors = {
+    'pending': 'warning',
+    'canceled': 'danger',
+    'uploaded': 'success'
+}
+
+export const auditLogActions = {
+    'created': 'Creado',
+    'updated': 'Modificado',
+    'deleted': 'Eliminado'
+}
+
+export const clinicalRecordStates = {
+    'active': 'Activa',
+    'pending_cancellation': 'Solicitud de cancelación pendiente',
+    'cancelled': 'Anulada'
+}
+
+export const clinicalRecordStateColors = {
+    'active': 'success',
+    'pending_cancellation': 'warning',
+    'cancelled': 'danger'
+}
+
+export const recipeInvoiceStates = {
+    'pending': 'Facturada',
+    'paid': 'Sin facturar'
+}
+
+export const recipeInvoiceStateColors = {
+    'pending': 'success',
+    'paid': 'warning'
+}
+
+export const generalRequestStates = {
+    'pending': 'Pendiente',
+    'approved': 'Aprobado',
+    'rejected': 'Rechazado'
+}
+
+export const generalRequestStateColors = {
+    'pending': 'warning',
+    'approved': 'success',
+    'rejected': 'danger'
 }

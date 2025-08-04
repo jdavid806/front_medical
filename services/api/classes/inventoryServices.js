@@ -49,6 +49,69 @@ export class InventoryService extends BaseApiService {
     });
   }
 
+
+
+  // Métodos para creación de productos
+  async createSupply(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/insumos`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  async createMedication(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/medicamentos`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  async createVaccine(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/vacunas`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  async createActivoFijo(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/activos-fijos`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  async createInventariable(data) {
+    return await this.httpClient.post(
+      `api/v1/admin/products/inventariables`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   async getSupplies() {
     return await this.httpClient.get(`api/v1/admin/products/insumos`);
   }
@@ -59,6 +122,18 @@ export class InventoryService extends BaseApiService {
 
   async getVaccines() {
     return await this.httpClient.get(`api/v1/admin/products/vacunas`);
+  }
+
+  async getServices() {
+    return await this.httpClient.get(`api/v1/admin/products/servicios`);
+  }
+
+  async getActivosFijos() {
+    return await this.httpClient.get(`api/v1/admin/products/activos-fijos`);
+  }
+
+  async getInventariables() {
+    return await this.httpClient.get(`api/v1/admin/products/inventariables`);
   }
 }
 export default InventoryService;

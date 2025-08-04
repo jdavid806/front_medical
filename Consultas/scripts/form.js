@@ -3,12 +3,39 @@ import { AlertManager } from "../../services/alertManager.js";
 
 let formValues = {};
 
+// let start = new Date().getTime();
+// let timerInterval;
+// let tiempoTranscurrido = 0;
+
+// function formatTime(totalSegundos) {
+//   let horas = Math.floor(totalSegundos / 3600);
+//   let remainingSeconds = totalSegundos % 3600;
+//   let minutos = Math.floor(remainingSeconds / 60);
+//   let segundos = remainingSeconds % 60;
+//   return `${horas.toString().padStart(2, "0")}:${minutos
+//     .toString()
+//     .padStart(2, "0")}:${segundos.toString().padStart(2, "0")}`;
+// }
+
+// function iniciarCronometro() {
+//   timerInterval = setInterval(() => {
+//     let now = new Date().getTime();
+//     tiempoTranscurrido = Math.floor((now - start) / 1000);
+//     document.getElementById("timer").textContent =
+//       formatTime(tiempoTranscurrido);
+//   }, 1000);
+// }
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   iniciarCronometro();
+// });
+
 document.addEventListener("DOMContentLoaded", async function () {
   const params = new URLSearchParams(window.location.search);
   const jsonPath = `../../ConsultasJson/${params.get("tipo_historia")}.json`;
-  console.log("Historia: ", jsonPath);
+  // console.log("Historia: ", jsonPath);
   const dataHistoryPreaddmission = await historyPreadmission();
-  console.log(dataHistoryPreaddmission);
+  console.log("Preadmision: ", dataHistoryPreaddmission);
   // const timerElement = document.getElementById('timer');
   // const finishBtn = document.getElementById('finishBtn');
   // const modalTimer = document.getElementById('modalTimer');
@@ -17,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   try {
     const response = await fetch(jsonPath);
     const formData = await response.json();
-    console.log("Formdata: ", formData);
+    // console.log("Formdata: ", formData);
 
     generateForm(formData.form1);
     // updateTimer();
@@ -49,10 +76,51 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.error("Error cargando el JSON:", error);
   }
 
-  const pesoInput = document.getElementById("peso");
-  const alturaInput = document.getElementById("altura");
+  const agregarNotaBtn = document.getElementById("agregarNotaBtn");
+
+  if (agregarNotaBtn) {
+    agregarNotaBtn.addEventListener("click", agregarNota);
+  }
+
+  const agregarObservacionBtn = document.getElementById(
+    "agregarObservacionBtn"
+  );
+
+  if (agregarObservacionBtn) {
+    agregarObservacionBtn.addEventListener("click", agregarObservacion);
+  }
+
+  const agregarInformeBtn = document.getElementById("agregarInforme");
+
+  if (agregarInformeBtn) {
+    agregarInformeBtn.addEventListener("click", agregarInforme);
+  }
+
+  // Agregar event listeners a todos los radio buttons
+  document
+    .querySelectorAll(
+      'input[name="actividadMuscular"], input[name="respiratorios"], input[name="circulatorios"], input[name="estadoConciencia"], input[name="colorMucosas"]'
+    )
+    .forEach((radio) => {
+      radio.addEventListener("change", calcularTotal);
+    });
+
+  const tensionSistolica = document.getElementById("tensionSistólica");
+  const tensionDiastolica = document.getElementById("tensionDiastólica");
+
+  if (tensionSistolica && tensionDiastolica) {
+    tensionSistolica.addEventListener("input", calcularPAM);
+    tensionDiastolica.addEventListener("input", calcularPAM);
+  }
+  // console.log("Preadmision: ", dataHistoryPreaddmission);
+  const pesoInput = document.getElementById("peso") || 0;
+  const alturaInput = document.getElementById("altura") || 0;
+  const glucemiaInput = document.getElementById("glucemia") || 0;
   pesoInput.value = dataHistoryPreaddmission?.weight || 0;
   alturaInput.value = dataHistoryPreaddmission?.size || 0;
+  if (glucemiaInput) {
+    glucemiaInput.value = dataHistoryPreaddmission?.glycemia || 0;
+  }
 
   if (pesoInput && alturaInput) {
     pesoInput.addEventListener("input", actualizarIMC);
@@ -62,6 +130,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
   const sistolicaInput = document.getElementById("presionArterialSistolica");
   const diastolicaInput = document.getElementById("presionArterialDiastolica");
+  sistolicaInput.value =
+    dataHistoryPreaddmission?.extra_data?.tensionSistolica || 0;
+  diastolicaInput.value =
+    dataHistoryPreaddmission?.extra_data?.tensionDiastolica || 0;
 
   if (sistolicaInput && diastolicaInput) {
     sistolicaInput.addEventListener("input", actualizarTensionArterialMedia);
@@ -69,7 +141,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     actualizarTensionArterialMedia();
   }
+  catchExtraDataToInputs(dataHistoryPreaddmission?.extra_data);
 });
+
+function catchExtraDataToInputs(extraData){
+    Object.keys(extraData).forEach(key => {
+        let inputById = document.getElementById(key);
+        let inputByName = inputById ? null : document.querySelector(`input[name="${key}"]`);
+
+        if (inputById) {
+            inputById.value = extraData[key];
+        } else if (inputByName) {
+            inputByName.value = extraData[key];
+        }
+    });
+}
 
 async function historyPreadmission() {
   const params = new URLSearchParams(window.location.search);
@@ -310,9 +396,9 @@ function createSingleFileDropzone(field) {
     "dropzone dropzone-single p-0 dz-clickable position-relative overflow-hidden d-flex flex-column align-items-center";
   div.id = field.id;
   div.setAttribute("data-dropzone", "data-dropzone");
-  div.style.minHeight = "550px"; // Aumentar altura para incluir botón
-  div.style.border = "none"; // Eliminar borde
-  div.style.outline = "none"; // Eliminar contorno
+  div.style.minHeight = "550px";
+  div.style.border = "none";
+  div.style.outline = "none";
 
   // Crear el contenedor de previsualización
   const previewContainer = document.createElement("div");
@@ -564,8 +650,68 @@ function createCheckboxWithSubfields(field) {
 
         subFieldDiv.appendChild(textareaLabel);
         subFieldDiv.appendChild(textarea);
+      } else if (subField.type === "radio") {
+        // Nuevo manejo para botones de radio
+        const radioGroupContainer = document.createElement("div");
+        if (subField.class) {
+          radioGroupContainer.className = subField.class;
+        } else {
+          radioGroupContainer.className = "mb-3 col-12";
+        }
+
+        // Crear la etiqueta del grupo
+        const radioGroupLabel = document.createElement("label");
+        radioGroupLabel.className = "form-label";
+        radioGroupLabel.textContent = subField.label;
+        radioGroupContainer.appendChild(radioGroupLabel);
+
+        // Contenedor para los radio buttons
+        const radioButtonsContainer = document.createElement("div");
+        radioButtonsContainer.className = "radio-group-container";
+
+        // Crear cada botón de radio
+        subField.options.forEach((option, index) => {
+          const radioDiv = document.createElement("div");
+          radioDiv.className = "form-check form-check-inline";
+
+          const input = document.createElement("input");
+          input.className = "form-check-input";
+          input.type = "radio";
+          input.id = `${subField.id}_${index}`;
+          input.name = subField.id; // Todos los radios del mismo grupo comparten el nombre
+          input.value = option.value;
+
+          // Manejar opciones preseleccionadas
+          if (option.selected) {
+            input.checked = true;
+          }
+
+          // Manejar opciones deshabilitadas
+          if (option.disabled) {
+            input.disabled = true;
+          }
+
+          const label = document.createElement("label");
+          label.className = "form-check-label";
+          label.setAttribute("for", `${subField.id}_${index}`);
+          label.textContent = option.text;
+
+          // Agregar eventos si están definidos
+          if (subField.onChange) {
+            input.addEventListener("change", (e) => {
+              subField.onChange(e, option.value);
+            });
+          }
+
+          radioDiv.appendChild(input);
+          radioDiv.appendChild(label);
+          radioButtonsContainer.appendChild(radioDiv);
+        });
+
+        radioGroupContainer.appendChild(radioButtonsContainer);
+        subFieldsContainer.appendChild(radioGroupContainer);
       } else {
-        // Aquí es donde agregamos el input, tal como lo solicitaste
+        // Manejo de campos de tipo input estándar
         let inputFieldDiv = document.createElement("div");
         if (subField.class) {
           inputFieldDiv.classList.add("mb-2", subField.class);
@@ -595,7 +741,10 @@ function createCheckboxWithSubfields(field) {
         subFieldsContainer.appendChild(inputFieldDiv);
       }
 
-      subFieldsContainer.appendChild(subFieldDiv);
+      // Solo agregamos subFieldDiv si no es un campo de radio (ya que los radio se han tratado de forma especial)
+      if (subField.type !== "radio") {
+        subFieldsContainer.appendChild(subFieldDiv);
+      }
     });
   }
 
@@ -768,6 +917,319 @@ function createTextareaField(field) {
   return fieldDiv;
 }
 
+function createProgressBar(field) {
+  // Crear el contenedor principal de la barra de progreso
+  const progressContainer = document.createElement("div");
+
+  // Asignar clases, siguiendo la misma lógica que createSelect
+  if (!field.class) {
+    progressContainer.className = "progress mt-2";
+  } else {
+    progressContainer.className = "progress " + field.class;
+  }
+
+  // Establecer altura de la barra, valor por defecto: 20px
+  progressContainer.style.height = field.height || "20px";
+
+  // Eliminar cualquier padding interno
+  progressContainer.style.padding = "0";
+
+  progressContainer.style.width = "98%";
+
+  // Centrar el contenedor horizontalmente
+  progressContainer.style.margin = "0 auto";
+
+  // Crear la barra de progreso interna
+  const progressBar = document.createElement("div");
+  progressBar.className = "progress-bar " + (field.bgColor || "bg-success");
+  progressBar.id = field.id;
+  progressBar.role = "progressbar";
+
+  // Inicializar con 0% de ancho
+  progressBar.style.width = "0%";
+  progressBar.setAttribute("aria-valuenow", 0);
+  progressBar.setAttribute("aria-valuemin", 0);
+  progressBar.setAttribute("aria-valuemax", 100);
+
+  // Eliminar padding interno de la barra de progreso
+  progressBar.style.padding = "0";
+
+  // Asegurar que no haya espacios internos
+  progressBar.style.margin = "0";
+  progressBar.style.boxSizing = "border-box";
+
+  // Añadir la barra al contenedor
+  progressContainer.appendChild(progressBar);
+
+  return progressContainer;
+}
+
+function createDateTimeField(field) {
+  // Crear el contenedor principal
+  let fieldDiv = document.createElement("div");
+  if (field.class) {
+    fieldDiv.classList.add(field.class);
+  } else {
+    fieldDiv.classList.add("col-12", "mb-3");
+  }
+
+  // Crear el input - usamos datetime-local para fecha y hora
+  let input = document.createElement("input");
+  input.classList.add("form-control");
+
+  // Permitir configurar si es solo fecha o fecha+hora
+  input.setAttribute("type", "datetime-local");
+  input.setAttribute("id", field.id);
+  input.setAttribute("name", field.name);
+
+  // Configurar valor mínimo y máximo si se especifican
+  if (field.min) input.setAttribute("min", field.min);
+  if (field.max) input.setAttribute("max", field.max);
+
+  if (field.placeholder) {
+    input.setAttribute("placeholder", field.placeholder);
+  }
+
+  // Función para establecer la fecha y hora actual en formato adecuado para input datetime-local
+  function setCurrentDateTime() {
+    const now = new Date();
+    // Formato requerido para datetime-local: YYYY-MM-DDThh:mm
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    // Crear string en formato YYYY-MM-DDThh:mm
+    const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    input.value = formattedDateTime;
+
+    // Disparar evento change para detectar el cambio
+    const event = new Event("change");
+    input.dispatchEvent(event);
+
+    if (field.onChange) {
+      field.onChange(formattedDateTime);
+    }
+  }
+
+  // Establecer fecha y hora actual al crear el campo
+  setCurrentDateTime();
+
+  // Configurar intervalo para actualizar cada minuto
+  const intervalId = setInterval(setCurrentDateTime, 60000);
+
+  // Guardar el ID del intervalo para poder limpiarlo cuando sea necesario
+  fieldDiv.dataset.intervalId = intervalId;
+
+  // Método para limpiar el intervalo
+  fieldDiv.cleanup = function () {
+    clearInterval(intervalId);
+  };
+
+  // Crear la etiqueta
+  let label = document.createElement("label");
+  label.setAttribute("for", field.id);
+  label.textContent = field.label;
+  label.classList.add("form-label");
+
+  // Agregar elementos al contenedor
+  fieldDiv.appendChild(label);
+  fieldDiv.appendChild(input);
+
+  return fieldDiv;
+}
+
+function createTimePickerField(field) {
+  // Crear el contenedor principal
+  let fieldDiv = document.createElement("div");
+  if (field.class) {
+    fieldDiv.classList.add(field.class);
+  } else {
+    fieldDiv.classList.add("col-12", "mb-3");
+  }
+
+  // Crear la etiqueta
+  let label = document.createElement("label");
+  label.setAttribute("for", field.id);
+  label.textContent = field.label;
+  label.classList.add("form-label");
+
+  // Crear el input para el time picker
+  let input = document.createElement("input");
+  input.classList.add("form-control", "datetimepicker", "flatpickr-input");
+  input.setAttribute("type", "text");
+  input.setAttribute("id", field.id);
+  input.setAttribute("name", field.name);
+  input.setAttribute("readonly", "readonly");
+
+  if (field.placeholder) {
+    input.setAttribute("placeholder", field.placeholder);
+  } else {
+    input.setAttribute("placeholder", "hh:mm");
+  }
+
+  // Configurar las opciones de flatpickr
+  const options = {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    disableMobile: true,
+    ...field.options, // Permite extender o sobrescribir las opciones predeterminadas
+  };
+
+  // Convertir las opciones a un atributo data-options
+  input.setAttribute("data-options", JSON.stringify(options));
+
+  // Inicializar flatpickr
+  const flatpickrInstance = flatpickr(input, options);
+
+  // Función para establecer la hora actual
+  function setCurrentTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    // Formatear la hora según el formato especificado
+    const formattedTime = `${hours}:${minutes}`;
+
+    // Actualizar el valor en flatpickr
+    flatpickrInstance.setDate(formattedTime, true);
+
+    if (field.onChange) {
+      field.onChange(formattedTime);
+    }
+  }
+
+  // Establecer la hora actual al crear el campo si se solicita
+  if (field.setCurrentTime) {
+    setCurrentTime();
+  }
+
+  // Configurar manejador de eventos para cambios
+  input.addEventListener("change", function (e) {
+    if (field.onChange) {
+      field.onChange(input.value);
+    }
+  });
+
+  // Método para limpiar recursos si es necesario
+  fieldDiv.cleanup = function () {
+    flatpickrInstance.destroy();
+  };
+
+  // Agregar elementos al contenedor
+  fieldDiv.appendChild(label);
+  fieldDiv.appendChild(input);
+
+  return fieldDiv;
+}
+
+function createIconButton(field) {
+  // Crear el contenedor principal
+  let containerDiv = document.createElement("div");
+  containerDiv.classList.add("text-end");
+
+  // Crear el botón
+  let button = document.createElement("button");
+  button.classList.add("btn", "btn-secondary", "me-1", "mb-1");
+  button.setAttribute("type", "button");
+
+  // Crear el icono
+  let icon = document.createElement("i");
+  icon.classList.add("fas", "fa-plus");
+
+  // Configuraciones opcionales
+  if (field.buttonClass) {
+    button.className = field.buttonClass; // Sobrescribe todas las clases
+  }
+
+  if (field.buttonType) {
+    button.setAttribute("type", field.buttonType);
+  }
+
+  if (field.iconClass) {
+    icon.className = field.iconClass;
+  }
+
+  if (field.id) {
+    button.setAttribute("id", field.id);
+  }
+
+  if (field.onClick) {
+    button.addEventListener("click", field.onClick);
+  }
+
+  // Ensamblar los elementos
+  button.appendChild(icon);
+  containerDiv.appendChild(button);
+
+  return containerDiv;
+}
+
+function createRadioGroup(field) {
+  // Crear el contenedor principal
+  const div = document.createElement("div");
+  if (!field.class) {
+    div.className = "col-12 mb-3";
+  } else {
+    div.className = field.class;
+  }
+
+  // Crear la etiqueta del grupo
+  const groupLabel = document.createElement("label");
+  groupLabel.className = "form-label";
+  groupLabel.textContent = field.label;
+  div.appendChild(groupLabel);
+
+  // Crear un contenedor para los radio buttons
+  const radioContainer = document.createElement("div");
+  radioContainer.className = "radio-group-container";
+
+  // Crear cada botón de radio con su etiqueta
+  field.options.forEach((option, index) => {
+    const radioDiv = document.createElement("div");
+    radioDiv.className = "form-check form-check-inline";
+
+    const input = document.createElement("input");
+    input.className = "form-check-input";
+    input.type = "radio";
+    input.id = `${field.id}_${index}`;
+    input.name = field.id; // Todos los radios del mismo grupo tienen el mismo name
+    input.value = option.value;
+
+    // Manejar opciones preseleccionadas
+    if (option.selected) {
+      input.checked = true;
+    }
+
+    // Manejar opciones deshabilitadas
+    if (option.disabled) {
+      input.disabled = true;
+    }
+
+    const label = document.createElement("label");
+    label.className = "form-check-label";
+    label.setAttribute("for", `${field.id}_${index}`);
+    label.textContent = option.text;
+
+    // Agregar eventos si están definidos
+    if (field.onChange) {
+      input.addEventListener("change", (e) => {
+        field.onChange(e, option.value);
+      });
+    }
+
+    // Ensamblar el botón de radio con su etiqueta
+    radioDiv.appendChild(input);
+    radioDiv.appendChild(label);
+    radioContainer.appendChild(radioDiv);
+  });
+
+  div.appendChild(radioContainer);
+  return div;
+}
+
 function generateForm(formData) {
   const tabsContainer = document.getElementById("tabsContainer");
   const formContainer = document.getElementById("formContainer");
@@ -847,8 +1309,16 @@ function generateForm(formData) {
                 fieldDiv = createDropzone(field);
               } else if (field.type === "fileS") {
                 fieldDiv = createSingleFileDropzone(field);
-              } else if (field.type === "table") {
-                fieldDiv = createDynamicTable(field);
+              } else if (field.type === "progressbar") {
+                fieldDiv = createProgressBar(field);
+              } else if (field.type === "dateC") {
+                fieldDiv = createDateTimeField(field);
+              } else if (field.type === "hours") {
+                fieldDiv = createTimePickerField(field);
+              } else if (field.type === "buttonI") {
+                fieldDiv = createIconButton(field);
+              } else if (field.type === "radio") {
+                fieldDiv = createRadioGroup(field);
               } else if (field.type === "label") {
                 fieldDiv = document.createElement("div");
                 if (field.class) {
@@ -945,6 +1415,15 @@ function generateForm(formData) {
   // Deshabilitar el botón siguiente en el último tab si sólo hay un tab
   nextButton.disabled = formData.tabs.length <= 1;
 
+  if (formData.tabs.length === 1) {
+    const finishButton = document.getElementById("finishBtn");
+    const herramientasIABtn = document.getElementById("herramientasIABtn");
+    prevButton.style.display = "none";
+    nextButton.style.display = "none";
+    finishButton.disabled = false;
+    herramientasIABtn.disabled = false;
+  }
+
   navigationButtons.appendChild(prevButton);
   navigationButtons.appendChild(nextButton);
 
@@ -1004,12 +1483,20 @@ function updateButtonsState(totalTabs) {
 
   const prevButton = document.getElementById("prevTabButton");
   const nextButton = document.getElementById("nextTabButton");
+  const finishButton = document.getElementById("finishBtn");
+  const herramientasIABtn = document.getElementById("herramientasIABtn");
 
   // Deshabilitar botón anterior en el primer tab
   prevButton.disabled = currentIndex === 0;
 
   // Deshabilitar botón siguiente en el último tab
   nextButton.disabled = currentIndex === totalTabs - 1;
+
+  // Control del botón finalizar (siempre visible pero solo activo en último paso)
+  finishButton.disabled = currentIndex !== totalTabs - 1;
+
+  // Control del botón herramientas IA
+  herramientasIABtn.disabled = currentIndex !== totalTabs - 1;
 }
 
 function initTinyMCE() {
@@ -1124,5 +1611,327 @@ function actualizarTensionArterialMedia() {
     } else {
       tamInput.value = "";
     }
+  }
+}
+
+function calcularTotal() {
+  const valorActividadMuscular =
+    parseInt(
+      document.querySelector('input[name="actividadMuscular"]:checked')?.value
+    ) || 0;
+  const valorRespiratorios =
+    parseInt(
+      document.querySelector('input[name="respiratorios"]:checked')?.value
+    ) || 0;
+  const valorCirculatorios =
+    parseInt(
+      document.querySelector('input[name="circulatorios"]:checked')?.value
+    ) || 0;
+  const valorEstadoConciencia =
+    parseInt(
+      document.querySelector('input[name="estadoConciencia"]:checked')?.value
+    ) || 0;
+  const valorColorMucosa =
+    parseInt(
+      document.querySelector('input[name="colorMucosas"]:checked')?.value
+    ) || 0;
+  let totalEscala = document.querySelector('label[for="totalEscala"]');
+  const progresoEscala = document.getElementById("progresoEscala");
+
+  const total =
+    valorActividadMuscular +
+    valorRespiratorios +
+    valorCirculatorios +
+    valorEstadoConciencia +
+    valorColorMucosa;
+
+  if (totalEscala.textContent.includes(":")) {
+    const textoBase = totalEscala.textContent.split(":")[0].trim();
+    totalEscala.textContent = `${textoBase}: ${total}`;
+  } else {
+    totalEscala.textContent = `Total: ${total}`;
+  }
+
+  let porcentaje = total * 10;
+  if (progresoEscala) {
+    progresoEscala.style.width = porcentaje + "%";
+  }
+}
+
+function agregarNota() {
+  const fechaNota = document.getElementById("fechaNota");
+  const medicamentoNota = document.getElementById("medicamentoNota");
+  const observacionesEnfermeria = tinymce.get("observacionesEnfermeria");
+  const valorFecha = fechaNota.value;
+  const valorMedicamento = medicamentoNota.value;
+  const valorObservaciones = observacionesEnfermeria.getContent();
+  // console.log("Observaciones ", valorObservaciones);
+
+  if (!valorFecha || !valorMedicamento || !valorObservaciones) {
+    alert("Por favor, completa todos los campos");
+    return;
+  }
+
+  const fechaFormateada = new Date(valorFecha).toLocaleString();
+
+  // Verificar si ya existe la tabla, si no, crearla
+  let tabla = document.getElementById("tablaNotes");
+  let contenedorTabla;
+
+  if (!tabla) {
+    contenedorTabla = document.createElement("div");
+    contenedorTabla.className = "table-responsive text-center mt-3";
+    contenedorTabla.id = "contenedorTablaNotes";
+
+    tabla = document.createElement("table");
+    tabla.id = "tablaNotes";
+    tabla.className = "table";
+    tabla.style.width = "100%";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const headers = ["#", "Fecha - Hora", "Medicamento", "Observaciones"];
+    const widths = ["10%", "25%", "25%", "40%"];
+
+    headers.forEach((headerText, index) => {
+      const th = document.createElement("th");
+      th.textContent = headerText;
+      th.style.width = widths[index];
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    tabla.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tbody.id = "tablaNotesBody";
+    tabla.appendChild(tbody);
+
+    // Agregar la tabla al contenedor y luego el contenedor después del botón
+    contenedorTabla.appendChild(tabla);
+    const boton = document.getElementById("agregarNotaBtn");
+    boton.parentNode.insertBefore(contenedorTabla, boton.nextSibling);
+  } else {
+    contenedorTabla = document.getElementById("contenedorTablaNotes");
+  }
+
+  const tbody = document.getElementById("tablaNotesBody");
+
+  const rowCount = tbody.children.length + 1;
+
+  const newRow = document.createElement("tr");
+
+  const celdaIndice = document.createElement("td");
+  celdaIndice.textContent = rowCount;
+  newRow.appendChild(celdaIndice);
+
+  const celdaFecha = document.createElement("td");
+  celdaFecha.textContent = fechaFormateada;
+  newRow.appendChild(celdaFecha);
+
+  const celdaMedicamento = document.createElement("td");
+  celdaMedicamento.textContent = valorMedicamento;
+  newRow.appendChild(celdaMedicamento);
+
+  const celdaObservaciones = document.createElement("td");
+  celdaObservaciones.innerHTML = valorObservaciones;
+  newRow.appendChild(celdaObservaciones);
+
+  tbody.appendChild(newRow);
+
+  // fechaNota.value = "";
+  medicamentoNota.value = "";
+  observacionesEnfermeria.setContent("");
+}
+function agregarObservacion() {
+  const fechaObservacion = document.getElementById("fechaObservacion");
+  const observacionesPost = tinymce.get("observacionesPost");
+  const valorFechaObs = fechaObservacion.value;
+  const valorObservacionesPost = observacionesPost.getContent();
+  // console.log("Observaciones ", valorObservacionesPost);
+
+  if (!valorObservacionesPost) {
+    alert("Por favor, completa todos los campos");
+    return;
+  }
+
+  const fechaFormateada = new Date(valorFechaObs).toLocaleString();
+
+  // Verificar si ya existe la tabla, si no, crearla
+  let tabla = document.getElementById("tablaObservaciones");
+  let contenedorTabla;
+
+  if (!tabla) {
+    contenedorTabla = document.createElement("div");
+    contenedorTabla.className = "table-responsive text-center mt-3";
+    contenedorTabla.id = "contenedorTablaObservaciones";
+
+    tabla = document.createElement("table");
+    tabla.id = "tablaObservaciones";
+    tabla.className = "table";
+    tabla.style.width = "100%";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const headers = ["#", "Fecha - Hora", "Observaciones"];
+    const widths = ["10%", "30%", "60%"];
+
+    headers.forEach((headerText, index) => {
+      const th = document.createElement("th");
+      th.textContent = headerText;
+      th.style.width = widths[index];
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    tabla.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tbody.id = "tablaObservacionesBody";
+    tabla.appendChild(tbody);
+
+    // Agregar la tabla al contenedor y luego el contenedor después del botón
+    contenedorTabla.appendChild(tabla);
+    const boton = document.getElementById("agregarObservacionBtn");
+    boton.parentNode.insertBefore(contenedorTabla, boton.nextSibling);
+  } else {
+    contenedorTabla = document.getElementById("contenedorTablaObservaciones");
+  }
+
+  const tbody = document.getElementById("tablaObservacionesBody");
+
+  const rowCount = tbody.children.length + 1;
+
+  const newRow = document.createElement("tr");
+
+  const celdaIndice = document.createElement("td");
+  celdaIndice.textContent = rowCount;
+  newRow.appendChild(celdaIndice);
+
+  const celdaFecha = document.createElement("td");
+  celdaFecha.textContent = fechaFormateada;
+  newRow.appendChild(celdaFecha);
+
+  const celdaObservaciones = document.createElement("td");
+  celdaObservaciones.innerHTML = valorObservacionesPost;
+  newRow.appendChild(celdaObservaciones);
+
+  tbody.appendChild(newRow);
+
+  // fechaObservacion.value = "";
+  observacionesPost.setContent("");
+}
+
+function agregarInforme() {
+  const tipoInforme = document.getElementById("tipoInforme");
+  const especialidad = document.getElementById("especialidad");
+  const tipoTitulo = document.getElementById("tipoTitulo");
+  const detalle = tinymce.get("detalle");
+  const valorTipoInforme = tipoInforme.value;
+  const valorEspecialidad = especialidad.value;
+  const valorTipoTitulo = tipoTitulo.value;
+  const valorDetalle = detalle.getContent();
+  // console.log("Detalle: ", detalle);
+  // console.log("Detalle value: ", detalle.getContent());
+  // console.log("Observaciones ", valorObservacionesPost);
+
+  if (!valorDetalle) {
+    alert("Por favor, completa todos los campos");
+    return;
+  }
+
+  // Verificar si ya existe la tabla, si no, crearla
+  let tabla = document.getElementById("tablaInforme");
+  let contenedorTabla;
+
+  if (!tabla) {
+    contenedorTabla = document.createElement("div");
+    contenedorTabla.className = "table-responsive text-center mt-3";
+    contenedorTabla.id = "contenedorTablaInforme";
+
+    tabla = document.createElement("table");
+    tabla.id = "tablaInforme";
+    tabla.className = "table";
+    tabla.style.width = "100%";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const headers = ["#", "Tipo/Titulo", "Detalle"];
+    const widths = ["10%", "30%", "60%"];
+
+    headers.forEach((headerText, index) => {
+      const th = document.createElement("th");
+      th.textContent = headerText;
+      th.style.width = widths[index];
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    tabla.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tbody.id = "tablaInformeBody";
+    tabla.appendChild(tbody);
+
+    // Agregar la tabla al contenedor y luego el contenedor después del botón
+    contenedorTabla.appendChild(tabla);
+    const boton = document.getElementById("agregarInforme");
+    boton.parentNode.insertBefore(contenedorTabla, boton.nextSibling);
+  } else {
+    contenedorTabla = document.getElementById("contenedorTablaInforme");
+  }
+
+  const tbody = document.getElementById("tablaInformeBody");
+
+  const rowCount = tbody.children.length + 1;
+
+  const newRow = document.createElement("tr");
+
+  const celdaIndice = document.createElement("td");
+  celdaIndice.textContent = rowCount;
+  newRow.appendChild(celdaIndice);
+
+  const celdaTipoTitulo = document.createElement("td");
+  celdaTipoTitulo.textContent = valorTipoTitulo;
+  newRow.appendChild(celdaTipoTitulo);
+
+  const celdaDetalle = document.createElement("td");
+  celdaDetalle.innerHTML = valorDetalle;
+  newRow.appendChild(celdaDetalle);
+
+  tbody.appendChild(newRow);
+
+  tipoTitulo.value = "";
+  detalle.setContent("");
+}
+
+function calcularPAM() {
+  // Obtener los elementos por ID
+  const tensionSistolica = document.getElementById("tensionSistólica");
+  const tensionDiastolica = document.getElementById("tensionDiastólica");
+  const pamResultado = document.getElementById("pam");
+  const tensionArterialMedia = document.getElementById("tensionArterialMedia");
+
+  // Obtener los valores como números
+  const sistolica = parseFloat(tensionSistolica.value) || 0;
+  const diastolica = parseFloat(tensionDiastolica.value) || 0;
+
+  // Calcular la PAM usando la fórmula: PAM = (Sistólica + 2*Diastólica) / 3
+  let pam = 0;
+  if (sistolica > 0 && diastolica > 0) {
+    pam = (sistolica + 2 * diastolica) / 3;
+    // Redondear a cuatro decimales
+    pam = parseFloat(pam.toFixed(4));
+  }
+
+  if (pamResultado) {
+    pamResultado.value = pam;
+  }
+
+  if (tensionArterialMedia) {
+    tensionArterialMedia.value = pam;
   }
 }

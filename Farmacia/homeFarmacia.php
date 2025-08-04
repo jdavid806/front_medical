@@ -6,7 +6,8 @@ include "../ConsultasJson/dataPaciente.php";
 $tabs = [
     ['icono' => 'pills', 'titulo' => 'Entrega de medicamentos', 'texto' => 'Dirigirse a la entrega de medicamentos', 'url' => 'farmacia'],
     ['icono' => 'stethoscope', 'titulo' => 'Entrega de insumos', 'texto' => 'Dirigirse a la entrega de insumos', 'url' => 'insumos'],
-    ['icono' => 'cash-register', 'titulo' => 'Caja', 'texto' => 'Dirigirse a la caja', 'url' => 'caja'],
+    ['icono' => 'stethoscope', 'titulo' => 'Solicitud de insumos', 'texto' => 'Dirigirse a la solicitud de insumos', 'url' => 'solicitarInsumos'],
+    ['icono' => 'cash-register', 'titulo' => 'Caja', 'texto' => 'Dirigirse a la caja', 'url' => 'cajaPrueba'],
 ];
 
 ?>

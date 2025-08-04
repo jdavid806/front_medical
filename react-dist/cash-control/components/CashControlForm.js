@@ -46,7 +46,10 @@ export const CashControlForm = ({
     });
   }, [reset]);
   useEffect(() => {
-    setMappedPaymentMethods(paymentMethods.map(paymentMethod => ({
+    const filteredPaymentMethods = paymentMethods.filter(paymentMethod => {
+      return paymentMethod.category === 'transactional';
+    });
+    setMappedPaymentMethods(filteredPaymentMethods.map(paymentMethod => ({
       ...paymentMethod,
       amount: 0
     })));

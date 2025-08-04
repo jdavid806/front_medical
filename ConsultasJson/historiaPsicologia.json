@@ -18,13 +18,13 @@
         ],
         "card2": [
           {
-            "title": "Evolución de los sintomas",
+            "title": "Historia de la enfermedad actual",
             "fields": [
               {
-                "id": "evolucionSintomas",
+                "id": "historiaEnfermedadActual",
                 "label": "",
                 "type": "textarea",
-                "name": "evolucionSintomas"
+                "name": "historiaEnfermedadActual"
               }
             ]
           }
@@ -47,10 +47,10 @@
             "title": "¿Qué ha tomado?",
             "fields": [
               {
-                "id": "manejoSintoma",
+                "id": "haTomado",
                 "label": "",
                 "type": "textarea",
-                "name": "manejoSintoma"
+                "name": "haTomado"
               }
             ]
           }
@@ -632,11 +632,11 @@
             ]
           }
         ],
-        "card4":[
+        "card4": [
           {
             "title": "Evaluación",
             "class": "col-12",
-            "fields":[
+            "fields": [
               {
                 "id": "evaluacion",
                 "label": "",
@@ -646,11 +646,11 @@
             ]
           }
         ],
-        "card5":[
+        "card5": [
           {
             "title": "Tratamiento",
             "class": "col-12",
-            "fields":[
+            "fields": [
               {
                 "id": "tratamiento",
                 "label": "",

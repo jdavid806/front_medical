@@ -1,0 +1,91 @@
+<p-toast></p-toast>
+
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+  header="Crear nuevo contacto"
+  (onHide)="hideDialog()">
+
+  <div class="grid">
+    <div class="col-12">
+
+      <form (ngSubmit)="saveContact()" class="p-fluid">
+        <div class="grid formgrid">
+          <!-- Nombre -->
+          <div class="field col-12 md:col-6 mb-4">
+            <label for="nombre" class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+            <input
+              pInputText
+              id="nombre"
+              [(ngModel)]="newContact.nombre"
+              name="nombre"
+              required
+              class="w-full"
+              placeholder="Ingrese el nombre">
+          </div>
+
+          <!-- Apellido -->
+          <div class="field col-12 md:col-6 mb-4">
+            <label for="apellido" class="block text-sm font-medium text-gray-700 mb-2">Apellido</label>
+            <input
+              pInputText
+              id="apellido"
+              [(ngModel)]="newContact.apellido"
+              name="apellido"
+              required
+              class="w-full"
+              placeholder="Ingrese el apellido">
+          </div>
+
+          <!-- Email -->
+          <div class="field col-12 md:col-6 mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              [(ngModel)]="newContact.email"
+              name="email"
+              required
+              class="w-full"
+              placeholder="Ingrese el correo electrónico">
+          </div>
+
+          <!-- Celular -->
+          <div class="field col-12 md:col-6 mb-4">
+            <label for="celular" class="block text-sm font-medium text-gray-700 mb-2">Número de Celular</label>
+            <p-inputMask
+            id="celular"
+            [(ngModel)]="newContact.celular"
+            name="celular"
+            mask="(999) 999-9999"
+            placeholder="(999) 999-9999"
+            styleClass="w-full">
+          </p-inputMask>
+          </div>
+        </div>
+
+
+        <div class="relative mt-6 w-full h-12"> <!-- Contenedor con altura definida -->
+          <!-- Botón izquierdo -->
+          <p-button
+            label="Cancelar"
+            icon="pi pi-times"
+            (click)="hideDialog()"
+            class=" left-0 bg-gray-500 hover:bg-gray-600 text-white">
+          </p-button>
+
+          <!-- Botón derecho -->
+          <p-button
+            label="Guardar Contacto"
+            icon="pi pi-check"
+            type="submit"
+            class="absolute right-0 bg-green-500 hover:bg-green-600 text-white">
+          </p-button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</p-dialog>

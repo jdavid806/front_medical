@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal } from 'react-bootstrap';
+import React from "react";
+import { Modal } from "react-bootstrap";
 export const CustomModal = ({
   children,
   title,
@@ -14,7 +14,7 @@ export const CustomModal = ({
     size: "xl",
     "aria-labelledby": "contained-modal-title-vcenter",
     centered: true,
-    className: `${scrollable ? 'modal-dialog-scrollable' : ''}`,
+    className: `${scrollable ? "modal-dialog-scrollable" : ""}`,
     scrollable: scrollable
   }, /*#__PURE__*/React.createElement(Modal.Header, {
     closeButton: true

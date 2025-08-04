@@ -64,7 +64,7 @@ export async function postPatient(patient) {
         }
 
         const data = await response.json();
-        console.log("Paciente creado:", data);
+        // console.log("Paciente creado:", data);
         return data;  
     } catch (error) {
         console.error("Error al crear el paciente:", error);

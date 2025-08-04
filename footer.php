@@ -182,7 +182,7 @@
   <div class="container-fluid support-chat" style="left: 3rem; margin-left: 0; transform-origin: bottom left;">
     <div class="card bg-body-emphasis">
       <div class="card-header d-flex flex-between-center px-4 py-3 border-bottom border-translucent">
-        <h5 class="mb-0 d-flex align-items-center gap-2">Demo widget<span
+        <h5 class="mb-0 d-flex align-items-center gap-2">MediBot AI<span
             class="fa-solid fa-circle text-success fs-11"></span></h5>
         <div class="btn-reveal-trigger">
           <button class="btn btn-link p-0 dropdown-toggle dropdown-caret-none transition-none d-flex" type="button"
@@ -206,11 +206,11 @@
             <div class="avatar avatar-3xl status-online">
               <img class="rounded-circle border border-3 border-light-subtle" src="assets/img/team/30.webp" alt="" />
             </div>
-            <h5 class="mt-2 mb-3">Eric</h5>
-            <p class="text-center text-body-emphasis mb-0">
+            <h5 class="mt-2 mb-3">MediBot AI</h5>
+            <!-- <p class="text-center text-body-emphasis mb-0">
               Pregúntenos cualquier cosa - nos pondremos en contacto con usted aquí o por correo electrónico dentro de
               las 24 horas.
-            </p>
+            </p> -->
           </div>
         </div>
       </div>
@@ -328,8 +328,8 @@
 <footer class="footer">
   <div class="row g-0 justify-content-between align-items-center h-100">
     <div class="col-12 col-sm-auto text-center">
-      <p class="mb-0 mt-2 mt-sm-0 text-body">Monaros<span class="d-none d-sm-inline-block"></span><span
-          class="d-none d-sm-inline-block mx-1">|</span><br class="d-sm-none" />2024 &copy;
+      <p class="mb-0 mt-2 mt-sm-0 text-body">By MedicaslSoft<span class="d-none d-sm-inline-block"></span><span
+          class="d-none d-sm-inline-block mx-1">|</span><br class="d-sm-none" />2025 &copy;
       </p>
 
     </div>
@@ -467,7 +467,7 @@
 
 
 <script>
-  $(document).ready(function () {
+  $(document).ready(function() {
     $('.tableDataTableSearch').DataTable({
       paging: true, // Habilita la paginación
       pageLength: 5, // Número de filas por página
@@ -498,7 +498,7 @@
           "sSortDescending": ": activar para ordenar la columna de manera descendente"
         }
       },
-      "drawCallback": function (settings) {
+      "drawCallback": function(settings) {
         // Personaliza los botones de paginación después de que DataTables se haya inicializado
         $('.dataTables_paginate .paginate_button').addClass('btn btn-primary');
         $('.dataTables_paginate .paginate_button.disabled').addClass('btn btn-primary');
@@ -533,7 +533,7 @@
         'columnWhere': columnWhere,
         'idWhere': idWhere
       },
-      success: function (response) {
+      success: function(response) {
         response = response.trim();
         if (response == "ok") {
           if (toast) {
@@ -561,13 +561,13 @@
           }
         }
       },
-      error: function (xhr, status, error) { }
+      error: function(xhr, status, error) {}
     })
   }
 </script>
 <script>
   // Definir la función selectMaster
-  $.fn.selectMaster = function (config = null) {
+  $.fn.selectMaster = function(config = null) {
     this.select2();
     this.empty();
     this.append('<option value="0" >-- Seleccione --</option>');
@@ -587,7 +587,7 @@
           valorInput: btoa(config['valorInput']),
           selected: (config['selected'] != '0' ? btoa(config['selected']) : '0'),
         },
-        success: function (response) {
+        success: function(response) {
           let data = JSON.parse(response);
 
 
@@ -627,7 +627,7 @@
     // Definir una función de debouncing
     function debounce(func, delay) {
       let timer;
-      return function () {
+      return function() {
         const context = this;
         const args = arguments;
         clearTimeout(timer);
@@ -637,13 +637,13 @@
       };
     }
 
-    this.on('select2:open', function (e) {
+    this.on('select2:open', function(e) {
       // Verificar que todos los datos de config existan
       if (config && config['campoValue'] && config['campoTexto'] && config['tabla']) {
         // buscarDatos(true);
         var $searchField = $select.data('select2').dropdown.$search || $select.data('select2').dropdown.$searchbox;
         // Evento input para el campo de búsqueda con debouncing
-        $searchField.off('input').on('input', debounce(function () {
+        $searchField.off('input').on('input', debounce(function() {
           var searchText = $(this).val();
           config['valorInput'] = searchText;
           $select.empty();
@@ -682,7 +682,7 @@
 </div>
 
 <script>
-  window.createDoughnutChart = function (
+  window.createDoughnutChart = function(
     elementId,
     titleText,
     titleSubtext,
@@ -731,7 +731,7 @@
           position: "outside",
           formatter: "{b}: {d}%",
         },
-      },],
+      }, ],
     };
 
     // Usar la configuración para inicializar el gráfico
@@ -772,7 +772,7 @@
       visible,
       callback = false
     } = JSON.parse(atob(jsonB64));
-    $("#contentOffCanvasMaster").find("textarea, input, select").each(function () {
+    $("#contentOffCanvasMaster").find("textarea, input, select").each(function() {
       let idElemento = $(this).attr("id");
       if (idElemento) {
         data[idElemento] = $(this).val();
@@ -784,7 +784,7 @@
       type: "POST",
       url: atob(ajaxB64),
       data,
-      success: function (response) {
+      success: function(response) {
         const dataJson = JSON.parse(response);
         const {
           icon,
@@ -813,7 +813,7 @@
 
         }
       },
-      error: function (xhr, status, error) {
+      error: function(xhr, status, error) {
 
       }
     })
@@ -844,7 +844,7 @@
   }
 </script>
 
-<script type="module">
+<!-- <script type="module">
   import {
     userService
   } from "./services/api/index.js";
@@ -919,26 +919,6 @@
         }
 
 
-        // Procesar respuesta
-        // if (response.ok) {
-
-        //   // Remover indicador de carga
-        //   removeLoadingIndicator(loadingId);
-
-        //   // Mostrar las tres respuestas
-        //   if (data.respuesta_1) addBotMessageToChat(data.respuesta_1);
-        //   // if (data.respuesta
-        // _2) addBotMessageToChat(data.respuesta_2);
-        //   // if (data.respuesta_3) addBotMessageToChat(data.respuesta_3);
-        // } else {
-        //   console.error('Error en la respuesta del servidor:', response.status);
-
-        //   // Remover indicador de carga
-        //   removeLoadingIndicator(loadingId);
-
-        //   // Mostrar mensaje de error
-        //   addBotMessageToChat('Lo siento, hubo un problema al procesar tu mensaje.');
-        // }
       } catch (error) {
         console.error('Error al enviar mensaje:', error);
         addBotMessageToChat('Lo siento, ocurrió un error al comunicarse con el servidor.');
@@ -965,9 +945,9 @@
       <div class="mb-3">
         <div class="d-flex align-items-center mb-2">
           <div class="avatar avatar-l me-2">
-            <img class="rounded-circle border border-2 border-white" src="assets/img/team/30.webp" alt="Eric" />
+            <img class="rounded-circle border border-2 border-white" src="assets/img/team/30.webp" alt="MediBot AI" />
           </div>
-          <h6 class="mb-0">Eric</h6>
+          <h6 class="mb-0">MediBot AI</h6>
         </div>
         <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
           <p class="mb-0">${message}</p>
@@ -1109,7 +1089,7 @@
 
     // 13. Mensaje inicial del bot (opcional)
     setTimeout(() => {
-      addBotMessageToChat('¡Hola! Soy tu asistente médico virtual. ¿En qué puedo ayudarte hoy?');
+      addBotMessageToChat('¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?');
     }, 1000);
 
     // Inicializar estilos
@@ -1117,6 +1097,379 @@
 
     // console.log('Inicialización del chat completada');
   });
+</script> -->
+
+<script type="module">
+  // ==========================================================================
+  // Script Chat con Historial de Sesión y Preparación para Adjuntos
+  // ==========================================================================
+  // Importaciones originales
+  import {
+    userService
+  } from "./services/api/index.js";
+  import {
+    getJWTPayload
+  } from "./services/utilidades.js";
+
+  // --- Configuración ---
+  const webhookUrl = 'https://hooks.medicalsoft.ai/webhook/chat_medical'; // URL del Webhook en n8n
+  const chatHistoryKey = 'chatSessionHistoryMedical'; // Clave para guardar historial en sessionStorage
+  const botName = 'MediBot AI'; // Nombre del bot para mostrar
+  const botAvatar = 'assets/img/team/30.webp'; // Ruta al avatar del bot
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Iniciando script de chat v2...');
+
+    // Variables globales dentro del listener
+    let chatHistory = []; // Array para mantener el historial en memoria
+    let currentUser = null; // Para guardar los datos del usuario recuperados
+    let hostname = 'unknown'; // Hostname por defecto
+
+    // --- 1. OBTENER DATOS DEL USUARIO Y HOSTNAME ---
+    try {
+      const payload = getJWTPayload();
+      if (!payload || !payload.sub) {
+        throw new Error("No se pudo obtener el payload del JWT o el ID de usuario (sub).");
+      }
+      currentUser = await userService.getByExternalId(payload.sub);
+      if (!currentUser) {
+        throw new Error(`No se encontraron datos para el usuario con ID externo: ${payload.sub}`);
+      }
+      hostname = window.location.hostname.split('.')[0];
+      console.log('Usuario y hostname obtenidos:', currentUser.email, hostname);
+    } catch (error) {
+      console.error("Error crítico al obtener datos iniciales:", error);
+      // Podrías mostrar un mensaje de error en la UI aquí si lo deseas
+      // alert('No se pudo inicializar el chat: faltan datos del usuario.');
+      return; // Detener ejecución si no hay datos esenciales
+    }
+
+    // --- 2. IDENTIFICAR ELEMENTOS DEL DOM ---
+    const chatContainer = document.querySelector('.support-chat .d-flex.flex-column-reverse.scrollbar');
+    const inputField = document.querySelector('.support-chat .form-control.outline-none');
+    const sendButton = document.querySelector('.support-chat .send-btn');
+    const predefinedQuestions = document.querySelectorAll('.support-chat .d-inline-flex.align-items-center.text-decoration-none');
+    // Elementos para adjuntar archivos (¡ASEGÚRATE QUE ESTÉN EN TU HTML!)
+    const fileInput = document.getElementById('chatFileInput');
+    const attachButton = document.getElementById('chatAttachButton'); // Botón opcional para activar el input file
+
+    // Comprobar elementos básicos del chat
+    if (!chatContainer || !inputField || !sendButton) {
+      console.error('Error crítico: No se pudieron encontrar los elementos básicos del chat (contenedor, input o botón de enviar).');
+      return; // Detener si falta algo esencial
+    }
+    // Comprobar elementos de adjuntar (opcional pero recomendado)
+    if (!fileInput) {
+      console.warn("Input para adjuntar archivos ('chatFileInput') no encontrado. La función de adjuntar no estará disponible.");
+    }
+    if (!attachButton) {
+      console.warn("Botón para adjuntar archivos ('chatAttachButton') no encontrado.");
+    } else if (fileInput && attachButton) {
+      // Conectar botón de adjuntar con el input oculto
+      attachButton.addEventListener('click', () => {
+        fileInput.click(); // Abre el selector de archivos al hacer clic en el botón
+      });
+      console.log('Botón de adjuntar conectado.');
+    }
+    // Opcional: Mostrar nombre de archivo seleccionado
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          // Podrías mostrar fileInput.files[0].name en algún lugar de la UI
+          console.log(`Archivo seleccionado: ${fileInput.files[0].name}`);
+          // Ejemplo: Cambiar placeholder del input de texto
+          // inputField.placeholder = `Archivo: ${fileInput.files[0].name}`;
+        } else {
+          // inputField.placeholder = 'Escribe tu mensaje...'; // Restaurar placeholder
+        }
+      });
+    }
+
+
+    // --- 3. FUNCIONES PARA MANEJAR HISTORIAL (sessionStorage) ---
+
+    function loadChatHistory() {
+      const storedHistory = sessionStorage.getItem(chatHistoryKey);
+      if (storedHistory) {
+        try {
+          chatHistory = JSON.parse(storedHistory);
+          // Pintar historial en la UI. Invertir para que 'afterbegin' muestre en orden correcto.
+          const reversedHistory = [...chatHistory].reverse();
+          reversedHistory.forEach(msg => {
+            if (msg.type === 'user') {
+              addUserMessageToChat(msg.content, false); // false = no volver a guardar
+            } else {
+              addBotMessageToChat(msg.content, false); // false = no volver a guardar
+            }
+          });
+          console.log(`Historial de sesión cargado (${chatHistory.length} mensajes).`);
+        } catch (error) {
+          console.error('Error al parsear historial de sesión guardado:', error);
+          sessionStorage.removeItem(chatHistoryKey); // Limpiar si está corrupto
+          chatHistory = [];
+        }
+      } else {
+        console.log('No se encontró historial de sesión previo.');
+        chatHistory = [];
+      }
+    }
+
+    function saveToSessionHistory(messageObject) {
+      // Añade al array en memoria ANTES de guardar
+      if (!chatHistory.find(msg => msg.timestamp === messageObject.timestamp && msg.content === messageObject.content)) {
+        chatHistory.push(messageObject);
+      }
+      try {
+        // Guarda el array completo actualizado en sessionStorage
+        sessionStorage.setItem(chatHistoryKey, JSON.stringify(chatHistory));
+      } catch (error) {
+        console.error("Error al guardar en sessionStorage (¿quizás lleno?):", error);
+        // Aquí podrías implementar lógica para quitar mensajes viejos si el storage está lleno
+      }
+    }
+
+    // --- 4. FUNCIONES PARA ACTUALIZAR LA INTERFAZ DE USUARIO (UI) ---
+
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return text; // Devolver si no es string
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addUserMessageToChat(message, save = true) {
+      const timestamp = Date.now(); // Usar timestamp como ID temporal
+      const userMessageHTML = `
+            <div class="text-end mb-3" data-timestamp="${timestamp}">
+              <div class="d-inline-block p-3 rounded-3 bg-primary text-white">
+                <p class="mb-0">${escapeHtml(message)}</p>
+              </div>
+            </div>
+          `;
+      chatContainer.insertAdjacentHTML('afterbegin', userMessageHTML);
+      // Hacer scroll hacia abajo (en este caso, hacia arriba por flex-column-reverse)
+      chatContainer.scrollTop = 0; // Scroll al principio (mensaje más reciente)
+
+
+      if (save) {
+        saveToSessionHistory({
+          type: 'user',
+          content: message,
+          timestamp: timestamp
+        });
+      }
+    }
+
+    function addBotMessageToChat(message, save = true) {
+      const timestamp = Date.now();
+      // Asumimos que la respuesta del bot puede contener HTML simple (como <br>),
+      // pero no debería contener scripts. Si necesitas seguridad extra, sanitiza aquí.
+      const botMessageHTML = `
+            <div class="mb-3" data-timestamp="${timestamp}">
+              <div class="d-flex align-items-center mb-2">
+                <div class="avatar avatar-l me-2">
+                  <img class="rounded-circle border border-2 border-white" src="${botAvatar}" alt="${botName}" />
+                </div>
+                <h6 class="mb-0">${botName}</h6>
+              </div>
+              <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
+                <p class="mb-0">${message}</p>
+              </div>
+            </div>
+          `;
+      chatContainer.insertAdjacentHTML('afterbegin', botMessageHTML);
+      chatContainer.scrollTop = 0; // Scroll al principio
+
+      if (save) {
+        saveToSessionHistory({
+          type: 'bot',
+          content: message,
+          timestamp: timestamp
+        });
+      }
+    }
+
+    function addLoadingIndicator() {
+      const id = 'loading-' + Date.now();
+      const loadingHTML = `
+            <div id="${id}" class="mb-3">
+              <div class="d-flex align-items-center mb-2">
+                <div class="avatar avatar-l me-2">
+                   <img class="rounded-circle border border-2 border-white" src="${botAvatar}" alt="${botName}" />
+                </div>
+                <h6 class="mb-0">${botName}</h6>
+              </div>
+              <div class="d-inline-block p-3 rounded-3 bg-body-tertiary">
+                <p class="mb-0">
+                  <span class="typing-indicator">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                  </span>
+                </p>
+              </div>
+            </div>
+          `;
+      chatContainer.insertAdjacentHTML('afterbegin', loadingHTML);
+      chatContainer.scrollTop = 0; // Scroll al principio
+      return id;
+    }
+
+    function removeLoadingIndicator(id) {
+      const loadingElement = document.getElementById(id);
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+    }
+
+    function addStyles() {
+      const styleId = 'chat-styles';
+      if (document.getElementById(styleId)) return; // Evitar añadir estilos múltiples veces
+
+      const styleElement = document.createElement('style');
+      styleElement.id = styleId;
+      styleElement.textContent = `
+            .typing-indicator { display: flex; gap: 4px; }
+            .typing-indicator .dot { width: 8px; height: 8px; background-color: #888; border-radius: 50%; opacity: 0.6; animation: dot-pulse 1.5s infinite ease-in-out; }
+            .typing-indicator .dot:nth-child(1) { animation-delay: 0s; }
+            .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+            .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes dot-pulse { 0%, 60%, 100% { transform: scale(1); opacity: 0.6; } 30% { transform: scale(1.5); opacity: 1; } }
+          `;
+      document.head.appendChild(styleElement);
+    }
+
+    // --- 5. FUNCIÓN PRINCIPAL PARA ENVIAR MENSAJES Y/O ARCHIVOS ---
+
+    async function sendMessageAndOrFileToWebhook() {
+      const textMessage = inputField.value.trim();
+      const selectedFile = (fileInput && fileInput.files.length > 0) ? fileInput.files[0] : null;
+
+      // No enviar si no hay NADA (ni texto ni archivo)
+      if (!textMessage && !selectedFile) {
+        console.log("Nada que enviar.");
+        return;
+      }
+
+      // Mostrar mensaje de usuario en la UI (si hay texto)
+      if (textMessage) {
+        addUserMessageToChat(textMessage); // Guarda en historial por defecto
+      }
+      // Mostrar indicación de archivo enviado (si hay archivo)
+      if (selectedFile) {
+        // Puedes mejorar esta UI, por ejemplo mostrando una miniatura si es imagen
+        addUserMessageToChat(`Archivo adjunto: ${selectedFile.name}`, true);
+      }
+
+      const loadingId = addLoadingIndicator();
+
+      // Crear FormData para enviar
+      const formData = new FormData();
+
+      // Añadir mensaje de texto (si existe)
+      if (textMessage) {
+        formData.append('message', textMessage);
+      }
+
+      // Añadir datos del usuario (¡Verificados al inicio!)
+      formData.append('username', `${currentUser.first_name || ''} ${currentUser.middle_name || ''} ${currentUser.last_name || ''} ${currentUser.second_last_name || ''}`.trim());
+      formData.append('tenant', hostname);
+      formData.append('user_id', currentUser.id);
+      // Usar optional chaining (?.) por si alguna propiedad no existiera
+      formData.append('speciality', currentUser.specialty?.name || 'N/A');
+      formData.append('phone', currentUser.phone || 'N/A');
+      formData.append('email', currentUser.email || 'N/A');
+      formData.append('profile', currentUser.role?.name || 'N/A');
+
+      // Añadir archivo si existe
+      if (selectedFile) {
+        formData.append('attachment', selectedFile, selectedFile.name); // Clave 'attachment'
+        console.log(`Adjuntando archivo: ${selectedFile.name}, Tamaño: ${selectedFile.size} bytes`);
+        // ================= ¡¡¡ ADVERTENCIA IMPORTANTE !!! =================
+        // El webhook en n8n (${webhookUrl}) DEBE estar configurado para aceptar
+        // 'multipart/form-data' y procesar el campo llamado 'attachment'.
+        // Si no, la subida del archivo NO funcionará correctamente.
+        // Consulta con el responsable de configurar n8n.
+        // ==================================================================
+      }
+
+      // Enviar al Webhook
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          body: formData // El navegador pondrá el Content-Type correcto automáticamente
+          // No añadas 'Content-Type': 'application/json' aquí
+        });
+
+        // Procesar respuesta
+        const responseText = await response.text(); // Leer como texto siempre
+        removeLoadingIndicator(loadingId); // Quitar indicador de carga
+
+        if (response.ok) {
+          addBotMessageToChat(responseText || 'Respuesta recibida.'); // Guarda en historial
+        } else {
+          console.error(`Error ${response.status} en la respuesta del servidor:`, responseText);
+          addBotMessageToChat(`Hubo un problema (${response.status}) al procesar tu mensaje. Intenta de nuevo.`, false); // No guardar error
+        }
+
+      } catch (error) {
+        console.error('Error de red o al enviar mensaje/archivo:', error);
+        removeLoadingIndicator(loadingId);
+        addBotMessageToChat('Lo siento, ocurrió un error de conexión al intentar enviar tu mensaje.', false); // No guardar error
+      } finally {
+        // Limpiar campos después de enviar, independientemente del resultado
+        inputField.value = '';
+        if (fileInput) {
+          fileInput.value = ''; // Resetea el input de archivo para poder seleccionar el mismo otra vez
+          // inputField.placeholder = 'Escribe tu mensaje...'; // Restaurar placeholder si se cambió
+        }
+      }
+    } // Fin de sendMessageAndOrFileToWebhook
+
+    // --- 6. EVENT LISTENERS ---
+
+    // Botón Enviar
+    sendButton.addEventListener('click', sendMessageAndOrFileToWebhook);
+
+    // Tecla Enter en el campo de texto
+    inputField.addEventListener('keypress', function(e) {
+      // Enviar con Enter, permitir Shift+Enter para nueva línea
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // Evitar nueva línea o submit por defecto
+        sendMessageAndOrFileToWebhook();
+      }
+    });
+
+    // Preguntas Predefinidas
+    predefinedQuestions.forEach(question => {
+      question.addEventListener('click', function(e) {
+        e.preventDefault();
+        const messageElement = this.querySelector('p');
+        if (messageElement) {
+          const message = messageElement.textContent.trim();
+          if (message) {
+            // Simular que el usuario escribió y envió la pregunta
+            inputField.value = message; // Poner el texto en el input (opcional)
+            sendMessageAndOrFileToWebhook();
+            // inputField.value = ''; // Limpiar input si se llenó antes
+          }
+        }
+      });
+    });
+
+    // --- 7. INICIALIZACIÓN FINAL ---
+    addStyles(); // Añadir estilos CSS para el indicador de carga
+    loadChatHistory(); // Cargar historial de la sesión al iniciar
+
+    // Mensaje inicial del bot (solo si no hay historial previo)
+    setTimeout(() => {
+      if (chatHistory.length === 0) {
+        addBotMessageToChat(`¡Hola ${currentUser.first_name || 'usuario'}! Soy ${botName}. ¿En qué puedo ayudarte hoy?`, true); // Guardar saludo
+      }
+    }, 500); // Pequeño retraso para asegurar que todo esté listo
+
+    console.log('Script de chat v2 completamente inicializado y listo.');
+    console.warn("Recordatorio MUY IMPORTANTE: La funcionalidad de adjuntar archivos depende de la configuración correcta del webhook en n8n para recibir 'multipart/form-data'.");
+
+  }); // Fin de DOMContentLoaded
 </script>
 
 <!-- PARA HACER UN GUARDADO RAPIDO -->
@@ -1165,7 +1518,6 @@ M. Castro c:
 
 <!-- consultar información impresiones -->
 <script src="funciones/funcionesJS/ConsultasDinamicas.js"></script>
-<script src="funciones/funcionesJS/utils.js"></script>
 <script src="funciones/funcionesJS/CrearFormatoImpresion.js"></script>
 <script src="funciones/funcionesJS/RealizarEnvios.js"></script>
 <script src="funciones/funcionesJS/funcioneConfig.js"></script>
@@ -1212,8 +1564,10 @@ M. Castro c:
 <script src="Documentos/js/CrudConsentimientos.js"></script>
 <script src="Documentos/js/UtilsConsentimientos.js"></script>
 
+<script src="funciones/funcionesJS/utils.js"></script>
+
 <script>
-  document.addEventListener("DOMContentLoaded", async function () { });
+  document.addEventListener("DOMContentLoaded", async function() {});
 </script>
 <!--
 hasta aca construyo

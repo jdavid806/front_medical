@@ -36,10 +36,7 @@ include "../header.php";
             <h2 class="mb-0">Citas</h2>
             <small class="patientName">Cargando...</small>
           </div>
-          <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCrearCita"
-            data-bs-paciente-id="1">
-            <i class="fa-solid fa-plus me-2"></i> Nueva Cita
-          </button>
+          <div id="appointmentCreateFormModalButtonReact"></div>
         </div>
       </div>
     </div>
@@ -82,7 +79,6 @@ include "../header.php";
 
   <?php include "../footer.php"; ?>
   <?php include "./modalCitas.php"; ?>
-
 </div>
 
 <template id="appointment-template">
@@ -174,8 +170,12 @@ include "../header.php";
   import {
     AppointmentsTable
   } from './react-dist/appointments/AppointmentsTable.js';
+  import {
+    AppointmentCreateFormModalButton
+  } from './react-dist/appointments/AppointmentCreateFormModalButton.js';
 
   ReactDOMClient.createRoot(document.getElementById('appointmentsTableReact')).render(React.createElement(AppointmentsTable));
+  ReactDOMClient.createRoot(document.getElementById('appointmentCreateFormModalButtonReact')).render(React.createElement(AppointmentCreateFormModalButton));
 </script>
 
 <script>
@@ -226,7 +226,7 @@ include "../header.php";
   const appointmentTableBody = document.getElementById('appointmentTableBody');
   const appointmentTemplate = document.getElementById('appointment-template');
 
-  console.log(appointments);
+  // console.log(appointments);
 
   // Ordenar citas por fecha y hora
   appointments.sort((a, b) => {
@@ -243,7 +243,7 @@ include "../header.php";
     const doctor = appointment.user_availability.user;
     const estado = appointment.appointment_state.name;
 
-    console.log(appointment);
+    // console.log(appointment);
 
     row.querySelector('.fecha').textContent = formatDate(appointment.appointment_date).split(',')[0];
     row.querySelector('.hora').textContent = appointment.appointment_time;
@@ -284,11 +284,11 @@ include "../header.php";
 
 <script>
   async function imprimirCita(cita) {
-    console.log(cita);
+    // console.log(cita);
   }
 
   async function descargarCita(cita) {
-    console.log(cita);
+    // console.log(cita);
   }
 
   function eliminarCita(id) {
@@ -303,7 +303,7 @@ include "../header.php";
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('Cita eliminada con ID:', id);
+        // console.log('Cita eliminada con ID:', id);
         Swal.fire(
           '¡Eliminado!',
           'La cita ha sido eliminada.',

@@ -10,32 +10,36 @@ include "../header.php";
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="pacientes">Pacientes</a></li>
                 <li class="breadcrumb-item"><a href="verPaciente?1" class="patientName">Cargando...</a></li>
-                <li class="breadcrumb-item"><a href="consultas-especialidad?patient_id=<?php echo $_GET['patient_id']; ?>&especialidad=<?php echo $_GET['especialidad']; ?>">Consultas</a></li>
+                <li class="breadcrumb-item"><a
+                        href="consultas-especialidad?patient_id=<?php echo $_GET['patient_id']; ?>&especialidad=<?php echo $_GET['especialidad']; ?>">Consultas</a>
+                </li>
                 <li class="breadcrumb-item active" onclick="location.reload()">Consulta Primera vez</li>
             </ol>
         </nav>
         <div class="row">
             <div class="col-12">
                 <div class="row align-items-center justify-content-between">
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <h2 class="mb-0">Nueva Consulta</h2>
                         <small class="patientName">
                             Cargando...
                         </small>
                     </div>
-                    <div class="col-5">
-                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalAgregarParaclinico">
-                            <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar Paraclínico
+                    <div class="col-md-7 text-end d-flex align-items-center justify-content-end gap-2">
+                        <div id="addParaclinicalBtnReact" class="d-inline-flex"></div>
+                        <button class="btn btn-primary" disabled id="herramientasIABtn" type="button"
+                            data-bs-toggle="modal" data-bs-target="#modalHerramientasIA">
+                            Herramientas IA
                         </button>
                         <button class="btn btn-primary" id="detallePacienteBtn" type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalDetallePaciente">Ver Información Paciente</button>
-
+                            data-bs-target="#modalDetallePaciente">
+                            Ver Información Paciente
+                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
+
 
         <div class="row g-0 g-md-4 g-xl-6 p-3">
 
@@ -179,23 +183,32 @@ include "../header.php";
                                     <div class="timer">
                                         Tiempo en consulta: <span id="timer">00:00:00</span>
                                         <script>
-                                            let start = new Date().getTime();
-                                            setInterval(function() {
-                                                let now = new Date().getTime();
-                                                let diff = (now - start) / 1000;
-                                                let minutes = Math.floor(diff / 60);
-                                                let seconds = Math.floor(diff % 60);
-                                                document.getElementById("timer").innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                                            }, 1000);
+                                        // let start = new Date().getTime();
+                                        // setInterval(function() {
+                                        //     let now = new Date().getTime();
+                                        //     let diff = Math.floor((now - start) /
+                                        //     1000); // Diferencia en segundos
+
+                                        //     // Calcular horas, minutos y segundos
+                                        //     let hours = Math.floor(diff / 3600);
+                                        //     let remainingSeconds = diff % 3600;
+                                        //     let minutes = Math.floor(remainingSeconds / 60);
+                                        //     let seconds = remainingSeconds % 60;
+
+                                        //     // Formatear con 2 dígitos
+                                        //     document.getElementById("timer").innerHTML =
+                                        //         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                                        // }, 1000);
                                         </script>
                                     </div>
                                 </div>
                                 <div class="col-3">
-                                    <a href="consultas-especialidad?patient_id=<?php echo $_GET['patient_id']; ?>&especialidad=<?php echo $_GET['especialidad']; ?>" class="btn btn-danger" id="cancelBtn">Cancelar consulta</a>
+                                    <a href="consultas-especialidad?patient_id=<?php echo $_GET['patient_id']; ?>&especialidad=<?php echo $_GET['especialidad']; ?>"
+                                        class="btn btn-danger" id="cancelBtn">Cancelar consulta</a>
                                 </div>
                                 <div class="col-3">
-                                    <button class="btn btn-primary" id="finishBtn" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#finishModal">Terminar consulta</button>
+                                    <button disabled class="btn btn-primary" id="finishBtn" type="button"
+                                        data-bs-toggle="modal" data-bs-target="#finishModal">Terminar consulta</button>
                                 </div>
                             </div>
                         </div>
@@ -212,6 +225,8 @@ include "../header.php";
 <?php
 include "../footer.php";
 // include "../Pacientes/modalPacientes.php";
+// include "./modalResumenPaciente.php";
+include "./modalHerramientasIA.php";
 include "./modalDetallePaciente.php";
 include "./modalAntecedenteNecesario.php";
 include "../Incapacidades/modalIncapacidad.php";
@@ -223,10 +238,10 @@ include "./modalTerminarConsulta.php";
 
 <script type="module" src="Consultas/scripts/form.js"></script>
 <script>
-    // document.getElementById("mostrarFormulario").addEventListener("click", function () {
-    //     var formulario = document.getElementById("formularioPrescripciones");
-    //     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
-    // });    
+// document.getElementById("mostrarFormulario").addEventListener("click", function () {
+//     var formulario = document.getElementById("formularioPrescripciones");
+//     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
+// });    
 </script>
 
 <!-- <script>
@@ -486,158 +501,163 @@ include "./modalTerminarConsulta.php";
 </script> -->
 
 <style>
-    .profile-img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #ddd;
-    }
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
 
-    video {
-        display: none;
-        width: 100%;
-        max-width: 300px;
-        border-radius: 10px;
-        border: 2px solid #ddd;
-    }
+video {
+    display: none;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+}
 
-    .steps-container {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-    }
+.steps-container {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
 
-    .steps {
-        list-style: none;
-        display: flex;
-        justify-content: space-between;
-        padding: 0;
-        margin: 0;
-    }
+.steps {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+}
 
-    .step {
-        text-align: center;
-        position: relative;
-        flex: 1;
-    }
+.step {
+    text-align: center;
+    position: relative;
+    flex: 1;
+}
 
-    .step-number {
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        line-height: 30px;
-        border-radius: 50%;
-        background-color: #e9ecef;
-        color: #0d6efd;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
+.step-number {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #0d6efd;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
 
-    .step.active .step-number {
-        background-color: #0d6efd;
-        color: #fff;
-    }
+.step.active .step-number {
+    background-color: #0d6efd;
+    color: #fff;
+}
 
-    .wizard-step {
-        display: none;
-    }
+.wizard-step {
+    display: none;
+}
 
-    .wizard-step.active {
-        display: block;
-    }
+.wizard-step.active {
+    display: block;
+}
 </style>
 
 <script>
-    const patientId = new URLSearchParams(window.location.search).get('patient_id');
+const patientId = new URLSearchParams(window.location.search).get('patient_id');
 </script>
 
 <script type="module">
-    import React from "react"
-    import ReactDOMClient from "react-dom/client"
-    import {
-        PastMedicalHistoryForm
-    } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
-    import {
-        clinicalRecordService
-    } from "./services/api/index.js";
+import React from "react"
+import ReactDOMClient from "react-dom/client"
+import {
+    PastMedicalHistoryForm
+} from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
+import {
+    AddParaclinicalButton
+} from './react-dist/clinical-records/AddParaclinicalButton.js';
+import {
+    clinicalRecordService
+} from "./services/api/index.js";
 
-    ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
-        onFinishSave: () => {
-            validatePastMedicalHistory();
-        }
-    }));
-
-    async function validatePastMedicalHistory() {
-        const antecedentes = await clinicalRecordService.ofParentByType(
-            "PAST_MEDICAL_HISTORY",
-            patientId
-        );
-
-        if (antecedentes.length === 0) {
-            const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
-            modal.show();
-            document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
-                const antecedentes2 = await clinicalRecordService.ofParentByType(
-                    "PAST_MEDICAL_HISTORY",
-                    patientId
-                );
-                if (antecedentes2.length === 0) {
-                    modal.show();
-                }
-            });
-        }
+ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
+    onFinishSave: () => {
+        validatePastMedicalHistory();
     }
+}));
+ReactDOMClient.createRoot(document.getElementById('addParaclinicalBtnReact')).render(React.createElement(
+    AddParaclinicalButton));
 
-    validatePastMedicalHistory()
-</script>
+async function validatePastMedicalHistory() {
+    const antecedentes = await clinicalRecordService.ofParentByType(
+        "PAST_MEDICAL_HISTORY",
+        patientId
+    );
 
-<script type="module">
-    import {
-        appointmentService
-    } from "../../services/api/index.js";
-
-    const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
-
-    if (appointmentId) {
-        const appointment = await appointmentService.get(appointmentId);
-
-        console.log('Cita:', appointment);
-
-
-        if (appointment.appointment_state.name === 'pending_consultation') {
-            appointmentService.changeStatus(appointmentId, 'in_consultation')
-        }
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: 'No fue posible encontrar la cita relacionada.',
-            icon: 'error',
-            timer: 2000,
-            showConfirmButton: false
-        }).then(() => {
-            //window.history.back();
+    if (antecedentes.length === 0) {
+        const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
+        modal.show();
+        document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
+            const antecedentes2 = await clinicalRecordService.ofParentByType(
+                "PAST_MEDICAL_HISTORY",
+                patientId
+            );
+            if (antecedentes2.length === 0) {
+                modal.show();
+            }
         });
     }
+}
+
+validatePastMedicalHistory()
 </script>
 
 <script type="module">
-    import {
-        patientService,
-        clinicalRecordService
-    } from "../../services/api/index.js";
-    import {
-        formatDate
-    } from "../../services/utilidades.js";
+import {
+    appointmentService
+} from "../../services/api/index.js";
 
-    const patientPromise = patientService.get(patientId);
+const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
 
-    const [patient] = await Promise.all([patientPromise]);
+if (appointmentId) {
+    const appointment = await appointmentService.get(appointmentId);
 
-    document.querySelectorAll('.patientName').forEach(element => {
-        element.textContent = `${patient.first_name} ${patient.last_name}`;
-        if (element.tagName === 'A') {
-            element.href = `verPaciente?id=${patient.id}`
-        }
-    })
+    console.log('Cita:', appointment);
+
+
+    if (appointment.appointment_state.name === 'pending_consultation') {
+        appointmentService.changeStatus(appointmentId, 'in_consultation')
+    }
+} else {
+    Swal.fire({
+        title: 'Error',
+        text: 'No fue posible encontrar la cita relacionada.',
+        icon: 'error',
+        timer: 2000,
+        showConfirmButton: false
+    }).then(() => {
+        //window.history.back();
+    });
+}
+</script>
+
+<script type="module">
+import {
+    patientService,
+    clinicalRecordService
+} from "../../services/api/index.js";
+import {
+    formatDate
+} from "../../services/utilidades.js";
+
+const patientPromise = patientService.get(patientId);
+
+const [patient] = await Promise.all([patientPromise]);
+
+document.querySelectorAll('.patientName').forEach(element => {
+    element.textContent = `${patient.first_name} ${patient.last_name}`;
+    if (element.tagName === 'A') {
+        element.href = `verPaciente?id=${patient.id}`
+    }
+})
 </script>

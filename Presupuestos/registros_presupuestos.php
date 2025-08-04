@@ -45,7 +45,9 @@ $presupuestos = [
             </ol>
         </nav>
 
-        <div class="row">
+        <div id="purchaseOrdersReact"></div>
+
+        <!-- <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -62,13 +64,53 @@ $presupuestos = [
         </div>
         <div class="row mt-4">
             <div id="estimate-table-content"></div>
-        </div>
+        </div> -->
     </div>
 </div>
 
 <?php
 include "../footer.php";
 ?>
+
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        PurchaseOrders
+    } from './react-dist/invoices/PurchaseOrders.js';
+    import {
+        thirdPartyService
+    } from "./services/api/index.js";
+
+    const patientThirdParty = await thirdPartyService.getByExternalIdAndType({
+        externalId: new URLSearchParams(window.location.search).get('patient_id'),
+        externalType: "client"
+    });
+
+    console.log(patientThirdParty);
+
+    const rootElement = document.getElementById('purchaseOrdersReact');
+    ReactDOMClient.createRoot(rootElement).render(React.createElement(PurchaseOrders, {
+        initialFilters: {
+            thirdId: patientThirdParty.id,
+            type: "quote_of"
+        },
+        filterConfigs: {
+            thirdId: {
+                disabled: true
+            },
+            type: {
+                disabled: true
+            }
+        },
+        componentConfigs: {
+            newPurchaseOrderBtn: {
+                label: "Nueva cotización",
+                redirect: `OrdenesCompra?patient_id=${new URLSearchParams(window.location.search).get('patient_id')}`
+            }
+        }
+    }));
+</script>
 
 <script type="module">
     import {

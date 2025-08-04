@@ -17,14 +17,14 @@ export class MSMasivaService extends BaseApiService {
                 *¡Gracias por tu paciencia!*
             `
             const url = `${this.microservice}/message/send`;
-            console.log({
-                "channel": "whatsapp",
-                "message_type": "text",
-                "instance_name": "Cenode",
-                "recipients": [patient.whatsapp],
-                message,
-                "webhook_url": "https://hooks.medicalsoft.ai/webhook/mensajes"
-            });
+            // console.log({
+            //     "channel": "whatsapp",
+            //     "message_type": "text",
+            //     "instance_name": "Cenode",
+            //     "recipients": [patient.whatsapp],
+            //     message,
+            //     "webhook_url": "https://hooks.medicalsoft.ai/webhook/mensajes"
+            // });
 
             return await this.httpClient.post(
                 url,

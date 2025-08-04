@@ -129,6 +129,7 @@ $_SESSION["ID"] = 1;
   <!-- DATATABLES -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+
   <!-- DATATABLES -->
   <style>
     /* Personaliza los botones de paginación */
@@ -250,7 +251,7 @@ $_SESSION["ID"] = 1;
     } from "./services/api/index.js";
 
     UserManager.onAuthChange(async (isAuthenticated, user, userPermissions, userMenus) => {
-      console.log(isAuthenticated, user, userPermissions, userMenus);
+      // console.log(isAuthenticated, user, userPermissions, userMenus);
       const menusFromService = await menuService.getAll()
 
       if (user && userPermissions && userMenus) {
@@ -349,7 +350,30 @@ $_SESSION["ID"] = 1;
       "primereact/column": "https://esm.sh/primereact/column?dev",
       "primereact/badge": "https://esm.sh/primereact/badge?dev",
       "primereact/inputswitch":"https://esm.sh/primereact/inputswitch?dev",
-      "primereact/toolbar":"https://esm.sh/primereact/toolbar?dev"
+      "primereact/toolbar":"https://esm.sh/primereact/toolbar?dev",
+      "primereact/radiobutton":"https://esm.sh/primereact/radiobutton?dev",
+      "primereact/tooltip":"https://esm.sh/primereact/tooltip?dev",
+      "primereact/treetable":"https://esm.sh/primereact/treetable?dev",
+      "primereact/treenode":"https://esm.sh/primereact/treenode?dev",
+      "primereact/confirmdialog":"https://esm.sh/primereact/confirmdialog?dev",
+      "primereact/toast":"https://esm.sh/primereact/toast?dev",
+      "primereact/confirmpopup":"https://esm.sh/primereact/confirmpopup?dev",
+      "primereact/confirmpopup":"https://esm.sh/primereact/confirmpopup?dev",
+      "primereact/fileupload":"https://esm.sh/primereact/fileupload?dev",
+      "primereact/progressspinner":"https://esm.sh/primereact/progressspinner?dev",
+      "primereact/message":"https://esm.sh/primereact/message?dev",
+      "primereact/autocomplete":"https://esm.sh/primereact/autocomplete?dev",
+      "primereact/menu":"https://esm.sh/primereact/menu?dev",
+      "primereact/hooks":"https://esm.sh/primereact/hooks?dev",
+      "primereact/progressbar":"https://esm.sh/primereact/progressbar?dev",
+      "primereact/row":"https://esm.sh/primereact/row?dev",
+      "primereact/columngroup":"https://esm.sh/primereact/columngroup?dev",
+      "primereact/paginator":"https://esm.sh/primereact/paginator?dev",
+      "primereact/steps":"https://esm.sh/primereact/steps?dev",
+      "primereact/breadcrumb": "https://esm.sh/primereact/breadcrumb?dev",
+      "jspdf": "https://esm.sh/jspdf?dev",
+      "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
+      "react-dom/server": "https://esm.sh/react-dom/server?dev"
     }
   }
 </script>

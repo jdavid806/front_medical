@@ -11,8 +11,7 @@
       <table class="table table-striped table-hover">
         <thead class="table-dark">
           <tr>
-            <th>Nombre</th>
-            <th>Número de Cuenta</th>
+            <th>Nombres</th>
             <th>Detalles</th>
             <th>Acciones</th>
           </tr>
@@ -29,5 +28,4 @@
   document.addEventListener("DOMContentLoaded", function () {
     cargarMetodosPago();
   });
-
 </script>

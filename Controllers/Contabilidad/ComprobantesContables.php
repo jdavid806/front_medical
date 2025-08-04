@@ -1,4 +1,4 @@
-<?php 
+        <?php 
 class ComprobantesContablesController {
     private $model;
 

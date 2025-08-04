@@ -10,9 +10,8 @@
                 <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
                     <!-- Imagen del avatar -->
                     <div class="avatar avatar-5xl">
-                        <img class="rounded-circle img-fluid"
-                            src="http://5.78.129.143:9000/dev-monaros/App/Model/User/1742500750VkCzwt1vqzpng"
-                            alt="Avatar">
+                        <img id="avatar-paciente" class="rounded-circle img-fluid"
+                            src="../assets/img/profile/profile_default.jpg" alt="Avatar">
                     </div>
 
                     <!-- Información personal -->
@@ -102,7 +101,7 @@
 
         <div class="card mb-3">
             <div class="card-body">
-                <div class="d-flex align-items-center mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3>Información de Contacto</h3>
                     <button class="btn text-primary p-0 d-flex align-items-center gap-2"
                         title="ver información del paciente" data-value="mostrar" type="button" data-bs-toggle="modal"
@@ -110,7 +109,6 @@
                         <i class="fa-solid fa-file-medical"></i>
                         Ver más
                     </button>
-                    <!-- <button class="btn btn-link" type="button">Editar</button> -->
                 </div>
                 <div class="mb-4">
                     <div class="d-flex align-items-center mb-1"><span class="me-2 uil uil-estate"></span>
@@ -151,75 +149,87 @@ include "./modalPacientes.php";
 ?>
 
 <script type="module">
-    import {
-        patientService
-    } from "../../services/api/index.js";
-    import {
-        formatDate
-    } from "../../services/utilidades.js";
-    import {
-        bloodType
-    } from "../../services/commons.js";
+import {
+    patientService
+} from "../../services/api/index.js";
+import {
+    formatDate
+} from "../../services/utilidades.js";
+import {
+    bloodType
+} from "../../services/commons.js";
 
-    const patientId = new URLSearchParams(window.location.search).get("id") || new URLSearchParams(window.location.search).get("patient_id");
+const patientId = new URLSearchParams(window.location.search).get("id") || new URLSearchParams(window.location.search)
+    .get("patient_id");
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            if (id) {
-                // Filtrar el paciente por ID
-                const paciente = await patientService.get(patientId);
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        if (id) {
+            // Filtrar el paciente por ID
+            const paciente = await patientService.get(patientId);
 
-                displayPatientData(paciente);
-            }
-
-        } catch (error) {
-            console.error("Error al obtener los datos:", error);
+            displayPatientData(paciente);
         }
-    });
 
-    function filterPatientById(pacientes, id) {
-
-        return pacientes.find(paciente => paciente.id === parseInt(id)); // Asegúrate de que el ID es numérico
+    } catch (error) {
+        console.error("Error al obtener los datos:", error);
     }
+});
 
-    function displayPatientData(paciente) {
-        if (!paciente) {
-            console.log("Paciente no encontrado");
-            return;
-        }
+function filterPatientById(pacientes, id) {
 
-        document.getElementById("id").textContent = paciente.document_number;
-        document.getElementById("name").textContent = `${paciente.first_name} ${paciente.last_name}`;
-        document.getElementById("phone").textContent = paciente.validated_data?.whatsapp || "No disponible"; // Si tienes el campo de teléfono
-        document.getElementById("email").textContent = paciente.validated_data?.email || "No disponible";
-        document.getElementById("allergies").textContent = paciente.has_allergies ? paciente.allergies || "No especificado" : "No tiene alergias";
-        document.getElementById("chronic-diseases").textContent = paciente.has_special_condition ? paciente.special_condition || "No especificado" : "No tiene enfermedades crónicas";
+    return pacientes.find(paciente => paciente.id === parseInt(id)); // Asegúrate de que el ID es numérico
+}
 
-
-        document.getElementById("address").textContent = paciente.address || "No disponible";
-        document.getElementById("city").textContent = paciente.city_id || "No especificada";
-        document.getElementById("country").textContent = paciente.country_id || "No especificado";
-
-        // Información adicional
-        document.getElementById("relevant-habits").textContent = paciente.relevant_habits || "No especificado";
-
-        const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        const lastClinicalRecord = sortedClinicalRecords[0];
-        document.getElementById("last-visit").textContent = lastClinicalRecord ? formatDate(lastClinicalRecord.created_at) : "Fecha no disponible";
-        document.getElementById("last-visit-reason").textContent = lastClinicalRecord && lastClinicalRecord.description ? lastClinicalRecord.description : "No especificado";
-
-        document.getElementById("rh").textContent = bloodType[paciente.blood_type] || "No especificado";
-
-        const nameBreadcumb = document.getElementById("nameBradcumb");
-
-        if (nameBreadcumb) {
-            nameBreadcumb.textContent = paciente.first_name + paciente.last_name;
-        }
-        document.querySelectorAll(".patientName").forEach(element => {
-            element.textContent = paciente.first_name + paciente.last_name
-            if (element.tagName === 'A') {
-                element.href = `verPaciente?id=${paciente.id}`
-            }
-        })
+async function displayPatientData(paciente) {
+    if (!paciente) {
+        console.log("Paciente no encontrado");
+        return;
     }
+    const avatarPaciente = await getUrlImage(paciente.minio_url);
+
+    console.log("avatarPacienteXDXD", avatarPaciente, paciente);
+
+    document.getElementById("avatar-paciente").src = avatarPaciente || "../assets/img/profile/profile_default.jpg";
+
+    document.getElementById("id").textContent = paciente.document_number;
+    document.getElementById("name").textContent = `${paciente.first_name} ${paciente.last_name}`;
+    document.getElementById("phone").textContent = paciente.validated_data?.whatsapp ||
+        "No disponible"; // Si tienes el campo de teléfono
+    document.getElementById("email").textContent = paciente.validated_data?.email || "No disponible";
+    document.getElementById("allergies").textContent = paciente.has_allergies ? paciente.allergies ||
+        "No especificado" : "No tiene alergias";
+    document.getElementById("chronic-diseases").textContent = paciente.has_special_condition ? paciente
+        .special_condition || "No especificado" : "No tiene enfermedades crónicas";
+
+
+    document.getElementById("address").textContent = paciente.address || "No disponible";
+    document.getElementById("city").textContent = paciente.city_id || "No especificada";
+    document.getElementById("country").textContent = paciente.country_id || "No especificado";
+
+    // Información adicional
+    document.getElementById("relevant-habits").textContent = paciente.relevant_habits || "No especificado";
+
+    const sortedClinicalRecords = paciente.clinical_records.sort((a, b) => new Date(b.created_at) - new Date(a
+        .created_at));
+    const lastClinicalRecord = sortedClinicalRecords[0];
+    document.getElementById("last-visit").textContent = lastClinicalRecord ? formatDate(lastClinicalRecord
+        .created_at) : "Fecha no disponible";
+    document.getElementById("last-visit-reason").textContent = lastClinicalRecord && lastClinicalRecord
+        .description ? lastClinicalRecord.description : "No especificado";
+
+    document.getElementById("rh").textContent = bloodType[paciente.blood_type] || "No especificado";
+
+    const nameBreadcumb = document.getElementById("nameBradcumb");
+
+    if (nameBreadcumb) {
+        nameBreadcumb.textContent = paciente.first_name + paciente.last_name;
+    }
+    document.querySelectorAll(".patientName").forEach(element => {
+        element.textContent = paciente.first_name + paciente.last_name
+        if (element.tagName === 'A') {
+            element.href = `verPaciente?id=${paciente.id}`
+        }
+    })
+}
 </script>

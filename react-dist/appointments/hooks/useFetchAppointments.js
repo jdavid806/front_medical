@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { appointmentService } from "../../../services/api/index.js";
 const getEstado = appointment => {
   const stateId = appointment.appointment_state_id.toString();
   const stateKey = appointment.appointment_state?.name;
-  const attentionType = appointment.attention_type;
+  const attentionType = appointment.attention_type || "CONSULTATION";
 
   // Función auxiliar para simplificar las condiciones
   const isPending = () => stateId === "1" || stateKey === "pending" && attentionType === "PROCEDURE";
@@ -27,13 +28,23 @@ const getEstado = appointment => {
       return "Sin Cita";
   }
 };
-export const useFetchAppointments = (fetchPromise, customMapper) => {
+export const useFetchAppointments = (getCustomFilters, customMapper) => {
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [first, setFirst] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+  const [search, setSearch] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0);
   const defaultMapper = appointment => {
     const doctorFirstName = appointment.user_availability.user.first_name || "";
     const doctorMiddleName = appointment.user_availability.user.middle_name || "";
     const doctorLastName = appointment.user_availability.user.last_name || "";
     const doctorSecondLastName = appointment.user_availability.user.second_last_name || "";
     const doctorName = `${doctorFirstName} ${doctorMiddleName} ${doctorLastName} ${doctorSecondLastName}`;
+    let attentionType = appointment.attention_type || "CONSULTATION";
+    if (attentionType === "REHABILITATION") {
+      attentionType = "CONSULTATION";
+    }
     const estado = getEstado(appointment);
     return {
       id: appointment.id.toString(),
@@ -49,7 +60,7 @@ export const useFetchAppointments = (fetchPromise, customMapper) => {
       isChecked: false,
       stateId: appointment.appointment_state_id.toString(),
       stateKey: appointment.appointment_state?.name,
-      attentionType: appointment.attention_type,
+      attentionType: attentionType,
       productId: appointment.product_id,
       stateDescription: estado,
       // Nuevo campo agregado
@@ -58,34 +69,48 @@ export const useFetchAppointments = (fetchPromise, customMapper) => {
   };
   const mapper = customMapper || defaultMapper;
   const [appointments, setAppointments] = useState([]);
-  const fetchAppointments = async () => {
-    const data = await fetchPromise;
-
-    // Ordenar por fecha descendente y hora ascendente
-    data.sort((a, b) => {
-      const fechaA = new Date(a.appointment_date).getTime();
-      const fechaB = new Date(b.appointment_date).getTime();
-      if (fechaA > fechaB) return -1;
-      if (fechaA < fechaB) return 1;
-      const [horaA, minutoA, segundoA] = a.appointment_time.split(":").map(Number);
-      const [horaB, minutoB, segundoB] = b.appointment_time.split(":").map(Number);
-      if (horaA !== horaB) return horaA - horaB;
-      if (minutoA !== minutoB) return minutoA - minutoB;
-      return segundoA - segundoB;
-    });
-    const patientId = +(new URLSearchParams(window.location.search).get("patient_id") || "0");
-    setAppointments(data.filter(appointment => {
-      return appointment.is_active;
-    }).filter(appointment => {
-      if (patientId <= 0) return true;
-      return appointment.patient_id == patientId;
-    }).map(appointment => mapper(appointment)));
+  const fetchAppointments = async (perPage, page = 1, _search = null) => {
+    try {
+      setLoading(true);
+      const filters = typeof getCustomFilters === 'function' ? getCustomFilters() : {};
+      const data = await appointmentService.filterAppointments({
+        per_page: perPage,
+        page: page,
+        search: _search || "",
+        ...filters
+      });
+      setAppointments(data.data.data.map(appointment => mapper(appointment)));
+      setTotalRecords(data.data.total);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+  const handlePageChange = page => {
+    const calculatedPage = Math.floor(page.first / page.rows) + 1;
+    setFirst(page.first);
+    setPerPage(page.rows);
+    setCurrentPage(calculatedPage);
+    fetchAppointments(page.rows, calculatedPage, search);
+  };
+  const handleSearchChange = _search => {
+    setSearch(_search);
+    fetchAppointments(perPage, currentPage, _search);
+  };
+  const refresh = () => fetchAppointments(perPage, currentPage, search);
   useEffect(() => {
-    fetchAppointments();
+    fetchAppointments(perPage);
   }, []);
   return {
     appointments,
-    fetchAppointments
+    fetchAppointments,
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+    totalRecords,
+    first,
+    perPage,
+    loading
   };
 };

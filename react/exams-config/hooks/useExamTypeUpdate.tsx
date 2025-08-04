@@ -10,7 +10,16 @@ export const useExamTypeUpdate = () => {
     const updateExamType = async (id: string, data: ExamTypeInputs) => {
         setLoading(true);
         try {
-            await examTypeService.update(id, data);
+            const finalData = {
+                ...data,
+                form_config: (
+                    Object.keys(data.form_config).length > 0
+                        || data.form_config != null
+                        && data.form_config != "{}"
+                        ? data.form_config : { tabs: [] }
+                )
+            }
+            await examTypeService.update(id, finalData);
             SwalManager.success();
         } catch (error) {
             ErrorHandler.generic(error);

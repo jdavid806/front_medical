@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import CustomDataTable from '../components/CustomDataTable.js';
-import TableActionsWrapper from '../components/table-actions/TableActionsWrapper.js';
-import { EditTableAction } from '../components/table-actions/EditTableAction.js';
-import { DeleteTableAction } from '../components/table-actions/DeleteTableAction.js';
+import React, { useState } from "react";
+import CustomDataTable from "../components/CustomDataTable.js";
+import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
+import { EditTableAction } from "../components/table-actions/EditTableAction.js";
+import { DeleteTableAction } from "../components/table-actions/DeleteTableAction.js";
+import { CustomFormModal } from "../components/CustomFormModal.js";
+import { UserAssistantForm } from "./UserAssistantForm.js";
+import { useUserAssistantBulkCreate } from "./hooks/useUserAssistantBulkCreate.js";
+import { userAssistantService } from "../../services/api/index.js";
 const UserTable = ({
   users,
   onEditItem,
@@ -10,12 +14,18 @@ const UserTable = ({
   onAddSignature,
   onAddStamp,
   onDeleteSignature,
-  onDeleteStamp
+  onDeleteStamp,
+  onReload
 }) => {
+  const [showAssistantsModal, setShowAssistantsModal] = useState(false);
+  const [assistantsFormInitialData, setAssistantsFormInitialData] = useState();
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [actionType, setActionType] = useState(null);
+  const {
+    createUserAssistantBulk
+  } = useUserAssistantBulkCreate();
   const handleFileChange = (event, type) => {
     const file = event.target.files?.[0] || null;
     setSelectedFile(file);
@@ -27,17 +37,14 @@ const UserTable = ({
       setPreviewUrl(null);
     }
   };
-  const handleConfirm = () => {
-    console.log("selectedFile:", selectedFile);
-    console.log("currentUserId:", currentUserId);
-    console.log("actionType:", actionType);
-    const id_inputUsuario = guardarArchivoUsuario("fileInput", 2);
-    console.log("id_inputUsuario", id_inputUsuario);
+  const handleConfirm = async () => {
+    //@ts-ignore
+    const id_inputUsuario = await guardarArchivoUsuario("fileInput", 40);
     if (selectedFile && currentUserId && actionType) {
-      if (actionType === 'signature' && onAddSignature) {
-        onAddSignature(selectedFile, currentUserId);
-      } else if (actionType === 'stamp' && onAddStamp) {
-        onAddStamp(selectedFile, currentUserId);
+      if (actionType === "signature") {
+        saveSignature(id_inputUsuario, currentUserId);
+      } else if (actionType === "stamp") {
+        saveStamp(id_inputUsuario, currentUserId);
       }
     }
     setSelectedFile(null);
@@ -45,16 +52,48 @@ const UserTable = ({
     setCurrentUserId(null);
     setActionType(null);
   };
+  function saveSignature(signatureId, userId) {
+    //@ts-ignore
+    let urlUser = obtenerRutaPrincipal() + `/medical/users/` + userId;
+    let jsonData = {
+      firma_minio_url: signatureId
+    };
+    //@ts-ignore
+    actualizarDatos(urlUser, jsonData);
+  }
+  function saveStamp(stamp, userId) {
+    //@ts-ignore
+    let urlUser = obtenerRutaPrincipal() + `/medical/users/` + userId;
+    let jsonData = {
+      image_minio_url: stamp
+    };
+    //@ts-ignore
+    actualizarDatos(urlUser, jsonData);
+  }
+  const openAssistantsModal = async userId => {
+    setCurrentUserId(userId);
+    setShowAssistantsModal(true);
+    const assistants = await userAssistantService.getAssistantsByUserId(userId);
+    setAssistantsFormInitialData({
+      assistants: assistants.data.map(assistant => assistant.id)
+    });
+  };
+  const handleAssistantsSubmit = async data => {
+    await createUserAssistantBulk(currentUserId, data.assistants).then(() => {
+      setShowAssistantsModal(false);
+      onReload && onReload();
+    });
+  };
   const columns = [{
-    data: 'fullName'
+    data: "fullName"
   }, {
-    data: 'role'
+    data: "role"
   }, {
-    data: 'city'
+    data: "city"
   }, {
-    data: 'phone'
+    data: "phone"
   }, {
-    data: 'email'
+    data: "email"
   }, {
     orderable: false,
     searchable: false
@@ -62,55 +101,70 @@ const UserTable = ({
   const slots = {
     5: (cell, data) => /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement("li", {
       style: {
-        marginBottom: '8px'
+        marginBottom: "8px"
       }
     }, /*#__PURE__*/React.createElement(EditTableAction, {
       onTrigger: () => onEditItem && onEditItem(data.id)
     })), /*#__PURE__*/React.createElement("li", {
       style: {
-        marginBottom: '8px'
+        marginBottom: "8px"
       }
     }, /*#__PURE__*/React.createElement(DeleteTableAction, {
       onTrigger: () => onDeleteItem && onDeleteItem(data.id)
-    })), data.roleGroup === 'DOCTOR' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", {
+    })), data.roleGroup === "DOCTOR" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", {
       style: {
-        marginBottom: '8px'
+        marginBottom: "8px"
       }
     }, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: () => {
         setCurrentUserId(data.id);
-        setActionType('signature');
-        document.getElementById('fileInput')?.click();
+        setActionType("signature");
+        document.getElementById("fileInput")?.click();
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-file-signature",
       style: {
-        width: '20px'
+        width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, data.signature ? 'Actualizar firma' : 'Añadir firma')))), /*#__PURE__*/React.createElement("li", {
+    }), /*#__PURE__*/React.createElement("span", null, data.signatureMinioUrl ? "Actualizar firma" : "Añadir firma")))), /*#__PURE__*/React.createElement("li", {
       style: {
-        marginBottom: '8px'
+        marginBottom: "8px"
       }
     }, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: () => {
         setCurrentUserId(data.id);
-        setActionType('stamp');
-        document.getElementById('fileInput')?.click();
+        setActionType("stamp");
+        document.getElementById("fileInput")?.click();
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-stamp",
       style: {
-        width: '20px'
+        width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, data.stamp ? 'Actualizar sello' : 'Añadir sello'))))))
+    }), /*#__PURE__*/React.createElement("span", null, data.imageMinioUrl ? "Actualizar sello" : "Añadir sello")))), /*#__PURE__*/React.createElement("li", {
+      style: {
+        marginBottom: "8px"
+      }
+    }, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
+      onClick: () => openAssistantsModal(data.id)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-user-nurse",
+      style: {
+        width: "20px"
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "Gestionar asistentes"))))))
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
@@ -138,21 +192,20 @@ const UserTable = ({
     type: "file",
     accept: "image/*",
     style: {
-      display: 'none'
+      display: "none"
     },
     onChange: e => {
-      console.log("File selected:", e.target.files?.[0]);
-      if (actionType === 'signature') {
-        handleFileChange(e, 'signature');
-      } else if (actionType === 'stamp') {
-        handleFileChange(e, 'stamp');
+      if (actionType === "signature") {
+        handleFileChange(e, "signature");
+      } else if (actionType === "stamp") {
+        handleFileChange(e, "stamp");
       }
     }
   }), previewUrl && /*#__PURE__*/React.createElement("div", {
     className: "modal fade show",
     style: {
-      display: 'block',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      display: "block",
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "modal-dialog modal-dialog-centered"
@@ -175,7 +228,7 @@ const UserTable = ({
     src: previewUrl,
     alt: "Previsualizaci\xF3n",
     style: {
-      width: '100%'
+      width: "100%"
     }
   })), /*#__PURE__*/React.createElement("div", {
     className: "modal-footer"
@@ -190,18 +243,27 @@ const UserTable = ({
     type: "button",
     className: "btn btn-danger",
     onClick: () => {
-      if (actionType === 'signature' && onDeleteSignature) {
+      if (actionType === "signature" && onDeleteSignature) {
         onDeleteSignature(currentUserId);
-      } else if (actionType === 'stamp' && onDeleteStamp) {
+      } else if (actionType === "stamp" && onDeleteStamp) {
         onDeleteStamp(currentUserId);
       }
       setPreviewUrl(null);
       setSelectedFile(null);
     }
-  }, actionType === 'signature' && users.find(user => user.id === currentUserId)?.signature ? 'Eliminar firma' : actionType === 'stamp' && users.find(user => user.id === currentUserId)?.stamp ? 'Eliminar sello' : 'Eliminar'), /*#__PURE__*/React.createElement("button", {
+  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signature ? "Eliminar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.stamp ? "Eliminar sello" : "Eliminar"), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-primary",
     onClick: handleConfirm
-  }, actionType === 'signature' && users.find(user => user.id === currentUserId)?.signature ? 'Actualizar firma' : actionType === 'stamp' && users.find(user => user.id === currentUserId)?.stamp ? 'Actualizar sello' : 'Confirmar'))))));
+  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signature ? "Actualizar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.stamp ? "Actualizar sello" : "Confirmar"))))), /*#__PURE__*/React.createElement(CustomFormModal, {
+    show: showAssistantsModal,
+    formId: "assistantsForm",
+    title: "Gestionar asistentes",
+    onHide: () => setShowAssistantsModal(false)
+  }, /*#__PURE__*/React.createElement(UserAssistantForm, {
+    formId: "assistantsForm",
+    onHandleSubmit: handleAssistantsSubmit,
+    initialData: assistantsFormInitialData
+  })));
 };
 export default UserTable;

@@ -1,0 +1,183 @@
+<div class="form-container">
+  <form form-group="form">
+    <h3>Información básica</h3>
+    <div class="form-grid-basic">
+      <div class="form-inputElement">
+        <p>Tipo de comprobante</p>
+        <p-select [options]="typeOptions" placeholder="Seleccionar" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Numero de factura</p>
+        <input type="text" pInputText placeholder="Ingresar Numero Factura" />
+      </div>
+      <div class="form-inputElement">
+        <p>Cliente</p>
+        <p-select [options]="clientsOptions" placeholder="Selecciona cliente" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Destinatario</p>
+        <p-select [options]="recipientOptions" placeholder="Selecciona destinatario" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Vendedor</p>
+        <p-select [options]="sellerOptions" placeholder="Selecciona vendedor" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Centro de costo</p>
+        <p-select [options]="costCenterOptions" placeholder="Selecciona centro" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement full-width">
+        <p>Fecha seleccionada</p>
+        <p-datepicker class="date-picker-id" [iconDisplay]="'input'" [showIcon]="true" dateFormat="dd/mm/yy"  placeholder="dd/mm/aaaa"  />
+      </div>
+    </div>
+
+    <h3>Información de facturación</h3>
+    <p-card class="parent-card">
+      <!-- Encabezado de la tabla -->
+      <table class="product-table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Valor unitario</th>
+            <th>% Dscto</th>
+            <th>IVA</th>
+            <th>Impuesto retención</th>
+            <th>Valor Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(product of productsArray; track product; let i = $index) {
+          <tr>
+            <td>
+              <p-select [options]="products" placeholder="Selecciona producto" [editable]="true" optionLabel="name"></p-select>
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="Cantidad" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="Valor unitario" />
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="% Dscto" />
+            </td>
+            <td>
+              <p-select [options]="ivaOptions" placeholder="IVA" [editable]="true" optionLabel="name"></p-select>
+            </td>
+            <td>
+              <p-select [options]="retentionTaxOptions" placeholder="Impuesto retención" [editable]="true" optionLabel="name"></p-select>
+            </td>
+            <td>
+              <input type="text" pInputText placeholder="0.00" />
+            </td>
+            <td>
+              <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="removeProduct(i)" />
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Botón para añadir producto -->
+      <p class="add-text" (click)="addProduct()">
+        <i class="pi pi-plus"></i> Añadir
+      </p>
+
+      <!-- Total -->
+      <p-card class="total-card">
+        <h4>Total Neto: {{totalValue}}</h4>
+      </p-card>
+    </p-card>
+
+    <h3>Medio de pago</h3>
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e5e7eb', 'box-shadow': '0 1px 3px rgba(0,0,0,0.05)' }">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+          <i class="pi pi-credit-card mr-2 text-blue-500"></i>
+          Medio de pago
+        </h3>
+
+        <div class="payment-array space-y-4">
+          @for(paymentMethods of paymentMethodsArray; track paymentMethods; let i = $index) {
+          <div class="payment-container grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50/30 hover:bg-gray-50/50 transition-colors">
+
+            <!-- Medio de pago -->
+            <div class="md:col-span-4">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">Medio de pago</label>
+              <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+                <p-select
+                  [options]="makepaymentOptions"
+                  placeholder="Seleccionar"
+                  [editable]="true"
+                  optionLabel="name"
+                  class="w-full"
+                  [dropdownIcon]="'pi pi-chevron-down'"
+                  inputStyleClass="text-sm border-none"
+                ></p-select>
+              </div>
+            </div>
+
+            <!-- Número de autorización -->
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">Número de autorización</label>
+              <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+                <input
+                  type="text"
+                  pInputText
+                  placeholder="Ingresar número"
+                  class="w-full text-sm border-none"
+                />
+              </div>
+            </div>
+
+            <!-- Valor -->
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">Valor</label>
+                <input
+                  type="text"
+                  pInputText
+                  placeholder="0.00"
+                  class="w-full text-sm border-none pl-6"
+                />
+              </div>
+            </div>
+
+            <!-- Botón eliminar -->
+            <div class="md:col-span-2 flex items-end justify-end">
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                styleClass="hover:bg-red-50 transition-colors"
+                (click)="removePayment(i)"
+              ></p-button>
+            </div>
+          </div>
+          }
+
+          <!-- Botón Añadir -->
+          <button
+            type="button"
+            class="add-text w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 py-2 px-4 rounded-md transition-colors text-sm font-medium"
+            (click)="addPayment()"
+          >
+            <i class="pi pi-plus"></i>
+            Añadir medio de pago
+          </button>
+        </div>
+      </div>
+    </p-card>
+    <div class="total-pagar-container">
+      <h3>Total a pagar</h3>
+      <p class="total-amount">0.00</p>
+      <div class="button-container">
+        <p-button label="Cancelar" (click)="cancel()" class="cancel-button"></p-button>
+        <p-button label="Guardar" (click)="save()" class="save-button"></p-button>
+        <p-button label="Guardar y Enviar" (click)="saveAndSend()" class="save-send-button"></p-button>
+      </div>
+    </div>
+  </form>
+</div>

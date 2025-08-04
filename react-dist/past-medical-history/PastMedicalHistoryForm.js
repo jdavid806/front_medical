@@ -32,6 +32,26 @@ const CAMPOS = [
   placeholder: "Ejemplo: Hepatitis A (infancia)",
   step: 2
 }, {
+  id: "enfermedades_cronicas",
+  label: "¿Padece una enfermedad cronica?",
+  placeholder: "Ejemplo: Diabetes",
+  step: 2
+}, {
+  id: "enfermedades_cronicas_tiempo",
+  label: "¿Tiempo con enfermedad cronica?",
+  placeholder: "Ejemplo: 20 años con tratamiento de Metformina",
+  step: 2
+}, {
+  id: "alergias_medicamentos",
+  label: "¿Alergias a medicamentos?",
+  placeholder: "Ejemplo: Salbutamol",
+  step: 2
+}, {
+  id: "alergias_alimenticias",
+  label: "¿Alergias con alimentos?",
+  placeholder: "Ejemplo: Cebolla",
+  step: 2
+}, {
   id: "cirugias",
   label: "¿Se ha sometido a alguna cirugía?",
   placeholder: "Ejemplo: Apendicectomía (2015)",
@@ -57,6 +77,21 @@ const CAMPOS = [
   id: "habitos",
   label: "¿Cuáles son sus hábitos?",
   placeholder: "Ejemplo: No fuma, consume alcohol ocasionalmente",
+  step: 3
+}, {
+  id: "habitos_alcohol",
+  label: "¿Consume alcohol?",
+  placeholder: "Ejemplo: Si toma, consume alcohol ocasionalmente",
+  step: 3
+}, {
+  id: "tabaco",
+  label: "¿Consume Tabaco?",
+  placeholder: "Ejemplo: No fuma, fuma socialmente",
+  step: 3
+}, {
+  id: "cafeina",
+  label: "¿Consume cafeina?",
+  placeholder: "Ejemplo: Si, consume cafe diariamente",
   step: 3
 }, {
   id: "actividad_fisica",
@@ -116,8 +151,7 @@ export const PastMedicalHistoryForm = () => {
     label: "Personales No Patológicos"
   }, {
     number: 4,
-    label: "Historia Gineco-Obstétrica",
-    hidden: true
+    label: "Historia Gineco-Obstétrica"
   }];
   useEffect(() => {
     scrollToCurrentStep();
@@ -131,7 +165,7 @@ export const PastMedicalHistoryForm = () => {
       CAMPOS.forEach(campo => {
         const apiValue = selectedClinicalRecord.data[campo.id];
         const hasValue = apiValue !== null && apiValue !== "";
-        initialChecked[campo.id] = hasValue;
+        initialChecked[campo.id] = false;
         initialTexts[campo.id] = hasValue ? apiValue : "";
       });
       setCheckedFields(initialChecked);

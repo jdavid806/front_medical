@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { ExamTable } from "./components/ExamTable.js";
 import { ExamForm } from "./components/ExamForm.js";
-import { CustomModal } from "../components/CustomModal.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { useExams } from "./hooks/useExams.js";
-import { ExamResultsForm } from "./components/ExamResultsForm.js";
-import { SwalManager } from "../../services/alertManagerImported.js";
 const ExamApp = () => {
   const [showFormModal, setShowFormModal] = useState(false);
-  const [showResultsFormModal, setShowResultsFormModal] = useState(false);
   const [patientId, setPatientId] = useState('');
-  const [selectedExamId, setSelectedExamId] = useState('');
   const {
     exams,
     fetchExams
@@ -24,28 +19,16 @@ const ExamApp = () => {
   const handleHideFormModal = () => {
     setShowFormModal(false);
   };
-  const handleHideResultsFormModal = () => {
-    setShowResultsFormModal(false);
+  const handleLoadExamResults = examTableItem => {
+    window.location.href = `cargarResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}&appointment_id=${examTableItem.appointmentId}`;
   };
-  const handleSave = exams => {
-    console.log(exams);
-    setShowFormModal(false);
-  };
-  const handleLoadExamResults = examId => {
-    console.log(examId);
-    setSelectedExamId(examId);
-    setShowResultsFormModal(true);
-  };
-  const handleViewExamResults = async minioId => {
-    if (minioId) {
+  const handleViewExamResults = async (examTableItem, minioUrl) => {
+    if (minioUrl) {
       //@ts-ignore
-      const url = await getFileUrl(minioId);
-      console.log('Archivo URL: ', url);
+      const url = await getUrlImage(minioUrl);
       window.open(url, '_blank');
     } else {
-      SwalManager.error({
-        text: 'No se pudo obtener la URL del archivo'
-      });
+      window.location.href = `verResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}`;
     }
   };
   const handleReload = () => {
@@ -69,12 +52,6 @@ const ExamApp = () => {
     show: showFormModal,
     onHide: handleHideFormModal,
     title: "Crear Ex\xE1menes"
-  }, /*#__PURE__*/React.createElement(ExamForm, null)), /*#__PURE__*/React.createElement(CustomModal, {
-    show: showResultsFormModal,
-    onHide: handleHideResultsFormModal,
-    title: "Cargar Resultados"
-  }, /*#__PURE__*/React.createElement(ExamResultsForm, {
-    examId: selectedExamId
-  })));
+  }, /*#__PURE__*/React.createElement(ExamForm, null)));
 };
 export default ExamApp;

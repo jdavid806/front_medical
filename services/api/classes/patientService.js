@@ -38,6 +38,34 @@ export class PatientService extends BaseApiService {
     }
   }
 
+  async getByUserAndFilter({ per_page = 8, page = 1 }) {
+    return await this.httpClient.get(
+      `medical/v2/patients/${getJWTPayload().sub}`,
+      {
+        per_page,
+        page
+      }
+    );
+  }
+
+  async getWithAppointmentsByUserAndFilter({ per_page = 8, page = 1 }) {
+    return await this.httpClient.get(
+      `medical/v2/patients-with-appointments/${getJWTPayload().sub}`,
+      {
+        per_page,
+        page
+      }
+    );
+  }
+
+  async getByFilters({ search, per_page = 10, page = 1 }) {
+    return await this.httpClient.get(`medical/v2/patients-clinical-records`, {
+      per_page,
+      page,
+      search
+    });
+  }
+
   async get(id) {
     const res = await super.get(id);
     try {
@@ -104,6 +132,12 @@ export class PatientService extends BaseApiService {
         field,
         value,
       }
+    );
+  }
+
+  async getLastDisability(patientId) {
+    return await this.httpClient.get(
+      "medical/patients-disabilities/last-by-patient/" + patientId
     );
   }
 }

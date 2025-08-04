@@ -44,11 +44,11 @@
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="vaccine_type" name="vaccine_type" required>
-                                        <label for="vaccine_type">Tipo de vacuna</label>
+                                        <label for="reference">Referencia</label>
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="storage_temperature" name="storage_temperature" required>
-                                        <label for="storage_temperature">Temperatura de almacenamiento</label>
+                                        <label for="sanitary_registration">Registro Sanitario</label>
                                     </div>
                                 </div>
                             </div>
@@ -64,17 +64,17 @@
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="doses" name="doses" required>
-                                        <label for="doses">Dosis recomendadas</label>
+                                        <label for="capacity">Capacidad</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="application_method" name="application_method" required>
-                                        <label for="application_method">Método de aplicación</label>
+                                        <label for="weight">Peso</label>
                                     </div>
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="mandatory" name="mandatory">
-                                        <label class="form-check-label" for="mandatory">Vacuna obligatoria</label>
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="concentration" name="concentration" required>
+                                        <label for="weight">Conectración</label>
                                     </div>
                                 </div>
                             </div>
@@ -108,8 +108,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3">
-                                        <input type="number" class="form-control" id="supplier_id" name="supplier_id" required>
-                                        <label for="supplier_id">Proveedor</label>
+                                        <input type="number" class="form-control" id="stock_alert" name="stock_alert" required>
+                                        <label for="supplier_id">Alerta de Stock</label>
                                     </div>
                                     <div class="form-floating mb-3">
                                         <input type="number" class="form-control" id="purchase_price" name="purchase_price" required>
@@ -134,6 +134,79 @@
     </div>
 </div>
 
+<script>
+
+document.getElementById('finishStepVac').addEventListener('click', function () {
+    const form = document.getElementById('formNuevaVacuna');
+    if (form.checkValidity()) {
+        enviarVacuna(); // Ejecuta la función para enviar los datos
+    } else {
+        form.classList.add('was-validated'); // Activa estilos de validación
+    }
+});
+
+    // Obtener datos del formulario
+    const obtenerDatosVacuna = () => {
+        return {
+            name: document.getElementById('name').value,
+            manufacturer: document.getElementById('manufacturer').value,
+            vaccine_type: document.getElementById('vaccine_type').value,
+            storage_temperature: document.getElementById('storage_temperature').value,
+            expiration_date: document.getElementById('expiration_date').value,
+            doses: document.getElementById('doses').value,
+            application_method: document.getElementById('application_method').value,
+            concentration: document.getElementById('concentration').value,
+            batch_number: document.getElementById('batch_number').value,
+            stock: parseInt(document.getElementById('stock').value),
+            stock_minimum: document.getElementById('cantidadStock').checked
+                ? parseInt(document.getElementById('stockMinimoVacuna').value)
+                : null,
+            stock_alert: parseInt(document.getElementById('stock_alert').value),
+            purchase_price: parseFloat(document.getElementById('purchase_price').value),
+            sale_price: parseFloat(document.getElementById('sale_price').value)
+        };
+    };
+
+    // Enviar datos al servidor
+    const enviarVacuna = async () => {
+        console.log("Ejecutando función enviarVacuna");
+        const data = obtenerDatosVacuna();
+
+        try {
+            const response = await fetch('https://dev.monaros.co/api/v1/admin/products/vacunas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': 'Bearer TU_TOKEN' // Descomenta y coloca tu token si es necesario
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error al enviar la vacuna:', errorData);
+                alert("Hubo un error al guardar la vacuna.");
+            } else {
+                const result = await response.json();
+                console.log('Vacuna registrada con éxito:', result);
+                alert("Vacuna registrada con éxito.");
+                // Aquí podrías cerrar el modal, limpiar el formulario, etc.
+                document.getElementById('formNuevaVacuna').reset();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaVacuna'));
+                modal.hide();
+            }
+        } catch (error) {
+            console.error('Error en la petición:', error);
+            alert("Error de conexión al guardar la vacuna.");
+        }
+    };
+
+    // Manejar evento submit del formulario
+    document.getElementById('formNuevaVacuna').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevenir el comportamiento por defecto
+        enviarVacuna();     // Ejecutar envío
+    });
+</script>
 
 
 <script>
@@ -175,22 +248,22 @@
 
     updateWizardVac();
 
-    function controlarVistaStock() {
-        const checkStock = document.getElementById('cantidadStock');
-        const estadoCheckStock = document.getElementById('cantidadStock').checked;
-        const divInputStock = document.getElementById('divInputStock');
+    // function controlarVistaStock() {
+    //     const checkStock = document.getElementById('cantidadStock');
+    //     const estadoCheckStock = document.getElementById('cantidadStock').checked;
+    //     const divInputStock = document.getElementById('divInputStock');
 
-        divInputStock.style.display = estadoCheckStock ? 'block' : 'none';
-        if (divInputStock.style.display === "block") {
-            const inputStock = document.getElementById('stockMedicamento');
-            inputStock.required = true;
-        }
-    }
+    //     divInputStock.style.display = estadoCheckStock ? 'block' : 'none';
+    //     if (divInputStock.style.display === "block") {
+    //         const inputStock = document.getElementById('stockMedicamento');
+    //         inputStock.required = true;
+    //     }
+    // }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        controlarVistaStock();
-        document.getElementById('cantidadStock').addEventListener('change', controlarVistaStock);
-    });
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     controlarVistaStock();
+    //     document.getElementById('cantidadStock').addEventListener('change', controlarVistaStock);
+    // });
 </script>
 
 <script type="module" src="../Inventario/js/inventarioVacunas.js"></script>

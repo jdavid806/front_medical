@@ -59,7 +59,7 @@
 <script>
     function handleSubmit() {
         const selectedValues = getSelectedValues();
-        console.log(selectedValues);
+        // console.log(selectedValues);
     }
 
     function getSelectedValues() {

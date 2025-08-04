@@ -50,15 +50,26 @@ async function guardarDatos(url, datos) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-DOMAIN": getDomain(),
+        "X-External-ID": getJWTPayload().sub,
       },
       body: JSON.stringify(datos),
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`Error ${respuesta.status}: ${respuesta.statusText}`);
+    const contentType = respuesta.headers.get("content-type");
+    let resultado = null;
+
+    if (contentType && contentType.includes("application/json")) {
+      resultado = await respuesta.json();
     }
 
-    const resultado = await respuesta.json();
+    if (!respuesta.ok) {
+      // Lanzar el JSON del error, para que se pueda capturar en catch
+      throw (
+        resultado ||
+        new Error(`Error ${respuesta.status}: ${respuesta.statusText}`)
+      );
+    }
 
     Swal.fire({
       icon: "success",
@@ -67,6 +78,7 @@ async function guardarDatos(url, datos) {
       timer: 2000,
       showConfirmButton: false,
     });
+
     return resultado;
   } catch (error) {
     console.error("Error al guardar los datos:", error);
@@ -74,7 +86,7 @@ async function guardarDatos(url, datos) {
     Swal.fire({
       icon: "error",
       title: "Error al guardar",
-      text: "Hubo un problema al guardar los datos.",
+      text: error.message || "Hubo un problema al guardar los datos.",
       confirmButtonText: "Aceptar",
     });
 
@@ -88,21 +100,26 @@ async function actualizarDatos(url, datos) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        "X-DOMAIN": getDomain(),
+        "X-External-ID": getJWTPayload().sub,
       },
       body: JSON.stringify(datos),
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`Error en la red: ${response.statusText}`);
-    }
-
     const contentType = respuesta.headers.get("content-type");
-    let resultado = {};
+    let resultado = null;
+
     if (contentType && contentType.includes("application/json")) {
       resultado = await respuesta.json();
     }
 
-    // Notificación de éxito
+    if (!respuesta.ok) {
+      throw (
+        resultado ||
+        new Error(`Error ${respuesta.status}: ${respuesta.statusText}`)
+      );
+    }
+
     Swal.fire({
       icon: "success",
       title: "¡Actualización exitosa!",
@@ -110,19 +127,19 @@ async function actualizarDatos(url, datos) {
       timer: 2000,
       showConfirmButton: false,
     });
+
     return resultado;
   } catch (error) {
     console.error("Error al actualizar los datos:", error);
 
-    // Notificación de error
     Swal.fire({
       icon: "error",
       title: "Error al actualizar",
-      text: "Hubo un problema al actualizar los datos.",
+      text: error.message || "Hubo un problema al actualizar los datos.",
       confirmButtonText: "Aceptar",
     });
 
-    return null;
+    throw error;
   }
 }
 
@@ -143,6 +160,8 @@ async function EliminarDatos(url) {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            "X-DOMAIN": getDomain(),
+            "X-External-ID": getJWTPayload().sub,
           },
         });
 
@@ -270,6 +289,19 @@ async function getCountryInfo(value) {
 async function getSpecialtyName(value) {
   let url = obtenerRutaPrincipal() + "/medical/specialties";
   let especialidades = await obtenerDatos(url);
+  // console.log("especialidades ", especialidades);
+
+  for (const especilidad of especialidades) {
+    if (value === especilidad.id) {
+      return especilidad.name;
+    }
+  }
+}
+
+async function getUserSpecialtyName(value) {
+  let url = obtenerRutaPrincipal() + "/medical/user-specialties";
+  let especialidades = await obtenerDatos(url);
+  // console.log("especialidades ", especialidades);
 
   for (const especilidad of especialidades) {
     if (value === especilidad.id) {
@@ -484,8 +516,10 @@ async function reemplazarVariablesIncapacidad(template, object_id, patient_id) {
   let recomendaciones = datosIncapacidad.reason;
 
   let enlace =
-  obtenerRutaPrincipal() +
-  `/visualizarDocumento/${encryptData(object_id)}/${encryptData("incapacidad")}`;
+    obtenerRutaPrincipal() +
+    `/visualizarDocumento/${encryptData(object_id)}/${encryptData(
+      "incapacidad"
+    )}`;
 
   return template
     .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
@@ -611,7 +645,7 @@ async function reemplazarVariablesReceta(template, object_id, patient_id) {
   let especilidad = datosDoctor.especialidad;
 
   let recomendaciones = data.recipe_items.observations;
-  
+
   let enlace =
     obtenerRutaPrincipal() +
     `/visualizarDocumento/${encryptData(object_id)}/${encryptData("receta")}`;
@@ -638,12 +672,27 @@ async function reemplazarVariablesOrden(template, object_id, patient_id) {
   let nombreExamen = datosOrden.exam_type.name;
 
   let enlace =
-  obtenerRutaPrincipal() +
-  `/visualizarDocumento/${encryptData(object_id)}/${encryptData("orden")}`;
+    obtenerRutaPrincipal() +
+    `/visualizarDocumento/${encryptData(object_id)}/${encryptData("orden")}`;
 
   return template
     .replace(/\[\[NOMBRE_PACIENTE\]\]/g, nombrePaciente || "")
     .replace(/\[\[FECHA_EXAMEN\]\]/g, fechaOrden || "")
     .replace(/\[\[ENLACE DOCUMENTO\]\]/g, enlace || "")
     .replace(/\[\[NOMBRE_EXAMEN\]\]/g, nombreExamen || "");
+}
+
+function getJWTPayload() {
+  const token = sessionStorage.getItem("auth_token");
+
+  if (token) {
+    const payloadBase64 = token.split(".")[1];
+    return JSON.parse(atob(payloadBase64));
+  }
+
+  return null;
+}
+
+function getDomain() {
+  return window.location.hostname.split(".")[0];
 }

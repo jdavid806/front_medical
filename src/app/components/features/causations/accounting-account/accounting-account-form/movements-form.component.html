@@ -1,0 +1,67 @@
+<div class="form-container">
+  <form form-group="form">
+    <h3>Información básica</h3>
+    <div class="form-grid">
+      <div class="form-inputElement">
+        <p>Tipo de comprobante</p>
+        <p-select placeholder="Seleccionar" [editable]="true" optionLabel="name" />
+      </div>
+      <div class="form-inputElement">
+        <p>Numero de factura (Numeración manual y/o automática)</p>
+        <input type="text" pInputText placeholder="Seleccionar" />
+      </div>
+      <div class="form-inputElement full-width">
+        <p>Fecha de elaboración</p>
+        <p-datepicker [iconDisplay]="'input'" [showIcon]="true" />
+      </div>
+    </div>
+
+    <h3>Información de (preguntar titulo)</h3>
+    <p-card class="parent-card">
+      @for(product of productsArray; track product; let i = $index) {
+      <p-card>
+        <div class="products-container">
+          <div>
+            <p>Cuenta contable</p>
+            <p-select placeholder="Selecciona" [editable]="true" optionLabel="name" />
+          </div>
+          <div>
+            <p>Tercero</p>
+            <p-select placeholder="Selecciona" [editable]="true" optionLabel="name" />
+          </div>
+          <div>
+            <p>Detalle contable</p>
+            <input type="text" pInputText placeholder="Seleccionar" />
+          </div>
+          <div>
+            <p>Descripcion</p>
+            <input type="text" pInputText placeholder="Seleccionar" />
+          </div>
+          <div>
+            <p>Centro de costo</p>
+            <p-select placeholder="Selecciona" [editable]="true" optionLabel="name" />
+          </div>
+          <div>
+            <p>Débito</p>
+            <input type="text" pInputText placeholder="Seleccionar" />
+          </div>
+          <div>
+            <p>Crédito</p>
+            <input type="text" pInputText placeholder="Seleccionar" />
+          </div>
+          <div class="icon">
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="removeProduct(i)" />
+          </div>
+        </div>
+      </p-card>
+      }
+      <p class="add-text" (click)="addProduct()"><i class="pi pi-plus"></i> Añadir</p>
+      <p-card class="total-card">
+        <h4>Total {{totalValue}}</h4>
+      </p-card>
+    </p-card>
+
+    <h3>Observaciones</h3>
+    <textarea rows="15" cols="100" pTextarea></textarea>
+  </form>
+</div>

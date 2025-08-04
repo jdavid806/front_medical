@@ -11,9 +11,10 @@ function guardarDataPlantilla(tabId) {
 
     const adjuntoSwitch = document.querySelector(`#adjunto-${tabId}`);
     const adjuntoSeleccionado = adjuntoSwitch ? adjuntoSwitch.checked : false;
+    const tenant = window.location.hostname.split(".")[0];
 
     const datos = {
-      tenant_id: "1",
+      tenant_id: tenant,
       template: contenido,
       type: opcionSeleccionada,
       belongs_to: tabId,
@@ -36,9 +37,10 @@ async function cambiarContenidoEditor(tabId) {
 
   const adjuntoSwitch = document.querySelector(`#adjunto-${tabId}`);
   const adjuntoSeleccionado = adjuntoSwitch ? adjuntoSwitch.checked : false;
+  const tenant = window.location.hostname.split(".")[0];
 
   const datos = {
-    tenant_id: "1",
+    tenant_id: tenant,
     type: opcionSeleccionada,
     belongs_to: tabId,
     attached: adjuntoSeleccionado,

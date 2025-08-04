@@ -19,6 +19,7 @@ async function cargarEntidades() {
         <td>${producto.email}</td>
         <td>${producto.phone}</td>
         <td>${producto.address}</td>
+        <td>${producto.koneksi_sponsor_slug}</td>
         <td>
             <button class="btn btn-primary btn-sm" onclick="editarEntidad(${producto.id}, 
             '${producto.name}', '${producto.document_number}',
@@ -53,10 +54,20 @@ async function updateEntidad(id, entidad) {
 }
 
 async function createEntidad(entidad) {
-  guardarDatos(obtenerRutaPrincipal() + "/medical/entities", entidad);
-  $('#crearPlantilla').modal('hide');
-  cargarEntidades();
+  const spinner = document.getElementById("spinnerEntidades");
+  spinner.style.display = "block";
+
+  try {
+    await guardarDatos(obtenerRutaPrincipal() + "/medical/entities", entidad);
+    $('#crearEntidad').modal('hide');
+    await cargarEntidades(); // esperar que termine
+  } catch (error) {
+    throw error; // propaga el error para manejarlo en handleEntidadesForm
+  } finally {
+    spinner.style.display = "none";
+  }
 }
+
 
 function editarEntidad(
   id,

@@ -559,41 +559,41 @@
 
 
 
-    function tabularDatosFacturaEntidad() {
-        let datos = <?= $dataJsonSimuladaFacturas ?>;
-        console.log("datos =>" + datos);
-        let keysData = Object.keys(datos);
+    // function tabularDatosFacturaEntidad() {
+    //     let datos = ""; //<?= $dataJsonSimuladaFacturas ?>;
+    //     console.log("datos =>" + datos);
+    //     let keysData = Object.keys(datos);
 
 
-        keysData.forEach(key => {
-            let data = datos[key];
+    //     keysData.forEach(key => {
+    //         let data = datos[key];
 
-            let valorTotal = Number(data.valor) * Number(data.cantidad) - Number(data.descuento);
-            let fila = `<tr id="filaF${data.facturaId}" data-empresaid="${data.empresaId}" data-especialista="${data.especialistaId}" data-clienteid="${data.clienteId}" data-fecha="${data.fecha}" data-procedimientoid="${data.procedimientoId}">
-                    <td style="padding:10px !important">
-                      <select class="underline-input">
-                        <option value="${data.clienteId}">${data.nombreCliente}</option>
-                      </select>
-                    </td> 
-                    <td style="padding:10px !important"><input class="underline-input" type="date" readonly value="${data.fecha}"></td> 
-                    <td style="padding:10px !important">
-                      <select class="underline-input">
-                        <option value="${data.procedimientoId}">${data.procedimientoNombre}</option>
-                      </select>
-                    </td> 
-                    <td style="padding:10px !important"><input class="underline-input" onkeyup="calcularTotalSeleccionado()" name="FacturasSeleccionadas[${data.facturaId}][nAutorizacion]" type="text" value=""></td>                     
-                    <td style="padding:10px !important"><input class="underline-input" type="number" readonly value="${data.valor}"></td> 
-                    <td style="padding:10px !important">
-                      <input class="underline-input" type="number" readonly value="${valorTotal}">
-                    </td> 
-                    <td style="padding:10px !important">
-                      <input class="checkbox_multiple_empresa" name="FacturasSeleccionadas[${data.facturaId}][facturaId]" onchange="calcularTotalSeleccionado()" type="checkbox" data-idfactura="${data.facturaId}" value="${valorTotal}">
-                    </td> 
-                  </tr>`;
-            $("#modalNuevaFacturaEmpresa #tbody-modal-facturacion").append(fila);
-        })
+    //         let valorTotal = Number(data.valor) * Number(data.cantidad) - Number(data.descuento);
+    //         let fila = `<tr id="filaF${data.facturaId}" data-empresaid="${data.empresaId}" data-especialista="${data.especialistaId}" data-clienteid="${data.clienteId}" data-fecha="${data.fecha}" data-procedimientoid="${data.procedimientoId}">
+    //                 <td style="padding:10px !important">
+    //                   <select class="underline-input">
+    //                     <option value="${data.clienteId}">${data.nombreCliente}</option>
+    //                   </select>
+    //                 </td> 
+    //                 <td style="padding:10px !important"><input class="underline-input" type="date" readonly value="${data.fecha}"></td> 
+    //                 <td style="padding:10px !important">
+    //                   <select class="underline-input">
+    //                     <option value="${data.procedimientoId}">${data.procedimientoNombre}</option>
+    //                   </select>
+    //                 </td> 
+    //                 <td style="padding:10px !important"><input class="underline-input" onkeyup="calcularTotalSeleccionado()" name="FacturasSeleccionadas[${data.facturaId}][nAutorizacion]" type="text" value=""></td>                     
+    //                 <td style="padding:10px !important"><input class="underline-input" type="number" readonly value="${data.valor}"></td> 
+    //                 <td style="padding:10px !important">
+    //                   <input class="underline-input" type="number" readonly value="${valorTotal}">
+    //                 </td> 
+    //                 <td style="padding:10px !important">
+    //                   <input class="checkbox_multiple_empresa" name="FacturasSeleccionadas[${data.facturaId}][facturaId]" onchange="calcularTotalSeleccionado()" type="checkbox" data-idfactura="${data.facturaId}" value="${valorTotal}">
+    //                 </td> 
+    //               </tr>`;
+    //         $("#modalNuevaFacturaEmpresa #tbody-modal-facturacion").append(fila);
+    //     })
 
-    }
+    // }
 
 
     function guardarFacturaEmpresa() {
@@ -837,7 +837,7 @@
         $("#modalNuevaFacturaEmpresa #centro_costo").html(obtenerOptionsCentrosCosto());
         $("#modalNuevaFacturaEmpresa #modal-resumen-n-autorizacion").html(($("#numeroAutorizacion").val() != '' ? $("#numeroAutorizacion").val() : 'No aplica'));
 
-        tabularDatosFacturaEntidad();
+        // tabularDatosFacturaEntidad();
         filtrarTablaModalEmpresa();
         paginacionModal("modalNuevaFacturaEmpresa", "modalFacturaEmpresa_p", 3) /// funcion para generar las paginaciones del modal => se encuentra en includeGeneralesModalFE.php
 

@@ -14,11 +14,15 @@ include "../header.php";
       </ol>
     </nav>
 
+    <div class="d-flex justify-content-end mb-3">
+      <a class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCrearCita">
+        <i class="fas fa-calendar-plus"></i> Nueva Cita
+      </a>
+    </div>
     <div id="examRecipesAppReact"></div>
-
   </div>
 </div>
-
+<?php include "../Citas//modalCitas.php"; ?>
 <?php include "../footer.php"; ?>
 
 <script type="module">

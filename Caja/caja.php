@@ -633,7 +633,7 @@ include "./includes/modals/AccesoCajaModal.php";
             })
             .then(response => response.json())
             .then(responseData => {
-                console.log('Respuesta del endpoint:', responseData); // Inspecciona la respuesta
+                // console.log('Respuesta del endpoint:', responseData); // Inspecciona la respuesta
                 const select = document.getElementById('customerSelect');
                 select.innerHTML = '<option selected="selected">Seleccionar</option>'; // Resetear opciones
 

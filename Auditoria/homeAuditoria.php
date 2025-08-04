@@ -4,7 +4,10 @@ include "../header.php";
 include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
-    ['icono' => 'ban', 'titulo' => 'Anulaciones', 'texto' => 'Ver las solicitudes de anulaciones', 'url' => 'consultas-anulacion-pendiente'],
+    ['icono' => 'ban', 'titulo' => 'Anulaciones de historias clinicas', 'texto' => 'Ver las solicitudes de anulaciones', 'url' => 'consultas-anulacion-pendiente'],
+    ['icono' => 'ban', 'titulo' => 'Anulaciones de facturas', 'texto' => 'Ver las solicitudes de anulaciones', 'url' => 'admisiones-anulacion-pendiente'],
+    ['icono' => 'ban', 'titulo' => 'Estados de las solicitudes', 'texto' => 'Ver los estados de las solicitudes', 'url' => 'general-requests'],
+    ['icono' => 'right-to-bracket', 'titulo' => 'Logs', 'texto' => 'Ver logs de auditoria en el sistema', 'url' => 'logsAuditoria'],
 ];
 
 ?>

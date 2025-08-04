@@ -3,11 +3,12 @@ include "../menu.php";
 include "../header.php";
 ?>
 <div class="content">
-    <div class="container-small">
+    <div class="">
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()">Nueva Forma De Pago</li>
+                <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
+                <li class="breadcrumb-item active" onclick="location.reload()">Cuentas por Cobrar/Pagar</li>
             </ol>
         </nav>
         <div class="main-content">

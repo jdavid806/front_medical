@@ -1,18 +1,35 @@
 <div class="body">
   <p-card class="custom-background">
-      <div class="flex justify-content-between align-items-center mb-3">
-          <div class="input-container">
-              <input type="text" pInputText [(ngModel)]="wordFilter" (ngModelChange)="onChangeWord()"
-                  placeholder="Buscar" />
-          </div>
-          <div>
-              <p-button label="Nuevo componente contable" variant="text" [raised]="true" severity="primary"
-                  (click)="onNewSelected()"></p-button>
-
-              <p-splitButton label="Nuevo" [model]="items" icon="pi pi-plus" (onClick)="onNewSelected()"></p-splitButton>
-          </div>
+    <div class="flex justify-content-between align-items-center mb-3">
+      <div class="input-container">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="wordFilter"
+          (ngModelChange)="onChangeWord()"
+          placeholder="Buscar"
+        />
       </div>
-      <p-table
+      <div class="button-container">
+        <p-button
+          label="Nuevo componente contable"
+          [raised]="true"
+          (click)="onNewSelected()"
+        >
+        </p-button>
+
+        <p-splitButton
+          label="Nuevo"
+          [model]="items"
+          icon="pi pi-plus"
+          raised
+          severity="secondary"
+          class="custom-split-btn"
+        >
+        </p-splitButton>
+      </div>
+    </div>
+    <p-table
       [value]="data"
       [paginator]="true"
       [rows]="10"
@@ -23,75 +40,82 @@
       dataKey="voucher"
       rowGroupMode="subheader"
       groupRowsBy="voucher"
-      [tableStyle]="{'min-width': '70rem'}"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 5%">Secuencia</th>
+          <th style="width: 10%">Fecha elaboración</th>
+          <th style="width: 10%">Cód contable</th>
+          <th style="width: 10%">Cuenta contable</th>
+          <th style="width: 10%">Identificación</th>
+          <th style="width: 5%">Sucursal</th>
+          <th style="width: 10%">Nombre tercero</th>
+          <th style="width: 10%">Descripción</th>
+          <th style="width: 10%">Detalle</th>
+          <th style="width: 10%">Centro de costo</th>
+          <th style="width: 10%">Costo</th>
+        </tr>
+      </ng-template>
+      <ng-template
+        #groupheader
+        let-movement
+        let-rowIndex="rowIndex"
+        let-expanded="expanded"
       >
-          <ng-template #header>
-              <tr>
-                  <th style="width:5%">Secuencia</th>
-                  <th style="width:10%">Fecha elaboración</th>
-                  <th style="width:10%">Cód contable</th>
-                  <th style="width:10%">Cuenta contable</th>
-                  <th style="width:10%">Identificación</th>
-                  <th style="width:5%">Sucursal</th>
-                  <th style="width:10%">Nombre tercero</th>
-                  <th style="width:10%">Descripción</th>
-                  <th style="width:10%">Detalle</th>
-                  <th style="width:10%">Centro de costo</th>
-                  <th style="width:10%">Costo</th>
-              </tr>
-          </ng-template>
-          <ng-template  #groupheader let-movement let-rowIndex="rowIndex" let-expanded="expanded">
-              <tr>
-                  <td colspan="50">
-                      <button
-                          type="button"
-                          pButton
-                          pRipple
-                          [pRowToggler]="movement"
-                          class="p-button-text p-button-rounded p-button-plain mr-2"
-                          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
-                      </button>
-                      <span class="font-bold ml-2">Comprobante: {{movement.voucher}}</span>
-                  </td>
-              </tr>
-          </ng-template>
-          <ng-template #expandedrow let-movement let-rowIndex="rowIndex">
-              <tr>
-                  <td>
-                      {{rowIndex}}
-                  </td>
-                  <td>
-                      {{movement.parsedDate}}
-                  </td>
-                  <td>
-                      {{movement.accountingCode}}
-                  </td>
-                  <td>
-                      {{movement.accountingAccount}}
-                  </td>
-                  <td>
-                      {{movement.clientId}}
-                  </td>
-                  <td>
-                      {{movement.branchOffice}}
-                  </td>
-                  <td>
-                      {{movement.thirdName}}
-                  </td>
-                  <td>
-                      {{movement.description}}
-                  </td>
-                  <td>
-                      {{movement.detail}}
-                  </td>
-                  <td>
-                      {{movement.centerCorst}}
-                  </td>
-                  <td>
-                      {{movement.cost}}
-                  </td>
-              </tr>
-          </ng-template>
-      </p-table>
+        <tr>
+          <td colspan="50">
+            <button
+              type="button"
+              pButton
+              pRipple
+              [pRowToggler]="movement"
+              class="p-button-text p-button-rounded p-button-plain mr-2"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            ></button>
+            <span class="font-bold ml-2"
+              >Comprobante: {{ movement.voucher }}</span
+            >
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #expandedrow let-movement let-rowIndex="rowIndex">
+        <tr>
+          <td>
+            {{ rowIndex }}
+          </td>
+          <td>
+            {{ movement.parsedDate }}
+          </td>
+          <td>
+            {{ movement.accountingCode }}
+          </td>
+          <td>
+            {{ movement.accountingAccount }}
+          </td>
+          <td>
+            {{ movement.clientId }}
+          </td>
+          <td>
+            {{ movement.branchOffice }}
+          </td>
+          <td>
+            {{ movement.thirdName }}
+          </td>
+          <td>
+            {{ movement.description }}
+          </td>
+          <td>
+            {{ movement.detail }}
+          </td>
+          <td>
+            {{ movement.centerCorst }}
+          </td>
+          <td>
+            {{ movement.cost }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </p-card>
 </div>

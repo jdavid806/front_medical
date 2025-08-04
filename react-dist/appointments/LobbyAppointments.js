@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
-import { appointmentService } from "../../services/api/index.js";
 import { Panel } from "primereact/panel";
 import { ScrollPanel } from "primereact/scrollpanel";
+import { Paginator } from "primereact/paginator";
 const appointmentStatesByKey = {
   Pendiente: "Pendiente",
   "En espera de consulta": "En espera de consulta",
@@ -53,16 +53,24 @@ const stateColors = {
   } // Violeta
 };
 export const LobbyAppointments = () => {
+  const getCustomFilters = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return {
+      sort: "-appointment_date,appointment_time",
+      appointmentDate: today
+    };
+  };
   const {
-    appointments
-  } = useFetchAppointments(appointmentService.active());
-  const [filterAppointments, setFilterAppointments] = useState([]);
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato "YYYY-MM-DD"
-    setFilterAppointments(appointments.filter(appointment => appointment.date === today));
-  }, [appointments]);
-  // Agrupar citas por estado
-  const groupedAppointments = filterAppointments.reduce((acc, appointment) => {
+    appointments,
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+    totalRecords,
+    first,
+    loading: loadingAppointments,
+    perPage
+  } = useFetchAppointments(getCustomFilters);
+  const groupedAppointments = appointments.reduce((acc, appointment) => {
     const stateKey = appointment.stateDescription;
     const stateLabel = appointmentStatesByKey[stateKey] || "Sin Cita";
     if (stateLabel !== "Sin Cita") {
@@ -101,7 +109,9 @@ export const LobbyAppointments = () => {
     }
   }, stateAppointments?.map(appointment => /*#__PURE__*/React.createElement(Card, {
     key: appointment.id,
-    title: appointment.patientName,
+    title: /*#__PURE__*/React.createElement("h5", null, /*#__PURE__*/React.createElement("a", {
+      href: `verPaciente?id=${appointment.patientId}`
+    }, appointment.patientName)),
     style: {
       flex: "1 1 300px",
       // Las tarjetas ocupan el mismo ancho mínimo de 300px
@@ -124,5 +134,11 @@ export const LobbyAppointments = () => {
       fontSize: "14px",
       alignSelf: "flex-start" // Asegura que la etiqueta no estire la tarjeta
     }
-  }))))))));
+  }))))))), /*#__PURE__*/React.createElement(Paginator, {
+    first: first,
+    rows: perPage,
+    rowsPerPageOptions: [10, 20, 30],
+    totalRecords: totalRecords,
+    onPageChange: handlePageChange
+  }));
 };

@@ -1,0 +1,281 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Informe",
+        "card": [
+          {
+            "title": "",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tipoInforme",
+                "label": "Tipo de Informe",
+                "type": "select",
+                "name": "tipoInforme",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "Informe Marzo 2025",
+                    "text": "Informe Marzo 2025"
+                  },
+                  {
+                    "value": "Informe Marzo a Abril 2025",
+                    "text": "Informe Marzo a Abril 2025"
+                  },
+                  {
+                    "value": "Informe Abril a Mayo 2025",
+                    "text": "Informe Abril a Mayo 2025"
+                  },
+                  {
+                    "value": "Informe Abril 2025",
+                    "text": "Informe Abril 2025"
+                  }
+                ]
+              },
+              {
+                "id": "especialidad",
+                "label": "Especialidad",
+                "type": "select",
+                "name": "especialidad",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "Fonoaudiología",
+                    "text": "Fonoaudiología"
+                  },
+                  {
+                    "value": "Fisioterapia",
+                    "text": "Fisioterapia"
+                  },
+                  {
+                    "value": "Hidroterapia",
+                    "text": "Hidroterapia"
+                  },
+                  {
+                    "value": "Terapia ocupacional",
+                    "text": "Terapia ocupacional"
+                  },
+                  {
+                    "value": "Neurosensorial",
+                    "text": "Neurosensorial"
+                  },
+                  {
+                    "value": "Psicología",
+                    "text": "Psicología"
+                  },
+                  {
+                    "value": "Psicología clínica",
+                    "text": "Psicología clínica"
+                  },
+                  {
+                    "value": "Psicología familiar",
+                    "text": "Psicología familiar"
+                  },
+                  {
+                    "value": "Neuropsicología",
+                    "text": "Neuropsicología"
+                  },
+                  {
+                    "value": "Acompañamiento terapéutico",
+                    "text": "Acompañamiento terapéutico"
+                  },
+                  {
+                    "value": "Musicoterapia",
+                    "text": "Musicoterapia"
+                  },
+                  {
+                    "value": "Equinoterapia",
+                    "text": "Equinoterapia"
+                  },
+                  {
+                    "value": "Psiquiatría",
+                    "text": "Psiquiatría"
+                  },
+                  {
+                    "value": "Rehabilitación cognitiva",
+                    "text": "Rehabilitación cognitiva"
+                  }
+                ]
+              },
+              {
+                "id": "tipoTitulo",
+                "label": "Tipo/Titulo",
+                "type": "select",
+                "name": "tipoTitulo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "value": "PERFIL DE EVOLUCION",
+                    "text": "PERFIL DE EVOLUCION"
+                  },
+                  { "value": "NUEVOS OBJETIVOS", "text": "NUEVOS OBJETIVOS" },
+                  {
+                    "value": "ANALISIS DESCRIPTIVO",
+                    "text": "ANALISIS DESCRIPTIVO"
+                  },
+                  { "value": "RECOMENDACIONES", "text": "RECOMENDACIONES" },
+                  { "value": "OBJETIVOS", "text": "OBJETIVOS" },
+                  { "value": "AREA EMOCIONAL", "text": "AREA EMOCIONAL" },
+                  { "value": "AREA SOCIAL", "text": "AREA SOCIAL" },
+                  {
+                    "value": "AREA CONDUCTUAL Y FAMILIAR",
+                    "text": "AREA CONDUCTUAL Y FAMILIAR"
+                  },
+                  { "value": "OBJETIVO", "text": "OBJETIVO" },
+                  { "value": "FORTALEZAS", "text": "FORTALEZAS" },
+                  { "value": "RETOS", "text": "RETOS" },
+                  { "value": "ORIENTACION", "text": "ORIENTACION" },
+                  { "value": "MOTOR", "text": "MOTOR" },
+                  { "value": "SENSO-PERCEPCION", "text": "SENSO-PERCEPCION" },
+                  { "value": "ATENCION", "text": "ATENCION" },
+                  { "value": "LENGUAJE", "text": "LENGUAJE" },
+                  { "value": "MEMORIA", "text": "MEMORIA" },
+                  { "value": "PRAXIS", "text": "PRAXIS" },
+                  {
+                    "value": "FUNCIONES EJECUTIVAS",
+                    "text": "FUNCIONES EJECUTIVAS"
+                  },
+                  { "value": "SOCIAL Y EMOCION", "text": "SOCIAL Y EMOCION" },
+                  {
+                    "value": "NIVEL DE INDEPENDENCIA",
+                    "text": "NIVEL DE INDEPENDENCIA"
+                  },
+                  {
+                    "value": "CONCLUSIÓN Y RECOMENDACIONES",
+                    "text": "CONCLUSIÓN Y RECOMENDACIONES"
+                  },
+                  {
+                    "value": "OBJETIVOS ALCANZADOS",
+                    "text": "OBJETIVOS ALCANZADOS"
+                  },
+                  { "value": "PERCEPCION", "text": "PERCEPCION" },
+                  { "value": "GNOSIAS", "text": "GNOSIAS" },
+                  { "value": "PRAXIAS", "text": "PRAXIAS" },
+                  {
+                    "value": "NIVEL COMPORTAMENTAL",
+                    "text": "NIVEL COMPORTAMENTAL"
+                  },
+                  { "value": "NIVEL COGNITIVO", "text": "NIVEL COGNITIVO" },
+                  { "value": "NIVEL SOCIAL", "text": "NIVEL SOCIAL" },
+                  {
+                    "value": "LENGUAJE EXPRESIVO",
+                    "text": "LENGUAJE EXPRESIVO"
+                  },
+                  {
+                    "value": "LENGUAJE COMPRENSIVO",
+                    "text": "LENGUAJE COMPRENSIVO"
+                  },
+                  {
+                    "value": "PROCESO DE LECTO – ESCRITURA",
+                    "text": "PROCESO DE LECTO – ESCRITURA"
+                  },
+                  {
+                    "value": "ESTRATEGIAS DE INTERVENCION DESARROLLADAS PARA INCENTIVAR EL LENGUAJE",
+                    "text": "ESTRATEGIAS DE INTERVENCION DESARROLLADAS PARA INCENTIVAR EL LENGUAJE"
+                  },
+                  {
+                    "value": "AREA PSICOFUNCIONAL",
+                    "text": "AREA PSICOFUNCIONAL"
+                  },
+                  {
+                    "value": "EVALUACIÓN GENERAL FISIOTERAPEUTICA",
+                    "text": "EVALUACIÓN GENERAL FISIOTERAPEUTICA"
+                  },
+                  {
+                    "value": "IDENTIFICACION DE CONDUCTAS PROBLEMA",
+                    "text": "IDENTIFICACION DE CONDUCTAS PROBLEMA"
+                  },
+                  {
+                    "value": "HETEROAGRESIVIDAD O DAÑO A OTROS",
+                    "text": "HETEROAGRESIVIDAD O DAÑO A OTROS"
+                  },
+                  {
+                    "value": "DESTRUCCION DE OBJETOS",
+                    "text": "DESTRUCCION DE OBJETOS"
+                  },
+                  {
+                    "value": "CONDUCTA DISRUPTIVA QUE INTERFIERE A LAS ACTIVIDADES DE OTROS",
+                    "text": "CONDUCTA DISRUPTIVA QUE INTERFIERE A LAS ACTIVIDADES DE OTROS"
+                  },
+                  {
+                    "value": "HABITOS ATIPICOS O REPETITIVOS (ESTEROTIPIAS)",
+                    "text": "HABITOS ATIPICOS O REPETITIVOS (ESTEROTIPIAS)"
+                  },
+                  {
+                    "value": "CONDUCTA SOCIAL OFENSIVA",
+                    "text": "CONDUCTA SOCIAL OFENSIVA"
+                  },
+                  {
+                    "value": "RETAIMIENTO O FALTA DE ATENCION",
+                    "text": "RETAIMIENTO O FALTA DE ATENCION"
+                  },
+                  {
+                    "value": "CONDUCTAS NO COLABORADORAS",
+                    "text": "CONDUCTAS NO COLABORADORAS"
+                  },
+                  { "value": "OTRAS", "text": "OTRAS" },
+                  {
+                    "value": "JERARQUIZACION DE LAS CONDUCTAS PROBLEMA",
+                    "text": "JERARQUIZACION DE LAS CONDUCTAS PROBLEMA"
+                  },
+                  {
+                    "value": "FRECUENCIA DE LAS CONDUCTAS PROBLEMA",
+                    "text": "FRECUENCIA DE LAS CONDUCTAS PROBLEMA"
+                  },
+                  {
+                    "value": "DIAS Y HORAS EN LAS QUE SUCEDE LA CONDUCTA",
+                    "text": "DIAS Y HORAS EN LAS QUE SUCEDE LA CONDUCTA"
+                  },
+                  { "value": "ANTECEDENTE", "text": "ANTECEDENTE" },
+                  { "value": "CONDUCTA", "text": "CONDUCTA" },
+                  { "value": "CONSECUENCIAS", "text": "CONSECUENCIAS" },
+                  {
+                    "value": "HIPOTESIS DE MANTENIMIENTO",
+                    "text": "HIPOTESIS DE MANTENIMIENTO"
+                  },
+                  { "value": "COMUNICACION", "text": "COMUNICACION" },
+                  {
+                    "value": "OBTENCION DE ESTIMULOS SENSORIALES",
+                    "text": "OBTENCION DE ESTIMULOS SENSORIALES"
+                  },
+                  { "value": "AUTONOMIA", "text": "AUTONOMIA" },
+                  {
+                    "value": "AMENAZAS, CASTIGOS E INTERFERENCIA FAMILIAR",
+                    "text": "AMENAZAS, CASTIGOS E INTERFERENCIA FAMILIAR"
+                  }
+                ]
+              },
+              {
+                "id": "detalle",
+                "label": "Detalle",
+                "type": "textarea",
+                "name": "detalle",
+                "class": "col-12"
+              },
+              {
+                "id": "agregarInforme",
+                "type": "buttonI",
+                "name": "agregarInforme"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Archivos (Opcional)",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "archivos",
+                "label": "",
+                "type": "file",
+                "name": "archivos"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

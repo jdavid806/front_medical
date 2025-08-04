@@ -10,7 +10,13 @@ export const useUserSpecialties = () => {
     const fetchUserSpecialties = async () => {
         try {
             const data = await userSpecialtyService.getAll();
-            setUserSpecialties(data);
+            const mappedData = data.map((item: UserSpecialtyDto) => {
+                return {
+                    ...item,
+                    label: item.name,
+                };
+            })
+            setUserSpecialties(mappedData);
         } catch (err) {
             ErrorHandler.generic(err);
         } finally {

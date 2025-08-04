@@ -12,7 +12,18 @@ async function getFileUrl(file_id) {
   }
 }
 
-async function guardarArchivo(formData) {
+function getUrlImage(minioUrl, withProtocol = false) {
+  const { protocol, hostname } = window.location;
+  const tenant = hostname.split(".")[0];
+  const subdomains = hostname.split(".").slice(1).join(".") || "";
+  if (!withProtocol) {
+    return `/bucket/${tenant}-${subdomains.split(".")[0]}/${minioUrl}`;
+  } else {
+    return `${protocol}//${tenant}.${subdomains.split(".")[0]}.${subdomains.split(".")[1]}/bucket/${tenant}-${subdomains.split(".")[0]}/${minioUrl}`;
+  }
+}
+
+async function guardarArchivo(formData, returnFullData = false) {
   let tenant = obtenerTenant();
   formData.append("tenant_id", tenant);
 
@@ -25,10 +36,10 @@ async function guardarArchivo(formData) {
 
     let result = await response.json();
 
-    if (response.ok) {
-      return result.file.id;
+    if (!returnFullData) {
+      return result.file.file_url;
     } else {
-      console.log("Error en el cargue", response);
+      return result;
     }
   } catch (error) {
     console.error("Error en la subida del archivo:", error);
@@ -40,37 +51,27 @@ async function guardarArchivoUsuario(id_input, user_id) {
   let file = fileInput.files[0];
 
   if (!file) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Por favor seleccione un archivo antes de continuar.",
-    });
     return;
   }
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "App\Models\User");
+  formData.append("model_type", "App\\Models\\User");
   formData.append("model_id", user_id);
   return guardarArchivo(formData);
 }
 
-async function guardarArchivoPaciente(id_input, patient_id) {
-  let fileInput = document.getElementById(id_input);
-  let file = fileInput.files[0];
-
+async function guardarArchivoPaciente(id_input, patient_id, file = null) {
+  let fileToStore = file;
+  if (!fileToStore) {
+    fileToStore = document.getElementById(id_input).files[0];
+  }
   if (!file) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Por favor seleccione un archivo antes de continuar.",
-    });
     return;
   }
-
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "App\Models\Patient");
+  formData.append("model_type", "App\\Models\\Patient");
   formData.append("model_id", patient_id);
   return guardarArchivo(formData);
 }
@@ -90,7 +91,7 @@ async function guardarArchivoExamen(id_input, examen_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "App\Models\ExamOrder");
+  formData.append("model_type", "App\\Models\\ExamOrder");
   formData.append("model_id", examen_id);
   return guardarArchivo(formData);
 }
@@ -110,7 +111,30 @@ async function guardarArchivoClinico(id_input, record_id) {
 
   let formData = new FormData();
   formData.append("file", file);
-  formData.append("model_type", "App\Models\ClinicalRecord");
+  formData.append("model_type", "App\\Models\\ClinicalRecord");
   formData.append("model_id", record_id);
+  return guardarArchivo(formData);
+}
+
+async function guardarDocumentoAdmision(id_input, record_id) {
+  let fileInput = document.getElementById(id_input);
+  let file = fileInput.files[0];
+
+  let formData = new FormData();
+  formData.append("file", file);
+  formData.append("model_type", "App\\Models\\Admission");
+  formData.append("model_id", record_id);
+  return guardarArchivo(formData);
+}
+
+async function guardarResultadoRecetaExamen(id_input, record_id) {
+  let fileInput = document.getElementById(id_input);
+  let file = fileInput.files[0];
+
+  let formData = new FormData();
+  formData.append("file", file);
+  formData.append("model_type", "App\\Models\\ExamRecipeResult");
+  formData.append("model_id", record_id);
+
   return guardarArchivo(formData);
 }

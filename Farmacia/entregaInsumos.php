@@ -99,20 +99,20 @@ include('../menu.php');
                                         <h6 class="card-title">Detalles de insumos</h6>
                                         <div class="d-flex justify-content-between mb-2">
                                             <span>Subtotal:</span>
-                                            <span>$49.00</span>
+                                            <span  id='subtotal'>$0</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-2">
                                             <span>Impuestos:</span>
-                                            <span>$3.92</span>
+                                            <span  id='impuesto'> $0</span>
                                         </div>
                                         <div class="d-flex justify-content-between mb-2">
                                             <span>Descuento:</span>
-                                            <span>-$5.00</span>
+                                            <span  id='descuento'>-$0</span>
                                         </div>
                                         <hr>
                                         <div class="d-flex justify-content-between fw-bold">
                                             <span>Total:</span>
-                                            <span>$47.92</span>
+                                            <span id='total'>$0</span>
                                         </div>
                                         <div class="mt-3">
                                             <div class="d-flex align-items-center">
@@ -422,7 +422,7 @@ include('../menu.php');
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" id="printReceiptBtn">
                     <i class="fas fa-print me-1"></i> Imprimir
                 </button>
             </div>

@@ -1,127 +1,388 @@
-<div class="form-container">
-  <form form-group="form">
-    <h3>Información básica</h3>
-    <div class="form-grid-basic">
-      <div class="form-inputElement">
-        <p>Tipo de comprobante</p>
-        <p-select placeholder="Seleccionar" [editable]="true" optionLabel="name" />
-      </div>
-      <div class="form-inputElement">
-        <p>Numero de factura</p>
-        <input type="text" pInputText placeholder="Ingresar Numero Factura" />
-      </div>
-      <div class="form-inputElement">
-        <p>Cliente</p>
-        <p-select placeholder="Selecciona cliente" [editable]="true" optionLabel="name" />
-      </div>
-      <div class="form-inputElement">
-        <p>Destinatario</p>
-        <p-select placeholder="Selecciona destinatario" [editable]="true" optionLabel="name" />
-      </div>
-      <div class="form-inputElement">
-        <p>Vendedor</p>
-        <p-select placeholder="Selecciona vendedor" [editable]="true" optionLabel="name" />
-      </div>
-      <div class="form-inputElement">
-        <p>Centro de costo</p>
-        <p-select placeholder="Selecciona centro" [editable]="true" optionLabel="name" />
-      </div>
-      <div class="form-inputElement full-width">
-        <p>Fecha seleccionada</p>
-        <p-datepicker class="date-picker-id" [iconDisplay]="'input'" [showIcon]="true" dateFormat="dd/mm/yy" [(ngModel)]="formattedDate" placeholder="dd/mm/aaaa"  />
-      </div>
-    </div>
+<!-- Main Header Section -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-0 mb-4 bg-white p-4 md:p-3 rounded-lg shadow-md">
+  <!-- Back Button -->
+  <div class="w-full  md:w-auto md:flex-1 flex justify-start">
+    <p-button
+      label="{{ 'SALES_INVOICES' | translate }} - {{ 'CREATE_SALES_INVOICE' | translate }}"
+      icon="pi pi-arrow-left"
+      styleClass="p-button-text p-button-secondary w-full md:w-auto justify-start"
+      [raised]="true"
+      routerLink="/billing/sales">
+    </p-button>
+  </div>
 
-    <h3>Información de facturación</h3>
-    <p-card class="parent-card">
-      <!-- Encabezado de la tabla -->
-      <table class="product-table" style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Valor unitario</th>
-            <th>% Dscto</th>
-            <th>IVA</th>
-            <th>Impuesto retención</th>
-            <th>Valor Total</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for(product of productsArray; track product; let i = $index) {
-          <tr>
-            <td>
-              <p-select placeholder="Selecciona producto" [editable]="true" optionLabel="name"></p-select>
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="Cantidad" />
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="Valor unitario" />
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="% Dscto" />
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="IVA" />
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="" />
-            </td>
-            <td>
-              <input type="text" pInputText placeholder="0.00" />
-            </td>
-            <td>
-              <p-button icon="pi pi-trash"  [text]="true" severity="danger" (click)="removeProduct(i)" />
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
+  <!-- Centered Title -->
+  <div class="w-full mr-8 md:flex-1 px-0 md:px-4">
+    <h1 class="text-xl md:text-2xl font-bold mb-1 inline-block">
+      {{ "CREATE_NEW_SALES_INVOICE" | translate }}
+      <div class="w-16  md:w-20 h-1 bg-blue-500 mx-auto mt-2 md:mt-1"></div>
+    </h1>
+  </div>
+</div>
 
-      <!-- Botón para añadir producto -->
-      <p class="add-text" (click)="addProduct()">
-        <i class="pi pi-plus"></i> Añadir
-      </p>
+<div class="form-container p-4">
+  <form [formGroup]="form"  class="space-y-6">
+    <!-- Información básica -->
+    <p-card class="mb-2" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none' , 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4"><i class="pi pi-user-edit mr-2 mt-1 text-blue-500"></i> {{"BASIC_INFO" | translate}}</h3>
+      <div class="form-grid-basic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 ml-1">
+        <div class="form-inputElement   rounded bg-gray-50">
+          <p class="font-normal mb-2 text-gray-700"> {{ "VOUCHER_TYPE" | translate }}</p>
 
-      <!-- Total -->
-      <p-card class="total-card">
-        <h4>Total Neto: {{totalValue}}</h4>
-      </p-card>
+          <p-select
+                [options]="typeOptions"
+                formControlName="type"
+                optionLabel="name"
+                placeholder="{{ 'SELECT_RECEIPT_TYPE' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('type')?.invalid && form.get('type')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true">
+              </p-select>
+        </div>
+        <div class="form-inputElement  border border-gray-200 rounded bg-gray-50">
+          <p class="font-normal text-gray-700"> {{ "INVOICE_NUMBER" | translate }}</p>
+          <input
+            type="text"
+            pInputText
+            placeholder="{{ 'ENTER_INVOICE_NUMBER' | translate }}"
+            class="w-full"
+            formControlName="invoiceNumber"
+            [ngClass]="{'ng-invalid ng-dirty': form.get('invoiceNumber')?.invalid && form.get('invoiceNumber')?.touched}"
+            readonly
+            />
+        </div>
+        <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+          <p class="font-normal text-gray-700">{{ "CLIENT" | translate }}</p>
+          <p-select
+          [options]="customers"
+          formControlName="customer"
+          optionLabel="fullName"
+          placeholder="{{ 'SELECT_CLIENT' | translate }}"
+          class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': form.get('customer')?.invalid && form.get('customer')?.touched}"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+           />
+        </div>
+
+        <div class="form-inputElement  border border-gray-200 rounded bg-gray-50">
+          <p class="font-normal text-gray-700">{{ "ADDRESSEE" | translate }}</p>
+          <p-select
+          [options]="recipientOptions"
+          formControlName="addressee"
+          optionLabel="name"
+          placeholder="{{ 'SELECT_CLIENT' | translate }}"
+          class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': form.get('addressee')?.invalid && form.get('addressee')?.touched}"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+           >
+           <ng-template pTemplate="footer">
+            <div class="p-2 border-t border-gray-200">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-plus"
+                label="{{ 'CREATE_NEW' | translate }}"
+                class="p-button-text p-button-sm w-full justify-content-start"
+                (click)="openNewContactModal()">
+              </button>
+            </div>
+          </ng-template>
+          </p-select>
+        </div>
+
+
+        <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+          <p class="font-normal  text-gray-700">{{ 'SELLER' | translate }}</p>
+          <p-select
+          [options]="sellerOptions"
+          formControlName="seller"
+          optionLabel="name"
+          placeholder="{{ 'SELECT_SELLER' | translate }}"
+          class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': form.get('seller')?.invalid && form.get('seller')?.touched}"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          />
+        </div>
+        <div class="form-inputElement  border border-gray-200 rounded bg-gray-50">
+          <p class="font-normal  text-gray-700">{{ 'COST_CENTER' | translate }}</p>
+          <p-select
+          [options]="costCenterOptions"
+          formControlName="costcenter"
+          optionLabel="name"
+          placeholder="{{ 'SELECT_COST_CENTER' | translate }}"
+          class="w-full"
+          [ngClass]="{'ng-invalid ng-dirty': form.get('costcenter')?.invalid && form.get('costcenter')?.touched}"
+          [filter]="true"
+          filterBy="name"
+          [showClear]="true"
+          />
+        </div>
+        <div
+          class="form-inputElement  border border-gray-200 rounded bg-gray-50 col-span-4 md:col-span-2 lg:col-span-3">
+          <p class="font-normal text-gray-700">{{ 'DATE_ELABORATION' | translate }}</p>
+            <p-datepicker
+                formControlName="creationDate"
+                [iconDisplay]="'input'"
+                [showIcon]="true"
+                [showButtonBar]="true"
+                inputId="icondisplay"
+                placeholder="dd/mm/yy"
+                dateFormat="dd/mm/yy"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('creationDate')?.invalid && form.get('creationDate')?.touched}">
+              </p-datepicker>
+        </div>
+
+        <div
+        class="form-inputElement  border border-gray-200 rounded bg-gray-50 col-span-4 md:col-span-2 lg:col-span-3">
+        <p class="font-normal text-gray-700">{{ 'EXPIRATION_DATE' | translate }}</p>
+          <p-datepicker
+              formControlName="expirationonDate"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              inputId="icondisplay"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('expirationonDate')?.invalid && form.get('expirationonDate')?.touched}">
+            </p-datepicker>
+      </div>
+      </div>
     </p-card>
 
-    <h3>Medio de pago</h3>
-    <div class="payment-array">
-      @for(paymentMethods of paymentMethodsArray; track paymentMethods; let i = $index) {
-      <div class="payment-container">
-        <div>
-          <p>Selecciona medio de pago</p>
-          <p-select placeholder="Seleccionar" [editable]="true" optionLabel="name" />
-        </div>
-        <div>
-          <p>Número de autorización</p>
-          <input type="text" pInputText placeholder="" />
-        </div>
-        <div>
-          <p>Valor</p>
-          <input type="text" pInputText placeholder="0.00" />
-        </div>
-        <div class="icon">
-          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (click)="removePayment(i)" />
+    <!-- Información de facturación -->
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none', 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4"><i class="pi pi-barcode mr-2 mt-1 text-blue-500"></i>{{ 'INVOICE_INFO' | translate }}
+      </h3>
+
+      <div class="parent-card border border-gray-200 rounded p-4 bg-white">
+        <table class="product-table w-full border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-100">
+              <th class="text-center  text-gray-700 font-semibold">{{ 'PRODUCT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'PROCEDURE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'UNIT_VALUE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'PERCENTAGE_DISCOUNT' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'VAT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'WITHHOLDING_TAX' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'TOTAL_VALUE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(product of productsArray; track product; let i = $index) {
+            <tr class="border-b border-gray-200 hover:bg-gray-50">
+              <td class="p-3 bg-gray-50">
+                <p-select
+                formControlName="products"
+                [options]="products"
+                placeholder="{{ 'SELECT_PRODUCT' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('products')?.invalid && form.get('products')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                optionLabel="name"
+                [showClear]="true"
+                >
+                </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                type="text"
+                pInputText
+                placeholder="{{ 'AMOUNT' | translate }}"
+                class="w-full"
+                formControlName="amount"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('amount')?.invalid && form.get('amount')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                type="text"
+                pInputText
+                placeholder="{{ 'UNIT_VALUE' | translate }}"
+                class="w-full"
+                formControlName="unitvalue"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('unitvalue')?.invalid && form.get('unitvalue')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                type="text"
+                pInputText
+                placeholder="{{ 'PERCENTAGE_DISCOUNT' | translate }}"
+                class="w-full"
+                formControlName="discount"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('discount')?.invalid && form.get('discount')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                [options]="ivaOptions"
+                formControlName="iva"
+                placeholder="{{ 'SELECT_TAX' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('iva')?.invalid && form.get('iva')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                optionLabel="name"
+                [showClear]="true"
+                >
+                </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                [options]="retentionTaxOptions"
+                formControlName="withholdingtax"
+                placeholder="{{ 'SELECT_WITHHOLDING_TAX' | translate }}"
+                optionLabel="name"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('withholdingtax')?.invalid && form.get('withholdingtax')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                optionLabel="name"
+                [showClear]="true"
+                >
+              </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                formControlName="totalvalue"
+                type="text"
+                pInputText
+                placeholder="{{ 'TOTAL_VALUE' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('totalvalue')?.invalid && form.get('totalvalue')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="removeProduct(i)" />
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Botón para añadir producto -->
+        <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700"
+          (click)="addProduct()">
+          <i class="pi pi-plus mr-2"></i> {{ 'ADD' | translate }}
+        </p>
+
+        <!-- Total -->
+        <p-card [style]="{'background':'#f8f9fa'}" class="total-card mt-4 border border-gray-200  rounded">
+          <h4 class="text-lg font-semibold text-gray-800">Total Neto: {{totalValue | currency}}</h4>
+        </p-card>
+      </div>
+    </p-card>
+
+    <!-- Medio de pago - Versión mejorada -->
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e5e7eb', 'box-shadow': '0 1px 3px rgba(0,0,0,0.05)', 'margin-bottom': '1.5rem' }">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+          <i class="pi pi-credit-card mr-2 mt-1 text-blue-500"></i>
+          {{ 'PAYMENT_METHOD' | translate }}
+        </h3>
+
+        <div class="payment-array space-y-4">
+          @for(paymentMethods of paymentMethodsArray; track paymentMethods; let i = $index) {
+          <div
+            class="payment-container grid grid-cols-1 md:grid-cols-12 gap-4 p-4  rounded-lg bg-gray-50/30 hover:bg-gray-50/50 transition-colors">
+            <!-- Medio de pago -->
+            <div class="md:col-span-4">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{ 'SELECT_HALF_PAYMENT' | translate }}</label>
+              <div class="bg-white border border-gray-200 rounded-md">
+                <p-select
+                [options]="makepaymentOptions"
+                placeholder="Seleccionar"
+                [editable]="true"
+                optionLabel="name"
+                class="w-full"
+                [dropdownIcon]="'pi pi-chevron-down'"
+                inputStyleClass="text-sm border-none"
+                />
+              </div>
+            </div>
+
+            <!-- Número de autorización -->
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'AUTHORIZATION_NUMBER' | translate}}</label>
+              <div class="bg-white border border-gray-200 rounded-md overflow-auto">
+                <input type="text" pInputText placeholder="Ingresar número" class="w-full text-sm border-none" />
+              </div>
+            </div>
+
+            <!-- Valor -->
+            <div>
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'VALUE' | translate}}</label>
+              <input type="text" pInputText placeholder="0.00" class="w-full text-sm border-none" />
+            </div>
+
+
+            <!-- Botón eliminar -->
+            <div>
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                styleClass="hover:bg-red-50 transition-colors" (click)="removePayment(i)"></p-button>
+            </div>
+          </div>
+          }
+
+          <!-- Botón Añadir -->
+          <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700"
+            (click)="addPayment()">
+            <i class="pi pi-plus mr-2"></i> {{ 'ADD_HALF_PAYMENT' | translate }}
+
+          </p>
         </div>
       </div>
-      }
-      <p class="add-text" (click)="addPayment()"><i class="pi pi-plus"></i> Añadir</p>
-    </div>
-    <div class="total-pagar-container">
-      <h3>Total a pagar</h3>
-      <p class="total-amount">0.00</p>
-      <div class="button-container">
-        <p-button label="Cancelar" (click)="cancel()" class="cancel-button"></p-button>
-        <p-button label="Guardar" (click)="save()" class="save-button"></p-button>
-        <p-button label="Guardar y Enviar" (click)="saveAndSend()" class="save-send-button"></p-button>
+    </p-card>
+
+    <!-- Total a pagar -->
+    <p-card [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none' }">
+      <div class="total-pagar-container">
+        <h3 class="text-lg font-semibold mb-2">{{ 'TOTAL_TO_PAY' | translate }}</h3>
+        <p class="total-amount text-2xl font-bold mb-4 text-blue-600">{{totalValue | currency}}</p>
       </div>
-    </div>
+
+      <div class="button-container mt-4 flex justify-content-around">
+        <p-button
+        label="Cancelar"
+        (click)="cancel()"
+        [raised]="true"
+        severity="secondary"
+        >
+      </p-button>
+
+        <p-button
+        label="Guardar"
+        (click)="save()"
+        [raised]="true"
+        [disabled]="form.invalid"
+        >
+      </p-button>
+
+        <p-button
+        label="Guardar y Enviar"
+        (click)="saveAndSend()"
+        [raised]="true"
+        [disabled]="form.invalid"
+          >
+        </p-button>
+      </div>
+    </p-card>
+
   </form>
 </div>
+<app-modal-sales-invoice #modalSalesInvoice></app-modal-sales-invoice>

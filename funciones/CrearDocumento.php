@@ -4,6 +4,7 @@
 require_once '../dompdf/autoload.inc.php';
 
 use Dompdf\Dompdf;
+
 $dompdf = new Dompdf();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -26,6 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $nombre_doctor = $doctor['nombre'];
   $especialidad_doctor = $doctor['especialidad'];
   $firma_doctor = $doctor['firma'];
+  $sello_doctor = $doctor['sello'];
+  $registro_medico = $doctor['registro_medico'];
 
   $tipo_Impresion = $_POST['tipo_Impresion'];
   $tipo_documento = $_POST['tipoDocumento'];

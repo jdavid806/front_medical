@@ -34,7 +34,7 @@
     document.getElementById('applyTemplate').addEventListener('click', function() {
         const textareaId = this.getAttribute('data-textarea-id');
         const selectedTemplate = document.getElementById('plantillaSelect').value;
-        console.log(textareaId, selectedTemplate);
+        // console.log(textareaId, selectedTemplate);
 
         if (selectedTemplate && textareaId) {
             tinymce.get(textareaId).setContent(selectedTemplate);

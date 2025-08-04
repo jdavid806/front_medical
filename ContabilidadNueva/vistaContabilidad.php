@@ -2,13 +2,21 @@
 include "../menu.php";
 include "../header.php";
 ?>
-
+<style>
+  /* Asegurar que el contenedor principal no cause overflow */
+  .container-small {
+    max-width: 100% !important;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+</style>
 <div class="content">
   <div class="container-small">
     <nav class="mb-3" aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-        <li class="breadcrumb-item active" onclick="location.reload()">Contable</li>
+        <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
+        <li class="breadcrumb-item active" onclick="location.reload()">Cuentas Contable</li>
       </ol>
     </nav>
     <div class="main-content">

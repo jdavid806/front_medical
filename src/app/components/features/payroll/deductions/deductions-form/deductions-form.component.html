@@ -1,0 +1,235 @@
+<div class="w-full h-full">
+  <div class="flex justify-content-between m-2">
+    <p-button
+      label="{{ 'LIST' | translate }} - {{ 'DEDUCTIONS' | translate }}"
+      icon="pi pi-arrow-left"
+      variant="outlined"
+      severity="secondary"
+      [routerLink]="'/payroll/deductions'"
+    ></p-button>
+
+    <p-button
+      label="{{ 'SAVE' | translate }}"
+      icon="pi pi-save"
+      variant="outlined"
+      severity="info"
+      [disabled]="form.invalid"
+      (onClick)="save()"
+    ></p-button>
+  </div>
+
+  <div class="grid">
+    <p-card class="col-8 col-offset-2">
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="formgrid grid">
+          <div class="field col-6">
+            <label for="name">{{ "NAME" | translate }} *</label>
+            <input
+              id="name"
+              pInputText
+              name="name"
+              class="w-full"
+              formControlName="name"
+              [ngClass]="
+                form.get('name')?.invalid && form.get('name')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            />
+          </div>
+
+          <div class="field col-6">
+            <label for="discountTo">{{ "DISCOUNT_TO" | translate }} *</label>
+            <p-select
+              [options]="discountOptions"
+              formControlName="discountTo"
+              name="discountTo"
+              optionLabel="name"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              placeholder="{{ 'SELECT_DISCOUNT' | translate }}"
+              class="w-full"
+              [ngClass]="
+                form.get('discountTo')?.invalid &&
+                form.get('discountTo')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            >
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{ selectedOption.name }}</div>
+                </div>
+              </ng-template>
+              <ng-template let-discount #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ discount.name }}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          @if(form.value.discountTo && form.value.discountTo.id == 1){
+          <div class="field col-6">
+            <label for="percentage">{{ "PERCENTAGE" | translate }} *</label>
+            <p-inputnumber
+              prefix="%"
+              [useGrouping]="false"
+              id="percentage"
+              name="percentage"
+              class="w-full"
+              formControlName="percentage"
+              [ngClass]="
+                form.get('percentage')?.invalid &&
+                form.get('percentage')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            />
+          </div>
+          } @else if(form.value.discountTo!== "") {
+          <div class="field col-6">
+            <label for="value">{{ "VALUE" | translate }} *</label>
+            <p-inputnumber
+              mode="currency"
+              currency="COP"
+              locale="en-US"
+              [useGrouping]="false"
+              id="value"
+              name="value"
+              class="w-full"
+              formControlName="value"
+              [ngClass]="
+                form.get('value')?.invalid && form.get('value')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            />
+          </div>
+          }
+
+          <div class="field col-6">
+            <label for="applicableTo"
+              >{{ "APPLICABLE_TO" | translate }} *</label
+            >
+            <p-select
+              [options]="applicableOptions"
+              formControlName="applicableTo"
+              name="applicableTo"
+              optionLabel="name"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              placeholder="{{ 'SELECT' | translate }}"
+              class="w-full"
+              [ngClass]="
+                form.get('applicableTo')?.invalid &&
+                form.get('applicableTo')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            >
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{ selectedOption.name }}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ item.name }}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="field col-6">
+            <label for="worker">{{ "WORKERS" | translate }} *</label>
+            <p-select
+              [options]="workerOptions"
+              formControlName="worker"
+              name="worker"
+              optionLabel="name"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              placeholder="{{ 'SELECT_WORKER' | translate }}"
+              class="w-full"
+              [ngClass]="
+                form.get('worker')?.invalid && form.get('worker')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            >
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{ selectedOption.name }}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ item.name }}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="field col-6">
+            <label for="salaryRangeStart"
+              >{{ "SALARY_RANGE_START" | translate }} *</label
+            >
+            <p-inputnumber
+              mode="currency"
+              currency="COP"
+              locale="en-US"
+              [useGrouping]="false"
+              id="salaryRangeStart"
+              name="salaryRangeStart"
+              class="w-full"
+              formControlName="salaryRangeStart"
+              [ngClass]="
+                form.get('salaryRangeStart')?.invalid &&
+                form.get('salaryRangeStart')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            />
+          </div>
+
+          <div class="field col-6">
+            <label for="salaryRangeEnd"
+              >{{ "SALARY_RANGE_END" | translate }} *</label
+            >
+            <p-inputnumber
+              mode="currency"
+              currency="COP"
+              locale="en-US"
+              [useGrouping]="false"
+              id="salaryRangeEnd"
+              name="salaryRangeEnd"
+              class="w-full"
+              formControlName="salaryRangeEnd"
+              [ngClass]="
+                form.get('salaryRangeEnd')?.invalid &&
+                form.get('salaryRangeEnd')?.touched
+                  ? 'ng-invalid ng-dirty'
+                  : ''
+              "
+            />
+          </div>
+          <div class="field col-12">
+            <label for="notes">{{ "NOTES" | translate }}</label>
+            <textarea
+              rows="5"
+              pTextarea
+              name="notes"
+              id="notes"
+              formControlName="notes"
+              class="w-full"
+            ></textarea>
+          </div>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+@use "src/scss/styles.sass"
+@use "../../../../../../scss/variables/color-global-primary" as primary
+@use "../../../../../../scss/variables/color-global-secondary" as secondary
+
+.dialog-container
+  .p-dialog
+    &-content
+      padding: 0
+      display: flex
+      flex-direction: column
+      overflow: hidden
+
+    .dialog-content-wrapper
+      flex: 1
+      overflow-y: auto
+      display: flex
+      flex-direction: column
+      min-height: 0
+
+    .custom-steps
+      .p-steps
+        &-item
+          padding: 0.5rem
+          &:before
+            height: 2px
+          &.p-steps-current
+            .p-steps-number
+              background: primary.$primary-color
+              color: white
+          .p-steps-title
+            font-size: 0.8rem
+            white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
+
+    .card
+      border: none
+      margin: 0
+      height: auto
+      overflow: visible
+
+    .field
+      margin-bottom: 1.25rem
+      label
+        font-size: 0.9rem
+
+    .grid
+      margin: 0 -0.5rem
+      .col-12
+        padding: 0 0.5rem
+
+    .p-dialog-footer
+      padding: 0.75rem 1rem
+      border-top: 1px solid #e0e0e0
+      .p-button
+        min-width: 100px
+        &-text
+          color: primary.$primary-color
+
+//Responsive adjustments for mobile(max-width: 300px)
+@media (max-width: 300px)
+  .dialog-container
+    .p-dialog
+      width: 100vw !important
+      height: 100vh !important
+      margin: 0
+      border-radius: 0
+
+      &-content
+        overflow-x: hidden
+        width: 100% !important
+
+        .dialog-content-wrapper
+          width: 100%
+          overflow-x: hidden
+          max-height: calc(100vh - 120px)
+
+          .w-full
+            width: 100% !important
+            padding: 0.25rem !important
+
+            .card
+              width: 100% !important
+              margin: 0 !important
+              padding: 0.5rem !important
+              box-shadow: none !important
+
+              form
+                width: 100%
+                overflow-x: hidden
+
+                .grid
+                  margin: 0 !important
+
+                  .col-12
+                    padding: 0 !important
+                    width: 100% !important
+
+                    .field
+                      width: 100%
+
+                      input,
+                      p-select,
+                      p-inputnumber
+                        width: 100% !important
+                        max-width: 100% !important
+                        min-width: auto !important
+
+  // Settings for PrimeNG components
+  .p-dropdown,
+  .p-inputtext,
+  .p-inputnumber
+    width: 100% !important
+    min-width: auto !important
+
+  // Stepper responsive
+  .custom-steps
+    .p-steps
+      overflow-x: auto
+      padding-bottom: 0.5rem
+
+      &-item
+        flex: 0 0 auto
+        min-width: 60px

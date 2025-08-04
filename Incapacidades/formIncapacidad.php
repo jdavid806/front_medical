@@ -5,11 +5,11 @@
             <script>
                 document.getElementById("desde").value = new Date().toISOString().split('T')[0];
             </script>
-            <div class="col-12">
+            <div class="col-6">
                 <label for="dias" class="form-label">Días de Incapacidad</label>
-                <input type="number" class="form-control" id="dias" name="dias" min="1">
+                <input type="number" class="form-control" id="dias" name="dias" min="1" required>
             </div>
-            <div class="col-12" id="contentFecha">
+            <div class="col-6">
                 <label for="hasta" class="form-label">Hasta</label>
                 <input type="date" class="form-control" id="hasta" name="end_date" readonly>
             </div>
@@ -30,7 +30,8 @@
             </div>
             <div class="mb-3">
                 <label for="cantidadRecurrencia" class="form-label">Cantidad</label>
-                <input type="text" class="form-control" id="cantidadRecurrencia" name="cantidadRecurrencia" min="1" value="1">
+                <input type="text" class="form-control" id="cantidadRecurrencia" name="cantidadRecurrencia" min="1"
+                    value="1">
             </div>
         </div>
     </div>

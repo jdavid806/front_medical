@@ -42,6 +42,30 @@ import { BillingService } from "./classes/billingService.js";
 import MSMasivaService from "./classes/msMasivaService.js";
 import { ExamRecipeService } from "./classes/examRecipeService.js";
 import ExamOrderService from "./classes/examOrderService.js";
+import ComissionConfigService from "./classes/comissionConfigService.js";
+import HistoryRequestIAService from "./classes/historyRequestIA.js";
+import { UserAssistantService } from "./classes/userAssistantService.js";
+import { ExamRecipeResultService } from "./classes/examRecipeResultService.js";
+import AuditLogService from "./classes/auditLogService.js";
+import { AccountingAccountsService } from "./classes/accountingAccountsService.js";
+import { AccountingVouchersService } from "./classes/accountingVouchersService.js";
+import { ResourcesAdminService } from "./classes/resourcesAdmin.js";
+import { CashRecipes } from "./classes/cashRecipes.js";
+import { InvoiceService } from "./classes/invoiceService.js";
+import { MassMessagingService } from "./classes/massMessaging.js";
+import { InfoCompanyService } from "./classes/infoCompanyService.js";
+import { OptometryService } from "./classes/optometryService.js";
+import { EntitiesService } from "./classes/entitiesService.js";
+import { TaxService } from "./classes/taxService.js";
+import { RetentionsService } from "./classes/retentionsService.js";
+import { PurchaseOrdersService } from "./classes/purchaseOrdersService.js";
+import { DepositService } from "./classes/depositService.js";
+import { PostService } from "./classes/postService.js";
+import { CommentsService } from "./classes/commentsService.js";
+import { AssetsService } from "./classes/assetsService.js";
+import { CategoryProductsService } from "./classes/categoryProductsService.js";
+import { BrandService } from "./classes/brandService.js";
+import { ThirdPartyService } from "./classes/thirdPartyService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -169,7 +193,7 @@ export const productService = new ProductService(
   "products-services"
 );
 
-export const templateService = new ProductService("medical", "template-create");
+export const templateService = new TemplateService("api/v1/firma");
 
 /* Cups */
 
@@ -205,7 +229,7 @@ export const prescriptionService = new PrescriptionService(
 );
 
 export const paymentMethodService = new PaymentMethodService(
-  "medical",
+  "api/v1/admin",
   "payment-methods"
 );
 export const clinicalRecordTypeService = new ClinicalRecordTypeService(
@@ -229,10 +253,94 @@ export const historyPreadmission = new HistoryPreadmissionService(
   "history-preadmissions"
 );
 
-export const costCenterService = new CostCenterService();
+export const costCenterService = new CostCenterService(
+  "api/v1/admin",
+  "centres-cost"
+);
 
 export const billingService = new BillingService();
 
-export const msMasivaService = new MSMasivaService('api/mensajeria', '');
+export const msMasivaService = new MSMasivaService("api/mensajeria", "");
 
-export const examRecipeService = new ExamRecipeService('medical', 'exam-recipes');
+export const examRecipeService = new ExamRecipeService(
+  "medical",
+  "exam-recipes"
+);
+
+export const examRecipeResultService = new ExamRecipeResultService();
+
+export const auditLogService = new AuditLogService();
+
+export const comissionConfig = new ComissionConfigService(
+  "medical",
+  "comission-config"
+);
+
+export const userAbsenceService = new OneToManyService(
+  "medical",
+  "users",
+  "absences"
+);
+
+export const historyRequestIAService = new HistoryRequestIAService(
+  "medical",
+  "history-request-ia"
+);
+
+export const userAssistantService = new UserAssistantService();
+
+/* Cuentas Contables */
+
+export const accountingAccountsService = new AccountingAccountsService(
+  "api/v1/admin",
+  "accounting-accounts"
+);
+
+export const accountingVouchersService = new AccountingVouchersService(
+  "api/v1/admin",
+  "accounting-entries"
+);
+
+export const resourcesAdminService = new ResourcesAdminService("api/v1/admin");
+
+//Recibos de caja y el que me borre esto la re mala, att: jeffer
+
+export const cashRecipes = new CashRecipes("api/v1/admin");
+
+export const invoiceService = new InvoiceService();
+
+export const massMessagingService = new MassMessagingService(
+  "api/v2/mensajeria"
+);
+export const infoCompanyService = new InfoCompanyService("medical");
+
+export const optometryService = new OptometryService("medical");
+
+export const entitiesService = new EntitiesService("medical", "entities");
+export const taxesService = new TaxService("api/v1/admin", "tax-charges");
+export const retentionsService = new RetentionsService(
+  "api/v1/admin",
+  "tax-withholdings"
+);
+
+export const purchaseOrdersService = new PurchaseOrdersService(
+  "api/v1/admin",
+  "purchase-orders"
+);
+
+//Depositos
+export const depositService = new DepositService("api/v1/admin", "deposits");
+
+export const postService = new PostService("medical", "posts");
+
+export const commentsService = new CommentsService("medical", "comments");
+
+export const assetsService = new AssetsService("api/v1/admin", "assets");
+export const categoryProductsService = new CategoryProductsService(
+  "api/v1/admin",
+  "category-products"
+);
+
+export const brandService = new BrandService("api/v1/admin", "brands");
+
+export const thirdPartyService = new ThirdPartyService();

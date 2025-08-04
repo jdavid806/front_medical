@@ -24,6 +24,19 @@ export class AdmissionService extends BaseApiService {
       `${this.microservice}/${this.endpoint}/${id}`
     );
   }
+
+  async getLastAdmissionByPatient(patientId) {
+    return await this.httpClient.get(
+      `${this.microservice}/${this.endpoint}/last-patient-invoice/${patientId}`
+    );
+  }
+
+  async filterAdmissions(filters = null) {
+    return await this.httpClient.get(
+      `${this.microservice}/v2/admissions-v2`,
+      filters || {}
+    );
+  }
 }
 
 export default AdmissionService;

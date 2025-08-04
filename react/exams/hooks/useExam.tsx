@@ -13,8 +13,6 @@ export const useExam = () => {
             const examType = await examTypeService.get(data.exam_type_id);
             data.exam_type = examType;
 
-            console.log(data);
-
             setExam(data);
         } catch (err) {
             ErrorHandler.generic(err);

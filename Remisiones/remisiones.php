@@ -92,12 +92,8 @@ $jsonData = json_encode($remisionesData);
             </div>
 
             <div class="row g-0 g-md-4 g-xl-6 p-5">
-                <h2 class="mb-0 patientName">Cargando...</h2>
-                <div class="col-4">
-                    <?php include "../Pacientes/infoPaciente.php"; ?>
-                </div>
 
-                <div class="col-8">
+                <div class="col-12">
                     <h3>Remisiones</h3>
                     <!-- <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
                         data-bs-target="#nuevaRemisionModal">
@@ -124,6 +120,42 @@ $jsonData = json_encode($remisionesData);
 
 <script>
     const remisionesData = <?php echo $jsonData; ?>;
+</script>
+
+<script type="module">
+    import {
+        patientService
+    } from "../services/api/index.js";
+    document.addEventListener("DOMContentLoaded", async () => {
+        const patientId = new URLSearchParams(window.location.search).get("id") || new URLSearchParams(window.location.search).get("patient_id");
+        try {
+            if (patientId) {
+                const paciente = await patientService.get(patientId);
+                displayPatientData(paciente)
+            }
+
+        } catch (error) {
+            console.error("Error al obtener los datos:", error);
+        }
+    });
+
+    async function displayPatientData(paciente) {
+        if (!paciente) {
+            console.log("Paciente no encontrado");
+            return;
+        }
+        const nameBreadcumb = document.getElementById("nameBradcumb");
+
+        if (nameBreadcumb) {
+            nameBreadcumb.textContent = paciente.first_name + ' ' + paciente.last_name;
+        }
+        document.querySelectorAll(".patientName").forEach(element => {
+            element.textContent = paciente.first_name + ' ' + paciente.last_name
+            if (element.tagName === 'A') {
+                element.href = `verPaciente?id=${paciente.id}`
+            }
+        })
+    }
 </script>
 
 <script>

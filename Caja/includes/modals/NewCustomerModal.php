@@ -71,7 +71,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
+                // console.log('Success:', data);
                 // Aquí puedes manejar la respuesta del backend, por ejemplo, mostrar un mensaje de éxito
 
                 // Cierra el modal

@@ -114,7 +114,7 @@ include "../header.php";
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Pacientes</li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Consultas</li>
                 </ol>
             </nav>
 
@@ -123,13 +123,13 @@ include "../header.php";
                     <div class="pb-9">
                         <div class="row align-items-center justify-content-between mb-4">
                             <div class="col-md-6">
-                                <h2 class="mb-0">Pacientes</h2>
+                                <h2 class="mb-0">Consultas</h2>
                             </div>
                             <div class="col-md-6 text-md-end">
-                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                <!-- <button class="btn btn-primary" type="button" data-bs-toggle="modal"
                                     data-bs-target="#modalCrearPaciente">
                                     <span class="fa-solid fa-plus me-2 fs-9"></span> Nuevo Paciente
-                                </button>
+                                </button> -->
                             </div>
                         </div>
 
@@ -201,8 +201,7 @@ include "../header.php";
 
 <script type="module">
     import {
-        patientService,
-        appointmentStateService
+        patientService
     } from "../../services/api/index.js";
     import {
         formatDate,
@@ -215,13 +214,63 @@ include "../header.php";
     import {
         reestructurarPacientes
     } from '../Pacientes/js/reestructurarPacientes.js';
+    import {
+        getPatientNextAppointment
+    } from "../../services/patientHelpers.js";
+
+    const itemsPerPage = 8; // Número de pacientes por página
+
+    // Función para obtener la página actual desde la URL
+    const getCurrentPage = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        return parseInt(urlParams.get("page") || "1");
+    };
+
+    // Función para renderizar los controles de paginación
+    const renderPagination = (totalPatients) => {
+        const totalPages = Math.ceil(totalPatients / itemsPerPage);
+        const paginationControls = document.getElementById("paginationControls");
+        paginationControls.innerHTML = ""; // Limpiar los controles anteriores
+
+        if (totalPages > 1) {
+            const currentPage = getCurrentPage();
+
+            let paginationHtml = `
+          <ul class="pagination">
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage - 1}'">&laquo;</a>
+            </li>`;
+
+            for (let page = 1; page <= totalPages; page++) {
+                paginationHtml += `
+            <li class="page-item ${page === currentPage ? 'active' : ''}">
+              <a class="page-link" href="#" onclick="window.location.href='?page=${page}'">${page}</a>
+            </li>`;
+            }
+
+            paginationHtml += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage + 1}'">&raquo;</a>
+            </li>
+          </ul>`;
+
+            paginationControls.innerHTML = paginationHtml;
+        }
+    };
 
     document.addEventListener("DOMContentLoaded", async () => {
 
-        let pacientesData = await patientService.getByUser();
-        const appointmentStates = await appointmentStateService.getAll();
+        let pacientesResponse = await patientService.getWithAppointmentsByUserAndFilter({
+            per_page: 8,
+            page: getCurrentPage()
+        });
+        let pacientesData = pacientesResponse.original.data.data;
+
+        renderPagination(pacientesResponse.original.data.total);
 
         function procesarPacientes(pacientes) {
+            // console.log('pacientes', pacientes);
+
             const hoy = new Date().toISOString().split('T')[0];
 
             return pacientes
@@ -229,27 +278,7 @@ include "../header.php";
                     // Ordenar citas por fecha y hora
                     const hoy = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
-                    const citasHoy = paciente.appointments
-                        .filter(c => c.appointment_date === hoy)
-                        .sort((a, b) => {
-                            const fechaHoraA = new Date(`${a.appointment_date}T${a.appointment_time}`);
-                            const fechaHoraB = new Date(`${b.appointment_date}T${b.appointment_time}`);
-                            return fechaHoraA - fechaHoraB;
-                        });
-
-                    let citaAMostrar;
-
-                    if (citasHoy.length === 1) {
-                        citaAMostrar = citasHoy[0];
-                    } else {
-                        citaAMostrar = citasHoy.find(c => c.appointment_state.name !== "consultation_completed");
-                    }
-
-                    if (!citaAMostrar && citasHoy.length > 0) {
-                        citaAMostrar = citasHoy[citasHoy.length - 1];
-                    }
-
-                    const primeraCita = citaAMostrar;
+                    const primeraCita = getPatientNextAppointment(paciente);
 
                     // Determinar el estado de la primera cita
                     const estado = primeraCita ? primeraCita.appointment_state.name : null;
@@ -295,7 +324,8 @@ include "../header.php";
         var channel = pusher.subscribe('waiting-room.' + hostname);
 
         channel.bind('appointment.created', function(data) {
-
+            console.log(data);
+            
             pacientesData.forEach(paciente => {
                 if (paciente.id === data.appointment.patient_id) {
                     paciente.appointments.push(data.appointment);
@@ -307,10 +337,13 @@ include "../header.php";
         });
 
         channel.bind('appointment.state.updated', function(data) {
+            console.log(data);
+
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
-                        cita.appointment_state = appointmentStates.find(state => state.id === data.newState);
+                        cita.appointment_state = appointmentStates.find(state => state
+                            .id === data.newState);
                     }
                 })
             })
@@ -320,10 +353,13 @@ include "../header.php";
         });
 
         channel.bind('appointment.inactivated', function(data) {
+            console.log(data);
+            
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
-                        cita.appointment_state = appointmentStates.find(state => state.name === 'cancelled');
+                        cita.appointment_state = appointmentStates.find(state => state
+                            .name === 'cancelled');
                     }
                 })
             })
@@ -331,8 +367,6 @@ include "../header.php";
 
             renderPacientes(pacientesData)
         });
-
-        const itemsPerPage = 8; // Número de pacientes por página
 
         // Función para filtrar y mostrar los pacientes
         const filterPacientes = () => {
@@ -384,15 +418,12 @@ include "../header.php";
         const renderPacientes = (pacientes) => {
             const pacientesReestructurados = reestructurarPacientes(pacientes);
 
-
             const pacientesList = document.getElementById("pacientesList");
             pacientesList.innerHTML = ""; // Limpiar los resultados anteriores
 
-            const currentPage = getCurrentPage();
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const paginatedPacientes = pacientesReestructurados.slice(startIndex, startIndex + itemsPerPage);
+            // console.log('paginatedPacientes', paginatedPacientes);
 
-            paginatedPacientes.forEach(paciente => {
+            pacientesReestructurados.forEach(paciente => {
                 const idPaciente = paciente.id;
 
                 const pacienteFiltrado = pacientesReestructurados.filter(
@@ -408,9 +439,6 @@ include "../header.php";
     <div class="card card-paciente">
         <div class="card-body">
             <!-- Imagen del paciente -->
-            <div class="avatar avatar-xl rounded-circle">
-                <img class="rounded-circle" src="<?= $ConfigNominaUser['logoBase64'] ?>" alt="Paciente" onerror="this.onerror=null; this.src='../assets/img/profile/profile_default.jpg';" />
-            </div>
 
             <!-- Estado del paciente -->
            <span class="badge badge-phoenix badge-phoenix-${estadoColor} fs-10 mb-3">
@@ -501,44 +529,6 @@ include "../header.php";
 
             return age;
         }
-
-        // Función para renderizar los controles de paginación
-        const renderPagination = (pacientes) => {
-            const totalPages = Math.ceil(pacientes.filter(paciente => paciente.appointments.length).length / itemsPerPage);
-            const paginationControls = document.getElementById("paginationControls");
-            paginationControls.innerHTML = ""; // Limpiar los controles anteriores
-
-            if (totalPages > 1) {
-                const currentPage = getCurrentPage();
-
-                let paginationHtml = `
-          <ul class="pagination">
-            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage - 1}'">&laquo;</a>
-            </li>`;
-
-                for (let page = 1; page <= totalPages; page++) {
-                    paginationHtml += `
-            <li class="page-item ${page === currentPage ? 'active' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${page}'">${page}</a>
-            </li>`;
-                }
-
-                paginationHtml += `
-            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage + 1}'">&raquo;</a>
-            </li>
-          </ul>`;
-
-                paginationControls.innerHTML = paginationHtml;
-            }
-        };
-
-        // Función para obtener la página actual desde la URL
-        const getCurrentPage = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            return parseInt(urlParams.get("page") || "1");
-        };
 
         // Función para cambiar de página
         const changePage = (page) => {

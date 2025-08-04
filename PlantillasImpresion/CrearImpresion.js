@@ -18,6 +18,8 @@ async function crearDocumento(
     tipoDocumento,
   };
 
+  // console.log("Los datos son: ", datos);
+
   try {
     // Crear un formulario oculto
     let form = document.createElement("form");

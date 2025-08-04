@@ -9,7 +9,8 @@ include "../header.php";
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mt-5">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Pacientes</li>
+                    <li class="breadcrumb-item"><a href="homeInventario">Inventarios</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Paquetes</li>
                 </ol>
             </nav>
             <!-- Contenido Paquetes -->

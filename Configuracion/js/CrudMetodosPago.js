@@ -15,18 +15,16 @@ async function cargarMetodosPago() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${producto.method}</td>
-        <td>${producto.accounting_account}</td> 
         <td>${producto.description || "N/A"}</td>
         <td>
             <button class="btn btn-primary btn-sm" onclick="editarMetodo
             (${producto.id}, '${producto.method}',
-             '${producto.accounting_account}', '${producto.description}')" 
+             '${producto.category}', '${producto.description}')" 
              data-bs-toggle="modal" data-bs-target="#crearMetodoPago">
                 <i class="fa-solid fa-pen"></i>
             </button>
-            <button class="btn btn-danger btn-sm" onclick="eliminarMetodo(${
-              producto.id
-            })">
+            <button class="btn btn-danger btn-sm" onclick="eliminarMetodo(${producto.id
+        })">
                 <i class="fa-solid fa-trash"></i>
             </button>
         </td>
@@ -59,9 +57,10 @@ async function createMetodoPago(metodoPago) {
   cargarMetodosPago();
 }
 
-function editarMetodo(id, method, accounting_account, description) {
+function editarMetodo(id, method, category, description) {
   document.getElementById("nombre-metodo").value = method;
-  document.getElementById("numero-cuenta").value = accounting_account;
+  // document.getElementById("numero-cuenta").value = accounting_account;
+  document.getElementById("category").value = category;
   document.getElementById("descripcion-metodo").value = description;
 
   // Agregar un input oculto con el ID del producto

@@ -1,7 +1,16 @@
 import { suppliesService } from "../../services/api/index.js";
 import { inventoryService } from "../../services/api/index.js";
 
+
 let selectedRecipe = null;
+
+function aPesos(valor) {
+    return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN'
+    }).format(valor);
+}
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -31,6 +40,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 //Renderizar la lista de insumos
 
+function sumatoria(productos) {
+    let  total = 0
+    const impuesto = 0
+    const descuento = 0
+    const subTotal = productos.reduce((acc, item) => {
+        return acc + (typeof item.precio === 'number' ? item.precio : 0);
+    }, 0);
+    document.getElementById('subtotal').textContent = aPesos(subTotal);
+    document.getElementById('impuesto').textContent = aPesos(impuesto);
+    document.getElementById('descuento').textContent = aPesos(descuento);
+    total = +subTotal - +descuento + +impuesto
+    document.getElementById('total').textContent = aPesos(total);
+}
+
+
+
 function renderOrderList(recipes) {
     const orderList = document.querySelector(".order-list");
 
@@ -42,6 +67,7 @@ function renderOrderList(recipes) {
     orderList.innerHTML = ""; // Limpiar lista antes de renderizar
 
     recipes.forEach(recipe => {
+        console.log(recipe);
         const statusClass = getStatusBadgeClass(recipe.status);
         const formattedDate = formatDate(recipe.created_at);
 
@@ -71,6 +97,7 @@ function renderOrderList(recipes) {
 
         // Evento de clic para seleccionar la receta
         orderItem.addEventListener("click", () => {
+            console.log(recipe)
             selectedRecipe = recipe; // Guardar la receta seleccionada
             updateClientInfo(recipe.patient);
             renderMedicationTable(recipe.products);
@@ -163,6 +190,7 @@ function validateDelivery(recipe) {
 
 
 function updateClientInfo(patient) {
+    console.log(patient)
     if (!patient) {
         console.error("Error: Paciente no encontrado.");
         return;
@@ -194,6 +222,8 @@ function updateClientInfo(patient) {
 
 // Función para renderizar la tabla de insumos
 function renderMedicationTable(recipeItems) {
+    //Calcular el total de items
+    sumatoria(recipeItems)
     const tableBody = document.querySelector(".table tbody");
     const verifyButtonContainer = document.querySelector("#verifyButtonContainer");
 
@@ -208,17 +238,19 @@ function renderMedicationTable(recipeItems) {
         tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay medicamentos en esta receta.</td></tr>`;
         return;
     }
-
     recipeItems.forEach(item => {
         const statusBadge = item.verified
             ? `<span class="badge bg-success">Verificado</span>`
             : `<span class="badge bg-secondary">Pendiente</span>`;
 
         const row = document.createElement("tr");
-
+        const medication = item.medication ?? '';
+        const concentration = item.medication ?? '';
+        let textoMostrar = medication + ' ' + concentration
         row.innerHTML = `
             <td>
-                <div class="fw-medium">${item.medication + " " + item.concentration || "Desconocido"}</div>
+                
+                <div class="fw-medium">${textoMostrar}</div>
                 <div class="text-muted small">${item.description || "Sin descripción"}</div>
             </td>
             <td>${item.quantity || "N/A"}</td>

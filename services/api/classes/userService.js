@@ -13,7 +13,7 @@ export class UserService extends BaseApiService {
         const user = await this.httpClient.get(`${this.microservice}/users/search/${id}`);
 
         const todayAvailability = user.availabilities.find(availability => {
-            return availability.days_of_week.includes(new Date().getDay())
+            return availability.days_of_week.includes(new Date().getDay()) && availability.is_active
         })
 
         return {

@@ -16,10 +16,7 @@ const TableActionsWrapper = ({
   }, /*#__PURE__*/React.createElement("i", {
     "data-feather": "settings"
   }), " Acciones"), /*#__PURE__*/React.createElement("ul", {
-    className: "dropdown-menu",
-    style: {
-      zIndex: 10000
-    }
+    className: "dropdown-menu"
   }, children));
 };
 export default TableActionsWrapper;

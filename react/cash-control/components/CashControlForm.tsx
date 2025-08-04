@@ -55,7 +55,11 @@ export const CashControlForm: React.FC<ExamCategoryFormProps> = ({ formId, onHan
     }, [reset]);
 
     useEffect(() => {
-        setMappedPaymentMethods(paymentMethods.map(paymentMethod => ({ ...paymentMethod, amount: 0 })))
+        const filteredPaymentMethods = paymentMethods.filter(paymentMethod => {
+            return paymentMethod.category === 'transactional'
+        })
+
+        setMappedPaymentMethods(filteredPaymentMethods.map(paymentMethod => ({ ...paymentMethod, amount: 0 })))
     }, [paymentMethods])
 
     const handlePaymentMethodsAmountChange = (e: InputNumberChangeEvent, index: number) => {

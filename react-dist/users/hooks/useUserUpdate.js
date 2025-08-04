@@ -7,8 +7,9 @@ export const useUserUpdate = () => {
   const updateUser = async (id, data) => {
     setLoading(true);
     try {
-      await userService.update(id, data);
+      const response = await userService.update(id, data);
       SwalManager.success();
+      return response;
     } catch (error) {
       ErrorHandler.generic(error);
       throw error;

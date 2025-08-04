@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { ErrorHandler } from "../../../services/errorHandler";
 import { SwalManager } from '../../../services/alertManagerImported';
-import { UserFormInputs } from '../UserForm';
 import { userService } from '../../../services/api';
 
 export const useUserUpdate = () => {
     const [loading, setLoading] = useState(true);
 
-    const updateUser = async (id: string, data: UserFormInputs) => {
+    const updateUser = async (id: string, data: any) => {
         setLoading(true);
         try {
-            await userService.update(id, data);
+            const response = await userService.update(id, data);
             SwalManager.success();
+            return response;
         } catch (error) {
             ErrorHandler.generic(error);
             throw error

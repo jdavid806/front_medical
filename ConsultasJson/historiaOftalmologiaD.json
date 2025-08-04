@@ -18,13 +18,13 @@
         ],
         "card2": [
           {
-            "title": "Evolución de los sintomas",
+            "title": "Historia de la enfermedad actual",
             "fields": [
               {
-                "id": "evolucionSintomas",
+                "id": "historiaEnfermedadActual",
                 "label": "",
                 "type": "textarea",
-                "name": "evolucionSintomas"
+                "name": "historiaEnfermedadActual"
               }
             ]
           }
@@ -47,10 +47,10 @@
             "title": "¿Qué ha tomado?",
             "fields": [
               {
-                "id": "manejoSintoma",
+                "id": "haTomado",
                 "label": "",
                 "type": "textarea",
-                "name": "manejoSintoma"
+                "name": "haTomado"
               }
             ]
           }
@@ -66,73 +66,133 @@
               {
                 "id": "disminucionVision",
                 "label": "Disminución de la visión",
-                "type": "select",
+                "type": "radio",
                 "name": "disminucionVision",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  { "id": "si", "value": "si", "text": "Sí" },
+                  { "id": "no", "value": "no", "text": "No" },
+                  { "id": "noNiega", "value": "noNiega", "text": "No niega" }
                 ]
               },
               {
                 "id": "estrabismo",
                 "label": "Estrabismo",
-                "type": "select",
+                "type": "radio",
                 "name": "estrabismo",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "glaucoma",
                 "label": "Glaucoma",
-                "type": "select",
+                "type": "radio",
                 "name": "glaucoma",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
-                "id": "amblyopia",
-                "label": "Amblyopia",
-                "type": "select",
-                "name": "amblyopia",
-                "class": "col-6",
+                "id": "ambliopia",
+                "label": "Ambliopia",
+                "type": "radio",
+                "name": "ambliopia",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "usaLentes",
                 "label": "Usa lentes",
-                "type": "select",
+                "type": "radio",
                 "name": "usaLentes",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
                 "id": "fumador",
                 "label": "Fumador",
-                "type": "select",
+                "type": "radio",
                 "name": "fumador",
-                "class": "col-6",
+                "class": "col-4",
                 "options": [
-                  { "value": "si", "text": "Sí" },
-                  { "value": "no", "text": "No" },
-                  { "value": "noNiega", "text": "No niega" }
+                  {
+                    "id": "si",
+                    "value": "si",
+                    "text": "Sí"
+                  },
+                  {
+                    "id": "no",
+                    "value": "no",
+                    "text": "No"
+                  },
+                  {
+                    "id": "noNiega",
+                    "value": "noNiega",
+                    "text": "No niega"
+                  }
                 ]
               },
               {
@@ -163,24 +223,40 @@
                   {
                     "id": "ubicacionDolor",
                     "label": "Ubicación",
-                    "type": "select",
+                    "type": "radio",
                     "name": "ubicacionDolor",
                     "class": "col-6",
                     "options": [
-                      { "value": "periocular", "text": "Periocular" },
-                      { "value": "ocular", "text": "Ocular" },
-                      { "value": "retrobulbar", "text": "Retrobulbar" }
+                      { "id": "ocular", "value": "ocular", "text": "Ocular" },
+                      {
+                        "id": "periocular",
+                        "value": "periocular",
+                        "text": "Periocular"
+                      },
+                      {
+                        "id": "retrobulbar",
+                        "value": "retrobulbar",
+                        "text": "Retrobulbar"
+                      }
                     ]
                   },
                   {
                     "id": "profundidadDolor",
                     "label": "Profundidad",
-                    "type": "select",
+                    "type": "radio",
                     "name": "profundidadDolor",
                     "class": "col-6",
                     "options": [
-                      { "value": "superficial", "text": "Superficial" },
-                      { "value": "profundo", "text": "Profundo" }
+                      {
+                        "id": "superficial",
+                        "value": "superficial",
+                        "text": "Superficial"
+                      },
+                      {
+                        "id": "profundo",
+                        "value": "profundo",
+                        "text": "Profundo"
+                      }
                     ]
                   }
                 ]
@@ -268,7 +344,7 @@
                 "label": "Otros",
                 "type": "checkbox",
                 "name": "otrosExploracionOcularCheck",
-                "class": "col-6",
+                "class": "col-12",
                 "toggleFields": [
                   {
                     "id": "otrosExploracionOcularInfo",
@@ -276,6 +352,17 @@
                     "type": "textarea",
                     "name": "otrosExploracionOcularInfo"
                   }
+                ]
+              },
+              {
+                "id": "remisionCirugia",
+                "label": "Remision a cirugia",
+                "type": "radio",
+                "name": "remisionCirugia",
+                "class": "col-12",
+                "options": [
+                  { "id": "si", "value": "si", "text": "Sí" },
+                  { "id": "no", "value": "no", "text": "No" }
                 ]
               }
             ]

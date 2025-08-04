@@ -1,0 +1,63 @@
+<p-dialog
+  header="{{ 'NEW_CUSTOMER' | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+  (onHide)="hideDialog()">
+
+  <form [formGroup]="form" class="p-fluid">
+    <div class="field">
+      <label for="fullName">{{ "FULL_NAME" | translate }} *</label>
+      <input
+        id="fullName"
+        pInputText
+        formControlName="fullName"
+        [ngClass]="{'ng-invalid ng-dirty': form.get('fullName')?.invalid && form.get('fullName')?.touched}">
+    </div>
+
+    <div class="field mt-3">
+      <label for="identification">{{ "IDENTIFICATION" | translate }} *</label>
+      <input
+        id="identification"
+        pInputText
+        formControlName="identification"
+        [ngClass]="{'ng-invalid ng-dirty': form.get('identification')?.invalid && form.get('identification')?.touched}">
+    </div>
+
+    <div class="field mt-3">
+      <label for="branch">{{ "BRANCH" | translate }}</label>
+      <p-dropdown
+        id="branch"
+        [options]="branchOptions"
+        formControlName="branch"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full">
+      </p-dropdown>
+    </div>
+
+    <div class="field-checkbox mt-3">
+      <p-checkbox
+        id="active"
+        formControlName="active"
+        [binary]="true">
+      </p-checkbox>
+      <label for="active">{{ "ACTIVE" | translate }}</label>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="{{ 'CANCEL' | translate }}"
+      icon="pi pi-times"
+      (click)="hideDialog()"
+      styleClass="p-button-text">
+    </p-button>
+    <p-button
+      label="{{ 'SAVE' | translate }}"
+      icon="pi pi-check"
+      (click)="onSubmit()"
+      [disabled]="form.invalid">
+    </p-button>
+  </ng-template>
+</p-dialog>

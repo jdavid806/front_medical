@@ -1,8 +1,11 @@
+import { cleanJsonObject } from "../../utilidades";
 import BaseApiService from "./baseApiService";
 
 export class PrescriptionService extends BaseApiService {
-  async getPrescriptions() {
-    return await this.httpClient.get(this.microservice + "/" + "recipes");
+  async getPrescriptions(type = "") {
+    return await this.httpClient.get(this.microservice + "/" + "recipes", cleanJsonObject({
+      type: type,
+    }));
   }
 
   async storePrescription(data) {
@@ -17,9 +20,9 @@ export class PrescriptionService extends BaseApiService {
     );
   }
 
-  async getLastByPatientId(patientId) {
+  async getLastByPatientId(patientId, type) {
     return await this.httpClient.get(
-      this.microservice + "/recipes/last-of/patient/" + patientId
+      this.microservice + "/recipes/last-of/patient/" + patientId + '/' + type
     );
   }
 }

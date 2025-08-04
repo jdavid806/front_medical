@@ -8,8 +8,9 @@ include "../header.php";
         <div class="">
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mt-5">
-                    <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Pacientes</li>
+                <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="homeInventario">Inventario</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Vacunas</li>
                 </ol>
             </nav>
             <ul class="nav nav-underline fs-9" id="myTab" role="tablist">
@@ -31,46 +32,7 @@ include "../header.php";
                                 </button>
                             </div>
                         </div>
-                        <div class="row">
-                            <!-- Tabla de Vacunas -->
-                            <div class="col-lg-8">
-                                <div id="tableExample4"
-                                    data-list="{&quot;valueNames&quot;:[&quot;vacuna&quot;,&quot;tipo&quot;,&quot;stock&quot;,&quot;caducidad&quot;],&quot;page&quot;:5,&quot;pagination&quot;:true}">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm fs-9 mb-0">
-                                            <thead>
-                                                <tr class="bg-body-highlight">
-                                                    <th class="ps-3">Nombre</th>
-                                                    <th>Tipo de producto</th>
-                                                    <th class="text-end">Stock</th>
-                                                    <th class="text-end">Rango Stock</th>
-                                                    <th class="text-end">Precio de Compra</th>
-                                                    <th class="text-end">Precio de Venta</th>
-                                                    <th class="text-end pe-3">Acciones</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Información del Paciente -->
-                            <div class="col-lg-4">
-                                <div class="card h-100 animated-card">
-                                    <div class="card-body">
-                                        <div class="text-center mb-3">
-                                            <img id="vacunaImage" src="./Smallpox_vaccine.jpg" alt="Imagen de Vacuna"
-                                                class="img-fluid rounded" style="max-height: 200px;">
-                                        </div>
-                                        <h4 class="card-title">Selecciona una Vacuna</h4>
-                                        <div class="card-content">
-                                            <p><strong>Tipo:</strong> -</p>
-                                            <p><strong>Stock:</strong> -</p>
-                                            <p><strong>Fecha de Caducidad:</strong> -</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div id="productInventoryAppReact">
 
                         </div>
                     </div>
@@ -203,3 +165,16 @@ include "./modal/modalGrupoVacunas.php";
         /* Color gris claro */
     }
 </style>
+
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        ProductInventoryApp
+    } from './react-dist/inventory/ProductInventoryApp.js';
+
+    ReactDOMClient.createRoot(document.getElementById('productInventoryAppReact')).render(React
+                .createElement(ProductInventoryApp, {
+                    type: 'vaccines'
+                }));
+</script>

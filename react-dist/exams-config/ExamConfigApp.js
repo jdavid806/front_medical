@@ -36,10 +36,14 @@ export const ExamConfigApp = () => {
   };
   const handleSubmit = async data => {
     console.log(data);
+    const mappedData = {
+      ...data,
+      form_config: data.form_config || {}
+    };
     if (examType) {
-      await updateExamType(examType.id, data);
+      await updateExamType(examType.id, mappedData);
     } else {
-      await createExamType(data);
+      await createExamType(mappedData);
     }
     fetchExamTypes();
     setShowExamTypeFormModal(false);

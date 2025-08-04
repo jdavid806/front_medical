@@ -27,188 +27,253 @@
 
                 <!-- Contenido de los pasos -->
                 <form id="formNuevoProducto" class="needs-validation" novalidate>
-                    <div class="wizard-content">
+  <div class="wizard-content">
 
-                        <div class="wizard-step active" data-step="1">
-                            <div class="row">
-                                <div class="col-8 col-sm-6">
+    <!-- Paso 1: Datos Generales -->
+    <div class="wizard-step active" data-step="1">
+      <div class="row">
+        <div class="col-8 col-sm-6">
 
-                                    <div class="input-group">
-                                        <div class="form-floating">
-                                            <input type="text" class="form-control" id="name" required name="name">
-                                            <label for="name" class="form-label">Nombre del producto</label>
-                                            <div class="invalid-feedback">Por favor ingrese el nombre del producto</div>
-                                        </div>
-                                    </div>
+          <div class="input-group">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="name" name="name" required>
+              <label for="name">Nombre del producto</label>
+              <div class="invalid-feedback">Ingrese el nombre del producto.</div>
+            </div>
+          </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <select class="form-select" name="tipoProducto" id="tipoProducto" required>
-                                                <option value="" disabled selected>Seleccione el tipo del producto</option>
-                                                <option value="producto">producto</option>
-                                                <option value="servicio">servicio</option>
-                                            </select>
-                                            <label for="tipoVacuna" class="form-label">Tipo de producto</label>
-                                            <div class="invalid-feedback">Por favor seleccione un tipo de vacuna.</div>
-                                        </div>
-                                    </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+              <label for="description">Descripción</label>
+            </div>
+          </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <input type="number" class="form-control" min="0" id="stockVacuna" required name="stockVacuna">
-                                            <label for="stockVacuna" class="form-label">Cantidad en Stock</label>
-                                            <div class="invalid-feedback">Por favor ingrese la cantidad en stock.</div>
-                                        </div>
-                                    </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="reference" name="reference">
+              <label for="reference">Referencia</label>
+            </div>
+          </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <input class="form-control datetimepicker" id="fechaCaducidad" type="text" required="required" />
-                                            <label for="fechaCaducidad" class="form-label">Fecha de Caducidad</label>
-                                            <div class="invalid-feedback">Por favor seleccione una fecha válida.</div>
-                                        </div>
-                                    </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <select class="form-select" id="controlled_product" name="controlled_product" required>
+                <option value="" disabled selected>Seleccione</option>
+                <option value="1">Sí</option>
+                <option value="0">No</option>
+              </select>
+              <label for="controlled_product">¿Es un producto controlado?</label>
+            </div>
+          </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <input class="form-control" id="loteVacuna" name="loteVacuna" type="text" required />
-                                            <label for="loteVacuna" class="form-label">Número de Lote</label>
-                                            <div class="invalid-feedback">Por favor ingrese el número de lote.</div>
-                                        </div>
-                                    </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <input type="number" class="form-control" name="weight" id="weight" step="any" min="0">
+              <label for="weight">Peso</label>
+            </div>
+          </div>
 
-                                    <div class="input-group mt-3">
-                                        <div class="form-floating">
-                                            <textarea class="form-control" id="descripcionVacuna" name="descripcionVacuna" rows="3"></textarea>
-                                            <label for="descripcionVacuna" class="form-label">Descripción (Opcional)</label>
-                                        </div>
-                                    </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <input type="number" class="form-control" name="capacity" id="capacity" step="any" min="0">
+              <label for="capacity">Capacidad</label>
+            </div>
+          </div>
 
-                                </div>
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="concentration" name="concentration">
+              <label for="concentration">Concentración</label>
+            </div>
+          </div>
 
-                                <div class="col-4 col-sm-6">
+          <div class="input-group mt-3">
+            <div class="form-floating">
+              <select class="form-select" id="prescription" name="prescription" required>
+                <option value="" disabled selected>Seleccione</option>
+                <option value="1">Requiere fórmula</option>
+                <option value="0">Sin fórmula</option>
+              </select>
+              <label for="prescription">Prescripción médica</label>
+            </div>
+          </div>
 
-                                    <div class="row justify-content-center">
-                                        <div class="col-md-6 text-center">
-                                            <h2>Imagen de Vacuna</h2>
-                                            <!-- Imagen de previsualización -->
-                                            <div class="mt-3">
-                                                <img id="vacunaPreview" src="https://via.placeholder.com/150" alt="Previsualización" class="profile-img">
-                                            </div>
-                                            <!-- Botones de acción -->
-                                            <div class="mt-4">
-                                                <label for="uploadVacunaImage" class="btn btn-primary me-2">
-                                                    <i class="fa-solid fa-upload me-1"></i> Subir Imagen
-                                                </label>
-                                                <!-- Input oculto para subir imagen -->
-                                                <input type="file" id="uploadVacunaImage" class="d-none" accept="image/*">
-                                            </div>
-                                        </div>
-                                    </div>
+        </div>
 
-                                </div>
-                            </div>
-                        </div>
+        <!-- Imagen -->
+        <div class="col-4 col-sm-6">
+          <div class="text-center">
+            <h5>Imagen del producto</h5>
+            <img id="vacunaPreview" src="https://via.placeholder.com/150" alt="Previsualización" class="profile-img mt-3">
+            <div class="mt-3">
+              <label for="uploadVacunaImage" class="btn btn-primary">
+                <i class="fa fa-upload"></i> Subir Imagen
+              </label>
+              <input type="file" id="uploadVacunaImage" class="d-none" accept="image/*" name="file_url">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Paso 2: Identificación -->
+    <div class="wizard-step" data-step="2">
 
-                        <div class="wizard-step" data-step="2">
+      <div class="form-group mb-3">
+        <label for="barcode">Código de barras</label>
+        <input class="form-control" id="barcode" name="barcode" type="text">
+      </div>
 
-                            <div class="mb-2">
-                                <label class="form-check-label" for="esCodificado">¿Incluye código de barras?</label>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" id="esCodificado"
-                                        onchange="setupToggleSwitch('esCodificado', ['codigoBarras']);" type="checkbox" />
-                                </div>
+      <div class="form-group mb-3">
+        <label for="components">Componentes</label>
+        <textarea class="form-control" id="components" name="components" rows="2"></textarea>
+      </div>
 
-                                <div id="codigoBarras" class="d-none mb-2">
-                                    <div class="mb-2 form-floating">
-                                        <input class="form-control" id="codigoBarrasInput" name="codigoBarras" type="text" />
-                                        <label for="codigoBarrasInput" class="form-label">Código de barras</label>
-                                    </div>
-                                </div>
-                            </div>
+      <div class="form-group mb-3">
+        <label for="minimum_stock">Stock mínimo</label>
+        <input class="form-control" type="number" id="minimum_stock" name="minimum_stock" min="0">
+      </div>
 
-                            <div class="mb-2">
-                                <label class="form-check-label" for="tieneEtiqueta">¿Incluye etiqueta RFID?</label>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" id="tieneEtiqueta"
-                                        onchange="setupToggleSwitch('tieneEtiqueta', ['etiquetaRfid']);" type="checkbox" />
-                                </div>
+      <div class="form-group mb-3">
+        <label for="maximum_stock">Stock máximo</label>
+        <input class="form-control" type="number" id="maximum_stock" name="maximum_stock" min="0">
+      </div>
 
-                                <div id="etiquetaRfid" class="d-none mb-2">
-                                    <div class="mb-2 form-floating">
-                                        <input class="form-control" id="rfidInput" name="etiquetaRfid" type="text" />
-                                        <label for="rfidInput" class="form-label">Etiqueta RFID</label>
-                                    </div>
-                                </div>
-                            </div>
+      <div class="form-group mb-3">
+        <label for="stock">Stock actual</label>
+        <input class="form-control" type="number" id="stock" name="stock" min="0">
+      </div>
 
-                            <div class="mb-2">
-                                <label class="form-check-label" for="tieneQr">¿Incluye código QR?</label>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" id="tieneQr"
-                                        onchange="setupToggleSwitch('tieneQr', ['codigoQr']);" type="checkbox" />
-                                </div>
+      <div class="form-group mb-3">
+        <label for="stock_alert">Alerta de stock</label>
+        <input class="form-control" type="number" id="stock_alert" name="stock_alert" min="0">
+      </div>
 
-                                <div id="codigoQr" class="d-none mb-2">
-                                    <div class="mb-2 form-floating">
-                                        <textarea class="form-control" id="qrInput" name="codigoQr" style="height: 100px"></textarea>
-                                        <label for="qrInput" class="form-label">Código QR</label>
-                                    </div>
-                                </div>
-                            </div>
+      <div class="form-group mb-3">
+        <label for="expiration_date">Fecha de caducidad</label>
+        <input type="date" class="form-control" id="expiration_date" name="expiration_date">
+      </div>
 
-                            <div class="mb-2">
-                                <label class="form-check-label" for="otrosIdentificadoresCheck">¿Otros identificadores?</label>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" id="otrosIdentificadoresCheck"
-                                        onchange="setupToggleSwitch('otrosIdentificadoresCheck', ['otrosIdentificadores']);" type="checkbox" />
-                                </div>
+      <div class="form-group mb-3">
+        <label for="sanitary_registration">Registro sanitario</label>
+        <input type="text" class="form-control" id="sanitary_registration" name="sanitary_registration">
+      </div>
+    </div>
 
-                                <div id="otrosIdentificadores" class="d-none">
-                                    <div class="form-floating">
-                                        <textarea class="form-control" id="otrosIdentificadoresInput" name="otrosIdentificadores"
-                                            style="height: 100px"></textarea>
-                                        <label for="otrosIdentificadoresInput">Descripción de identificadores adicionales</label>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- Paso 3: Precios y asociaciones -->
+    <div class="wizard-step" data-step="3">
 
-                        </div>
+      <div class="form-group mb-3">
+        <label for="purchase_price">Precio de compra</label>
+        <input class="form-control" type="number" step="0.01" id="purchase_price" name="purchase_price">
+      </div>
 
+      <div class="form-group mb-3">
+        <label for="sale_price">Precio de venta</label>
+        <input class="form-control" type="number" step="0.01" id="sale_price" name="sale_price">
+      </div>
 
-                        <div class="wizard-step" data-step="3">
+      <div class="form-group mb-3">
+        <label for="sale_purchase_status">Estado de venta/compra</label>
+        <select class="form-select" id="sale_purchase_status" name="sale_purchase_status">
+          <option value="both">Compra y Venta</option>
+          <option value="sale_only">Solo Venta</option>
+          <option value="purchase_only">Solo Compra</option>
+        </select>
+      </div>
 
-                            <div class="input-group mt-3">
-                                <div class="form-floating">
-                                    <input class="form-control" id="precioCompraVacuna" name="precioCompraVacuna" type="number" />
-                                    <label for="precioCompraVacuna" class="form-label">Precio de combra</label>
-                                    <div class="invalid-feedback">Ingrese el precio de compra</div>
-                                </div>
-                            </div>
+      <div class="form-group mb-3">
+        <label for="quantity">Cantidad</label>
+        <input class="form-control" type="number" id="quantity" name="quantity">
+      </div>
 
-                            <div class="input-group mt-3">
-                                <div class="form-floating">
-                                    <input class="form-control" id="precioVentaVacuna" name="precioVentaVacuna" type="venta" />
-                                    <label for="precioVentaVacuna" class="form-label">Precio de venta</label>
-                                    <div class="invalid-feedback">Ingrese el precio de venta</div>
-                                </div>
-                            </div>
+      <div class="form-group mb-3">
+        <label for="supplier_id">Proveedor</label>
+        <select class="form-select" id="supplier_id" name="supplier_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
 
-                            <div class="mb-2 form-floating">
-                                <select class="form-select" id="sucursalVacuna" name="sucursalVacuna">
-                                    <option selected disabled value="">Seleccione</option>
-                                    <option value="Bogotá">Bogotá</option>
-                                    <option value="Medellín">Medellín</option>
-                                    <option value="Cali">Cali</option>
-                                    <option value="Barranquilla">Barranquilla</option>
-                                    <option value="Cartagena">Cartagena</option>
-                                </select>
-                                <label for="sucursalVacuna" class="form-label">Sucursal</label>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+      <div class="form-group mb-3">
+        <label for="attention_type">Tipo de atención</label>
+        <input class="form-control" type="text" id="attention_type" name="attention_type">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="copayment">Copago</label>
+        <input class="form-control" type="number" step="0.01" id="copayment" name="copayment">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="tax_charge_id">Impuesto</label>
+        <select class="form-select" id="tax_charge_id" name="tax_charge_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="presentation">Presentación</label>
+        <input class="form-control" id="presentation" name="presentation" type="text">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="exam_type_id">Tipo de examen</label>
+        <select class="form-select" id="exam_type_id" name="exam_type_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="medical_form_id">Forma médica</label>
+        <select class="form-select" id="medical_form_id" name="medical_form_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="laboratory_id">Laboratorio</label>
+        <select class="form-select" id="laboratory_id" name="laboratory_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="brand_id">Marca</label>
+        <select class="form-select" id="brand_id" name="brand_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="concentration_type_id">Tipo de concentración</label>
+        <select class="form-select" id="concentration_type_id" name="concentration_type_id">
+          <option value="">Seleccione</option>
+          <!-- Opciones dinámicas -->
+        </select>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="product_type_id">Tipo de producto</label>
+        <select class="form-select" id="product_type_id" name="product_type_id" required>
+          <option value="">Seleccione</option>
+          <option value="1">Medicamento</option>
+          <option value="2">Vacuna</option>
+          <option value="3">Suministro</option>
+          <option value="4">Otro</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+</form>
+
             </div>
 
             <div class="modal-footer">

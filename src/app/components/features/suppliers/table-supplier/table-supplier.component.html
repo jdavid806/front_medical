@@ -1,0 +1,123 @@
+<div class="card p-4 shadow-lg rounded-lg">
+  <p-toast position="top-center"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Listado de Proveedores</h2>
+  </div>
+  <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+    <div class="flex justify-between items-center mb-6">
+      <button pButton icon="pi pi-plus" label="Nuevo Proveedor" [raised]="true"
+        class="ml-auto" (click)="showDialogToAdd()">
+      </button>
+    </div>
+    <p-table [value]="suppliers" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" [loading]="loading"
+      selectionMode="multiple" [(selection)]="selectedSuppliers" dataKey="id"
+      [globalFilterFields]="['nombre','ruc','direccion','telefono','email','estado']" styleClass="p-datatable-striped">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="nombre">Nombre Proveedor <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="ruc">RUC <p-sortIcon field="ruc"></p-sortIcon></th>
+          <th pSortableColumn="direccion">Dirección <p-sortIcon field="direccion"></p-sortIcon></th>
+          <th pSortableColumn="telefono">Teléfono <p-sortIcon field="telefono"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+          <th style="width: 10rem">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-supplier>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="supplier"></p-tableCheckbox>
+          </td>
+          <td class="font-medium">{{supplier.nombre}}</td>
+          <td>{{supplier.ruc}}</td>
+          <td>{{supplier.direccion}}</td>
+          <td>{{supplier.telefono}}</td>
+          <td>{{supplier.email}}</td>
+          <td>
+            <p-tag [value]="supplier.estado" [severity]="getSeverity(supplier.estado)" class="capitalize">
+            </p-tag>
+          </td>
+          <td>
+            <div class="flex gap-3">
+              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-warning"
+                (click)="editSupplier(supplier)">
+              </button>
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                (click)="deleteSupplier(supplier)" pTooltip="Eliminar proveedor" tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-6 text-gray-500">
+            No se encontraron proveedores registrados
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog [(visible)]="displayDialog" [style]="{width: '90vw', maxWidth: '700px'}"
+    [contentStyle]="{height: 'auto', 'max-height': '70vh', 'overflow-y': 'auto'}" header="Detalle de Proveedor"
+    [modal]="true" [draggable]="false" [resizable]="false" [breakpoints]="{'960px': '75vw', '640px': '90vw'}"
+    [styleClass]="'centered-dialog'">
+
+    <div class="p-fluid grid p-3 mx-auto gap-0" style="max-width: 700px;">
+      <!-- Primera fila -->
+      <div class="field col-12 md:col-6">
+        <label for="nombre" class="block mb-2 font-medium">Nombre/Razón Social *</label>
+        <input id="nombre" pInputText [(ngModel)]="nuevoSupplier.nombre" class="w-full" required />
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="ruc" class="block mb-2 font-medium">RUC *</label>
+        <input id="ruc" pInputText [(ngModel)]="nuevoSupplier.ruc" class="w-full" required />
+      </div>
+
+      <!-- Segunda fila -->
+      <div class="field col-12 md:col-6">
+        <label for="telefono" class="block mb-2 font-medium">Teléfono</label>
+        <input id="telefono" pInputText [(ngModel)]="nuevoSupplier.telefono" class="w-full" />
+      </div>
+
+      <div class="field col-12 md:col-6">
+        <label for="direccion" class="block mb-2 font-medium">Dirección</label>
+        <input id="direccion" pInputText [(ngModel)]="nuevoSupplier.direccion" class="w-full" />
+      </div>
+
+      <!-- Tercera fila -->
+      <div class="field col-12 md:col-8">
+        <label for="email" class="block mb-2 font-medium">Email</label>
+        <input id="email" pInputText [(ngModel)]="nuevoSupplier.email" class="w-full" type="email" />
+      </div>
+
+      <div class="field col-12 md:col-4">
+        <label for="estado" class="block mb-2 font-medium">Estado</label>
+        <p-dropdown id="estado" [options]="['Activo', 'Inactivo', 'Pendiente']" [(ngModel)]="nuevoSupplier.estado"
+          appendTo="body" [style]="{width: '100%'}" [panelStyle]="{minWidth: '200px'}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-between w-full px-3 pb-2">
+        <button pButton icon="pi pi-times" label="Cancelar" [raised]="true" severity="secondary" class="p-button-text"
+          (click)="displayDialog = false">
+        </button>
+        <button pButton icon="pi pi-check" label="Guardar" [raised]="true" class="p-button-success" (click)="save()">
+        </button>
+      </div>
+    </ng-template>
+  </p-dialog>
+</div>

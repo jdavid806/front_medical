@@ -8,7 +8,6 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                        <!-- Agregamos los detalles de la cita -->
                         <div class="mb-3">
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -29,36 +28,37 @@
                                 </div>
                             </div>
                             <span class="text-info small">
-                                "Esta información junto con el enlace para ingresar a la sala fue enviada por correo electrónico a 
-                                <strong class="small">user@test.com</strong> y por WhatsApp a <strong class="small">96385214</strong>"
+                                "Esta información junto con el enlace para ingresar a la sala fue enviada por correo
+                                electrónico a
+                                <strong class="small">user@test.com</strong> y por WhatsApp a <strong
+                                    class="small">96385214</strong>"
                             </span>
 
                             <div class="container mt-4">
                                 <div class="row g-2">
-                                    <!-- Botón Entrar -->
                                     <div class="col-md-6">
-                                        <button class="btn btn-outline-primary w-100 rounded-pill" type="button" id="btnEntrar">
+                                        <button class="btn btn-outline-primary w-100 rounded-pill" type="button"
+                                            id="btnEntrar">
                                             <i class="fas fa-sign-in-alt me-2"></i>Entrar
                                         </button>
                                     </div>
 
-                                    <!-- Botón Finalizar -->
                                     <div class="col-md-6">
                                         <button class="btn btn-outline-danger w-100 rounded-pill" type="button">
                                             <i class="fas fa-times me-2"></i>Finalizar
                                         </button>
                                     </div>
 
-                                    <!-- Botón Copiar enlace de invitación -->
                                     <div class="col-12">
-                                        <button class="btn btn-outline-info w-100 rounded-pill" type="button" id="btnCopiar">
-                                            <i class="fas fa-link me-2"></i>Copiar enlace de invitación
+                                        <button class="btn btn-outline-info w-100 rounded-pill" type="button"
+                                            id="btnCopiar">
+                                            <i class="fas fa-link me-2"></i>Copiar enlace de invitaciónnnnnnnnnnnnnn
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            <p id="roomLink" class="mt-3 text-center"></p> <!-- 📌 Agregado para mostrar el enlace -->
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -72,35 +72,50 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        let roomId = ""; // 📌 Inicializamos roomId
+        let userRole = ""; // 📌 Inicializamos userRole
 
-        console.log("Script ejecutado");
-        // Obtener elementos
+        const socket = io("https://dev.monaros.co", {
+            path: "/telemedicina/socket.io",
+            transports: ["websocket"],
+            query: { roomId, userRole }
+        });
+
         const btnEntrar = document.getElementById("btnEntrar");
         const btnCopiar = document.getElementById("btnCopiar");
         const roomIdText = document.getElementById("roomIdText");
+        const roomLinkContainer = document.getElementById("roomLink");
 
-        // Verificar si ya hay un Room ID o generar uno nuevo
-        let roomId = roomIdText.textContent.trim();
-        if (!roomId || roomId.includes("...")) {
-            roomId = Math.random().toString(36).substring(2, 10); // Generar Room ID único
-            roomIdText.textContent = roomId; // Mostrar en la interfaz
+        function createRoom() {
+            userRole = "doctor";
+            socket.emit("create-room", userRole);
         }
 
-        // Crear la URL con el roomId
-        let salaUrl = `https://dev.monaros.ai/videoLlamada?room=${roomId}`;
-        console.log("URL de la sala:", salaUrl); // Para depuración
+        function joinRoom() {
+            const inputRoomId = prompt("🔑 Ingresa el ID de la sala:");
+            if (inputRoomId) {
+                userRole = "paciente";
+                socket.emit("join-room", { roomId: inputRoomId, role: userRole });
+            }
+        }
 
-        // Evento para el botón "Entrar"
-        btnEntrar.addEventListener("click", () => {
-            window.location.href = salaUrl;
+        socket.on("room-created", (newRoomId) => {
+            roomId = newRoomId; // 📌 Guardamos el nuevo ID de sala
+            const roomLink = `${window.location.origin}/prueba.html?roomId=${roomId}`;
+            roomIdText.textContent = roomId;
+            roomLinkContainer.innerHTML = `
+                <a href="${roomLink}" target="_blank">${roomLink}</a>
+                <button onclick="copyToClipboard('${roomLink}')" class="btn btn-sm btn-outline-secondary ms-2">Copiar</button>
+            `;
         });
 
-        // Evento para copiar el enlace de la sala
-        btnCopiar.addEventListener("click", () => {
-            navigator.clipboard.writeText(salaUrl)
-                .then(() => alert("Enlace copiado al portapapeles."))
-                .catch(err => console.error("Error al copiar:", err));
-        });
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Enlace copiado al portapapeles");
+            }).catch(err => console.error("Error al copiar:", err));
+        }
+
+        btnEntrar.addEventListener("click", createRoom);
+        btnCopiar.addEventListener("click", () => copyToClipboard(window.location.origin + "/prueba.html?roomId=" + roomId));
     });
 </script>
-

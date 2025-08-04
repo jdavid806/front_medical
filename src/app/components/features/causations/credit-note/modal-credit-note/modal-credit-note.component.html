@@ -1,0 +1,261 @@
+<p-dialog
+  header="{{ 'CREATE_NEW_THIRD' | translate }}"
+  [(visible)]="visible"
+  [modal]="true"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [style]="{ width: '60vw', minWidth: '350px', maxWidth: '1000px', height: '85vh' }"
+  [contentStyle]="{ 'max-height': '90vh', 'height': '80vh', 'overflow-y': 'auto' }"
+  (onHide)="hideDialog()"
+  class="dialog-container"
+  [draggable]="false">
+
+  <div class="mb-6 px-4  top-0 bg-white pt-2 pb-4 z-10 border-b">
+    <p-steps
+      [model]="steps"
+      [readonly]="true"
+      [activeIndex]="currentStep"
+      class="w-full custom-steps">
+    </p-steps>
+  </div>
+
+  <!-- Contenedor principal con card -->
+  <div class="w-full p-4 flex flex-column align-items-center">
+    <div class="w-full" style="max-width: 900px; ">
+      <div class="card shadow-2 p-3">
+        <form *ngIf="currentStep === 0" [formGroup]="basicInfoForm" class="h-full">
+          <div class="grid">
+            <div class="col-12 md:col-6 pr-0 md:pr-3">
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">{{ "TYPE" | translate }} *</label>
+                <p-select
+                  id="type"
+                  [options]="typeOptions"
+                  formControlName="type"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="{{ 'SELECT_TYPE' | translate }}"
+                  [filter]="true"
+                  [showClear]="true"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('type')?.invalid && basicInfoForm.get('type')?.touched}">
+                </p-select>
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Nombre *</label>
+                <input
+                  id="contactName"
+                  pInputText
+                  formControlName="contactName"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('contactName')?.invalid && basicInfoForm.get('contactName')?.touched}">
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Ciudad *</label>
+                <p-select
+                  id="city"
+                  [options]="cityOptions"
+                  formControlName="city"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Buscar ciudad"
+                  [filter]="true"
+                  [showClear]="true"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('city')?.invalid && basicInfoForm.get('city')?.touched}">
+                </p-select>
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Dirección *</label>
+                <input
+                  id="address"
+                  pInputText
+                  formControlName="address"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('address')?.invalid && basicInfoForm.get('address')?.touched}">
+              </div>
+            </div>
+
+            <!-- Columna Derecha - Campos secundarios -->
+            <div class="col-12 md:col-6 pl-0 md:pl-3">
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Tipo documento *</label>
+                <p-select
+                  id="documentType"
+                  [options]="documentTypeOptions"
+                  formControlName="documentType"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Buscar tipo documento"
+                  [filter]="true"
+                  [showClear]="true"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('documentType')?.invalid && basicInfoForm.get('documentType')?.touched}">
+                </p-select>
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Apellido *</label>
+                <input
+                  id="contactLastName"
+                  pInputText
+                  formControlName="contactLastName"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('contactLastName')?.invalid && basicInfoForm.get('contactLastName')?.touched}">
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">N° Documento</label>
+                <p-inputNumber
+                  id="documentNumber"
+                  formControlName="documentNumber"
+                  [min]="1"
+                  mode="decimal"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('documentNumber')?.invalid && basicInfoForm.get('documentNumber')?.touched}">
+                </p-inputNumber>
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Teléfono *</label>
+                <input
+                  id="phoneNumber"
+                  pInputText
+                  formControlName="phoneNumber"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('phoneNumber')?.invalid && basicInfoForm.get('phoneNumber')?.touched}">
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <form *ngIf="currentStep === 1" [formGroup]="billingForm" class="h-full">
+          <div class="grid">
+            <div class="col-12 md:col-6 pr-0 md:pr-3">
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Nombre *</label>
+                <input
+                  id="billingContactName"
+                  pInputText
+                  formControlName="billingContactName"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': billingForm.get('billingContactName')?.invalid && billingForm.get('billingContactName')?.touched}">
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Email *</label>
+                <input
+                  id="email"
+                  type="email"
+                  pInputText
+                  formControlName="email"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': billingForm.get('email')?.invalid && billingForm.get('email')?.touched}">
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Teléfono *</label>
+                <input
+                  id="billingPhoneNumber"
+                  pInputText
+                  formControlName="billingPhoneNumber"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': basicInfoForm.get('billingPhoneNumber')?.invalid && basicInfoForm.get('billingPhoneNumber')?.touched}">
+              </div>
+            </div>
+
+            <div class="col-12 md:col-6 pl-0 md:pl-3">
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Apellido *</label>
+                <input
+                  id="billingContactLastName"
+                  pInputText
+                  formControlName="billingContactLastName"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': billingForm.get('billingContactLastName')?.invalid && billingForm.get('billingContactLastName')?.touched}">
+              </div>
+
+              <div class="field mb-3">
+                <label class="block mb-1 font-medium">Régimen *</label>
+                <p-select
+                  id="regimenType"
+                  [options]="regimenOptions"
+                  formControlName="regimenType"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Buscar régimen"
+                  [filter]="true"
+                  [showClear]="true"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': billingForm.get('regimenType')?.invalid && billingForm.get('regimenType')?.touched}">
+                </p-select>
+              </div>
+            </div>
+
+            <div class="col-12 mt-4">
+              <div class="field">
+                <label class="block mb-3 font-medium">Responsabilidades fiscales</label>
+                <p class="text-sm text-gray-500 mb-4">Verifica en el RUT del cliente (mínimo R-99-PN)</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  <div *ngFor="let option of responsibilityOptions; let i = index" class="flex align-items-center">
+                    <p-checkbox
+                      [binary]="true"
+                      [formControl]="fiscalResponsibilities.controls[i]"
+                      [inputId]="'resp-' + i"
+                      class="mr-3">
+                    </p-checkbox>
+                    <label [for]="'resp-' + i" class="text-sm">{{option.label}}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-between items-center w-full px-4 pb-3 gap-4">
+      <div>
+        <button
+          *ngIf="!isFirstStep"
+          pButton
+          type="button"
+          (click)="prevStep()"
+          class="p-button-text"
+          icon="pi pi-arrow-left"
+          [label]="'BACK' | translate">
+        </button>
+      </div>
+
+      <div class="flex-1 text-right">
+        <button
+          *ngIf="!isLastStep"
+          pButton
+          type="button"
+          (click)="nextStep()"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [label]="'NEXT' | translate"
+          [disabled]="currentStep === 0 ? basicInfoForm.invalid : billingForm.invalid"
+          [style]="{'min-width': '120px'}">
+        </button>
+
+        <button
+          *ngIf="isLastStep"
+          pButton
+          type="button"
+          (click)="onSubmit()"
+          icon="pi pi-check"
+          label="Crear Tercero"
+          [disabled]="billingForm.invalid"
+          [style]="{'min-width': '150px'}">
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

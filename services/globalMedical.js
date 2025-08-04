@@ -3,4 +3,5 @@ const api = "/";
 
 const url = `${domain}${api}`;
 
-export { url };
+export { url }; 
+ 

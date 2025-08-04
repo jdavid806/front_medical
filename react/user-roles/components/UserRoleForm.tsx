@@ -36,6 +36,7 @@ export interface UserRoleFormInputs {
 const roleGroupOptions = [
     { label: 'Médico', value: 'DOCTOR' },
     { label: 'Administrativo', value: 'ADMIN' },
+    { label: 'Asistente médico', value: 'DOCTOR_ASSISTANT' },
     // { label: 'Indeterminado', value: 'INDETERMINATE' }
 ];
 

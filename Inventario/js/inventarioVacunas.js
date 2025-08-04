@@ -1,9 +1,11 @@
 import { inventoryService } from "../../services/api/index.js";
 
+console.log("Ejecutando script");
+
 document.addEventListener("DOMContentLoaded", async () => {
     const formVacuna = document.getElementById("formNuevaVacuna");
     let editingProductId = null;
-
+    fetchVaccines();
     formVacuna.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!formVacuna.checkValidity()) {
@@ -48,21 +50,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     let currentPage = 1;
     const perPage = 5;
     const tableBody = document.querySelector(".list");
-    const prevButton = document.getElementById("prevPage");
-    const nextButton = document.getElementById("nextPage");
-    const currentPageSpan = document.getElementById("currentPage");
-    const totalPagesSpan = document.getElementById("totalPages");
+    // const prevButton = document.getElementById("prevPage");
+    // const nextButton = document.getElementById("nextPage");
+    // const currentPageSpan = document.getElementById("currentPage");
+    // const totalPagesSpan = document.getElementById("totalPages");
     
     async function fetchVaccines() {
         try {
-            const response = await inventoryService.getAll();
-            vaccines = response.data.filter(product => product.attributes.product_type_id == 3);
+            const response = await inventoryService.getVaccines();
+            vaccines = response?.data || [];
             updatePagination();
             renderVaccinesTable();
         } catch (error) {
             console.error("Error al obtener vacunas:", error);
         }
     }
+    
 
     function updatePagination() {
         const totalPages = Math.ceil(vaccines.length / perPage);
@@ -77,18 +80,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? `<tr><td colspan="7" class="text-center">No hay vacunas disponibles.</td></tr>`
             : vaccines.slice((currentPage - 1) * perPage, currentPage * perPage)
             .map(product => {
-                const attributes = product.attributes;
                 return `
                     <tr class="table-row selectable-row">
-                        <td class="align-middle ps-3">${attributes.name || "Sin nombre"}</td>
-                        <td class="align-middle text-end">${attributes.stock || "N/A"}</td>
-                        <td class="align-middle text-end">${formatDate(attributes.expiration_date)}</td>
+                        <td class="align-middle ps-3">${product.name || "Sin nombre"}</td>
+                        <td class="align-middle text-end">${product.stock || "N/A"}</td>
+                        <td class="align-middle text-end">${formatDate(product.expiration_date)}</td>
                         <td class="text-end align-middle pe-3">
                             <button class="btn btn-sm btn-primary editar-producto" data-id="${product.id}">Editar</button>
                             <button class="btn btn-sm btn-danger eliminar-producto" data-id="${product.id}">Eliminar</button>
                         </td>
                     </tr>`;
-            }).join("");
+            })
+            
     }
 
     prevButton.addEventListener("click", () => {

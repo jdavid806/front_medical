@@ -31,7 +31,7 @@ export class OneToManyService extends BaseApiService {
     async createForParent(parentId, data) {
         try {
             const url = `${this.microservice}/${this.parentEndpoint}/${parentId}/${this.childEndpoint}`;
-            console.log(url);
+            // console.log(url);
 
             return await this.httpClient.post(url, data);
         } catch (error) {
@@ -43,7 +43,7 @@ export class OneToManyService extends BaseApiService {
     async updateForParent(id, data) {
         try {
             const url = `${this.microservice}/clinical-records/${id}`;
-            console.log(url);
+            // console.log(url);
 
             return await this.httpClient.patch(url, data);
         } catch (error) {

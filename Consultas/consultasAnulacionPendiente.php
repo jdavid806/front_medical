@@ -83,47 +83,7 @@ $historiasClinicas = [
         </div>
 
         <div class="row mt-4">
-            <div class="table-responsive">
-                <table class="table table-sm tableDataTableSearch">
-                    <thead>
-                        <tr>
-                            <th>Nombre de la Historia</th>
-                            <th width="250">Paciente</th>
-                            <th width="250">Doctor(a)</th>
-                            <th>Razón de la anulación</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($historiasClinicas as $historia) { ?>
-                            <tr>
-                                <td class="align-middle"><?= $historia['nombre'] ?></td>
-                                <td class="align-middle"><?= $historia['paciente'] ?></td>
-                                <td class="align-middle"><?= $historia['doctor'] ?></td>
-                                <td class="align-middle"><?= $historia['razon'] ?></td>
-                                <td class="text-center">
-                                    <div class="d-flex gap-2 justify-content-center">
-                                        <i
-                                            class="fs-7 fa-solid fa-check cursor-pointer text-success"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            data-bs-title="Solicitar anulación"
-                                            onclick="aceptarAnulacion(<?= $historia['id'] ?>)"
-                                            title="Aceptar anulación"></i>
-                                        <i
-                                            class="fs-7 fa-solid fa-ban cursor-pointer text-danger"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            data-bs-title="Solicitar anulación"
-                                            onclick="rechazarAnulacion(<?= $historia['id'] ?>)"
-                                            title="Rechazar anulación"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
+            <div id="clinicalRecordsPendingCancellationReact"></div>
         </div>
     </div>
 
@@ -175,6 +135,17 @@ $historiasClinicas = [
                 }
             });
         }
+    </script>
+
+    <script type="module">
+        import React from "react";
+        import ReactDOMClient from "react-dom/client";
+        import {
+            ClinicalRecordsPendingCancellation
+        } from './react-dist/clinical-records/ClinicalRecordsPendingCancellation.js';
+
+        const rootElement = document.getElementById('clinicalRecordsPendingCancellationReact');
+        ReactDOMClient.createRoot(rootElement).render(React.createElement(ClinicalRecordsPendingCancellation));
     </script>
 
     <?php include "../footer.php"; ?>

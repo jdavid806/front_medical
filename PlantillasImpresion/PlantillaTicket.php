@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recibo de Caja</title>
+  <title>Recibo</title>
   <style>
     body {
       font-family: "Courier New", Courier, monospace;
-      margin: 0;
-      padding: 0;
+      margin: 0 !important;
+      padding: 0 !important;
       background-color: #fff;
+      text-align: left;
     }
 
     .receipt-container {

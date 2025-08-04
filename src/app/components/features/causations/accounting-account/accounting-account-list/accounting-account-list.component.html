@@ -1,0 +1,190 @@
+<div class="p-4">
+  <!-- Header with search and new button -->
+  <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 gap-4">
+    <div class="w-full md:w-6">
+      <!-- <div class="p-inputgroup">
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-search"></i>
+        </span>
+        <input pInputText placeholder="Buscar cuenta contable" class="w-full" (input)="onGlobalFilter($event)" />
+        <p-button icon="pi pi-filter-slash" severity="secondary" tooltip="Limpiar filtros" tooltipPosition="bottom" />
+      </div> -->
+    </div>
+    <p-button label="Nuevo componente contable" icon="pi pi-plus" (click)="onNewSelected()"></p-button>
+  </div>
+
+  <!-- Main content -->
+  <div class="grid">
+    <!-- Tree table section -->
+    <div class="col-12 md:col-6">
+      <p-card header="Plan de Cuentas" [style]="{ height: '100%' }">
+        <p-table
+          [value]="flattenedData"
+          [scrollable]="true"
+          scrollHeight="flex"
+          styleClass="p-datatable-sm"
+          selectionMode="single"
+          [(selection)]="selectedNode"
+          (onRowSelect)="onNodeSelect($event)"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[5,10,25,50]"
+          [globalFilterFields]="['code','name']"
+          #dt>
+          <ng-template pTemplate="caption">
+            <div class="flex justify-content-between align-items-center">
+              <span class="p-input-icon-left">
+                <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Buscar..." class="w-full"/>
+              </span>
+              <div class="flex gap-2">
+                <p-dropdown
+                  [options]="levelOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Filtrar por nivel"
+                  (onChange)="filterByLevel($event.value)"></p-dropdown>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="code">Código <p-sortIcon field="code"></p-sortIcon></th>
+              <th pSortableColumn="name">Cuenta Contable <p-sortIcon field="name"></p-sortIcon></th>
+              <th>Nivel</th>
+            </tr>
+            <tr>
+              <th>
+                <input pInputText type="text" (input)="onCodeFilter($event)" class="w-full"/>
+              </th>
+              <th>
+                <input pInputText type="text" (input)="onNameFilter($event)" class="w-full"/>
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-account>
+            <tr [pSelectableRow]="account" (click)="onNodeSelect({data: account})">
+              <td>
+                <div class="flex align-items-center gap-2">
+
+                  <i [class]="account.hasChildren ? (account.isExpanded ? 'pi pi-folder-open' : 'pi pi-folder') : 'pi pi-file'"></i>
+                  <span>{{account.code}}</span>
+                </div>
+              </td>
+              <td>
+                <div [ngClass]="account.indent">
+                  {{account.name}}
+                </div>
+              </td>
+              <td>
+                <p-tag [value]="account.level | titlecase"
+                      [severity]="getSeverity(account.level)"></p-tag>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3">No se encontraron cuentas</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+
+    <!-- Detail section -->
+    <div class="col-12 md:col-6">
+      <p-card header="Detalle de Cuenta" [style]="{ height: '100%' }">
+        <div class="grid">
+          <!-- Code/Name display -->
+          <div class="col-12">
+            <div class="grid">
+              <div class="col-5 text-right font-bold">Código</div>
+              <div class="col-7 font-bold">Nombre</div>
+
+              <div class="col-5 text-right p-2 border-bottom-1 surface-border">Clase</div>
+              <div class="col-7 p-2 border-bottom-1 surface-border">
+                <div class="flex justify-content-between">
+                  <span>{{currentFormData.classCode || '-'}}</span>
+                  <span class="text-color-secondary">{{currentFormData.className || '-'}}</span>
+                </div>
+              </div>
+
+              <div class="col-5 text-right p-2 border-bottom-1 surface-border">Grupo</div>
+              <div class="col-7 p-2 border-bottom-1 surface-border">
+                <div class="flex justify-content-between">
+                  <span>{{currentFormData.groupCode || '-'}}</span>
+                  <span class="text-color-secondary">{{currentFormData.groupName || '-'}}</span>
+                </div>
+              </div>
+
+              <div class="col-5 text-right p-2 border-bottom-1 surface-border">Cuenta</div>
+              <div class="col-7 p-2 border-bottom-1 surface-border">
+                <div class="flex justify-content-between">
+                  <span>{{currentFormData.accountCode || '-'}}</span>
+                  <span class="text-color-secondary">{{currentFormData.accountName || '-'}}</span>
+                </div>
+              </div>
+
+              <div class="col-5 text-right p-2 border-bottom-1 surface-border">Subcuenta</div>
+              <div class="col-7 p-2 border-bottom-1 surface-border">
+                <div class="flex justify-content-between">
+                  <span>{{currentFormData.subAccountCode || '-'}}</span>
+                  <span class="text-color-secondary">{{currentFormData.subAccountName || '-'}}</span>
+                </div>
+              </div>
+
+              <div class="col-5 text-right p-2 border-bottom-1 surface-border">Auxiliar</div>
+              <div class="col-7 p-2 border-bottom-1 surface-border">
+                <div class="flex justify-content-between">
+                  <span>{{currentFormData.assistantCode || '-'}}</span>
+                  <span class="text-color-secondary">{{currentFormData.assistantName || '-'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transactional features -->
+          <div class="col-12 mt-4">
+            <h4 class="mt-0 mb-3">Características transaccionales</h4>
+            <div class="grid formgrid">
+              <div class="col-12 md:col-4 mb-3">
+                <label class="block font-bold mb-2">Relacionado con</label>
+                <p-dropdown [options]="relatedOptions" placeholder="Seleccionar" [style]="{ width: '100%' }"></p-dropdown>
+              </div>
+
+              <div class="col-12 md:col-4 mb-3">
+                <label class="block font-bold mb-2">Categoría</label>
+                <p-dropdown [options]="categoryOptions" placeholder="Seleccionar" [style]="{ width: '100%' }"></p-dropdown>
+              </div>
+
+              <div class="col-12 md:col-4 mb-3">
+                <label class="block font-bold mb-2">Detallar saldos</label>
+                <p-dropdown [options]="detailOptions" placeholder="Seleccionar" [style]="{ width: '100%' }"></p-dropdown>
+              </div>
+
+              <div class="col-12 md:col-6 mb-3">
+                <div class="flex align-items-center gap-2">
+                  <p-checkbox [binary]="true" inputId="niif"></p-checkbox>
+                  <label for="niif">Cuenta de diferencia fiscal o ajustes NIIF</label>
+                </div>
+              </div>
+
+              <div class="col-12 md:col-6 mb-3">
+                <div class="flex align-items-center gap-2">
+                  <p-checkbox [binary]="true" inputId="active" [(ngModel)]="currentFormData.active"></p-checkbox>
+                  <label for="active">Activa</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-12 flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancelar" severity="secondary" icon="pi pi-times"></p-button>
+            <p-button label="Guardar" icon="pi pi-check"></p-button>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

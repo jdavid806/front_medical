@@ -18,67 +18,148 @@ include "../header.php";
     }
 </style>
 
+<!-- Tu contenido HTML va aquí (el que ya enviaste) -->
 <div class="componete">
-    <div class="content">
-        <div class="container">
-            <nav class="mb-3" aria-label="breadcrumb">
-                <ol class="breadcrumb mt-5">
-                    <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Inventario</li>
-                </ol>
-            </nav>
-            <div class="pb-9">
-                <div class="row mt-5">
-                    <div class="col-md-12">
-                        <h2 class="mb-3">Solicitud de insumos</h2>
+  <div class="content">
+    <div class="container">
+      <nav class="mb-3" aria-label="breadcrumb">
+        <ol class="breadcrumb mt-5">
+          <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+          <li class="breadcrumb-item active" onclick="location.reload()">Inventario</li>
+        </ol>
+      </nav>
 
-                        <button class="btn dropdown-toggle mb-4 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="fa-solid fa-plus me-2 fs-9"></span> Solicitar insumo
-                        </button>
+      <div class="pb-9">
+        <div class="row mt-5">
+          <div class="col-md-12">
+            <h2 class="mb-3">Solicitud de insumos</h2>
 
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoAdmin">Administrativo</a>
+            <button class="btn dropdown-toggle mb-4 btn-primary" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="fa-solid fa-plus me-2 fs-9"></span> Solicitar insumo
+            </button>
 
-                            <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoProcedimiento">Procedimiento</a>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <!-- Tabla de insumos -->
-                    <div class="col-lg-12">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr class="bg-body-highlight">
-                                        <th class="text-center">Tipo</th>
-                                        <th class="text-center" style="width: 35%;">Insumos</th>
-                                        <th class="text-center" style="width: 35%;">Observaciones</th>
-                                        <th class="text-center" style="width: 10%;">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list"></tbody>
-                            </table>
-
-                            <!-- 🔹 Controles de paginación -->
-                            <div class="pagination d-flex justify-content-end mt-3">
-                                <button id="prevPage" class="btn btn-sm btn-outline-primary mx-1">Anterior</button>
-                                <span class="mx-2">Página <span id="currentPage">1</span> de <span id="totalPages">1</span></span>
-                                <button id="nextPage" class="btn btn-sm btn-outline-primary mx-1">Siguiente</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoAdmin">Administrativo</a>
+              <!-- <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#solicitudInsumoProcedimiento">Procedimiento</a> -->
             </div>
-
+          </div>
         </div>
+
+        <div class="row">
+          <!-- Tabla de insumos -->
+          <div class="col-lg-12">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr class="bg-body-highlight">
+                    <th class="text-center">Tipo</th>
+                    <th class="text-center" style="width: 35%;">Insumos</th>
+                    <th class="text-center" style="width: 35%;">Observaciones</th>
+                    <th class="text-center" style="width: 10%;">Estado</th>
+                  </tr>
+                </thead>
+                <tbody class="list"></tbody>
+              </table>
+
+              <!-- 🔹 Controles de paginación -->
+              <div class="pagination d-flex justify-content-end mt-3">
+                <button id="prevPage" class="btn btn-sm btn-outline-primary mx-1">Anterior</button>
+                <span class="mx-2">Página <span id="currentPage">1</span> de <span id="totalPages">1</span></span>
+                <button id="nextPage" class="btn btn-sm btn-outline-primary mx-1">Siguiente</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 </div>
 
-
+<!-- ✅ SCRIPT -->
 <script>
+  const tbody = document.querySelector('.list');
+
+  const fetchProducts = async (productList) => {
+    if (!productList.length) {
+      return ["No hay productos"];
+    }
+
+    const productNames = await Promise.all(
+      productList.map(async (p) => {
+        try {
+          const res = await fetch(`https://dev.monaros.co/api/v1/admin/products/${p.product_id}`);
+          const data = await res.json();
+          const productName = data.name || `Producto #${p.product_id}`;
+          return `${productName} (x${p.quantity})`;
+        } catch {
+          return `Producto #${p.product_id} (x${p.quantity})`;
+        }
+      })
+    );
+
+    return productNames;
+  };
+
+  const fetchAndRenderInsumos = async () => {
+    try {
+      const res = await fetch('https://dev.monaros.co/api/v1/admin/medical-supplies/');
+      const json = await res.json();
+      const insumos = json.data;
+
+      for (const insumo of insumos) {
+        const tr = document.createElement('tr');
+
+        const productNames = await fetchProducts(insumo.products);
+        const productItems = productNames.map(name => `<li>${name}</li>`).join("");
+
+        let badgeClass = '';
+        let badgeText = '';
+
+        switch (insumo.status) {
+          case 'pendiente':
+            badgeClass = 'bg-primary text-white';
+            badgeText = 'Pendiente';
+            break;
+          case 'entregado':
+            badgeClass = 'bg-success text-white';
+            badgeText = 'Entregado';
+            break;
+          case 'cancelado':
+            badgeClass = 'bg-danger text-white';
+            badgeText = 'Cancelado';
+            break;
+          default:
+            badgeClass = 'bg-secondary text-white';
+            badgeText = insumo.status || '—';
+        }
+
+        tr.innerHTML = `
+          <td class="text-start">Administrativo</td>
+          <td class="text-start" style="min-width: 35%;"> 
+            <ul style="list-style-type: none; padding-left: 0;">
+              ${productItems}
+            </ul>
+          </td>
+          <td class="text-start" style="min-width: 35%;">${insumo.observations || '—'}</td>
+          <td class="text-center" style="min-width: 10%;">
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+    } catch (error) {
+      console.error('Error cargando insumos:', error);
+    }
+  };
+
+  fetchAndRenderInsumos();
+</script>
+
+
+
+<!-- <script>
     const insumos = [{
             tipo: "Administrativo",
             insumos: ["Papelería", "Carpetas", "Bolígrafo"],
@@ -152,7 +233,7 @@ include "../header.php";
 
         tbody.appendChild(tr);
     });
-</script>
+</script> -->
 
 
 <?php include "../footer.php";

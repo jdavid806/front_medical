@@ -5,13 +5,18 @@ include "../header.php";
 $tabs = [
     ['icono' => 'toolbox', 'titulo' => 'Cuentas Contables', 'texto' => 'Ver y configurar las cuentas contables', 'url' => 'CuentasContables'],
     ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturación', 'texto' => 'Genera facturaras x Entidad y de venta', 'url' => 'FE_FCE'],
-    ['icono' => 'file-invoice', 'titulo' => 'Comprobantes Contables', 'texto' => 'Genera Comprobantes contables', 'url' => 'FE_ContabilidadNueva'],
-    ['icono' => 'file-contract', 'titulo' => 'Recibos de Caja', 'texto' => 'Contabiliza los pagos recibidos y realizados', 'url' => 'RecibosDeCajas'],
+    ['icono' => 'building-columns', 'titulo' => 'Bancos', 'texto' => 'Visualiza saldos y transacciones bancarias', 'url' => 'BancosContables'],
+    ['icono' => 'file-invoice', 'titulo' => 'Comprobantes Contables', 'texto' => 'Genera Comprobantes contables', 'url' => 'ComprobantesContables'],
+    ['icono' => 'file-contract', 'titulo' => 'Recibos de Caja', 'texto' => 'Contabiliza los recibidos cajas y realizados', 'url' => 'RecibosDeCajas'],
+    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Visualiza reporte de facturas con sus vencimientos', 'url' => 'CuentasCobrarPagar'],
     ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Generar el cierre de Caja', 'url' => 'controlCaja'],
     ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Auditoria de cierres de caja', 'url' => 'reporteCaja'],
-    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Visualiza reporte de facturas con sus vencimientos', 'url' => 'CuentasCobrarPagar'],
-    ['icono' => 'chart-simple', 'titulo' => 'Reportes Contables', 'texto' => 'Visualiza reportes financieros', 'url' => 'FE_ContabilidadNueva'],
+    ['icono' => 'chart-simple', 'titulo' => 'Reportes Contables', 'texto' => 'Visualiza reportes financieros', 'url' => 'ReportesContables'],
+    ['icono' => 'receipt', 'titulo' => 'Cierres Contables', 'texto' => 'Visualiza saldos de cierres contables', 'url' => 'CierresContables'],
     ['icono' => 'check-double', 'titulo' => 'Auditoria Contable', 'texto' => 'Visualiza historico de registros y acciones del sistema', 'url' => 'FE_ContabilidadNueva'],
+    ['icono' => 'users', 'titulo' => 'Gestión de Terceros', 'texto' => 'Consulta y administra el registro de terceros, incluyendo su creación y modificación', 'url' => 'GestionarTerceros'],
+    ['icono' => 'toolbox', 'titulo' => 'Configuración Contable', 'texto' => 'Configura Métodos de pago, Impuestos y Centros de Costo', 'url' => 'configContabilidad'],
+    ['icono' => 'warehouse', 'titulo' => 'Gestión de Activos', 'texto' => 'Administra el inventario y estado de todos los activos de las cuentas', 'url' => 'ActivosFijos'],
 ];
 
 ?>
@@ -37,7 +42,7 @@ $tabs = [
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()" id="nameBradcumb"></li>
+                <li class="breadcrumb-item active" onclick="location.reload()">Modulos Contables</li>
             </ol>
         </nav>
         <div class="row g-0 g-md-4 g-xl-6 p-5 justify-content-center">

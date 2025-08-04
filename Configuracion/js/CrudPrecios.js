@@ -225,11 +225,13 @@ async function editarProducto(id) {
   if (producto.attention_type === "LABORATORY") {
     document.getElementById("priceSection").style.display = "none";
     document.getElementById("copagoSection").style.display = "none";
+    document.getElementById("purchasePriceSection").style.display = "none";
     document.getElementById("toggleEntitiesSection").style.display = "none";
     document.getElementById("toggleImpuestoSection").style.display = "none";
   } else {
     document.getElementById("priceSection").style.display = "block";
     document.getElementById("copagoSection").style.display = "block";
+    document.getElementById("purchasePriceSection").style.display = "block";
     document.getElementById("toggleEntitiesSection").style.display = "block";
     document.getElementById("toggleImpuestoSection").style.display = "block";
   }
@@ -241,10 +243,10 @@ async function editarProducto(id) {
 
   document.getElementById("name").value = producto.name || "";
   document.getElementById("curp").value = producto.barcode || "";
-  document.getElementById("attention_type").value =
-    producto.attention_type || "";
+  document.getElementById("attention_type").value = producto.attention_type || "";
   document.getElementById("sale_price").value = producto.sale_price || "";
   document.getElementById("copago").value = producto.copayment || "";
+  document.getElementById("purchase_price").value = producto.purchase_price || "";
   // document.getElementById("tax_charge_id").value = producto.tax_charge.id || "";
 
   const examTypeSection = document.getElementById("examTypeSection");

@@ -1,0 +1,409 @@
+<!-- Main Header Section -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-0 mb-4 bg-white p-4 md:p-3 rounded-lg shadow-md">
+  <!-- Back Button -->
+  <div class="w-full md:w-auto md:flex-1 flex justify-start">
+    <p-button
+      label="{{ 'ENTITIES_INVOICE' | translate }} - {{ 'CREATE_ENTITY_INVOICE' | translate }}"
+      icon="pi pi-arrow-left"
+      styleClass="p-button-text p-button-secondary w-full md:w-auto justify-start"
+      [raised]="true"
+      routerLink="/billing/entities">
+    </p-button>
+  </div>
+
+  <!-- Centered Title -->
+  <div class="w-full mr-8 md:flex-1 px-0 md:px-4">
+    <h1 class="text-xl md:text-2xl font-bold mb-1 inline-block">
+      {{ "CREATE_NEW_ENTITY_INVOICE" | translate }}
+      <div class="w-16 md:w-20 h-1 bg-blue-500 mx-auto mt-2 md:mt-1"></div>
+    </h1>
+  </div>
+</div>
+
+<div class="form-container p-4">
+  <form [formGroup]="form" class="space-y-2">
+    <p-card class="mb-2" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none', 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4 mobile:mb-3"><i class="pi pi-user-edit mr-2 mt-1 text-blue-500"></i> {{"BASIC_INFO" | translate}}</h3>
+
+      <div class="form-grid grid grid-cols-1 md:grid-cols-2">
+        <div class="space-y-2 mobile:space-y-3">
+          <div class="form-inputElement border rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "TYE_OF_SELLER" | translate }}</p>
+            <p-select
+              [options]="sellerTypeOptions"
+              formControlName="sellerType"
+              optionLabel="name"
+              placeholder="{{ 'TYE_OF_SELLER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('sellerType')?.invalid && form.get('sellerType')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal  text-gray-700">{{ "DATE_OF_PREPARATION" | translate }}</p>
+            <p-datepicker
+              formControlName="preparationDate"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('preparationDate')?.invalid && form.get('preparationDate')?.touched}">
+            </p-datepicker>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal text-gray-700">{{ "PROCEDURE_START_DATE" | translate }}</p>
+            <p-datepicker
+              formControlName="procedureStartDate"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('procedureStartDate')?.invalid && form.get('procedureStartDate')?.touched}">
+            </p-datepicker>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal  text-gray-700">{{ "PATIENT" | translate }}</p>
+            <p-select
+              [options]="patientOptions"
+              formControlName="patient"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_PATIENT' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('patient')?.invalid && form.get('patient')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal  text-gray-700">{{ "COST_CENTER" | translate }}</p>
+            <p-select
+              [options]="costCenterOptions"
+              formControlName="costCenter"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_COST_CENTER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('costCenter')?.invalid && form.get('costCenter')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+        </div>
+        <div class="space-y-4 mobile:space-y-3">
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal  text-gray-700">{{ "ENTITY" | translate }}</p>
+            <p-select
+              [options]="entityOptions"
+              formControlName="entity"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_ENTITY' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('entity')?.invalid && form.get('entity')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "EXPIRATION_DATE" | translate }}</p>
+            <p-datepicker
+              formControlName="expirationDate"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('expirationDate')?.invalid && form.get('expirationDate')?.touched}">
+            </p-datepicker>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "PROCEDURE_END_DATE" | translate }}</p>
+            <p-datepicker
+              formControlName="procedureEndDate"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('procedureEndDate')?.invalid && form.get('procedureEndDate')?.touched}">
+            </p-datepicker>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "PROCEDURES" | translate }}</p>
+            <p-select
+              [options]="procedureOptions"
+              formControlName="procedure"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_PROCEDURE' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('procedure')?.invalid && form.get('procedure')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "SPECIALIST" | translate }}</p>
+            <p-select
+              [options]="specialistOptions"
+              formControlName="specialist"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_SPECIALIST' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('specialist')?.invalid && form.get('specialist')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none', 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4"><i class="pi pi-barcode mr-2 mt-1 text-blue-500"></i>{{ 'INVOICE_INFO' | translate }}
+      </h3>
+
+      <div class="parent-card  border  rounded p-4 bg-white">
+        <table class="product-table w-full border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-100">
+              <th class="text-center  text-gray-700 font-semibold">{{ 'PATIENT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'DATE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'PROCEDURE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'AUTHORIZATION_NUMBER' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'AMOUNT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'UNIT_VALUE' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'TOTAL_VALUE' | translate }}</th>
+              <th class="text-center  text-gray-700 font-semibold">{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(procedure of proceduresArray; track procedure; let i = $index) {
+            <tr class="border-b  hover:bg-gray-50">
+              <td class="p-3 bg-gray-50">
+                <p-select
+                formControlName="medicalpatient"
+                [options]="medicalPatientOptions"
+                placeholder="{{ 'SELECT_PRODUCT' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('medicalpatient')?.invalid && form.get('medicalpatient')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                optionLabel="name"
+                [showClear]="true"
+                >
+                </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-datepicker
+                formControlName="date"
+                [iconDisplay]="'input'"
+                [showIcon]="true"
+                [showButtonBar]="true"
+                placeholder="dd/mm/yy"
+                dateFormat="dd/mm/yy"
+                inputStyleClass="w-full"
+                styleClass="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('date')?.invalid && form.get('date')?.touched}">
+              </p-datepicker>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                [options]="medicalProcedureOptions"
+                formControlName="medicalprodedure"
+                optionLabel="name"
+                placeholder="{{ 'SELECT_SPECIALIST' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('medicalprodedure')?.invalid && form.get('medicalprodedure')?.touched}"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true">
+              </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                [options]="autorizationNumberOptions"
+                formControlName="autorizationnumber"
+                optionLabel="number"
+                placeholder="{{ 'SELECT_SPECIALIST' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('autorizationnumber')?.invalid && form.get('autorizationnumber')?.touched}"
+                [filter]="true"
+                filterBy="number"
+                [showClear]="true">
+              </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                formControlName="quantity"
+                type="text"
+                pInputText
+                placeholder="{{ 'AMOUNT' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('quantity')?.invalid && form.get('quantity')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                formControlName="value"
+                type="text"
+                pInputText
+                placeholder="{{ 'UNIT_VALUE' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('value')?.invalid && form.get('value')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                formControlName="totalvalue"
+                type="text"
+                pInputText
+                placeholder="{{ 'TOTAL_VALUE' | translate }}"
+                class="w-full"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('totalvalue')?.invalid && form.get('totalvalue')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="removeProcedure(i)" />
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Botón para añadir producto -->
+        <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700"
+          (click)="addProcedure()">
+          <i class="pi pi-plus mr-2"></i> {{ 'ADD' | translate }}
+        </p>
+
+        <!-- Total -->
+        <p-card [style]="{'background':'#f8f9fa'}" class="total-card mt-4 border border-gray-200  rounded">
+          <h4 class="text-lg font-semibold text-gray-800">Total Neto: {{totalValue | currency}}</h4>
+        </p-card>
+      </div>
+    </p-card>
+
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e5e7eb', 'box-shadow': '0 1px 3px rgba(0,0,0,0.05)', 'margin-bottom': '1.5rem' }">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+          <i class="pi pi-credit-card mr-2 mt-1 text-blue-500"></i>
+          {{ 'PAYMENT_METHOD' | translate }}
+        </h3>
+
+        <div class="payment-array space-y-4">
+          @for(paymentMethods of paymentMethodsArray; track paymentMethods; let i = $index) {
+          <div class="payment-container grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-lg bg-gray-50/30 hover:bg-gray-50/50 transition-colors">
+            <div class="md:col-span-4">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{ 'SELECT_HALF_PAYMENT' | translate }}</label>
+              <div class="bg-white border border-gray-200 rounded-md">
+                <p-select
+                  [options]="paymentMethodOptions"
+                  formControlName="paymentMethod"
+                  optionLabel="name"
+                  placeholder="{{ 'SELECT_PAYMENT_METHOD' | translate }}"
+                  class="w-full"
+                  [dropdownIcon]="'pi pi-chevron-down'"
+                  inputStyleClass="text-sm border-none"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('paymentMethod')?.invalid && form.get('paymentMethod')?.touched}"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                />
+              </div>
+            </div>
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'AUTHORIZATION_NUMBER' | translate}}</label>
+              <div class="bg-white border border-gray-200 rounded-md overflow-auto">
+                <input
+                type="text"
+                formControlName="autorizationnumber"
+                pInputText
+                placeholder="{{ 'ENTER_AUTHORIZATION_NUMBER' | translate }}"
+                class="w-full text-sm border-none"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('autorizationnumber')?.invalid && form.get('autorizationnumber')?.touched}"
+                />
+              </div>
+            </div>
+
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'VALUE' | translate}}</label>
+              <input
+              type="text"
+              formControlName="value"
+              pInputText
+              placeholder="0.00"
+              class="w-full text-sm border-none"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('value')?.invalid && form.get('value')?.touched}"
+              />
+            </div>
+
+            <div class="md:col-span-2 flex items-end justify-center">
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                styleClass="hover:bg-red-50 transition-colors" (click)="removePayment(i)"></p-button>
+            </div>
+          </div>
+          }
+
+          <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700" (click)="addPayment()">
+            <i class="pi pi-plus mr-2"></i> {{ 'ADD_HALF_PAYMENT' | translate }}
+          </p>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none' }">
+      <div class="total-pagar-container">
+        <h3 class="text-lg font-semibold mb-2">{{ 'TOTAL_TO_PAY' | translate }}</h3>
+        <p class="total-amount text-2xl font-bold mb-4 text-blue-600">{{totalValue | currency}}</p>
+      </div>
+
+      <div class="button-container mt-4 flex justify-content-around">
+        <p-button
+          label="{{ 'CANCEL' | translate }}"
+          (click)="cancel()"
+          [raised]="true"
+          severity="secondary">
+        </p-button>
+
+        <p-button
+          label="{{ 'SAVE' | translate }}"
+          (click)="save()"
+          [raised]="true"
+          [disabled]="form.invalid">
+        </p-button>
+
+        <p-button
+          label="{{ 'SAVE_AND_SEND' | translate }}"
+          (click)="saveAndSend()"
+          [raised]="true"
+          [disabled]="form.invalid">
+        </p-button>
+      </div>
+    </p-card>
+  </form>
+</div>

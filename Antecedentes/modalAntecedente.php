@@ -257,13 +257,13 @@ $generoPaciente = 'femenino';
 
     function editarAntecedente(id) {
         $("#modalAntecedenteLabel").html(`Editar Antecedente`);
-        console.log('Editar incapacidad con ID:', id, "data_antecedente_" + id);
+        // console.log('Editar incapacidad con ID:', id, "data_antecedente_" + id);
 
         const data = JSON.parse(
             document.getElementById("data_antecedente_" + id).value
         );
 
-        console.log(data);
+        // console.log(data);
 
         Object.keys(antecedentes).forEach(key => {
             const dataKey = antecedentes[key]

@@ -74,18 +74,15 @@ $examenes = [
     const productId = new URLSearchParams(window.location.search).get('product_id');
 
     const patientPromise = patientService.get(patientId);
-    const productPromise = inventoryService.getById(productId);
     const examOrdersPromise = examOrderService.getAll();
     const examOrderStatesPromise = examOrderStateService.getAll();
 
     const [
         patient,
-        product,
         examOrders,
         examOrderStates
     ] = await Promise.all([
         patientPromise,
-        productPromise,
         examOrdersPromise,
         examOrderStatesPromise
     ]);
@@ -99,25 +96,21 @@ $examenes = [
         }
     })
 
-    const examOrder = examOrders.find(e => {
-        console.log(e, e.created_at.slice(0, 10), new Date().toISOString().slice(0, 10));
+    let examOrder = null
 
-        return e.patient_id == patientId &&
-            e.exam_type_id == product.exam_type_id &&
-            examOrderStates.find(es => es.name.toLowerCase() == 'generated').id == e.exam_order_state_id &&
-            e.created_at.slice(0, 10) == new Date().toISOString().slice(0, 10)
-    });
+    if (examId) {
+        examOrder = examOrders.find(e => e.id == examId)
+    } else {
+        const product = await inventoryService.getById(productId);
+        examOrder = examOrders.find(e => {
+            return e.patient_id == patientId &&
+                e.exam_type_id == product.exam_type_id &&
+                examOrderStates.find(es => es.name.toLowerCase() == 'generated').id == e.exam_order_state_id &&
+                e.created_at.slice(0, 10) == new Date().toISOString().slice(0, 10)
+        });
+    }
 
-    // if (!examOrder) {
-    //     AlertManager.error({
-    //         text: 'No hay exámenes disponibles para este paciente'
-    //     })
-    //     setTimeout(() => {
-    //         history.back()
-    //     }, 1000);
-    // }
-
-    document.getElementById('productName').textContent = product.name
+    document.getElementById('productName').textContent = examOrder?.exam_type?.name || 'Cargar Resultados de Examen';
 
     ReactDOMClient.createRoot(document.getElementById('examsAppReact')).render(React.createElement(ExamResultsForm, {
         examId: examOrder.id,

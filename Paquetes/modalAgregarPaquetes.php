@@ -261,16 +261,6 @@
 </style>
 
 <script type="module">
-    import React from "react"
-    import ReactDOMClient from "react-dom/client"
-    import {
-        remissionsForm
-    } from './react-dist/remissions/RemissionsForm.js';
-
-    ReactDOMClient.createRoot(document.getElementById('formRemision')).render(React.createElement(remissionsForm));
-</script>
-
-<script type="module">
     import {
         cie11Service,
         cupsService,
@@ -322,13 +312,10 @@
 
     document.addEventListener('DOMContentLoaded', async function() {
 
-        document.getElementById('contentFecha').style.display = 'none';
-
         medicamentos = await packagesService.getPackagesByMedications();
         vacunas = await packagesService.getPackagesByVaccines();
         insumos = await packagesService.getPackagesBySupplies();
         examenes = await examenTypeService.getExamenTypes();
-
         /**
          * Función para cargar los medicamentos en el select
          */
@@ -1733,4 +1720,14 @@
                 console.error('Error al crear la admisión:', error);
             });
     });
+</script>
+
+<script type="module">
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        remissionsForm
+    } from './react-dist/remissions/RemissionsForm.js';
+
+    ReactDOMClient.createRoot(document.getElementById('formRemision')).render(React.createElement(remissionsForm));
 </script>

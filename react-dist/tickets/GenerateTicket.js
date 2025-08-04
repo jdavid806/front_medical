@@ -1,71 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { ticketService, patientService } from "../../services/api/index.js";
-import { SelectButton } from 'primereact/selectbutton';
-import { classNames } from 'primereact/utils';
-import Swal from 'sweetalert2';
+import { SelectButton } from "primereact/selectbutton";
+import { classNames } from "primereact/utils";
+import { useMassMessaging } from "../hooks/useMassMessaging.js";
+import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/utilidades.js";
+import { useTemplate } from "../hooks/useTemplate.js";
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
-    patient_name: '',
-    phone: '',
-    reason: '',
-    priority: 'NONE'
+    patient_name: "",
+    phone: "",
+    reason: "",
+    priority: "NONE"
   });
   const [ticket, setTicket] = useState(null); // <-- STATE DEFINIDO
   const [patient, setPatient] = useState(null);
-  const [patientDni, setPatientDni] = useState('');
+  const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
     ticket: false,
     patient: false
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showPatientInputs, setShowPatientInputs] = useState(false);
+  const {
+    sendMessage,
+    responseMsg,
+    loading: loadingMsg,
+    error: errorMsg
+  } = useMassMessaging();
+  const tenant = window.location.hostname.split(".")[0];
+  const data = {
+    tenantId: tenant,
+    belongsTo: "turnos-creacion",
+    type: "whatsapp"
+  };
+  const {
+    template,
+    setTemplate,
+    fetchTemplate
+  } = useTemplate(data);
 
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [{
-    value: 'ADMISSION_PRESCHEDULED',
-    label: 'Admisión (Cita Programada)',
-    icon: 'fas fa-calendar'
+    value: "ADMISSION_PRESCHEDULED",
+    label: "Admisión (Cita Programada)",
+    icon: "fas fa-calendar"
   }, {
-    value: 'EXIT_CONSULTATION',
-    label: 'Salida de Consulta',
-    icon: 'fas fa-sign-out-alt'
+    value: "EXIT_CONSULTATION",
+    label: "Salida de Consulta",
+    icon: "fas fa-sign-out-alt"
   }, {
-    value: 'CONSULTATION_GENERAL',
-    label: 'Consulta General',
-    icon: 'fas fa-file'
+    value: "CONSULTATION_GENERAL",
+    label: "Consulta General",
+    icon: "fas fa-file"
   }, {
-    value: 'SPECIALIST',
-    label: 'Especialista',
-    icon: 'fas fa-user-md'
+    value: "SPECIALIST",
+    label: "Especialista",
+    icon: "fas fa-user-md"
   }, {
-    value: 'VACCINATION',
-    label: 'Vacunación',
-    icon: 'fas fa-syringe'
+    value: "VACCINATION",
+    label: "Vacunación",
+    icon: "fas fa-syringe"
   }, {
-    value: 'LABORATORY',
-    label: 'Laboratorio',
-    icon: 'fas fa-flask'
+    value: "LABORATORY",
+    label: "Laboratorio",
+    icon: "fas fa-flask"
   }];
   const PRIORITY_OPTIONS = [{
-    value: 'NONE',
-    label: 'Sin Prioridad',
-    icon: 'fas fa-circle'
+    value: "NONE",
+    label: "Sin Prioridad",
+    icon: "fas fa-circle"
   }, {
-    value: 'PREGNANT',
-    label: 'Embarazada',
-    icon: 'fas fa-heart'
+    value: "PREGNANT",
+    label: "Embarazada",
+    icon: "fas fa-heart"
   }, {
-    value: 'SENIOR',
-    label: 'Adulto Mayor',
-    icon: 'fas fa-user'
+    value: "SENIOR",
+    label: "Adulto Mayor",
+    icon: "fas fa-user"
   }, {
-    value: 'DISABILITY',
-    label: 'Discapacidad',
-    icon: 'fas fa-wheelchair'
+    value: "DISABILITY",
+    label: "Discapacidad",
+    icon: "fas fa-wheelchair"
   }, {
-    value: 'CHILDREN_BABY',
-    label: 'Niño/bebé',
-    icon: 'fas fa-child'
+    value: "CHILDREN_BABY",
+    label: "Niño/bebé",
+    icon: "fas fa-child"
   }];
 
   // Buscar paciente cuando cambia el ID
@@ -75,16 +94,16 @@ export const GenerateTicket = () => {
       ...prev,
       patient: true
     }));
-    setError('');
+    setError("");
     try {
       const response = await patientService.findByField({
-        field: 'document_number',
+        field: "document_number",
         value: patientDni
       });
-      setPatient(response.data);
+      setPatient(response);
       setFormData(prev => ({
         ...prev,
-        patient_name: response.first_name || '' + ' ' + response.middle_name || '' + ' ' + response.last_name || '' + ' ' + response.second_last_name || '',
+        patient_name: `${response.first_name ?? ""} ${response.middle_name ?? ""} ${response.last_name ?? ""} ${response.second_last_name ?? ""}`,
         phone: response.whatsapp
       }));
       setShowPatientInputs(true);
@@ -93,10 +112,10 @@ export const GenerateTicket = () => {
       setShowPatientInputs(true);
       setFormData(prev => ({
         ...prev,
-        patient_name: '',
-        phone: ''
+        patient_name: "",
+        phone: ""
       }));
-      setError('Paciente no encontrado, ingrese número telefónico manualmente');
+      setError("Paciente no encontrado, ingrese número telefónico manualmente");
     } finally {
       setLoading(prev => ({
         ...prev,
@@ -110,7 +129,7 @@ export const GenerateTicket = () => {
       ...prev,
       ticket: true
     }));
-    setError('');
+    setError("");
     try {
       const ticketData = {
         ...formData,
@@ -120,7 +139,7 @@ export const GenerateTicket = () => {
       const response = await ticketService.create(ticketData);
       setTicket(response);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error generando turno');
+      setError(err.response?.data?.message || "Error generando turno");
     } finally {
       setLoading(prev => ({
         ...prev,
@@ -145,11 +164,27 @@ export const GenerateTicket = () => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex align-items-center gap-2"
     }, /*#__PURE__*/React.createElement("i", {
-      className: classNames('pi', option.icon)
+      className: classNames("pi", option.icon)
     }), /*#__PURE__*/React.createElement("span", null, option.label));
   };
-  const options = ['Off', 'On'];
+  const options = ["Off", "On"];
   const [value, setValue] = useState(options[0]);
+  async function sendMessageWhatsapp() {
+    const replacements = {
+      NOMBRE_PACIENTE: `${ticket?.patient_name}`,
+      TICKET: `${ticket?.ticket_number}`
+    };
+    const templateFormatted = formatWhatsAppMessage(template.template, replacements);
+    const dataMessage = {
+      channel: "whatsapp",
+      message_type: "text",
+      recipients: [getIndicativeByCountry(patient?.country_id || "Dominican Republic") + ticket.phone],
+      message: templateFormatted,
+      webhook_url: "https://example.com/webhook"
+    };
+    console.log("Data to send:", dataMessage);
+    await sendMessage(dataMessage);
+  }
   return /*#__PURE__*/React.createElement("div", {
     className: "container mt-5"
   }, /*#__PURE__*/React.createElement("h2", {
@@ -177,7 +212,7 @@ export const GenerateTicket = () => {
     className: "btn btn-outline-secondary",
     onClick: handleSearchPatient,
     disabled: !patientDni || loading.patient
-  }, loading.patient ? 'Buscando...' : 'Buscar'))), showPatientInputs && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, loading.patient ? "Buscando..." : "Buscar"))), showPatientInputs && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
@@ -201,7 +236,7 @@ export const GenerateTicket = () => {
     onChange: handleChange,
     required: showPatientInputs,
     disabled: !!patient
-  }))), formData.phone && formData.phone !== '' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }))), formData.phone && formData.phone !== "" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header text-center"
@@ -220,12 +255,12 @@ export const GenerateTicket = () => {
     itemTemplate: BadgeTemplate,
     pt: {
       root: {
-        className: 'd-flex flex-wrap gap-2 justify-content-center'
+        className: "d-flex flex-wrap gap-2 justify-content-center"
       },
       button: options => ({
-        className: classNames('rounded', {
-          'btn btn-outline-secondary': !options?.context.selected,
-          'btn btn-primary': options?.context.selected
+        className: classNames("rounded", {
+          "btn btn-outline-secondary": !options?.context.selected,
+          "btn btn-primary": options?.context.selected
         })
       })
     },
@@ -249,23 +284,23 @@ export const GenerateTicket = () => {
     itemTemplate: BadgeTemplate,
     pt: {
       root: {
-        className: 'd-flex flex-wrap gap-2 justify-content-center'
+        className: "d-flex flex-wrap gap-2 justify-content-center"
       },
       button: options => ({
-        className: classNames('rounded', {
-          'btn btn-outline-secondary': !options?.context.selected,
-          'btn btn-primary': options?.context.selected
+        className: classNames("rounded", {
+          "btn btn-outline-secondary": !options?.context.selected,
+          "btn btn-primary": options?.context.selected
         })
       })
     },
     required: true
   })))), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger"
-  }, error), formData.phone && formData.phone !== '' && /*#__PURE__*/React.createElement("button", {
+  }, error), formData.phone && formData.phone !== "" && /*#__PURE__*/React.createElement("button", {
     type: "submit",
     className: "btn btn-primary w-100",
     disabled: loading.ticket
-  }, loading.ticket ? 'Generando...' : 'Generar Turno')))), ticket && /*#__PURE__*/React.createElement("div", {
+  }, loading.ticket ? "Generando..." : "Generar Turno")))), ticket && /*#__PURE__*/React.createElement("div", {
     id: "ticket-printable",
     className: "mt-4 p-4 bg-light rounded text-center"
   }, /*#__PURE__*/React.createElement("h3", {
@@ -274,40 +309,19 @@ export const GenerateTicket = () => {
     className: "h2 fw-bold text-primary"
   }, ticket.ticket_number), /*#__PURE__*/React.createElement("div", {
     className: "text-muted"
-  }, "Prioridad: ", PRIORITY_OPTIONS.find(p => p.value === ticket.priority)?.label), /*#__PURE__*/React.createElement("div", {
+  }, "Prioridad:", " ", PRIORITY_OPTIONS.find(p => p.value === ticket.priority)?.label), /*#__PURE__*/React.createElement("div", {
     className: "mt-3"
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-outline-secondary me-2",
-    onClick: () => printElement(document.getElementById('ticket-printable'))
+    onClick: () => printElement(document.getElementById("ticket-printable"))
   }, "Imprimir"), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-outline-success",
     onClick: async () => {
-      const ticketPrintable = document.getElementById('ticket-printable');
+      const ticketPrintable = document.getElementById("ticket-printable");
       if (ticketPrintable) {
-        const parametrosMensaje = {
-          number: formData.phone,
-          text: ticketPrintable.innerHTML
-        };
-        try {
-          const response = await fetch("https://apiwhatsapp.medicalsoft.ai/message/sendText/instancia_carlos", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              apikey: "034B981E0055-4366-83B6-2113BE36234B"
-            },
-            body: JSON.stringify(parametrosMensaje)
-          });
-          const result = await response.json();
-          Swal.fire({
-            title: '¡Notificación enviada!',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
-        } catch (error) {
-          console.error("Error al enviar el mensaje:", error);
-        }
+        sendMessageWhatsapp();
       }
     }
   }, "Enviar por WhatsApp"))));

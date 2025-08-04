@@ -1,0 +1,366 @@
+<!-- Main Header Section -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-0 mb-4 bg-white p-4 md:p-3 rounded-lg shadow-md">
+  <!-- Back Button -->
+  <div class="w-full md:w-auto md:flex-1 flex justify-start">
+    <p-button
+      label="{{ 'REFERRALS' | translate }} - {{ 'NEW_REFERRAL' | translate }}"
+      icon="pi pi-arrow-left"
+      styleClass="p-button-text p-button-secondary w-full md:w-auto justify-start"
+      [raised]="true"
+      routerLink="/billing/referrals">
+    </p-button>
+  </div>
+
+  <!-- Centered Title -->
+  <div class="w-full mr-8 md:flex-1 px-0 md:px-4">
+    <h1 class="text-xl md:text-2xl font-bold mb-1 inline-block">
+      {{ "CREATE_NEW_REFERRAL" | translate }}
+      <div class="w-16 md:w-20 h-1 bg-blue-500 mx-auto mt-2 md:mt-1"></div>
+    </h1>
+  </div>
+</div>
+
+<div class="form-container p-4">
+  <form [formGroup]="form" class="space-y-2">
+    <p-card class="mb-2" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none', 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4 mobile:mb-3"><i class="pi pi-user-edit mr-2 mt-1 text-blue-500"></i> {{"BASIC_INFO" | translate}}</h3>
+
+      <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-2 mobile:space-y-3">
+          <div class="form-inputElement border rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "TYPE" | translate }}</p>
+            <p-select
+              [options]="typeOptions"
+              formControlName="receiptType"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_TYPE' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('receiptType')?.invalid && form.get('receiptType')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "CONTACT" | translate }}</p>
+            <p-select
+              [options]="contactOptions"
+              formControlName="receiver"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_CONTACT' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('receiver')?.invalid && form.get('receiver')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "CUSTOMER" | translate }}</p>
+            <p-select
+              [options]="customerOptions"
+              formControlName="customer"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_CUSTOMER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('customer')?.invalid && form.get('customer')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "DATE_OF_PREPARATION" | translate }}</p>
+            <p-datepicker
+              formControlName="date"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              placeholder="dd/mm/yy"
+              dateFormat="dd/mm/yy"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('date')?.invalid && form.get('date')?.touched}">
+            </p-datepicker>
+          </div>
+        </div>
+
+        <div class="space-y-2 mobile:space-y-3">
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "INVOICE_NUMER_AUTOMATIC" | translate }}</p>
+            <input
+              pInputText
+              formControlName="id"
+              optionLabel="name"
+              placeholder="{{ 'INVOICE_NUMBER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('id')?.invalid && form.get('id')?.touched}"
+              readonly
+             />
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "COST_CENTER" | translate }}</p>
+            <p-select
+              [options]="costCenterOptions"
+              formControlName="costCenter"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_COST_CENTER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('costCenter')?.invalid && form.get('costCenter')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "SELLER" | translate }}</p>
+            <p-select
+              [options]="sellerOptions"
+              formControlName="seller"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_SELLER' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('seller')?.invalid && form.get('seller')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+
+          <div class="form-inputElement border border-gray-200 rounded bg-gray-50">
+            <p class="font-normal mb-2 text-gray-700">{{ "REFERRAL_REASON" | translate }}</p>
+            <p-select
+              [options]="reasonOptions"
+              formControlName="reason"
+              optionLabel="name"
+              placeholder="{{ 'SELECT_REFERRAL_REASON' | translate }}"
+              class="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': form.get('reason')?.invalid && form.get('reason')?.touched}"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true">
+            </p-select>
+          </div>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none', 'margin-bottom': '1.5rem' }">
+      <h3 class="text-lg font-semibold mb-4"><i class="pi pi-shopping-cart mr-2 mt-1 text-blue-500"></i>{{ 'HALF_PAYMENT' | translate }}</h3>
+
+      <div class="parent-card border rounded p-4 bg-white">
+        <table class="product-table w-full border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-100">
+              <th class="text-center text-gray-700 font-semibold">{{ 'PRODUCT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'DESCRIPTION' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'AMOUNT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'UNIT_VALUE' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'PERCENTAGE_DISCOUNT' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'TAX_CHARGE' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'TAX_RETENTION' | translate }}</th>
+              <th class="text-center text-gray-700 font-semibold">{{ 'ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(product of productsArray; track product; let i = $index) {
+            <tr class="border-b hover:bg-gray-50">
+              <td class="p-3 bg-gray-50">
+                <p-select
+                  [options]="productOptions"
+                  formControlName="product"
+                  placeholder="{{ 'SELECT_PRODUCT' | translate }}"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('product')?.invalid && form.get('product')?.touched}"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  optionLabel="name">
+                </p-select>
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                  type="text"
+                  formControlName="description"
+                  pInputText
+                  placeholder="{{ 'ENTER_DESCRIPTION' | translate }}"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('description')?.invalid && form.get('description')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                  type="number"
+                  formControlName="quantity"
+                  pInputText
+                  placeholder="0"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('quantity')?.invalid && form.get('quantity')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                  type="number"
+                  formControlName="price"
+                  pInputText
+                  placeholder="0.00"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('price')?.invalid && form.get('price')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <input
+                  type="number"
+                  formControlName="discount"
+                  pInputText
+                  placeholder="0.00"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('discount')?.invalid && form.get('discount')?.touched}"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                  [options]="taxChargeOptions"
+                  formControlName="iva"
+                  placeholder="{{ 'ENTER_TAX_CHARGE' | translate }}"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('iva')?.invalid && form.get('iva')?.touched}"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  optionLabel="name"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-select
+                  [options]="taxRetentionOptions"
+                  formControlName="retention"
+                  placeholder="{{ 'ENTER_TAX_RETENTION' | translate }}"
+                  class="w-full"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('retention')?.invalid && form.get('retention')?.touched}"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  optionLabel="name"
+                />
+              </td>
+              <td class="p-3 bg-gray-50">
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="removeProduct(i)" />
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Add product button -->
+        <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700"
+          (click)="addProduct()">
+          <i class="pi pi-plus mr-2"></i> {{ 'ADD' | translate }}
+        </p>
+
+        <!-- Total -->
+        <p-card [style]="{'background':'#f8f9fa'}" class="total-card mt-4 border border-gray-200 rounded">
+          <h4 class="text-lg font-semibold text-gray-800">Total Neto: {{totalValue | currency}}</h4>
+        </p-card>
+      </div>
+    </p-card>
+
+    <p-card class="mb-4" [style]="{ 'border': '1px solid #e5e7eb', 'box-shadow': '0 1px 3px rgba(0,0,0,0.05)', 'margin-bottom': '1.5rem' }">
+      <div class="p-4">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+          <i class="pi pi-credit-card mr-2 mt-1 text-blue-500"></i>
+          {{ 'PAYMENT_METHOD' | translate }}
+        </h3>
+
+        <div class="payment-array space-y-4">
+          @for(paymentMethod of paymentMethodsArray; track paymentMethod; let i = $index) {
+          <div class="payment-container grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-lg bg-gray-50/30 hover:bg-gray-50/50 transition-colors">
+            <div class="md:col-span-4">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{ 'PAYMENT_METHOD' | translate }}</label>
+              <div class="bg-white border border-gray-200 rounded-md">
+                <p-select
+                  [options]="paymentMethodOptions"
+                  formControlName="method"
+                  optionLabel="name"
+                  placeholder="{{ 'SELECT_PAYMENT_METHOD' | translate }}"
+                  class="w-full"
+                  [dropdownIcon]="'pi pi-chevron-down'"
+                  inputStyleClass="text-sm border-none"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('method')?.invalid && form.get('method')?.touched}"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                />
+              </div>
+            </div>
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'AUTHORIZATION_NUMBER' | translate}}</label>
+              <div class="bg-white border border-gray-200 rounded-md overflow-auto">
+                <input
+                  type="text"
+                  formControlName="authorizationNumber"
+                  pInputText
+                  placeholder="{{ 'ENTER_AUTHORIZATION_NUMBER' | translate }}"
+                  class="w-full text-sm border-none"
+                  [ngClass]="{'ng-invalid ng-dirty': form.get('authorizationNumber')?.invalid && form.get('authorizationNumber')?.touched}"
+                />
+              </div>
+            </div>
+
+            <div class="md:col-span-3">
+              <label class="block font-medium mb-2 text-gray-700 text-sm">{{'VALUE' | translate}}</label>
+              <input
+                type="number"
+                formControlName="value"
+                pInputText
+                placeholder="0.00"
+                class="w-full text-sm border-none"
+                [ngClass]="{'ng-invalid ng-dirty': form.get('value')?.invalid && form.get('value')?.touched}"
+              />
+            </div>
+
+            <div class="md:col-span-2 flex items-end justify-center">
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                styleClass="hover:bg-red-50 transition-colors" (click)="removePayment(i)"></p-button>
+            </div>
+          </div>
+          }
+
+          <p class="add-text mt-4 flex items-center text-blue-500 cursor-pointer hover:text-blue-700" (click)="addPayment()">
+            <i class="pi pi-plus mr-2"></i> {{ 'ADD_HALF_PAYMENT' | translate }}
+          </p>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card [style]="{ 'border': '1px solid #e2e8f0', 'box-shadow': 'none' }">
+      <div class="button-container mt-4 flex justify-content-around">
+        <p-button
+          label="{{ 'CANCEL' | translate }}"
+          (click)="cancel()"
+          [raised]="true"
+          severity="secondary">
+        </p-button>
+
+        <p-button
+          label="{{ 'SAVE' | translate }}"
+          (click)="save()"
+          [raised]="true"
+          [disabled]="form.invalid">
+        </p-button>
+
+        <p-button
+          label="{{ 'SAVE_AND_SEND' | translate }}"
+          (click)="saveAndSend()"
+          [raised]="true"
+          [disabled]="form.invalid">
+        </p-button>
+      </div>
+    </p-card>
+  </form>
+</div>

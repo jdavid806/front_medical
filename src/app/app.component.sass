@@ -1,0 +1,150 @@
+// Variables de color actualizadas
+$primary: #C8E6FF
+$hover-bg: rgba(0, 0, 0, 0.03)
+$border-color: #e0e0e0
+$text-color: #2c3e50
+$white: #ffffff
+$black: #000000
+
+// Funciones modernas de SASS
+@use "sass:color"
+
+// Estructura base
+:host
+  display: flex
+  flex-direction: column
+  min-height: 100vh
+  background: $white
+
+// Componentes PrimeNG
+:host ::ng-deep
+  // Dropdown minimalista
+  p-dropdown
+    .p-dropdown
+      width: 100%
+      border: 1px solid $border-color
+      transition: border-color 0.2s ease
+      &:hover:not(.p-disabled)
+        border-color: color.adjust($border-color, $lightness: -10%)
+      &.p-focus
+        border-color: $primary
+        box-shadow: 0 0 0 0.1rem rgba($primary, 0.1)
+
+    .p-overlay
+      min-width: 280px !important
+      border: 1px solid $border-color
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08)
+
+  // TreeSelect mejorado
+  p-treeselect
+    .p-treeselect
+      width: 100%
+      .p-treeselect-label
+        padding: 0.7rem 1rem
+      .p-treeselect-trigger
+        width: 2.5rem
+
+// Elementos de formulario
+.form-input-element
+  margin-bottom: 1.2rem
+  input, p-dropdown
+    width: 100%
+    padding: 0.7rem 1rem
+    border: 1px solid $border-color
+    border-radius: 4px
+    transition: all 0.2s ease
+    &:focus
+      outline: none
+      border-color: $primary
+      box-shadow: 0 0 0 2px rgba($primary, 0.1)
+
+// Botón de cierre minimalista
+.close-button
+  position: absolute
+  top: 12px
+  right: 12px
+  background: transparent
+  border: none
+  color: color.adjust($text-color, $lightness: 30%)
+  transition: all 0.2s ease
+  &:hover
+    color: $text-color
+    transform: rotate(90deg)
+
+// Navegación minimalista - Versión corregida
+a
+  display: flex
+  align-items: center
+  padding: 0.8rem 1.2rem
+  margin: 0.2rem 0
+  color: $text-color
+  text-decoration: none
+  border-radius: 4px
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+  position: relative
+  overflow: hidden
+
+  i
+    margin-right: 0.8rem
+    font-size: 1rem
+    transition: transform 0.2s ease
+
+  &:hover
+    background: $hover-bg
+    i
+      transform: translateX(2px)
+
+  // Ruta activa mejorada - Corrección aplicada
+  &.active-route
+    background: $primary
+    color: $black
+    font-weight: 500
+    box-shadow: 0 2px 6px rgba($primary, 0.2)
+
+    &, i
+      color: $black
+
+    i
+      transform: scale(1.1)
+
+  // Estilo para padre activo - Corrección aplicada
+  &.active-parent
+    background: rgba($primary, 0.2)
+    font-weight: 500
+
+    i:not(.pi-chevron-down)
+      color: $primary
+
+// Estilos para submenú
+.pl-6
+  padding-left: 1.5rem
+
+.rotate-180
+  transform: rotate(180deg)
+
+// Transiciones y animaciones
+.transition-all
+  transition-property: all
+
+.duration-300
+  transition-duration: 300ms
+
+.ease-in-out
+  transition-timing-function: ease-in-out
+
+// Media queries para responsive
+@media (max-width: 768px)
+  :host ::ng-deep
+    p-dropdown .p-overlay
+      min-width: 100% !important
+      max-width: 100vw
+
+  .form-input-element
+    margin-bottom: 1rem
+    input, p-dropdown
+      padding: 0.6rem 0.8rem
+
+  a
+    padding: 0.7rem 1rem
+    i
+      margin-right: 0.6rem

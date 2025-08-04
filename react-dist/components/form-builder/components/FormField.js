@@ -16,7 +16,7 @@ export const FormField = ({
         value: formValues[field.id] || '',
         onTextChange: e => onEditorChange(e.htmlValue ?? '', field.id),
         style: {
-          height: '150px'
+          height: '350px'
         }
       }));
     case 'select':

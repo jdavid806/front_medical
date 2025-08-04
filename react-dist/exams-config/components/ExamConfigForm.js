@@ -137,11 +137,14 @@ export const ExamConfigForm = ({
       options: selectableExamTypes,
       optionLabel: "label",
       optionValue: "value",
+      filter: true,
       placeholder: "Seleccione un tipo de examen",
       className: classNames('w-100', {
         'p-invalid': errors.type
       })
-    }, field)))
+    }, field, {
+      appendTo: 'self'
+    })))
   }), getFormErrorMessage('type')), /*#__PURE__*/React.createElement("div", {
     className: "form-check form-switch"
   }, /*#__PURE__*/React.createElement("input", {

@@ -37,89 +37,27 @@ include "../header.php";
                         </button>
                     </div>
                 </div>
-                <div class="row">
-                    <!-- Tabla de productos -->
-                    <div class="col-lg-8">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr class="bg-body-highlight">
-                                        <th class="ps-3">Nombre</th>
-                                        <th>Tipo de producto</th>
-                                        <th class="text-end">Stock</th>
-                                        <th class="text-end">Rango Stock</th>
-                                        <th class="text-end">Precio de Compra</th>
-                                        <th class="text-end">Precio de Venta</th>
-                                        <th class="text-end pe-3">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="list"></tbody>
-                            </table>
 
-                            <!-- 🔹 Controles de paginación -->
-                            <div class="pagination d-flex justify-content-end mt-3">
-                                <button id="prevPage" class="btn btn-sm btn-outline-primary mx-1">Anterior</button>
-                                <span class="mx-2">Página <span id="currentPage">1</span> de <span
-                                        id="totalPages">1</span></span>
-                                <button id="nextPage" class="btn btn-sm btn-outline-primary mx-1">Siguiente</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card animated-card">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <img id="insumoImage" src="https://via.placeholder.com/200x150"
-                                        alt="Imagen de Insumo" class="img-fluid rounded"
-                                        style="width: 100%; max-width: 200px; height: auto;">
-                                </div>
-                                <h4 class="card-title">Selecciona un insumo</h4>
-                                <div class="card-content">
-                                    <p><strong>Tipo:</strong> <span id="tipoInsumo">-</span></p>
-                                    <p><strong>Stock:</strong> <span id="stockInsumo">-</span></p>
-                                    <p><strong>Precio:</strong> <span id="precioInsumo">-</span></p>
-                                </div>
-                                <button class="btn btn-sm btn-primary ver-detalle" type="button"
-                                    data-bs-toggle="modal" data-bs-target="#infoModal" data-id="${product.id}">
-                                    Ver más
-                                </button>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
+                <div id="productInventoryAppReact"></div>
 
             </div>
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card h-100 animated-card">
-                        <div class="card-body">
-                            <div class="text-center mb-3">
-                                <h4>Los siguientes productos se encuentran próximos a caducar o se encuentran caducados
-                                </h4>
-                            </div>
-                            <ul id="alertaProductos" class="list-group">
-                                <!-- Aquí se agregarán los productos dinámicamente -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
 
-<script type="module" src="Inventario/js/inventarioGeneral.js"></script>
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        ProductInventoryApp
+    } from './react-dist/inventory/ProductInventoryApp.js';
 
-
+    ReactDOMClient.createRoot(document.getElementById('productInventoryAppReact')).render(React
+                .createElement(ProductInventoryApp, {
+                    type: 'supplies'
+                }));
+</script>
 
 <?php include "../footer.php";
 include "./modal/modalNuevoInsumo.php";
-// include "./modal/modalNuevoProducto.php";
-include "./modal/modalInformaciónProducto.php";
 ?>

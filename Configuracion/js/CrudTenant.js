@@ -1,19 +1,28 @@
 async function cargarDatosTenant() {
-  let ruta = obtenerRutaPrincipal() + "/medical/companies";
+  let ruta = obtenerRutaPrincipal() + "/medical/companies?include=billings,representative,communication";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
       throw new Error("Error en la solicitud");
     }
     const datosEmpresa = await response.json();
+    // console.log("debug", datosEmpresa);
 
     if (datosEmpresa && datosEmpresa.data) {
-      let dataEmpresa = datosEmpresa.data[0];
+      let dataEmpresa = datosEmpresa.data[0].attributes;
+      dataEmpresa.id = datosEmpresa.data[0].id;
+      dataEmpresa.representative = datosEmpresa.data[0].includes.representative;
+      dataEmpresa.communication = datosEmpresa.data[0].includes.communication;
+      dataEmpresa.billings = datosEmpresa.data[0].includes.billings;
 
-      // console.log("debug", datosEmpresa);
+      console.log("dataEmpresa", dataEmpresa);
+
+
+      // console.log("debug", dataEmpresa);
       // Asignar los datos a los campos del formulario de Información General
       document.getElementById("id_Empresa").value = dataEmpresa.id;
-      document.getElementById("nombre-consultorio").value = dataEmpresa.name;
+      document.getElementById("nombre-consultorio").value =
+        dataEmpresa.legal_name;
       document.getElementById("tipoDocumento-consultorio").value =
         dataEmpresa.document_type;
       document.getElementById("documento-consultorio").value =
@@ -205,10 +214,16 @@ async function cargarDatosTenant() {
 //   }
 // }
 
+async function createEmpresa(infoGeneral) {
+  let url = obtenerRutaPrincipal() + `/medical/companies`;
+  guardarDatos(url, infoGeneral);
+  cargarDatosTenant();
+}
+
 async function updateEmpresa(infoGeneral) {
   let idEmpresa = document.getElementById("id_Empresa").value;
   let rutaCompanie = obtenerRutaPrincipal() + `/medical/companies/${idEmpresa}`;
-  actualizarDatos(rutaCompanie, infoGeneral);
+  await actualizarDatos(rutaCompanie, infoGeneral);
 }
 
 // Representante

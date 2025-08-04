@@ -14,7 +14,7 @@
             <div class="invalid-feedback">Debe ingresar un título</div>
           </div>
           <div class="mb-3">
-            <?php include "./botonesDinamicos/Consentimeintos.php" ?>
+            <?php include "../botonesDinamicos/Consentimeintos.php" ?>
           </div>
           <div class="mb-3">
             <label class="form-label" for="contenido-plantilla">Contenido</label>

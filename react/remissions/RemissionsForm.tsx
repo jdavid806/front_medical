@@ -79,19 +79,20 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
         "patient_id"
       );
 
-      const data = await clinicalRecordService.ofParent(url);
-      console.log(data);
-      const mappedData = data.map((item: any) => {
-        return {
-          value: item.id,
-          label:
-            item.clinical_record_type.name +
-            " - " +
-            formatDate(item.created_at),
-        };
-      });
+      if (url) {
+        const data = await clinicalRecordService.ofParent(url);
+        const mappedData = data.map((item: any) => {
+          return {
+            value: item.id,
+            label:
+              item.clinical_record_type.name +
+              " - " +
+              formatDate(item.created_at),
+          };
+        });
 
-      setMappedServiceClinicalRecord(mappedData);
+        setMappedServiceClinicalRecord(mappedData);
+      }
     };
 
     const fetchDoctors = async () => {

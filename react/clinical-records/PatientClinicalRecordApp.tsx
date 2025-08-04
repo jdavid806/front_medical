@@ -11,8 +11,9 @@ import { useClinicalRecordTypes } from "../clinical-record-types/hooks/useClinic
 import { useClinicalRecords } from "./hooks/useClinicalRecords";
 import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecordsTable";
 import UserManager from "../../services/userManager";
+import { generarFormato } from "../../funciones/funcionesJS/generarPDF";
 
-interface PatientClinicalRecordAppProps {}
+interface PatientClinicalRecordAppProps { }
 
 const specialtyId = new URLSearchParams(window.location.search).get(
   "especialidad"
@@ -39,6 +40,7 @@ export const PatientClinicalRecordApp: React.FC<
 
   useEffect(() => {
     if (specializables && clinicalRecordTypes) {
+
       const specialtyClinicalRecordIds = specializables
         .filter(
           (record) =>
@@ -48,9 +50,21 @@ export const PatientClinicalRecordApp: React.FC<
             )
         )
         .map((record) => record.specializable_id.toString());
+
       const filteredClinicalRecords = clinicalRecordTypes.filter((record) =>
         specialtyClinicalRecordIds.includes(record.id.toString())
       );
+
+      console.log('specialtyClinicalRecordIds', specialtyClinicalRecordIds);
+      console.log('clinicalRecords', clinicalRecords);
+      console.log('filteredClinicalRecords', filteredClinicalRecords);
+      console.log('tableClinicalRecords', clinicalRecords.filter((record) =>
+        specialtyClinicalRecordIds.includes(
+          record.clinical_record_type_id.toString()
+        )
+      ));
+
+
 
       setSpecialtyClinicalRecords(filteredClinicalRecords);
       setTableClinicalRecords(
@@ -64,6 +78,7 @@ export const PatientClinicalRecordApp: React.FC<
   }, [specializables, clinicalRecordTypes, clinicalRecords]);
 
   useEffect(() => {
+
     if (specializables) {
       const specialtyClinicalRecordIds = specializables
         .filter(
@@ -85,12 +100,14 @@ export const PatientClinicalRecordApp: React.FC<
 
   const printClinicalRecord = (id: string, title: string) => {
     //@ts-ignore
-    crearDocumento(id, "Impresion", "Consulta", "Completa", title);
+    generarFormato("Consulta", id, "Impresion");
+    // crearDocumento(id, "Impresion", "Consulta", "Completa", title);
   };
 
   const downloadClinicalRecord = (id: string, title: string) => {
     //@ts-ignore
-    crearDocumento(id, "Descarga", "Consulta", "Completa", title);
+    generarFormato("Consulta", id, "Descarga");
+    // crearDocumento(id, "Descarga", "Consulta", "Completa", title);
   };
 
   const shareClinicalRecord = (

@@ -15,7 +15,7 @@ const TableActionsWrapper: React.FC<TableActionsWrapperProps> = ({ children }) =
             >
                 <i data-feather="settings"></i> Acciones
             </button>
-            <ul className="dropdown-menu" style={{ zIndex: 10000 }}>
+            <ul className="dropdown-menu">
                 {children}
             </ul>
         </div>

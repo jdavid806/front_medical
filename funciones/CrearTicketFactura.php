@@ -57,7 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tipo_factura = "RECIBO DE CAJA";
     $agregar_autorizacion = true;
   } else {
-    $tipo_factura = "RECIBO DE VENTA";
+    // $tipo_factura = "RECIBO DE VENTA";
+    $tipo_factura = "FACTURA DE VENTA";
     $agregar_autorizacion = false;
   }
 

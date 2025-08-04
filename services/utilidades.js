@@ -6,7 +6,7 @@ function changeAjaxFast(
   idWhere,
   toast = false
 ) {
-  console.log("Funcion");
+  // console.log("Funcion");
 
   $.ajax({
     type: "POST",
@@ -54,10 +54,19 @@ function changeAjaxFast(
   });
 }
 
-export const formatDate = (dateString) => {
+export const formatDate = (dateString, returnAsISO = false) => {
   const date = new Date(dateString);
+
+  if (returnAsISO) {
+    // Devuelve formato: YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() es base 0
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Formato local con hora
   const formattedDate = date.toLocaleString("es-AR", {
-    timeZone: "UTC", // Fuerza a usar UTC
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -66,6 +75,17 @@ export const formatDate = (dateString) => {
   });
   return formattedDate;
 };
+
+export const formatDateDMY = (dateString) => {
+  const date = new Date(dateString);
+  const formattedDate = date.toLocaleString("es-AR", {
+    timeZone: "UTC", // Fuerza a usar UTC
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formattedDate;
+}
 
 export const parseFechaDMY = (fechaString) => {
   if (!fechaString) return null;
@@ -136,7 +156,7 @@ export const getJWTPayload = () => {
     return JSON.parse(atob(payloadBase64));
   }
 
-  console.log("No token found in localStorage");
+  // console.log("No token found in localStorage");
   return null;
 };
 
@@ -209,4 +229,215 @@ export function sortSpaghettiArray(array) {
     const dateB = parseCustomDate(b.createdAt);
     return dateB.getTime() - dateA.getTime();
   });
+}
+
+export function stringToDate(dateString) {
+  if (!dateString) return new Date();
+
+  const parts = dateString.split('-');
+  if (parts.length !== 3) return new Date();
+
+  const year = parseInt(parts[0]);
+  const month = parseInt(parts[1]) - 1;
+  const day = parseInt(parts[2]);
+
+  return new Date(year, month, day);
+}
+
+export function getAge(dateString) {
+  const today = new Date();
+  const birthDate = stringToDate(dateString);
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+export function dataURItoBlob(dataURI) {
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], {
+    type: mimeString
+  });
+}
+
+export function validFile(id_input, throwError = true) {
+  let fileInput = document.getElementById(id_input);
+  let file = fileInput.files[0];
+
+  console.log("fileInput", fileInput);
+  console.log("file", file);
+
+  if (!file && throwError) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor seleccione un archivo antes de continuar.",
+    });
+    return;
+  }
+
+  return file;
+}
+
+
+
+function cleanJson(obj) {
+  if (obj === null || obj === undefined) {
+    return undefined;
+  }
+
+  if (typeof obj === 'object') {
+    if (Array.isArray(obj)) {
+      const cleanArray = obj
+        .map(item => cleanJson(item))
+        .filter(item => item !== undefined && item !== null && item !== '');
+      return cleanArray.length === 0 ? undefined : cleanArray;
+    }
+    else {
+      const cleanObj = {};
+      let hasProperties = false;
+
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const cleanValue = cleanJson(obj[key]);
+          if (cleanValue !== undefined && cleanValue !== null && cleanValue !== '') {
+            cleanObj[key] = cleanValue;
+            hasProperties = true;
+          }
+        }
+      }
+
+      return hasProperties ? cleanObj : undefined;
+    }
+  }
+
+  if (typeof obj === 'string' && obj.trim() === '') {
+    return undefined;
+  }
+
+  return obj;
+}
+
+export function cleanJsonObject(obj) {
+  const result = cleanJson(obj);
+  return result === undefined ? {} : result;
+}
+
+export function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    console.log(args, delay);
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+export function formatWhatsAppMessage(html, replacements) {
+  // Primero reemplazar los placeholders en el HTML
+  if (replacements) {
+    Object.keys(replacements).forEach(key => {
+      const placeholder = `\\[\\[${key}\\]\\]`; // Escapar los corchetes para la expresión regular
+      const regex = new RegExp(placeholder, 'g');
+      html = html.replace(regex, replacements[key]);
+    });
+  }
+
+  // Convertir HTML a texto plano con mejor manejo de saltos de línea
+  let text = html
+    // Convertir párrafos y breaks a saltos de línea
+    .replace(/<\/p>|<br\s*\/?>|<\/div>/gi, '\n')
+    // Eliminar todas las demás etiquetas HTML
+    .replace(/<[^>]+>/g, '')
+    // Reemplazar entidades HTML
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+
+  // Limpiar formato
+  text = text
+    // Eliminar espacios múltiples
+    .replace(/[ \t]+/g, ' ')
+    // Eliminar espacios al inicio y final de cada línea
+    .replace(/^[ \t]+|[ \t]+$/gm, '')
+    // Eliminar líneas vacías múltiples
+    .replace(/\n{3,}/g, '\n\n')
+    // Eliminar espacios alrededor de saltos de línea
+    .replace(/[ \t]*\n[ \t]*/g, '\n')
+    // Eliminar espacios al inicio y final
+    .trim();
+
+  return text;
+}
+
+export function getIndicativeByCountry(nombrePais) {
+  // Convertir el nombre del país a minúsculas y sin tildes (opcional, para mejor manejo)
+  const pais = nombrePais.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Elimina tildes
+
+  // Mapeo de países y sus indicativos (sin el "+")
+  const indicativos = {
+    'colombia': '57',
+    'mexico': '52',
+    'argentina': '54',
+    'dominican republic': '1',
+    'chile': '56',
+    'peru': '51',
+    'venezuela': '58',
+    'ecuador': '593',
+    'brasil': '55',
+    'bolivia': '591'
+  };
+
+  // Devuelve el indicativo o null si no existe
+  return indicativos[pais] || '1';
+}
+
+export function obtenerUltimaParteUrl() {
+  // Obtener la URL completa
+  const urlCompleta = window.location.href;
+  
+  // Crear un objeto URL para facilitar el análisis
+  const url = new URL(urlCompleta);
+  
+  // Obtener la parte del pathname (ruta)
+  const pathname = url.pathname;
+  
+  // Dividir el pathname por las barras y filtrar elementos vacíos
+  const partes = pathname.split('/').filter(part => part !== '');
+  
+  // Devolver la última parte del pathname
+  return partes.length > 0 ? partes[partes.length - 1] : '';
+}
+
+export function calculateDaysBetweenDates(startDate, endDate) {
+    // Convert date strings to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Validate the dates
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
+    }
+    
+    // Calculate difference in milliseconds
+    const timeDifference = end - start;
+    
+    // Convert milliseconds to days (1000 ms * 60 sec * 60 min * 24 hrs)
+    const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+    
+    // Return absolute value in case dates are reversed
+    return Math.abs(Math.round(daysDifference));
 }

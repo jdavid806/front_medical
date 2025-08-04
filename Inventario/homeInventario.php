@@ -8,8 +8,11 @@ $tabs = [
     ['icono' => 'pills', 'titulo' => 'Medicamentos', 'texto' => 'Revisar el inventario de medicamentos o agregar nuevos', 'url' => 'inventarioMedicamentos'],
     ['icono' => 'syringe', 'titulo' => 'Vacunas', 'texto' => 'Revisar el inventario de vacunas o agregar nuevas', 'url' => 'inventarioVacunas'],
     ['icono' => 'stethoscope', 'titulo' => 'Insumos', 'texto' => 'Revisar el inventario de insumos o agregar nuevos', 'url' => 'inventarioInsumos'],
+    ['icono' => 'stethoscope', 'titulo' => 'Paquetes', 'texto' => 'Construir un paquete', 'url' => 'paquetes'],
+    ['icono' => 'warehouse', 'titulo' => 'Depositos', 'texto' => 'Crear y editar depositos de inventarios', 'url' => 'depositosInventario'],
+    ['icono' => 'layer-group', 'titulo' => 'Categorias', 'texto' => 'Crear y editar categorias', 'url' => 'categoriesProducts'],
+    ['icono' => 'code-branch', 'titulo' => 'Marcas', 'texto' => 'Crear y editar marcas', 'url' => 'brandsProducts'],
 ];
-
 ?>
 
 <style type="text/css">
