@@ -436,7 +436,8 @@ $resumenPaciente = [
     appointmentService,
     msMasivaService,
     templateService,
-    infoCompanyService
+    infoCompanyService,
+    ticketService
   } from './services/api/index.js';
 
   import {
@@ -466,12 +467,15 @@ $resumenPaciente = [
 
     const messaging = createMassMessaging(infoInstance);
 
-    function sendMessageWhatsapp(patient) {
+    function sendMessageWhatsapp(data, currentAppointment) {
       const replacements = {
-        NOMBRE_PACIENTE: `${patient?.first_name ?? ""} ${patient?.middle_name ?? ""
-          } ${patient?.last_name ?? ""} ${patient?.second_last_name ?? ""
+        NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
+          } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
           }`,
-        TICKET: `${patient?.ticket_number ?? ""}`,
+        TICKET: `${data?.ticket_number ?? ""}`,
+        MODULO: `${data?.module?.name ?? ""}`,
+        ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
+        CONSULTORIO: `${data?.branch?.address ?? ""}`,
       };
 
       const templateFormatted = formatWhatsAppMessage(
@@ -483,8 +487,8 @@ $resumenPaciente = [
         channel: "whatsapp",
         message_type: "text",
         recipients: [
-          getIndicativeByCountry(patient.country_id) +
-          patient.whatsapp,
+          getIndicativeByCountry(data?.patient.country_id) +
+          data?.patient.whatsapp,
         ],
         message: templateFormatted,
         webhook_url: "https://example.com/webhook",
@@ -516,12 +520,18 @@ $resumenPaciente = [
 
               if (currentAppointment) {
                 await appointmentService.changeStatus(currentAppointment.id, 'called');
-                sendMessageWhatsapp(patient);
-                Swal.fire(
-                  '¡Paciente llamado!',
-                  'Se ha llamado al paciente para que se acerque al consultorio.',
-                  'success'
-                )
+                await ticketService.lastByPatient(patientId).then((response) => {
+
+                  if (response?.patient?.whatsapp_notifications) {
+                    sendMessageWhatsapp(response, currentAppointment);
+                  }
+                  Swal.fire(
+                    '¡Paciente llamado!',
+                    'Se ha llamado al paciente para que se acerque al consultorio.',
+                    'success'
+                  )
+
+                });
               } else {
                 Swal.fire(
                   'Error',
@@ -533,14 +543,10 @@ $resumenPaciente = [
           });
           break;
           // case 'verRecetasOptometria':
-          //   console.log("case optometria");
           //   async function consultarDatosDoctor(doctorId) {
           //       let data = await obtenerDatosPorId("users", doctorId);
-          //       // console.log("doctorId", doctorId);
-          //       console.log(data);
 
           //       let especialidad = await getSpecialtyName(data.user_specialty_id);
-          //       console.log("Especialidad Doctor ", especialidad);
           //       // pendiente consultar
           //       // Datos firma
           //       return {

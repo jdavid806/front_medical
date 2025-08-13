@@ -11,7 +11,6 @@ export const ProductInventoryDetail: React.FC<{ product: any }> = ({ product }) 
                     <p><i className="fas fa-barcode"></i> <strong>Código de Barras:</strong> <span>{product.barcode}</span></p>
                 </div>
                 <div className="col-md-6">
-                    <p><i className="fas fa-box"></i> <strong>Stock:</strong> <span>{product.stock || '--'}</span></p>
                     <p><i className="fas fa-exclamation-triangle"></i> <strong>Stock Mínimo:</strong> <span>{product.minimum_stock || '--'}</span></p>
                     <p><i className="fas fa-chart-line"></i> <strong>Stock Máximo:</strong> <span>{product.maximum_stock || '--'}</span></p>
                 </div>
@@ -26,9 +25,7 @@ export const ProductInventoryDetail: React.FC<{ product: any }> = ({ product }) 
                     <p><i className="fas fa-info-circle"></i> <strong>Estado:</strong> <span>{'--'}</span></p>
                 </div>
                 <div className="col-md-6">
-                    <p><i className="fas fa-industry"></i> <strong>Laboratorio:</strong> <span>{product.laboratory_id || '--'}</span></p>
-                    <p><i className="fas fa-tags"></i> <strong>Marca:</strong> <span>{product.brand_id || '--'}</span></p>
-                    <p><i className="fas fa-store"></i> <strong>Proveedor:</strong> <span>{product.supplier_id || '--'}</span></p>
+                    <p><i className="fas fa-tags"></i> <strong>Marca:</strong> <span>{product.brand.name || '--'}</span></p>
                 </div>
             </div>
 

@@ -10,6 +10,9 @@ import {
   getIndicativeByCountry,
 } from "../../services/utilidades";
 import { useTemplate } from "../hooks/useTemplate";
+import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF";
+import { useCompany } from "../hooks/useCompany";
+
 
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
@@ -40,6 +43,7 @@ export const GenerateTicket = () => {
     type: "whatsapp",
   };
   const { template, setTemplate, fetchTemplate } = useTemplate(data);
+  const { company } = useCompany();
 
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [
@@ -166,11 +170,25 @@ export const GenerateTicket = () => {
   };
 
   const printElement = (element: any) => {
-    const printContents = element.innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+    // Clonar el elemento para no modificar el DOM original
+    const clone = element.cloneNode(true) as HTMLElement;
+    // Eliminar los botones dentro del clon
+    clone.querySelectorAll("button").forEach((btn) => btn.remove());
+    // Agregar estilos para mejorar la apariencia del ticket
+    clone.style.border = "2px dashed #007bff";
+    clone.style.padding = "24px";
+    clone.style.margin = "16px auto";
+    clone.style.maxWidth = "350px";
+    clone.style.background = "#f8f9fa";
+    clone.style.borderRadius = "12px";
+    clone.style.boxShadow = "0 2px 8px rgba(0,0,0,0.07)";
+
+    const printContents = clone.innerHTML;
+    const configPDF = {
+      name: "ticket",
+      dimensions: [0, 0, 212.6, 210],
+    }
+    generatePDFReceipts(printContents, configPDF);
   };
 
   const BadgeTemplate = (option: any) => {
@@ -203,7 +221,6 @@ export const GenerateTicket = () => {
       message: templateFormatted,
       webhook_url: "https://example.com/webhook",
     };
-    console.log("Data to send:", dataMessage);
     await sendMessage(dataMessage);
   }
 

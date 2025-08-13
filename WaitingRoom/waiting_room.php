@@ -165,6 +165,8 @@
         const dateEl = document.getElementById('date');
         const currentlyCallingContainer = document.getElementById('currently-calling-container');
 
+        const ticketIntervals = {};
+
         // --- Data Fetching and Initialization ---
         let [appointmentStates, appointments, modules, tickets] = await Promise.all([
             appointmentStateService.getAll(),
@@ -304,16 +306,18 @@
             if (ticket.status == "CALLED") {
                 const moduleInfo = modules.find(module => module.id == ticket.module_id);
                 const moduleName = moduleInfo ? moduleInfo.name : 'Desconocido';
-                callTicket({
-                    nombre: ticket.patient_name,
-                    turno: ticket.ticket_number,
-                    modulo: moduleName
-                });
+
                 updateCurrentlyCallingDisplay({
                     type: 'ticket',
                     ticket,
                     moduleName
                 });
+
+                // Gestionar el anuncio periódico para este ticket
+                manageTicketAnnouncement(ticket.id);
+            } else {
+                // Si el ticket ya no está en estado CALLED, limpiamos su intervalo
+                clearTicketAnnouncement(ticket.id);
             }
             updateTicketTable();
         });
@@ -344,15 +348,61 @@
             if (dateEl) dateEl.textContent = dateString.charAt(0).toUpperCase() + dateString.slice(1);
         }
 
-        // --- Initializer ---
+        // --- Función para manejar el anuncio periódico de un ticket ---
+        function manageTicketAnnouncement(ticketId) {
+            // Si ya existe un intervalo para este ticket, lo limpiamos
+            if (ticketIntervals[ticketId]) {
+                clearInterval(ticketIntervals[ticketId]);
+                delete ticketIntervals[ticketId];
+            }
+
+            const ticket = tickets.find(t => t.id == ticketId);
+            if (!ticket || ticket.status !== "CALLED") return;
+
+            const moduleInfo = modules.find(module => module.id == ticket.module_id);
+            const moduleName = moduleInfo ? moduleInfo.name : 'Desconocido';
+
+            // Creamos un nuevo intervalo para este ticket
+            ticketIntervals[ticketId] = setInterval(() => {
+                //console.log('Anuncio para ticket', ticket);
+
+                /*callTicket({
+                    nombre: ticket.patient_name,
+                    turno: ticket.ticket_number,
+                    modulo: moduleName
+                });*/
+            }, 10000); // 10 segundos
+
+            // Hacemos el primer anuncio inmediatamente
+            callTicket({
+                nombre: ticket.patient_name,
+                turno: ticket.ticket_number,
+                modulo: moduleName
+            });
+        }
+
+        // --- Función para limpiar el intervalo de un ticket ---
+        function clearTicketAnnouncement(ticketId) {
+            if (ticketIntervals[ticketId]) {
+                clearInterval(ticketIntervals[ticketId]);
+                delete ticketIntervals[ticketId];
+            }
+        }
+
+        // --- Modificar la función initialize para manejar tickets existentes ---
         function initialize() {
             updateTables();
             updateTicketTable();
             updateCurrentlyCallingDisplay({
                 type: 'none'
-            }); // Initial empty state
+            });
             setInterval(updateTime, 1000);
             updateTime();
+
+            // Iniciar anuncios para tickets llamados existentes
+            tickets.filter(t => t.status === "CALLED").forEach(ticket => {
+                manageTicketAnnouncement(ticket.id);
+            });
         }
 
         initialize();

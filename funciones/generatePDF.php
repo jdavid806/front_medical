@@ -20,12 +20,23 @@ $dompdf = new Dompdf();
 $options = $dompdf->getOptions();
 $options->set(array('isRemoteEnabled' => true));
 
-if (isset($pdfConfig['dimensions']) && is_array($pdfConfig['dimensions'])) {
-    $dompdf->setPaper($pdfConfig['dimensions']);
-} else {
-    // Tamaño por defecto si no se especifican dimensiones
-    $dompdf->setPaper('letter');
-}
+// if (isset($pdfConfig['dimensions']) && is_array($pdfConfig['dimensions'])) {
+//     $dompdf->setPaper($pdfConfig['dimensions']);
+// } else {
+//     // Tamaño por defecto si no se especifican dimensiones
+//     $dompdf->setPaper('letter');
+// }
+
+$paperSize = isset($pdfConfig['dimensions']) && is_array($pdfConfig['dimensions']) 
+    ? $pdfConfig['dimensions'] 
+    : 'letter';
+
+$orientation = isset($pdfConfig['orientation']) && in_array(strtolower($pdfConfig['orientation']), ['portrait', 'landscape']) 
+    ? strtolower($pdfConfig['orientation']) 
+    : 'portrait'; // Valor por defecto
+
+$dompdf->setPaper($paperSize, $orientation);
+
 
 $options->set('isHtml5ParserEnabled', true);
 $dompdf->setOptions($options);

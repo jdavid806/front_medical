@@ -14,6 +14,7 @@ export type ProductInventoryFormInputs = {
     sanitary_registration: string;
     description: string;
     prescription: boolean;
+    sale_price: number;
 }
 
 interface ProductInventoryFormProps {
@@ -107,6 +108,30 @@ export const ProductInventoryForm: React.FC<ProductInventoryFormProps> = ({ form
                             </>)}
                         />
                         {getFormErrorMessage('maximum_stock')}
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <div className="col-12">
+                        <Controller
+                            name="sale_price"
+                            control={control}
+                            rules={{ required: 'Este campo es requerido' }}
+                            render={({ field }) => (<>
+                                <label htmlFor={field.name} className="form-label">Precio de venta *</label>
+                                <InputNumber
+                                    inputId={field.name}
+                                    min={1}
+                                    placeholder="Ingrese el precio de venta"
+                                    ref={field.ref}
+                                    value={field.value}
+                                    onBlur={field.onBlur}
+                                    onValueChange={(e) => field.onChange(e)}
+                                    className='w-100'
+                                    inputClassName={classNames('w-100', { 'p-invalid': errors.sale_price })}
+                                />
+                            </>)}
+                        />
+                        {getFormErrorMessage('sale_price')}
                     </div>
                 </div>
                 <div className="row mb-3">

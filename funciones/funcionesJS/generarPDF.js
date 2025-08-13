@@ -6,6 +6,7 @@ import { generarFormatoConsulta } from "./formatosImpresion/formatoConsulta.js";
 import { generarFormatoRecetaOrden } from "./formatosImpresion/formatoRecetaOrden.js";
 import { generarFormatoOrden } from "./formatosImpresion/formatoOrden.js";
 import { generarFormatoRecetaOptometria } from "./formatosImpresion/formatoRecetaOptometria.js";
+import { generarFormatoCita } from "./formatosImpresion/formatoCita.js";
 
 export function generarFormato(name, object, tipo, inputId = "") {
   switch (name) {
@@ -25,6 +26,8 @@ export function generarFormato(name, object, tipo, inputId = "") {
       generarFormatoReceta(object, tipo, inputId);
       break;
     case "Examen":
+      console.log("aa");
+      
       generarFormatoOrden(object, tipo, inputId);
       break;
     case "RecetaOptometria":
@@ -33,7 +36,8 @@ export function generarFormato(name, object, tipo, inputId = "") {
     case "ReciboCaja":
       generarFormatoReciboCaja(object, tipo);
       break;
-
+    case "Cita":
+      generarFormatoCita(object, tipo, inputId);
     default:
       break;
   }

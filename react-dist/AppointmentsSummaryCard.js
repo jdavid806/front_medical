@@ -17,7 +17,7 @@ export const AppointmentsSummaryCard = () => {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("h3", {
     id: "appointmentsActiveCount"
-  }, "Cargando..."), "Citas generadas este mes"), /*#__PURE__*/React.createElement("button", {
+  }, "Cargando..."), "Citas este mes"), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-phoenix-secondary me-1 mb-1",
     type: "button",
     onClick: () => setShowAppointmentFormModal(true)

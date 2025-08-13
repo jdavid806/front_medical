@@ -109,7 +109,6 @@ export function generarTablaPaciente(patient, additionalData = {}) {
       width: 50%;
     }
   </style>
-      <h4 style="margin: 0.1rem 0;">Datos del Paciente</h4>
       <table id="tablePatient" style="margin-bottom: 5px">
         <tr>
           <td><strong>Nombre:</strong> ${

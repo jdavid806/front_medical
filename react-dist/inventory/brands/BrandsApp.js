@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { BrandTable } from "./table/BrandTable.js";
 import { BrandFormModal } from "./modal/BrandFormModal.js";
-import { brandService } from "../../../services/api/index.js";
+import { brandService } from "../../../services/api.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { useBrand } from "./hooks/useBrand.js";
 export const BrandsApp = () => {

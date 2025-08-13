@@ -95,6 +95,7 @@ export const appointmentStatesColors = {
 }
 
 export const appointmentStateFilters = {
+    'non-attendance': 'Sin atención',
     'pending': 'Pendiente',
     'pending_consultation': 'En espera',
     'called': 'Llamado',

@@ -53,6 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $numero_comprobante = $related_invoice['numero_comprobante'];
   $numero_autorizacion = $related_invoice['numero_autorizacion'];
 
+  $facturador = $related_invoice['facturador'];
+  $entidad = $related_invoice['entidad'];
+  $monto_autorizado = $related_invoice['monto_autorizado'];
+  $id_factura = $related_invoice['id'];
+
   if ($numero_autorizacion) {
     $tipo_factura = "RECIBO DE CAJA";
     $agregar_autorizacion = true;
@@ -77,12 +82,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   foreach ($datails as $detalle) {
     $detalles_ticket_html .= "<li>
                                   <strong>{$detalle['producto']}</strong><br>
-                                  Cantidad: {$detalle['cantidad']}<br>
+                                  Cantidad: {$detalle['cantidad']}<br>";
+                                  if (!$numero_autorizacion) {
+                                  $detalles_ticket_html .= "
                                   Precio Unitario: $" . number_format($detalle['precio_unitario'], 2) . "<br>
                                   Subtotal: $" . number_format($detalle['subtotal'], 2) . "<br>
                                   Descuento: $" . number_format($detalle['descuento'], 2) . "<br>
                                   Total: $" . number_format($detalle['total'], 2) . "<br>
                                 </li><hr>";
+                                  }
   }
   $detalles_ticket_html .= "</ul>";
 
@@ -118,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   $dompdf->loadHtml($html);
 
-  $dompdf->setPaper([0, 0, 240, 1000], 'portrait');
+  $dompdf->setPaper([0, 0, 235, 750], 'portrait');
 
   $dompdf->render();
 

@@ -59,8 +59,8 @@ export function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
       ${tablePatient}
   </table>
     <div class="container p-2 border rounded shadow-sm">
-      <hr style="margin: 0.35rem 0;">
-      <div style="width: 100%; margin-bottom: 0">
+      <hr style="margin: 0.25rem 0;">
+      <div style="width: 100%; margin-bottom: 0; margin-top: 0">
           <p style="display: inline-block; width: 49%; margin-bottom: 5px"><strong>Desde:</strong> ${incapacidad.start_date}</p>
           <p style="display: inline-block; width: 49%; margin-bottom: 5px"><strong>Hasta:</strong> ${incapacidad.end_date}</p>
       </div>
@@ -68,7 +68,9 @@ export function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
       <p style="margin: 0;"><strong>Motivo de Incapacidad: </strong> ${incapacidad.reason}</p>
       </div>
     </div>
-    ${datosUsuario(user)}`;
+    <div style="font-size: 12px;">
+    ${datosUsuario(user)}
+    </div>`;
     
 
   let isDownload = false;
@@ -80,6 +82,8 @@ export function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
   const pdfConfig = {
     name: `Incapacidad_Médica_${patientData.datos_basicos.documento}`,
     isDownload: isDownload,
+     dimensions: [0, 0, 396, 612],
+    orientation: "landscape",
   };
 
   generatePDFFromHTML(contenido, companyData, pdfConfig, inputId);

@@ -8,7 +8,6 @@ export const useAllTableTickets = () => {
     const fetchTickets = async () => {
       try {
         const data = await ticketService.getAllByReasons(["SPECIALIST", "VACCINATION", "ADMISSION_PRESCHEDULED", "CONSULTATION_GENERAL", "LABORATORY", "OTHER"]);
-        console.log(data);
         setTickets(data);
       } catch (err) {
         setError(err);

@@ -8,6 +8,7 @@ $tabs = [
     ['icono' => 'stethoscope', 'titulo' => 'Entrega de insumos', 'texto' => 'Dirigirse a la entrega de insumos', 'url' => 'insumos'],
     ['icono' => 'stethoscope', 'titulo' => 'Solicitud de insumos', 'texto' => 'Dirigirse a la solicitud de insumos', 'url' => 'solicitarInsumos'],
     ['icono' => 'cash-register', 'titulo' => 'Caja', 'texto' => 'Dirigirse a la caja', 'url' => 'cajaPrueba'],
+    ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturas - Farmacia', 'texto' => 'Facturas de la farmacia', 'url' => 'pharmacyInvoices'],
 ];
 
 ?>

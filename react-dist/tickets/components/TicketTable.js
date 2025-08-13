@@ -72,6 +72,8 @@ export const TicketTable = () => {
         step: ticketStatusSteps[data.ticket.status],
         created_at: data.ticket.created_at,
         branch_id: data.ticket.branch_id,
+        branch: data.branch || "Sin consultorio",
+        module: data.module || "Sin modulo",
         module_id: data.ticket.module_id,
         patient: data?.ticket?.patient
       };
@@ -123,6 +125,8 @@ export const TicketTable = () => {
         step: ticketStatusSteps[ticket.status],
         created_at: ticket.created_at,
         branch_id: ticket.branch_id,
+        branch: ticket.branch || "Sin consultorio",
+        module: ticket.module || "Sin modulo",
         module_id: ticket.module_id,
         patient: ticket.patient
       };
@@ -145,9 +149,7 @@ export const TicketTable = () => {
     } : item));
   };
   const callTicket = async data => {
-    console.log(data);
     const status = "CALLED";
-    await sendMessageWhatsapp(data);
     const user = await userService.getByExternalId(getJWTPayload().sub);
     await ticketService.update(data.id, {
       status,
@@ -159,11 +161,15 @@ export const TicketTable = () => {
       status,
       statusView: ticketStatus[status]
     } : item));
+    await sendMessageWhatsapp(data);
   };
   const sendMessageWhatsapp = useCallback(async data => {
     const replacements = {
       NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""} ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""}`,
-      TICKET: `${data?.ticket_number}`
+      TICKET: `${data?.ticket_number}`,
+      MODULO: `${data?.module?.name ?? ""}`,
+      ESPECIALISTA: `${""}`,
+      CONSULTORIO: `${data?.branch?.address ?? ""}`
     };
     try {
       const response = await templateService.getTemplate(dataTemplate);

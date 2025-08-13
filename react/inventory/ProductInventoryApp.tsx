@@ -1,248 +1,193 @@
-import React, { useEffect, useState } from "react";
-import { useProductInventory } from "./hooks/useProductInventory";
-import {
-  CustomPRTable,
-  CustomPRTableColumnProps,
-} from "../components/CustomPRTable";
+import React, { useState } from "react";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import { CustomModal } from "../components/CustomModal";
 import { ProductInventoryDetail } from "./ProductInventoryDetail";
 import { CustomFormModal } from "../components/CustomFormModal";
-import {
-  ProductInventoryForm,
-  ProductInventoryFormInputs,
-} from "./ProductInventoryForm";
+import { ProductInventoryForm, ProductInventoryFormInputs } from "./ProductInventoryForm";
+import { useProductUpdate } from "../products/hooks/useProductUpdate";
+import { Button } from 'primereact/button';
+import { Tag } from 'primereact/tag';
+import { Badge } from 'primereact/badge';
+import { useProductInventory } from "./hooks/useProductInventory";
 import TableActionsWrapper from "../components/table-actions/TableActionsWrapper";
 import { EditTableAction } from "../components/table-actions/EditTableAction";
-import { useProductUpdate } from "../products/hooks/useProductUpdate";
-import { set } from "react-hook-form";
-import { stringToDate } from "../../services/utilidades";
-
-interface ProductInventoryTableItem {
-  uuid: string;
-  name: string;
-  stock: string;
-  weight: string;
-  capacity: string;
-  concentration: string;
-  expiration_date: string;
-  original: any;
-}
+import { useProductInventoryOnlyDeposits } from "./hooks/useProductInventoryOnlyDeposits";
+import { useProductInventoryFormat } from "../documents-generation/hooks/useProductInventoryFormat";
 
 interface ProductInventoryAppProps {
   type: string;
 }
 
-export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({
-  type,
-}) => {
-  const [tableItems, setTableItems] = useState<ProductInventoryTableItem[]>([]);
-  const [expiredTableItems, setExpiredTableItems] = useState<
-    ProductInventoryTableItem[]
-  >([]);
-  const [selectedProduct, setSelectedProduct] =
-    useState<ProductInventoryTableItem | null>(null);
+interface InventoryItem {
+  id: number;
+  name: string;
+  notes: string;
+  is_active: boolean;
+  created_at: string | null;
+  updated_at: string;
+  products: Product[];
+}
+
+interface Product {
+  id: number;
+  name: string;
+  description: string | null;
+  sale_price: number;
+  minimum_stock: number | null;
+  maximum_stock: number | null;
+  product_type: {
+    id: number;
+    name: string;
+  };
+  inventories: {
+    id: number;
+    quantity: number;
+    deposit_id: number;
+    product_id: number;
+  }[];
+  [key: string]: any;
+}
+
+export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }) => {
+  const [expandedRows, setExpandedRows] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
 
-  const { productInventory, loading, fetchProductInventory } =
-    useProductInventory(type);
+  const { productInventory, loading, fetchProductInventoryOnlyDeposits } = useProductInventoryOnlyDeposits(type);
   const { updateProduct } = useProductUpdate();
+    const { generarFormatoInventario } = useProductInventoryFormat();
 
-  useEffect(() => {
-    const mappedItems: ProductInventoryTableItem[] = productInventory.map(
-      (product) => {
-        return {
-          uuid: product.id,
-          name: product.name,
-          stock: product.stock?.toString() || "--",
-          weight: product.weight?.toString() || "--",
-          capacity: product.capacity?.toString() || "--",
-          concentration: product.concentration?.toString() || "--",
-          expiration_date: product.expiration_date
-            ? new Intl.DateTimeFormat("es-AR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }).format(
-                new Date(
-                  new Date(product.expiration_date).getTime() +
-                    24 * 60 * 60 * 1000
-                )
-              )
-            : "--",
-          original: product,
-        };
-      }
-    );
-    setTableItems(mappedItems);
-  }, [productInventory]);
+  // Filtrar productos que no son "Laboratorio"
+  const filteredInventory = productInventory.map(deposit => ({
+    ...deposit,
+    products: deposit.products.filter(product => product.name !== "Laboratorio")
+  })); 
 
-  useEffect(() => {
-    const today = new Date();
-    const oneMonthAgo = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      today.getDate()
-    );
-    const expiredTableItems = tableItems.filter((item) => {
-      const expirationDate = stringToDate(item.original.expiration_date);
+  // Calcular el stock total de un producto en un depósito
+  const getProductStock = (product: Product) => {
+    return product.inventories.reduce((sum, inventory) => sum + inventory.quantity, 0);
+  };
 
-      return (
-        (expirationDate.getTime() <= today.getTime() ||
-        expirationDate.getTime() <= oneMonthAgo.getTime()) && (item.original.expiration_date !== null)
-      );
-    });
-    setExpiredTableItems(expiredTableItems);
-  }, [tableItems]);
+  // Calcular total de productos y stock para cada depósito
+  const getInventorySummary = (inventory: InventoryItem) => {
+    const totalProducts = inventory.products.length;
+    const totalStock = inventory.products.reduce((sum, product) => sum + getProductStock(product), 0);
+    
+    return {
+      totalProducts,
+      totalStock
+    };
+  };
 
-  function openFormModal(selectedProduct: ProductInventoryTableItem) {
+  function openFormModal(selectedProduct: Product) {
     setSelectedProduct(structuredClone(selectedProduct));
     setShowFormModal(true);
   }
 
-  const columns: CustomPRTableColumnProps[] = [
-    {
-      field: "name",
-      header: "Nombre",
-      sortable: true,
-    },
-    {
-      field: "stock",
-      header: "Stock",
-      sortable: true,
-    },
-    {
-      field: "weight",
-      header: "Peso",
-      sortable: true,
-    },
-    {
-      field: "capacity",
-      header: "Capacidad",
-      sortable: true,
-    },
-    {
-      field: "concentration",
-      header: "Concentración",
-      sortable: true,
-    },
-    {
-      field: "expiration_date",
-      header: "Fecha de vencimiento",
-      sortable: true,
-    },
-    {
-      field: "actions",
-      header: "Acciones",
-      sortable: false,
-      frozen: false,
-      body: (rowData: ProductInventoryTableItem) => (
-        <>
-          <TableActionsWrapper>
-            <EditTableAction onTrigger={() => openFormModal(rowData)} />
-          </TableActionsWrapper>
-        </>
-      ),
-    },
-  ];
+  // Plantilla de expansión para depósitos (muestra productos)
+  const depositRowExpansionTemplate = (data: InventoryItem) => {
+    return (
+      <div className="p-3">
+        <DataTable 
+          value={data.products} 
+          dataKey="id"
+          onRowClick={(e) => {
+            setSelectedProduct(e.data as Product);
+          }}
+          selectionMode="single"
+          selection={selectedProduct}
+          onSelectionChange={(e) => setSelectedProduct(e.value)}
+        >
+          <Column field="name" header="Producto" sortable />
+          <Column header="Tipo" body={(rowData: Product) => rowData.product_type?.name || '--'} />
+          <Column header="Precio" body={(rowData: Product) => `$${rowData.sale_price}`} />
+          <Column header="Stock" body={(rowData: Product) => getProductStock(rowData)} />
+          <Column header="Stock Mín/Máx" body={(rowData: Product) => 
+            `${rowData.minimum_stock || '--'} / ${rowData.maximum_stock || '--'}`
+          } />
+          <Column 
+            header="Acciones" 
+            body={(rowData: Product) => (
+              <TableActionsWrapper>
+                <EditTableAction onTrigger={() => openFormModal(rowData)} />
+                  <li>
+            <a className="dropdown-item"
+                href="#"
+                onClick={() => {
+                  setSelectedProduct(rowData);
+                  setShowDetailModal(true);
+                }}>
+                <div className="d-flex gap-2 align-items-center">
+                    <i className="fa-solid fa-eye" style={{ width: '20px' }}></i>
+                    <span>Ver más</span>
+                </div>
+            </a>
+        </li>
+              </TableActionsWrapper>
+            )}
+          />
+        </DataTable>
+      </div>
+    );
+  };
 
-  const handleRowSelect = (rowData: ProductInventoryTableItem) => {
-    setSelectedProduct(structuredClone(rowData));
+  // Resumen del depósito para la fila principal
+  const depositSummaryTemplate = (data: InventoryItem) => {
+    const summary = getInventorySummary(data);
+    
+    return (
+      <div className="d-flex flex-column gap-1">
+        <span className="font-bold">{data.name}</span>
+        <div className="d-flex flex-wrap gap-3">
+          <Badge severity="info" value={`${summary.totalProducts} productos`}></Badge>
+          <Badge severity="success" value={`${summary.totalStock} unidades en stock`}></Badge>
+        </div>
+      </div>
+    );
   };
 
   const onHandleSubmit = async (data: ProductInventoryFormInputs) => {
-
-    updateProduct(selectedProduct?.uuid || "", {
+    if (!selectedProduct) return;
+    
+    updateProduct(selectedProduct.id.toString(), {
       product: data,
       entities: [],
     }).then(() => {
       setShowFormModal(false);
-      fetchProductInventory();
+      fetchProductInventoryOnlyDeposits();
     });
   };
 
+    const exportToPDF = () => {
+    generarFormatoInventario(productInventory, 'inventario-productos', 'Impresion');
+  }
+
   return (
     <>
-      <div className="row mb-3">
-        <div className="col-md-8">
-          <CustomPRTable
-            data={tableItems}
-            columns={columns}
-            globalFilterFields={[
-              "name",
-              "stock",
-              "weight",
-              "capacity",
-              "concentration",
-              "expiration_date",
-            ]}
-            onSelectedRow={handleRowSelect}
-            loading={loading}
-            onReload={fetchProductInventory}
-            selectionActive
-          />
-        </div>
-        <div className="col-md-4">
-          <div className="card animated-card">
-            <div className="card-body">
-              <h4 className="card-title">
-                {selectedProduct?.name || "Selecciona un producto"}
-              </h4>
-              <div className="card-content">
-                <p>
-                  <strong>Tipo:</strong>{" "}
-                  <span>
-                    {selectedProduct?.original.product_type?.name || "--"}
-                  </span>
-                </p>
-                <p>
-                  <strong>Stock:</strong>{" "}
-                  <span>{selectedProduct?.stock || "--"}</span>
-                </p>
-                <p>
-                  <strong>Precio:</strong>{" "}
-                  <span>{selectedProduct?.original.sale_price || "--"}</span>
-                </p>
-              </div>
-              {selectedProduct && (
-                <button
-                  className="btn btn-sm btn-primary"
-                  type="button"
-                  onClick={() => setShowDetailModal(true)}
-                >
-                  Ver más
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="card h-100 animated-card">
-            <div className="card-body">
-              <div className="text-center mb-3">
-                <h4>
-                  Los siguientes productos se encuentran próximos a caducar o se
-                  encuentran caducados
-                </h4>
-              </div>
-              <CustomPRTable
-                data={expiredTableItems}
-                columns={columns}
-                globalFilterFields={[
-                  "name",
-                  "stock",
-                  "weight",
-                  "capacity",
-                  "concentration",
-                  "expiration_date",
-                ]}
-                onSelectedRow={handleRowSelect}
-                loading={loading}
-                onReload={fetchProductInventory}
-              />
-            </div>
+      <div className="mb-3">
+        <div className="row">
+            <div className="col-auto">
+                          <Button 
+                            label="Exportar a PDF" 
+                            icon={<i className="fa-solid fa-file-pdf"></i>} 
+                            className="btn btn-primary"
+                            onClick={() => exportToPDF()}
+                          />
+                        </div>
+          <div className="col-12 col-md-12">
+            <DataTable
+              value={filteredInventory}
+              expandedRows={expandedRows}
+              onRowToggle={(e) => setExpandedRows(e.data)}
+              rowExpansionTemplate={depositRowExpansionTemplate}
+              dataKey="id"
+              loading={loading}
+            >
+              <Column expander style={{ width: '3rem' }} />
+              <Column body={depositSummaryTemplate} />
+            </DataTable>
           </div>
         </div>
       </div>
@@ -252,8 +197,9 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({
         show={showDetailModal}
         onHide={() => setShowDetailModal(false)}
       >
-        <ProductInventoryDetail product={selectedProduct?.original} />
+        <ProductInventoryDetail product={selectedProduct} />
       </CustomModal>
+
       <CustomFormModal
         formId="product-inventory-form"
         title="Editar inventario del producto"
@@ -262,7 +208,7 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({
       >
         <ProductInventoryForm
           formId="product-inventory-form"
-          productId={selectedProduct?.uuid || ""}
+          productId={selectedProduct?.id.toString() || ""}
           onHandleSubmit={onHandleSubmit}
         />
       </CustomFormModal>

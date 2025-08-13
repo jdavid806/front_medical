@@ -31,7 +31,7 @@ export const ExamResultsDetail: React.FC<ExamResultsFormProps> = ({ examId }) =>
             }
 
             if (filledForm) {
-                exam!.exam_type!.form_config.values = filledForm
+                exam!.exam_type!.form_config.values = (exam as any).exam_result[0].results;
                 setFormConfig(exam?.exam_type?.form_config)
             }
         }

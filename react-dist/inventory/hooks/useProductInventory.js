@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { inventoryService } from "../../../services/api/index.js";
+import { inventoryService } from "../../../services/api.js";
 import { ErrorHandler } from "../../../services/errorHandler.js";
 export const useProductInventory = type => {
   const [productInventory, setProductInventory] = useState([]);

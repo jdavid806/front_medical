@@ -66,7 +66,7 @@ export const TicketTable = () => {
 
     channel.bind(
       "ticket.generated",
-      function (data: { ticket: TicketDto | any }) {
+      function (data: { ticket: TicketDto | any } | any) {
         const newTicketData: TicketTableItemDto | any = {
           id: data.ticket.id,
           ticket_number: data.ticket.ticket_number,
@@ -79,6 +79,8 @@ export const TicketTable = () => {
           step: ticketStatusSteps[data.ticket.status],
           created_at: data.ticket.created_at,
           branch_id: data.ticket.branch_id,
+          branch: data.branch || "Sin consultorio",
+          module: data.module || "Sin modulo",
           module_id: data.ticket.module_id,
           patient: data?.ticket?.patient,
         };
@@ -149,6 +151,8 @@ export const TicketTable = () => {
           step: ticketStatusSteps[ticket.status],
           created_at: ticket.created_at,
           branch_id: ticket.branch_id,
+          branch: ticket.branch || "Sin consultorio",
+          module: ticket.module || "Sin modulo",
           module_id: ticket.module_id,
           patient: ticket.patient,
         };
@@ -176,21 +180,18 @@ export const TicketTable = () => {
       prevData.map((item) =>
         item.id === id
           ? {
-            ...item,
-            step: ticketStatusSteps[status],
-            status,
-            statusView: ticketStatus[status],
-          }
+              ...item,
+              step: ticketStatusSteps[status],
+              status,
+              statusView: ticketStatus[status],
+            }
           : item
       )
     );
   };
 
   const callTicket = async (data: any) => {
-    console.log(data);
-
     const status = "CALLED";
-    await sendMessageWhatsapp(data);
     const user = await userService.getByExternalId(getJWTPayload().sub);
     await ticketService.update(data.id, {
       status,
@@ -201,23 +202,29 @@ export const TicketTable = () => {
       prevData.map((item) =>
         item.id === data.id
           ? {
-            ...item,
-            step: ticketStatusSteps[status],
-            status,
-            statusView: ticketStatus[status],
-          }
+              ...item,
+              step: ticketStatusSteps[status],
+              status,
+              statusView: ticketStatus[status],
+            }
           : item
       )
     );
+    await sendMessageWhatsapp(data);
   };
 
   const sendMessageWhatsapp = useCallback(
     async (data) => {
       const replacements = {
-        NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
-          } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
-          }`,
+        NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${
+          data?.patient?.middle_name ?? ""
+        } ${data?.patient?.last_name ?? ""} ${
+          data?.patient?.second_last_name ?? ""
+        }`,
         TICKET: `${data?.ticket_number}`,
+        MODULO: `${data?.module?.name ?? ""}`,
+        ESPECIALISTA: `${""}`,
+        CONSULTORIO: `${data?.branch?.address ?? ""}`,
       };
 
       try {
@@ -249,8 +256,9 @@ export const TicketTable = () => {
   const slots = {
     3: (cell, data: TicketTableItemDto) => (
       <span
-        className={`badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]
-          }`}
+        className={`badge badge-phoenix badge-phoenix-${
+          ticketStatusColors[data.status]
+        }`}
       >
         {data.statusView}
       </span>
@@ -264,8 +272,9 @@ export const TicketTable = () => {
           <i className="fas fa-phone"></i>
         </button>
         <div
-          className={`d-flex flex-wrap gap-1 ${data.step === 2 ? "" : "d-none"
-            }`}
+          className={`d-flex flex-wrap gap-1 ${
+            data.step === 2 ? "" : "d-none"
+          }`}
         >
           <button
             className={`btn btn-success`}
@@ -347,7 +356,7 @@ export const TicketTable = () => {
             <div className="card d-flex flex-grow-1">
               <div className="card-body">
                 {data.filter((ticket) => ticket.status === "MISSED").length >
-                  0 ? (
+                0 ? (
                   data
                     .filter((ticket) => ticket.status === "MISSED")
                     .map((ticket) => (

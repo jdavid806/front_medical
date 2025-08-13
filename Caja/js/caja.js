@@ -418,7 +418,12 @@ async function processPayment() {
             title: 'Factura Creada',
             text: `Factura creada con éxito. Código de factura: ${data.invoice.invoice_code}`,
             icon: 'success',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: 'Imprimir',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+            generarReciboPDF(data);
+            }
         });
 
         clearCart();
@@ -432,6 +437,10 @@ async function processPayment() {
             confirmButtonText: 'Aceptar'
         });
     }
+}
+
+function generarReciboPDF(data){
+console.log("data", data);
 }
 
 

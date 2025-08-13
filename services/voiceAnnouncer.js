@@ -62,12 +62,17 @@ export async function speak({ text, options = {} }) {
 
     Object.assign(utterance, config);
 
+    console.log(utterance, config);
+
+
     synth.speak(utterance);
     return utterance;
 }
 
 export async function callTicket({ nombre, turno, modulo, options = {} }) {
     const text = `Turno número ${turno}, ${nombre}, favor acercarse al módulo ${modulo}.`;
+    console.log(text, options);
+
     return await speak({ text, options });
 }
 

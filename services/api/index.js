@@ -66,6 +66,7 @@ import { AssetsService } from "./classes/assetsService.js";
 import { CategoryProductsService } from "./classes/categoryProductsService.js";
 import { BrandService } from "./classes/brandService.js";
 import { ThirdPartyService } from "./classes/thirdPartyService.js";
+import { DisabilityService } from "./classes/disabilityService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -344,3 +345,5 @@ export const categoryProductsService = new CategoryProductsService(
 export const brandService = new BrandService("api/v1/admin", "brands");
 
 export const thirdPartyService = new ThirdPartyService();
+
+export const disabilityService = new DisabilityService();

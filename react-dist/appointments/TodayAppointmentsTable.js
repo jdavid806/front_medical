@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
+import AdmissionBilling from "../admission/admission-billing/AdmissionBilling.js";
+import { Dialog } from "primereact/dialog";
+import { PrimeReactProvider } from "primereact/api";
+import { Button } from "primereact/button";
+import { TicketTable } from "../tickets/components/TicketTable.js";
+import { GenerateTicket } from "../tickets/GenerateTicket.js";
+import { AppointmentFormModal } from "./AppointmentFormModal.js";
+import { Menu } from "primereact/menu";
 export const TodayAppointmentsTable = () => {
+  const [showBillingDialog, setShowBillingDialog] = useState(false);
+  const [showTicketControl, setShowTicketControl] = useState(false);
+  const [showTicketRequest, setShowTicketRequest] = useState(false);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const customFilters = () => {
     return {
-      appointmentState: 'pending',
-      appointmentDate: new Date().toISOString().split('T')[0],
-      sort: '-appointment_date,appointment_time'
+      appointmentState: "pending",
+      appointmentDate: new Date().toISOString().split("T")[0],
+      sort: "-appointment_date,appointment_time"
     };
+  };
+  const menu = useRef(null);
+  const handleFacturarAdmision = appointment => {
+    setSelectedAppointment(appointment);
+    setShowBillingDialog(true);
   };
   const {
     appointments,
@@ -41,30 +59,61 @@ export const TodayAppointmentsTable = () => {
     field: "entity",
     header: "Entidad"
   }, {
-    field: "",
-    header: "",
-    body: rowData => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "align-middle white-space-nowrap pe-0 p-3"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "btn-group me-1"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "btn dropdown-toggle mb-1 btn-primary",
-      type: "button",
-      "data-bs-toggle": "dropdown",
-      "aria-haspopup": "true",
-      "aria-expanded": "false"
-    }, "Acciones"), /*#__PURE__*/React.createElement("div", {
-      className: "dropdown-menu"
-    }, /*#__PURE__*/React.createElement("a", {
-      href: `generar_admision_rd?id_cita=${rowData.id}`,
-      className: "dropdown-item",
-      id: "generar-admision"
-    }, "Generar admisi\xF3n")))))
+    field: "actions",
+    header: "Acciones",
+    body: rowData => {
+      const items = [{
+        label: "Generar admisión",
+        command: () => window.location.href = `generar_admision_rd?id_cita=${rowData.id}`
+      }, {
+        label: "Facturar admisión",
+        command: () => handleFacturarAdmision(rowData)
+      }];
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+        className: "btn-primary flex items-center gap-2",
+        onClick: e => menu.current.toggle(e),
+        "aria-controls": `popup_menu_${rowData.id}`,
+        "aria-haspopup": true
+      }, "Acciones", /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-cog\t ml-2"
+      })), /*#__PURE__*/React.createElement(Menu, {
+        model: items,
+        popup: true,
+        ref: menu,
+        id: `popup_menu_${rowData.id}`,
+        style: {
+          zIndex: 9999
+        }
+      }));
+    }
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end gap-3 mb-4"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Control de turnos",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-clock me-2"
+    }, "\u200C"),
+    className: "p-button-primary me-2",
+    onClick: () => setShowTicketControl(true)
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Solicitar turno",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-clipboard-check me-2"
+    }, "\u200C"),
+    className: "p-button-primary me-2",
+    onClick: () => setShowTicketRequest(true)
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Crear Cita",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-comment-medical me-2"
+    }, "\u200C"),
+    className: "p-button-primary",
+    onClick: () => setShowAppointmentForm(true)
+  })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      minHeight: "300px"
+      minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
@@ -79,5 +128,38 @@ export const TodayAppointmentsTable = () => {
     onPage: handlePageChange,
     onSearch: handleSearchChange,
     onReload: refresh
-  }))));
+  }))), /*#__PURE__*/React.createElement(AdmissionBilling, {
+    visible: showBillingDialog,
+    onHide: () => setShowBillingDialog(false),
+    appointmentData: selectedAppointment
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Control de Turnos",
+    visible: showTicketControl,
+    style: {
+      width: "90vw",
+      maxWidth: "1200px"
+    },
+    onHide: () => setShowTicketControl(false),
+    maximizable: true,
+    modal: true
+  }, /*#__PURE__*/React.createElement(PrimeReactProvider, null, /*#__PURE__*/React.createElement(TicketTable, null))), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Solicitud de Turnos",
+    visible: showTicketRequest,
+    style: {
+      width: "70vw"
+    },
+    onHide: () => setShowTicketRequest(false),
+    modal: true
+  }, /*#__PURE__*/React.createElement(GenerateTicket, null)), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Crear Nueva Cita",
+    visible: showAppointmentForm,
+    style: {
+      width: "50vw"
+    },
+    onHide: () => setShowAppointmentForm(false),
+    modal: true
+  }, /*#__PURE__*/React.createElement(AppointmentFormModal, {
+    isOpen: showAppointmentForm,
+    onClose: () => setShowAppointmentForm(false)
+  })));
 };

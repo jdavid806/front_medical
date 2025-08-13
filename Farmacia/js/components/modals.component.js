@@ -2,12 +2,18 @@ import { formatDate, getLoggedInUser } from "../services/utils.service.js";
 import { farmaciaService } from "../services/api.service.js";
 import { paymentMethodService } from "../../../services/api/index.js";
 import { generatePDFReceipts } from "../../../funciones/funcionesJS/exportPDF.js";
+import { infoCompanyService } from "../../../services/api/index.js";
 
 let htmlPrintReceipt = "";
+let infoCompany = null;
 window.verifiedProducts = [];
 window.getVerifiedProducts = function () {
   return window.verifiedProducts;
 };
+
+document.addEventListener("DOMContentLoaded", async () => {
+  infoCompany = await infoCompanyService.getCompany();
+});
 
 export function renderRecipeModalContent(recipeItems, patient, prescriber) {
   const header = document.getElementById("recipeHeader");
@@ -107,12 +113,8 @@ function renderDeliverySummary() {
   }
 
   tableBody.innerHTML = verifiedProducts
-    .map((product) => {
-      // Buscamos la cantidad en recipe_items usando la misma posición (índice)
-      // Asumimos que verifiedProducts y recipe_items están sincronizados por orden
-      const index = verifiedProducts.indexOf(product);
+    .map((product, index) => {
       const item = window.currentRecipe.recipe_items[index];
-
       const quantity = item?.quantity || 0;
       const name = product.name || "Sin nombre";
       const price = product.price || 0;
@@ -123,8 +125,14 @@ function renderDeliverySummary() {
       <tr data-product-id="${product.id}">
         <td>${name}</td>
         <td>
-          <input type="number" id="quantity" class="form-control quantity-input" value="${quantity}" min="1" style="width: 80px;"
-        onchange="this.closest('tr').querySelector('.subtotal-cell').textContent = '$' + (parseFloat(this.value) * ${price}).toFixed(2);" />
+          <input 
+            type="number" 
+            class="form-control quantity-input" 
+            value="${quantity}" 
+            min="1" 
+            style="width: 80px;" 
+            data-price="${price}"
+          />
         </td>
         <td>$${price.toFixed(2)}</td>
         <td class="subtotal-cell">$${subtotal.toFixed(2)}</td>
@@ -133,10 +141,40 @@ function renderDeliverySummary() {
     })
     .join("");
 
+  // Mostrar el total inicial
+  updateTotal(total);
+
+  // Agregar listeners para recalcular subtotal y total
+  tableBody.querySelectorAll(".quantity-input").forEach((input) => {
+    input.addEventListener("input", function () {
+      const price = parseFloat(this.dataset.price) || 0;
+      const quantity = parseFloat(this.value) || 0;
+      const subtotal = quantity * price;
+
+      // Actualizar subtotal de la fila
+      this.closest("tr").querySelector(".subtotal-cell").textContent =
+        `$${subtotal.toFixed(2)}`;
+
+      // Recalcular total general
+      recalcTotal();
+    });
+  });
+}
+
+function recalcTotal() {
+  let total = 0;
+  document.querySelectorAll(".subtotal-cell").forEach((cell) => {
+    total += parseFloat(cell.textContent.replace("$", "")) || 0;
+  });
+  updateTotal(total);
+}
+
+function updateTotal(total) {
   document.getElementById("deliveryTotalPrice").textContent = `$${total.toFixed(
     2
   )}`;
 }
+
 
 function renderPaymentMethods(paymentMethods) {
   if (!Array.isArray(paymentMethods)) {
@@ -223,9 +261,9 @@ export function renderReceiptModal(recipe) {
   modalBody.innerHTML = `
     <div class="receipt-preview">
       <div class="receipt-header">
-        <div class="fw-bold">FARMACIA CENODE</div>
-        <div>Av. Principal 123, Ciudad</div>
-        <div>Tel: +1 234 567 890</div>
+        <div class="fw-bold">${infoCompany.data[0].attributes.legal_name}</div>
+        <div>${infoCompany.data[0].attributes.address}, ${infoCompany.data[0].attributes.city}</div>
+        <div>${infoCompany.data[0].attributes.phone}</div>
       </div>
 
       <div class="receipt-divider"></div>
@@ -280,8 +318,10 @@ export function renderReceiptModal(recipe) {
   htmlPrintReceipt = modalBody.innerHTML;
 }
 
-document.getElementById("printReceiptBtn").addEventListener("click", () => {
-   const receiptStyles = `
+document
+  .getElementById("printReceiptBtn")
+  .addEventListener("click", async () => {
+    const receiptStyles = `
     <style>
       .receipt-preview {
         font-family: 'Courier New', monospace;
@@ -325,15 +365,15 @@ document.getElementById("printReceiptBtn").addEventListener("click", () => {
       }
     </style>
   `;
-  
-  // Combinar estilos con el contenido del recibo
-  const styledHtml = receiptStyles + htmlPrintReceipt;
-  const configPDF = {
-    dimensions: [0,0,290,360]
-  };
-  generatePDFReceipts(styledHtml, configPDF);
-})
 
+    // Combinar estilos con el contenido del recibo
+    const styledHtml = receiptStyles + htmlPrintReceipt;
+    const configPDF = {
+      name: "Entrega de Medicamentos",
+      dimensions: [0, 0, 226.77, 390],
+    };
+    generatePDFReceipts(styledHtml, configPDF);
+  });
 
 export async function populateMedicationSelect() {
   const select = document.getElementById("medicamentoSelect");

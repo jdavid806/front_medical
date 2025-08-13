@@ -28,14 +28,10 @@ include "../header.php";
                     <li class="breadcrumb-item active" onclick="location.reload()">Medicamentos</li>
                 </ol>
             </nav>
-            <div class="pb-9">
+            <div class="pb-3">
                 <div class="row mt-5">
                     <div class="col-md-12">
                         <h2 class="mb-3">Inventario de Medicamentos</h2>
-                        <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalNuevoMedicamento">
-                            <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo Medicamento
-                        </button>
                     </div>
                 </div>
 
@@ -56,11 +52,11 @@ include "../header.php";
     import React from "react";
     import ReactDOMClient from "react-dom/client";
     import {
-        ProductInventoryApp
-    } from './react-dist/inventory/ProductInventoryApp.js';
+        ProductWithLotInventoryApp
+    } from './react-dist/inventory/ProductWithLotInventoryApp.js';
 
     ReactDOMClient.createRoot(document.getElementById('productInventoryAppReact')).render(React
-                .createElement(ProductInventoryApp, {
+                .createElement(ProductWithLotInventoryApp, {
                     type: 'medications'
                 }));
 </script>

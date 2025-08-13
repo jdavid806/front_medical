@@ -63,13 +63,13 @@ export const Commissions = () => {
             filterParams
           );
           setComissionData(data);
-          formatDataToTreeNodes(data);
+          formatDataToTreeNodes(data, "admissions_by_doctor");
           break;
         case "tab-orders":
           const dataToOrders = await comissionConfig.comissionReportByOrders(
             filterParams
           );
-          formatDataToTreeNodes(dataToOrders);
+          formatDataToTreeNodes(dataToOrders, "admissions_prescriber_doctor");
         default:
           console.warn(`Tab no reconocido: ${tabId}`);
       }
@@ -128,11 +128,11 @@ export const Commissions = () => {
     await handleTabChange(activeTab, filterParams);
   };
 
-  const formatDataToTreeNodes = (users: any[]) => {
+  const formatDataToTreeNodes = (users: any[], nodeKey: string) => {
     const nodes: any = users.map((user, userIndex) => {
       const nombre = `${user.first_name || ""} ${user.last_name || ""}`.trim();
-      const sumAmountTotal = user.admissions.reduce((total, admission) => {
-        if (admission.invoice.type === "entity") {
+      const sumAmountTotal = user[nodeKey].reduce((total, admission) => {
+        if (admission.invoice.sub_type === "entity") {
           const amount = parseFloat(admission.entity_authorized_amount) || 0;
           return total + amount;
         } else {
@@ -150,7 +150,7 @@ export const Commissions = () => {
       let netAmount = 0;
 
       const children =
-        user.admissions?.flatMap((admission, admissionIndex) => {
+        user[nodeKey]?.flatMap((admission, admissionIndex) => {
           admission.dataChild = null;
           const baseCalculation =
             (calculateBase(admission) *
@@ -172,7 +172,7 @@ export const Commissions = () => {
 
           admission.dataChild = {
             monto:
-              admission.invoice.type == "entity"
+              admission.invoice.sub_type == "entity"
                 ? parseInt(admission.entity_authorized_amount)
                 : parseInt(admission.invoice.total_amount),
             base: baseCalculation,
@@ -186,7 +186,7 @@ export const Commissions = () => {
             data: {
               totalServices: "",
               monto:
-                admission.invoice.type == "entity"
+                admission.invoice.sub_type == "entity"
                   ? admission.entity_authorized_amount
                   : admission.invoice.total_amount,
               base: baseCalculation,
@@ -208,7 +208,7 @@ export const Commissions = () => {
           retencion: parseFloat(retentionCalculatedUser.toFixed(2)),
           netAmount: parseFloat(netAmount.toFixed(2)),
           isLeaf: false,
-          rawData: user.admissions,
+          rawData: user[nodeKey],
         },
         children: children,
       };
@@ -224,12 +224,10 @@ export const Commissions = () => {
 
   function calculateBase(admission) {
     let resultBase = 0;
-    const comissionsInDetails = admission.invoice.details.map((detail) => {
-      return detail.commission !== null;
-    }).length;
-    if (admission.invoice.type == "entity") {
+    const comissionsInDetails = admission.invoice.details.filter((detail) => detail.commission ).length;
+    if (admission.invoice.sub_type == "entity") {
       resultBase =
-        (admission.entity_authorized_amount /
+        (Number(admission.entity_authorized_amount) /
           admission.invoice.details.length) *
         comissionsInDetails;
       return resultBase;

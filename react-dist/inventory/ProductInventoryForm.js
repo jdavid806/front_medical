@@ -114,6 +114,34 @@ export const ProductInventoryForm = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement(Controller, {
+    name: "sale_price",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Precio de venta *"), /*#__PURE__*/React.createElement(InputNumber, {
+      inputId: field.name,
+      min: 1,
+      placeholder: "Ingrese el precio de venta",
+      ref: field.ref,
+      value: field.value,
+      onBlur: field.onBlur,
+      onValueChange: e => field.onChange(e),
+      className: "w-100",
+      inputClassName: classNames('w-100', {
+        'p-invalid': errors.sale_price
+      })
+    }))
+  }), getFormErrorMessage('sale_price'))), /*#__PURE__*/React.createElement("div", {
+    className: "row mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement(Controller, {
     name: "sanitary_registration",
     control: control,
     rules: {

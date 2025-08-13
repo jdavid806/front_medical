@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Calendar } from "primereact/calendar";
+import { MultiSelect } from "primereact/multiselect";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { TabView, TabPanel } from "primereact/tabview";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js"; // Import your services
-import { appointmentService } from "../../services/api/index.js";
-import { appointmentStatesByKeyTwo } from "../../services/commons.js";
+import { appointmentService, userSpecialtyService, userService, appointmentStateService } from "../../services/api/index.js";
+import { appointmentStatesByKeyTwo, appointmentStateFilters } from "../../services/commons.js";
 export const Appointments = () => {
-  // Set default date range (last 5 days)
   const today = new Date();
   const fiveDaysAgo = new Date();
   fiveDaysAgo.setDate(today.getDate() - 5);
@@ -19,30 +20,75 @@ export const Appointments = () => {
   // State for filters
   const [dateRange, setDateRange] = useState([fiveDaysAgo, today]);
   const [reportData, setReportData] = useState([]);
-  const [groupedData, setGroupedData] = useState({});
+  const [groupedByState, setGroupedByState] = useState({});
+  const [groupedBySpecialtyDoctor, setGroupedBySpecialtyDoctor] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [loadedTabs, setLoadedTabs] = useState([]);
+  const [specialties, setSpecialties] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [appointmentStates, setAppointmentStates] = useState([]);
   const {
     company,
     setCompany,
     fetchCompany
   } = useCompany();
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+  const [selectedDoctors, setSelectedDoctors] = useState([]);
+  const [selectedStates, setSelectedStates] = useState([]);
   useEffect(() => {
-    const initializeData = async () => {
-      setLoading(true);
-      try {
-        await loadData();
-      } catch (error) {
-        console.error("Error initializing data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initializeData();
+    if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
+      loadDataForTab(0);
+    } else if (activeTabIndex === 1 && !loadedTabs.includes(1)) {
+      loadDataForTab(1);
+    }
+  }, [activeTabIndex]);
+  useEffect(() => {
+    loadSpecialties();
+    loadDoctors();
+    loadAppointmentStates();
   }, []);
-  const loadData = async (filterParams = {}) => {
+  async function loadSpecialties() {
+    try {
+      const response = await userSpecialtyService.getAll();
+      setSpecialties(response);
+    } catch (error) {
+      console.error("Error fetching specialties:", error);
+    }
+  }
+  async function loadDoctors() {
+    try {
+      const response = await userService.getAll();
+      const responseFiltered = response.map(user => ({
+        ...user,
+        full_name: `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_last_name ?? ""}`
+      })).filter(user => user.role.group === "DOCTOR");
+      setDoctors(responseFiltered);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  }
+  async function loadAppointmentStates() {
+    try {
+      const response = await appointmentStateService.getAll();
+      const responseMapped = response.map(state => {
+        return {
+          ...state,
+          nameState: appointmentStateFilters[state.name]
+        };
+      });
+      setAppointmentStates(responseMapped);
+    } catch (error) {
+      console.error("Error fetching appointment states:", error);
+    }
+  }
+  const loadDataForTab = async (tabIndex, filterParams = {
+    start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
+    end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
+  }) => {
     setTableLoading(true);
     try {
       const response = await appointmentService.appointmentsWithFilters(filterParams);
@@ -52,16 +98,49 @@ export const Appointments = () => {
       }
       const processedData = handlerDataAppointments(data);
       setReportData(processedData);
+      if (tabIndex === 0) {
+        // Agrupamiento original (solo por estado)
+        const grouped = {};
+        processedData.forEach(appointment => {
+          if (!grouped[appointment.state]) {
+            grouped[appointment.state] = [];
+          }
+          grouped[appointment.state].push(appointment);
+        });
+        setGroupedByState(grouped);
+      } else {
+        // Nuevo agrupamiento (estado -> array de {especialidad, médico, count})
+        const grouped = {};
+        processedData.forEach(appointment => {
+          const state = appointment.state;
+          const specialty = appointment.assigned_user_availability?.user?.specialty?.name || "Sin especialidad";
+          const doctorId = appointment.assigned_user_availability?.user?.id || "unknown";
+          const doctorName = [appointment.assigned_user_availability?.user?.first_name, appointment.assigned_user_availability?.user?.middle_name, appointment.assigned_user_availability?.user?.last_name, appointment.assigned_user_availability?.user?.second_last_name].filter(Boolean).join(" ") || "Sin nombre";
+          if (!grouped[state]) {
+            grouped[state] = [];
+          }
 
-      // Agrupar datos por estado
-      const grouped = {};
-      processedData.forEach(appointment => {
-        if (!grouped[appointment.state]) {
-          grouped[appointment.state] = [];
-        }
-        grouped[appointment.state].push(appointment);
-      });
-      setGroupedData(grouped);
+          // Buscar si ya existe esta combinación especialidad-médico
+          const existingEntry = grouped[state].find(entry => entry.specialty === specialty && entry.doctorName === doctorName);
+          if (existingEntry) {
+            existingEntry.count++;
+            existingEntry.appointments.push(appointment);
+          } else {
+            grouped[state].push({
+              specialty,
+              doctorName,
+              count: 1,
+              appointments: [appointment]
+            });
+          }
+        });
+        setGroupedBySpecialtyDoctor(grouped);
+      }
+
+      // Marcar el tab como cargado
+      if (!loadedTabs.includes(tabIndex)) {
+        setLoadedTabs([...loadedTabs, tabIndex]);
+      }
     } catch (error) {
       console.error("Error loading report data:", error);
     } finally {
@@ -74,7 +153,18 @@ export const Appointments = () => {
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
         end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
       };
-      await loadData(filterParams);
+      if (selectedStates.length > 0) {
+        filterParams.appointment_state_ids = selectedStates.map(state => state.id);
+      }
+      if (selectedDoctors.length > 0) {
+        filterParams.user_ids = selectedDoctors.map(doctor => doctor.id);
+      }
+      if (selectedSpecialties.length > 0) {
+        filterParams.specialty_ids = selectedSpecialties.map(specialty => specialty.id);
+      }
+
+      // Cargar datos solo para el tab activo
+      await loadDataForTab(activeTabIndex, filterParams);
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -92,8 +182,8 @@ export const Appointments = () => {
       };
     });
   };
-  const handleExportExcel = state => {
-    const dataToExport = groupedData[state].map(item => ({
+  const handleExportExcel = (state, data) => {
+    const dataToExport = data.map(item => ({
       Estado: item.state,
       Paciente: `${item.patient.first_name} ${item.patient.last_name}`,
       Documento: item.patient.document_number,
@@ -106,82 +196,62 @@ export const Appointments = () => {
       fileName: `Citas_${state.replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
     });
   };
-  function handleExportPDF(state) {
-    const dataExport = groupedData[state].map(item => ({
+  const handleExportPDF = (state, data) => {
+    const dataExport = data.map(item => ({
       state: item.state,
       patient: `${item.patient.first_name} ${item.patient.last_name}`,
       document_number: item.patient.document_number,
       city: item.patient.city_id,
-      productt: item.product_id,
+      product: item.product_id,
       date: new Date(item.created_at).toLocaleDateString("es-DO")
     }));
     const table = `
-        <style>
-        table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          margin-top: 25px;
-          font-size: 12px;
-        }
-        th { 
-          background-color: rgb(66, 74, 81); 
-          color: white; 
-          padding: 10px; 
-          text-align: left;
-          font-weight: normal;
-        }
-        td { 
-          padding: 10px 8px; 
-          border-bottom: 1px solid #eee;
-        }
-        </style>
-    
-        <table>
-          <thead>
+      <style>
+      table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 12px; }
+      th { background-color: rgb(66, 74, 81); color: white; padding: 10px; text-align: left; font-weight: normal; }
+      td { padding: 10px 8px; border-bottom: 1px solid #eee; }
+      </style>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Paciente</th>
+            <th>Documento</th>
+            <th>Ciudad</th>
+            <th>Producto</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${dataExport.reduce((acc, item) => acc + `
             <tr>
-              <th>Estado</th>
-              <th>Paciente</th>
-              <th>Documento</th>
-              <th>Ciudad</th>
-              <th>Producto</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${dataExport.reduce((acc, item) => acc + `
-              <tr>
-                <td>${item.state ?? ""}</td>
-                <td>${item.patient ?? ""}</td>
-                <td>${item.document_number ?? ""}</td>
-                <td>${item.city ?? ""}</td>
-                <td>${item.product ?? ""}</td>
-                <td>${item.date}</td>
-              </tr>
-            `, "")}
-          </tbody>
-        </table>`;
-    const configPDF = {
+              <td>${item.state ?? ""}</td>
+              <td>${item.patient ?? ""}</td>
+              <td>${item.document_number ?? ""}</td>
+              <td>${item.city ?? ""}</td>
+              <td>${item.product ?? ""}</td>
+              <td>${item.date}</td>
+            </tr>`, "")}
+        </tbody>
+      </table>`;
+    generatePDFFromHTML(table, company, {
       name: "Citas - " + state
-    };
-    generatePDFFromHTML(table, company, configPDF);
-  }
-  const dateTemplate = rowData => {
-    return new Date(rowData.created_at).toLocaleDateString("es-DO");
+    });
   };
-  const headerTemplate = (state, count) => {
+  const dateTemplate = rowData => {
+    return new Date(rowData.created_at).toLocaleDateString("es-DO") + ", " + (rowData.appointment_time || "");
+  };
+  const headerTemplate = (state, count, data) => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between align-items-center w-full p-4"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, state), " - Total: ", count)), /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2"
     }, /*#__PURE__*/React.createElement(Button, {
-      style: {
-        marginLeft: "10px"
-      },
       className: "p-button-rounded p-button-success p-button-sm",
       onClick: e => {
         e.stopPropagation();
         e.preventDefault();
-        handleExportExcel(state);
+        handleExportExcel(state, data);
       },
       tooltip: `Exportar ${state} a Excel`,
       tooltipOptions: {
@@ -190,14 +260,11 @@ export const Appointments = () => {
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-file-excel"
     })), /*#__PURE__*/React.createElement(Button, {
-      style: {
-        marginLeft: "10px"
-      },
       className: "p-button-rounded p-button-secondary p-button-sm",
       onClick: e => {
         e.stopPropagation();
         e.preventDefault();
-        handleExportPDF(state);
+        handleExportPDF(state, data);
       },
       tooltip: `Exportar ${state} a PDF`,
       tooltipOptions: {
@@ -211,9 +278,7 @@ export const Appointments = () => {
     return /*#__PURE__*/React.createElement("div", {
       className: "flex justify-content-center align-items-center",
       style: {
-        height: "50vh",
-        marginLeft: "950px",
-        marginTop: "100px"
+        height: "50vh"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null));
   }
@@ -226,14 +291,14 @@ export const Appointments = () => {
     className: "pb-9"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "mb-4"
-  }, "Reporte de Citas por Estado"), /*#__PURE__*/React.createElement("div", {
+  }, "Reporte de Citas"), /*#__PURE__*/React.createElement("div", {
     className: "card border border-light mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "grid p-fluid"
+    className: "grid p-fluid row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 md:col-6"
+    className: "col-6 md:col-6"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
@@ -245,6 +310,47 @@ export const Appointments = () => {
     placeholder: "Seleccione un rango",
     className: "w-full",
     showIcon: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 md:col-6"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Estado"), /*#__PURE__*/React.createElement(MultiSelect, {
+    value: selectedStates,
+    onChange: e => {
+      setSelectedStates(e.value);
+    },
+    options: appointmentStates,
+    optionLabel: "nameState",
+    filter: true,
+    placeholder: "Seleccione estados",
+    maxSelectedLabels: 3,
+    className: "w-full"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 md:col-6"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Especialista"), /*#__PURE__*/React.createElement(MultiSelect, {
+    value: selectedDoctors,
+    onChange: e => setSelectedDoctors(e.value),
+    options: doctors,
+    optionLabel: "full_name",
+    filter: true,
+    placeholder: "Seleccione Especialistas",
+    maxSelectedLabels: 3,
+    className: "w-full"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 md:col-6"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Especialidad"), /*#__PURE__*/React.createElement(MultiSelect, {
+    value: selectedSpecialties,
+    onChange: e => setSelectedSpecialties(e.value),
+    options: specialties,
+    optionLabel: "name",
+    filter: true,
+    placeholder: "Seleccione Especialidades",
+    maxSelectedLabels: 3,
+    className: "w-full"
   }))), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-end mt-3"
   }, /*#__PURE__*/React.createElement(Button, {
@@ -255,19 +361,22 @@ export const Appointments = () => {
     className: "p-button-primary"
   })))), /*#__PURE__*/React.createElement("div", {
     className: "card"
+  }, /*#__PURE__*/React.createElement(TabView, {
+    activeIndex: activeTabIndex,
+    onTabChange: e => setActiveTabIndex(e.index)
+  }, /*#__PURE__*/React.createElement(TabPanel, {
+    header: "Vista por Estado"
   }, tableLoading ? /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
     style: {
-      height: "200px",
-      marginLeft: "950px",
-      marginTop: "100px"
+      height: "200px"
     }
-  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : Object.keys(groupedData).length > 0 ? /*#__PURE__*/React.createElement(Accordion, {
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : Object.keys(groupedByState).length > 0 ? /*#__PURE__*/React.createElement(Accordion, {
     activeIndex: activeIndex,
     onTabChange: e => setActiveIndex(e.index)
-  }, Object.entries(groupedData).map(([state, appointments]) => /*#__PURE__*/React.createElement(AccordionTab, {
+  }, Object.entries(groupedByState).map(([state, appointments]) => /*#__PURE__*/React.createElement(AccordionTab, {
     key: state,
-    header: headerTemplate(state, appointments.length)
+    header: headerTemplate(state, appointments.length, appointments)
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: appointments,
     emptyMessage: `No hay citas en estado ${state}`,
@@ -289,7 +398,16 @@ export const Appointments = () => {
     header: "Ciudad",
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "product_id",
+    field: "assigned_user_availability.first_name",
+    header: "Especialista",
+    body: data => `${data.assigned_user_availability?.user?.first_name || ""} ${data.assigned_user_availability?.user?.last_name || ""}`,
+    sortable: true
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "assigned_user_availability.user.specialty.name",
+    header: "Especialidad",
+    sortable: true
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "product.name",
     header: "Producto",
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
@@ -297,5 +415,49 @@ export const Appointments = () => {
     header: "Fecha",
     body: dateTemplate,
     sortable: true
-  }))))) : /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar")))));
+  }))))) : /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar")), /*#__PURE__*/React.createElement(TabPanel, {
+    header: "Vista por Especialidad y M\xE9dico"
+  }, tableLoading ? /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-center align-items-center",
+    style: {
+      height: "200px"
+    }
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : Object.keys(groupedBySpecialtyDoctor).length > 0 ? /*#__PURE__*/React.createElement(Accordion, {
+    activeIndex: activeIndex,
+    onTabChange: e => setActiveIndex(e.index)
+  }, Object.entries(groupedBySpecialtyDoctor).map(([state, entries]) => {
+    const totalCount = entries.reduce((sum, entry) => sum + entry.count, 0);
+    const allAppointments = entries.flatMap(entry => entry.appointments);
+    return /*#__PURE__*/React.createElement(AccordionTab, {
+      key: state,
+      header: headerTemplate(state, totalCount, allAppointments)
+    }, /*#__PURE__*/React.createElement(DataTable, {
+      value: entries,
+      emptyMessage: `No hay citas en estado ${state}`,
+      className: "p-datatable-sm p-datatable-striped",
+      paginator: true,
+      rows: 10,
+      rowsPerPageOptions: [5, 10, 25],
+      sortMode: "multiple"
+    }, /*#__PURE__*/React.createElement(Column, {
+      field: "specialty",
+      header: "Especialidad",
+      sortable: true,
+      filter: true,
+      filterPlaceholder: "Buscar especialidad"
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "doctorName",
+      header: "M\xE9dico",
+      sortable: true,
+      filter: true,
+      filterPlaceholder: "Buscar m\xE9dico"
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "count",
+      header: "Cantidad",
+      sortable: true,
+      body: rowData => /*#__PURE__*/React.createElement("span", {
+        className: "font-bold"
+      }, rowData.count)
+    })));
+  })) : /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar")))))));
 };

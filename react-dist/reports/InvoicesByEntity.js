@@ -63,7 +63,10 @@ export const InvoicesByEntity = () => {
       prepareTreeData();
     }
   }, [reportData]);
-  const loadData = async (filterParams = {}) => {
+  const loadData = async (filterParams = {
+    end_date: formatDate(today),
+    start_date: formatDate(fiveDaysAgo)
+  }) => {
     try {
       setTableLoading(true);
       const data = await billingService.getBillingReportByEntity(filterParams);
@@ -125,12 +128,12 @@ export const InvoicesByEntity = () => {
     try {
       const filterParams = {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity
+        start_date: dateRange[0] ? formatDate(dateRange[0]) : ""
       };
+      if (selectedPatients && selectedPatients.length > 0) filterParams.patient_ids = selectedPatients;
+      if (selectedProcedures && selectedProcedures.length > 0) filterParams.product_ids = selectedProcedures;
+      if (selectedSpecialists && selectedSpecialists.length > 0) filterParams.user_ids = selectedSpecialists;
+      if (selectedEntity) filterParams.entity_id = selectedEntity;
       await loadData(filterParams);
     } catch (error) {
       console.error("Error filtering data:", error);

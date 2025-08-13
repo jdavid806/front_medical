@@ -148,8 +148,9 @@ export const InvoicesReport = () => {
       const response = await userService.getAllUsers();
       setSpecialists(
         response.map((user) => ({
-          label: `${user.first_name} ${user.last_name} - ${user.specialty?.name || ""
-            }`,
+          label: `${user.first_name} ${user.last_name} - ${
+            user.specialty?.name || ""
+          }`,
           value: user.id,
         }))
       );
@@ -270,23 +271,23 @@ export const InvoicesReport = () => {
           <thead>
             <tr>
               ${Object.keys(headers)
-        .map((header) => `<th>${header}</th>`)
-        .join("")}
+                .map((header) => `<th>${header}</th>`)
+                .join("")}
             </tr>
           </thead>
           <tbody>
             ${dataExport.reduce(
-          (acc: string, child: any) =>
-            acc +
-            `
+              (acc: string, child: any) =>
+                acc +
+                `
               <tr>
                 ${Object.keys(headers)
-              .map((header) => `<td>${child[header]}</td>`)
-              .join("")}
+                  .map((header) => `<td>${child[header]}</td>`)
+                  .join("")}
               </tr>
             `,
-          ""
-        )}
+              ""
+            )}
           </tbody>
         </table>`;
     const configPDF = {
@@ -330,13 +331,18 @@ export const InvoicesReport = () => {
   const generateProceduresTable = (returnData = false) => {
     if (!reportData || reportData.length === 0) {
       return (
-        <div className="flex justify-content-center align-items-center" style={{ height: "200px" }}>
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
           <span>No hay datos disponibles</span>
         </div>
       );
     }
 
-    const users = [...new Set(reportData.map((item: any) => item.billing_user))];
+    const users = [
+      ...new Set(reportData.map((item: any) => item.billing_user)),
+    ];
     const procedures = [
       ...new Set(
         reportData.flatMap(
@@ -355,21 +361,47 @@ export const InvoicesReport = () => {
         const count = reportData
           .filter((item: any) => item.billing_user === user)
           .flatMap((item: any) => item)
-          .filter((item) => item.type == 'entity' && item.billed_procedure.some((p: any) => p.product.name === proc))
-          .reduce((sum, i) => sum + parseFloat(i.billed_procedure.filter(p => p.product.name === proc)[0]?.amount ?? 0), 0);
+          .filter(
+            (item) =>
+              item.sub_type == "entity" &&
+              item.billed_procedure.some((p: any) => p.product.name === proc)
+          )
+          .reduce(
+            (sum, i) =>
+              sum +
+              parseFloat(
+                i.billed_procedure.filter((p) => p.product.name === proc)[0]
+                  ?.amount ?? 0
+              ),
+            0
+          );
 
         // Segunda métrica: Monto total
         const amount = reportData
           .filter((item: any) => item.billing_user === user)
           .flatMap((item: any) => item)
-          .filter((item) => item.type == 'public' && item.billed_procedure.some((p: any) => p.product.name === proc))
-          .reduce((sum, i) => sum + parseFloat(i.billed_procedure.filter(p => p.product.name === proc)[0]?.amount ?? 0), 0);
+          .filter(
+            (item) =>
+              item.sub_type == "public" &&
+              item.billed_procedure.some((p: any) => p.product.name === proc)
+          )
+          .reduce(
+            (sum, i) =>
+              sum +
+              parseFloat(
+                i.billed_procedure.filter((p) => p.product.name === proc)[0]
+                  ?.amount ?? 0
+              ),
+            0
+          );
 
         // Tercera métrica: Promedio
         const average = reportData
           .filter((item: any) => item.billing_user === user)
           .flatMap((item: any) => item)
-          .filter((item) => item.billed_procedure.some((p: any) => p.product.name === proc))
+          .filter((item) =>
+            item.billed_procedure.some((p: any) => p.product.name === proc)
+          )
           .reduce((sum, p) => sum + parseFloat(p.entity_authorized_amount), 0);
 
         row[`${user}_count`] = count;
@@ -387,16 +419,28 @@ export const InvoicesReport = () => {
     const footerData = {
       procedimiento: "TOTALES",
       isFooter: true,
-      style: { fontWeight: "bold", backgroundColor: "#f8f9fa" }
+      style: { fontWeight: "bold", backgroundColor: "#f8f9fa" },
     };
 
-    users.forEach(user => {
-      footerData[`${user}_count`] = tableRows.reduce((sum, row) => sum + (row[`${user}_count`] || 0), 0);
-      footerData[`${user}_amount`] = tableRows.reduce((sum, row) => sum + (row[`${user}_amount`] || 0), 0);
-      footerData[`${user}_avg`] = tableRows.reduce((sum, row) => sum + (row[`${user}_avg`] || 0), 0);
+    users.forEach((user) => {
+      footerData[`${user}_count`] = tableRows.reduce(
+        (sum, row) => sum + (row[`${user}_count`] || 0),
+        0
+      );
+      footerData[`${user}_amount`] = tableRows.reduce(
+        (sum, row) => sum + (row[`${user}_amount`] || 0),
+        0
+      );
+      footerData[`${user}_avg`] = tableRows.reduce(
+        (sum, row) => sum + (row[`${user}_avg`] || 0),
+        0
+      );
     });
 
-    footerData["total"] = tableRows.reduce((sum, row) => sum + (row.total || 0), 0);
+    footerData["total"] = tableRows.reduce(
+      (sum, row) => sum + (row.total || 0),
+      0
+    );
 
     if (returnData) {
       return [...tableRows, footerData];
@@ -411,34 +455,42 @@ export const InvoicesReport = () => {
         body: (rowData: any) => (
           <span
             style={{
-              fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
-              fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+              fontWeight:
+                rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+              fontSize:
+                rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
             }}
           >
             {rowData.procedimiento}
           </span>
         ),
         footer: "TOTALES",
-        footerStyle: { fontWeight: "bold", textAlign: "left" }
+        footerStyle: { fontWeight: "bold", textAlign: "left" },
       },
-      ...users.flatMap(user => [
+      ...users.flatMap((user) => [
         {
           field: `${user}_count`,
           header: "Copago",
           body: (rowData: any) => (
             <span
               style={{
-                fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
-                fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+                fontWeight:
+                  rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+                fontSize:
+                  rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
               }}
             >
               {rowData[`${user}_count`] || "-"}
             </span>
           ),
-          footer: () => <span style={{ fontWeight: "bold" }}>{footerData[`${user}_count`]}</span>,
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {footerData[`${user}_count`]}
+            </span>
+          ),
           style: createColumnStyle("right"),
           headerStyle: createColumnStyle("right"),
-          footerStyle: { fontWeight: "bold", textAlign: "right" }
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
         },
         {
           field: `${user}_amount`,
@@ -446,17 +498,25 @@ export const InvoicesReport = () => {
           body: (rowData: any) => (
             <span
               style={{
-                fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
-                fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+                fontWeight:
+                  rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+                fontSize:
+                  rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
               }}
             >
-              {rowData[`${user}_amount`] ? formatCurrency(rowData[`${user}_amount`]) : "-"}
+              {rowData[`${user}_amount`]
+                ? formatCurrency(rowData[`${user}_amount`])
+                : "-"}
             </span>
           ),
-          footer: () => <span style={{ fontWeight: "bold" }}>{formatCurrency(footerData[`${user}_amount`])}</span>,
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(footerData[`${user}_amount`])}
+            </span>
+          ),
           style: createColumnStyle("right"),
           headerStyle: createColumnStyle("right"),
-          footerStyle: { fontWeight: "bold", textAlign: "right" }
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
         },
         {
           field: `${user}_avg`,
@@ -464,18 +524,26 @@ export const InvoicesReport = () => {
           body: (rowData: any) => (
             <span
               style={{
-                fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
-                fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+                fontWeight:
+                  rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+                fontSize:
+                  rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
               }}
             >
-              {rowData[`${user}_avg`] ? formatCurrency(rowData[`${user}_avg`]) : "-"}
+              {rowData[`${user}_avg`]
+                ? formatCurrency(rowData[`${user}_avg`])
+                : "-"}
             </span>
           ),
-          footer: () => <span style={{ fontWeight: "bold" }}>{formatCurrency(footerData[`${user}_avg`])}</span>,
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(footerData[`${user}_avg`])}
+            </span>
+          ),
           style: createColumnStyle("right"),
           headerStyle: createColumnStyle("right"),
-          footerStyle: { fontWeight: "bold", textAlign: "right" }
-        }
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
       ]),
       {
         field: "total",
@@ -483,17 +551,23 @@ export const InvoicesReport = () => {
         body: (rowData: any) => (
           <span
             style={{
-              fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
-              fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+              fontWeight:
+                rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+              fontSize:
+                rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
             }}
           >
             {formatCurrency(rowData.total)}
           </span>
         ),
-        footer: () => <span style={{ fontWeight: "bold" }}>{formatCurrency(footerData.total)}</span>,
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(footerData.total)}
+          </span>
+        ),
         style: createColumnStyle("right"),
         headerStyle: createColumnStyle("right"),
-        footerStyle: { fontWeight: "bold", textAlign: "right" }
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
       },
     ];
 
@@ -502,16 +576,16 @@ export const InvoicesReport = () => {
       <ColumnGroup>
         <Row>
           <Column header="Procedimiento" rowSpan={2} />
-          {users.map(user => (
+          {users.map((user) => (
             <Column key={user} header={user} colSpan={3} />
           ))}
           <Column header="Total General" rowSpan={2} />
         </Row>
         <Row>
-          {users.flatMap(user => [
+          {users.flatMap((user) => [
             <Column key={`${user}_count`} header="Copago" />,
             <Column key={`${user}_amount`} header="Particular" />,
-            <Column key={`${user}_avg`} header="Monto autorizado" />
+            <Column key={`${user}_avg`} header="Monto autorizado" />,
           ])}
         </Row>
       </ColumnGroup>
@@ -559,18 +633,281 @@ export const InvoicesReport = () => {
               </ColumnGroup>
             }
           >
-            {procedureColumns.map((col, i) => (
-              <Column
-                key={i}
-                field={col.field}
-                header={col.header}
-                body={col.body}
-                style={col.style}
-                headerStyle={col.headerStyle}
-                footer={col.footer}
-                footerStyle={col.footerStyle}
-              />
-            ))}
+            {procedureColumns.map((col, i) => {
+              return (
+                <Column
+                  key={i}
+                  field={col.field}
+                  header={col.header}
+                  body={col.body}
+                  style={col.style}
+                  headerStyle={col.headerStyle}
+                  footer={col.footer}
+                  footerStyle={col.footerStyle}
+                />
+              );
+            })}
+          </DataTable>
+        )}
+      </div>
+    );
+  };
+
+  const generateProceduresCountTable = (returnData = false) => {
+    if (!reportData || reportData.length === 0) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <span>No hay datos disponibles</span>
+        </div>
+      );
+    }
+
+    const users = [
+      ...new Set(reportData.map((item: any) => item.billing_user)),
+    ];
+    const procedures = [
+      ...new Set(
+        reportData.flatMap(
+          (item: any) => item.billed_procedure?.map((p) => p.product.name) || []
+        )
+      ),
+    ];
+
+    // Procesar datos para conteos
+    const tableRows = procedures.map((proc: any) => {
+      const row = { procedimiento: proc };
+      let rowTotal = 0;
+
+      users.forEach((user) => {
+
+        // Conteo para Particular
+        const countParticular = reportData
+          .filter((item: any) => item.billing_user === user)
+          .flatMap((item: any) => item)
+          .filter(
+            (item) =>
+              item.sub_type == "public" &&
+              item.billed_procedure.some((p: any) => p.product.name === proc)
+          ).length;
+
+        // Conteo para Monto Autorizado
+        const countAutorizado = reportData
+          .filter((item: any) => item.billing_user === user)
+          .flatMap((item: any) => item)
+          .filter((item) =>
+            item.billed_procedure.some((p: any) => p.product.name === proc)
+          ).length;
+
+        row[`${user}_particular`] = countParticular;
+        row[`${user}_autorizado`] = countAutorizado;
+
+        rowTotal +=  countParticular + countAutorizado;
+      });
+
+      row["total"] = rowTotal;
+      return row;
+    });
+
+    // Calcular totales para el footer
+    const footerData = {
+      procedimiento: "TOTALES",
+      isFooter: true,
+      style: { fontWeight: "bold", backgroundColor: "#f8f9fa" },
+    };
+
+    users.forEach((user) => {
+      footerData[`${user}_particular`] = tableRows.reduce(
+        (sum, row) => sum + (row[`${user}_particular`] || 0),
+        0
+      );
+      footerData[`${user}_autorizado`] = tableRows.reduce(
+        (sum, row) => sum + (row[`${user}_autorizado`] || 0),
+        0
+      );
+    });
+
+    footerData["total"] = tableRows.reduce(
+      (sum, row) => sum + (row.total || 0),
+      0
+    );
+
+    if (returnData) {
+      return [...tableRows, footerData];
+    }
+
+    // Crear columnas para la tabla
+    const procedureColumns: TableColumn[] = [
+      {
+        field: "procedimiento",
+        header: "Procedimiento",
+        style: createColumnStyle("left", "200px"),
+        body: (rowData: any) => (
+          <span
+            style={{
+              fontWeight:
+                rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+              fontSize:
+                rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+            }}
+          >
+            {rowData.procedimiento}
+          </span>
+        ),
+        footer: "TOTALES",
+        footerStyle: { fontWeight: "bold", textAlign: "left" },
+      },
+      ...users.flatMap((user) => [
+        {
+          field: `${user}_particular`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight:
+                  rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+                fontSize:
+                  rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${user}_particular`] || "-"}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {footerData[`${user}_particular`]}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+        {
+          field: `${user}_autorizado`,
+          header: "Monto autorizado",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight:
+                  rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+                fontSize:
+                  rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${user}_autorizado`] || "-"}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {footerData[`${user}_autorizado`]}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+      ]),
+      {
+        field: "total",
+        header: "Total General",
+        body: (rowData: any) => (
+          <span
+            style={{
+              fontWeight:
+                rowData.isTotal || rowData.isFooter ? "bold" : "normal",
+              fontSize:
+                rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
+            }}
+          >
+            {rowData.total}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>{footerData.total}</span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
+    ];
+
+    // Crear grupo de encabezados
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Procedimiento" rowSpan={2} />
+          {users.map((user) => (
+            <Column key={user} header={user} colSpan={2} />
+          ))}
+          <Column header="Total General" rowSpan={2} />
+        </Row>
+        <Row>
+          {users.flatMap((user) => [
+            <Column key={`${user}_particular`} header="Particular" />,
+            <Column key={`${user}_autorizado`} header="Monto autorizado" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
+
+    return (
+      <div className="card">
+        {tableLoading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{ height: "200px", marginLeft: "800px" }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <DataTable
+            headerColumnGroup={headerGroup}
+            value={tableRows}
+            loading={tableLoading}
+            scrollable
+            scrollHeight="flex"
+            showGridlines
+            stripedRows
+            size="small"
+            tableStyle={{ minWidth: "100%" }}
+            className="p-datatable-sm"
+            paginator
+            rows={rows}
+            first={first}
+            onPage={onPageChange}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            footerColumnGroup={
+              <ColumnGroup>
+                <Row>
+                  {procedureColumns.map((col, index) => (
+                    <Column
+                      key={`footer-${index}`}
+                      footer={col.footer}
+                      footerStyle={col.footerStyle}
+                    />
+                  ))}
+                </Row>
+              </ColumnGroup>
+            }
+          >
+            {procedureColumns.map((col, i) => {
+              return (
+                <Column
+                  key={i}
+                  field={col.field}
+                  header={col.header}
+                  body={col.body}
+                  style={col.style}
+                  headerStyle={col.headerStyle}
+                  footer={col.footer}
+                  footerStyle={col.footerStyle}
+                />
+              );
+            })}
           </DataTable>
         )}
       </div>
@@ -578,345 +915,488 @@ export const InvoicesReport = () => {
   };
 
   const generateEntitiesTable = (isReturnData = false) => {
-    if (
-      !reportData ||
-      reportData.length === 0 ||
-      !reportData.some((item) => item.insurance)
-    ) {
-      return (
+  if (
+    !reportData ||
+    reportData.length === 0 ||
+    !reportData.some((item) => item.insurance)
+  ) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "200px" }}
+      >
+        <span>No hay datos disponibles</span>
+      </div>
+    );
+  }
+
+  const filteredData = reportData.filter((item: any) => item.insurance);
+  const entities = new Set();
+  const billingUsers = new Set();
+  
+  // Objeto para agrupar por tipo (copago o autorizado)
+  const groupedData: Record<string, Record<string, {copago: number, autorizado: number}>> = {};
+  const totals: Record<string, {copago: number, autorizado: number}> = {};
+
+  filteredData.forEach((entry) => {
+    const { billing_user, insurance, billed_procedure, sub_type }: any = entry;
+    const insuranceName = insurance?.name;
+
+    entities.add(insuranceName);
+    billingUsers.add(billing_user);
+
+    if (!groupedData[insuranceName]) {
+      groupedData[insuranceName] = {};
+    }
+
+    if (!groupedData[insuranceName][billing_user]) {
+      groupedData[insuranceName][billing_user] = { copago: 0, autorizado: 0 };
+    }
+
+    if (!totals[billing_user]) {
+      totals[billing_user] = { copago: 0, autorizado: 0 };
+    }
+
+    billed_procedure?.forEach((proc: any) => {
+      const amount = parseFloat(proc.amount);
+      
+      if (sub_type === "entity") {
+        groupedData[insuranceName][billing_user].copago += amount;
+        totals[billing_user].copago += amount;
+      } else {
+        groupedData[insuranceName][billing_user].autorizado += amount;
+        totals[billing_user].autorizado += amount;
+      }
+    });
+  });
+
+  const tableData = Array.from(entities).map((entity: any) => {
+    const row: Record<string, any> = { entity };
+    let rowTotalCopago = 0;
+    let rowTotalAutorizado = 0;
+
+    Array.from(billingUsers).forEach((user: any) => {
+      row[`${user}_copago`] = groupedData[entity][user].copago || 0;
+      row[`${user}_autorizado`] = groupedData[entity][user].autorizado || 0;
+      
+      rowTotalCopago += row[`${user}_copago`];
+      rowTotalAutorizado += row[`${user}_autorizado`];
+    });
+
+    row["total_copago"] = rowTotalCopago;
+    row["total_autorizado"] = rowTotalAutorizado;
+    row["total_general"] = rowTotalCopago + rowTotalAutorizado;
+    return row;
+  });
+
+  // Crear columnas para la tabla
+  const entityColumns: TableColumn[] = [
+    {
+      field: "entity",
+      header: "Entidad",
+      style: createColumnStyle("left", "200px"),
+      body: (rowData: any) => (
+        <span
+          style={{
+            fontWeight: rowData.isTotal ? "bold" : "normal",
+            fontSize: rowData.isTotal ? "1.1em" : "inherit",
+          }}
+        >
+          {rowData.entity}
+        </span>
+      ),
+      footer: "TOTALES",
+      footerStyle: { fontWeight: "bold", textAlign: "left" },
+    },
+    ...Array.from(billingUsers).flatMap((user: any) => [
+      {
+        field: `${user}_copago`,
+        header: "Copago",
+        body: (rowData: any) => (
+          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+            {formatCurrency(rowData[`${user}_copago`])}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(totals[user].copago)}
+          </span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
+      {
+        field: `${user}_autorizado`,
+        header: "Monto autorizado",
+        body: (rowData: any) => (
+          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+            {formatCurrency(rowData[`${user}_autorizado`])}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(totals[user].autorizado)}
+          </span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
+    ]),
+    {
+      field: "total_general",
+      header: "Total General",
+      body: (rowData: any) => (
+        <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+          {formatCurrency(rowData.total_general)}
+        </span>
+      ),
+      footer: () => {
+        const grandTotal = Object.values(totals).reduce(
+          (acc, { copago, autorizado }) => acc + copago + autorizado,
+          0
+        );
+        return (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(grandTotal)}
+          </span>
+        );
+      },
+      style: createColumnStyle("right"),
+      headerStyle: createColumnStyle("right"),
+      footerStyle: { fontWeight: "bold", textAlign: "right" },
+    },
+  ];
+
+  // Crear grupo de encabezados
+  const headerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column header="Entidad" rowSpan={2} />
+        {Array.from(billingUsers).map((user) => (
+          <Column key={user} header={user} colSpan={2} />
+        ))}
+        <Column header="Total General" rowSpan={2} />
+      </Row>
+      <Row>
+        {Array.from(billingUsers).flatMap((user) => [
+          <Column key={`${user}_copago`} header="Copago" />,
+          <Column key={`${user}_autorizado`} header="Monto autorizado" />,
+        ])}
+      </Row>
+    </ColumnGroup>
+  );
+
+  return (
+    <div className="card">
+      {tableLoading ? (
         <div
           className="flex justify-content-center align-items-center"
           style={{ height: "200px" }}
         >
-          <span>No hay datos disponibles</span>
+          <ProgressSpinner />
         </div>
-      );
-    }
-    const filteredData = reportData.filter((item: any) => item.insurance);
-    const entities = new Set();
-    const billingUsers = new Set();
-    const groupedData: Record<string, Record<string, number>> = {};
-    const totals: Record<string, number> = {};
+      ) : (
+        <DataTable
+          headerColumnGroup={headerGroup}
+          value={tableData}
+          loading={tableLoading}
+          scrollable
+          scrollHeight="flex"
+          showGridlines
+          stripedRows
+          size="small"
+          tableStyle={{ minWidth: "100%" }}
+          className="p-datatable-sm"
+          paginator
+          rows={rows}
+          first={first}
+          onPage={onPageChange}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+          footerColumnGroup={
+            <ColumnGroup>
+              <Row>
+                {entityColumns.map((col, index) => (
+                  <Column
+                    key={`footer-${index}`}
+                    footer={col.footer}
+                    footerStyle={col.footerStyle}
+                  />
+                ))}
+              </Row>
+            </ColumnGroup>
+          }
+        >
+          {entityColumns.map((col, i) => (
+            <Column
+              key={i}
+              field={col.field}
+              header={col.header}
+              body={col.body}
+              style={col.style}
+              headerStyle={col.headerStyle}
+              footer={col.footer}
+              footerStyle={col.footerStyle}
+            />
+          ))}
+        </DataTable>
+      )}
+    </div>
+  );
+};
 
-    filteredData.forEach((entry) => {
-      const { billing_user, insurance, billed_procedure }: any = entry;
-      const insuranceName = insurance?.name;
+  const generatePaymentsTable = (isReturnData = false) => {
+  if (
+    !reportData ||
+    reportData.length === 0 ||
+    !reportData.some(
+      (item) => item.payment_methods && item.payment_methods.length > 0
+    )
+  ) {
+    return (
+      <div
+        className="flex justify-content-center align-items-center"
+        style={{ height: "200px" }}
+      >
+        <span>No hay datos disponibles</span>
+      </div>
+    );
+  }
 
-      entities.add(insuranceName);
-      billingUsers.add(billing_user);
+  const paymentMethods = new Set();
+  const billingUsers = new Set();
+  
+  // Objeto para agrupar por tipo (copago, particular o autorizado)
+  const groupedData: Record<string, Record<string, {copago: number, particular: number, autorizado: number}>> = {};
+  const totals: Record<string, {copago: number, particular: number, autorizado: number}> = {};
 
-      if (!groupedData[insuranceName]) {
-        groupedData[insuranceName] = {};
+  reportData.forEach((entry) => {
+    const { billing_user, payment_methods, sub_type }: any = entry;
+    billingUsers.add(billing_user);
+
+    payment_methods?.forEach((pm: any) => {
+      const method = pm.payment_method.method;
+      const amount = parseFloat(pm.amount);
+
+      paymentMethods.add(method);
+
+      if (!groupedData[method]) {
+        groupedData[method] = {};
       }
 
-      if (!groupedData[insuranceName][billing_user]) {
-        groupedData[insuranceName][billing_user] = 0;
+      if (!groupedData[method][billing_user]) {
+        groupedData[method][billing_user] = { copago: 0, particular: 0, autorizado: 0 };
       }
 
       if (!totals[billing_user]) {
-        totals[billing_user] = 0;
+        totals[billing_user] = { copago: 0, particular: 0, autorizado: 0 };
       }
 
-      if (!groupedData[insuranceName]["total"]) {
-        groupedData[insuranceName]["total"] = 0;
+      // Clasificar por tipo de pago
+      if (sub_type === "entity") {
+        groupedData[method][billing_user].copago += amount;
+        totals[billing_user].copago += amount;
+      } else if (sub_type === "public") {
+        groupedData[method][billing_user].particular += amount;
+        totals[billing_user].particular += amount;
+      } else {
+        groupedData[method][billing_user].autorizado += amount;
+        totals[billing_user].autorizado += amount;
       }
-
-      billed_procedure?.forEach((proc: any) => {
-        const amount = parseFloat(proc.amount);
-        groupedData[insuranceName][billing_user] += amount;
-        totals[billing_user] += amount;
-        groupedData[insuranceName]["total"] += amount;
-      });
     });
+  });
 
-    const tableData = Array.from(entities).map((entity: any) => {
-      const row: Record<string, any> = { entity };
-      let rowTotal = 0;
-
-      Array.from(billingUsers).forEach((user: any) => {
-        row[user] = groupedData[entity][user] || 0;
-        rowTotal += row[user];
-      });
-
-      row["total"] = rowTotal;
-      return row;
-    });
-
-    // Add totals row
-    const totalsRow: Record<string, any> = {
-      entity: "Total",
-      isTotal: true,
-      style: { fontWeight: "bold", fontSize: "1.1em" },
-    };
-
-    let grandTotal = 0;
+  const tableData = Array.from(paymentMethods).map((method: any) => {
+    const row: Record<string, any> = { method };
+    let rowTotal = 0;
 
     Array.from(billingUsers).forEach((user: any) => {
-      totalsRow[user] = totals[user] || 0;
-      grandTotal += totalsRow[user];
+      row[`${user}_copago`] = groupedData[method][user].copago || 0;
+      row[`${user}_particular`] = groupedData[method][user].particular || 0;
+      row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
+      
+      rowTotal += row[`${user}_copago`] + row[`${user}_particular`] + row[`${user}_autorizado`];
     });
 
-    totalsRow["total"] = grandTotal;
-    tableData.push(totalsRow);
+    row["total"] = rowTotal;
+    return row;
+  });
 
-    if (isReturnData) return tableData;
+  // Calcular total general
+  const grandTotal = tableData.reduce((sum, row) => sum + (row.total || 0), 0);
 
-    const entityColumns: TableColumn[] = [
+  if (isReturnData) {
+    return tableData;
+  }
+
+  // Crear columnas para la tabla
+  const paymentColumns: TableColumn[] = [
+    {
+      field: "method",
+      header: "Método de Pago",
+      style: createColumnStyle("left", "200px"),
+      body: (rowData: any) => (
+        <span style={{ fontWeight: "normal" }}>
+          {rowData.method}
+        </span>
+      ),
+      footer: "TOTALES",
+      footerStyle: { fontWeight: "bold", textAlign: "left" },
+    },
+    ...Array.from(billingUsers).flatMap((user: any) => [
       {
-        field: "entity",
-        header: "Entidad",
-        style: createColumnStyle("left", "200px"),
+        field: `${user}_copago`,
+        header: "Copago",
         body: (rowData: any) => (
-          <span
-            style={{
-              fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1.1em" : "inherit",
-            }}
-          >
-            {rowData.entity}
+          <span style={{ fontWeight: "normal" }}>
+            {formatCurrency(rowData[`${user}_copago`])}
           </span>
         ),
-      },
-      ...Array.from(billingUsers).map((user: any) => ({
-        field: user,
-        header: user,
-        body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData[user])}
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(totals[user].copago)}
           </span>
         ),
         style: createColumnStyle("right"),
         headerStyle: createColumnStyle("right"),
-      })),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
       {
-        field: "total",
-        header: "Total",
+        field: `${user}_particular`,
+        header: "Particular",
         body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData.total)}
+          <span style={{ fontWeight: "normal" }}>
+            {formatCurrency(rowData[`${user}_particular`])}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(totals[user].particular)}
           </span>
         ),
         style: createColumnStyle("right"),
         headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
       },
-    ];
+      {
+        field: `${user}_autorizado`,
+        header: "Monto autorizado",
+        body: (rowData: any) => (
+          <span style={{ fontWeight: "normal" }}>
+            {formatCurrency(rowData[`${user}_autorizado`])}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(totals[user].autorizado)}
+          </span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
+    ]),
+    {
+      field: "total",
+      header: "Total General",
+      body: (rowData: any) => (
+        <span style={{ fontWeight: "normal" }}>
+          {formatCurrency(rowData.total)}
+        </span>
+      ),
+      footer: () => (
+        <span style={{ fontWeight: "bold" }}>
+          {formatCurrency(grandTotal)}
+        </span>
+      ),
+      style: createColumnStyle("right"),
+      headerStyle: createColumnStyle("right"),
+      footerStyle: { fontWeight: "bold", textAlign: "right" },
+    },
+  ];
 
-    return (
-      <div className="card">
-        {tableLoading ? (
-          <div
-            className="flex justify-content-center align-items-center"
-            style={{ height: "200px" }}
-          >
-            <ProgressSpinner />
-          </div>
-        ) : (
-          <DataTable
-            value={tableData}
-            loading={tableLoading}
-            scrollable
-            scrollHeight="flex"
-            showGridlines
-            stripedRows
-            size="small"
-            tableStyle={{ minWidth: "100%" }}
-            className="p-datatable-sm"
-            paginator
-            rows={rows}
-            first={first}
-            onPage={onPageChange}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-          >
-            {entityColumns.map((col, i) => (
-              <Column
-                key={i}
-                field={col.field}
-                header={col.header}
-                body={col.body}
-                style={col.style}
-                headerStyle={col.headerStyle}
-              />
-            ))}
-          </DataTable>
-        )}
-      </div>
-    );
-  };
+  // Crear grupo de encabezados
+  const headerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column header="Método de Pago" rowSpan={2} />
+        {Array.from(billingUsers).map((user) => (
+          <Column key={user} header={user} colSpan={3} />
+        ))}
+        <Column header="Total General" rowSpan={2} />
+      </Row>
+      <Row>
+        {Array.from(billingUsers).flatMap((user) => [
+          <Column key={`${user}_copago`} header="Copago" />,
+          <Column key={`${user}_particular`} header="Particular" />,
+          <Column key={`${user}_autorizado`} header="Monto autorizado" />,
+        ])}
+      </Row>
+    </ColumnGroup>
+  );
 
-  const generatePaymentsTable = (isReturnData = false) => {
-    if (
-      !reportData ||
-      reportData.length === 0 ||
-      !reportData.some(
-        (item) => item.payment_methods && item.payment_methods.length > 0
-      )
-    ) {
-      return (
+  return (
+    <div className="card">
+      {tableLoading ? (
         <div
           className="flex justify-content-center align-items-center"
           style={{ height: "200px" }}
         >
-          <span>No hay datos disponibles</span>
+          <ProgressSpinner />
         </div>
-      );
-    }
-
-    const paymentMethods = new Set();
-    const billingUsers = new Set();
-    const groupedData: Record<string, Record<string, number>> = {};
-    const totals: Record<string, number> = {};
-
-    reportData.forEach((entry) => {
-      const { billing_user, payment_methods }: any = entry;
-      billingUsers.add(billing_user);
-
-      payment_methods?.forEach((pm: any) => {
-        const method = pm.payment_method.method;
-        const amount = parseFloat(pm.amount);
-
-        paymentMethods.add(method);
-
-        if (!groupedData[method]) {
-          groupedData[method] = {};
-        }
-
-        if (!groupedData[method][billing_user]) {
-          groupedData[method][billing_user] = 0;
-        }
-
-        if (!totals[billing_user]) {
-          totals[billing_user] = 0;
-        }
-
-        if (!groupedData[method]["total"]) {
-          groupedData[method]["total"] = 0;
-        }
-
-        groupedData[method][billing_user] += amount;
-        totals[billing_user] += amount;
-        groupedData[method]["total"] += amount;
-      });
-    });
-
-    const tableData = Array.from(paymentMethods).map((method: any) => {
-      const row: Record<string, any> = { method };
-      let rowTotal = 0;
-
-      Array.from(billingUsers).forEach((user: any) => {
-        row[user] = groupedData[method][user] || 0;
-        rowTotal += row[user];
-      });
-
-      row["total"] = rowTotal;
-      return row;
-    });
-
-    // Add totals row
-    const totalsRow: Record<string, any> = {
-      method: "Total",
-      isTotal: true,
-      style: { fontWeight: "bold", fontSize: "1.1em" },
-    };
-
-    let grandTotal = 0;
-
-    Array.from(billingUsers).forEach((user: any) => {
-      totalsRow[user] = totals[user] || 0;
-      grandTotal += totalsRow[user];
-    });
-
-    totalsRow["total"] = grandTotal;
-    tableData.push(totalsRow);
-
-    if (isReturnData) {
-      return tableData;
-    }
-
-    const paymentColumns: TableColumn[] = [
-      {
-        field: "method",
-        header: "Método de Pago",
-        style: createColumnStyle("left", "200px"),
-        body: (rowData: any) => (
-          <span
-            style={{
-              fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1.1em" : "inherit",
-            }}
-          >
-            {rowData.method}
-          </span>
-        ),
-      },
-      ...Array.from(billingUsers).map((user: any) => ({
-        field: user,
-        header: user,
-        body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData[user])}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-      })),
-      {
-        field: "total",
-        header: "Total",
-        body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData.total)}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-      },
-    ];
-
-    return (
-      <div className="card">
-        {tableLoading ? (
-          <div
-            className="flex justify-content-center align-items-center"
-            style={{ height: "200px", marginRight: "400px" }}
-          >
-            <ProgressSpinner />
-          </div>
-        ) : (
-          <DataTable
-            value={tableData}
-            loading={tableLoading}
-            scrollable
-            scrollHeight="flex"
-            showGridlines
-            stripedRows
-            size="small"
-            tableStyle={{ minWidth: "100%" }}
-            className="p-datatable-sm"
-            paginator
-            rows={rows}
-            first={first}
-            onPage={onPageChange}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-          >
-            {paymentColumns.map((col, i) => (
-              <Column
-                key={i}
-                field={col.field}
-                header={col.header}
-                body={col.body}
-                style={col.style}
-                headerStyle={col.headerStyle}
-              />
-            ))}
-          </DataTable>
-        )}
-      </div>
-    );
-  };
+      ) : (
+        <DataTable
+          headerColumnGroup={headerGroup}
+          value={tableData}
+          loading={tableLoading}
+          scrollable
+          scrollHeight="flex"
+          showGridlines
+          stripedRows
+          size="small"
+          tableStyle={{ minWidth: "100%" }}
+          className="p-datatable-sm"
+          paginator
+          rows={rows}
+          first={first}
+          onPage={onPageChange}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+          footerColumnGroup={
+            <ColumnGroup>
+              <Row>
+                {paymentColumns.map((col, index) => (
+                  <Column
+                    key={`footer-${index}`}
+                    footer={col.footer}
+                    footerStyle={col.footerStyle}
+                  />
+                ))}
+              </Row>
+            </ColumnGroup>
+          }
+        >
+          {paymentColumns.map((col, i) => (
+            <Column
+              key={i}
+              field={col.field}
+              header={col.header}
+              body={col.body}
+              style={col.style}
+              headerStyle={col.headerStyle}
+              footer={col.footer}
+              footerStyle={col.footerStyle}
+            />
+          ))}
+        </DataTable>
+      )}
+    </div>
+  );
+};
 
   return (
     <main className="main" id="top">
@@ -946,8 +1426,9 @@ export const InvoicesReport = () => {
                   >
                     <li className="nav-item">
                       <a
-                        className={`nav-link ${activeTab === "range-dates-tab" ? "active" : ""
-                          }`}
+                        className={`nav-link ${
+                          activeTab === "range-dates-tab" ? "active" : ""
+                        }`}
                         id="range-dates-tab"
                         onClick={() => setActiveTab("range-dates-tab")}
                         role="tab"
@@ -1099,19 +1580,33 @@ export const InvoicesReport = () => {
                   >
                     <li className="nav-item">
                       <a
-                        className={`nav-link ${activeTab === "procedures-tab" ? "active" : ""
-                          }`}
+                        className={`nav-link ${
+                          activeTab === "procedures-tab" ? "active" : ""
+                        }`}
                         id="procedures-tab"
                         onClick={() => setActiveTab("procedures-tab")}
                         role="tab"
                       >
-                        Procedimientos
+                        Procedimientos $
                       </a>
                     </li>
                     <li className="nav-item">
                       <a
-                        className={`nav-link ${activeTab === "entities-tab" ? "active" : ""
-                          }`}
+                        className={`nav-link ${
+                          activeTab === "procedures-count-tab" ? "active" : ""
+                        }`}
+                        id="procedures-count-tab"
+                        onClick={() => setActiveTab("procedures-count-tab")}
+                        role="tab"
+                      >
+                        Procedimientos #
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={`nav-link ${
+                          activeTab === "entities-tab" ? "active" : ""
+                        }`}
                         id="entities-tab"
                         onClick={() => setActiveTab("entities-tab")}
                         role="tab"
@@ -1121,8 +1616,9 @@ export const InvoicesReport = () => {
                     </li>
                     <li className="nav-item">
                       <a
-                        className={`nav-link ${activeTab === "paymentsMethods-tab" ? "active" : ""
-                          }`}
+                        className={`nav-link ${
+                          activeTab === "paymentsMethods-tab" ? "active" : ""
+                        }`}
                         id="paymentsMethods-tab"
                         onClick={() => setActiveTab("paymentsMethods-tab")}
                         role="tab"
@@ -1137,8 +1633,9 @@ export const InvoicesReport = () => {
                     id="myTabContent"
                   >
                     <div
-                      className={`tab-pane fade ${activeTab === "procedures-tab" ? "show active" : ""
-                        }`}
+                      className={`tab-pane fade ${
+                        activeTab === "procedures-tab" ? "show active" : ""
+                      }`}
                       id="tab-procedures"
                       role="tabpanel"
                       aria-labelledby="procedures-tab"
@@ -1150,7 +1647,9 @@ export const InvoicesReport = () => {
                           disabled={!reportData || reportData.length === 0}
                         />
                         <ExportButtonPDF
-                          onClick={() => exportToProceduresPDF("procedures-tab")}
+                          onClick={() =>
+                            exportToProceduresPDF("procedures-tab")
+                          }
                           loading={exporting.procedures}
                           disabled={!reportData || reportData.length === 0}
                         />
@@ -1158,8 +1657,40 @@ export const InvoicesReport = () => {
                       {generateProceduresTable()}
                     </div>
                     <div
-                      className={`tab-pane fade ${activeTab === "entities-tab" ? "show active" : ""
-                        }`}
+                      className={`tab-pane fade ${
+                        activeTab === "procedures-count-tab"
+                          ? "show active"
+                          : ""
+                      }`}
+                      id="tab-procedures-count"
+                      role="tabpanel"
+                      aria-labelledby="procedures-count-tab"
+                    >
+                      <div className="d-flex justify-content-end gap-2 mb-2">
+                        {/* <ExportButtonExcel
+                          onClick={() =>
+                            exportToExcel(
+                              generateProceduresCountTable(true),
+                              "procedimientos-conteo"
+                            )
+                          }
+                          loading={exporting.procedures}
+                          disabled={!reportData || reportData.length === 0}
+                        /> */}
+                        <ExportButtonPDF
+                          onClick={() =>
+                            exportToProceduresPDF("procedures-count-tab")
+                          }
+                          loading={exporting.procedures}
+                          disabled={!reportData || reportData.length === 0}
+                        />
+                      </div>
+                      {generateProceduresCountTable()}
+                    </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "entities-tab" ? "show active" : ""
+                      }`}
                       id="tab-entities"
                       role="tabpanel"
                       aria-labelledby="entities-tab"
@@ -1187,8 +1718,9 @@ export const InvoicesReport = () => {
                       {generateEntitiesTable()}
                     </div>
                     <div
-                      className={`tab-pane fade ${activeTab === "paymentsMethods-tab" ? "show active" : ""
-                        }`}
+                      className={`tab-pane fade ${
+                        activeTab === "paymentsMethods-tab" ? "show active" : ""
+                      }`}
                       id="tab-paymentsMethods"
                       role="tabpanel"
                       aria-labelledby="paymentsMethods-tab"
@@ -1208,7 +1740,9 @@ export const InvoicesReport = () => {
                           }
                         />
                         <ExportButtonPDF
-                          onClick={() => exportToProceduresPDF("payments-methods-tab")}
+                          onClick={() =>
+                            exportToProceduresPDF("payments-methods-tab")
+                          }
                           loading={exporting.payments}
                           disabled={
                             !reportData ||

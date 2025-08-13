@@ -114,9 +114,8 @@ export const SalesInvoices = () => {
     };
     try {
       const response = await invoiceService.filterInvoices(cleanJsonObject(filterInvoiceParams));
-      console.log("facturas", response.data);
       setFacturas(response.data.map(invoice => mapInvoiceResponseToUI(invoice)));
-      setTotalRecords(response.meta?.total || 0);
+      setTotalRecords(response.total);
     } catch (error) {
       console.error("Error al obtener facturas:", error);
     } finally {
@@ -813,9 +812,12 @@ export const SalesInvoices = () => {
     style: styles.card
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: facturas,
+    lazy: true,
     paginator: true,
-    rows: 10,
-    onPage: handlePageChange,
+    first: lazyState.first,
+    rows: lazyState.rows,
+    totalRecords: totalRecords,
+    onPage: onPage,
     rowsPerPageOptions: [5, 10, 25, 50],
     loading: loading,
     className: "p-datatable-striped p-datatable-gridlines",

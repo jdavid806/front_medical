@@ -1,0 +1,535 @@
+import React, { useState } from "react";
+import { Button } from "primereact/button";
+import { Card } from "primereact/card";
+import { Dropdown } from "primereact/dropdown";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { InputNumber } from "primereact/inputnumber";
+import { Tag } from "primereact/tag";
+import { Divider } from "primereact/divider";
+import { Dialog } from "primereact/dialog";
+import { calculateTotal, calculatePaid, calculateChange, validateProductsStep, validatePaymentStep } from "../utils/helpers.js";
+import { paymentMethodOptions } from "../utils/constants.js";
+const ProductsPaymentStep = ({
+  formData,
+  updateFormData,
+  addPayment,
+  removePayment,
+  nextStep,
+  prevStep,
+  toast
+}) => {
+  const [showChangeField, setShowChangeField] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [modalAmount, setModalAmount] = useState(0);
+  const [modalChange, setModalChange] = useState(0);
+  const total = calculateTotal(formData.products);
+  const paid = calculatePaid(formData.payments);
+  const change = calculateChange(total, paid);
+  const remaining = Math.max(0, total - paid);
+  const getPaymentMethodLabel = value => {
+    return paymentMethodOptions.find(m => m.value === value)?.label || value;
+  };
+  const getPaymentMethodIcon = method => {
+    const methodLabel = paymentMethodOptions.find(m => m.value === method)?.label || method;
+    switch (methodLabel) {
+      case 'Efectivo':
+        return 'fa-money-bill-wave';
+      case 'Tarjeta de Crédito':
+        return 'fa-credit-card';
+      case 'Transferencia Bancaria':
+        return 'fa-bank';
+      case 'Cheque':
+        return 'fa-file-invoice-dollar';
+      default:
+        return 'fa-wallet';
+    }
+  };
+  const handleAddProduct = product => {
+    // Lógica para agregar producto
+  };
+  const handleRemoveProduct = id => {
+    updateFormData("products", formData.products.filter(p => p.id !== id));
+  };
+  const handlePaymentChange = (field, value) => {
+    updateFormData("currentPayment", {
+      [field]: value
+    });
+    if (field === 'method') {
+      setShowChangeField(value === 'CASH');
+    }
+  };
+  const handleAddPayment = () => {
+    const {
+      method,
+      amount
+    } = formData.currentPayment;
+    if (!method || !amount) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Método de pago y monto son requeridos",
+        life: 3000
+      });
+      return;
+    }
+    const paymentAmount = parseFloat(amount);
+    if (isNaN(paymentAmount)) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El monto debe ser un número válido",
+        life: 3000
+      });
+      return;
+    }
+    addPayment({
+      method: method,
+      amount: paymentAmount,
+      authorizationNumber: formData.currentPayment.authorizationNumber,
+      notes: formData.currentPayment.notes
+    });
+    updateFormData("currentPayment", {
+      method: "",
+      amount: "",
+      authorizationNumber: "",
+      notes: ""
+    });
+    setShowChangeField(false);
+  };
+  const handleNext = () => {
+    const total = calculateTotal(formData.products);
+    if (validateProductsStep(formData.products, toast) && validatePaymentStep(formData.payments, total, toast)) {
+      nextStep();
+    }
+  };
+  const formatCurrency = value => {
+    return new Intl.NumberFormat('es-DO', {
+      style: 'currency',
+      currency: 'DOP',
+      minimumFractionDigits: 2
+    }).format(value);
+  };
+  const openPaymentModal = () => {
+    setShowPaymentModal(true);
+    setModalAmount(remaining);
+    setModalChange(0);
+  };
+  const calculateModalChange = amount => {
+    setModalAmount(amount);
+    setModalChange(Math.max(0, amount - remaining));
+  };
+  const applyModalPayment = () => {
+    updateFormData("currentPayment", {
+      ...formData.currentPayment,
+      method: "CASH",
+      amount: modalAmount
+    });
+    setShowPaymentModal(false);
+    setShowChangeField(true);
+  };
+  const productPriceBodyTemplate = rowData => {
+    return formatCurrency(rowData.price);
+  };
+  const productTaxBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement(Tag, {
+      value: `${rowData.tax}%`,
+      severity: "info"
+    });
+  };
+  const productTotalBodyTemplate = rowData => {
+    const total = rowData.price * rowData.quantity * (1 + rowData.tax / 100);
+    return /*#__PURE__*/React.createElement("strong", null, formatCurrency(total));
+  };
+  const paymentAmountBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, formatCurrency(rowData.amount));
+  };
+  const paymentMethodBodyTemplate = rowData => {
+    const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center gap-2"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: `fas ${getPaymentMethodIcon(rowData.method)} mr-2`
+    }), /*#__PURE__*/React.createElement("span", null, methodLabel));
+  };
+  const actionBodyTemplate = (rowData, isProduct) => {
+    return /*#__PURE__*/React.createElement(Button, {
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-trash"
+      }),
+      className: "p-button-danger p-button-rounded p-button-outlined p-button-sm",
+      onClick: () => isProduct ? handleRemoveProduct(rowData.id) : removePayment(rowData.id),
+      tooltip: "Eliminar",
+      tooltipOptions: {
+        position: "top"
+      }
+    });
+  };
+  const paymentModalFooter = /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-times"
+    }),
+    onClick: () => setShowPaymentModal(false),
+    className: "p-button-text"
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Aplicar Pago",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-check"
+    }),
+    onClick: applyModalPayment,
+    disabled: modalAmount <= 0,
+    className: "p-button-success"
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-8"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-shopping-cart mr-2"
+    }), " Lista de Productos"),
+    className: "mb-4 shadow-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-column md:flex-row gap-3 mb-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 mb-4"
+  }, /*#__PURE__*/React.createElement(Dropdown, {
+    placeholder: "Seleccione un producto",
+    options: [{
+      label: "Consulta Endocrinologia",
+      value: "Consulta Endocrinologia"
+    }],
+    className: "w-full",
+    panelClassName: "shadow-3"
+  })), /*#__PURE__*/React.createElement(Button, {
+    label: "Agregar Producto",
+    className: "p-button-secondary p-button-sm mb-2",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus-square"
+    }),
+    onClick: () => handleAddProduct({})
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "border-round border-1 surface-border"
+  }, /*#__PURE__*/React.createElement(DataTable, {
+    value: formData.products,
+    className: "p-datatable-sm p-datatable-gridlines",
+    scrollable: true,
+    scrollHeight: "flex",
+    emptyMessage: "No se han agregado productos",
+    stripedRows: true
+  }, /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "#",
+    headerStyle: {
+      width: "50px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "description",
+    header: "Descripci\xF3n",
+    headerStyle: {
+      minWidth: "200px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "price",
+    header: "Precio Unitario",
+    body: productPriceBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "quantity",
+    header: "Cantidad"
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "tax",
+    header: "Impuesto",
+    body: productTaxBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "total",
+    header: "Total",
+    body: productTotalBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "Actions",
+    header: "Acciones",
+    body: rowData => actionBodyTemplate(rowData, true),
+    headerStyle: {
+      width: "80px"
+    }
+  }))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-end align-items-center gap-3 mt-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-lg"
+  }, "Total General:"), /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-bold text-primary"
+  }, formatCurrency(total))))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-4"
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-credit-card mr-2"
+    }), " M\xE9todos de Pago"),
+    className: "mb-4 shadow-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-6"
+  }, /*#__PURE__*/React.createElement(Card, {
+    className: "mb-3 border-left-3 border-green-500 bg-green-50"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-column p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center gap-2 mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-check-circle text-green-500"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-sm font-medium"
+  }, "Total Pagado")), /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-bold text-green-700"
+  }, formatCurrency(paid))))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-6"
+  }, /*#__PURE__*/React.createElement(Card, {
+    className: "mb-3 border-left-3 border-blue-500 bg-blue-50"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex flex-column p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center gap-2 mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-exclamation-circle text-blue-500"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-sm font-medium"
+  }, "Saldo Pendiente")), /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-bold text-blue-700"
+  }, formatCurrency(remaining)))))), change > 0 && /*#__PURE__*/React.createElement(Card, {
+    className: "mb-4 border-left-3 border-teal-500 bg-teal-50"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-between align-items-center p-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center gap-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-money-bill-wave text-teal-500"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-lg font-medium"
+  }, "Cambio a devolver")), /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-bold text-teal-700"
+  }, formatCurrency(change)))), /*#__PURE__*/React.createElement("div", {
+    className: "border-round border-1 surface-border mb-4"
+  }, /*#__PURE__*/React.createElement(DataTable, {
+    value: formData.payments,
+    className: "p-datatable-sm p-datatable-gridlines",
+    emptyMessage: /*#__PURE__*/React.createElement("div", {
+      className: "text-center p-4"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-info-circle mr-2"
+    }), "No se han agregado m\xE9todos de pago"),
+    stripedRows: true
+  }, /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "#",
+    headerStyle: {
+      width: "50px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "method",
+    header: "M\xE9todo",
+    body: paymentMethodBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "amount",
+    header: "Monto",
+    body: paymentAmountBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    header: "Acciones",
+    body: rowData => actionBodyTemplate(rowData, false),
+    headerStyle: {
+      width: "80px"
+    }
+  }))), /*#__PURE__*/React.createElement(Dialog, {
+    header: /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center gap-2"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-calculator"
+    }), /*#__PURE__*/React.createElement("span", null, "Calcular Pago en Efectivo")),
+    visible: showPaymentModal,
+    style: {
+      width: '450px'
+    },
+    footer: paymentModalFooter,
+    onHide: () => setShowPaymentModal(false),
+    breakpoints: {
+      '960px': '75vw',
+      '640px': '90vw'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-fluid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "remainingAmount",
+    className: "block font-medium mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-receipt mr-2"
+  }), "Total Pendiente"), /*#__PURE__*/React.createElement(InputNumber, {
+    id: "remainingAmount",
+    value: remaining,
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    readOnly: true,
+    className: "w-full",
+    inputClassName: "font-bold"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mt-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "cashAmount",
+    className: "block font-medium mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-hand-holding-usd mr-2"
+  }), "Monto Recibido"), /*#__PURE__*/React.createElement(InputNumber, {
+    id: "cashAmount",
+    value: modalAmount,
+    onValueChange: e => calculateModalChange(e.value || 0),
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    className: "w-full",
+    inputClassName: "font-bold"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mt-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "changeAmount",
+    className: "block font-medium mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-exchange-alt mr-2"
+  }), "Cambio a Devolver"), /*#__PURE__*/React.createElement(InputNumber, {
+    id: "changeAmount",
+    value: modalChange,
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    readOnly: true,
+    className: `w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`,
+    inputClassName: modalChange > 0 ? 'text-green-700' : ''
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "surface-card p-4 border-round-lg border-1 surface-border shadow-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "m-0 text-700"
+  }, "Agregar Nuevo Pago", /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-credit-card mr-3 text-xl text-primary"
+  }))), /*#__PURE__*/React.createElement(Button, {
+    label: "Calcular Pago en Efectivo",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-calculator"
+    }),
+    className: "mb-3 w-full p-button-outlined",
+    onClick: openPaymentModal
+  }), /*#__PURE__*/React.createElement(Card, {
+    className: "border-round-lg shadow-1 mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "paymentMethod",
+    className: "block font-medium mb-2 text-700"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-money-check-alt mr-2"
+  }), "M\xE9todo de pago ", /*#__PURE__*/React.createElement("span", {
+    className: "text-red-500"
+  }, "*")), /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "paymentMethod",
+    options: paymentMethodOptions,
+    value: formData.currentPayment.method,
+    onChange: e => handlePaymentChange("method", e.value),
+    placeholder: "Seleccione m\xE9todo...",
+    className: "w-full",
+    optionLabel: "label",
+    panelClassName: "shadow-3",
+    showClear: true,
+    filter: true,
+    filterPlaceholder: "Buscar m\xE9todo...",
+    emptyFilterMessage: "No se encontraron m\xE9todos"
+  }), !formData.currentPayment.method && /*#__PURE__*/React.createElement("small", {
+    className: "p-error block mt-1"
+  }, "Seleccione un m\xE9todo de pago"))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 md:col-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "paymentAmount",
+    className: "block font-medium mb-2 text-700"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-dollar-sign mr-2"
+  }), "Monto ", /*#__PURE__*/React.createElement("span", {
+    className: "text-red-500"
+  }, "*")), /*#__PURE__*/React.createElement(InputNumber, {
+    inputId: "paymentAmount",
+    value: formData.currentPayment.amount,
+    onValueChange: e => handlePaymentChange("amount", e.value),
+    className: "w-full",
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    min: 0,
+    maxFractionDigits: 2,
+    showButtons: true,
+    buttonLayout: "horizontal",
+    incrementButtonIcon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus-square"
+    }),
+    decrementButtonIcon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-window-close"
+    })
+  }), (!formData.currentPayment.amount || formData.currentPayment.amount <= 0) && /*#__PURE__*/React.createElement("small", {
+    className: "p-error block mt-1"
+  }, "Ingrese un monto v\xE1lido"))), showChangeField && formData.currentPayment.amount > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 bg-green-100 border-round mb-3 border-1 border-green-200"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-between align-items-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center gap-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-money-bill-wave text-green-600"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "font-medium"
+  }, "Cambio a devolver:")), /*#__PURE__*/React.createElement("span", {
+    className: "font-bold text-green-700"
+  }, formatCurrency(calculateChange(total, formData.currentPayment.amount)))))))), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-end mt-4"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Agregar Pago",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cash-register"
+    }),
+    className: "p-button-success",
+    onClick: handleAddPayment,
+    disabled: !formData.currentPayment.method || !formData.currentPayment.amount,
+    tooltip: "Agregar este pago al registro",
+    tooltipOptions: {
+      position: "top"
+    }
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex pt-4 justify-content-between gap-3"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Atr\xE1s",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-arrow-left me-1"
+    }),
+    onClick: prevStep,
+    className: "p-button-secondary",
+    tooltip: "Volver al paso anterior"
+  }), /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    label: "Continuar",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-save me-1"
+    }),
+    iconPos: "right",
+    onClick: handleNext,
+    disabled: formData.payments.length === 0 || formData.products.length === 0,
+    tooltip: "Ir al siguiente paso"
+  })));
+};
+export default ProductsPaymentStep;

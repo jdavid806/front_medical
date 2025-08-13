@@ -47,12 +47,12 @@ export const BanksAccounting = () => {
       id: account.id.toString(),
       codigoCuentaContable: account.account_code,
       nombreCuentaContable: account.account_name,
-      banco: account.auxiliary_name ?? 'Sin banco',
+      banco: account.sub_auxiliary_name ?? 'Sin banco',
       numeroCuenta: account.account,
-      tipoCuenta: account.account_type,
+      tipoCuenta: account.account_name,
       moneda: 'DOP',
       saldoDisponible: parseFloat(account.balance ?? "0"),
-      saldoContable: parseFloat(account.initial_balance),
+      saldoContable: parseFloat(account.balance ?? "0"),
       fechaApertura: new Date(account.created_at),
       activa: account.status === 'activo' || account.status === 'active'
     }));
@@ -332,7 +332,7 @@ export const BanksAccounting = () => {
     className: "col-md-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "Tipo de Cuenta"), /*#__PURE__*/React.createElement(Dropdown, {
+  }, "Nombre"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.tipoCuenta,
     options: tiposCuenta,
     onChange: e => handleFilterChange('tipoCuenta', e.value),
@@ -434,7 +434,7 @@ export const BanksAccounting = () => {
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
     field: "tipoCuenta",
-    header: "Tipo de Cuenta",
+    header: "Banco",
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
     field: "saldoDisponible",

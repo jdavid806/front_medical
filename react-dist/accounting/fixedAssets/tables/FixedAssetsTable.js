@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -15,6 +15,7 @@ import FixedAssetsModal from "../modal/FixedAssetsModal.js";
 import DepreciationAppreciationModal from "../modal/DepreciationAppreciationModal.js";
 import MaintenanceModal from "../modal/MaintenanceModal.js";
 import { useAssets } from "../hooks/useAssets.js";
+import { useUpdateAssetStatus } from "../hooks/useUpdateAssetStatus.js";
 export const FixedAssetsTable = () => {
   const {
     assets,
@@ -29,6 +30,9 @@ export const FixedAssetsTable = () => {
   const [depreciationModalVisible, setDepreciationModalVisible] = useState(false);
   const [selectedAssetForAdjustment, setSelectedAssetForAdjustment] = useState(null);
   const toast = useRef(null);
+  const {
+    updateAssetStatus
+  } = useUpdateAssetStatus();
   const [filters, setFilters] = useState({
     assetName: "",
     assetCategory: null,
@@ -168,6 +172,10 @@ export const FixedAssetsTable = () => {
     });
     setFilteredAssets(assets);
   };
+  useEffect(() => {
+    setFilteredAssets(assets);
+    applyFilters();
+  }, [assets]);
   const formatCurrency = value => {
     return value.toLocaleString("es-DO", {
       style: "currency",
@@ -412,7 +420,7 @@ export const FixedAssetsTable = () => {
     field: "includes.category.attributes.name",
     header: "Categor\xEDa",
     sortable: true,
-    body: rowData => getCategoryLabel(rowData.includes.category?.attributes.name) || '--',
+    body: rowData => getCategoryLabel(rowData.includes.category?.attributes.name) || "--",
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
     field: "attributes.brand",
@@ -487,12 +495,18 @@ export const FixedAssetsTable = () => {
   }), selectedAssetForMaintenance && /*#__PURE__*/React.createElement(MaintenanceModal, {
     isVisible: maintenanceModalVisible,
     onSave: async maintenanceData => {
-      const updatedAssets = (await fetchAssets()) || [];
-      setFilteredAssets(updatedAssets);
+      const body = {
+        status: maintenanceData.assetStatus,
+        status_type: maintenanceData.maintenanceType,
+        status_changed_at: maintenanceData.maintenanceDate.toLocaleDateString("es-DO"),
+        maintenance_cost: maintenanceData.cost || 0,
+        status_comment: maintenanceData.comments || null
+      };
+      await updateAssetStatus(selectedAssetForMaintenance.id, body);
+      await fetchAssets();
       setMaintenanceModalVisible(false);
-
-      // Mostrar notificación
-      showToast("success", "Mantenimiento registrado", `El estado de ${selectedAssetForMaintenance.attributes.description} ha sido actualizado.`);
+      setSelectedAssetForMaintenance(null);
+      showToast("success", "Mantenimiento registrado", `El estado de ${selectedAssetForMaintenance?.attributes?.description} ha sido actualizado.`);
     },
     onClose: () => {
       setMaintenanceModalVisible(false);

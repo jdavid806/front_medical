@@ -743,14 +743,22 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 showGridlines
                 stripedRows
               >
-                {getProductColumns().map((col, i) => (
-                  <Column
-                    key={i}
-                    field={col.field}
-                    header={col.header}
-                    body={col.body}
-                  />
-                ))}
+                {getProductColumns().map((col, i) => {
+                  if (
+                    col.field === "depositId" &&
+                    !(product.typeProduct === "supplies" || product.typeProduct === "inventariables")
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <Column
+                      key={i}
+                      field={col.field}
+                      header={col.header}
+                      body={col.body}
+                    />
+                  );
+                })}
               </DataTable>
 
               {shouldShowLotForm && (
@@ -956,7 +964,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             deposit_id: infoLot?.deposit_id || null,
             lot_number: infoLot?.lot_number || "",
           }
-          : {};
+          : {
+            deposit_id: product.depositId || null,
+          };
 
         return {
           product_id:
@@ -1057,9 +1067,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           detail: "Factura de compra guardada correctamente",
           life: 3000,
         });
-        setTimeout(() => {
-          window.location.href = `FE_FCE`;
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.href = `FE_FCE`;
+        // }, 2000);
       })
       .catch((error) => {
         console.error("Error al guardar la factura de compra:", error);
@@ -1186,6 +1196,21 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               handleProductChange(rowData.id, "tax", value)
             }
             value={rowData.tax}
+            disabled={disabledInputs}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "depositId",
+        header: "Deposito",
+        body: (rowData: InvoiceProduct) => (
+          <DepositColumnBody
+            deposits={formattedDeposits}
+            onChange={(value: string | null) =>
+              handleProductChange(rowData.id, "depositId", value)
+            }
+            value={rowData.depositId}
             disabled={disabledInputs}
           />
         ),
@@ -2316,6 +2341,35 @@ const IvaColumnBody = ({
       }
       optionValue="percentage"
       placeholder="Seleccione IVA"
+      className="w-100"
+      onChange={(e: DropdownChangeEvent) => {
+        onChange(e.value);
+      }}
+      appendTo={document.body}
+      disabled={disabled}
+    />
+  );
+};
+
+const DepositColumnBody = ({
+  deposits,
+  onChange,
+  value,
+  disabled,
+}: {
+  deposits: any[];
+  onChange: (value: string | null) => void;
+  value: any | null;
+  disabled?: boolean;
+}) => {
+
+  return (
+    <Dropdown
+      value={value}
+      options={deposits}
+      optionLabel="name"
+      optionValue="id"
+      placeholder="Seleccione depósito"
       className="w-100"
       onChange={(e: DropdownChangeEvent) => {
         onChange(e.value);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { CategoriesTable } from "./table/CategoriesTable.js";
 import { CategoriesFormModal } from "./modal/CategoriesFormModal.js";
-import { categoryProductsService } from "../../../services/api/index.js";
+import { categoryProductsService } from "../../../services/api.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { useCategory } from "./hooks/useCategory.js";
 export const CategoriesApp = () => {

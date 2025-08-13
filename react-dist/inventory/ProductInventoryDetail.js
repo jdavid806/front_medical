@@ -19,8 +19,6 @@ export const ProductInventoryDetail = ({
   }), " ", /*#__PURE__*/React.createElement("strong", null, "C\xF3digo de Barras:"), " ", /*#__PURE__*/React.createElement("span", null, product.barcode))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-box"
-  }), " ", /*#__PURE__*/React.createElement("strong", null, "Stock:"), " ", /*#__PURE__*/React.createElement("span", null, product.stock || '--')), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-exclamation-triangle"
   }), " ", /*#__PURE__*/React.createElement("strong", null, "Stock M\xEDnimo:"), " ", /*#__PURE__*/React.createElement("span", null, product.minimum_stock || '--')), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-chart-line"
@@ -37,12 +35,8 @@ export const ProductInventoryDetail = ({
   }), " ", /*#__PURE__*/React.createElement("strong", null, "Estado:"), " ", /*#__PURE__*/React.createElement("span", null, '--'))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-industry"
-  }), " ", /*#__PURE__*/React.createElement("strong", null, "Laboratorio:"), " ", /*#__PURE__*/React.createElement("span", null, product.laboratory_id || '--')), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-tags"
-  }), " ", /*#__PURE__*/React.createElement("strong", null, "Marca:"), " ", /*#__PURE__*/React.createElement("span", null, product.brand_id || '--')), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-store"
-  }), " ", /*#__PURE__*/React.createElement("strong", null, "Proveedor:"), " ", /*#__PURE__*/React.createElement("span", null, product.supplier_id || '--')))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("div", {
+  }), " ", /*#__PURE__*/React.createElement("strong", null, "Marca:"), " ", /*#__PURE__*/React.createElement("span", null, product.brand.name || '--')))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"

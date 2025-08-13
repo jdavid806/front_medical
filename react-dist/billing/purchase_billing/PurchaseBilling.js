@@ -569,12 +569,17 @@ export const PurchaseBilling = ({
       className: "p-datatable-sm p-datatable-gridlines mb-4",
       showGridlines: true,
       stripedRows: true
-    }, getProductColumns().map((col, i) => /*#__PURE__*/React.createElement(Column, {
-      key: i,
-      field: col.field,
-      header: col.header,
-      body: col.body
-    }))), shouldShowLotForm && /*#__PURE__*/React.createElement("div", {
+    }, getProductColumns().map((col, i) => {
+      if (col.field === "depositId" && !(product.typeProduct === "supplies" || product.typeProduct === "inventariables")) {
+        return null;
+      }
+      return /*#__PURE__*/React.createElement(Column, {
+        key: i,
+        field: col.field,
+        header: col.header,
+        body: col.body
+      });
+    })), shouldShowLotForm && /*#__PURE__*/React.createElement("div", {
       className: "mt-4"
     }, /*#__PURE__*/React.createElement("h5", {
       className: "mb-3"
@@ -703,7 +708,9 @@ export const PurchaseBilling = ({
           expiration_date: infoLot?.expiration_date || null,
           deposit_id: infoLot?.deposit_id || null,
           lot_number: infoLot?.lot_number || ""
-        } : {};
+        } : {
+          deposit_id: product.depositId || null
+        };
         return {
           product_id: product.typeProduct === "assets" ? null : Number(product.product),
           quantity: product.quantity,
@@ -783,9 +790,9 @@ export const PurchaseBilling = ({
         detail: "Factura de compra guardada correctamente",
         life: 3000
       });
-      setTimeout(() => {
-        window.location.href = `FE_FCE`;
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.href = `FE_FCE`;
+      // }, 2000);
     }).catch(error => {
       console.error("Error al guardar la factura de compra:", error);
       toast.current?.show({
@@ -888,6 +895,18 @@ export const PurchaseBilling = ({
       body: rowData => /*#__PURE__*/React.createElement(IvaColumnBody, {
         onChange: value => handleProductChange(rowData.id, "tax", value),
         value: rowData.tax,
+        disabled: disabledInputs
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "depositId",
+      header: "Deposito",
+      body: rowData => /*#__PURE__*/React.createElement(DepositColumnBody, {
+        deposits: formattedDeposits,
+        onChange: value => handleProductChange(rowData.id, "depositId", value),
+        value: rowData.depositId,
         disabled: disabledInputs
       }),
       style: {
@@ -1829,6 +1848,26 @@ const IvaColumnBody = ({
     optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
     optionValue: "percentage",
     placeholder: "Seleccione IVA",
+    className: "w-100",
+    onChange: e => {
+      onChange(e.value);
+    },
+    appendTo: document.body,
+    disabled: disabled
+  });
+};
+const DepositColumnBody = ({
+  deposits,
+  onChange,
+  value,
+  disabled
+}) => {
+  return /*#__PURE__*/React.createElement(Dropdown, {
+    value: value,
+    options: deposits,
+    optionLabel: "name",
+    optionValue: "id",
+    placeholder: "Seleccione dep\xF3sito",
     className: "w-100",
     onChange: e => {
       onChange(e.value);

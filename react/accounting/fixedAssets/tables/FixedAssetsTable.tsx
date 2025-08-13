@@ -18,6 +18,7 @@ import DepreciationAppreciationModal from "../modal/DepreciationAppreciationModa
 import MaintenanceModal from "../modal/MaintenanceModal";
 import { useAssets } from "../hooks/useAssets";
 import { stringToDate } from "../../../../services/utilidades";
+import { useUpdateAssetStatus } from "../hooks/useUpdateAssetStatus";
 
 export const FixedAssetsTable = () => {
   const { assets, fetchAssets } = useAssets();
@@ -33,6 +34,7 @@ export const FixedAssetsTable = () => {
   const [selectedAssetForAdjustment, setSelectedAssetForAdjustment] =
     useState<FixedAsset | null>(null);
   const toast = useRef<Toast>(null);
+  const { updateAssetStatus } = useUpdateAssetStatus();
 
   const [filters, setFilters] = useState<Filters>({
     assetName: "",
@@ -96,21 +98,26 @@ export const FixedAssetsTable = () => {
     // Filter by asset name
     if (filters.assetName) {
       results = results.filter((asset) =>
-        asset.attributes.description?.toLowerCase().includes(filters.assetName.toLowerCase())
+        asset.attributes.description
+          ?.toLowerCase()
+          .includes(filters.assetName.toLowerCase())
       );
     }
 
     // Filter by category
     if (filters.assetCategory) {
       results = results.filter(
-        (asset) => asset.relationships.category.data.id === filters.assetCategory
+        (asset) =>
+          asset.relationships.category.data.id === filters.assetCategory
       );
     }
 
     // Filter by brand
     if (filters.brand) {
       results = results.filter((asset) =>
-        asset.attributes.brand?.toLowerCase().includes(filters.brand.toLowerCase())
+        asset.attributes.brand
+          ?.toLowerCase()
+          .includes(filters.brand.toLowerCase())
       );
     }
 
@@ -125,7 +132,9 @@ export const FixedAssetsTable = () => {
 
     // Filter by status
     if (filters.status) {
-      results = results.filter((asset) => asset.attributes.status === filters.status);
+      results = results.filter(
+        (asset) => asset.attributes.status === filters.status
+      );
     }
 
     // Filter by date range
@@ -156,6 +165,11 @@ export const FixedAssetsTable = () => {
     });
     setFilteredAssets(assets);
   };
+
+  useEffect(() => {
+    setFilteredAssets(assets);
+    applyFilters();
+  }, [assets]);
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("es-DO", {
@@ -435,7 +449,10 @@ export const FixedAssetsTable = () => {
             field="includes.category.attributes.name"
             header="Categoría"
             sortable
-            body={(rowData: FixedAsset) => getCategoryLabel(rowData.includes.category?.attributes.name) || '--'}
+            body={(rowData: FixedAsset) =>
+              getCategoryLabel(rowData.includes.category?.attributes.name) ||
+              "--"
+            }
             style={styles.tableCell}
           />
           <Column
@@ -444,7 +461,11 @@ export const FixedAssetsTable = () => {
             sortable
             style={styles.tableCell}
           />
-          <Column field="attributes.model" header="Modelo" style={styles.tableCell} />
+          <Column
+            field="attributes.model"
+            header="Modelo"
+            style={styles.tableCell}
+          />
           {/*<Column
             field="acquisitionDate"
             header="Fecha Adquisición"
@@ -582,15 +603,26 @@ export const FixedAssetsTable = () => {
         <MaintenanceModal
           isVisible={maintenanceModalVisible}
           onSave={async (maintenanceData) => {
-            const updatedAssets: FixedAsset[] = await fetchAssets() || [];
-            setFilteredAssets(updatedAssets);
-            setMaintenanceModalVisible(false);
+            const body = {
+              status: maintenanceData.assetStatus,
+              status_type: maintenanceData.maintenanceType,
+              status_changed_at:
+                maintenanceData.maintenanceDate.toLocaleDateString("es-DO"),
+              maintenance_cost: maintenanceData.cost || 0,
+              status_comment: maintenanceData.comments || null,
+            };
 
-            // Mostrar notificación
+            await updateAssetStatus(selectedAssetForMaintenance.id, body);
+
+            await fetchAssets();
+
+            setMaintenanceModalVisible(false);
+            setSelectedAssetForMaintenance(null);
+
             showToast(
               "success",
               "Mantenimiento registrado",
-              `El estado de ${selectedAssetForMaintenance.attributes.description} ha sido actualizado.`
+              `El estado de ${selectedAssetForMaintenance?.attributes?.description} ha sido actualizado.`
             );
           }}
           onClose={() => {

@@ -33,6 +33,36 @@
     </div>
 </form>
 
+<div class="d-flex justify-content-end">
+    <button id="btnImprimirCita" class="btn btn-secondary" type="button">
+        <span class="fa fa-print me-2"></span> Imprimir Cita
+    </button>
+</div>
+
+<script type="module">
+    import {
+        generarFormato
+    } from "./funciones/funcionesJS/generarPDF.js";
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const btnImprimirCita = document.getElementById('btnImprimirCita')
+
+        btnImprimirCita.addEventListener('click', () => {
+            console.log("Imprimiendo cita");
+
+            generarFormato(
+                "Cita", {
+                    fechaConsulta: document.getElementById('fechaCita').value,
+                    horaConsulta: document.getElementById('appointment_time').value,
+                    patientId: new URLSearchParams(window.location.search).get('patient_id'),
+                },
+                "Impresion"
+            )
+        })
+    })
+</script>
+
 <script type="module">
     import {
         userService,

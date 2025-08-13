@@ -18,7 +18,6 @@ export const useAllTableTickets = () => {
                     "LABORATORY",
                     "OTHER"
                 ]);
-                console.log(data);
 
                 setTickets(data);
             } catch (err) {

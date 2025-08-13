@@ -57,7 +57,7 @@ export const AccountsCollectPay = () => {
   } = useAccountsCollectPay({
     ...commonFilters,
     type: "sale,entity",
-    status: "pending",
+    status: "pending,partially_pending",
   });
 
   const {
@@ -67,7 +67,7 @@ export const AccountsCollectPay = () => {
   } = useAccountsCollectPay({
     ...commonFilters,
     type: "purchase",
-    status: "pending",
+    status: "pending,partially_pending",
   });
 
   const daysToPayOptions = [
@@ -239,6 +239,17 @@ export const AccountsCollectPay = () => {
         Estado: getStatusBadgeBasic(status, daysToPay),
       };
     });
+    const totals = {
+      Factura: " ",
+      Cliente: " ",
+      Fecha: " ",
+      "Fecha vencimiento": " ",
+      "Días para pagar": "Totales",
+      Total: `$${items.reduce((acc, item) => acc + Number(item.total_amount), 0).toFixed(2)}`,
+      Pendiende: `$${items.reduce((acc, item) => acc + Number(item.remaining_amount), 0).toFixed(2)}`,
+      Estado: " ", 
+    };
+    dataExport.push(totals);
     exportToExcel({
       data: dataExport,
       fileName: name,
@@ -264,6 +275,17 @@ export const AccountsCollectPay = () => {
         Estado: getStatusBadgeBasic(status, daysToPay),
       };
     });
+    const totals = {
+      Factura: " ",
+      Cliente: " ",
+      Fecha: " ",
+      "Fecha vencimiento": " ",
+      "Días para pagar": "Totales",
+      Total: `$${items.reduce((acc, item) => acc + Number(item.total_amount), 0).toFixed(2)}`,
+      Pendiende: `$${items.reduce((acc, item) => acc + Number(item.remaining_amount), 0).toFixed(2)}`,
+      Estado: " ", 
+    };
+    dataExport.push(totals);
     const table = `
         <style>
         table { 

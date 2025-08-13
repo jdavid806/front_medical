@@ -10,6 +10,7 @@ import { formatDate, ordenarPorFecha } from "../../../services/utilidades.js";
 import { CustomModal } from "../../components/CustomModal.js";
 import { examOrderService, userService } from "../../../services/api/index.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
+import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 export const ExamGeneralTable = ({
   exams,
   onLoadExamResults,
@@ -34,7 +35,8 @@ export const ExamGeneralTable = ({
         appointmentId: exam.appointment_id,
         state: exam.exam_order_state?.name || 'pending',
         created_at: exam.created_at,
-        dateTime: formatDate(exam.created_at)
+        dateTime: formatDate(exam.created_at),
+        original: exam
       };
     });
     ordenarPorFecha(mappedExams, 'created_at');
@@ -145,8 +147,10 @@ export const ExamGeneralTable = ({
           const url = await getFileUrl(data.minioId);
           window.open(url, '_blank');
         } else {
+          console.log("xd");
+
           //@ts-ignore
-          crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
+          generarFormato("Examen", data.original, "Impresion");
         }
       }
     }), /*#__PURE__*/React.createElement(DownloadTableAction, {

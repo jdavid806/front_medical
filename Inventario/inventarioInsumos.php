@@ -28,13 +28,9 @@ include "../header.php";
                 </ol>
             </nav>
             <div class="pb-9">
-                <div class="row mt-5">
+                <div class="row mt-5 mb-3">
                     <div class="col-md-12">
                         <h2 class="mb-3">Inventario Insumos</h2>
-                        <button class="btn btn-primary mb-4" type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalNuevoInsumo">
-                            <span class="fa-solid fa-plus me-2 fs-9"></span> Agregar nuevo insumo
-                        </button>
                     </div>
                 </div>
 

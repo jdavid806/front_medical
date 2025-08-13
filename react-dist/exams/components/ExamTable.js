@@ -65,7 +65,8 @@ export const ExamTable = ({
         dateTime: formatDate(exam.created_at),
         exam_order_state: exam.exam_order_state,
         exam_type: exam.exam_type,
-        items: exam.items
+        items: exam.items,
+        original: exam
       };
     });
     ordenarPorFecha(mappedExams, "created_at");
@@ -83,7 +84,7 @@ export const ExamTable = ({
       };
     } else {
       //@ts-ignore
-      generarFormato("Examen", exam, "Impresion", "examInput");
+      generarFormato("Examen", exam.original, "Impresion", "examInput");
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           let fileInput = document.getElementById("pdf-input-hidden-to-examInput");
@@ -235,7 +236,7 @@ export const ExamTable = ({
           window.open(url, "_blank");
         } else {
           //@ts-ignore
-          generarFormato("Examen", data, "Impresion");
+          generarFormato("Examen", data.original, "Impresion");
           // crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
         }
       }
@@ -252,7 +253,7 @@ export const ExamTable = ({
           document.body.removeChild(link);
         } else {
           //@ts-ignore
-          generarFormato("Examen", data, "Descarga");
+          generarFormato("Examen", data.original, "Descarga");
           // crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
         }
       }

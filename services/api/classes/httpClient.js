@@ -4,6 +4,7 @@ import { getJWTPayload } from "../../utilidades";
 export class HttpClient {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
+        //console.log("getJWTPayload", getJWTPayload());
         this.defaultHeaders = {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -30,7 +31,7 @@ export class HttpClient {
 
             // Construir URL de forma segura
             const url = new URL(`https://${this.baseUrl}${endpoint}`);
-            
+
             // Añadir parámetros solo si existen
             if (params instanceof URLSearchParams && params.toString()) {
                 url.search = params.toString();
@@ -44,8 +45,8 @@ export class HttpClient {
 
             // Procesar respuesta
             const contentType = response.headers.get("content-type");
-            let responseData = contentType?.includes("application/json") 
-                ? await response.json() 
+            let responseData = contentType?.includes("application/json")
+                ? await response.json()
                 : await response.text();
 
             if (!response.ok) {

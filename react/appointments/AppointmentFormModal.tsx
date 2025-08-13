@@ -72,7 +72,7 @@ export interface FormAppointment extends AppointmentFormInputs {
   specialty_name: string;
 }
 
-export const AppointmentFormModal = ({ isOpen, onClose }) => {
+export const  AppointmentFormModal = ({ isOpen, onClose }) => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [appointments, setAppointments] = useState<FormAppointment[]>([]);
   const [currentAppointment, setCurrentAppointment] =

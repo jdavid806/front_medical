@@ -5,6 +5,8 @@ import { classNames } from "primereact/utils";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
 import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/utilidades.js";
 import { useTemplate } from "../hooks/useTemplate.js";
+import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF.js";
+import { useCompany } from "../hooks/useCompany.js";
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
     patient_name: "",
@@ -38,6 +40,9 @@ export const GenerateTicket = () => {
     setTemplate,
     fetchTemplate
   } = useTemplate(data);
+  const {
+    company
+  } = useCompany();
 
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [{
@@ -154,11 +159,24 @@ export const GenerateTicket = () => {
     });
   };
   const printElement = element => {
-    const printContents = element.innerHTML;
-    const originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
+    // Clonar el elemento para no modificar el DOM original
+    const clone = element.cloneNode(true);
+    // Eliminar los botones dentro del clon
+    clone.querySelectorAll("button").forEach(btn => btn.remove());
+    // Agregar estilos para mejorar la apariencia del ticket
+    clone.style.border = "2px dashed #007bff";
+    clone.style.padding = "24px";
+    clone.style.margin = "16px auto";
+    clone.style.maxWidth = "350px";
+    clone.style.background = "#f8f9fa";
+    clone.style.borderRadius = "12px";
+    clone.style.boxShadow = "0 2px 8px rgba(0,0,0,0.07)";
+    const printContents = clone.innerHTML;
+    const configPDF = {
+      name: "ticket",
+      dimensions: [0, 0, 212.6, 210]
+    };
+    generatePDFReceipts(printContents, configPDF);
   };
   const BadgeTemplate = option => {
     return /*#__PURE__*/React.createElement("div", {
@@ -182,7 +200,6 @@ export const GenerateTicket = () => {
       message: templateFormatted,
       webhook_url: "https://example.com/webhook"
     };
-    console.log("Data to send:", dataMessage);
     await sendMessage(dataMessage);
   }
   return /*#__PURE__*/React.createElement("div", {

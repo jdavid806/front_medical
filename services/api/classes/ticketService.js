@@ -6,4 +6,8 @@ export class TicketService extends BaseApiService {
             reasons
         })
     }
+
+    async lastByPatient(patientId){
+        return await this.httpClient.get(`${this.microservice}/${this.endpoint}/last-by-patient/${patientId}`)
+    }
 }

@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { SplitButton } from "primereact/splitbutton";
 import DepositModal from "./modal/DepositModal.js";
-import { depositService } from "../../../services/api/index.js";
+import { depositService } from "../../../services/api.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 export const DepositsTablet = () => {
   const [deposits, setDeposits] = useState([]);

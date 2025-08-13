@@ -24,21 +24,26 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function generarFormatoReceta(receta, tipo, inputId = "") {
-
- let userName = [
-  receta.prescriber?.first_name,
-  receta.prescriber?.middle_name,
-  receta.prescriber?.last_name,
-  receta.prescriber?.second_last_name
-].filter(Boolean).join(" ");
+  let userName = [
+    receta.prescriber?.first_name,
+    receta.prescriber?.middle_name,
+    receta.prescriber?.last_name,
+    receta.prescriber?.second_last_name,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   let user = {
     nombre: userName,
     especialidad: receta.prescriber?.specialty.name || "",
     registro_medico: receta.prescriber?.clinical_record || "",
-    sello: `https://dev.monaros.co/` + getUrlImage(receta.prescriber?.image_minio_url || ""),
-    firma: `https://dev.monaros.co/` + getUrlImage(receta.prescriber?.firma_minio_url || "")
-  }
+    sello:
+      `https://dev.monaros.co/` +
+      getUrlImage(receta.prescriber?.image_minio_url || ""),
+    firma:
+      `https://dev.monaros.co/` +
+      getUrlImage(receta.prescriber?.firma_minio_url || ""),
+  };
 
   const tablePatient = generarTablaPaciente(patient, {
     date: receta.created_at || "--",
@@ -53,15 +58,14 @@ export function generarFormatoReceta(receta, tipo, inputId = "") {
   if (receta.recipe_items.length > 0) {
     receta.recipe_items.forEach((item, index) => {
       contenido += `
-      <h3 class="text-primary text-center" style="margin: 0; padding: 0;">Medicamentos</h3>
       <hr style="margin: 0.25rem 0;">
-          <div style="margin-bottom: 5px;">
+          <div style="margin-bottom: 5px; font-size: 12px">
             <p style="margin: 0;"><strong>${index + 1}. Nombre:</strong> ${
         item.medication
-      } - <strong>Concentración:</strong> ${
-        item.concentration
-      } - <strong>Tipo:</strong> ${item.medication_type}</p>
-            <p style="margin: 0;"><strong>Frecuencia:</strong> ${
+      } - ${item.concentration} - <strong>Tipo:</strong> ${
+        item.medication_type
+      }
+            <strong>Frecuencia:</strong> ${
               item.frequency
             } - <strong>Duración:</strong> ${
         item.duration
@@ -82,7 +86,9 @@ export function generarFormatoReceta(receta, tipo, inputId = "") {
   contenido += `
     </div>
   </div>
+  <div style="font-size: 12px">
   ${datosUsuario(user)}
+  </div>
   `;
 
   let isDownload = false;
@@ -94,7 +100,10 @@ export function generarFormatoReceta(receta, tipo, inputId = "") {
   const pdfConfig = {
     name: `Receta_Medica_${patient.datos_basicos.documento}`,
     isDownload: isDownload,
+    dimensions: [0, 0, 396, 612],
+    orientation: "landscape",
   };
+  // console.log(pdfConfig);
 
   generatePDFFromHTML(contenido, company, pdfConfig, inputId);
 }

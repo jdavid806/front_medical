@@ -103,6 +103,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
         exam_order_state: exam.exam_order_state,
         exam_type: exam.exam_type,
         items: exam.items,
+        original: exam,
       };
     });
 
@@ -123,7 +124,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       };
     } else {
       //@ts-ignore
-      generarFormato("Examen", exam, "Impresion", "examInput");
+      generarFormato("Examen", exam.original, "Impresion", "examInput");
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -158,11 +159,9 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       const dataToFile: any = await generatePdfFile(exam);
 
       const replacements = {
-        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${
-          exam.patient.middle_name ?? ""
-        } ${exam.patient.last_name ?? ""} ${
-          exam.patient.second_last_name ?? ""
-        }`,
+        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${exam.patient.middle_name ?? ""
+          } ${exam.patient.last_name ?? ""} ${exam.patient.second_last_name ?? ""
+          }`,
         NOMBRE_EXAMEN: `${exam.examName}`,
         FECHA_EXAMEN: `${exam.dateTime}`,
         "ENLACE DOCUMENTO": "",
@@ -177,7 +176,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(exam.patient.country_id) +
-            exam.patient.whatsapp,
+          exam.patient.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
@@ -317,7 +316,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
                       window.open(url, "_blank");
                     } else {
                       //@ts-ignore
-                      generarFormato("Examen", data, "Impresion");
+                      generarFormato("Examen", data.original, "Impresion");
                       // crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
                     }
                   }}
@@ -335,7 +334,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
                       document.body.removeChild(link);
                     } else {
                       //@ts-ignore
-                      generarFormato("Examen", data, "Descarga");
+                      generarFormato("Examen", data.original, "Descarga");
                       // crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
                     }
                   }}

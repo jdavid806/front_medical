@@ -1,8 +1,8 @@
 const BASE_URL = window.location.origin;
 
 export const farmaciaService = {
-  getAllRecipes: async () => {
-    const response = await fetch(`${BASE_URL}/medical/recipes?type=general`);
+  getAllRecipes: async (status = "ALL") => {
+    const response = await fetch(`${BASE_URL}/medical/recipes?type=general&status=${status}`);
     return await response.json();
   },
 

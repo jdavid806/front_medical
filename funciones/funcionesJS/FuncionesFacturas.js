@@ -27,17 +27,28 @@ async function generateInvoice(idCita, generarDescarga = false) {
     let url =
       obtenerRutaPrincipal() + `/medical/admissions/by-appointment/${idCita}`;
     let datosEmpresa = await consultarDatosEmpresa();
+    
 
     // Obtener los datos desde la API
     const response = await fetch(url);
     const data = await response.json();
-
+    console.log(" data", data);
+    let entidad = await obtenerDatosPorId("entities", data.admission.entity_id);
+    // console.log("entidad", entidad);
     if (!data || !data.admission) {
       console.error("Datos no encontrados");
       return;
     }
 
     let factura = data.related_invoice[0];
+    let user = data.admission.user;
+
+    let facturador = [
+      user?.first_name,
+      user?.middle_name,
+      user?.last_name,
+      user?.second_last_name,
+    ].filter(Boolean).join(" ");
 
     let datosFactura = {
       numero_comprobante: factura.invoice_code,
@@ -48,6 +59,10 @@ async function generateInvoice(idCita, generarDescarga = false) {
       iva: factura.iva,
       total: factura.total_amount,
       descuento: factura.discount,
+      facturador: facturador,
+      entidad: entidad.name,
+      monto_autorizado: data.admission.entity_authorized_amount,
+      id: factura.id,
     };
 
     let paciente = data.admission.patient;

@@ -50,6 +50,7 @@ export const NewReceiptBoxTable = () => {
     if (!isLoading) {
       if (recipes.length > 0) {
         try {
+          console.log("recipes", recipes);
           const recibosAdaptados = recipes.map(recibo => {
             const thirdParty = recibo.includes?.third_party || null;
             const payment = recibo.includes?.payments?.[0] || null;
@@ -149,7 +150,6 @@ export const NewReceiptBoxTable = () => {
     });
   };
   const generatePrintReceipt = recibo => {
-    console.log("recibo", recibo);
     // generarFormatoContable("ReciboCaja", recibo, "Impresion");
   };
   const generateCancelReceipt = recibo => {
@@ -389,7 +389,6 @@ export const NewReceiptBoxTable = () => {
     onHide: () => setShowReciboModal(false),
     receiptType: currentReceiptType,
     onSubmit: data => {
-      console.log("Recibo creado:", data);
       setShowReciboModal(false);
     }
   }));

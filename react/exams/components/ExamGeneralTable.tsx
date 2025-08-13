@@ -12,6 +12,7 @@ import { formatDate, ordenarPorFecha } from '../../../services/utilidades';
 import { CustomModal } from '../../components/CustomModal';
 import { examOrderService, userService } from '../../../services/api';
 import { SwalManager } from '../../../services/alertManagerImported';
+import { generarFormato } from '../../../funciones/funcionesJS/generarPDF';
 
 export type ExamTableItem = {
     id: string
@@ -24,6 +25,7 @@ export type ExamTableItem = {
     patientId: string
     appointmentId: string
     minioId?: string
+    original: any
 }
 
 type ExamTableProps = {
@@ -53,7 +55,8 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                 appointmentId: exam.appointment_id,
                 state: exam.exam_order_state?.name || 'pending',
                 created_at: exam.created_at,
-                dateTime: formatDate(exam.created_at)
+                dateTime: formatDate(exam.created_at),
+                original: exam
             }
         })
 
@@ -149,8 +152,10 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                                     const url = await getFileUrl(data.minioId);
                                     window.open(url, '_blank');
                                 } else {
+                                    console.log("xd");
+                                    
                                     //@ts-ignore
-                                    crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
+                                    generarFormato("Examen", data.original, "Impresion");
                                 }
 
                             }} />

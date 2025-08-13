@@ -29,6 +29,8 @@ import { formatDate as formatDateUtils } from "../../services/utilidades";
 
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
+import { ColumnGroup } from "primereact/columngroup";
+import { Row } from "primereact/row";
 
 type TextAlign =
   | "left"
@@ -82,6 +84,7 @@ export const SpecialistsReport = () => {
   // Export loading states
   const [exporting, setExporting] = useState({
     procedures: false,
+    proceduresCount: false,
     entityPrices: false,
     entityCounts: false,
     consultations: false,
@@ -318,8 +321,6 @@ export const SpecialistsReport = () => {
         break;
     }
 
-    console.log("dataExport", dataExport);
-
     const headers = dataExport[0];
     const lastRowIndex = dataExport.length - 1;
 
@@ -411,7 +412,17 @@ export const SpecialistsReport = () => {
     }
 
     // Process data and group by procedure and doctor
-    const procedureDoctorTotals: Record<string, Record<string, number>> = {};
+    const procedureDoctorTotals: Record<
+      string,
+      Record<
+        string,
+        {
+          count: number;
+          amount: number;
+          avg: number;
+        }
+      >
+    > = {};
     const doctors = new Set<string>();
     const procedureSet = new Set<string>();
 
@@ -422,6 +433,7 @@ export const SpecialistsReport = () => {
       entry.billed_procedure?.forEach((proc) => {
         const procedureName = proc.product?.name;
         const amount = parseFloat(proc.amount) || 0;
+        const entityAmount = parseFloat(entry.entity_authorized_amount) || 0;
 
         procedureSet.add(procedureName);
 
@@ -429,46 +441,110 @@ export const SpecialistsReport = () => {
           procedureDoctorTotals[procedureName] = {};
         }
 
-        procedureDoctorTotals[procedureName][doctor] =
-          (procedureDoctorTotals[procedureName][doctor] || 0) + amount;
+        if (!procedureDoctorTotals[procedureName][doctor]) {
+          procedureDoctorTotals[procedureName][doctor] = {
+            count: 0,
+            amount: 0,
+            avg: 0,
+          };
+        }
+
+        // Copago (count)
+        if (entry.sub_type === "entity") {
+          procedureDoctorTotals[procedureName][doctor].count += amount;
+        }
+
+        // Particular (amount)
+        if (entry.sub_type === "public") {
+          procedureDoctorTotals[procedureName][doctor].amount += amount;
+        }
+
+        // Monto autorizado (avg)
+        procedureDoctorTotals[procedureName][doctor].avg += entityAmount;
       });
     });
 
     // Calculate column totals (doctors)
-    const doctorTotals: Record<string, number> = {};
+    const doctorTotals: Record<
+      string,
+      {
+        count: number;
+        amount: number;
+        avg: number;
+        total: number;
+      }
+    > = {};
+
     Array.from(doctors).forEach((doctor: string) => {
-      doctorTotals[doctor] = Array.from(procedureSet).reduce(
-        (sum, proc: string) => {
-          return sum + (procedureDoctorTotals[proc]?.[doctor] || 0);
-        },
-        0
-      );
+      doctorTotals[doctor] = {
+        count: 0,
+        amount: 0,
+        avg: 0,
+        total: 0,
+      };
+
+      Array.from(procedureSet).forEach((proc: string) => {
+        const doctorData = procedureDoctorTotals[proc]?.[doctor] || {
+          count: 0,
+          amount: 0,
+          avg: 0,
+        };
+        doctorTotals[doctor].count += doctorData.count;
+        doctorTotals[doctor].amount += doctorData.amount;
+        doctorTotals[doctor].avg += doctorData.avg;
+        doctorTotals[doctor].total += doctorData.amount;
+      });
     });
 
     // Prepare table data
     const tableData = Array.from(procedureSet).map((proc: string) => {
       const row: Record<string, any> = { procedure: proc };
+      let rowTotal = 0;
+
       Array.from(doctors).forEach((doctor: string) => {
-        row[doctor] = procedureDoctorTotals[proc]?.[doctor] || 0;
+        const doctorData = procedureDoctorTotals[proc]?.[doctor] || {
+          count: 0,
+          amount: 0,
+          avg: 0,
+        };
+
+        row[`${doctor}_count`] = doctorData.count;
+        row[`${doctor}_amount`] = doctorData.amount;
+        row[`${doctor}_avg`] = doctorData.avg;
+
+        rowTotal += doctorData.amount;
       });
+
+      row["total"] = rowTotal;
       return row;
     });
 
     // Add totals row
     const totalsRow: Record<string, any> = {
-      procedure: "Total",
+      procedure: "TOTALES",
       isTotal: true,
-      style: { fontWeight: "bold", fontSize: "1em" },
+      style: { fontWeight: "bold", backgroundColor: "#f8f9fa" },
     };
+
     Array.from(doctors).forEach((doctor: string) => {
-      totalsRow[doctor] = doctorTotals[doctor] || 0;
+      totalsRow[`${doctor}_count`] = doctorTotals[doctor].count;
+      totalsRow[`${doctor}_amount`] = doctorTotals[doctor].amount;
+      totalsRow[`${doctor}_avg`] = doctorTotals[doctor].avg;
     });
-    tableData.push(totalsRow);
+
+    totalsRow["total"] = Array.from(doctors).reduce(
+      (sum, doctor) => sum + doctorTotals[doctor].total,
+      0
+    );
+
+    // Add totals row to table data only for display (not when returning data)
+    const displayData = isReturnData ? tableData : [...tableData, totalsRow];
 
     if (isReturnData) {
       return tableData;
     }
 
+    // Create columns for the table
     const procedureColumns: TableColumn[] = [
       {
         field: "procedure",
@@ -478,51 +554,107 @@ export const SpecialistsReport = () => {
           <span
             style={{
               fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1em" : "inherit",
+              fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              ...rowData.style,
             }}
           >
             {rowData.procedure}
           </span>
         ),
       },
-      ...Array.from(doctors).map((doctor: string) => ({
-        field: doctor,
-        header: doctor,
+      ...Array.from(doctors).flatMap((doctor: string) => [
+        {
+          field: `${doctor}_count`,
+          header: "Copago",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_count`]
+                ? formatCurrency(rowData[`${doctor}_count`])
+                : "-"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+        {
+          field: `${doctor}_amount`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_amount`]
+                ? formatCurrency(rowData[`${doctor}_amount`])
+                : "-"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+        {
+          field: `${doctor}_avg`,
+          header: "Monto autorizado",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_avg`]
+                ? formatCurrency(rowData[`${doctor}_avg`])
+                : "-"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+      ]),
+      {
+        field: "total",
+        header: "Total General",
         body: (rowData: any) => (
           <span
             style={{
               fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1em" : "inherit",
+              fontSize: rowData.isTotal ? "1.1em" : "inherit",
             }}
           >
-            {formatCurrency(rowData[doctor])}
+            {formatCurrency(rowData.total)}
           </span>
         ),
-        style: createColumnStyle("center", "nowrap"),
-        headerStyle: createColumnStyle("center", "180px"),
-      })),
-      {
-        field: "total",
-        header: "Total",
-        body: (rowData: any) => {
-          const total = Array.from(doctors).reduce((sum, doctor: string) => {
-            return sum + (rowData[doctor] || 0);
-          }, 0);
-          return (
-            <span
-              style={{
-                fontWeight: rowData.isTotal ? "bold" : "normal",
-                fontSize: rowData.isTotal ? "1em" : "inherit",
-              }}
-            >
-              {formatCurrency(total)}
-            </span>
-          );
-        },
-        style: createColumnStyle("center", "nowrap"),
-        headerStyle: createColumnStyle("center", "180px"),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
       },
     ];
+
+    // Create header group
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Procedimiento" rowSpan={2} />
+          {Array.from(doctors).map((doctor) => (
+            <Column key={doctor} header={doctor} colSpan={3} />
+          ))}
+          <Column header="Total General" rowSpan={2} />
+        </Row>
+        <Row>
+          {Array.from(doctors).flatMap((doctor) => [
+            <Column key={`${doctor}_count`} header="Copago" />,
+            <Column key={`${doctor}_amount`} header="Particular" />,
+            <Column key={`${doctor}_avg`} header="Monto autorizado" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
 
     return (
       <div className="card">
@@ -535,14 +667,15 @@ export const SpecialistsReport = () => {
           </div>
         ) : (
           <DataTable
-            value={tableData}
+            headerColumnGroup={headerGroup}
+            value={displayData}
             loading={tableLoading}
             scrollable
             scrollHeight="flex"
             showGridlines
             stripedRows
             size="small"
-            tableStyle={{ minWidth: "100%", width: "100%" }}
+            tableStyle={{ minWidth: "100%" }}
             className="p-datatable-sm"
             paginator
             rows={rows}
@@ -552,20 +685,327 @@ export const SpecialistsReport = () => {
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
           >
-            {procedureColumns.map((col, i) => (
-              <Column
-                key={i}
-                field={col.field}
-                header={col.header}
-                body={col.body}
-                style={col.style}
-                headerStyle={col.headerStyle}
-              />
-            ))}
+            {procedureColumns.map((col, i) => {
+              return (
+                <Column
+                  key={i}
+                  field={col.field}
+                  header={col.header}
+                  body={col.body}
+                  style={col.style}
+                  headerStyle={col.headerStyle}
+                />
+              );
+            })}
           </DataTable>
         )}
       </div>
     );
+  };
+
+  const generateDoctorsCountTable = (isReturnData = false) => {
+    if (!reportData || reportData.length === 0) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <span>No hay datos disponibles</span>
+        </div>
+      );
+    }
+
+    // Process data and group by procedure and doctor
+    const procedureDoctorCounts: Record<
+      string,
+      Record<
+        string,
+        {
+          count: number; // Copago count
+          amount: number; // Particular count
+          avg: number; // Monto autorizado count
+        }
+      >
+    > = {};
+    const doctors = new Set<string>();
+    const procedureSet = new Set<string>();
+
+    reportData.forEach((entry) => {
+      const doctor = entry.billing_doctor;
+      doctors.add(doctor);
+
+      entry.billed_procedure?.forEach((proc) => {
+        const procedureName = proc.product?.name;
+        procedureSet.add(procedureName);
+
+        if (!procedureDoctorCounts[procedureName]) {
+          procedureDoctorCounts[procedureName] = {};
+        }
+
+        if (!procedureDoctorCounts[procedureName][doctor]) {
+          procedureDoctorCounts[procedureName][doctor] = {
+            count: 0,
+            amount: 0,
+            avg: 0,
+          };
+        }
+
+        // Increment counts instead of summing amounts
+        if (entry.sub_type === "entity") {
+          procedureDoctorCounts[procedureName][doctor].count += 1; // Count instead of sum amount
+        }
+
+        if (entry.sub_type === "public") {
+          procedureDoctorCounts[procedureName][doctor].amount += 1; // Count instead of sum amount
+        }
+
+        procedureDoctorCounts[procedureName][doctor].avg += 1; // Count for authorized amount
+      });
+    });
+
+    // Calculate column totals (doctors)
+    const doctorTotals: Record<
+      string,
+      {
+        count: number;
+        amount: number;
+        avg: number;
+        total: number;
+      }
+    > = {};
+
+    Array.from(doctors).forEach((doctor: string) => {
+      doctorTotals[doctor] = {
+        count: 0,
+        amount: 0,
+        avg: 0,
+        total: 0,
+      };
+
+      Array.from(procedureSet).forEach((proc: string) => {
+        const doctorData = procedureDoctorCounts[proc]?.[doctor] || {
+          count: 0,
+          amount: 0,
+          avg: 0,
+        };
+        doctorTotals[doctor].count += doctorData.count;
+        doctorTotals[doctor].amount += doctorData.amount;
+        doctorTotals[doctor].avg += doctorData.avg;
+        doctorTotals[doctor].total += doctorData.amount; // Sum counts for total
+      });
+    });
+
+    // Prepare table data
+    const tableData = Array.from(procedureSet).map((proc: string) => {
+      const row: Record<string, any> = { procedure: proc };
+      let rowTotal = 0;
+
+      Array.from(doctors).forEach((doctor: string) => {
+        const doctorData = procedureDoctorCounts[proc]?.[doctor] || {
+          count: 0,
+          amount: 0,
+          avg: 0,
+        };
+
+        row[`${doctor}_count`] = doctorData.count;
+        row[`${doctor}_amount`] = doctorData.amount;
+        row[`${doctor}_avg`] = doctorData.avg;
+
+        rowTotal += doctorData.amount; // Sum counts for row total
+      });
+
+      row["total"] = rowTotal;
+      return row;
+    });
+
+    // Add totals row
+    const totalsRow: Record<string, any> = {
+      procedure: "TOTALES",
+      isTotal: true,
+      style: { fontWeight: "bold", backgroundColor: "#f8f9fa" },
+    };
+
+    Array.from(doctors).forEach((doctor: string) => {
+      totalsRow[`${doctor}_count`] = doctorTotals[doctor].count;
+      totalsRow[`${doctor}_amount`] = doctorTotals[doctor].amount;
+      totalsRow[`${doctor}_avg`] = doctorTotals[doctor].avg;
+    });
+
+    totalsRow["total"] = Array.from(doctors).reduce(
+      (sum, doctor) => sum + doctorTotals[doctor].total,
+      0
+    );
+
+    const displayData = isReturnData ? tableData : [...tableData, totalsRow];
+
+    if (isReturnData) {
+      return tableData;
+    }
+
+    // Create columns for the table
+    const procedureColumns: TableColumn[] = [
+      {
+        field: "procedure",
+        header: "Procedimiento",
+        style: createColumnStyle("left", "200px"),
+        body: (rowData: any) => (
+          <span
+            style={{
+              fontWeight: rowData.isTotal ? "bold" : "normal",
+              fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              ...rowData.style,
+            }}
+          >
+            {rowData.procedure}
+          </span>
+        ),
+      },
+      ...Array.from(doctors).flatMap((doctor: string) => [
+        {
+          field: `${doctor}_count`,
+          header: "Copago",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_count`] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+        {
+          field: `${doctor}_amount`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_amount`] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+        {
+          field: `${doctor}_avg`,
+          header: "Monto autorizado",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1.1em" : "inherit",
+              }}
+            >
+              {rowData[`${doctor}_avg`] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+      ]),
+      {
+        field: "total",
+        header: "Total General",
+        body: (rowData: any) => (
+          <span
+            style={{
+              fontWeight: rowData.isTotal ? "bold" : "normal",
+              fontSize: rowData.isTotal ? "1.1em" : "inherit",
+            }}
+          >
+            {rowData.total}
+          </span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+      },
+    ];
+
+    // Create header group (same as generateDoctorsTable)
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Procedimiento" rowSpan={2} />
+          {Array.from(doctors).map((doctor) => (
+            <Column key={doctor} header={doctor} colSpan={3} />
+          ))}
+          <Column header="Total General" rowSpan={2} />
+        </Row>
+        <Row>
+          {Array.from(doctors).flatMap((doctor) => [
+            <Column key={`${doctor}_count`} header="Copago" />,
+            <Column key={`${doctor}_amount`} header="Particular" />,
+            <Column key={`${doctor}_avg`} header="Monto autorizado" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
+
+    return (
+      <div className="card">
+        {tableLoading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{ height: "200px", marginLeft: "800px" }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <DataTable
+            headerColumnGroup={headerGroup}
+            value={displayData}
+            loading={tableLoading}
+            scrollable
+            scrollHeight="flex"
+            showGridlines
+            stripedRows
+            size="small"
+            tableStyle={{ minWidth: "100%" }}
+            className="p-datatable-sm"
+            paginator
+            rows={rows}
+            first={first}
+            onPage={onPageChange}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+          >
+            {procedureColumns.map((col, i) => {
+              return (
+                <Column
+                  key={i}
+                  field={col.field}
+                  header={col.header}
+                  body={col.body}
+                  style={col.style}
+                  headerStyle={col.headerStyle}
+                />
+              );
+            })}
+          </DataTable>
+        )}
+      </div>
+    );
+  };
+
+  const handleExportProceduresCount = async () => {
+    // try {
+    //   setExporting({ ...exporting, proceduresCount: true });
+    //   const data = generateDoctorsCountTable(true);
+    //   await exportToExcel(data, "Procedimientos_conteo");
+    // } catch (error) {
+    //   console.error("Error exporting procedures count:", error);
+    //   alert(error.message);
+    // } finally {
+    //   setExporting({ ...exporting, proceduresCount: false });
+    // }
   };
 
   const generateEntityPricesTable = (isReturnData = false) => {
@@ -1275,7 +1715,19 @@ export const SpecialistsReport = () => {
                         onClick={() => handleTabChange("doctors-tab")}
                         role="tab"
                       >
-                        Procedimientos
+                        Procedimientos $
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={`nav-link ${
+                          activeTab === "doctors-count-tab" ? "active" : ""
+                        }`}
+                        id="doctors-count-tab"
+                        onClick={() => handleTabChange("doctors-count-tab")}
+                        role="tab"
+                      >
+                        Procedimientos #
                       </a>
                     </li>
                     <li className="nav-item">
@@ -1341,6 +1793,28 @@ export const SpecialistsReport = () => {
                         />
                       </div>
                       {generateDoctorsTable()}
+                    </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "doctors-count-tab" ? "show active" : ""
+                      }`}
+                      id="tab-doctors-count"
+                      role="tabpanel"
+                      aria-labelledby="doctors-count-tab"
+                    >
+                      <div className="d-flex justify-content-end gap-2 mb-3">
+                        <ExportButtonExcel
+                          onClick={handleExportProceduresCount}
+                          loading={exporting.proceduresCount}
+                          disabled={!reportData || reportData.length === 0}
+                        />
+                        <ExportButtonPDF
+                          onClick={() => exportToPDF("doctors-count-tab")}
+                          loading={exporting.proceduresCount}
+                          disabled={!reportData || reportData.length === 0}
+                        />
+                      </div>
+                      {generateDoctorsCountTable()}
                     </div>
                     <div
                       className={`tab-pane fade ${

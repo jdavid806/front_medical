@@ -19,7 +19,6 @@ const MaintenanceForm = ({
   maintenanceTypeOptions,
   userOptions,
   currentStatus,
-  currentAssignedTo,
   asset
 }) => {
   const {
@@ -32,7 +31,6 @@ const MaintenanceForm = ({
   } = useForm({
     defaultValues: initialData || {
       assetStatus: currentStatus,
-      assignedTo: currentAssignedTo,
       maintenanceDate: new Date(),
       maintenanceType: "",
       comments: "",
@@ -77,11 +75,7 @@ const MaintenanceForm = ({
       onChange: e => field.onChange(e.value),
       appendTo: "self"
     })
-  }), getFormErrorMessage("assetStatus")), asset?.assignedTo && /*#__PURE__*/React.createElement("div", {
-    className: "mb-3 p-3 surface-100 border-round"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "font-medium text-900"
-  }, "Asignado actualmente a:"), /*#__PURE__*/React.createElement("div", null, asset.assignedTo)), (assetStatus === "active" || assetStatus === "assigned") && /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("assetStatus")), (assetStatus === "active" || assetStatus === "assigned") && /*#__PURE__*/React.createElement("div", {
     className: "mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "assignedTo",

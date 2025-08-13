@@ -1,48 +1,69 @@
+import { infoCompanyService } from "../../../services/api/index.js";
 import { generatePDFFromHTML } from "../exportPDF.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
+import { datosUsuario } from "./datosUsuario.js";
 
-let company = {};
-let patient = {};
 let patient_id = new URLSearchParams(window.location.search).get("patient_id");
 
 async function consultarData() {
   const response = await consultarDatosEmpresa();
-  const responePatient = await consultarDatosPaciente(patient_id);
 
-  patient = responePatient;
-  company = {
+  // console.log("-------------------------------------");
+  
+  console.log(response);
+
+  let company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
   };
+
+  console.log(company);
+  return company;
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoOrden(orden, tipo, inputId = "") {
-
+export async function generarFormatoOrden(orden, tipo, inputId = "") {
+  console.log("orden: ",orden);
+  const patient = await consultarDatosPaciente(orden.patient_id);
+  const company = await consultarData();
+  const user = await consultarDatosDoctor(orden.exam_result[0].created_by_user_id);
+  console.log("user", user);
+   
+  let userData = {
+    nombre: user.nombre,
+    especialidad: user.especialidad || "",
+    registro_medico: user.registro_medico || "",
+    sello:
+      `https://dev.monaros.co/` +
+      getUrlImage(user?.sello || ""),
+    firma:
+      `https://dev.monaros.co/` +
+      getUrlImage(user?.firma || ""),
+  };
   let state = getOrdenState(orden.exam_order_state.name);
 
   const tablePatient = generarTablaPaciente(patient, {
-    date: orden.dateTime || "--",
+    date: formatearFechaQuitarHora(orden.exam_result[0].created_at || "--"),
   });
 
   let contenido = `
   <div class="container border rounded shadow-sm text-start">
     <h3 class="text-primary text-center" style="margin-top: 0; margin-bottom: 0;">Orden de Examen Médico</h3>
     <hr style="margin: 0.25rem 0;">
-  ${tablePatient}
-  <hr style="margin: 0.25rem 0;">
-    <h4 class="text-secondary" style="margin-top: 0; margin-bottom: 0;">Detalles del examen:</h4>
-    <div style="display: table; width: 100%;">
-  <div style="display: table-row;">
-    <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Tipo de examen:</strong> ${orden.exam_type.name}</p></div>
-    <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Estado:</strong> ${state}</p></div>
-  </div>
-</div>
+  ${tablePatient}`;
+  // <hr style="margin: 0.25rem 0;">
+  //   <h4 class="text-secondary" style="margin-top: 0; margin-bottom: 0;">Detalles del examen:</h4>
+  //   <div style="display: table; width: 100%;">
+  // <div style="display: table-row;">
+  //   <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Tipo de examen:</strong> ${orden.exam_type.name}</p></div>
+  //   <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Estado:</strong> ${state}</p></div>
+  // </div>
+contenido += `</div>
     <hr style="margin: 0.25rem 0;">
   `;
 
@@ -56,21 +77,26 @@ export function generarFormatoOrden(orden, tipo, inputId = "") {
     }
   }
 
-  orden.exam_type.form_config.values = filledForm;
+  orden.exam_type.form_config.values = orden.exam_result[0].results;
 
   // Iteramos por las tarjetas y campos dinámicos del examen
   orden.exam_type.form_config.tabs.forEach((tab) => {
-    contenido += `<h4 class="text-secondary" style="margin-top: 0; margin-bottom: 0;">${tab.tab}</h4>`;
+    // contenido += `<h4 class="text-secondary" style="margin-top: 0; margin-bottom: 0;">${tab.tab}</h4>`;
 
     tab.cards.forEach((card) => {
-      contenido += `<h5 class="text-primary" style="margin-top: 0; margin-bottom: 0;">${card.title}</h5>`;
+      // contenido += `<h5 class="text-primary" style="margin-top: 0; margin-bottom: 0;">${card.title}</h5>`;
 
       card.fields.forEach((field) => {
+        // contenido += `
+        // <p style="margin-bottom: 0; margin-top: 0;"><strong>${
+        //   field.label
+        // }</strong></p>
+        // <div style="margin-bottom: 0; margin-top: 0;">${
+        //   orden.exam_type.form_config.values[field.id] || "Sin datos"
+        // }</div>
+        // `;
         contenido += `
-        <p style="margin-bottom: 0; margin-top: 0;"><strong>${
-          field.label
-        }</strong></p>
-        <div style="margin-bottom: 0; margin-top: 0;">${
+        <div style="margin-bottom: 0; margin-top: 0;" style="font-size: 13px;">${
           orden.exam_type.form_config.values[field.id] || "Sin datos"
         }</div>
         `;
@@ -79,7 +105,14 @@ export function generarFormatoOrden(orden, tipo, inputId = "") {
     contenido += `<hr style="margin: 0.25rem 0;">`;
   });
 
-  contenido += `</div>`;
+  contenido += `</div>
+  <div style="font-size: 13px;">
+  ${datosUsuario(userData)}
+  </div>
+  `;
+
+  // console.log(company);
+  
 
   generatePDFFromHTML(contenido, company, patient, inputId);
 }

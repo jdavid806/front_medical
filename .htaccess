@@ -249,6 +249,7 @@ RewriteRule ^homeVacunacion$  vacunas/homeVacunacion.php
 RewriteRule ^depositosInventario$  Inventario/DepositosInventario.php
 RewriteRule ^homeInventario$  Inventario/homeInventario.php
 RewriteRule ^inventarioGeneral$  Inventario/inventarioGeneral.php
+RewriteRule ^inventarioInventariables$  Inventario/inventarioInventariables.php
 RewriteRule ^inventarioMedicamentos$  Inventario/inventarioMedicamentos.php
 RewriteRule ^inventarioVacunas$  Inventario/inventarioVacunas.php
 RewriteRule ^inventarioInsumos$  Inventario/inventarioInsumos.php
@@ -267,6 +268,8 @@ RewriteRule ^cajaPrueba$  Caja/cajaPrueba.php
 
 RewriteRule ^farmacia$  Farmacia/entregaMedicamentos.php
 RewriteRule ^insumos$  Insumos/entregaInsumos.php
+
+RewriteRule ^pharmacyInvoices$  Farmacia/pharmacyInvoices.php
 
 RewriteRule ^homeTurnos$  turnos/homeTurnos.php
 RewriteRule ^solicitud-turnos$  turnos/solicitudTurnos.php

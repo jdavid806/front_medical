@@ -4,10 +4,10 @@ include "../header.php";
 include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
-    ['icono' => 'folder-open', 'titulo' => 'Inventario general', 'texto' => 'Dirigirse a la visualización del inventario general', 'url' => 'inventarioGeneral'],
-    ['icono' => 'pills', 'titulo' => 'Medicamentos', 'texto' => 'Revisar el inventario de medicamentos o agregar nuevos', 'url' => 'inventarioMedicamentos'],
-    ['icono' => 'syringe', 'titulo' => 'Vacunas', 'texto' => 'Revisar el inventario de vacunas o agregar nuevas', 'url' => 'inventarioVacunas'],
-    ['icono' => 'stethoscope', 'titulo' => 'Insumos', 'texto' => 'Revisar el inventario de insumos o agregar nuevos', 'url' => 'inventarioInsumos'],
+    ['icono' => 'folder-open', 'titulo' => 'Productos Inventariables', 'texto' => 'Revisar el inventario de productos inventariables', 'url' => 'inventarioInventariables'],
+    ['icono' => 'pills', 'titulo' => 'Medicamentos', 'texto' => 'Revisar el inventario de medicamentos', 'url' => 'inventarioMedicamentos'],
+    ['icono' => 'syringe', 'titulo' => 'Vacunas', 'texto' => 'Revisar el inventario de vacunas', 'url' => 'inventarioVacunas'],
+    ['icono' => 'stethoscope', 'titulo' => 'Insumos', 'texto' => 'Revisar el inventario de insumos', 'url' => 'inventarioInsumos'],
     ['icono' => 'stethoscope', 'titulo' => 'Paquetes', 'texto' => 'Construir un paquete', 'url' => 'paquetes'],
     ['icono' => 'warehouse', 'titulo' => 'Depositos', 'texto' => 'Crear y editar depositos de inventarios', 'url' => 'depositosInventario'],
     ['icono' => 'layer-group', 'titulo' => 'Categorias', 'texto' => 'Crear y editar categorias', 'url' => 'categoriesProducts'],

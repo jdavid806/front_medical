@@ -11,6 +11,8 @@ import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
 import { Calendar } from "primereact/calendar";
 import { useCentresCosts } from "../../../centres-cost/hooks/useCentresCosts.js";
+import { Card } from "primereact/card";
+import { formatDate } from "../../../../services/utilidades.js";
 const mapFormDataToPayload = formData => {
   const getUserIdFromLocalStorage = () => {
     try {
@@ -46,7 +48,6 @@ const mapFormDataToPayload = formData => {
     remaining_amount: 0,
     quantity_total: formData.quantity_total,
     third_party_id: parseInt(formData.clientes),
-    purchase_order_id: formData.id,
     user_id: userId,
     // Obtenido dinámicamente
     advance_role: formData.type === "purchase-order" ? "provider" : "customer",
@@ -68,7 +69,7 @@ const mapFormDataToPayload = formData => {
       account_number: "",
       notes: ""
     }],
-    invoices: formData.type === "sale-order" ? [] : [{
+    invoices: [{
       invoice_id: Number(formData.id),
       // Asumiendo que númeroFactura es el ID real
       applied_amount: formData.valorPagado
@@ -511,7 +512,58 @@ export const NewReceiptBoxModal = ({
     rows: 3,
     className: "w-100",
     placeholder: "Detalles adicionales..."
+  }))), isShowInputs && /*#__PURE__*/React.createElement(Card, {
+    className: "w-100 h-100 summary-card mb-3",
+    title: "Informaci\xF3n adicional"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "summary-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "summary-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "summary-label"
+  }, "Monto total:"), /*#__PURE__*/React.createElement("span", {
+    className: "summary-value"
+  }, formData.total_amount?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
   }))), /*#__PURE__*/React.createElement("div", {
+    className: "summary-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "summary-label"
+  }, "Descuento:"), /*#__PURE__*/React.createElement("span", {
+    className: "summary-value"
+  }, formData.discount?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "summary-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "summary-label"
+  }, "Impuestos:"), /*#__PURE__*/React.createElement("span", {
+    className: "summary-value"
+  }, formData.iva?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "summary-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "summary-label"
+  }, "Cantidad total:"), /*#__PURE__*/React.createElement("span", {
+    className: "summary-value"
+  }, formData.quantity_total?.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "summary-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "summary-label"
+  }, "Fecha de vencimiento:"), /*#__PURE__*/React.createElement("span", {
+    className: "summary-value"
+  }, formatDate(formData.due_date?.toLocaleDateString("es-ES"), true))))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center gap-3"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",

@@ -5,6 +5,9 @@ export async function generatePDFFromHTML(
   targetInputId = null
 ) {
 
+  console.log("expor5tPDFFFF");
+  
+
   try {
     const htmlContent = `
     <!DOCTYPE html>
@@ -12,15 +15,19 @@ export async function generatePDFFromHTML(
 <head>
   <meta charset="UTF-8">
   <style>
+   @page {
+      margin: 35px 22px 5px 18px;
+    }
     body { 
       font-family: 'Arial', sans-serif; 
       margin: 0; 
-      padding: 15px; 
+      padding: 0px; 
       color: #333; 
     }
     .header {
-      padding-bottom: 30px;
+      padding-bottom: 0px;
       overflow: hidden;
+      height: 110px;
     }
     .logo-container {
       width: fit-content;
@@ -35,7 +42,7 @@ export async function generatePDFFromHTML(
     }
     .clinic-info-container {
       overflow: hidden;
-      padding-left: 15px;
+      padding-left: 5px;
     }
     .clinic-name { 
       font-size: 18px; 
@@ -46,11 +53,11 @@ export async function generatePDFFromHTML(
     }
     .clinic-info, .clinic-contact {
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.2;
       color: #555;
     }
     .clinic-contact {
-      margin-top: 5px;
+      margin-top: 0px;
     }
     .footer {
     position: absolute;
@@ -58,7 +65,7 @@ export async function generatePDFFromHTML(
     left: 0;
     width: 100%; 
     text-align: center; 
-    padding: 10px 0;
+    padding: 5px 0;
     font-size: 12px;
     color: #666;
     border-top: 1px solid #eee;
@@ -93,6 +100,8 @@ export async function generatePDFFromHTML(
     </html>
     `;
     if (!targetInputId) {
+      console.log("entro al if");
+      
       // Comportamiento original (abrir en nueva ventana)
       const form = document.createElement("form");
       form.method = "POST";

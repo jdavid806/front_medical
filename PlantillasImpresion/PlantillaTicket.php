@@ -62,8 +62,25 @@
 
     <div class="receipt-divider"></div>
 
-    <div class="fw-bold"><?php echo $tipo_factura; ?></div>
+    <div class="fw-bold"><?php echo $tipo_factura. " #".$id_factura; ?></div>
     <hr>
+    <!-- <div class="receipt-divider"></div> -->
+
+    <div class="fw-bold">Datos del Paciente</div>
+    <div>
+      <span class="fw-bold">Nombre: </span>
+      <div>
+        <?php echo $paciente_nombre; ?>
+      </div>
+    </div>
+    <div>
+      <span class="fw-bold">Documento: </span>
+      <div>
+        <?php echo $paciente_documento; ?>
+      </div>
+    </div>
+    <hr>
+
     <div><span class="fw-bold">Fecha impresión:</span>
       <div><?php echo $fecha_impresion; ?></div>
     </div>
@@ -80,25 +97,13 @@
       <div><span class="fw-bold">Fecha autorización:</span>
         <div><?php echo $fecha_autorizacion; ?></div>
       </div>
+      <div><span class="fw-bold">Entidad:</span>
+        <div><?php echo $entidad; ?></div>
+      </div>
       <hr>
     <?php endif; ?>
 
-    <div class="receipt-divider"></div>
 
-    <div class="fw-bold">Datos del Paciente</div>
-    <div>
-      <span class="fw-bold">Nombre: </span>
-      <div>
-        <?php echo $paciente_nombre; ?>
-      </div>
-    </div>
-    <div>
-      <span class="fw-bold">Documento: </span>
-      <div>
-        <?php echo $paciente_documento; ?>
-      </div>
-    </div>
-    <hr>
     <div class="receipt-divider"></div>
 
     <div class="fw-bold">Items Facturados</div>
@@ -108,22 +113,36 @@
 
     <div class="receipt-divider"></div>
 
-    <div class="d-flex">
-      <span>Subtotal:</span>
-      <span>$<?php echo number_format($subtotal, 2); ?></span>
-    </div>
+
     <!-- <div class="d-flex">
       <span>IVA (10%):</span>
       <span>$<?php echo $iva; ?></span>
     </div> -->
-    <div class="d-flex">
-      <span>Descuento:</span>
-      <span>-$<?php echo $descuento; ?></span>
-    </div>
+    <?php if ($agregar_autorizacion): ?>
+      <div class="d-flex">
+        <span>Subtotal:</span>
+        <span>$<?php echo number_format($subtotal + $monto_autorizado, 2); ?></span>
+      </div>
+      <div class="d-flex">
+        <span>Monto autorizado:</span>
+        <span>$<?php echo $monto_autorizado; ?></span>
+      </div>
+    <?php else: ?>
+      <div class="d-flex">
+        <span>Subtotal:</span>
+        <span>$<?php echo number_format($subtotal, 2); ?></span>
+      </div>
+      <div class="d-flex">
+        <span>Descuento:</span>
+        <span>-$<?php echo $descuento; ?></span>
+      </div>
+    <?php endif; ?>
+
     <div class="d-flex fw-bold">
       <span>TOTAL:</span>
       <span>$<?php echo number_format($subtotal, 2); ?></span>
     </div>
+    <small><strong>Facturado por: </strong><?php echo $facturador; ?></small>
 
     <hr>
     <div class="receipt-divider"></div>

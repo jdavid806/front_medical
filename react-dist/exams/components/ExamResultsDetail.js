@@ -16,7 +16,6 @@ export const ExamResultsDetail = ({
   }, [examId]);
   useEffect(() => {
     if (exam) {
-      console.log(exam);
       setExamName(exam?.exam_type?.name || 'Ver resultados de examen');
       const result = exam?.exam_result?.results || {};
       const defaultForm = exam?.exam_type?.form_config.values || {};
@@ -29,7 +28,7 @@ export const ExamResultsDetail = ({
         }
       }
       if (filledForm) {
-        exam.exam_type.form_config.values = filledForm;
+        exam.exam_type.form_config.values = exam.exam_result[0].results;
         setFormConfig(exam?.exam_type?.form_config);
       }
     }

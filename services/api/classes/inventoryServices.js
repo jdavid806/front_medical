@@ -135,5 +135,13 @@ export class InventoryService extends BaseApiService {
   async getInventariables() {
     return await this.httpClient.get(`api/v1/admin/products/inventariables`);
   }
+
+  async getDepositsInventories({productType}) {
+    return await this.httpClient.get(`api/v1/admin/deposits/get-inventories-of-product-type/${productType}`);
+  }
+
+  async getDepositsInventoriesOnlyDeposits({productType}) {
+    return await this.httpClient.get(`api/v1/admin/deposits/get-inventories-of-product-type-only-deposits/${productType}`);
+  }
 }
 export default InventoryService;
