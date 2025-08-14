@@ -30,7 +30,7 @@ window.getVerifiedProducts = function () {
 // Inicialización
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const response = await farmaciaService.getAllRecipes();
+    const response = await farmaciaService.getAllRecipes("PENDING");
 
     window.allRecipes = Array.isArray(response)
       ? response

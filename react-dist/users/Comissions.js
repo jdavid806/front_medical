@@ -128,7 +128,7 @@ export const ComissionForm = ({
         value: "entity"
       }, {
         label: "Particular",
-        value: "private"
+        value: "public"
       }],
       optionLabel: "label",
       optionValue: "value",

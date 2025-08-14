@@ -16,7 +16,7 @@ import {
 import { validatePatientStep } from "../utils/helpers";
 import { PatientStepProps, FormData } from "../interfaces/AdmisionBilling";
 
-const PatientStep: React.FC<PatientStepProps> = ({
+const PatientStepPreview: React.FC<PatientStepProps> = ({
   formData,
   updateFormData,
   nextStep,
@@ -66,14 +66,11 @@ const PatientStep: React.FC<PatientStepProps> = ({
   const handleNext = async () => {
     const isValid = await trigger([
       "patient.documentNumber",
-      "patient.nameComplet",
+      "patient.nameComplet", 
       "patient.gender",
       "patient.whatsapp",
       "patient.email",
-      "patient.address",
-      "patient.city",
-      "patient.affiliateType",
-      "patient.insurance",
+      "patient.address"
     ] as const);
 
     if (isValid && validatePatientStep(formData.patient, toast)) {
@@ -115,6 +112,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("nameComplet", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.nameComplet")}
                   </div>
@@ -136,6 +134,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("documentNumber", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.documentNumber")}
                   </div>
@@ -163,6 +162,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         handlePatientChange("gender", e.value);
                       }}
                       appendTo="self"
+                      disabled
                     />
                     {getFormErrorMessage("patient.gender")}
                   </div>
@@ -184,6 +184,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("address", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.address")}
                   </div>
@@ -212,6 +213,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("whatsapp", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.whatsapp")}
                   </div>
@@ -240,6 +242,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("email", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.email")}
                   </div>
@@ -259,6 +262,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("insurance", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.insurance")}
                   </div>
@@ -282,6 +286,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("city", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.city")}
                   </div>
@@ -300,6 +305,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                         field.onChange(e.target.value);
                         handlePatientChange("affiliateType", e.target.value);
                       }}
+                      disabled
                     />
                     {getFormErrorMessage("patient.affiliateType")}
                   </div>
@@ -311,28 +317,26 @@ const PatientStep: React.FC<PatientStepProps> = ({
 
         <div className="container-fluid">
           <div className="row justify-content-center">
-
-            
-        <div className="col-lg-12 col-md-10 col-12 mb-4 w-40">
-          <Card title="Facturación Consumidor" className="h-100">
-            <div className="d-flex align-items-center mb-3">
-              <InputSwitch
-                checked={formData.patient.facturacionConsumidor}
-                onChange={() => toggleBillingType("consumer")}
-                disabled={formData.patient.facturacionEntidad}
-                className="me-3 bg-primary"
-              />
-              <span className="text-muted small">facturación consumidor</span>
+            <div className="col-lg-12 col-md-10 col-12 mb-4 w-40">
+              <Card title="Facturación Consumidor" className="h-100">
+                <div className="d-flex align-items-center mb-3">
+                  <InputSwitch
+                    checked={formData.patient.facturacionConsumidor}
+                    onChange={() => toggleBillingType("consumer")}
+                    disabled={true}
+                    className="me-3 bg-primary"
+                  />
+                  <span className="text-muted small">facturación consumidor</span>
+                </div>
+              </Card>
             </div>
-          </Card>
-        </div>
             <div className="col-lg-12 col-md-10 col-12 mb-4">
               <Card title="Facturación por Entidad" className="h-100">
                 <div className="d-flex align-items-center mb-3">
                   <InputSwitch
                     checked={formData.patient.facturacionEntidad}
                     onChange={() => toggleBillingType("entity")}
-                    disabled={formData.patient.facturacionConsumidor}
+                    disabled={true}
                     className="me-3 bg-primary"
                   />
                   <span className="text-muted small">
@@ -358,6 +362,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                               field.onChange(e.target.value);
                               handleBillingChange("entity", e.target.value);
                             }}
+                            disabled
                           />
                           {getFormErrorMessage("billing.entity")}
                         </div>
@@ -382,6 +387,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                             dateFormat="dd/mm/yy"
                             showIcon
                             appendTo="self"
+                            disabled
                           />
                         </div>
                       )}
@@ -410,6 +416,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                                 e.target.value
                               );
                             }}
+                            disabled
                           />
                           {getFormErrorMessage("billing.authorizationNumber")}
                         </div>
@@ -432,6 +439,7 @@ const PatientStep: React.FC<PatientStepProps> = ({
                                 e.target.value
                               );
                             }}
+                            disabled
                           />
                         </div>
                       )}
@@ -440,25 +448,6 @@ const PatientStep: React.FC<PatientStepProps> = ({
                 )}
               </Card>
             </div>
-
-            {/* <div className="col-lg-12 col-md-10 col-12 mb-4">
-              <Card title="Acompañantes" className="h-100">
-                <div className="d-flex align-items-center mb-3">
-                  <InputSwitch
-                    checked={formData.patient.hasCompanion}
-                    onChange={(e) => toggleCompanion(e.value)}
-                    className="me-3 bg-primary"
-                  />
-                  <label className="ml-2">Activar acompañante</label>
-                </div>
-
-                {formData.patient.hasCompanion && (
-                  <div>
-                    <span className="text-muted small">Información del acompañante</span>
-                  </div>
-                )}
-              </Card>
-            </div> */}
           </div>
         </div>
       </div>
@@ -476,4 +465,4 @@ const PatientStep: React.FC<PatientStepProps> = ({
   );
 };
 
-export default PatientStep;
+export default PatientStepPreview;

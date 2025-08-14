@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content shadow-lg border-0 rounded-4">
             <div class="modal-header bg-primary text-white rounded-top-4">
-                <h5 class="modal-title"><i class="bi bi-journal-medical me-2"></i>Detalles de la Receta</h5>
+                <h5 class="modal-title text-white"><i class="bi bi-journal-medical me-2 text-white"></i>Detalles de la Receta</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

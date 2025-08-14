@@ -138,6 +138,7 @@ export interface AppointmentTableItem {
   branchId: string | null;
   isChecked: boolean;
   specialtyId: string;
+  patient?: Patient;
 }
 
 export interface Companion {

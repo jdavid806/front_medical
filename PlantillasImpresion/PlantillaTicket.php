@@ -87,9 +87,11 @@
     <div><span class="fw-bold">Fecha factura:</span>
       <div><?php echo $fecha_factura; ?></div>
     </div>
+    <?php if ($total > 0): ?>
     <div><span class="fw-bold">Nro. Comprobante:</span>
       <div><?php echo $numero_comprobante; ?></div>
     </div>
+    <?php endif; ?>
     <?php if ($agregar_autorizacion): ?>
       <div><span class="fw-bold">Nro. Autorización:</span>
         <div><?php echo $numero_autorizacion; ?></div>

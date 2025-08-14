@@ -976,8 +976,8 @@ export const InvoicesReport = () => {
     let rowTotalAutorizado = 0;
 
     Array.from(billingUsers).forEach((user: any) => {
-      row[`${user}_copago`] = groupedData[entity][user].copago || 0;
-      row[`${user}_autorizado`] = groupedData[entity][user].autorizado || 0;
+      row[`${user}_copago`] = groupedData[entity][user]?.copago || 0;
+      row[`${user}_autorizado`] = groupedData[entity][user]?.autorizado || 0;
       
       rowTotalCopago += row[`${user}_copago`];
       rowTotalAutorizado += row[`${user}_autorizado`];
@@ -1019,7 +1019,7 @@ export const InvoicesReport = () => {
         ),
         footer: () => (
           <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user].copago)}
+            {formatCurrency(totals[user]?.copago || 0)}
           </span>
         ),
         style: createColumnStyle("right"),
@@ -1214,7 +1214,7 @@ export const InvoicesReport = () => {
     let rowTotal = 0;
 
     Array.from(billingUsers).forEach((user: any) => {
-      row[`${user}_copago`] = groupedData[method][user].copago || 0;
+      row[`${user}_copago`] = groupedData[method][user]?.copago || 0;
       row[`${user}_particular`] = groupedData[method][user].particular || 0;
       row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
       
@@ -1257,7 +1257,7 @@ export const InvoicesReport = () => {
         ),
         footer: () => (
           <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user].copago)}
+            {formatCurrency(totals[user]?.copago || 0)}
           </span>
         ),
         style: createColumnStyle("right"),

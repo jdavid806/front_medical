@@ -58,14 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $monto_autorizado = $related_invoice['monto_autorizado'];
   $id_factura = $related_invoice['id'];
 
-  if ($numero_autorizacion) {
-    $tipo_factura = "RECIBO DE CAJA";
-    $agregar_autorizacion = true;
-  } else {
-    // $tipo_factura = "RECIBO DE VENTA";
-    $tipo_factura = "FACTURA DE VENTA";
-    $agregar_autorizacion = false;
-  }
 
   $fecha_autorizacion = date('d-m-Y h:i A', strtotime($related_invoice['fecha_autorizacion']));
   $fecha_impresion = date('Y-m-d H:i:s');
@@ -75,6 +67,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $iva = $related_invoice['iva'];
   $total = $related_invoice['total'];
   $descuento = $related_invoice['descuento'];
+
+
+  if ($numero_autorizacion && $total == 0) {
+    $tipo_factura = "RECIBO DE CAJA";
+    $agregar_autorizacion = true;
+  } else {
+    // $tipo_factura = "RECIBO DE VENTA";
+    $tipo_factura = "FACTURA DE VENTA";
+    $agregar_autorizacion = false;
+  }
 
   $nombre_pdf = strtolower(str_replace(' ', '_', $tipo_factura)) . "_" . date('Ymd', strtotime($related_invoice['fecha_factura'])) . "_" . $paciente_documento . ".pdf";
 

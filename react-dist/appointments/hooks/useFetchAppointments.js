@@ -4,8 +4,6 @@ const getEstado = appointment => {
   const stateId = appointment.appointment_state_id.toString();
   const stateKey = appointment.appointment_state?.name;
   const attentionType = appointment.attention_type || "CONSULTATION";
-
-  // Función auxiliar para simplificar las condiciones
   const isPending = () => stateId === "1" || stateKey === "pending" && attentionType === "PROCEDURE";
   const isWaitingForConsultation = () => (stateId === "2" || stateKey === "pending_consultation" || stateKey === "in_consultation") && attentionType === "CONSULTATION";
   const isWaitingForExam = () => (stateId === "2" || stateKey === "pending_consultation") && attentionType === "PROCEDURE";
@@ -47,6 +45,7 @@ export const useFetchAppointments = (getCustomFilters, customMapper) => {
     }
     const estado = getEstado(appointment);
     return {
+      patient: appointment.patient,
       id: appointment.id.toString(),
       patientName: `${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}`,
       patientDNI: appointment.patient.document_number,
@@ -63,7 +62,6 @@ export const useFetchAppointments = (getCustomFilters, customMapper) => {
       attentionType: attentionType,
       productId: appointment.product_id,
       stateDescription: estado,
-      // Nuevo campo agregado
       user_availability: appointment?.user_availability
     };
   };

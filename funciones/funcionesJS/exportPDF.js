@@ -16,7 +16,7 @@ export async function generatePDFFromHTML(
   <meta charset="UTF-8">
   <style>
    @page {
-      margin: 35px 22px 5px 18px;
+      margin: 35px 28px 5px 18px;
     }
     body { 
       font-family: 'Arial', sans-serif; 

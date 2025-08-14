@@ -9,7 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { genderOptions } from "../utils/constants.js";
 import { validatePatientStep } from "../utils/helpers.js";
-const PatientStep = ({
+const PatientStepPreview = ({
   formData,
   updateFormData,
   nextStep,
@@ -52,7 +52,7 @@ const PatientStep = ({
     handlePatientChange("hasCompanion", value);
   };
   const handleNext = async () => {
-    const isValid = await trigger(["patient.documentNumber", "patient.nameComplet", "patient.gender", "patient.whatsapp", "patient.email", "patient.address", "patient.city", "patient.affiliateType", "patient.insurance"]);
+    const isValid = await trigger(["patient.documentNumber", "patient.nameComplet", "patient.gender", "patient.whatsapp", "patient.email", "patient.address"]);
     if (isValid && validatePatientStep(formData.patient, toast)) {
       nextStep();
     }
@@ -100,7 +100,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("nameComplet", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.nameComplet"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.documentNumber",
@@ -123,7 +124,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("documentNumber", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.documentNumber"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
@@ -151,7 +153,8 @@ const PatientStep = ({
         field.onChange(e.value);
         handlePatientChange("gender", e.value);
       },
-      appendTo: "self"
+      appendTo: "self",
+      disabled: true
     }), getFormErrorMessage("patient.gender"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.address",
@@ -174,7 +177,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("address", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.address"))
   })))), /*#__PURE__*/React.createElement(Card, {
     title: "Informaci\xF3n Adicional",
@@ -204,7 +208,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("whatsapp", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.whatsapp"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.email",
@@ -231,7 +236,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("email", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.email"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.insurance",
@@ -249,7 +255,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("insurance", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.insurance"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
@@ -271,7 +278,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("city", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.city"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.affiliateType",
@@ -289,7 +297,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handlePatientChange("affiliateType", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("patient.affiliateType"))
   })))), /*#__PURE__*/React.createElement("div", {
     className: "container-fluid"
@@ -305,7 +314,7 @@ const PatientStep = ({
   }, /*#__PURE__*/React.createElement(InputSwitch, {
     checked: formData.patient.facturacionConsumidor,
     onChange: () => toggleBillingType("consumer"),
-    disabled: formData.patient.facturacionEntidad,
+    disabled: true,
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-muted small"
@@ -319,7 +328,7 @@ const PatientStep = ({
   }, /*#__PURE__*/React.createElement(InputSwitch, {
     checked: formData.patient.facturacionEntidad,
     onChange: () => toggleBillingType("entity"),
-    disabled: formData.patient.facturacionConsumidor,
+    disabled: true,
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-muted small"
@@ -344,7 +353,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handleBillingChange("entity", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("billing.entity"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "billing.authorizationDate",
@@ -364,7 +374,8 @@ const PatientStep = ({
       },
       dateFormat: "dd/mm/yy",
       showIcon: true,
-      appendTo: "self"
+      appendTo: "self",
+      disabled: true
     }))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "billing.authorizationNumber",
@@ -387,7 +398,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handleBillingChange("authorizationNumber", e.target.value);
-      }
+      },
+      disabled: true
     }), getFormErrorMessage("billing.authorizationNumber"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "billing.authorizedAmount",
@@ -404,7 +416,8 @@ const PatientStep = ({
       onChange: e => {
         field.onChange(e.target.value);
         handleBillingChange("authorizedAmount", e.target.value);
-      }
+      },
+      disabled: true
     }))
   }))))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end pt-4 col-12"
@@ -418,4 +431,4 @@ const PatientStep = ({
     className: "btn btn-primary btn-sm"
   })));
 };
-export default PatientStep;
+export default PatientStepPreview;

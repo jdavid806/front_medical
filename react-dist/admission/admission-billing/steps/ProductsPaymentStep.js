@@ -167,13 +167,15 @@ const ProductsPaymentStep = ({
       }
     });
   };
-  const paymentModalFooter = /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+  const paymentModalFooter = /*#__PURE__*/React.createElement("div", {
+    className: "d-flex pt-4 justify-content-between gap-3"
+  }, /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-times"
     }),
     onClick: () => setShowPaymentModal(false),
-    className: "p-button-text"
+    className: "p-button-secondary"
   }), /*#__PURE__*/React.createElement(Button, {
     label: "Aplicar Pago",
     icon: /*#__PURE__*/React.createElement("i", {
@@ -181,7 +183,7 @@ const ProductsPaymentStep = ({
     }),
     onClick: applyModalPayment,
     disabled: modalAmount <= 0,
-    className: "p-button-success"
+    className: "p-button-primary me-2"
   }));
   return /*#__PURE__*/React.createElement("div", {
     className: "grid"
@@ -206,7 +208,7 @@ const ProductsPaymentStep = ({
     panelClassName: "shadow-3"
   })), /*#__PURE__*/React.createElement(Button, {
     label: "Agregar Producto",
-    className: "p-button-secondary p-button-sm mb-2",
+    className: "p-button-primary me-2",
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-plus-square"
     }),
@@ -419,7 +421,7 @@ const ProductsPaymentStep = ({
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-calculator"
     }),
-    className: "mb-3 w-full p-button-outlined",
+    className: "p-button-primary me-2",
     onClick: openPaymentModal
   }), /*#__PURE__*/React.createElement(Card, {
     className: "border-round-lg shadow-1 mb-4"
@@ -503,7 +505,7 @@ const ProductsPaymentStep = ({
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-cash-register"
     }),
-    className: "p-button-success",
+    className: "p-button-primary me-2",
     onClick: handleAddPayment,
     disabled: !formData.currentPayment.method || !formData.currentPayment.amount,
     tooltip: "Agregar este pago al registro",

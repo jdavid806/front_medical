@@ -3,6 +3,7 @@ import { farmaciaService } from "../services/api.service.js";
 import { paymentMethodService } from "../../../services/api/index.js";
 import { generatePDFReceipts } from "../../../funciones/funcionesJS/exportPDF.js";
 import { infoCompanyService } from "../../../services/api/index.js";
+import { findSimilarProducts } from "../../../services/productsHelper.js";
 
 let htmlPrintReceipt = "";
 let infoCompany = null;
@@ -31,27 +32,21 @@ export function renderRecipeModalContent(recipeItems, patient, prescriber) {
     <div class="row">
       <div class="col-md-6 mb-3">
         <h6 class="text-primary mb-1">Paciente</h6>
-        <div class="fw-semibold">${patient.first_name || ""} ${
-    patient.last_name || ""
-  }</div>
-        <div class="text-muted small">Documento: ${
-          patient.document_type || ""
-        } ${patient.document_number || ""}</div>
-        <div class="text-muted small">Nacimiento: ${
-          patient.date_of_birth || ""
-        }</div>
+        <div class="fw-semibold">${patient.first_name || ""} ${patient.last_name || ""
+    }</div>
+        <div class="text-muted small">Documento: ${patient.document_type || ""
+    } ${patient.document_number || ""}</div>
+        <div class="text-muted small">Nacimiento: ${patient.date_of_birth || ""
+    }</div>
       </div>
       <div class="col-md-6 mb-3">
         <h6 class="text-primary mb-1">Prescriptor</h6>
-        <div class="fw-semibold">${prescriber.first_name || ""} ${
-    prescriber.last_name || ""
-  }</div>
-        <div class="text-muted small">${
-          prescriber.specialty?.name || "Sin especialidad"
-        }</div>
-        <div class="text-muted small">Email: ${
-          prescriber.email || "Sin correo"
-        }</div>
+        <div class="fw-semibold">${prescriber.first_name || ""} ${prescriber.last_name || ""
+    }</div>
+        <div class="text-muted small">${prescriber.specialty?.name || "Sin especialidad"
+    }</div>
+        <div class="text-muted small">Email: ${prescriber.email || "Sin correo"
+    }</div>
       </div>
     </div>
   `;
@@ -67,11 +62,9 @@ export function renderRecipeModalContent(recipeItems, patient, prescriber) {
       (item) => `
     <div class="mb-3 p-3 border rounded-3">
       <div class="fw-medium">${item.medication} ${item.concentration}</div>
-      <div class="text-muted small mb-2">${
-        item.description || "Sin descripción"
-      }</div>
+      <div class="text-muted small mb-2">${item.description || "Sin descripción"
+        }</div>
       <div><strong>Cantidad:</strong> ${item.quantity}</div>
-      <div><strong>Precio:</strong> ${item.price || "$0.00"}</div>
     </div>
   `
     )
@@ -207,11 +200,9 @@ export function renderReceiptModal(recipe) {
     return;
   }
 
-  const patientName = `${recipe.patient.first_name} ${
-    recipe.patient.middle_name || ""
-  } ${recipe.patient.last_name} ${
-    recipe.patient.second_last_name || ""
-  }`.trim();
+  const patientName = `${recipe.patient.first_name} ${recipe.patient.middle_name || ""
+    } ${recipe.patient.last_name} ${recipe.patient.second_last_name || ""
+    }`.trim();
   const patientPhone = recipe.patient.whatsapp;
 
   const orderId = recipe.id;
@@ -380,7 +371,8 @@ export async function populateMedicationSelect() {
   select.innerHTML = '<option value="">Cargando medicamentos...</option>';
 
   try {
-    const medicamentos = await farmaciaService.getAllMedicaments();
+    const medicamentosResponse = await farmaciaService.getProductsWithAvailableStock({ productTypeNames: "Medicamentos" });
+    const medicamentos = medicamentosResponse.data;
     if (!Array.isArray(medicamentos) || medicamentos.length === 0) {
       select.innerHTML =
         '<option value="">No hay medicamentos disponibles</option>';
@@ -388,13 +380,17 @@ export async function populateMedicationSelect() {
     }
 
     select.innerHTML = '<option value="">Seleccione un medicamento</option>';
-    medicamentos.forEach((med) => {
+
+    const medicationName = document.getElementById("medicamentoNombre").textContent;
+
+    findSimilarProducts(medicationName, medicamentos).forEach((item) => {
+      const med = item.attributes;
       const option = document.createElement("option");
       option.value = JSON.stringify(med);
       const concentration = med.concentration ?? "";
       option.textContent = concentration
-        ? `${med.name} - ${concentration}`
-        : med.name;
+        ? `${med.name} - ${concentration} | Stock: ${med.product_stock}`
+        : `${med.name} | Stock: ${med.product_stock}`;
 
       option.dataset.name = med.name;
       option.dataset.concentration = concentration;
@@ -550,9 +546,8 @@ document
           .filter((p) => p.status === "OUT_OF_STOCK")
           .map((p) => {
             outOfStockIds.push(parseInt(p.id));
-            return `Producto ${p.name}: ${
-              p.message || "Sin stock disponible."
-            }`;
+            return `Producto ${p.name}: ${p.message || "Sin stock disponible."
+              }`;
           })
           .join("<br>");
 

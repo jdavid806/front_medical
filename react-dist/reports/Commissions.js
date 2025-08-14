@@ -109,11 +109,11 @@ export const Commissions = () => {
     const nodes = users.map((user, userIndex) => {
       const nombre = `${user.first_name || ""} ${user.last_name || ""}`.trim();
       const sumAmountTotal = user[nodeKey].reduce((total, admission) => {
-        if (admission.invoice.sub_type === "entity") {
+        if (admission?.invoice?.sub_type === "entity") {
           const amount = parseFloat(admission.entity_authorized_amount) || 0;
           return total + amount;
         } else {
-          const details = admission.invoice.details || [];
+          const details = admission?.invoice?.details || [];
           const amountByPublic = details.reduce((totalDetail, detail) => {
             return totalDetail + (parseFloat(detail.amount) || 0);
           }, 0);
@@ -126,16 +126,16 @@ export const Commissions = () => {
       let netAmount = 0;
       const children = user[nodeKey]?.flatMap((admission, admissionIndex) => {
         admission.dataChild = null;
-        const baseCalculation = calculateBase(admission) * admission?.invoice?.commission?.percentage_value / 100;
+        const baseCalculation = calculateBase(admission) * admission?.invoice?.commission?.percentage_value / 100 || 0;
         baseCalculationUser += baseCalculation;
-        const commissionCalculation = calculateCommission(baseCalculation, admission);
+        const commissionCalculation = calculateCommission(baseCalculation, admission) || 0;
         commissionCalculatedUser += commissionCalculation;
-        const retention = calculatedRetention(commissionCalculation, admission);
+        const retention = calculatedRetention(commissionCalculation, admission) || 0;
         retentionCalculatedUser += retention;
         const netAmountCalculated = commissionCalculation - retention;
         netAmount += netAmountCalculated;
         admission.dataChild = {
-          monto: admission.invoice.sub_type == "entity" ? parseInt(admission.entity_authorized_amount) : parseInt(admission.invoice.total_amount),
+          monto: admission?.invoice?.sub_type == "entity" ? parseInt(admission.entity_authorized_amount) : parseInt(admission?.invoice?.total_amount),
           base: baseCalculation,
           comision: commissionCalculation,
           retencion: retention,
@@ -145,7 +145,7 @@ export const Commissions = () => {
           key: `${userIndex}-${admissionIndex}`,
           data: {
             totalServices: "",
-            monto: admission.invoice.sub_type == "entity" ? admission.entity_authorized_amount : admission.invoice.total_amount,
+            monto: admission?.invoice?.sub_type == "entity" ? admission.entity_authorized_amount : admission?.invoice?.total_amount,
             base: baseCalculation,
             comision: commissionCalculation,
             retencion: retention,
@@ -178,17 +178,17 @@ export const Commissions = () => {
   };
   function calculateBase(admission) {
     let resultBase = 0;
-    const comissionsInDetails = admission.invoice.details.filter(detail => detail.commission).length;
-    if (admission.invoice.sub_type == "entity") {
-      resultBase = Number(admission.entity_authorized_amount) / admission.invoice.details.length * comissionsInDetails;
+    const comissionsInDetails = admission?.invoice?.details.filter(detail => detail.commission).length;
+    if (admission?.invoice?.sub_type == "entity") {
+      resultBase = Number(admission.entity_authorized_amount) / admission?.invoice?.details.length * comissionsInDetails;
       return resultBase;
     } else {
-      resultBase = admission.invoice.total_amount / admission.invoice.details.length * comissionsInDetails;
+      resultBase = admission?.invoice?.total_amount / admission?.invoice?.details.length * comissionsInDetails;
       return resultBase;
     }
   }
   function calculateCommission(baseCalculation, admission) {
-    const comissionsInDetails = admission.invoice.details.map(detail => {
+    const comissionsInDetails = admission?.invoice?.details.map(detail => {
       return detail.commission !== null;
     }).length;
     if (admission?.invoice?.commission?.commission_type == "percentage") {
@@ -201,10 +201,13 @@ export const Commissions = () => {
     if (admission?.invoice?.commission?.retention_type == "percentage") {
       return commissionCalculation * Math.floor(parseFloat(admission?.invoice?.commission?.value_retention)) / 100;
     } else {
-      return admission?.invoice?.commission?.value_retention;
+      if (admission?.invoice?.commission !== null) {
+        return Math.floor(parseFloat(admission?.invoice?.commission?.value_retention)) || 0;
+      }
     }
   }
-  function exportToPDF(data) {
+  function exportToPDF(data, mainNode) {
+    console.log("mainNode", mainNode);
     const table = `
         <style>
         table { 
@@ -226,6 +229,27 @@ export const Commissions = () => {
         }
         </style>
     
+        <div style="margin-bottom: 20px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <tr>
+              <td style="padding: 8px 0;"><strong>Rango de fechas liquidado:</strong></td>
+              <td style="padding: 8px 0;">${formatDate(dateRange[0], true)} - ${formatDate(dateRange[1], true)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;"><strong>Comisión total:</strong></td>
+              <td style="padding: 8px 0;">$${mainNode.data.comision.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;"><strong>Retención total:</strong></td>
+              <td style="padding: 8px 0;">$${mainNode.data.retencion.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0;"><strong>Neto a pagar:</strong></td>
+              <td style="padding: 8px 0;">$${mainNode.data.netAmount.toFixed(2)}</td>
+            </tr>
+          </table>
+        </div>
+
         <table>
           <thead>
             <tr>
@@ -289,7 +313,7 @@ export const Commissions = () => {
         className: "p-button-secondary d-flex justify-content-center",
         onClick: e => {
           e.stopPropagation();
-          exportToPDF(node.data.rawData);
+          exportToPDF(node.data.rawData, node);
         }
       }, /*#__PURE__*/React.createElement("i", {
         className: "fa-solid fa-file-pdf"

@@ -146,7 +146,7 @@ export const ComissionForm: React.FC<UserComissionsFormProps> = ({
                         filter
                         options={[
                           { label: "Entidad", value: "entity" },
-                          { label: "Particular", value: "private" },
+                          { label: "Particular", value: "public" },
                         ]}
                         optionLabel="label"
                         optionValue="value"

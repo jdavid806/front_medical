@@ -408,36 +408,85 @@ export function getIndicativeByCountry(nombrePais) {
 export function obtenerUltimaParteUrl() {
   // Obtener la URL completa
   const urlCompleta = window.location.href;
-  
+
   // Crear un objeto URL para facilitar el análisis
   const url = new URL(urlCompleta);
-  
+
   // Obtener la parte del pathname (ruta)
   const pathname = url.pathname;
-  
+
   // Dividir el pathname por las barras y filtrar elementos vacíos
   const partes = pathname.split('/').filter(part => part !== '');
-  
+
   // Devolver la última parte del pathname
   return partes.length > 0 ? partes[partes.length - 1] : '';
 }
 
 export function calculateDaysBetweenDates(startDate, endDate) {
-    // Convert date strings to Date objects
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    // Validate the dates
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
+  // Convert date strings to Date objects
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Validate the dates
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw new Error('Invalid date format. Please use "YYYY-MM-DD"');
+  }
+
+  // Calculate difference in milliseconds
+  const timeDifference = end - start;
+
+  // Convert milliseconds to days (1000 ms * 60 sec * 60 min * 24 hrs)
+  const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+
+  // Return absolute value in case dates are reversed
+  return Math.abs(Math.round(daysDifference));
+}
+
+/**
+ * Calcula la distancia de Levenshtein entre dos strings
+ * @param {string} a 
+ * @param {string} b 
+ * @returns {number} Distancia de Levenshtein
+ */
+export function levenshteinDistance(a, b) {
+  const matrix = [];
+  let i, j;
+
+  // Inicializar la matriz
+  for (i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // Calcular distancias
+  for (i = 1; i <= b.length; i++) {
+    for (j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // Sustitución
+          matrix[i][j - 1] + 1,     // Inserción
+          matrix[i - 1][j] + 1      // Eliminación
+        );
+      }
     }
-    
-    // Calculate difference in milliseconds
-    const timeDifference = end - start;
-    
-    // Convert milliseconds to days (1000 ms * 60 sec * 60 min * 24 hrs)
-    const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
-    
-    // Return absolute value in case dates are reversed
-    return Math.abs(Math.round(daysDifference));
+  }
+
+  return matrix[b.length][a.length];
+}
+
+/**
+ * Calcula el porcentaje de similitud entre dos strings
+ * @param {string} str1 
+ * @param {string} str2 
+ * @returns {number} Porcentaje de similitud (0-1)
+ */
+export function similarity(str1, str2) {
+  const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+  const maxLength = Math.max(str1.length, str2.length);
+  return 1 - distance / maxLength;
 }

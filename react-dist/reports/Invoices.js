@@ -743,8 +743,8 @@ export const InvoicesReport = () => {
       let rowTotalCopago = 0;
       let rowTotalAutorizado = 0;
       Array.from(billingUsers).forEach(user => {
-        row[`${user}_copago`] = groupedData[entity][user].copago || 0;
-        row[`${user}_autorizado`] = groupedData[entity][user].autorizado || 0;
+        row[`${user}_copago`] = groupedData[entity][user]?.copago || 0;
+        row[`${user}_autorizado`] = groupedData[entity][user]?.autorizado || 0;
         rowTotalCopago += row[`${user}_copago`];
         rowTotalAutorizado += row[`${user}_autorizado`];
       });
@@ -782,7 +782,7 @@ export const InvoicesReport = () => {
         style: {
           fontWeight: "bold"
         }
-      }, formatCurrency(totals[user].copago)),
+      }, formatCurrency(totals[user]?.copago || 0)),
       style: createColumnStyle("right"),
       headerStyle: createColumnStyle("right"),
       footerStyle: {
@@ -959,7 +959,7 @@ export const InvoicesReport = () => {
       };
       let rowTotal = 0;
       Array.from(billingUsers).forEach(user => {
-        row[`${user}_copago`] = groupedData[method][user].copago || 0;
+        row[`${user}_copago`] = groupedData[method][user]?.copago || 0;
         row[`${user}_particular`] = groupedData[method][user].particular || 0;
         row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
         rowTotal += row[`${user}_copago`] + row[`${user}_particular`] + row[`${user}_autorizado`];
@@ -1001,7 +1001,7 @@ export const InvoicesReport = () => {
         style: {
           fontWeight: "bold"
         }
-      }, formatCurrency(totals[user].copago)),
+      }, formatCurrency(totals[user]?.copago || 0)),
       style: createColumnStyle("right"),
       headerStyle: createColumnStyle("right"),
       footerStyle: {

@@ -6,6 +6,7 @@
         "card": [
           {
             "title": "Motivo de la consulta",
+            "class": "col-12",
             "fields": [
               {
                 "id": "motivoConsulta",
@@ -18,20 +19,7 @@
         ],
         "card2": [
           {
-            "title": "Historia de la enfermedad actual",
-            "fields": [
-              {
-                "id": "historiaEnfermedadActual",
-                "label": "",
-                "type": "textarea",
-                "name": "historiaEnfermedadActual"
-              }
-            ]
-          }
-        ],
-        "card3": [
-          {
-            "title": "Contexto de los sintomas",
+            "title": "Contexto de los sintomas/Enfermedad actual",
             "fields": [
               {
                 "id": "contextoSintoma",
@@ -42,7 +30,7 @@
             ]
           }
         ],
-        "card4": [
+        "card3": [
           {
             "title": "¿Qué ha tomado?",
             "fields": [

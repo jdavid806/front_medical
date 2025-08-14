@@ -1,0 +1,698 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Sintomas y evolucion",
+        "card": [
+          {
+            "title": "Antecedentes personales",
+            "fields": [
+              {
+                "id": "infartoMiocardioPrevio",
+                "label": "Infarto miocardio previo",
+                "type": "checkbox",
+                "name": "infartoMiocardioPrevio"
+              },
+              {
+                "id": "arritmia",
+                "label": "Arritmia",
+                "type": "checkbox",
+                "name": "arritmia"
+              },
+              {
+                "id": "ACV",
+                "label": "ACV",
+                "type": "checkbox",
+                "name": "ACV"
+              },
+              {
+                "id": "insuficienciaCardiaca",
+                "label": "Insuficiencia cardiaca",
+                "type": "checkbox",
+                "name": "insuficienciaCardiaca"
+              },
+              {
+                "id": "diabetesMellitas",
+                "label": "Diabetes mellitas",
+                "type": "checkbox",
+                "name": "diabetesMellitas"
+              },
+              {
+                "id": "asma",
+                "label": "Asma",
+                "type": "checkbox",
+                "name": "asma"
+              },
+              {
+                "id": "hipertensionArterial",
+                "label": "Hipertension arterial",
+                "type": "checkbox",
+                "name": "hipertensionArterial"
+              },
+              {
+                "id": "enfermedadRenal",
+                "label": "Enfermedad renal",
+                "type": "checkbox",
+                "name": "enfermedadRenal"
+              },
+              {
+                "id": "EBPOC",
+                "label": "EBPOC",
+                "type": "checkbox",
+                "name": "EBPOC"
+              },
+              {
+                "id": "valvulopatia",
+                "label": "Valvulopatia",
+                "type": "checkbox",
+                "name": "valvulopatia"
+              },
+              {
+                "id": "enfermedadHepatica",
+                "label": "Enfermedad hepatica",
+                "type": "checkbox",
+                "name": "enfermedadHepatica"
+              },
+              {
+                "id": "alergiasOtros",
+                "label": "Alergias/Otros",
+                "type": "checkbox",
+                "name": "alergiasOtros"
+              },
+              {
+                "id": "descripcionPersonales",
+                "label": "Descripcion",
+                "type": "textarea",
+                "name": "descripcionPersonales"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Antecedentes familiares",
+            "fields": [
+              {
+                "id": "abuelos",
+                "label": "Abuelos",
+                "type": "radio",
+                "name": "abuelos",
+                "options": [
+                  {
+                    "value": "HTA",
+                    "label": "HTA"
+                  },
+                  {
+                    "value": "CI",
+                    "label": "CI"
+                  },
+                  {
+                    "value": "MS",
+                    "label": "MS"
+                  },
+                  {
+                    "value": "DM",
+                    "label": "DM"
+                  },
+                  {
+                    "value": "DISL",
+                    "label": "DISL"
+                  },
+                  {
+                    "value": "ACV",
+                    "label": "ACV"
+                  }
+                ]
+              },
+              {
+                "id": "padre",
+                "label": "Padre",
+                "type": "radio",
+                "name": "padre",
+                "options": [
+                  {
+                    "value": "HTA",
+                    "label": "HTA"
+                  },
+                  {
+                    "value": "CI",
+                    "label": "CI"
+                  },
+                  {
+                    "value": "MS",
+                    "label": "MS"
+                  },
+                  {
+                    "value": "DM",
+                    "label": "DM"
+                  },
+                  {
+                    "value": "DISL",
+                    "label": "DISL"
+                  },
+                  {
+                    "value": "ACV",
+                    "label": "ACV"
+                  }
+                ]
+              },
+              {
+                "id": "madre",
+                "label": "Madre",
+                "type": "radio",
+                "name": "madre",
+                "options": [
+                  {
+                    "value": "HTA",
+                    "label": "HTA"
+                  },
+                  {
+                    "value": "CI",
+                    "label": "CI"
+                  },
+                  {
+                    "value": "MS",
+                    "label": "MS"
+                  },
+                  {
+                    "value": "DM",
+                    "label": "DM"
+                  },
+                  {
+                    "value": "DISL",
+                    "label": "DISL"
+                  },
+                  {
+                    "value": "ACV",
+                    "label": "ACV"
+                  }
+                ]
+              },
+              {
+                "id": "hermanos",
+                "label": "Hermanos",
+                "type": "radio",
+                "name": "hermanos",
+                "options": [
+                  {
+                    "value": "HTA",
+                    "label": "HTA"
+                  },
+                  {
+                    "value": "CI",
+                    "label": "CI"
+                  },
+                  {
+                    "value": "MS",
+                    "label": "MS"
+                  },
+                  {
+                    "value": "DM",
+                    "label": "DM"
+                  },
+                  {
+                    "value": "DISL",
+                    "label": "DISL"
+                  },
+                  {
+                    "value": "ACV",
+                    "label": "ACV"
+                  }
+                ]
+              },
+              {
+                "id": "tios",
+                "label": "Tios",
+                "type": "radio",
+                "name": "tios",
+                "options": [
+                  {
+                    "value": "HTA",
+                    "label": "HTA"
+                  },
+                  {
+                    "value": "CI",
+                    "label": "CI"
+                  },
+                  {
+                    "value": "MS",
+                    "label": "MS"
+                  },
+                  {
+                    "value": "DM",
+                    "label": "DM"
+                  },
+                  {
+                    "value": "DISL",
+                    "label": "DISL"
+                  },
+                  {
+                    "value": "ACV",
+                    "label": "ACV"
+                  }
+                ]
+              },
+              {
+                "id": "habitosToxicos",
+                "label": "Habitos Toxicos",
+                "type": "label",
+                "name": "habitosToxicos",
+                "class": "col-12"
+              },
+              {
+                "id": "tabaquismo",
+                "label": "Tabaquismo",
+                "type": "checkbox",
+                "name": "tabaquismo"
+              },
+              {
+                "id": "alcohol",
+                "label": "Alcohol",
+                "type": "checkbox",
+                "name": "alcohol"
+              },
+              {
+                "id": "te",
+                "label": "Te",
+                "type": "checkbox",
+                "name": "te"
+              },
+              {
+                "id": "cafe",
+                "label": "Cafe",
+                "type": "checkbox",
+                "name": "cafe"
+              },
+              {
+                "id": "otrosFamiliares",
+                "label": "Otros",
+                "type": "checkbox",
+                "name": "otrosFamiliares"
+              },
+              {
+                "id": "descripcionFamiliares",
+                "label": "Descripcion",
+                "type": "textarea",
+                "name": "descripcionFamiliares"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Farmacos que utiliza",
+            "fields": [
+              {
+                "id": "esteroides",
+                "label": "Esteroides",
+                "type": "checkbox",
+                "name": "esteroides"
+              },
+              {
+                "id": "anticoagulantes",
+                "label": "Anticoagulantes",
+                "type": "checkbox",
+                "name": "anticoagulantes"
+              },
+              {
+                "id": "anti_inflamatorios",
+                "label": "Anti-inflamatorios",
+                "type": "checkbox",
+                "name": "anti_inflamatorios"
+              },
+              {
+                "id": "anti_hipertensivos",
+                "label": "Anti-hipertensivos",
+                "type": "checkbox",
+                "name": "anti_hipertensivos"
+              },
+              {
+                "id": "anti_arritmicos",
+                "label": "Anti-arritmicos",
+                "type": "checkbox",
+                "name": "anti_arritmicos"
+              },
+              {
+                "id": "anticonceptivos",
+                "label": "Anti-conceptivos",
+                "type": "checkbox",
+                "name": "anticonceptivos"
+              },
+              {
+                "id": "antiplaquetarios",
+                "label": "Anti-plaquetarios",
+                "type": "checkbox",
+                "name": "antiplaquetarios"
+              },
+              {
+                "id": "antibioticos",
+                "label": "Antibioticos",
+                "type": "checkbox",
+                "name": "antibioticos"
+              },
+              {
+                "id": "otrosFarmacos",
+                "label": "Otros",
+                "type": "checkbox",
+                "name": "otrosFarmacos"
+              },
+              {
+                "id": "descripcionFarmacos",
+                "label": "Descripcion",
+                "type": "checkbox",
+                "name": "descripcionFarmacos"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examen objetivo",
+        "card": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "peso",
+                "label": "Peso",
+                "type": "number",
+                "name": "peso"
+              },
+              {
+                "id": "talla",
+                "label": "Talla",
+                "type": "number",
+                "name": "talla"
+              },
+              {
+                "id": "mmHg",
+                "label": "mmHg",
+                "type": "number",
+                "name": "mmHg"
+              },
+              {
+                "id": "taInicial",
+                "label": "TA inicial (mmHg)",
+                "type": "number",
+                "name": "taInicial"
+              },
+              {
+                "id": "taFinalPie",
+                "label": "TA final del pie (mmHg)",
+                "type": "number",
+                "name": "taFinalPie"
+              },
+              {
+                "id": "FC",
+                "label": "FC",
+                "type": "number",
+                "name": "FC"
+              },
+              {
+                "id": "FR",
+                "label": "FR",
+                "type": "number",
+                "name": "FR"
+              },
+              {
+                "id": "pliegueLobulo",
+                "label": "Pliegue Lobulo",
+                "type": "number",
+                "name": "pliegueLobulo"
+              },
+              {
+                "id": "arcoCorneal",
+                "label": "Arco corneal",
+                "type": "number",
+                "name": "arcoCorneal"
+              },
+              {
+                "id": "xantelasmas",
+                "label": "Xantelasmas",
+                "type": "number",
+                "name": "xantelasmas"
+              },
+              {
+                "id": "bocio",
+                "label": "Bocio",
+                "type": "number",
+                "name": "bocio"
+              },
+              {
+                "id": "PCB",
+                "label": "PCB",
+                "type": "number",
+                "name": "PCB"
+              },
+              {
+                "id": "ISE",
+                "label": "ISE",
+                "type": "number",
+                "name": "ISE"
+              },
+              {
+                "id": "PVY",
+                "label": "PVY",
+                "type": "number",
+                "name": "PVY"
+              },
+              {
+                "id": "otrosExamen1",
+                "label": "Otros",
+                "type": "text",
+                "name": "otrosExamen1"
+              },
+              {
+                "id": "IVI",
+                "label": "IVI",
+                "type": "number",
+                "name": "IVI"
+              },
+              {
+                "id": "fremio",
+                "label": "Fremio",
+                "type": "number",
+                "name": "fremio"
+              },
+              {
+                "id": "R1",
+                "label": "R1",
+                "type": "number",
+                "name": "R1"
+              },
+              {
+                "id": "R2",
+                "label": "R2",
+                "type": "number",
+                "name": "R2"
+              },
+              {
+                "id": "R3",
+                "label": "R3",
+                "type": "number",
+                "name": "R3"
+              },
+              {
+                "id": "R4",
+                "label": "R4",
+                "type": "number",
+                "name": "R4"
+              },
+              {
+                "id": "clic",
+                "label": "Clic",
+                "type": "number",
+                "name": "clic"
+              },
+              {
+                "id": "fremio",
+                "label": "Fremio",
+                "type": "number",
+                "name": "fremio"
+              },
+              {
+                "id": "chApertura",
+                "label": "CH Apertura",
+                "type": "number",
+                "name": "chApertura"
+              },
+              {
+                "id": "SS",
+                "label": "SS",
+                "type": "number",
+                "name": "SS"
+              },
+              {
+                "id": "SD",
+                "label": "SD",
+                "type": "number",
+                "name": "SD"
+              },
+              {
+                "id": "otrosExamen2",
+                "label": "Otros",
+                "type": "number",
+                "name": "otrosExamen2"
+              },
+              {
+                "id": "pulmones",
+                "label": "Pulmones",
+                "type": "number",
+                "name": "pulmones"
+              },
+              {
+                "id": "abdomen",
+                "label": "Abdomen",
+                "type": "number",
+                "name": "abdomen"
+              },
+              {
+                "id": "msls",
+                "label": "Msls",
+                "type": "number",
+                "name": "msls"
+              },
+              {
+                "id": "fundoscopia",
+                "label": "Fundoscopia",
+                "type": "number",
+                "name": "fundoscopia"
+              },
+              {
+                "id": "otrosExamen3",
+                "label": "Otros",
+                "type": "number",
+                "name": "otrosExamen3"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "presionArterialDiastolica",
+                "label": "Presión Arterial Diastólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialDiastolica"
+              },
+              {
+                "id": "presionArterialSistolica",
+                "label": "Presión Arterial Sistólica [mmHg]",
+                "type": "number",
+                "name": "presionArterialSistolica"
+              },
+              {
+                "id": "tensionArterialMedia",
+                "label": "Tensión Arterial Media [mmHg]",
+                "type": "number",
+                "name": "tensionArterialMedia",
+                "readonly": true
+              },
+              {
+                "id": "saturacion",
+                "label": "Saturación de Oxígeno [%]",
+                "type": "number",
+                "name": "saturacion"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "circunferenciaAbdominal",
+                "label": "Circunferencia Abdominal [cm]",
+                "type": "number",
+                "name": "circunferenciaAbdominal"
+              },
+              {
+                "id": "circunferenciaCintura",
+                "label": "Circunferencia de Cintura [cm]",
+                "type": "number",
+                "name": "circunferenciaCintura"
+              },
+              {
+                "id": "perimetroCefalico",
+                "label": "Perímetro Cefálico [cm]",
+                "type": "number",
+                "name": "perimetroCefalico"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "frecuenciaRespiratoria",
+                "label": "Frecuencia Respiratoria [rpm]",
+                "type": "number",
+                "name": "frecuenciaRespiratoria"
+              },
+              {
+                "id": "frecuenciaCardiaca",
+                "label": "Frecuencia Cardíaca [lpm]",
+                "type": "number",
+                "name": "frecuenciaCardiaca"
+              },
+              {
+                "id": "temperatura",
+                "label": "Temperatura Corporal [°C]",
+                "type": "number",
+                "name": "temperatura"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Exámen general",
+        "card": [
+          {
+            "title": "Sonidos Cardiacos",
+            "fields": [
+              {
+                "id": "sonidosCardiacos",
+                "label": "",
+                "type": "textarea",
+                "name": "sonidosCardiacos"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Revisión tórax",
+            "fields": [
+              {
+                "id": "revisionTorax",
+                "label": "",
+                "type": "textarea",
+                "name": "revisionTorax"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Observaciones",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "observaciones",
+                "label": "",
+                "type": "textarea",
+                "name": "observaciones"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -207,19 +207,19 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   };
 
   const paymentModalFooter = (
-    <div>
+      <div className="d-flex pt-4 justify-content-between gap-3">
       <Button
         label="Cancelar"
         icon={<i className="fas fa-times"></i>}
         onClick={() => setShowPaymentModal(false)}
-        className="p-button-text"
+        className="p-button-secondary"
       />
       <Button
         label="Aplicar Pago"
         icon={<i className="fas fa-check"></i>}
         onClick={applyModalPayment}
         disabled={modalAmount <= 0}
-        className="p-button-success"
+          className="p-button-primary me-2"
       />
     </div>
   );
@@ -251,7 +251,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
             </div>
             <Button
               label="Agregar Producto"
-              className="p-button-secondary p-button-sm mb-2"
+              className="p-button-primary me-2"
               icon={<i className="fas fa-plus-square"></i>}
               onClick={() => handleAddProduct({})}
             />
@@ -476,7 +476,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
             <Button
               label="Calcular Pago en Efectivo"
               icon={<i className="fas fa-calculator"></i>}
-              className="mb-3 w-full p-button-outlined"
+             className="p-button-primary me-2"
               onClick={openPaymentModal}
             />
 
@@ -567,7 +567,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
               <Button
                 label="Agregar Pago"
                 icon={<i className="fas fa-cash-register"></i>}
-                className="p-button-success"
+                className="p-button-primary me-2"
                 onClick={handleAddPayment}
                 disabled={
                   !formData.currentPayment.method ||

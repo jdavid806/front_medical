@@ -41,7 +41,8 @@ export function renderMedicationTable(recipeItems) {
           <button class="btn btn-sm btn-primary btn-verificar"
             data-id="${item.id}" 
             data-name="${item.medication}" 
-            data-concentration="${item.concentration}">
+            data-concentration="${item.concentration}"
+            data-quantity="${item.quantity}">
             <i class="fas fa-check"></i> Verificar
           </button>
         `}
@@ -60,12 +61,54 @@ function setupVerificationButtons() {
     button.addEventListener("click", async () => {
       const name = button.getAttribute("data-name");
       const concentration = button.getAttribute("data-concentration");
+      const quantity = button.getAttribute("data-quantity");
 
       try {
-        const result = await farmaciaService.searchProducts(name, concentration);
+        const result = await farmaciaService.verifyProducts({ name, concentration, quantity });
 
-        if (result.data?.length > 0) {
-          const product = result.data[0];
+        console.log("Resultados de verificación:", result);
+
+        if (result.status === 404) {
+          // Producto no encontrado, mostrar alerta con SweetAlert2
+          const swalResult = await Swal.fire({
+            title: 'Producto no encontrado',
+            text: '¿Deseas buscar el producto manualmente?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, buscar manualmente',
+            cancelButtonText: 'Cancelar'
+          });
+
+          if (swalResult.isConfirmed) {
+
+            window.buttonToUpdate = button;
+
+
+            const modal = new bootstrap.Modal(document.getElementById('verificationModal'));
+
+            document.getElementById('medicamentoNombre').textContent = name;
+            document.getElementById('medicamentoDescripcion').textContent = concentration;
+
+            await populateMedicationSelect();
+            modal.show();
+          }
+
+          return
+        }
+
+        if (!result.success) {
+          await Swal.fire({
+            title: '',
+            text: result.data.message,
+            icon: 'warning',
+            showCancelButton: true
+          });
+
+          return
+        }
+
+        if (result.data?.data) {
+          const product = result.data.data;
           const salePrice = product.attributes.sale_price;
 
           // Guardar en el arreglo de productos verificados
@@ -90,30 +133,6 @@ function setupVerificationButtons() {
           // Actualizar precio en la celda
           const priceCell = row.querySelector("td:nth-child(3)");
           priceCell.textContent = salePrice.toFixed(2);
-        } else {
-          // Producto no encontrado, mostrar alerta con SweetAlert2
-          const swalResult = await Swal.fire({
-            title: 'Producto no encontrado',
-            text: '¿Deseas buscar el producto manualmente?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, buscar manualmente',
-            cancelButtonText: 'Cancelar'
-          });
-
-          if (swalResult.isConfirmed) {
-
-            window.buttonToUpdate = button;
-
-
-            const modal = new bootstrap.Modal(document.getElementById('verificationModal'));
-
-            document.getElementById('medicamentoNombre').textContent = name;
-            document.getElementById('medicamentoDescripcion').textContent = concentration;
-
-            await populateMedicationSelect();
-            modal.show();
-          }
         }
       } catch (error) {
         console.error("Error verificando producto:", error);

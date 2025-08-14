@@ -39,10 +39,13 @@ export const TodayAppointmentsTable: React.FC<
   };
   const menu = useRef<Menu>(null);
 
-  const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
-    setSelectedAppointment(appointment);
-    setShowBillingDialog(true);
-  };
+const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
+  setSelectedAppointment({
+    ...appointment,
+    patient: appointment.patient 
+  });
+  setShowBillingDialog(true);
+};
 
   const {
     appointments,

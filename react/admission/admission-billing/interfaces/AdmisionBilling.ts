@@ -86,6 +86,7 @@ export interface PatientStepProps {
   formData: FormData;
   updateFormData: (section: keyof FormData, data: Partial<FormData[keyof FormData]>) => void;
   nextStep: () => void;
+  
   toast: React.RefObject<Toast>;
 }
 
