@@ -169,7 +169,8 @@ export const SalesBilling = ({
           discount: discount,
           iva: percentageTax || 0,
           taxAmount: item.total_taxes,
-          depositId: item.deposit_id || null
+          depositId: item.deposit_id || null,
+          taxAccountingAccountId: item.tax_accounting_account_id || null
         };
       });
       setProductsArray(productsMapped);
@@ -393,7 +394,8 @@ export const SalesBilling = ({
           quantity: product.quantity,
           unit_price: product.price,
           discount: product.discount,
-          tax_product: product.taxAmount || product.iva || 0
+          tax_product: product.taxAmount || product.iva || 0,
+          tax_accounting_account_id: product.taxAccountingAccountId || null
         };
       }),
       payments: paymentMethodsArray.map(payment => {
@@ -470,8 +472,13 @@ export const SalesBilling = ({
       field: "iva",
       header: "Impuestos",
       body: rowData => /*#__PURE__*/React.createElement(IvaColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "iva", value),
-        value: rowData.iva,
+        onChange: value => {
+          // value ahora es el objeto completo del impuesto
+          handleProductChange(rowData.id, "iva", value?.percentage || 0);
+          handleProductChange(rowData.id, "taxAccountingAccountId", value?.accounting_account_id || null);
+        },
+        value: rowData.iva // Esto seguirá mostrando el porcentaje
+        ,
         disabled: disabledInpputs
       }),
       style: {
@@ -1331,18 +1338,20 @@ const IvaColumnBody = ({
   useEffect(() => {
     fetchTaxes();
   }, []);
-  useEffect(() => {
-    console.log("taxes: ", taxes);
-  }, [taxes]);
   return /*#__PURE__*/React.createElement(Dropdown, {
-    value: value,
+    value: value // Usamos el porcentaje directamente como valor
+    ,
     options: taxes,
     optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
-    optionValue: "percentage",
+    optionValue: "percentage" // Usamos el porcentaje como valor
+    ,
     placeholder: "Seleccione IVA",
     className: "w-100",
     onChange: e => {
-      onChange(e.value);
+      const selectedTax = taxes.find(tax => tax.percentage === e.value);
+      if (selectedTax) {
+        onChange(selectedTax); // Pasamos el objeto completo
+      }
     },
     appendTo: document.body,
     disabled: disabled

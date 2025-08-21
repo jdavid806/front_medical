@@ -14,7 +14,7 @@ export type Product = {
   id: string;
   name: string;
   code: string;
-  fixedAssetInfo : string;
+  fixedAssetInfo: string;
 };
 
 export type PaymentMethod = {
@@ -35,5 +35,5 @@ export type InvoiceProduct = {
   iva: any;
   depositId?: any;
   fixedAssetInfo?: any;
-
+  taxAccountingAccountId?: number | null;
 };
