@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useForm, Controller, set } from "react-hook-form";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -172,8 +172,8 @@ export const SalesBilling: React.FC<any> = ({
         }
         const discount = item.discount
           ? (Number(item.discount) /
-            (Number(item.price) * Number(item.quantity))) *
-          100
+              (Number(item.price) * Number(item.quantity))) *
+            100
           : 0;
 
         const subtotal = Number(item.subtotal) - Number(item.discount);
@@ -297,9 +297,9 @@ export const SalesBilling: React.FC<any> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-            ...payment,
-            value: selectedAdvances.amount,
-          }
+              ...payment,
+              value: selectedAdvances.amount,
+            }
           : payment
       )
     );
@@ -457,16 +457,16 @@ export const SalesBilling: React.FC<any> = ({
   function formatInvoiceForBackend(frontendData: any) {
     const purchaseIdValue = purchaseOrderId
       ? {
-        purchase_order_id: purchaseOrderId,
-      }
+          purchase_order_id: purchaseOrderId,
+        }
       : {};
     const retentionsValue =
       retentions[0].value > 0
         ? {
-          retentions: retentions.map(
-            (retention: any) => retention.percentage.id
-          ),
-        }
+            retentions: retentions.map(
+              (retention: any) => retention.percentage.id
+            ),
+          }
         : {};
     return {
       invoice: {
@@ -479,15 +479,14 @@ export const SalesBilling: React.FC<any> = ({
         billing: billing,
       },
       invoice_detail: productsArray.map((product: any) => {
-
         return {
-        product_id: Number(product.product),
-        deposit_id: product.depositId,
-        quantity: product.quantity,
-        unit_price: product.price,
-        discount: product.discount,
-        tax_product: product.taxAmount || product.iva || 0,
-      }
+          product_id: Number(product.product),
+          deposit_id: product.depositId,
+          quantity: product.quantity,
+          unit_price: product.price,
+          discount: product.discount,
+          tax_product: product.taxAmount || product.iva || 0,
+        };
       }),
       payments: paymentMethodsArray.map((payment) => {
         return {
@@ -639,17 +638,16 @@ export const SalesBilling: React.FC<any> = ({
     ];
   };
 
-  const { openModal: openThirdPartyModal, ThirdPartyModal } = useThirdPartyModal({
-    onSuccess: (data) => {
-      fetchThirdParties();
-    }
-  });
+  const { openModal: openThirdPartyModal, ThirdPartyModal } =
+    useThirdPartyModal({
+      onSuccess: (data) => {
+        fetchThirdParties();
+      },
+    });
 
   return (
     <div className="container-fluid p-4">
-
       <ThirdPartyModal />
-
       {/* Encabezado */}
       <div className="row mb-4">
         <div className="col-12">
@@ -776,7 +774,8 @@ export const SalesBilling: React.FC<any> = ({
                                 type="button"
                                 onClick={openThirdPartyModal}
                                 icon={<i className="fa-solid fa-plus"></i>}
-                                className="p-button-primary" />
+                                className="p-button-primary"
+                              />
                             </div>
                           </>
                         )}
@@ -1600,6 +1599,10 @@ const IvaColumnBody = ({
   useEffect(() => {
     fetchTaxes();
   }, []);
+
+  useEffect(() => {
+    console.log("taxes: ", taxes);
+  }, [taxes]);
   return (
     <Dropdown
       value={value}

@@ -1331,6 +1331,9 @@ const IvaColumnBody = ({
   useEffect(() => {
     fetchTaxes();
   }, []);
+  useEffect(() => {
+    console.log("taxes: ", taxes);
+  }, [taxes]);
   return /*#__PURE__*/React.createElement(Dropdown, {
     value: value,
     options: taxes,
