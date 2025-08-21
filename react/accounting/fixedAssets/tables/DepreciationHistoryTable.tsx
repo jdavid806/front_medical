@@ -13,6 +13,7 @@ import { Divider } from "primereact/divider";
 import { ProgressBar } from "primereact/progressbar";
 import { classNames } from "primereact/utils";
 import { Badge } from "primereact/badge";
+import { useActiveFixed } from "../hooks/useActiveFixed";
 
 interface DepreciationRecord {
   id: string;
@@ -68,6 +69,8 @@ export const DepreciationHistoryTable = () => {
   >(null);
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  
+  //traer el servicion de activo fijos
 
   const statusOptions = [
     { label: "Activo", value: "active" },
@@ -148,77 +151,131 @@ export const DepreciationHistoryTable = () => {
       setMaintenanceRecords(mockMaintenanceData);
       setFilteredMaintenanceRecords(mockMaintenanceData);
 
-      const mockData: DepreciationRecord[] = [
-        {
-          id: "1",
-          assetId: "1",
-          assetName: "Laptop Ejecutiva",
-          internalCode: "ACT-IT-001",
-          date: new Date(2023, 0, 15),
-          previousValue: 120000,
-          newValue: 110000,
-          changeAmount: -10000,
-          changeType: "depreciation",
-          changePercentage: -8.33,
-          notes: "Depreciación anual normal",
-        },
-        {
-          id: "2",
-          assetId: "1",
-          assetName: "Laptop Ejecutiva",
-          internalCode: "ACT-IT-001",
-          date: new Date(2024, 0, 15),
-          previousValue: 110000,
-          newValue: 95000,
-          changeAmount: -15000,
-          changeType: "depreciation",
-          changePercentage: -13.64,
-          notes: "Depreciación acelerada por daños menores",
-        },
-        {
-          id: "3",
-          assetId: "2",
-          assetName: "Camioneta de Reparto",
-          internalCode: "ACT-VH-001",
-          date: new Date(2023, 5, 20),
-          previousValue: 1800000,
-          newValue: 1700000,
-          changeAmount: -100000,
-          changeType: "depreciation",
-          changePercentage: -5.56,
-          notes: "Depreciación normal por uso",
-        },
-        {
-          id: "4",
-          assetId: "2",
-          assetName: "Camioneta de Reparto",
-          internalCode: "ACT-VH-001",
-          date: new Date(2024, 5, 20),
-          previousValue: 1700000,
-          newValue: 1750000,
-          changeAmount: 50000,
-          changeType: "appreciation",
-          changePercentage: 2.94,
-          notes: "Revalorización por mejoras realizadas",
-        },
-        {
-          id: "5",
-          assetId: "3",
-          assetName: "Mesa de Conferencia",
-          internalCode: "ACT-MB-001",
-          date: new Date(2023, 2, 10),
-          previousValue: 75000,
-          newValue: 70000,
-          changeAmount: -5000,
-          changeType: "depreciation",
-          changePercentage: -6.67,
-        },
-      ];
-      setRecords(mockData);
-      setFilteredRecords(mockData);
+      // const mockData: DepreciationRecord[] = [
+      //   {
+      //     id: "1",
+      //     assetId: "1",
+      //     assetName: "Laptop Ejecutiva",
+      //     internalCode: "ACT-IT-001",
+      //     date: new Date(2023, 0, 15),
+      //     previousValue: 120000,
+      //     newValue: 110000,
+      //     changeAmount: -10000,
+      //     changeType: "depreciation",
+      //     changePercentage: -8.33,
+      //     notes: "Depreciación anual normal",
+      //   },
+      //   {
+      //     id: "2",
+      //     assetId: "1",
+      //     assetName: "Laptop Ejecutiva",
+      //     internalCode: "ACT-IT-001",
+      //     date: new Date(2024, 0, 15),
+      //     previousValue: 110000,
+      //     newValue: 95000,
+      //     changeAmount: -15000,
+      //     changeType: "depreciation",
+      //     changePercentage: -13.64,
+      //     notes: "Depreciación acelerada por daños menores",
+      //   },
+      //   {
+      //     id: "3",
+      //     assetId: "2",
+      //     assetName: "Camioneta de Reparto",
+      //     internalCode: "ACT-VH-001",
+      //     date: new Date(2023, 5, 20),
+      //     previousValue: 1800000,
+      //     newValue: 1700000,
+      //     changeAmount: -100000,
+      //     changeType: "depreciation",
+      //     changePercentage: -5.56,
+      //     notes: "Depreciación normal por uso",
+      //   },
+      //   {
+      //     id: "4",
+      //     assetId: "2",
+      //     assetName: "Camioneta de Reparto",
+      //     internalCode: "ACT-VH-001",
+      //     date: new Date(2024, 5, 20),
+      //     previousValue: 1700000,
+      //     newValue: 1750000,
+      //     changeAmount: 50000,
+      //     changeType: "appreciation",
+      //     changePercentage: 2.94,
+      //     notes: "Revalorización por mejoras realizadas",
+      //   },
+      //   {
+      //     id: "5",
+      //     assetId: "3",
+      //     assetName: "Mesa de Conferencia",
+      //     internalCode: "ACT-MB-001",
+      //     date: new Date(2023, 2, 10),
+      //     previousValue: 75000,
+      //     newValue: 70000,
+      //     changeAmount: -5000,
+      //     changeType: "depreciation",
+      //     changePercentage: -6.67,
+      //   },
+      // ];
+      // setRecords(mockData);
+      // setFilteredRecords(mockData);
       setLoading(false);
     }, 800);
   }, []);
+
+  console.log("first")
+
+  const formatProductToDepreciation = (product: any): DepreciationRecord[] => {
+  return [
+    {
+      id: product.id.toString(),
+      assetId: product.id.toString(),
+      assetName: product.name,
+      internalCode: product.reference ?? `PRD-${product.id}`,
+      date: new Date(product.created_at),
+      previousValue: product.purchase_price ?? 0,
+      newValue: product.sale_price ?? 0,
+      changeAmount: (product.sale_price ?? 0) - (product.purchase_price ?? 0),
+      changeType: (product.sale_price ?? 0) >= (product.purchase_price ?? 0) ? "appreciation" : "depreciation",
+      changePercentage:
+        product.purchase_price > 0
+          ? ((product.sale_price - product.purchase_price) / product.purchase_price) * 100
+          : 0,
+      notes: product.description ?? "",
+    },
+  ];
+};
+
+
+
+  useEffect(() => {
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const { getActiveFixed, loading: loadingActiveFixed, error: errorActiveFixed, success: successActiveFixed } = useActiveFixed();
+
+      const product = await getActiveFixed();
+      
+      console.log("product", product);
+
+      const depreciationData = formatProductToDepreciation(product);
+      // const maintenanceData = formatProductToMaintenance(product);
+
+      setRecords(depreciationData);
+      setFilteredRecords(depreciationData);
+      // setMaintenanceRecords(maintenanceData);
+      // setFilteredMaintenanceRecords(maintenanceData);
+    } catch (error) {
+      console.error("Error cargando producto:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadData();
+}, []);
+  
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("es-DO", {
@@ -619,7 +676,7 @@ export const DepreciationHistoryTable = () => {
 
           <Card>
             <DataTable
-              value={filteredRecords}
+              value={maintenanceRecords}
               paginator
               rows={10}
               rowsPerPageOptions={[5, 10, 25, 50]}

@@ -35,10 +35,12 @@ const MaintenanceForm = ({
       maintenanceType: "",
       comments: "",
       cost: undefined,
-      nextMaintenanceDate: undefined
+      nextMaintenanceDate: undefined,
+      disposedDate: new Date()
     }
   });
   const assetStatus = watch("assetStatus");
+  console.log("Asset Status:", assetStatus);
   const maintenanceType = watch("maintenanceType");
   const onFormSubmit = data => onSubmit(data);
   const getFormErrorMessage = name => {
@@ -100,7 +102,7 @@ const MaintenanceForm = ({
       onChange: e => field.onChange(e.value),
       appendTo: "self"
     })
-  }), getFormErrorMessage("assignedTo")), assetStatus !== "active" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("assignedTo")), assetStatus === "maintenance" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "maintenanceType",
@@ -197,7 +199,30 @@ const MaintenanceForm = ({
         "p-invalid": errors.nextMaintenanceDate
       })
     })
-  }), getFormErrorMessage("nextMaintenanceDate"))), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("nextMaintenanceDate"))), (assetStatus === "disposed" || assetStatus === "inactive") && /*#__PURE__*/React.createElement("div", {
+    className: "mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "disposedDate",
+    className: "font-medium text-900 block mb-2"
+  }, assetStatus === "inactive" ? "Fecha de Inactividad *" : "Fecha de Baja *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "disposedDate",
+    control: control,
+    rules: {
+      required: "La fecha de baja es requerida"
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(Calendar, {
+      id: "disposedDate",
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      dateFormat: "dd/mm/yy",
+      showIcon: true,
+      className: classNames("w-full", {
+        "p-invalid": errors.disposedDate
+      })
+    })
+  }), getFormErrorMessage("disposedDate")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "comments",

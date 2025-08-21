@@ -478,14 +478,17 @@ export const SalesBilling: React.FC<any> = ({
         ...purchaseIdValue,
         billing: billing,
       },
-      invoice_detail: productsArray.map((product: any) => ({
+      invoice_detail: productsArray.map((product: any) => {
+
+        return {
         product_id: Number(product.product),
         deposit_id: product.depositId,
         quantity: product.quantity,
         unit_price: product.price,
         discount: product.discount,
-        tax_product: product.taxAmount || 0,
-      })),
+        tax_product: product.taxAmount || product.iva || 0,
+      }
+      }),
       payments: paymentMethodsArray.map((payment) => {
         return {
           payment_method_id: payment.method,

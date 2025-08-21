@@ -295,6 +295,14 @@ export const ControlCashFlow = () => {
     }
     const cashControlColumns = [{
       field: "procedure",
+      header: "# Factura",
+      body: rowData => rowData?.invoice?.id
+    }, {
+      field: "procedure",
+      header: "Código de Factura",
+      body: rowData => rowData?.invoice?.invoice_code
+    }, {
+      field: "procedure",
       header: "Procedimiento",
       body: rowData => rowData?.invoice?.details.length <= 1 ? rowData?.invoice?.details[0].product.name : "Laboratorio"
     }, {
@@ -327,7 +335,7 @@ export const ControlCashFlow = () => {
       field: "outflows",
       header: "Salidas",
       style: createColumnStyle("right"),
-      body: rowData => rowData?.invoice?.status === "canceled" ? formatCurrency(rowData?.invoice?.total_amount || 0) : formatCurrency(0)
+      body: rowData => rowData?.invoice?.status === "cancelled" ? formatCurrency(rowData?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)
     }];
     return /*#__PURE__*/React.createElement("div", {
       className: "card"

@@ -17,12 +17,11 @@ include "../../header.php";
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h2>Configuración de Precios</h2>
                 </div>
-                <?php include "../tabs/tab_pricesConfiguration.php";?>
+                <?php include "../tabs/tab_pricesConfiguration.php"; ?>
             </div>
         </div>
     </div>
 </div>
-
 <?php
 include "../../footer.php";
 include "../ModalPrice.php";

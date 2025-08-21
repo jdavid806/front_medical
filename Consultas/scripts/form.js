@@ -879,40 +879,156 @@ function createDynamicTable(field) {
   return tableContainer;
 }
 
+// function createTextareaField(field) {
+//   // Crear el contenedor principal para el textarea
+//   let fieldDiv = document.createElement("div");
+//   // fieldDiv.classList.add("form-floating", "mb-3");
+//   if (field.class) {
+//     fieldDiv.classList.add(field.class);
+//   } else {
+//     fieldDiv.classList.add("col-12", "mb-3");
+//   }
+//   // Crear el textarea
+//   let textarea = document.createElement("textarea");
+//   textarea.classList.add("form-control");
+//   textarea.setAttribute("id", field.id);
+//   textarea.setAttribute("name", field.name);
+//   textarea.setAttribute("style", "height: 100px");
+
+//   if (field.placeholder) {
+//     textarea.setAttribute("placeholder", field.placeholder);
+//   }
+
+//   // Crear la etiqueta para el textarea
+//   let label = document.createElement("label");
+//   label.setAttribute("for", field.id);
+//   label.textContent = field.label;
+//   label.style.marginTop = "25px";
+//   label.style.fontWeight = "20px";
+//   label.classList.add("form-label");
+//   // if(field.class){
+//   // }
+//   // label.style.paddingBottom = "20px";
+
+//   // Agregar el textarea y la etiqueta al contenedor
+//   fieldDiv.appendChild(label);
+//   fieldDiv.appendChild(textarea);
+
+//   return fieldDiv;
+// }
+
 function createTextareaField(field) {
-  // Crear el contenedor principal para el textarea
   let fieldDiv = document.createElement("div");
-  // fieldDiv.classList.add("form-floating", "mb-3");
   if (field.class) {
     fieldDiv.classList.add(field.class);
   } else {
     fieldDiv.classList.add("col-12", "mb-3");
   }
-  // Crear el textarea
+
+  let label = document.createElement("label");
+  label.setAttribute("for", field.id);
+  label.textContent = field.label;
+  label.classList.add("form-label");
+  fieldDiv.appendChild(label);
+
+  // Contenedor para textarea y botón de micrófono
+  let textareaContainer = document.createElement("div");
+  textareaContainer.classList.add("textarea-with-mic");
+  textareaContainer.style.position = "relative";
+
   let textarea = document.createElement("textarea");
   textarea.classList.add("form-control");
   textarea.setAttribute("id", field.id);
   textarea.setAttribute("name", field.name);
-  textarea.setAttribute("style", "height: 100px");
+  textarea.setAttribute("style", "height: 100px; padding-right: 40px;"); // Espacio para el botón
 
   if (field.placeholder) {
     textarea.setAttribute("placeholder", field.placeholder);
   }
 
-  // Crear la etiqueta para el textarea
-  let label = document.createElement("label");
-  label.setAttribute("for", field.id);
-  label.textContent = field.label;
-  label.style.marginTop = "25px";
-  label.style.fontWeight = "20px";
-  label.classList.add("form-label");
-  // if(field.class){
-  // }
-  // label.style.paddingBottom = "20px";
+  // Botón de micrófono (estilo simplificado)
+  let micButton = document.createElement("button");
+  micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+  micButton.type = "button";
+  micButton.classList.add("mic-button");
+  micButton.title = "Dictado por voz";
+  
+  // Posicionar el botón dentro del textarea
+  micButton.style.position = "absolute";
+  micButton.style.right = "10px";
+  micButton.style.top = "60px";
+  micButton.id = "mic-button";
+  micButton.style.background = "none";
+  micButton.style.border = "none";
+  micButton.style.cursor = "pointer";
+  micButton.style.color = "#132030"; // Color gris por defecto
+  micButton.style.fontSize = "1rem";
 
-  // Agregar el textarea y la etiqueta al contenedor
-  fieldDiv.appendChild(label);
-  fieldDiv.appendChild(textarea);
+  textareaContainer.appendChild(textarea);
+  textareaContainer.appendChild(micButton);
+  fieldDiv.appendChild(textareaContainer);
+
+  // Variables para controlar el estado del reconocimiento
+  let recognition = null;
+  let isListening = false;
+
+  // Añadir funcionalidad de voz
+  micButton.addEventListener("click", function() {
+    if (!isListening) {
+      startRecognition();
+    } else {
+      stopRecognition();
+    }
+  });
+
+  function startRecognition() {
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true; // Para que no se detenga automáticamente
+    recognition.interimResults = true; // Para obtener resultados provisionales
+
+    recognition.onresult = function(event) {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript;
+        }
+      }
+      if (transcript) {
+        const editor = tinymce.get(textarea.id);
+        if (editor) {
+          editor.insertContent(transcript);
+        } else {
+          document.getElementById(textarea.id).value += transcript;
+        }
+      }
+    };
+
+    recognition.onerror = function(event) {
+      console.error('Error en reconocimiento de voz:', event.error);
+      stopRecognition();
+    };
+
+    recognition.onend = function() {
+      if (isListening) {
+        recognition.start(); // Reinicia si aún está en modo escucha
+      }
+    };
+
+    recognition.start();
+    isListening = true;
+    micButton.style.color = "#dc3545"; // Rojo cuando está escuchando
+    micButton.title = "Detener dictado";
+  }
+
+  function stopRecognition() {
+    if (recognition) {
+      recognition.stop();
+    }
+    isListening = false;
+    micButton.style.color = "#132030"; // Gris cuando no está escuchando
+    micButton.title = "Dictado por voz";
+  }
 
   return fieldDiv;
 }

@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState } from "react";
+import { useEffect } from "react";
 import { formatDate } from "../../services/utilidades.js";
 import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
 import { cancelConsultationClaim } from "../../services/koneksiService.js";
-import { Dropdown } from 'primereact/dropdown';
-import { Calendar } from 'primereact/calendar';
+import { Dropdown } from "primereact/dropdown";
+import { Calendar } from "primereact/calendar";
 import { useUsers } from "../users/hooks/useUsers.js";
 import { useEntities } from "../entities/hooks/useEntities.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { UpdateAdmissionAuthorizationForm } from "./UpdateAdmissionAuthorizationForm.js";
 import { CustomModal } from "../components/CustomModal.js";
-import { admissionService, patientService } from "../../services/api/index.js";
+import { admissionService, patientService, inventoryService } from "../../services/api/index.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
-import { AutoComplete } from 'primereact/autocomplete';
-import { useDebounce } from 'primereact/hooks';
+import { AutoComplete } from "primereact/autocomplete";
+import { useDebounce } from "primereact/hooks";
 import { RequestCancellationTableAction } from "../components/table-actions/RequestCancellationTableAction.js";
 import { clinicalRecordStateColors, clinicalRecordStates } from "../../services/commons.js";
 import { KoneksiUploadAndVisualizeExamResultsModal } from "./KoneksiUploadAndVisualizeExamResultsModal.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
+import { MultiSelect } from 'primereact/multiselect';
 export const AdmissionTable = ({
   items,
   onReload,
@@ -44,62 +45,82 @@ export const AdmissionTable = ({
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedDate, setSelectedDate] = React.useState([new Date(), new Date()]);
-  const [selectedAdmissionId, setSelectedAdmissionId] = useState('');
+  const [selectedAdmissionId, setSelectedAdmissionId] = useState("");
   const [patients, setPatients] = useState([]);
   const [showUpdateAuthorizationModal, setShowUpdateAuthorizationModal] = useState(false);
   const [showUploadAndVisualizeResultsModal, setShowUploadAndVisualizeResultsModal] = useState(false);
   const [showAttachFileModal, setShowAttachFileModal] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const onFilter = () => {
     const filterValues = {
       selectedAdmittedBy,
       selectedPatient: selectedPatient?.id?.toString() || null,
       selectedEntity,
-      selectedDate
+      selectedDate,
+      selectedProduct
     };
     handleFilter && handleFilter(filterValues);
   };
   useEffect(() => {
     onFilter();
+    fetchProducts();
   }, []);
   useEffect(() => {
     const mappedItems = items.map(item => {
       return {
         id: item.id,
         createdAt: formatDate(item.created_at),
-        admittedBy: `${item.user.first_name || ''} ${item.user.middle_name || ''} ${item.user.last_name || ''} ${item.user.second_last_name || ''}`,
-        patientName: `${item.patient.first_name || ''} ${item.patient.middle_name || ''} ${item.patient.last_name || ''} ${item.patient.second_last_name || ''}`,
-        entityName: item.entity?.name || '--',
+        admittedBy: `${item.user.first_name || ""} ${item.user.middle_name || ""} ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+        patientName: `${item.patient.first_name || ""} ${item.patient.middle_name || ""} ${item.patient.last_name || ""} ${item.patient.second_last_name || ""}`,
+        entityName: item.entity?.name || "--",
         koneksiClaimId: item.koneksi_claim_id,
-        patientDNI: item.patient.document_number || '--',
-        authorizationNumber: item.authorization_number || '--',
-        authorizedAmount: item.entity_authorized_amount || '0.00',
+        patientDNI: item.patient.document_number || "--",
+        authorizationNumber: item.authorization_number || "--",
+        authorizedAmount: item.entity_authorized_amount || "0.00",
         originalItem: item,
-        status: item.status
+        status: item.status,
+        invoiceCode: item?.invoice?.invoice_code,
+        invoiceId: item?.invoice?.id,
+        products: item?.invoice?.details.map(detail => detail.product.name).join(', ')
       };
     });
     setTableItems(mappedItems);
   }, [items]);
+  async function fetchProducts() {
+    const response = await inventoryService.getAll();
+    setProducts(response.data);
+  }
   const columns = [{
-    header: 'Admisionado el',
-    field: 'createdAt'
+    header: "Admisionado el",
+    field: "createdAt"
   }, {
-    header: 'Admisionado por',
-    field: 'admittedBy'
+    header: "Admisionado por",
+    field: "admittedBy"
   }, {
-    header: 'Paciente',
-    field: 'patientName'
+    header: "Paciente",
+    field: "patientName"
   }, {
-    header: 'Número de identificación',
-    field: 'patientDNI'
+    header: "Número de identificación",
+    field: "patientDNI"
   }, {
-    header: 'Entidad',
-    field: 'entityName'
+    header: "Entidad",
+    field: "entityName"
   }, {
-    header: 'Número de autorización',
-    field: 'authorizationNumber'
+    header: "Número de autorización",
+    field: "authorizationNumber"
   }, {
-    header: 'Monto autorizado',
-    field: 'authorizedAmount'
+    header: "Monto autorizado",
+    field: "authorizedAmount"
+  }, {
+    header: "Codigo de factura",
+    field: "invoiceCode"
+  }, {
+    header: "Id",
+    field: "invoiceId"
+  }, {
+    header: "Productos",
+    field: "products"
   }, {
     field: "status",
     header: "Estado",
@@ -111,8 +132,8 @@ export const AdmissionTable = ({
       }, text));
     }
   }, {
-    header: '',
-    field: '',
+    header: "",
+    field: "",
     body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
@@ -122,7 +143,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-pencil",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Actualizar informaci\xF3n de autorizaci\xF3n")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -136,7 +157,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-receipt",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Imprimir factura")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -150,7 +171,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-receipt",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Descargar factura")))), !data.originalItem.document_minio_id && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -161,7 +182,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-file-pdf",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Adjuntar documento")))), data.originalItem.document_minio_id && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -172,7 +193,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-file-pdf",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Ver documento adjunto")))), data.koneksiClaimId && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -183,7 +204,7 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-file-medical",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Cargar y visualizar resultados de examenes")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
@@ -194,39 +215,33 @@ export const AdmissionTable = ({
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-ban",
       style: {
-        width: '20px'
+        width: "20px"
       }
     }), /*#__PURE__*/React.createElement("span", null, "Anular reclamaci\xF3n"))))), /*#__PURE__*/React.createElement(RequestCancellationTableAction, {
       onTrigger: () => onCancelItem && onCancelItem(data.originalItem.id)
     })))
   }];
   const cancelClaim = claimId => {
-    //console.log('Cancel claim with ID:', claimId);
     SwalManager.confirmCancel(async () => {
       try {
         const response = await cancelConsultationClaim(claimId);
-
-        //console.log(response);
-
         SwalManager.success({
-          title: 'Éxito',
-          text: 'Reclamación anulada con éxito.'
+          title: "Éxito",
+          text: "Reclamación anulada con éxito."
         });
       } catch (error) {
         SwalManager.error({
-          title: 'Error',
-          text: 'No se pudo anular la reclamación.'
+          title: "Error",
+          text: "No se pudo anular la reclamación."
         });
       }
     });
   };
   const openUploadAndVisualizeResultsModal = admissionId => {
-    //console.log('Open update authorization modal with admission ID:', admissionId);
     setSelectedAdmissionId(admissionId);
     setShowUploadAndVisualizeResultsModal(true);
   };
   const openUpdateAuthorizationModal = admissionId => {
-    //console.log('Open update authorization modal with admission ID:', admissionId);
     setSelectedAdmissionId(admissionId);
     setShowUpdateAuthorizationModal(true);
   };
@@ -237,10 +252,8 @@ export const AdmissionTable = ({
   const handleUploadDocument = async () => {
     try {
       //@ts-ignore
-      const minioId = await guardarDocumentoAdmision('admissionDocumentInput', selectedAdmissionId);
+      const minioId = await guardarDocumentoAdmision("admissionDocumentInput", selectedAdmissionId);
       if (minioId !== undefined) {
-        //console.log("PDF de prueba:", minioId);
-        //console.log("Resultado de la promesa:", minioId);
         await admissionService.update(selectedAdmissionId, {
           document_minio_id: minioId.toString()
         });
@@ -261,12 +274,12 @@ export const AdmissionTable = ({
     if (minioId) {
       //@ts-ignore
       const url = await getFileUrl(minioId);
-      window.open(url, '_blank');
+      window.open(url, "_blank");
       return;
     }
     SwalManager.error({
-      title: 'Error',
-      text: 'No se pudo visualizar el documento adjunto.'
+      title: "Error",
+      text: "No se pudo visualizar el documento adjunto."
     });
   };
   const searchPatients = async event => {
@@ -281,7 +294,7 @@ export const AdmissionTable = ({
   };
   useEffect(() => {
     onFilter();
-  }, [selectedAdmittedBy, selectedPatient, selectedEntity, selectedDate]);
+  }, [selectedAdmittedBy, selectedPatient, selectedEntity, selectedDate, selectedProduct]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "accordion mb-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -381,12 +394,33 @@ export const AdmissionTable = ({
       setSelectedEntity(e.value);
     },
     showClear: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "procedure",
+    className: "form-label"
+  }, "Procedimientos"), /*#__PURE__*/React.createElement(MultiSelect, {
+    inputId: "procedure",
+    options: products,
+    optionLabel: "attributes.name",
+    optionValue: "id",
+    filter: true,
+    placeholder: "Procedimiento",
+    className: "w-100",
+    value: selectedProduct,
+    onChange: e => {
+      setSelectedProduct(e.value);
+    },
+    showClear: true
   }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
+    className: "d-flex justify-content-end mb-3"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary me-2",
     onClick: () => {

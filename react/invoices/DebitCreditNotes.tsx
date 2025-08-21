@@ -73,11 +73,7 @@ export const DebitCreditNotes = () => {
       return {
         ...note,
         cliente: note.invoice.third_party
-          ? `${note.invoice.third_party.first_name ?? ""} ${
-              note.invoice.third_party.middle_name ?? ""
-            } ${note.invoice.third_party.last_name ?? ""} ${
-              note.invoice.third_party.second_last_name ?? ""
-            }`
+          ? note.invoice.third_party.name
           : "Sin cliente",
         tipo: note.type === "debit" ? "Débito" : "Crédito",
       };
@@ -223,9 +219,9 @@ export const DebitCreditNotes = () => {
             </thead>
             <tbody>
               ${data.reduce(
-                (acc: string, item: any) =>
-                  acc +
-                  `
+      (acc: string, item: any) =>
+        acc +
+        `
                 <tr>
                   <td>${item.id}</td>
                   <td>${item.tipo ?? ""}</td>
@@ -236,8 +232,8 @@ export const DebitCreditNotes = () => {
                   <td>${item.reason ?? ""}</td>
                 </tr>
               `,
-                ""
-              )}
+      ""
+    )}
             </tbody>
           </table>`;
     const configPDF = {
@@ -276,46 +272,46 @@ export const DebitCreditNotes = () => {
   };
 
   const actionBodyTemplate = (rowData: any) => {
-      const items = [
-        {
-          label: "Descargar Excel",
-          // template: createActionTemplate(
-          //   "file-excel",
-          //   "Descargar Excel",
-          //   "text-green-600"
-          // ),
-          // command: () => handleDescargarExcel(rowData),
-        },
-        {
-          label: "Descargar PDF",
-          // template: createActionTemplate(
-          //   "file-pdf",
-          //   "Descargar PDF",
-          //   "text-red-500"
-          // ),
-          // command: () => handleDescargarPDF(rowData),
-        },
-        {
-          label: "Imprimir",
-          // template: createActionTemplate("print", "Imprimir", "text-blue-500"),
-  
-          // command: () => console.log("Imprimir factura", rowData),
-          command: () => generarFormatoContable("NotaDebitoCredito", rowData, "Impresion"),
-        },
-      ];
-  
-      return (
-        <div className="flex gap-2">
-          <SplitButton
-            label="Acciones"
-            model={items}
-            severity="contrast"
-            className="p-button-sm point"
-            buttonClassName="p-button-sm"
-          />
-        </div>
-      );
-    };
+    const items = [
+      {
+        label: "Descargar Excel",
+        // template: createActionTemplate(
+        //   "file-excel",
+        //   "Descargar Excel",
+        //   "text-green-600"
+        // ),
+        // command: () => handleDescargarExcel(rowData),
+      },
+      {
+        label: "Descargar PDF",
+        // template: createActionTemplate(
+        //   "file-pdf",
+        //   "Descargar PDF",
+        //   "text-red-500"
+        // ),
+        // command: () => handleDescargarPDF(rowData),
+      },
+      {
+        label: "Imprimir",
+        // template: createActionTemplate("print", "Imprimir", "text-blue-500"),
+
+        // command: () => console.log("Imprimir factura", rowData),
+        command: () => generarFormatoContable("NotaDebitoCredito", rowData, "Impresion"),
+      },
+    ];
+
+    return (
+      <div className="flex gap-2">
+        <SplitButton
+          label="Acciones"
+          model={items}
+          severity="contrast"
+          className="p-button-sm point"
+          buttonClassName="p-button-sm"
+        />
+      </div>
+    );
+  };
 
   return (
     <div

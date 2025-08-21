@@ -6,60 +6,19 @@ import PatientStep from "./steps/PatientStep";
 import ProductsPaymentStep from "./steps/ProductsPaymentStep";
 import PreviewDoneStep from "./steps/PreviewDoneStep";
 import { calculateTotal, validatePatientStep, validatePaymentStep, validateProductsStep } from "./utils/helpers";
-
+import { useProductsToBeInvoiced } from '../../appointments/hooks/useProductsToBeInvoiced'
+import { AdmissionBillingFormData } from "./interfaces/AdmisionBilling";
 interface AdmissionBillingProps {
   visible: boolean;
   onHide: () => void;
   appointmentData?: any;
+  productsToInvoice: any;
+  productsLoading?: boolean
 }
 
-interface FormData {
+const initialFormState: AdmissionBillingFormData = {
   patient: {
-    documentType: string;
-    documentNumber: string;
-    firstName: string;
-    nameComplet: string; 
-    middleName: string;
-    lastName: string;
-    secondLastName: string;
-    birthDate: Date | null;
-    gender: string;
-    country: string;
-    department: string;
-    city: string;
-    affiliateType?: string;
-    insurance?: string;
-    address: string;
-    email: string;
-    whatsapp: string;
-    bloodType: string;
-    hasCompanion: boolean;
-    facturacionEntidad: boolean;
-    facturacionConsumidor: boolean;
-    [key: string]: any;
-  };
-  billing: {
-    entity: string;
-    authorizationDate: Date | null;
-    authorizationNumber: string;
-    authorizedAmount: string;
-    consumerName: string;
-    consumerDocument: string;
-    consumerEmail: string;
-    consumerPhone: string;
-  };
-  products: any[];
-  payments: any[];
-  currentPayment: {
-    method: string;
-    amount: string;
-    authorizationNumber: string;
-    notes: string;
-  };
-}
-
-const initialFormState: FormData = {
-  patient: {
+    id: "",
     documentType: "",
     documentNumber: "",
     firstName: "",
@@ -78,7 +37,9 @@ const initialFormState: FormData = {
     bloodType: "",
     hasCompanion: false,
     facturacionEntidad: false,
-    facturacionConsumidor: false
+    facturacionConsumidor: false,
+    affiliateType: "",
+    insurance: ""
   },
   billing: {
     entity: "",
@@ -90,22 +51,11 @@ const initialFormState: FormData = {
     consumerEmail: "",
     consumerPhone: ""
   },
-  products: [
-    { 
-      id: 1, 
-      code: "CON-001",
-      description: "Consulta Endocrinologia", 
-      price: 2000, 
-      quantity: 1, 
-      tax: 0,
-      discount: 0,
-      total: 2000 
-    }
-  ],
+  products: [],
   payments: [],
   currentPayment: {
     method: "",
-    amount: "",
+    amount: 0,
     authorizationNumber: "",
     notes: ""
   }
@@ -115,7 +65,128 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   const toast = useRef<Toast>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [formData, setFormData] = useState<FormData>(initialFormState);
+  const [formData, setFormData] = useState<AdmissionBillingFormData>(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const [invoiceNumber] = useState(`FAC-${Math.floor(Math.random() * 10000)}`);
+
+
+  const idProduct = appointmentData?.id;
+  const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(idProduct);
+
+  const handleSubmitInvoice = async () => {
+    setIsSubmitting(true);
+
+    try {
+      console.log('📋 Datos del paciente:', {
+        documentType: formData.patient.documentType,
+        documentNumber: formData.patient.documentNumber,
+        name: formData.patient.nameComplet,
+        email: formData.patient.email,
+        phone: formData.patient.whatsapp
+      });
+
+      console.log('💰 Datos de facturación:', {
+        entityBilling: formData.patient.facturacionEntidad,
+        consumerBilling: formData.patient.facturacionConsumidor,
+        entity: formData.billing.entity,
+        authorizationNumber: formData.billing.authorizationNumber
+      });
+
+      console.log('🛒 Productos:', formData.products.map(p => ({
+        id: p.id,
+        description: p.description,
+        quantity: p.quantity,
+        price: p.price,
+        tax: p.tax
+      })));
+
+      console.log('💳 Pagos:', formData.payments.map(p => ({
+        method: p.method,
+        amount: p.amount,
+        authorizationNumber: p.authorizationNumber
+      })));
+
+      console.log('🧮 Totales:', {
+        subtotal: calculateTotal(formData.products),
+        taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
+        total: calculateTotal(formData.products)
+      });
+
+      console.log('📅 Appointment ID:', appointmentData?.id);
+
+      const invoiceData = {
+        patient: {
+          documentType: formData.patient.documentType,
+          documentNumber: formData.patient.documentNumber,
+          name: formData.patient.nameComplet,
+          email: formData.patient.email,
+          phone: formData.patient.whatsapp,
+          address: formData.patient.address,
+          city: formData.patient.city,
+          insurance: formData.patient.insurance,
+          affiliateType: formData.patient.affiliateType
+        },
+        billing: {
+          entityBilling: formData.patient.facturacionEntidad,
+          consumerBilling: formData.patient.facturacionConsumidor,
+          entity: formData.billing.entity,
+          authorizationNumber: formData.billing.authorizationNumber,
+          authorizationDate: formData.billing.authorizationDate,
+          authorizedAmount: formData.billing.authorizedAmount
+        },
+        items: formData.products.map(product => ({
+          productId: product.id,
+          description: product.description,
+          quantity: product.quantity,
+          unitPrice: product.price,
+          taxRate: product.tax,
+          discount: product.discount,
+          total: product.total
+        })),
+        payments: formData.payments.map(payment => ({
+          method: payment.method,
+          amount: payment.amount,
+          authorizationNumber: payment.authorizationNumber,
+          notes: payment.notes
+        })),
+        totals: {
+          subtotal: calculateTotal(formData.products),
+          taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
+          discount: formData.products.reduce((sum, product) => sum + product.discount, 0),
+          total: calculateTotal(formData.products)
+        },
+        appointmentId: appointmentData?.id,
+        invoiceNumber: invoiceNumber,
+        status: 'completed'
+      };
+
+      console.log('📤 Datos completos a enviar:', JSON.stringify(invoiceData, null, 2));
+
+      console.log('🚀 Simulando envío al backend...');
+      // await new Promise(resolve => setTimeout(resolve, 1500));
+
+      toast.current?.show({
+        severity: 'success',
+        summary: 'Factura creada',
+        detail: 'La factura se ha generado correctamente',
+        life: 5000
+      });
+
+      setIsDone(true);
+    } catch (error) {
+      console.error('❌ Error submitting invoice:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
+        life: 5000
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const handleHide = () => {
     setFormData(initialFormState);
@@ -125,15 +196,32 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   };
 
   useEffect(() => {
-    if (!visible) return; // No hacer nada si el modal no está visible
+    if (!visible) return;
+    console.log("📦 productsToInvoice actualizado:", productsToInvoice);
 
     if (appointmentData && appointmentData.patient) {
       const patient = appointmentData.patient;
-      console.log(patient, "paciente");
+      const initialProducts = productsToInvoice.length > 0
+        ? productsToInvoice.map(product => ({
+          uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
+          id: product.id,
+          code: product.code || `PROD-${product.id}`,
+          description: product.name || product.description || 'Producto sin nombre',
+          price: product.sale_price || 0,
+          quantity: 1,
+          tax: product.tax || 0,
+          discount: 0,
+          total: (product.sale_price || 0) * (1 + (product.tax || 0) / 100)
+        }))
+        : [];
+
+      console.log('initialProducts', initialProducts);
+
       setFormData({
         ...initialFormState,
         patient: {
           ...initialFormState.patient,
+          id: patient.id,
           documentType: patient.document_type || "",
           documentNumber: patient.document_number || "",
           firstName: patient.first_name || "",
@@ -158,29 +246,24 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
           ...initialFormState.billing,
           entity: patient.social_security?.entity?.name || ""
         },
-        products: [
-          {
-            id: 1,
-            code: appointmentData.product_id ? `CON-${appointmentData.product_id}` : "CON-001",
-            description: `Consulta ${appointmentData.doctorName || ''}`,
-            price: 2000,
-            quantity: 1,
-            tax: 0,
-            discount: 0,
-            total: 2000
-          }
-        ]
+        products: initialProducts
       });
     } else {
       setFormData(initialFormState);
     }
-  }, [appointmentData, visible]);
+  }, [appointmentData, visible, productsToInvoice]);
 
-  const updateFormData = <K extends keyof FormData>(section: K, data: Partial<FormData[K]>) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: { ...prev[section], ...data }
-    }));
+  const updateFormData = <K extends keyof AdmissionBillingFormData>(section: K, data: Partial<AdmissionBillingFormData[K]>) => {
+    setFormData(prev => {
+      const updatedData = section === 'products' && !Array.isArray(data)
+        ? Object.values(data || {})
+        : data;
+
+      return {
+        ...prev,
+        [section]: updatedData
+      };
+    });
   };
 
   const addPayment = (payment: any) => {
@@ -201,12 +284,12 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   };
 
   const validateCurrentStep = (index: number): boolean => {
-    switch(index) {
-      case 0: 
+    switch (index) {
+      case 0:
         return validatePatientStep(formData.patient, toast);
       case 1:
-        return validateProductsStep(formData.products, toast) && 
-               validatePaymentStep(formData.payments, calculateTotal(formData.products), toast);
+        return validateProductsStep(formData.products, toast) &&
+          validatePaymentStep(formData.payments, calculateTotal(formData.products), toast);
       default:
         return true;
     }
@@ -231,25 +314,16 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   };
 
   const items = [
-    { 
+    {
       label: 'Datos del paciente',
       command: () => {
-        if (completedSteps.includes(0)) {
-          setActiveIndex(0);
-        } else {
-          toast.current?.show({
-            severity: 'warn',
-            summary: 'Paso no disponible',
-            detail: 'Completa el paso actual primero',
-            life: 3000
-          });
-        }
+        setActiveIndex(0);
       }
     },
-    { 
+    {
       label: 'Productos y Pagos',
       command: () => {
-        if (completedSteps.includes(1)) {
+        if (validateCurrentStep(0)) {
           setActiveIndex(1);
         } else {
           toast.current?.show({
@@ -261,10 +335,10 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         }
       }
     },
-    { 
+    {
       label: 'Confirmación',
       command: () => {
-        if (completedSteps.includes(2)) {
+        if (validateCurrentStep(1)) {
           setActiveIndex(2);
         } else {
           toast.current?.show({
@@ -288,7 +362,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         style={{ width: '100vw', maxWidth: '1600px' }}
         maximizable
       >
-        <Steps 
+        <Steps
           model={items}
           activeIndex={activeIndex}
           readOnly={false}
@@ -296,35 +370,37 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         />
 
         <div className="step-content">
-          {activeIndex === 0 && (
-            <PatientStep 
+          <div className={activeIndex === 0 ? "" : "d-none"}>
+            <PatientStep
               formData={formData}
               updateFormData={updateFormData}
               nextStep={nextStep}
               toast={toast}
             />
-          )}
-          
-          {activeIndex === 1 && (
-            <ProductsPaymentStep 
-              formData={formData} 
+          </div>
+
+          <div className={activeIndex === 1 ? "" : "d-none"}>
+            <ProductsPaymentStep
+              formData={formData}
               updateFormData={updateFormData}
               addPayment={addPayment}
               removePayment={removePayment}
-              nextStep={nextStep} 
-              prevStep={prevStep} 
-              toast={toast} 
+              nextStep={nextStep}
+              prevStep={prevStep}
+              toast={toast}
             />
-          )}
-          
-          {activeIndex === 2 && (
-            <PreviewDoneStep 
-              formData={formData} 
-              prevStep={prevStep} 
+          </div>
+
+          <div className={activeIndex === 2 ? "" : "d-none"}>
+            <PreviewDoneStep
+              formData={formData}
+              prevStep={prevStep}
               onHide={handleHide}
               onPrint={() => window.print()}
+              onSubmit={handleSubmitInvoice}
+              isSubmitting={isSubmitting}
             />
-          )}
+          </div>
         </div>
       </Dialog>
     </>

@@ -27,6 +27,13 @@ const categories = [{
   label: "Anticipo Proveedores",
   value: "supplier_advance"
 }];
+const TypeMethod = [{
+  label: "Compras",
+  value: "buyy"
+}, {
+  label: "Ventas",
+  value: "sale"
+}];
 const PaymentMethodFormConfig = ({
   formId,
   onSubmit,
@@ -89,6 +96,28 @@ const PaymentMethodFormConfig = ({
       })
     }, field)))
   }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "category",
+    control: control,
+    rules: {
+      required: "La categoría es requerida"
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Tipo *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      id: field.name,
+      options: TypeMethod,
+      optionLabel: "label",
+      optionValue: "value",
+      className: classNames("w-100", {
+        "p-invalid": errors.category
+      })
+    }, field)))
+  }), getFormErrorMessage("category")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "category",

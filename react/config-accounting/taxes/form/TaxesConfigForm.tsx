@@ -92,7 +92,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Campo Porcentaje */}
       <div className="field mb-4">
         <label htmlFor="percentage" className="font-medium block mb-2">
           Porcentaje (%) *
@@ -132,7 +131,12 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Campo Cuenta Contable Principal */}
+      <div className="field mb-4">
+        <label htmlFor="percentage" className="font-medium block mb-2">
+          Configuración Compras *
+        </label>
+      </div>
+
       <div className="field mb-4">
         <label htmlFor="accounting_account" className="font-medium block mb-2">
           Cuenta Contable *
@@ -169,7 +173,98 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Campo Cuenta Contable Reversa */}
+      <div className="field mb-4">
+        <label
+          htmlFor="accounting_account_reverse"
+          className="font-medium block mb-2"
+        >
+          Cuenta Contable Reversa *
+        </label>
+        <Controller
+          name="accounting_account_reverse"
+          control={control}
+          rules={{
+            required: "La cuenta contable reversa es requerida",
+            // validate: (value) => {
+            //   if (!value?.id) return "Seleccione una cuenta válida";
+            //   if (Number(selectedAccount?.id) === value?.id) {
+            //     return "No puede ser la misma cuenta principal";
+            //   }
+            //   return true;
+            // },
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <Dropdown
+                id={field.name}
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
+                options={accounts.filter(
+                  (acc) =>
+                    !selectedAccount || acc.id !== selectedAccount
+                )}
+                optionLabel="account_name"
+                placeholder="Seleccione una cuenta"
+                filter
+                optionValue="id"
+                filterBy="account_name,account_code"
+                showClear
+                className={classNames("w-full", {
+                  "p-invalid": fieldState.error,
+                })}
+                loading={isLoadingAccounts}
+                appendTo="self"
+              />
+              {getFormErrorMessage("accounting_account_reverse")}
+            </>
+          )}
+        />
+      </div>
+
+
+
+      <div className="field mb-4">
+        <label htmlFor="percentage" className="font-medium block mb-2">
+          Configuración Ventas *
+        </label>
+      </div>
+
+      <div className="field mb-4">
+        <label htmlFor="accounting_account" className="font-medium block mb-2">
+          Cuenta Contable *
+        </label>
+        <Controller
+          name="accounting_account"
+          control={control}
+          rules={{
+            required: "La cuenta contable es requerida",
+            // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <Dropdown
+                id={field.name}
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
+                options={accounts}
+                optionValue="id"
+                optionLabel="account_name"
+                placeholder="Seleccione una cuenta"
+                filter
+                filterBy="account_name,account_code"
+                showClear
+                className={classNames("w-full", {
+                  "p-invalid": fieldState.error,
+                })}
+                loading={isLoadingAccounts}
+                appendTo="self"
+              />
+              {getFormErrorMessage("accounting_account")}
+            </>
+          )}
+        />
+      </div>
+
       <div className="field mb-4">
         <label
           htmlFor="accounting_account_reverse"

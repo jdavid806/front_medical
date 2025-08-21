@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AppointmentTableItem } from "../models/models";
 import { useFetchAppointments } from "./hooks/useFetchAppointments";
 import {
@@ -13,6 +13,7 @@ import { TicketTable } from "../tickets/components/TicketTable";
 import { GenerateTicket } from "../tickets/GenerateTicket";
 import { AppointmentFormModal } from "./AppointmentFormModal";
 import { Menu } from "primereact/menu";
+import { useProductsToBeInvoiced } from "./hooks/useProductsToBeInvoiced";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -37,15 +38,14 @@ export const TodayAppointmentsTable: React.FC<
       sort: "-appointment_date,appointment_time",
     };
   };
-  const menu = useRef<Menu>(null);
 
-const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
-  setSelectedAppointment({
-    ...appointment,
-    patient: appointment.patient 
-  });
-  setShowBillingDialog(true);
-};
+  const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
+    setSelectedAppointment({
+      ...appointment,
+      patient: appointment.patient
+    });
+    setShowBillingDialog(true);
+  };
 
   const {
     appointments,
@@ -57,6 +57,17 @@ const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
     loading,
     perPage,
   } = useFetchAppointments(customFilters);
+
+  const { products, loading: productsLoading } = useProductsToBeInvoiced(
+    selectedAppointment?.id || null
+  );
+
+  console.log("products", products);
+
+  useEffect(() => {
+    console.log("appointments", appointments);
+
+  }, [appointments]);
 
   const columns: CustomPRTableColumnProps[] = [
     {
@@ -80,35 +91,13 @@ const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
       field: "actions",
       header: "Acciones",
       body: (rowData: AppointmentTableItem) => {
-        const items = [
-          {
-            label: "Generar admisión",
-            command: () =>
-              (window.location.href = `generar_admision_rd?id_cita=${rowData.id}`),
-          },
-          {
-            label: "Facturar admisión",
-            command: () => handleFacturarAdmision(rowData),
-          },
-        ];
+        console.log("rowData", rowData);
 
         return (
           <div>
-            <Button
-              className="btn-primary flex items-center gap-2" 
-              onClick={(e) => menu.current.toggle(e)}
-              aria-controls={`popup_menu_${rowData.id}`}
-              aria-haspopup
-            >
-              Acciones
-              <i className="fa fa-cog	 ml-2"></i> 
-            </Button>
-            <Menu
-              model={items}
-              popup
-              ref={menu}
-              id={`popup_menu_${rowData.id}`}
-              style={{ zIndex: 9999 }}
+            <TableMenu
+              onFacturarAdmision={() => handleFacturarAdmision(rowData)}
+              rowData={rowData}
             />
           </div>
         );
@@ -163,6 +152,9 @@ const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
         visible={showBillingDialog}
         onHide={() => setShowBillingDialog(false)}
         appointmentData={selectedAppointment}
+        productsToInvoice={products}
+        productsLoading={productsLoading}
+
       />
 
       <Dialog
@@ -202,4 +194,42 @@ const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
       </Dialog>
     </>
   );
+};
+
+const TableMenu: React.FC<{
+  rowData: AppointmentTableItem,
+  onFacturarAdmision: () => void
+}> = ({ rowData, onFacturarAdmision }) => {
+
+  const menu = useRef<Menu>(null);
+
+  return <>
+    <Button
+      className="btn-primary flex items-center gap-2"
+      onClick={(e) => menu.current.toggle(e)}
+      aria-controls={`popup_menu_${rowData.id}`}
+      aria-haspopup
+    >
+      Acciones
+      <i className="fa fa-cog	 ml-2"></i>
+    </Button>
+    <Menu
+      model={[
+        {
+          label: "Generar admisión",
+          command: () =>
+            (window.location.href = `generar_admision_rd?id_cita=${rowData.id}`),
+        },
+        {
+          label: "Facturar admisión",
+          command: () => onFacturarAdmision(),
+        }
+      ]}
+      popup
+      ref={menu}
+      id={`popup_menu_${rowData.id}`}
+      style={{ zIndex: 9999 }}
+      onBlur={(e) => menu.current?.hide(e)}
+    />
+  </>
 };

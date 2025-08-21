@@ -11,6 +11,7 @@ export const usePaymentMethodCreate = () => {
         setLoading(true);
         try {
             const response = await paymentMethodService.storePaymentMethod(data);
+            console.log("response", response)
             SwalManager.success("Método de pago creado exitosamente");
             return response;
         } catch (error) {

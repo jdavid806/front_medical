@@ -230,7 +230,7 @@ export const FormDebitCreditNotes = ({
               onSuccess();
             } else {
               setTimeout(() => {
-                window.location.href = "FE_FCE";
+                //window.location.href = "FE_FCE";
               }, 1000);
             }
           }).catch(error => {});
@@ -249,7 +249,7 @@ export const FormDebitCreditNotes = ({
               onSuccess();
             } else {
               setTimeout(() => {
-                window.location.href = "FE_FCE";
+                //window.location.href = "FE_FCE";
               }, 1000);
             }
           }).catch(error => {});

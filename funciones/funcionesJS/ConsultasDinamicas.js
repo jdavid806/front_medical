@@ -28,6 +28,11 @@ async function consultarDatosWhatssap(tipo) {
 async function consultarWhatssapConectado() {
   const datosApi = await consultarDatosWhatssap("connect");
 
+  console.log("Datos API:", datosApi);
+  if (!datosApi.apiKey) {
+    return "NO-CREADA"
+  }
+
   try {
     const response = await fetch(datosApi.apiInstance, {
       method: "GET",
@@ -40,9 +45,9 @@ async function consultarWhatssapConectado() {
     const result = await response.json();
 
     if (result.instance && result.instance.state === "open") {
-      return true;
+      return "CONECTADA";
     } else {
-      return false;
+      return "NO-CONECTADA";
     }
   } catch (error) {
     console.error("Error al cargar el QR:", error);
@@ -51,7 +56,7 @@ async function consultarWhatssapConectado() {
 
 async function consultarDatosPaciente(pacienteId, fechaConsulta) {
   let data = await obtenerDatosPorId("patients", pacienteId);
-// console.log("data ", data);
+  // console.log("data ", data);
   let nombre = [
     data.first_name,
     data.middle_name,

@@ -72,7 +72,7 @@ export interface FormAppointment extends AppointmentFormInputs {
   specialty_name: string;
 }
 
-export const  AppointmentFormModal = ({ isOpen, onClose }) => {
+export const AppointmentFormModal = ({ isOpen, onClose }) => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [appointments, setAppointments] = useState<FormAppointment[]>([]);
   const [currentAppointment, setCurrentAppointment] =
@@ -1280,7 +1280,7 @@ export const  AppointmentFormModal = ({ isOpen, onClose }) => {
 
                   <div className="mb-3">
                     <div className="row">
-                      <div className="col-md-6">
+                      <div className="col-md-12">
                         <Controller
                           name="product_id"
                           control={control}
@@ -1311,6 +1311,12 @@ export const  AppointmentFormModal = ({ isOpen, onClose }) => {
                         />
                         {getFormErrorMessage("product_id")}
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="row">
+
                       <div className="col-md-6">
                         <Controller
                           name="consultation_purpose"
@@ -1340,11 +1346,6 @@ export const  AppointmentFormModal = ({ isOpen, onClose }) => {
                         />
                         {getFormErrorMessage("consultation_purpose")}
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <div className="row">
                       <div className="col-md-6">
                         <Controller
                           name="consultation_type"
@@ -1374,6 +1375,11 @@ export const  AppointmentFormModal = ({ isOpen, onClose }) => {
                         />
                         {getFormErrorMessage("consultation_type")}
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="row">
                       <div className="col-md-6">
                         <Controller
                           name="external_cause"

@@ -43,6 +43,61 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+
+ /* Estilos para el MegaMenu de PrimeReact */
+    .navbar-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0 1rem;
+    }
+    
+    .navbar-logo {
+        flex-shrink: 0;
+    }
+    
+    .navbar-megamenu-wrapper {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        min-width: 0; /* Permite que se reduzca correctamente */
+    }
+    
+    .navbar-icons {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Responsive para móviles */
+    @media screen and (max-width: 960px) {
+        .navbar-container {
+            flex-wrap: wrap;
+            padding: 0.5rem;
+        }
+        
+        .navbar-logo {
+            order: 1;
+            flex-basis: 50%;
+        }
+        
+        .navbar-icons {
+            order: 2;
+            flex-basis: 50%;
+            justify-content: flex-end;
+        }
+        
+        .navbar-megamenu-wrapper {
+            order: 3;
+            flex-basis: 100%;
+            margin-top: 0.5rem;
+        }
+    }
+
+    .navbar-megamenu-container{
+    text
+    }
 </style>
 
 
@@ -60,142 +115,14 @@
             </div>
         </a>
     </div>
-
+     <div class="main-content">
+            <div class="component-container">
+                <div id="NavbarHeader"></div>
+            </div>
+        </div>
     <div class="collapse navbar-collapse navbar-top-collapse order-1 order-lg-0 justify-content-center"
         id="navbarTopCollapse">
-        <ul class="navbar-nav navbar-nav-top" data-dropdown-on-hover="data-dropdown-on-hover">
-            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="#!" role="button"
-                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                    aria-expanded="false"><span class="uil fs-8 me-2 uil-home"></span>Home</a>
-                <ul class="dropdown-menu navbar-dropdown-caret">
-                    <li><a class="dropdown-item" href="Dashboard">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="home"></span>Inicio
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="pacientes">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="users"></span>Consultas
-                            </div>
-                        </a>
-                    </li>
-                    <!-- <li><a class="dropdown-item" href="citasControl#citas">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="calendar"></span>Citas
-              </div>
-            </a>
-          </li> -->
-                    <li><a class="dropdown-item" href="citasControl">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="user-plus"></span>Admisiones
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="telemedicina">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="video"></span>Telemedicina
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="homeTurnos">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="monitor"></span>Turnos
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="homeFarmacia">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="book-open"></span>Farmacia
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="verOrdenesExamenesGenerales">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="activity"></span>Laboratorio
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="Menu_reports" role="button"
-                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true"
-                    aria-expanded="false"><span class="uil fs-8 me-2 uil-archive"></span>Reportes</a>
-                <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-                    <li><a class="dropdown-item" href="Invoices">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="briefcase"></span>Facturación
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="InvoicesByEntity">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="briefcase"></span>Facturas x
-                                Entidad
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="InvoicesDoctors">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="briefcase"></span>Especialistas
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="Commissions">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="briefcase"></span>Bonificaciones
-                            </div>
-                        </a>
-                    </li>
-                    <li><a class="dropdown-item" href="AppointmentsReport">
-                            <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                    data-feather="briefcase"></span>Citas
-                            </div>
-                        </a>
-                    </li>
-            </li>
-        </ul>
-        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="Menu_reports" role="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
-                    class="uil fs-8 me-2 uil-credit-card">
-                </span>Administración</a>
-            <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-                <li><a class="dropdown-item" href="homeMarketing">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                data-feather="briefcase"></span>Marketing
-                        </div>
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="homeConfiguracion">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                data-feather="sliders"></span>Configuración
-                        </div>
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="homeInventario">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                data-feather="folder"></span>Inventario
-                        </div>
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="homeAuditoria">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                data-feather="user-check"></span>Auditoria
-                        </div>
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="homeContabilidad">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                                data-feather="file-text"></span>Contabilidad
-                        </div>
-                    </a>
-                </li>
-                <li><a class="dropdown-item" href="social">
-                        <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil-comments"></span>Comunidad
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </li>
+   
         <!-- <ul>
       <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="farmacia" role="button"
           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
@@ -271,15 +198,15 @@
             </div>
         </li>
 
-        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal"><span
-                    data-feather="search" style="height:19px;width:19px;margin-bottom: 2px;"></span></a></li>
+        <!-- <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal"><span
+                    data-feather="search" style="height:19px;width:19px;margin-bottom: 2px;"></span></a></li> -->
 
         <li class="nav-item dropdown">
             <!-- Botón de notificaciones con icono de Bootstrap -->
-            <a id="btnNotificaciones" class="nav-link position-relative" href="#" role="button"
+            <!-- <a id="btnNotificaciones" class="nav-link position-relative" href="#" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="far fa-bell"></span>
-            </a>
+            </a> -->
 
             <!-- Menú desplegable de notificaciones -->
             <div class="dropdown-menu dropdown-menu-end py-0 shadow border navbar-dropdown-caret"
@@ -496,6 +423,18 @@
         </li>
     </ul>
 </nav>
+
+
+<script type="module">
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import  NavbarHeader  from './react-dist/layout/menu/NavbarHeader.js';
+
+    ReactDOMClient.createRoot(document.getElementById('NavbarHeader')).render(
+        React.createElement(NavbarHeader)
+    );
+</script>
+
 
 <script type="module">
     import {

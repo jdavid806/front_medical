@@ -126,6 +126,86 @@ const TaxFormConfig = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "percentage",
+    className: "font-medium block mb-2"
+  }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "accounting_account",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account",
+    control: control,
+    rules: {
+      required: "La cuenta contable es requerida"
+      // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+      id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: accounts,
+      optionValue: "id",
+      optionLabel: "account_name",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      filterBy: "account_name,account_code",
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
+      }),
+      loading: isLoadingAccounts,
+      appendTo: "self"
+    }), getFormErrorMessage("accounting_account"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "accounting_account_reverse",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable Reversa *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_reverse",
+    control: control,
+    rules: {
+      required: "La cuenta contable reversa es requerida"
+      // validate: (value) => {
+      //   if (!value?.id) return "Seleccione una cuenta válida";
+      //   if (Number(selectedAccount?.id) === value?.id) {
+      //     return "No puede ser la misma cuenta principal";
+      //   }
+      //   return true;
+      // },
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+      id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: accounts.filter(acc => !selectedAccount || acc.id !== selectedAccount),
+      optionLabel: "account_name",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      optionValue: "id",
+      filterBy: "account_name,account_code",
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
+      }),
+      loading: isLoadingAccounts,
+      appendTo: "self"
+    }), getFormErrorMessage("accounting_account_reverse"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "percentage",
+    className: "font-medium block mb-2"
+  }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account",
     className: "font-medium block mb-2"
   }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {

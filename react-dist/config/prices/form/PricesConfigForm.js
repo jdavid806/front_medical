@@ -1,48 +1,33 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 import React, { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { classNames } from "primereact/utils";
-import { InputText } from "primereact/inputtext";
-import { InputNumber } from "primereact/inputnumber";
-import { Dropdown } from "primereact/dropdown";
-import { Button } from "primereact/button";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { examTypeService, entitiesService, taxesService, retentionsService } from "../../../../services/api/index.js";
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
+import { InputSwitch } from 'primereact/inputswitch';
+import { examTypeService, taxesService, retentionsService } from "../../../../services/api/index.js";
 const PricesConfigForm = ({
   formId,
   onHandleSubmit,
-  initialData
+  initialData,
+  onCancel,
+  entitiesData
 }) => {
   const [showExamType, setShowExamType] = useState(false);
-  const [showLabFields, setShowLabFields] = useState(false);
+  const [showLabFields, setShowLabFields] = useState(true);
   const [showEntities, setShowEntities] = useState(false);
   const [showTax, setShowTax] = useState(false);
   const [entityRows, setEntityRows] = useState([]);
   const [currentEntity, setCurrentEntity] = useState({
-    entity_id: {
-      id: 0
-    },
-    entity_name: {
-      name: ""
-    },
-    price: null,
-    tax_name: {
-      name: ""
-    },
-    tax_id: {
-      id: 0
-    },
-    retention_name: {
-      name: ""
-    },
-    retention_id: {
-      id: 0
-    }
+    entity_id: '',
+    entity_name: '',
+    price: 0,
+    tax_charge_id: '',
+    tax_name: '',
+    withholding_tax_id: '',
+    retention_name: ''
   });
   const [examTypesData, setExamTypesData] = useState([]);
-  const [entitiesData, setEntitiesData] = useState([]);
   const [taxes, setTaxes] = useState([]);
   const [retentions, setRetentions] = useState([]);
   const {
@@ -92,13 +77,62 @@ const PricesConfigForm = ({
   }, [toggleImpuesto]);
   useEffect(() => {
     loadExamTypes();
-    loadEntities();
     loadTaxes();
     loadRetentions();
   }, []);
+  useEffect(() => {
+    if (initialData) {
+      // Establecer product_id si existe para la actualización
+      if (initialData.product_id) {
+        setValue('product_id', initialData.product_id);
+      }
+      setValue('name', initialData.name);
+      setValue('curp', initialData.curp);
+      setValue('attention_type', initialData.attention_type);
+      setValue('sale_price', initialData.sale_price);
+      setValue('copago', initialData.copago);
+      setValue('purchase_price', initialData.purchase_price);
+      setValue('taxProduct_type', initialData.taxProduct_type || '');
+
+      // Load entities if they exist
+      if (initialData.entities && initialData.entities.length > 0) {
+        setEntityRows([...initialData.entities]); // Crear nueva copia para forzar re-render
+        setValue('toggleEntities', true);
+        setShowEntities(true);
+      } else {
+        setEntityRows([]);
+        setValue('toggleEntities', false);
+        setShowEntities(false);
+      }
+      if (initialData.taxProduct_type && initialData.taxProduct_type !== '0') {
+        setValue('toggleImpuesto', true);
+        setShowTax(true);
+      } else {
+        setValue('toggleImpuesto', false);
+        setShowTax(false);
+      }
+    } else {
+      // Reset form cuando no hay initialData
+      setEntityRows([]);
+      setShowEntities(false);
+      setShowTax(false);
+      setValue('toggleEntities', false);
+      setValue('toggleImpuesto', false);
+    }
+  }, [initialData, setValue]);
+
+  // Establecer exam_type_id después de que se carguen los examTypesData
+  useEffect(() => {
+    if (initialData?.exam_type_id && examTypesData.length > 0) {
+      // Convertir a número para comparar con los IDs de examTypesData
+      const examTypeId = parseInt(initialData.exam_type_id);
+      const foundExam = examTypesData.find(exam => exam.id === examTypeId);
+      if (foundExam) {
+        setValue('exam_type_id', foundExam.id);
+      }
+    }
+  }, [initialData?.exam_type_id, examTypesData, setValue]);
   const onSubmit = data => {
-    console.log("data: ", data);
-    console.log("entityRows: ", entityRows);
     const submitData = {
       ...data,
       entities: entityRows
@@ -106,41 +140,18 @@ const PricesConfigForm = ({
     if (data.attention_type === "LABORATORY") {
       submitData.sale_price = 0;
       submitData.copago = 0;
+      submitData.purchase_price = 0;
     }
-
-    // onHandleSubmit(submitData);
+    onHandleSubmit(submitData);
   };
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
+      className: "text-danger"
     }, errors[name]?.message);
   };
-  const attentionTypes = [{
-    label: "Seleccionar...",
-    value: ""
-  }, {
-    label: "Procedimiento",
-    value: "PROCEDURE"
-  }, {
-    label: "Consulta",
-    value: "CONSULTATION"
-  }, {
-    label: "Laboratorio",
-    value: "LABORATORY"
-  }, {
-    label: "Rehabilitación",
-    value: "REHABILITATION"
-  }, {
-    label: "Optometría",
-    value: "OPTOMETRY"
-  }];
   async function loadExamTypes() {
     const exmaTypes = await examTypeService.getAll();
     setExamTypesData(exmaTypes);
-  }
-  async function loadEntities() {
-    const entities = await entitiesService.getEntities();
-    setEntitiesData(entities.data);
   }
   async function loadTaxes() {
     const taxes = await taxesService.getTaxes();
@@ -151,78 +162,82 @@ const PricesConfigForm = ({
     setRetentions(retentions.data);
   }
   const handleEntityChange = (field, value) => {
-    setCurrentEntity(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-  const addEntityRow = () => {
-    if (currentEntity.entity_id && currentEntity.price !== null) {
-      console.log("currentEntity: ", currentEntity);
-      // const newRow: any = {
-      //   entity_id: currentEntity.entity_id.id,
-      //   price: currentEntity.price,
-      //   tax_type: currentEntity?.tax_type?.name || undefined,
-      //   retention_type: currentEntity.retention_type?.name || undefined,
-      // };
-
-      // setEntityRows([...entityRows, newRow]);
-
-      // // Reset current entity
-      // setCurrentEntity({
-      //   entity_id: { name: "" },
-      //   price: null,
-      //   tax_type: { name: "" },
-      //   retention_type: { name: "" },
-      // });
+    if (field === 'entity_id') {
+      const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
+      setCurrentEntity(prev => ({
+        ...prev,
+        entity_id: value,
+        entity_name: selectedEntity ? selectedEntity.name : ''
+      }));
+    } else if (field === 'tax_charge_id') {
+      const selectedTax = value ? taxes.find(t => t.id == value) : null;
+      setCurrentEntity(prev => ({
+        ...prev,
+        tax_charge_id: value,
+        tax_name: selectedTax ? selectedTax.name : ''
+      }));
+    } else if (field === 'withholding_tax_id') {
+      const selectedRetention = value ? retentions.find(r => r.id == value) : null;
+      setCurrentEntity(prev => ({
+        ...prev,
+        withholding_tax_id: value,
+        retention_name: selectedRetention ? selectedRetention.name : ''
+      }));
+    } else {
+      setCurrentEntity(prev => ({
+        ...prev,
+        [field]: value
+      }));
     }
   };
-  const confirmDelete = rowIndex => {
-    confirmDialog({
-      message: "¿Estás seguro de eliminar esta entidad?",
-      header: "Confirmación",
-      icon: "pi pi-exclamation-triangle",
-      acceptLabel: "Sí",
-      rejectLabel: "No",
-      accept: () => {
-        const newRows = [...entityRows];
-        newRows.splice(rowIndex, 1);
-        setEntityRows(newRows);
-      }
-    });
+  const addEntityRow = () => {
+    if (currentEntity.entity_id && currentEntity.price > 0) {
+      const newRow = {
+        entity_id: currentEntity.entity_id,
+        entity_name: currentEntity.entity_name,
+        price: currentEntity.price,
+        tax_charge_id: currentEntity.tax_charge_id || '',
+        tax_name: currentEntity.tax_name || 'N/A',
+        withholding_tax_id: currentEntity.withholding_tax_id || '',
+        retention_name: currentEntity.retention_name || 'N/A'
+      };
+      setEntityRows([...entityRows, newRow]);
+
+      // Reset current entity
+      setCurrentEntity({
+        entity_id: '',
+        entity_name: '',
+        price: 0,
+        tax_charge_id: '',
+        tax_name: '',
+        withholding_tax_id: '',
+        retention_name: ''
+      });
+    } else {
+      console.log('Cannot add entity row - missing entity_id or price:', currentEntity);
+    }
   };
-  const actionBodyTemplate = (rowData, {
-    rowIndex
-  }) => {
-    return /*#__PURE__*/React.createElement(Button, {
-      type: "button",
-      className: "p-button-danger p-button-sm",
-      onClick: e => {
-        e.preventDefault, confirmDelete(rowIndex);
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    }));
+  const removeEntityRow = rowIndex => {
+    if (window.confirm('¿Estás seguro de eliminar esta entidad?')) {
+      const newRows = [...entityRows];
+      newRows.splice(rowIndex, 1);
+      setEntityRows(newRows);
+    }
   };
-  const priceBodyTemplate = rowData => {
-    return `$${rowData.price.toFixed(2)}`;
-  };
-  const entityBodyTemplate = rowData => {
-    return entitiesData.find(e => e.value === rowData.entity_id)?.label || rowData.entity_id;
-  };
-  return /*#__PURE__*/React.createElement("form", {
-    id: formId,
-    onSubmit: handleSubmit(onSubmit)
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card"
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card mt-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("h5", {
     className: "card-title"
-  }, "Datos de producto"), /*#__PURE__*/React.createElement("input", _extends({
+  }, "Datos de producto"), /*#__PURE__*/React.createElement("form", {
+    className: "row g-3",
+    id: formId,
+    onSubmit: handleSubmit(onSubmit)
+  }, /*#__PURE__*/React.createElement("input", _extends({
     type: "hidden"
   }, register("product_id"))), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "name",
     control: control,
@@ -232,18 +247,18 @@ const PricesConfigForm = ({
     render: ({
       field,
       fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Nombre del item *"), /*#__PURE__*/React.createElement(InputText, _extends({
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
+    }, "Nombre del item"), /*#__PURE__*/React.createElement(InputText, _extends({
+      className: `w-100 ${fieldState.error ? 'p-invalid' : ''}`,
       id: field.name,
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
       placeholder: "Nombre del item"
     }, field)), getFormErrorMessage("name"))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "curp",
     control: control,
@@ -253,18 +268,18 @@ const PricesConfigForm = ({
     render: ({
       field,
       fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "C\xF3digo Cups *"), /*#__PURE__*/React.createElement(InputText, _extends({
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
+    }, "Cups"), /*#__PURE__*/React.createElement(InputText, _extends({
+      className: `w-100 ${fieldState.error ? 'p-invalid' : ''}`,
       id: field.name,
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
       placeholder: "C\xF3digo Cups"
     }, field)), getFormErrorMessage("curp"))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "attention_type",
     control: control,
@@ -274,282 +289,296 @@ const PricesConfigForm = ({
     render: ({
       field,
       fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Tipo de atenci\xF3n *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
+    }, "Tipo de atenci\xF3n"), /*#__PURE__*/React.createElement(Dropdown, {
+      className: `w-100 ${fieldState.error ? 'p-invalid' : ''}`,
       id: field.name,
-      options: attentionTypes,
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: [{
+        label: "Procedimiento",
+        value: "PROCEDURE"
+      }, {
+        label: "Consulta",
+        value: "CONSULTATION"
+      }, {
+        label: "Laboratorio",
+        value: "LABORATORY"
+      }, {
+        label: "Rehabilitación",
+        value: "REHABILITATION"
+      }, {
+        label: "Optometría",
+        value: "OPTOMETRY"
+      }],
       placeholder: "Seleccionar..."
-    }, field)), getFormErrorMessage("attention_type"))
+    }), getFormErrorMessage("attention_type"))
   })), showExamType && /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "exam_type_id",
     control: control,
     render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Examen"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      field
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
+    }, "Examen"), /*#__PURE__*/React.createElement(Dropdown, {
+      className: "w-100",
       id: field.name,
-      options: examTypesData,
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      optionLabel: "name",
+      value: field.value,
+      onChange: e => {
+        field.onChange(e.value);
+      },
+      options: examTypesData.map(exam => ({
+        label: exam.name,
+        value: exam.id
+      })),
       placeholder: "Seleccionar...",
       filter: true,
-      appendTo: "self"
-    }, field)))
-  })), showLabFields && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "row mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+      filterBy: "label",
+      filterPlaceholder: "Buscar por nombre...",
+      showClear: true
+    }))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6",
+    style: {
+      display: showLabFields ? 'block' : 'none'
+    }
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "sale_price",
     control: control,
     render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
+      field
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
     }, "Precio p\xFAblico"), /*#__PURE__*/React.createElement(InputNumber, {
-      inputId: field.name,
-      mode: "currency",
-      currency: "USD",
-      locale: "en-US",
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
+      className: "w-100",
+      id: field.name,
+      placeholder: "Precio p\xFAblico",
       value: field.value,
       onValueChange: e => field.onChange(e.value),
-      placeholder: "Precio p\xFAblico"
+      mode: "currency",
+      currency: "COP",
+      locale: "es-CO"
     }))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-md-6",
+    style: {
+      display: showLabFields ? 'block' : 'none'
+    }
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "copago",
     control: control,
     render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
+      field
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
     }, "Precio Copago"), /*#__PURE__*/React.createElement(InputNumber, {
-      inputId: field.name,
-      mode: "currency",
-      currency: "USD",
-      locale: "en-US",
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
+      className: "w-100",
+      id: field.name,
+      placeholder: "Precio Copago",
       value: field.value,
       onValueChange: e => field.onChange(e.value),
-      placeholder: "Precio Copago"
+      mode: "currency",
+      currency: "COP",
+      locale: "es-CO"
     }))
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12",
+    style: {
+      display: showLabFields ? 'block' : 'none'
+    }
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "purchase_price",
     control: control,
     render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
+      field
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
     }, "Costo"), /*#__PURE__*/React.createElement(InputNumber, {
-      inputId: field.name,
-      mode: "currency",
-      currency: "USD",
-      locale: "en-US",
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
+      className: "w-100",
+      id: field.name,
+      placeholder: "Costo",
       value: field.value,
       onValueChange: e => field.onChange(e.value),
-      placeholder: "Costo"
+      mode: "currency",
+      currency: "COP",
+      locale: "es-CO"
     }))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "row mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-md-6",
+    style: {
+      display: showLabFields ? 'block' : 'none'
+    }
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "toggleEntities",
     control: control,
     render: ({
       field
     }) => /*#__PURE__*/React.createElement("div", {
-      className: "form-check form-switch"
-    }, /*#__PURE__*/React.createElement("input", {
-      type: "checkbox",
-      className: "form-check-input",
-      id: "toggleEntities",
-      checked: field.value || false,
-      onChange: e => field.onChange(e.target.checked)
-    }), /*#__PURE__*/React.createElement("label", {
-      className: "form-check-label",
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label d-block",
       htmlFor: "toggleEntities"
-    }, "Agregar entidades"))
+    }, "Agregar entidades"), /*#__PURE__*/React.createElement(InputSwitch, {
+      inputId: "toggleEntities",
+      checked: field.value || false,
+      onChange: e => field.onChange(e.value)
+    }))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-md-6",
+    style: {
+      display: showLabFields ? 'block' : 'none'
+    }
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "toggleImpuesto",
     control: control,
     render: ({
       field
     }) => /*#__PURE__*/React.createElement("div", {
-      className: "form-check form-switch"
-    }, /*#__PURE__*/React.createElement("input", {
-      type: "checkbox",
-      className: "form-check-input",
-      id: "toggleImpuesto",
-      checked: field.value || false,
-      onChange: e => field.onChange(e.target.checked)
-    }), /*#__PURE__*/React.createElement("label", {
-      className: "form-check-label",
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label d-block",
       htmlFor: "toggleImpuesto"
-    }, "Agregar Impuesto"))
-  })))), showTax && /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    }, "Agregar Impuesto"), /*#__PURE__*/React.createElement(InputSwitch, {
+      inputId: "toggleImpuesto",
+      checked: field.value || false,
+      onChange: e => {
+        field.onChange(e.value);
+        if (!e.value) {
+          setValue('taxProduct_type', '0');
+        }
+      }
+    }))
+  })), showTax && /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "taxProduct_type",
     control: control,
     render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Tipo de impuesto"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      field
+    }) => /*#__PURE__*/React.createElement("div", {
+      className: "mb-3"
+    }, /*#__PURE__*/React.createElement("label", {
+      className: "form-label",
+      htmlFor: field.name
+    }, "Tipo de impuesto"), /*#__PURE__*/React.createElement(Dropdown, {
+      className: "w-100",
       id: field.name,
-      options: taxes,
-      optionLabel: "name",
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: taxes.map(tax => ({
+        label: tax.name,
+        value: tax.id
+      })),
       placeholder: "Seleccionar..."
-    }, field, {
-      filter: true,
-      appendTo: "self"
-    })))
+    }))
   })), showEntities && /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card p-3 mt-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Entidad"), /*#__PURE__*/React.createElement(Dropdown, {
-    options: entitiesData,
-    placeholder: "Seleccionar...",
     className: "w-100",
-    optionLabel: "name",
     value: currentEntity.entity_id,
     onChange: e => handleEntityChange("entity_id", e.value),
-    filter: true,
-    appendTo: "self"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    options: entitiesData.map(entity => ({
+      label: entity.name,
+      value: entity.id
+    })),
+    placeholder: "Seleccionar..."
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Precio"), /*#__PURE__*/React.createElement(InputNumber, {
-    mode: "currency",
-    currency: "USD",
-    locale: "en-US",
-    placeholder: "Precio",
     className: "w-100",
+    placeholder: "Precio",
     value: currentEntity.price,
-    onValueChange: e => handleEntityChange("price", e.value ?? 0)
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    onValueChange: e => handleEntityChange("price", e.value || 0),
+    mode: "currency",
+    currency: "COP",
+    locale: "es-CO"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Tipo de impuesto"), /*#__PURE__*/React.createElement(Dropdown, {
-    options: taxes,
-    placeholder: "Seleccionar...",
     className: "w-100",
-    optionLabel: "name",
-    value: currentEntity.tax_id,
-    onChange: e => handleEntityChange("tax_id", e.value),
-    filter: true,
-    appendTo: "self"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    value: currentEntity.tax_charge_id,
+    onChange: e => handleEntityChange("tax_charge_id", e.value),
+    options: taxes.map(tax => ({
+      label: tax.name,
+      value: tax.id
+    })),
+    placeholder: "Seleccionar..."
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Tipo de retenci\xF3n"), /*#__PURE__*/React.createElement(Dropdown, {
-    options: retentions,
-    placeholder: "Seleccionar...",
     className: "w-100",
-    optionLabel: "name",
-    value: currentEntity.retention_id,
-    onChange: e => handleEntityChange("retention_id", e.value),
-    filter: true,
-    appendTo: "self"
-  })), /*#__PURE__*/React.createElement("div", {
+    value: currentEntity.withholding_tax_id,
+    onChange: e => handleEntityChange("withholding_tax_id", e.value),
+    options: retentions.map(retention => ({
+      label: retention.name,
+      value: retention.id
+    })),
+    placeholder: "Seleccionar..."
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 text-end"
-  }, /*#__PURE__*/React.createElement(Button, {
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary",
     type: "button",
-    label: "Agregar",
-    icon: "pi pi-plus",
     onClick: addEntityRow
-  })))), entityRows.length > 0 && /*#__PURE__*/React.createElement("div", {
+  }, "Agregar")))), entityRows.length > 0 && /*#__PURE__*/React.createElement("div", {
     className: "card p-3 mt-3"
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: entityRows,
-    stripedRows: true,
-    showGridlines: true,
-    responsiveLayout: "scroll",
-    className: "p-datatable-sm",
-    emptyMessage: "No hay entidades agregadas"
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "entity_id",
-    header: "Entidad",
-    body: entityBodyTemplate,
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "price",
-    header: "Precio",
-    body: priceBodyTemplate,
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "tax_type",
-    header: "Tipo Impuesto",
-    body: rowData => rowData.tax_type || "-",
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "retention_type",
-    header: "Tipo Retenci\xF3n",
-    body: rowData => rowData.retention_type || "-",
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    header: "Acciones",
-    body: actionBodyTemplate,
-    style: {
-      width: "100px"
-    }
-  }))), /*#__PURE__*/React.createElement(ConfirmDialog, null)), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mt-4"
-  }, /*#__PURE__*/React.createElement(Button, {
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "table table-striped"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Entidad"), /*#__PURE__*/React.createElement("th", null, "Precio"), /*#__PURE__*/React.createElement("th", null, "Tipo Impuesto"), /*#__PURE__*/React.createElement("th", null, "Tipo Retenci\xF3n"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, entityRows.map((row, index) => /*#__PURE__*/React.createElement("tr", {
+    key: index
+  }, /*#__PURE__*/React.createElement("td", null, row.entity_name), /*#__PURE__*/React.createElement("td", null, row.price), /*#__PURE__*/React.createElement("td", null, row.tax_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, row.retention_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
     type: "button",
-    label: "Cancelar",
-    className: "p-button-outlined"
-  }), /*#__PURE__*/React.createElement(Button, {
-    type: "submit",
-    label: "Guardar",
-    icon: "pi pi-save"
-  })))));
+    className: "btn btn-danger btn-sm",
+    onClick: () => removeEntityRow(index)
+  }, "Eliminar")))))))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 text-end mt-4"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary me-2",
+    type: "submit"
+  }, "Guardar"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-outline-primary",
+    type: "button",
+    onClick: onCancel
+  }, "Cancelar")))));
 };
 export default PricesConfigForm;

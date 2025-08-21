@@ -57,13 +57,13 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
 
   const { productInventory, loading, fetchProductInventoryOnlyDeposits } = useProductInventoryOnlyDeposits(type);
   const { updateProduct } = useProductUpdate();
-    const { generarFormatoInventario } = useProductInventoryFormat();
+  const { generarFormatoInventario } = useProductInventoryFormat();
 
   // Filtrar productos que no son "Laboratorio"
   const filteredInventory = productInventory.map(deposit => ({
     ...deposit,
     products: deposit.products.filter(product => product.name !== "Laboratorio")
-  })); 
+  }));
 
   // Calcular el stock total de un producto en un depósito
   const getProductStock = (product: Product) => {
@@ -74,7 +74,7 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
   const getInventorySummary = (inventory: InventoryItem) => {
     const totalProducts = inventory.products.length;
     const totalStock = inventory.products.reduce((sum, product) => sum + getProductStock(product), 0);
-    
+
     return {
       totalProducts,
       totalStock
@@ -90,8 +90,8 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
   const depositRowExpansionTemplate = (data: InventoryItem) => {
     return (
       <div className="p-3">
-        <DataTable 
-          value={data.products} 
+        <DataTable
+          value={data.products}
           dataKey="id"
           onRowClick={(e) => {
             setSelectedProduct(e.data as Product);
@@ -104,27 +104,28 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
           <Column header="Tipo" body={(rowData: Product) => rowData.product_type?.name || '--'} />
           <Column header="Precio" body={(rowData: Product) => `$${rowData.sale_price}`} />
           <Column header="Stock" body={(rowData: Product) => getProductStock(rowData)} />
-          <Column header="Stock Mín/Máx" body={(rowData: Product) => 
+          <Column header="Stock Mín/Máx" body={(rowData: Product) =>
             `${rowData.minimum_stock || '--'} / ${rowData.maximum_stock || '--'}`
           } />
-          <Column 
-            header="Acciones" 
+          <Column
+
+            header="Acciones"
             body={(rowData: Product) => (
               <TableActionsWrapper>
                 <EditTableAction onTrigger={() => openFormModal(rowData)} />
-                  <li>
-            <a className="dropdown-item"
-                href="#"
-                onClick={() => {
-                  setSelectedProduct(rowData);
-                  setShowDetailModal(true);
-                }}>
-                <div className="d-flex gap-2 align-items-center">
-                    <i className="fa-solid fa-eye" style={{ width: '20px' }}></i>
-                    <span>Ver más</span>
-                </div>
-            </a>
-        </li>
+                <li>
+                  <a className="dropdown-item"
+                    href="#"
+                    onClick={() => {
+                      setSelectedProduct(rowData);
+                      setShowDetailModal(true);
+                    }}>
+                    <div className="d-flex gap-2 align-items-center">
+                      <i className="fa-solid fa-eye" style={{ width: '20px' }}></i>
+                      <span>Ver más</span>
+                    </div>
+                  </a>
+                </li>
               </TableActionsWrapper>
             )}
           />
@@ -136,7 +137,7 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
   // Resumen del depósito para la fila principal
   const depositSummaryTemplate = (data: InventoryItem) => {
     const summary = getInventorySummary(data);
-    
+
     return (
       <div className="d-flex flex-column gap-1">
         <span className="font-bold">{data.name}</span>
@@ -150,7 +151,7 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
 
   const onHandleSubmit = async (data: ProductInventoryFormInputs) => {
     if (!selectedProduct) return;
-    
+
     updateProduct(selectedProduct.id.toString(), {
       product: data,
       entities: [],
@@ -160,7 +161,7 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
     });
   };
 
-    const exportToPDF = () => {
+  const exportToPDF = () => {
     generarFormatoInventario(productInventory, 'inventario-productos', 'Impresion');
   }
 
@@ -168,14 +169,14 @@ export const ProductInventoryApp: React.FC<ProductInventoryAppProps> = ({ type }
     <>
       <div className="mb-3">
         <div className="row">
-            <div className="col-auto">
-                          <Button 
-                            label="Exportar a PDF" 
-                            icon={<i className="fa-solid fa-file-pdf"></i>} 
-                            className="btn btn-primary"
-                            onClick={() => exportToPDF()}
-                          />
-                        </div>
+          <div className="col-auto">
+            <Button
+              label="Exportar a PDF"
+              icon={<i className="fa-solid fa-file-pdf"></i>}
+              className="btn btn-primary"
+              onClick={() => exportToPDF()}
+            />
+          </div>
           <div className="col-12 col-md-12">
             <DataTable
               value={filteredInventory}

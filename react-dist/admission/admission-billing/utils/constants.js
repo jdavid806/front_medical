@@ -19,29 +19,32 @@ export const genderOptions = [{
   value: "OTHER"
 }];
 export const bloodTypeOptions = [{
-  label: "A+",
-  value: "A_POSITIVE"
+  label: "No Refiere",
+  value: "NO_REFIERE"
 }, {
-  label: "A-",
-  value: "A_NEGATIVE"
-}, {
-  label: "B+",
-  value: "B_POSITIVE"
-}, {
-  label: "B-",
-  value: "B_NEGATIVE"
-}, {
-  label: "AB+",
-  value: "AB_POSITIVE"
-}, {
-  label: "AB-",
-  value: "AB_NEGATIVE"
-}, {
-  label: "O+",
+  label: "O Positivo",
   value: "O_POSITIVE"
 }, {
-  label: "O-",
+  label: "O Negativo",
   value: "O_NEGATIVE"
+}, {
+  label: "A Positivo",
+  value: "A_POSITIVE"
+}, {
+  label: "A Negativo",
+  value: "A_NEGATIVE"
+}, {
+  label: "B Positivo",
+  value: "B_POSITIVE"
+}, {
+  label: "B Negativo",
+  value: "B_NEGATIVE"
+}, {
+  label: "AB Positivo",
+  value: "AB_POSITIVE"
+}, {
+  label: "AB Negativo",
+  value: "AB_NEGATIVE"
 }];
 export const paymentMethodOptions = [{
   label: "Efectivo",

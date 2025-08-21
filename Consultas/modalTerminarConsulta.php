@@ -502,7 +502,8 @@ include "../ConsultasJson/dataPaciente.php";
     const especialidad = new URLSearchParams(window.location.search).get("especialidad").normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
-    if (especialidad === "oftalmologia") {
+    // if (especialidad === "oftalmologia") {
+    if (especialidad === "optometria") {
         document.getElementById('tabRecetas').style.display = 'none';
         document.getElementById('tabRecetasOptometria').style.display = 'block';
     } else {

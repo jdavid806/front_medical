@@ -1,14 +1,15 @@
-import React from "react";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { validatePatientStep } from "../utils/helpers.js";
+import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
+import { Card } from "primereact/card";
+import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { InputSwitch } from "primereact/inputswitch";
-import { Controller, useForm } from "react-hook-form";
-import { classNames } from "primereact/utils";
-import { genderOptions } from "../utils/constants.js";
-import { validatePatientStep } from "../utils/helpers.js";
+import PatientFormModal from "../../../patients/modals/form/PatientFormModal.js";
+import { usePatient } from "../../../patients/hooks/usePatient.js";
+import { genders } from "../../../../services/commons.js";
 const PatientStepPreview = ({
   formData,
   updateFormData,
@@ -25,6 +26,38 @@ const PatientStepPreview = ({
   } = useForm({
     defaultValues: formData
   });
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [mappedPatient, setMappedPatient] = useState(null);
+  const {
+    patient
+  } = usePatient(formData.patient.id);
+  useEffect(() => {
+    if (patient) {
+      const mappedPatientData = {
+        id: patient.id,
+        documentType: patient.document_type || "",
+        documentNumber: patient.document_number || "",
+        firstName: patient.first_name || "",
+        middleName: patient.middle_name || "",
+        lastName: patient.last_name || "",
+        secondLastName: patient.second_last_name || "",
+        nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
+        birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
+        gender: genders[patient.gender] || "",
+        country: patient.country_id || "",
+        department: patient.department_id || "",
+        city: patient.city_id || "",
+        address: patient.address || "",
+        email: patient.email || "",
+        whatsapp: patient.whatsapp || "",
+        bloodType: patient.blood_type || "",
+        affiliateType: patient.social_security?.affiliate_type || "",
+        insurance: patient.social_security?.entity?.name || "",
+        hasCompanion: patient.companions?.length > 0 || false
+      };
+      setMappedPatient(mappedPatientData);
+    }
+  }, [patient]);
   const handlePatientChange = (field, value) => {
     updateFormData("patient", {
       [field]: value
@@ -51,9 +84,8 @@ const PatientStepPreview = ({
   const toggleCompanion = value => {
     handlePatientChange("hasCompanion", value);
   };
-  const handleNext = async () => {
-    const isValid = await trigger(["patient.documentNumber", "patient.nameComplet", "patient.gender", "patient.whatsapp", "patient.email", "patient.address"]);
-    if (isValid && validatePatientStep(formData.patient, toast)) {
+  const handleNext = () => {
+    if (validatePatientStep(formData.patient, toast)) {
       nextStep();
     }
   };
@@ -79,227 +111,40 @@ const PatientStepPreview = ({
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.nameComplet",
-    control: control,
-    rules: {
-      required: "Nombre completo es requerido"
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Nombre Paciente *"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("nameComplet", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.nameComplet"))
-  }), /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.documentNumber",
-    control: control,
-    rules: {
-      required: "Número de documento es requerido"
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "N\xFAmero de documento *"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("documentNumber", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.documentNumber"))
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Nombre"), mappedPatient?.nameComplet || "--"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Documento"), mappedPatient?.documentNumber || "--")), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.gender",
-    control: control,
-    rules: {
-      required: "Género es requerido"
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "G\xE9nero *"), /*#__PURE__*/React.createElement(Dropdown, {
-      options: genderOptions,
-      placeholder: "Seleccione",
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.value);
-        handlePatientChange("gender", e.value);
-      },
-      appendTo: "self",
-      disabled: true
-    }), getFormErrorMessage("patient.gender"))
-  }), /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.address",
-    control: control,
-    rules: {
-      required: "Dirección es requerido"
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Direcci\xF3n *"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("address", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.address"))
-  })))), /*#__PURE__*/React.createElement(Card, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "G\xE9nero"), mappedPatient?.gender || "--"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Direcci\xF3n"), mappedPatient?.address || "--")))), /*#__PURE__*/React.createElement(Card, {
     title: "Informaci\xF3n Adicional",
     className: "mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.whatsapp",
-    control: control,
-    rules: {
-      required: "WhatsApp es requerido"
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "WhatsApp *"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("whatsapp", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.whatsapp"))
-  }), /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.email",
-    control: control,
-    rules: {
-      required: "Correo electrónico es requerido",
-      pattern: {
-        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-        message: "Correo electrónico no válido"
-      }
-    },
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Correo electr\xF3nico *"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value,
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("email", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.email"))
-  }), /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.insurance",
-    control: control,
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Aseguradora"), /*#__PURE__*/React.createElement(InputText, {
-      className: "w-100",
-      value: field.value || "",
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("insurance", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.insurance"))
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "WhatsApp"), mappedPatient?.whatsapp || "--"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Correo"), mappedPatient?.email || "--"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Aseguradora"), mappedPatient?.insurance || "--")), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.city",
-    control: control,
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Ciudad"), /*#__PURE__*/React.createElement(InputText, {
-      className: classNames("w-100", {
-        "p-invalid": fieldState.error
-      }),
-      value: field.value || "",
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("city", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.city"))
-  }), /*#__PURE__*/React.createElement(Controller, {
-    name: "patient.affiliateType",
-    control: control,
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
-    }, /*#__PURE__*/React.createElement("label", {
-      className: "form-label"
-    }, "Tipo de afiliado"), /*#__PURE__*/React.createElement(InputText, {
-      className: "w-100",
-      value: field.value || "",
-      onChange: e => {
-        field.onChange(e.target.value);
-        handlePatientChange("affiliateType", e.target.value);
-      },
-      disabled: true
-    }), getFormErrorMessage("patient.affiliateType"))
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Ciudad"), mappedPatient?.city || "--"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-2 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("b", null, "Tipo de afiliado"), mappedPatient?.affiliateType || "--"), /*#__PURE__*/React.createElement(Button, {
+    label: "Actualizar Paciente",
+    className: "btn btn-primary btn-sm",
+    icon: "pi pi-user",
+    onClick: () => setShowUpdateModal(true)
   })))), /*#__PURE__*/React.createElement("div", {
     className: "container-fluid"
   }, /*#__PURE__*/React.createElement("div", {
@@ -314,7 +159,6 @@ const PatientStepPreview = ({
   }, /*#__PURE__*/React.createElement(InputSwitch, {
     checked: formData.patient.facturacionConsumidor,
     onChange: () => toggleBillingType("consumer"),
-    disabled: true,
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-muted small"
@@ -328,7 +172,6 @@ const PatientStepPreview = ({
   }, /*#__PURE__*/React.createElement(InputSwitch, {
     checked: formData.patient.facturacionEntidad,
     onChange: () => toggleBillingType("entity"),
-    disabled: true,
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-muted small"
@@ -429,6 +272,13 @@ const PatientStepPreview = ({
     iconPos: "right",
     onClick: handleNext,
     className: "btn btn-primary btn-sm"
-  })));
+  })), /*#__PURE__*/React.createElement(PatientFormModal, {
+    visible: showUpdateModal,
+    onHide: () => setShowUpdateModal(false),
+    onSuccess: () => {
+      setShowUpdateModal(false);
+    },
+    patientData: patient
+  }));
 };
 export default PatientStepPreview;

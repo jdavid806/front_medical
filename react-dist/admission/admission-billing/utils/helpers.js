@@ -1,37 +1,23 @@
-export const calculateTotal = products => {
-  return products.reduce((sum, product) => sum + product.price * product.quantity * (1 + (product.tax || 0) / 100), 0);
+export const calculateTotal = (products = []) => {
+  const productsArray = Array.isArray(products) ? products : Object.values(products);
+  return productsArray.reduce((sum, product) => {
+    const price = Number(product?.price) || 0;
+    const quantity = Number(product?.quantity) || 0;
+    const tax = Number(product?.tax) || 0;
+    return sum + price * quantity * (1 + tax / 100);
+  }, 0);
 };
-export const calculatePaid = payments => {
-  return payments.reduce((sum, payment) => sum + payment.amount, 0);
+export const calculatePaid = (payments = []) => {
+  const paymentsArray = Array.isArray(payments) ? payments : Object.values(payments);
+  return paymentsArray.reduce((sum, payment) => {
+    const amount = Number(payment?.amount) || 0;
+    return sum + amount;
+  }, 0);
 };
 export const calculateChange = (total, paid) => {
   return Math.max(0, paid - total);
 };
 export const validatePatientStep = (patientData, toast) => {
-  const requiredFields = ['documentNumber', 'nameComplet', 'gender', 'whatsapp', 'email', 'address'];
-  const missingFields = requiredFields.filter(field => {
-    const value = patientData[field];
-    return value === undefined || value === null || value === '';
-  });
-  if (missingFields.length > 0) {
-    toast.current?.show({
-      severity: 'error',
-      summary: 'Campos requeridos',
-      detail: 'Por favor complete todos los campos obligatorios del paciente',
-      life: 3000
-    });
-    return false;
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(patientData.email)) {
-    toast.current?.show({
-      severity: 'error',
-      summary: 'Email inválido',
-      detail: 'Por favor ingrese un email válido',
-      life: 3000
-    });
-    return false;
-  }
   if (patientData.facturacionEntidad) {
     const requiredBillingFields = ['entity', 'authorizationNumber'];
     const missingBillingFields = requiredBillingFields.filter(field => {
@@ -51,23 +37,25 @@ export const validatePatientStep = (patientData, toast) => {
   return true;
 };
 export const validateProductsStep = (products, toast) => {
-  if (products.length === 0) {
+  const productsArray = Array.isArray(products) ? products : Object.values(products || {});
+  const validProducts = productsArray.filter(p => p !== null && p !== undefined);
+  if (validProducts.length === 0) {
     toast.current?.show({
       severity: 'error',
       summary: 'Productos requeridos',
-      detail: 'Debe agregar al menos un producto',
+      detail: 'Debe agregar al menos un producto válido',
       life: 3000
     });
     return false;
   }
-  const invalidProducts = products.filter(product => {
-    return !product.description || !product.price || !product.quantity;
+  const invalidProducts = validProducts.filter(product => {
+    return !product?.description || product?.price == null || product?.quantity == null;
   });
   if (invalidProducts.length > 0) {
     toast.current?.show({
       severity: 'error',
       summary: 'Productos incompletos',
-      detail: 'Todos los productos deben tener descripción, precio y cantidad',
+      detail: `Hay ${invalidProducts.length} productos sin descripción, precio o cantidad`,
       life: 3000
     });
     return false;

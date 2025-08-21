@@ -4,7 +4,6 @@ include "../header.php";
 ?>
 
 <div class="content">
-    <div class="container-small">
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
@@ -20,7 +19,6 @@ include "../header.php";
                 <div id="admissionAppReact"></div>
             </div>
         </div>
-    </div>
 </div>
 
 <script type="module">

@@ -39,10 +39,12 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
       comments: "",
       cost: undefined,
       nextMaintenanceDate: undefined,
+      disposedDate: new Date(),
     },
   });
 
   const assetStatus = watch("assetStatus");
+
   const maintenanceType = watch("maintenanceType");
 
   const onFormSubmit: SubmitHandler<MaintenanceFormInputs> = (data) =>
@@ -121,7 +123,7 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
       )}
 
       {/* Mostrar sección de mantenimiento solo si no es estado "active" */}
-      {assetStatus !== "active" && (
+      {assetStatus === "maintenance" && (
         <>
           <Divider />
 
@@ -173,7 +175,8 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
                       id="maintenanceDate"
                       value={field.value}
                       onChange={(e) => field.onChange(e.value)}
-                      dateFormat="dd/mm/yy"
+                      dateFormat="dd-mm-yy"
+                      readOnlyInput={false}
                       showIcon
                       className={classNames("w-full", {
                         "p-invalid": errors.maintenanceDate,
@@ -232,7 +235,8 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
                     id="nextMaintenanceDate"
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    dateFormat="dd/mm/yy"
+                    dateFormat="dd-mm-yy"
+                    readOnlyInput={false}
                     showIcon
                     className={classNames("w-full", {
                       "p-invalid": errors.nextMaintenanceDate,
@@ -244,6 +248,39 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
             </div>
           )}
         </>
+      )}
+
+      {/* Sección Asignación (solo visible cuando estado es "dado de baja") */}
+      {(assetStatus === "disposed" || assetStatus === "inactive") && (
+        <div className="mb-4">
+          <label
+            htmlFor="disposedDate"
+            className="font-medium text-900 block mb-2"
+          >
+            {assetStatus === "inactive"
+              ? "Fecha de Inactividad *"
+              : "Fecha de Baja *"}
+          </label>
+          <Controller
+            name="disposedDate"
+            control={control}
+            rules={{ required: "La fecha de baja es requerida" }}
+            render={({ field }) => (
+              <Calendar
+                id="disposedDate"
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
+                dateFormat="dd-mm-yy"
+                readOnlyInput={false}
+                showIcon
+                className={classNames("w-full", {
+                  "p-invalid": errors.disposedDate,
+                })}
+              />
+            )}
+          />
+          {getFormErrorMessage("disposedDate")}
+        </div>
       )}
 
       {/* Sección Comentarios (siempre visible) */}

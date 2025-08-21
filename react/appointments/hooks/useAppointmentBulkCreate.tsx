@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { appointmentService } from '../../../services/api'
 import { ErrorHandler } from '../../../services/errorHandler'
-import { SwalManager } from '../../../services/alertManagerImported'
 
 export const useAppointmentBulkCreate = () => {
     const [loading, setLoading] = useState<boolean>(false)

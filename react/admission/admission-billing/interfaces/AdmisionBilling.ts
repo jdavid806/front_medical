@@ -2,6 +2,8 @@ import { Toast } from "primereact/toast";
 import { AppointmentTableItem } from "../../../models/models";
 
 export interface PatientData {
+  id: string;
+  nameComplet: string;
   documentType: string;
   documentNumber: string;
   firstName: string;
@@ -20,6 +22,8 @@ export interface PatientData {
   hasCompanion: boolean;
   facturacionEntidad: boolean;
   facturacionConsumidor: boolean;
+  insurance: string;
+  affiliateType: string;
 }
 
 
@@ -37,6 +41,7 @@ export interface BillingData {
 }
 
 export interface Product {
+  uuid: string;
   id: number;
   code: string;
   description: string;
@@ -59,21 +64,21 @@ export interface PaymentMethod {
 
 export interface CurrentPayment {
   method: string;
-  amount: string;
+  amount: number;
   authorizationNumber: string;
   notes: string;
 }
 
 export interface CompanionInfo {
   name: string;
-  documentType: DocumentType;
+  documentType: string;
   documentNumber: string;
   relationship: string;
   phone: string;
   address?: string;
 }
 
-export interface FormData {
+export interface AdmissionBillingFormData {
   patient: PatientData;
   billing: BillingData;
   products: Product[];
@@ -83,16 +88,16 @@ export interface FormData {
 }
 
 export interface PatientStepProps {
-  formData: FormData;
-  updateFormData: (section: keyof FormData, data: Partial<FormData[keyof FormData]>) => void;
+  formData: AdmissionBillingFormData;
+  updateFormData: (section: keyof AdmissionBillingFormData, data: Partial<AdmissionBillingFormData[keyof AdmissionBillingFormData]>) => void;
   nextStep: () => void;
-  
-  toast: React.RefObject<Toast>;
+
+  toast: React.RefObject<Toast | null>;
 }
 
 export interface PaymentStepProps {
-  formData: FormData;
-  updateFormData: (section: keyof FormData, data: Partial<FormData[keyof FormData]>) => void;
+  formData: AdmissionBillingFormData;
+  updateFormData: (section: keyof AdmissionBillingFormData, data: Partial<AdmissionBillingFormData[keyof AdmissionBillingFormData]>) => void;
   addPayment: (payment: Omit<PaymentMethod, 'id'>) => void;
   removePayment: (id: number) => void;
   nextStep: () => void;
@@ -119,3 +124,6 @@ export interface FormErrors {
     type: string;
   };
 }
+
+
+

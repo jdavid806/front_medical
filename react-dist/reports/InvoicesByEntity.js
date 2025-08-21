@@ -194,7 +194,9 @@ export const InvoicesByEntity = () => {
           producto: producto,
           numeroAutorizacion: item.admission.authorization_number || "-",
           montoPagado: montoPagado,
-          fechaVencimiento: item.invoice.due_date || "-"
+          fechaVencimiento: item.invoice.due_date || "-",
+          invoiceCode: item.invoice.invoice_code || "-",
+          id: item.invoice.id || "-"
         }
       });
 
@@ -269,6 +271,8 @@ export const InvoicesByEntity = () => {
       Paciente: child.data.paciente,
       Producto: child.data.producto,
       "Número Autorización": child.data.numeroAutorizacion,
+      "codigo de factura": child.data.invoiceCode,
+      "id": child.data.id,
       "Monto Pagado": child.data.montoPagado,
       "Fecha Vencimiento": child.data.fechaVencimiento
     }));
@@ -306,6 +310,8 @@ export const InvoicesByEntity = () => {
           <th>Paciente</th>
           <th>Producto</th>
           <th>Número Autorización</th>
+          <th>codigo de factura</th>
+          <th>id</th>
           <th>Monto Pagado</th>
           <th>Fecha Vencimiento</th>
         </tr>
@@ -317,10 +323,12 @@ export const InvoicesByEntity = () => {
             <td>${child.data.paciente}</td>
             <td>${child.data.producto}</td>
             <td>${child.data.numeroAutorizacion}</td>
+            <td>${child.data.invoiceCode}</td>
+            <td>${child.data.id}</td>
             <td>${child.data.montoPagado}</td>
             <td>${child.data.fechaVencimiento}</td>
           </tr>
-        `, '')}
+        `, "")}
       </tbody>
     </table>`;
     const configPDF = {
@@ -531,6 +539,18 @@ export const InvoicesByEntity = () => {
     header: "N\xFAmero autorizaci\xF3n",
     style: {
       minWidth: "200px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "invoiceCode",
+    header: "Codigo de factura",
+    style: {
+      minWidth: "150px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "Id",
+    style: {
+      minWidth: "150px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "montoPagado",

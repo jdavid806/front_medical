@@ -12,7 +12,7 @@ export class ProductService extends BaseApiService {
 
   async getProductById(productId) {
     return await this.httpClient.get(
-      `${this.microservice}/product/${productId}`
+      `api/v1/admin/products/${productId}`
     );
   }
 
@@ -31,7 +31,7 @@ export class ProductService extends BaseApiService {
 
   async storeProductEntity(data) {
     return await this.httpClient.post(
-      this.microservice + "/" + "product-create-entities",
+      "api/v1/admin/product-create-entities",
       data,
       {
         headers: {
@@ -75,9 +75,15 @@ export class ProductService extends BaseApiService {
     );
   }
 
+  async deleteProductById(productId) {
+    return await this.httpClient.delete(
+      `api/v1/admin/products/${productId}`
+    );
+  }
+
   async deleteProduct(productId) {
     return await this.httpClient.delete(
-      this.microservice + "/" + "products" + "/" + productId
+      `api/v1/admin/products/${productId}`
     );
   }
 }

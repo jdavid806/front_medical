@@ -1005,7 +1005,7 @@ export const AppointmentFormModal = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-md-12"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "product_id",
     control: control,
@@ -1035,7 +1035,11 @@ export const AppointmentFormModal = ({
     }, field, {
       disabled: disabledProductIdField
     })))
-  }), getFormErrorMessage("product_id")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("product_id")))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "consultation_purpose",
@@ -1061,11 +1065,7 @@ export const AppointmentFormModal = ({
       }),
       appendTo: "self"
     }, field)))
-  }), getFormErrorMessage("consultation_purpose")))), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("consultation_purpose")), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "consultation_type",
@@ -1091,7 +1091,11 @@ export const AppointmentFormModal = ({
       }),
       appendTo: "self"
     }, field)))
-  }), getFormErrorMessage("consultation_type")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("consultation_type")))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "external_cause",

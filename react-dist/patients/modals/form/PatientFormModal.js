@@ -265,12 +265,6 @@ const PatientFormModal = ({
         }
       } catch (error) {
         console.error("Error inicializando datos:", error);
-        toast.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Error al inicializar los datos del formulario",
-          life: 5000
-        });
       }
     };
     initializeData();
@@ -399,12 +393,6 @@ const PatientFormModal = ({
         }
       }
     } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Error al cargar departamentos",
-        life: 5000
-      });
       setDepartments([]);
     } finally {
       setIsLoading(false);

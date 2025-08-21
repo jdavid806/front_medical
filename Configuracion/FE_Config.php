@@ -243,6 +243,7 @@ include "../header.php";
   import {
     ComissionApp
   } from './react-dist/users/ComissionsApp.js';
+  import  SpecialityApp from './react-dist/fe-config/speciality/SpecialityApp.js';
   // Importa aquí otros componentes React que necesites
 
   // Mapa de contenido de los tabs
@@ -296,6 +297,10 @@ include "../header.php";
     'tab-comissions': {
       component: ComissionApp,
       containerId: 'userComissionsAppReact'
+    },
+    'tab-especialidades': {
+      component: SpecialityApp,
+      containerId: 'specialities'
     }
     // Agrega aquí otros tabs con componentes React
   };
@@ -408,14 +413,6 @@ include "../header.php";
         }
         break;
       case 'tab-especialidades':
-        if (typeof $ !== 'undefined' && $.fn.DataTable) {
-          await cargarEspecialidades();
-          new List("especialidadesTable", {
-            valueNames: ["name"],
-            page: 5,
-            pagination: true
-          });
-        }
         break;
       case 'tab-centro-costos':
         if (typeof $ !== 'undefined' && $.fn.DataTable) {

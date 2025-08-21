@@ -237,6 +237,9 @@ include "./modalTerminarConsulta.php";
 ?>
 
 <script type="module" src="Consultas/scripts/form.js"></script>
+<!-- <link rel="stylesheet" href="apiVoz.css">
+<script src="apiVoz_3.2.js"></script> -->
+
 <script>
 // document.getElementById("mostrarFormulario").addEventListener("click", function () {
 //     var formulario = document.getElementById("formularioPrescripciones");

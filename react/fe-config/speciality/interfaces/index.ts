@@ -1,0 +1,49 @@
+export interface Specialty {
+  id: number
+  name: string
+}
+
+export interface ClinicalRecordType {
+  id: number
+  name: string
+  [key: string]: any
+}
+
+export interface SpecializableElement {
+  id?: number
+  specializable_type: string
+  specializable_id: string | number
+  specialty_id: string
+  description: string
+  display_name?: string
+}
+
+export interface Cie11Code {
+  codigo: string
+  descripcion: string
+}
+
+export interface SpecialityTableProps {
+  specialties: Specialty[]
+  loading: boolean
+  globalFilterValue: string
+  filters: any
+  onGlobalFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onConfigModalOpen: (specialty: Specialty) => void
+}
+
+export interface SpecialityModalProps {
+  visible: boolean
+  selectedSpecialty: Specialty | null
+  clinicalRecordTypes: ClinicalRecordType[]
+  specializableElements: SpecializableElement[]
+  selectedClinicalRecord: ClinicalRecordType | null
+  cie11Code: string
+  onHide: () => void
+  onSave: () => void
+  onAddClinicalRecord: () => void
+  onAddCie11Code: () => void
+  onRemoveElement: (index: number) => void
+  onClinicalRecordChange: (value: ClinicalRecordType | null) => void
+  onCie11CodeChange: (value: string) => void
+}

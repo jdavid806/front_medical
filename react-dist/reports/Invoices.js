@@ -6,8 +6,11 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
-import { useCompany } from "../hooks/useCompany.js"; // Import your services
+import { useCompany } from "../hooks/useCompany.js";
+import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCashFormat.js";
+import { useProceduresCountFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCountFormat.js";
+import { useEntitiesFormat } from "../documents-generation/hooks/reports-medical/invoices/useEntitiesFormat.js";
+import { usePaymentsFormat } from "../documents-generation/hooks/reports-medical/invoices/usePaymentsFormat.js"; // Import your services
 import { productService, userService, patientService, billingService, entityService } from "../../services/api/index.js";
 import { exportProceduresToExcel, exportEntitiesToExcel, exportPaymentsToExcel } from "./excel/ExcelInvoices.js";
 import { ColumnGroup } from "primereact/columngroup";
@@ -39,6 +42,18 @@ export const InvoicesReport = () => {
     setCompany,
     fetchCompany
   } = useCompany();
+  const {
+    generateFormatProceduresCash
+  } = useProceduresCashFormat();
+  const {
+    generateFormatProceduresCount
+  } = useProceduresCountFormat();
+  const {
+    generateFormatEntities
+  } = useEntitiesFormat();
+  const {
+    generateFormatPayments
+  } = usePaymentsFormat();
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -87,7 +102,9 @@ export const InvoicesReport = () => {
       currency: "DOP",
       minimumFractionDigits: 2
     }).format(value);
-    return formatted;
+
+    // Reemplazar "RD$" por "$"
+    return formatted.replace("RD$", "$");
   };
   const loadProcedures = async () => {
     try {
@@ -175,61 +192,20 @@ export const InvoicesReport = () => {
   };
   function exportToProceduresPDF(tab = "") {
     let dataExport = [];
-    let namePDF = "";
     switch (tab) {
       case "procedures-tab":
         dataExport = generateProceduresTable(true);
-        namePDF = "Procedimientos";
-        break;
+        return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
+      case "procedures-count-tab":
+        dataExport = generateProceduresCountTable(true);
+        return generateFormatProceduresCount(dataExport, dateRange, "Impresion");
       case "entities-tab":
         dataExport = generateEntitiesTable(true);
-        namePDF = "Entidades";
-        break;
+        return generateFormatEntities(dataExport, dateRange, "Impresion");
       case "payments-methods-tab":
         dataExport = generatePaymentsTable(true);
-        namePDF = "Metodos_de_pago";
-        break;
+        return generateFormatPayments(dataExport, dateRange, "Impresion");
     }
-    const headers = dataExport[0];
-    const table = `
-        <style>
-        table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          margin-top: 25px;
-          font-size: 12px;
-        }
-        th { 
-          background-color: rgb(66, 74, 81); 
-          color: white; 
-          padding: 10px; 
-          text-align: left;
-          font-weight: normal;
-        }
-        td { 
-          padding: 10px 8px; 
-          border-bottom: 1px solid #eee;
-        }
-        </style>
-    
-        <table>
-          <thead>
-            <tr>
-              ${Object.keys(headers).map(header => `<th>${header}</th>`).join("")}
-            </tr>
-          </thead>
-          <tbody>
-            ${dataExport.reduce((acc, child) => acc + `
-              <tr>
-                ${Object.keys(headers).map(header => `<td>${child[header]}</td>`).join("")}
-              </tr>
-            `, "")}
-          </tbody>
-        </table>`;
-    const configPDF = {
-      name: namePDF
-    };
-    generatePDFFromHTML(table, company, configPDF);
   }
   const handleExportEntities = async () => {
     try {
@@ -324,7 +300,7 @@ export const InvoicesReport = () => {
     });
     footerData["total"] = tableRows.reduce((sum, row) => sum + (row.total || 0), 0);
     if (returnData) {
-      return [...tableRows, footerData];
+      return reportData;
     }
 
     // Crear columnas para la tabla
@@ -351,12 +327,12 @@ export const InvoicesReport = () => {
           fontWeight: rowData.isTotal || rowData.isFooter ? "bold" : "normal",
           fontSize: rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit"
         }
-      }, rowData[`${user}_count`] || "-"),
+      }, rowData[`${user}_count`] ? formatCurrency(rowData[`${user}_count`]) : "-"),
       footer: () => /*#__PURE__*/React.createElement("span", {
         style: {
           fontWeight: "bold"
         }
-      }, footerData[`${user}_count`]),
+      }, formatCurrency(footerData[`${user}_count`])),
       style: createColumnStyle("right"),
       headerStyle: createColumnStyle("right"),
       footerStyle: {
@@ -539,7 +515,7 @@ export const InvoicesReport = () => {
     });
     footerData["total"] = tableRows.reduce((sum, row) => sum + (row.total || 0), 0);
     if (returnData) {
-      return [...tableRows, footerData];
+      return reportData;
     }
 
     // Crear columnas para la tabla
@@ -692,6 +668,9 @@ export const InvoicesReport = () => {
           height: "200px"
         }
       }, /*#__PURE__*/React.createElement("span", null, "No hay datos disponibles"));
+    }
+    if (isReturnData) {
+      return reportData;
     }
     const filteredData = reportData.filter(item => item.insurance);
     const entities = new Set();
@@ -971,7 +950,7 @@ export const InvoicesReport = () => {
     // Calcular total general
     const grandTotal = tableData.reduce((sum, row) => sum + (row.total || 0), 0);
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     // Crear columnas para la tabla

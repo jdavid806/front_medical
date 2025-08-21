@@ -332,7 +332,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                 onSuccess();
               } else {
                 setTimeout(() => {
-                  window.location.href = "FE_FCE";
+                  //window.location.href = "FE_FCE";
                 }, 1000);
               }
             })
@@ -354,7 +354,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                 onSuccess();
               } else {
                 setTimeout(() => {
-                  window.location.href = "FE_FCE";
+                  //window.location.href = "FE_FCE";
                 }, 1000);
               }
             })

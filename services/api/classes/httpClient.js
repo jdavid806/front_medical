@@ -4,12 +4,14 @@ import { getJWTPayload } from "../../utilidades";
 export class HttpClient {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
+        const token = sessionStorage.getItem('auth_token');
         //console.log("getJWTPayload", getJWTPayload());
         this.defaultHeaders = {
             "Content-Type": "application/json",
             Accept: "application/json",
             "X-DOMAIN": url.split('.')[0],
             "X-External-ID": getJWTPayload().sub,
+            ...(token && { "Authorization": `Bearer ${token}` }),
         };
     }
 
@@ -48,12 +50,18 @@ export class HttpClient {
             let responseData = contentType?.includes("application/json")
                 ? await response.json()
                 : await response.text();
-
+                
             if (!response.ok) {
-                const error = new Error(responseData.message || 'Error en la solicitud');
-                error.response = response;
-                error.data = responseData;
-                throw error;
+              if (response.status === 401) {
+                sessionStorage.clear();
+                window.location.href = "/";
+              }
+              const error = new Error(
+                responseData.message || "Error en la solicitud"
+              );
+              error.response = response;
+              error.data = responseData;
+              throw error;
             }
 
             return responseData;

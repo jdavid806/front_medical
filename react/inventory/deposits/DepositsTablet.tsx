@@ -7,7 +7,6 @@ import { Card } from "primereact/card";
 import { Calendar } from "primereact/calendar";
 import { Menu } from "primereact/menu";
 import { SplitButton } from "primereact/splitbutton";
-
 import { Deposito, FiltrosDepositos } from "./ts/depositsType";
 import DepositModal from "./modal/DepositModal";
 import { DepositFormInputs } from "./ts/depositFormType";

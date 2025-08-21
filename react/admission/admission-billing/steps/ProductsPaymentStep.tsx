@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
@@ -17,35 +17,52 @@ import {
   validatePaymentStep
 } from "../utils/helpers";
 import { paymentMethodOptions } from "../utils/constants";
+import { useAppointmentProcedures } from "../../../appointments/hooks/useAppointmentProcedures";
+import { AdmissionBillingFormData } from "../interfaces/AdmisionBilling";
 
 interface ProductsPaymentStep {
-  formData: any;
-  updateFormData: (section: string, data: any) => void;
+  formData: AdmissionBillingFormData;
+  updateFormData: <K extends keyof AdmissionBillingFormData>(section: K, data: Partial<AdmissionBillingFormData[K]>) => void;
   addPayment: (payment: any) => void;
   removePayment: (id: number) => void;
   nextStep: () => void;
   prevStep: () => void;
-  toast: React.RefObject<Toast>;
+  toast: React.RefObject<Toast | null>;
+  productsToInvoice?: any[];
+  productsLoading?: boolean;
 }
 
 const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
-  formData,
   updateFormData,
   addPayment,
   removePayment,
   nextStep,
   prevStep,
   toast,
+  productsToInvoice = [],
+  productsLoading = false,
+  formData,
 }) => {
   const [showChangeField, setShowChangeField] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [modalAmount, setModalAmount] = useState(0);
   const [modalChange, setModalChange] = useState(0);
+  const [selectedProcedure, setSelectedProcedure] = useState<any>(null);
 
   const total = calculateTotal(formData.products);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const remaining = Math.max(0, total - paid);
+
+
+  const { procedureOptions, loadProcedures } = useAppointmentProcedures();
+
+
+  useEffect(() => {
+    loadProcedures();
+  }, []);
+
+
 
   const getPaymentMethodLabel = (value: string) => {
     return paymentMethodOptions.find(m => m.value === value)?.label || value;
@@ -63,15 +80,76 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
     }
   };
 
-  const handleAddProduct = (product: any) => {
-    // Lógica para agregar producto
+
+  const handleAddProduct = () => {
+    if (!selectedProcedure) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Debe seleccionar un procedimiento primero",
+        life: 3000
+      });
+      return;
+    }
+
+    const procedure = selectedProcedure.item || selectedProcedure.value || selectedProcedure;
+
+    if (!procedure || !procedure.id) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El procedimiento seleccionado no es válido",
+        life: 3000
+      });
+      return;
+    }
+
+    const newProduct = {
+      uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
+      id: procedure.id,
+      code: procedure.barcode || `PROC-${procedure.id}`,
+      name: procedure.name || 'Procedimiento sin nombre',
+      description: procedure.description || procedure.name || 'Procedimiento médico',
+      price: procedure.sale_price || 0,
+      quantity: 1,
+      tax: procedure.tax_charge?.percentage || 0,
+      discount: 0,
+      total: (procedure.sale_price || 0) * (1 + (procedure.tax_charge?.percentage || 0) / 100)
+    };
+
+    formData.products.push(newProduct);
+
+    setSelectedProcedure(null);
   };
 
-  const handleRemoveProduct = (id: number) => {
-    updateFormData(
-      "products",
-      formData.products.filter((p: any) => p.id !== id)
+
+  const handleRemoveProduct = (uuid: string) => {
+    console.log('Eliminando producto con uuid:', uuid);
+    console.log('Productos actuales:', formData.products);
+
+    const updatedProducts = formData.products.filter(product =>
+      product.uuid !== uuid
     );
+
+    updateFormData("products", updatedProducts);
+
+    toast.current?.show({
+      severity: "success",
+      summary: "Producto eliminado",
+      detail: "El producto ha sido removido correctamente",
+      life: 3000
+    });
+  };
+
+  const handleRemovePayment = (id: number) => {
+    removePayment(id);
+
+    toast.current?.show({
+      severity: "success",
+      summary: "Pago eliminado",
+      detail: "El pago ha sido removido correctamente",
+      life: 3000
+    });
   };
 
 
@@ -96,7 +174,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       return;
     }
 
-    const paymentAmount = parseFloat(amount);
+    const paymentAmount = amount;
     if (isNaN(paymentAmount)) {
       toast.current?.show({
         severity: "error",
@@ -116,7 +194,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
 
     updateFormData("currentPayment", {
       method: "",
-      amount: "",
+      amount: 0,
       authorizationNumber: "",
       notes: "",
     });
@@ -124,10 +202,31 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
     setShowChangeField(false);
   };
 
+
   const handleNext = () => {
-    const total = calculateTotal(formData.products);
+    console.log('Productos actuales:', formData.products);
+
+    const validProducts = formData.products.filter(product =>
+      product &&
+      product.description &&
+      product.price !== undefined &&
+      product.quantity !== undefined
+    );
+
+    if (validProducts.length === 0) {
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No hay productos válidos para facturar',
+        life: 3000
+      });
+      return;
+    }
+
+    const total = calculateTotal(validProducts);
+
     if (
-      validateProductsStep(formData.products, toast) &&
+      validateProductsStep(validProducts, toast) &&
       validatePaymentStep(formData.payments, total, toast)
     ) {
       nextStep();
@@ -190,16 +289,12 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
     );
   };
 
-  const actionBodyTemplate = (rowData: any, isProduct: boolean) => {
+  const actionBodyTemplate = (rowData: any) => {
     return (
       <Button
         icon={<i className="fas fa-trash"></i>}
         className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
-        onClick={() =>
-          isProduct
-            ? handleRemoveProduct(rowData.id)
-            : removePayment(rowData.id)
-        }
+        onClick={() => handleRemoveProduct(rowData.uuid)}
         tooltip="Eliminar"
         tooltipOptions={{ position: "top" }}
       />
@@ -207,7 +302,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   };
 
   const paymentModalFooter = (
-      <div className="d-flex pt-4 justify-content-between gap-3">
+    <div className="d-flex pt-4 justify-content-between gap-3">
       <Button
         label="Cancelar"
         icon={<i className="fas fa-times"></i>}
@@ -219,10 +314,31 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
         icon={<i className="fas fa-check"></i>}
         onClick={applyModalPayment}
         disabled={modalAmount <= 0}
-          className="p-button-primary me-2"
+        className="p-button-primary me-2"
       />
     </div>
   );
+
+  useEffect(() => {
+    if (productsToInvoice.length > 0 && formData.products.length === 0) {
+      const initialProducts = productsToInvoice.map(product => ({
+        uuid: product.uuid,
+        id: product.id,
+        productId: product.id,
+        code: product.barcode || `PROD-${product.id}`,
+        name: product.name || product.description || `Producto ${product.id}`,
+        description: product.description || product.name || `Producto ${product.id}`,
+        price: product.sale_price || 0,
+        quantity: 1,
+        tax: product.tax_charge?.percentage || 0,
+        discount: 0,
+        total: (product.sale_price || 0) * (1 + (product.tax_charge?.percentage || 0) / 100)
+      }));
+
+      updateFormData("products", initialProducts);
+    }
+  }, [productsToInvoice]);
+
 
   return (
     <div className="grid">
@@ -235,25 +351,28 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           }
           className="mb-4 shadow-3"
         >
-          <div className="flex flex-column md:flex-row gap-3 mb-2">
-            <div className="flex-1 mb-4">
+          <div className="d-flex pt-4 justify-content-end mb-2">
+            <div className="me-2 h-full w-full">
               <Dropdown
-                placeholder="Seleccione un producto"
-                options={[
-                  {
-                    label: "Consulta Endocrinologia",
-                    value: "Consulta Endocrinologia",
-                  },
-                ]}
-                className="w-full"
+                placeholder="Seleccione un procedimiento"
+                options={procedureOptions}
+                value={selectedProcedure}
+                onChange={(e) => setSelectedProcedure(e.value)}
+                optionLabel="label"
+                filter
+                showClear
+                className="w-full h-full"
                 panelClassName="shadow-3"
+                emptyMessage="No se encontraron procedimientos"
               />
             </div>
             <Button
               label="Agregar Producto"
-              className="p-button-primary me-2"
+              className="p-button-primary"
               icon={<i className="fas fa-plus-square"></i>}
-              onClick={() => handleAddProduct({})}
+              onClick={handleAddProduct}
+              disabled={!selectedProcedure}
+              tooltip="Agregar procedimiento seleccionado"
             />
           </div>
 
@@ -266,16 +385,8 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
               emptyMessage="No se han agregado productos"
               stripedRows
             >
-              <Column
-                field="id"
-                header="#"
-                headerStyle={{ width: "50px" }}
-              ></Column>
-              <Column
-                field="description"
-                header="Descripción"
-                headerStyle={{ minWidth: "200px" }}
-              ></Column>
+              <Column field="code" header="Código"></Column>
+              <Column field="description" header="Descripción"></Column>
               <Column
                 field="price"
                 header="Precio Unitario"
@@ -293,10 +404,18 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                 body={productTotalBodyTemplate}
               ></Column>
               <Column
-                field="Actions"
                 header="Acciones"
-                body={(rowData) => actionBodyTemplate(rowData, true)}
-                headerStyle={{ width: "80px" }}
+                body={(rowData) => (
+                  <Button
+                    icon={<i className="fas fa-trash"></i>}
+                    className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
+                    onClick={() => handleRemoveProduct(rowData.uuid)}
+                    tooltip="Eliminar"
+                    tooltipOptions={{ position: "top" }}
+                  />
+                )}
+                headerStyle={{ width: '100px' }}
+                bodyStyle={{ textAlign: 'center' }}
               ></Column>
             </DataTable>
           </div>
@@ -321,36 +440,6 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           }
           className="mb-4 shadow-3"
         >
-          {/* Tarjetas de resumen mejoradas */}
-          <div className="grid mb-4">
-            <div className="col-12 md:col-6">
-              <Card className="mb-3 border-left-3 border-green-500 bg-green-50">
-                <div className="flex flex-column p-3">
-                  <div className="flex align-items-center gap-2 mb-2">
-                    <i className="fas fa-check-circle text-green-500"></i>
-                    <span className="text-sm font-medium">Total Pagado</span>
-                  </div>
-                  <span className="text-xl font-bold text-green-700">
-                    {formatCurrency(paid)}
-                  </span>
-                </div>
-              </Card>
-            </div>
-            <div className="col-12 md:col-6">
-              <Card className="mb-3 border-left-3 border-blue-500 bg-blue-50">
-                <div className="flex flex-column p-3">
-                  <div className="flex align-items-center gap-2 mb-2">
-                    <i className="fas fa-exclamation-circle text-blue-500"></i>
-                    <span className="text-sm font-medium">Saldo Pendiente</span>
-                  </div>
-                  <span className="text-xl font-bold text-blue-700">
-                    {formatCurrency(remaining)}
-                  </span>
-                </div>
-              </Card>
-            </div>
-          </div>
-
           {change > 0 && (
             <Card className="mb-4 border-left-3 border-teal-500 bg-teal-50">
               <div className="flex justify-content-between align-items-center p-3">
@@ -394,9 +483,17 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
               ></Column>
               <Column
                 header="Acciones"
-                body={(rowData) => actionBodyTemplate(rowData, false)}
-                headerStyle={{ width: "80px" }}
-              ></Column>
+                body={(rowData) => (
+                  <Button
+                    icon={<i className="fas fa-trash"></i>}
+                    className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
+                    onClick={() => handleRemovePayment(rowData.id)}
+                    tooltip="Eliminar"
+                    tooltipOptions={{ position: "top" }}
+                  />
+                )}
+                headerStyle={{ width: '80px' }}
+              />
             </DataTable>
           </div>
 
@@ -465,68 +562,61 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           </Dialog>
 
           <div className="surface-card p-4 border-round-lg border-1 surface-border shadow-2">
-            <div className="flex align-items-center mb-4">
-              <h3 className="m-0 text-700">
+            <div className="d-flex justify-content-end align-items-center mb-4 gap-3">
+              <h3 className="m-0 text-700 text-right">
+                <i className="fas fa-credit-card mr-3 text-xl text-primary"></i>
                 Agregar Nuevo Pago
-                <i className="fas fa-credit-card mr-3 text-xl text-primary">
-                </i>
               </h3>
+              <Button
+                label="Calcular Efectivo"
+                icon={<i className="fas fa-calculator"></i>}
+                className="p-button-primary"
+                onClick={openPaymentModal}
+              />
             </div>
 
-            <Button
-              label="Calcular Pago en Efectivo"
-              icon={<i className="fas fa-calculator"></i>}
-             className="p-button-primary me-2"
-              onClick={openPaymentModal}
-            />
-
             <Card className="border-round-lg shadow-1 mb-4">
-              <div className="grid">
-                <div className="col-12 md:col-6">
-                  <div className="field mb-4">
-                    <label
-                      htmlFor="paymentMethod"
-                      className="block font-medium mb-2 text-700"
-                    >
-                      <i className="fas fa-money-check-alt mr-2"></i>Método de pago <span className="text-red-500">*</span>
-                    </label>
+              <div className="d-flex flex-column align-items-end gap-3">
+                <div className="w-100 text-right">
+                  <label htmlFor="paymentMethod" className="block font-medium mb-2 text-700 d-flex justify-content-end align-items-center">
+                    <i className="fas fa-money-check-alt mr-2"></i>
+                    Método de pago <span className="text-red-500 ml-1">*</span>
+                  </label>
+                  <div className="d-flex justify-content-end">
                     <Dropdown
                       inputId="paymentMethod"
                       options={paymentMethodOptions}
                       value={formData.currentPayment.method}
                       onChange={(e) => handlePaymentChange("method", e.value)}
                       placeholder="Seleccione método..."
-                      className="w-full"
+                      className="w-100"
                       optionLabel="label"
                       panelClassName="shadow-3"
                       showClear
                       filter
                       filterPlaceholder="Buscar método..."
                       emptyFilterMessage="No se encontraron métodos"
+                      style={{ maxWidth: '400px' }}
                     />
-                    {!formData.currentPayment.method && (
-                      <small className="p-error block mt-1">
-                        Seleccione un método de pago
-                      </small>
-                    )}
                   </div>
+                  {!formData.currentPayment.method && (
+                    <small className="p-error block mt-1 text-right d-flex justify-content-end">
+                      Seleccione un método de pago
+                    </small>
+                  )}
                 </div>
 
-                <div className="col-12 md:col-6">
-                  <div className="field mb-4">
-                    <label
-                      htmlFor="paymentAmount"
-                      className="block font-medium mb-2 text-700"
-                    >
-                      <i className="fas fa-dollar-sign mr-2"></i>Monto <span className="text-red-500">*</span>
-                    </label>
+                <div className="w-100 text-right">
+                  <label htmlFor="paymentAmount" className="block font-medium mb-2 text-700 d-flex justify-content-end align-items-center">
+                    <i className="fas fa-dollar-sign mr-2"></i>
+                    Monto <span className="text-red-500 ml-1">*</span>
+                  </label>
+                  <div className="d-flex justify-content-end">
                     <InputNumber
                       inputId="paymentAmount"
                       value={formData.currentPayment.amount}
-                      onValueChange={(e) =>
-                        handlePaymentChange("amount", e.value)
-                      }
-                      className="w-full"
+                      onValueChange={(e) => handlePaymentChange("amount", e.value)}
+                      className="w-100"
                       mode="currency"
                       currency="DOP"
                       locale="es-DO"
@@ -536,72 +626,69 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                       buttonLayout="horizontal"
                       incrementButtonIcon={<i className="fas fa-plus-square"></i>}
                       decrementButtonIcon={<i className="fas fa-window-close"></i>}
+                      style={{ maxWidth: '400px' }}
                     />
-                    {(!formData.currentPayment.amount ||
-                      formData.currentPayment.amount <= 0) && (
-                        <small className="p-error block mt-1">
-                          Ingrese un monto válido
-                        </small>
-                      )}
                   </div>
+                  {(!formData.currentPayment.amount || formData.currentPayment.amount <= 0) && (
+                    <small className="p-error block mt-1 text-right d-flex justify-content-end">
+                      Ingrese un monto válido
+                    </small>
+                  )}
                 </div>
 
                 {showChangeField && formData.currentPayment.amount > 0 && (
-                  <div className="col-12">
-                    <div className="p-3 bg-green-100 border-round mb-3 border-1 border-green-200">
-                      <div className="flex justify-content-between align-items-center">
-                        <div className="flex align-items-center gap-2">
-                          <i className="fas fa-money-bill-wave text-green-600"></i>
-                          <span className="font-medium">Cambio a devolver:</span>
+                  <div className="w-100 text-right">
+                    <div className="d-flex justify-content-end">
+                      <div className="p-3 bg-green-100 border-round mb-3 border-1 border-green-200" style={{ maxWidth: '400px', width: '100%' }}>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center gap-2">
+                            <i className="fas fa-money-bill-wave text-green-600"></i>
+                            <span className="font-medium">Cambio a devolver:</span>
+                          </div>
+                          <span className="font-bold text-green-700">
+                            {formatCurrency(calculateChange(total, formData.currentPayment.amount))}
+                          </span>
                         </div>
-                        <span className="font-bold text-green-700">
-                          {formatCurrency(calculateChange(total, formData.currentPayment.amount))}
-                        </span>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
             </Card>
-            <div className="flex justify-content-end mt-4">
+
+            <div className="d-flex justify-content-end mt-4">
               <Button
                 label="Agregar Pago"
                 icon={<i className="fas fa-cash-register"></i>}
-                className="p-button-primary me-2"
+                className="p-button-primary"
                 onClick={handleAddPayment}
-                disabled={
-                  !formData.currentPayment.method ||
-                  !formData.currentPayment.amount
-                }
+                disabled={!formData.currentPayment.method || !formData.currentPayment.amount}
                 tooltip="Agregar este pago al registro"
-                tooltipOptions={{ position: "top" }}
+                tooltipOptions={{ position: "left" }}
               />
             </div>
           </div>
         </Card>
-      </div>
+      </div >
 
-      <div className="d-flex pt-4 justify-content-between gap-3">
-        <Button
-          label="Atrás"
-          icon={<i className="fas fa-arrow-left me-1"></i>}
-          onClick={prevStep}
-          className="p-button-secondary"
-          tooltip="Volver al paso anterior"
-        />
-        <Button
-          className="p-button-primary"
-          label="Continuar"
-          icon={<i className="fas fa-save me-1"></i>}
-          iconPos="right"
-          onClick={handleNext}
-          disabled={
-            formData.payments.length === 0 || formData.products.length === 0
-          }
-          tooltip="Ir al siguiente paso"
-        />
+      <div className="col-12">
+        <div className="d-flex justify-content-between pt-4">
+          <Button
+            label="Atrás"
+            icon={<i className="fas fa-arrow-left me-1"></i>}
+            onClick={prevStep}
+            className="p-button-secondary"
+          />
+          <Button
+            label="Continuar"
+            icon={<i className="fas fa-save me-1"></i>}
+            className="p-button-primary"
+            onClick={handleNext}
+            disabled={formData.payments.length === 0 || formData.products.length === 0}
+          />
+        </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
-import { DataTable } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
-import { Tag } from 'primereact/tag';
-import { Dialog } from 'primereact/dialog';
-import { Dropdown } from 'primereact/dropdown';
-import { Calendar } from 'primereact/calendar';
-import { confirmDialog } from 'primereact/confirmdialog';
+import { FilterMatchMode } from 'primereact/api';
+import { useDebounce } from 'primereact/hooks';
 import { ProductDTO } from '../hooks/usePricesConfigTable';
-
-type Severity = "success" | "info" | "warning" | "secondary" | "danger" | "contrast";
 
 type PriceTablesConfigProps = {
     prices: ProductDTO[]
     onEditItem: (id: string) => void
+    onDeleteItem: (id: string) => void
 }
 
 type PriceItem = {
@@ -37,9 +32,7 @@ type FiltrosBusqueda = {
     fechaHasta: Date | null;
 };
 
-export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem, prices }) => {
-    // Sample data
-
+export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem, prices, onDeleteItem }) => {
 
     // Modal state
     const [modalVisible, setModalVisible] = useState(false);
@@ -54,6 +47,12 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
         fechaDesde: null,
         fechaHasta: null
     });
+
+    // Global search filter state
+    const [filters, setFilters] = useState<DataTableFilterMeta>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    });
+    const [globalFilterValue, debounceGlobalFilterValue, setGlobalFilterValue] = useDebounce('', 500);
 
     // Options for dropdowns
     const tiposAtencion = [
@@ -96,7 +95,6 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
             <div className="flex flex-row items-center gap-2" style={{ display: 'inline-flex' }}>
                 <Button
                     className="p-button-rounded p-button-text p-button-sm"
-                    tooltip="Editar"
                     onClick={(e) => {
                         e.stopPropagation();
                         handleEditPrice(rowData);
@@ -106,10 +104,9 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
                 </Button>
                 <Button
                     className="p-button-rounded p-button-text p-button-sm p-button-danger"
-                    tooltip="Eliminar"
                     onClick={(e) => {
                         e.stopPropagation();
-                        // handleDeletePrice(rowData);
+                        onDeleteItem(rowData.id.toString());
                     }}
                 >
                     <i className="fa-solid fa-trash"></i>
@@ -176,120 +173,90 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
         });
     };
 
+    // Handle global filter change
+    const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        let _filters = { ...filters };
 
+        // @ts-ignore
+        _filters['global'].value = value;
+
+        setFilters(_filters);
+        setGlobalFilterValue(value);
+    };
+
+    // Table header with search
+    const tableHeader = () => {
+        return (
+            <div className="d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">Listado de Precios</h5>
+                <InputText 
+                    value={globalFilterValue} 
+                    onChange={onGlobalFilterChange} 
+                    placeholder="Buscar por nombre..." 
+                    className="w-auto"
+                />
+            </div>
+        );
+    };
 
 
     return (
         <div className="container-fluid mt-4" style={{ width: '100%', padding: '0 15px' }}>
-            {/* Filtros de búsqueda */}
-            <Card title="Filtros de Búsqueda" style={styles.card}>
-                <div className="row g-3">
-                    {/* Filtro: Tipo de atención */}
-                    <div className="col-md-6 col-lg-3">
-                        <label style={styles.formLabel}>Tipo de atención</label>
-                        <Dropdown
-                            value={filtros.tipoAtencion}
-                            options={tiposAtencion}
-                            onChange={(e) => handleFilterChange('tipoAtencion', e.value)}
-                            optionLabel="label"
-                            placeholder="Seleccione tipo"
-                            className="w-100"
-                        />
-                    </div>
-
-                    {/* Filtro: Código */}
-                    <div className="col-md-6 col-lg-3">
-                        <label style={styles.formLabel}>Código</label>
-                        <InputText
-                            value={filtros.codigo || ''}
-                            onChange={(e) => handleFilterChange('codigo', e.target.value)}
-                            placeholder="Buscar por código..."
-                            className="w-100"
-                        />
-                    </div>
-
-                    {/* Filtro: Nombre */}
-                    <div className="col-md-6 col-lg-3">
-                        <label style={styles.formLabel}>Nombre</label>
-                        <InputText
-                            value={filtros.nombre || ''}
-                            onChange={(e) => handleFilterChange('nombre', e.target.value)}
-                            placeholder="Buscar por nombre..."
-                            className="w-100"
-                        />
-                    </div>
-
-                    {/* Filtro: Rango de fechas */}
-                    <div className="col-md-6 col-lg-3">
-                        <label style={styles.formLabel}>Fecha de creación</label>
-                        <Calendar
-                            value={filtros.fechaDesde}
-                            onChange={(e) => handleFilterChange('fechaDesde', e.value)}
-                            dateFormat="dd/mm/yy"
-                            placeholder="Desde"
-                            className="w-100"
-                            showIcon
-                        />
-                    </div>
-
-                    {/* Botones de acción */}
-                    <div className="col-12 d-flex justify-content-end gap-2">
-                        <Button
-                            label="Limpiar"
-                            icon="pi pi-trash"
-                            className="p-button-secondary"
-                            onClick={limpiarFiltros}
-                        />
-                        <Button
-                            label="Aplicar Filtros"
-                            icon="pi pi-filter"
-                            className="p-button-primary"
-                            onClick={aplicarFiltros}
-                        />
-                    </div>
-                </div>
-            </Card>
-
-            {/* Tabla de precios */}
-            <Card title="Listado de Precios" style={styles.card}>
-                <DataTable
-                    value={prices}
-                    paginator
-                    rows={10}
-                    rowsPerPageOptions={[5, 10, 25, 50]}
-                    className="p-datatable-striped p-datatable-gridlines"
-                    emptyMessage="No se encontraron precios"
-                    responsiveLayout="scroll"
-                    tableStyle={{ minWidth: '50rem' }}
-                >
-                    <Column field="code" header="Código" sortable style={styles.tableCell} />
-                    <Column field="name" header="Nombre" sortable style={styles.tableCell} />
-                    <Column field="attentionType" header="Tipo de Atención" sortable style={styles.tableCell} />
-                    <Column
-                        header="Precio Público"
-                        body={(rowData) => currencyFormat(rowData.publicPrice)}
-                        sortable
-                        style={styles.tableCell}
-                    />
-                    <Column
-                        header="Copago"
-                        body={(rowData) => currencyFormat(rowData.copayment)}
-                        sortable
-                        style={styles.tableCell}
-                    />
-                    <Column
-                        field="createdAt"
-                        header="Fecha Creación"
-                        sortable
-                        style={styles.tableCell}
-                    />
-                    <Column
-                        header="Acciones"
-                        body={actionBodyTemplate}
-                        style={{ ...styles.tableCell, width: '120px', textAlign: 'center' }}
-                    />
-                </DataTable>
-            </Card>
+            <DataTable
+                value={prices}
+                paginator
+                rows={10}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                className="p-datatable-striped p-datatable-gridlines"
+                emptyMessage="No se encontraron precios"
+                responsiveLayout="scroll"
+                tableStyle={{ minWidth: '50rem' }}
+                globalFilterFields={['name']}
+                filters={filters}
+                header={tableHeader}
+            >
+                <Column field="Cups" header="Cups"
+                    body={(rowData) => rowData.barcode}
+                    sortable style={styles.tableCell} />
+                <Column field="name" header="Nombre" sortable style={styles.tableCell} />
+                <Column field="attentionType"
+                    header="Tipo de Atención"
+                    body={(rowData) => {
+                        const attentionTypeMap: { [key: string]: string } = {
+                            PROCEDURE: "Procedimiento",
+                            CONSULTATION: "Consulta",
+                            LABORATORY: "Laboratorio",
+                            REHABILITATION: "Rehabilitación",
+                            OPTOMETRY: "Optometría"
+                        };
+                        return attentionTypeMap[rowData.attention_type] || rowData.attention_type || "";
+                    }}
+                    sortable style={styles.tableCell} />
+                <Column
+                    header="Precio Público"
+                    body={(rowData) => currencyFormat(rowData.sale_price)}
+                    sortable
+                    style={styles.tableCell}
+                />
+                <Column
+                    header="Copago"
+                    body={(rowData) => currencyFormat(rowData.copayment)}
+                    sortable
+                    style={styles.tableCell}
+                />
+                {/* <Column
+                    field="createdAt"
+                    header="Fecha Creación"
+                    sortable
+                    style={styles.tableCell}
+                /> */}
+                <Column
+                    header="Acciones"
+                    body={actionBodyTemplate}
+                    style={{ ...styles.tableCell, width: '120px', textAlign: 'center' }}
+                />
+            </DataTable>
         </div>
     );
 };

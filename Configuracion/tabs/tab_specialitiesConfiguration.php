@@ -16,14 +16,14 @@
       <h4>Listado de Especialidades</h4>
     </div>
 
-    <div id="especialidadesTable" class="card" data-list='{"valueNames":["name"],"page":5,"pagination":true}'>
+    <!-- <div id="especialidadesTable" class="card" data-list='{"valueNames":["name"],"page":5,"pagination":true}'>
       <div class="card-body">
-        <!-- Buscador -->
+
         <div class="search-box mb-3">
           <input class="form-control search" type="search" placeholder="Buscar especialidad..." aria-label="Buscar">
         </div>
 
-        <!-- Tabla -->
+
         <div class="card">
           <div class="card-body">
             <table class="table table-striped table-hover">
@@ -34,13 +34,12 @@
                 </tr>
               </thead>
               <tbody class="list" id="tablaEspecialidades">
-                <!-- Filas dinámicas -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Paginación -->
+
         <div class="d-flex justify-content-between mt-3">
           <span class="d-none d-sm-inline-block" data-list-info></span>
           <div class="d-flex">
@@ -48,21 +47,12 @@
           </div>
         </div>
       </div>
+    </div> -->
+
+    <div id="specialities">
+
     </div>
   </div>
-
-  <!-- JS -->
-  <script>
-    document.addEventListener("DOMContentLoaded", async function() {
-      await cargarEspecialidades();
-      new List("especialidadesTable", {
-        valueNames: ["name"],
-        page: 5,
-        pagination: true
-      });
-    });
-  </script>
-
 </body>
 
 </html>

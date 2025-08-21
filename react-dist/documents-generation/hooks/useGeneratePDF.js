@@ -7,12 +7,13 @@ export const useGeneratePDF = () => {
   function generatePDF({
     html,
     pdfName,
-    type
+    type,
+    orientation = 'portrait'
   }) {
-    console.log(company);
     generatePDFFromHTML(html, company, {
       name: pdfName,
-      isDownload: type !== "Impresion"
+      isDownload: type !== "Impresion",
+      orientation: orientation
     });
   }
   return {

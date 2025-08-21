@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Controller, set, SubmitHandler, useForm } from "react-hook-form";
-import { classNames } from "primereact/utils";
-import { InputText } from "primereact/inputtext";
-import { InputNumber } from "primereact/inputnumber";
-import { Dropdown } from "primereact/dropdown";
-import { Button } from "primereact/button";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
+import { InputSwitch } from 'primereact/inputswitch';
 import {
   examTypeService,
   entitiesService,
@@ -16,13 +12,13 @@ import {
 } from "../../../../services/api";
 
 type EntityRow = {
-  entity_name: { name: string };
-  entity_id: { id: number };
+  entity_id: string | number;
+  entity_name?: string;
   price: number;
-  tax_name?: { name: string };
-  tax_id?: { id: number };
-  retention_id?: { id: number };
-  retention_name?: { name: string };
+  tax_charge_id?: string | number;
+  tax_name?: string;
+  withholding_tax_id?: string | number;
+  retention_name?: string;
 };
 
 export type ProductFormInputs = {
@@ -44,31 +40,32 @@ interface ProductFormProps {
   formId: string;
   onHandleSubmit: (data: ProductFormInputs) => void;
   initialData?: ProductFormInputs;
+  onCancel?: () => void;
+  entitiesData: any[];
 }
 
 const PricesConfigForm: React.FC<ProductFormProps> = ({
   formId,
   onHandleSubmit,
   initialData,
+  onCancel,
+  entitiesData,
 }) => {
   const [showExamType, setShowExamType] = useState(false);
-  const [showLabFields, setShowLabFields] = useState(false);
+  const [showLabFields, setShowLabFields] = useState(true);
   const [showEntities, setShowEntities] = useState(false);
   const [showTax, setShowTax] = useState(false);
   const [entityRows, setEntityRows] = useState<EntityRow[]>([]);
-  const [currentEntity, setCurrentEntity] = useState<
-    Omit<EntityRow, "price"> & { price: number | null }
-  >({
-    entity_id: { id: 0 },
-    entity_name: { name: ""  },
-    price: null,
-    tax_name: { name: "" },
-    tax_id: { id: 0 },
-    retention_name: { name: "" },
-    retention_id: { id: 0 },
+  const [currentEntity, setCurrentEntity] = useState({
+    entity_id: '',
+    entity_name: '',
+    price: 0,
+    tax_charge_id: '',
+    tax_name: '',
+    withholding_tax_id: '',
+    retention_name: '',
   });
   const [examTypesData, setExamTypesData] = useState<any[]>([]);
-  const [entitiesData, setEntitiesData] = useState<any[]>([]);
   const [taxes, setTaxes] = useState<any[]>([]);
   const [retentions, setRetentions] = useState<any[]>([]);
 
@@ -123,14 +120,65 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
   useEffect(() => {
     loadExamTypes();
-    loadEntities();
     loadTaxes();
     loadRetentions();
   }, []);
 
+  useEffect(() => {
+    if (initialData) {
+      // Establecer product_id si existe para la actualización
+      if (initialData.product_id) {
+        setValue('product_id', initialData.product_id);
+      }
+      setValue('name', initialData.name);
+      setValue('curp', initialData.curp);
+      setValue('attention_type', initialData.attention_type);
+      setValue('sale_price', initialData.sale_price);
+      setValue('copago', initialData.copago);
+      setValue('purchase_price', initialData.purchase_price);
+      setValue('taxProduct_type', initialData.taxProduct_type || '');
+      
+      // Load entities if they exist
+      if (initialData.entities && initialData.entities.length > 0) {
+        setEntityRows([...initialData.entities]); // Crear nueva copia para forzar re-render
+        setValue('toggleEntities', true);
+        setShowEntities(true);
+      } else {
+        setEntityRows([]);
+        setValue('toggleEntities', false);
+        setShowEntities(false);
+      }
+
+      if (initialData.taxProduct_type && initialData.taxProduct_type !== '0') {
+        setValue('toggleImpuesto', true);
+        setShowTax(true);
+      } else {
+        setValue('toggleImpuesto', false);
+        setShowTax(false);
+      }
+    } else {
+      // Reset form cuando no hay initialData
+      setEntityRows([]);
+      setShowEntities(false);
+      setShowTax(false);
+      setValue('toggleEntities', false);
+      setValue('toggleImpuesto', false);
+    }
+  }, [initialData, setValue]);
+
+  // Establecer exam_type_id después de que se carguen los examTypesData
+  useEffect(() => {
+    if (initialData?.exam_type_id && examTypesData.length > 0) {
+      // Convertir a número para comparar con los IDs de examTypesData
+      const examTypeId = parseInt(initialData.exam_type_id);
+      const foundExam = examTypesData.find(exam => exam.id === examTypeId);
+      if (foundExam) {
+        setValue('exam_type_id', foundExam.id);
+      }
+    }
+  }, [initialData?.exam_type_id, examTypesData, setValue]);
+
   const onSubmit: SubmitHandler<ProductFormInputs> = (data) => {
-    console.log("data: ", data);
-    console.log("entityRows: ", entityRows);
     const submitData: ProductFormInputs = {
       ...data,
       entities: entityRows,
@@ -139,34 +187,23 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     if (data.attention_type === "LABORATORY") {
       submitData.sale_price = 0;
       submitData.copago = 0;
+      submitData.purchase_price = 0;
     }
 
-    // onHandleSubmit(submitData);
+    onHandleSubmit(submitData);
   };
 
   const getFormErrorMessage = (name: keyof ProductFormInputs) => {
     return (
-      errors[name] && <small className="p-error">{errors[name]?.message}</small>
+      errors[name] && <small className="text-danger">{errors[name]?.message}</small>
     );
   };
 
-  const attentionTypes = [
-    { label: "Seleccionar...", value: "" },
-    { label: "Procedimiento", value: "PROCEDURE" },
-    { label: "Consulta", value: "CONSULTATION" },
-    { label: "Laboratorio", value: "LABORATORY" },
-    { label: "Rehabilitación", value: "REHABILITATION" },
-    { label: "Optometría", value: "OPTOMETRY" },
-  ];
+
 
   async function loadExamTypes() {
     const exmaTypes = await examTypeService.getAll();
     setExamTypesData(exmaTypes);
-  }
-
-  async function loadEntities() {
-    const entities = await entitiesService.getEntities();
-    setEntitiesData(entities.data);
   }
 
   async function loadTaxes() {
@@ -181,475 +218,465 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
   const handleEntityChange = (
     field: keyof typeof currentEntity,
-    value: string | number | null
+    value: any
   ) => {
-    setCurrentEntity((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const addEntityRow = () => {
-    if (currentEntity.entity_id && currentEntity.price !== null) {
-      console.log("currentEntity: ", currentEntity);
-      // const newRow: any = {
-      //   entity_id: currentEntity.entity_id.id,
-      //   price: currentEntity.price,
-      //   tax_type: currentEntity?.tax_type?.name || undefined,
-      //   retention_type: currentEntity.retention_type?.name || undefined,
-      // };
-
-      // setEntityRows([...entityRows, newRow]);
-
-      // // Reset current entity
-      // setCurrentEntity({
-      //   entity_id: { name: "" },
-      //   price: null,
-      //   tax_type: { name: "" },
-      //   retention_type: { name: "" },
-      // });
+    if (field === 'entity_id') {
+      const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
+      setCurrentEntity((prev) => ({
+        ...prev,
+        entity_id: value,
+        entity_name: selectedEntity ? selectedEntity.name : ''
+      }));
+    } else if (field === 'tax_charge_id') {
+      const selectedTax = value ? taxes.find(t => t.id == value) : null;
+      setCurrentEntity((prev) => ({
+        ...prev,
+        tax_charge_id: value,
+        tax_name: selectedTax ? selectedTax.name : ''
+      }));
+    } else if (field === 'withholding_tax_id') {
+      const selectedRetention = value ? retentions.find(r => r.id == value) : null;
+      setCurrentEntity((prev) => ({
+        ...prev,
+        withholding_tax_id: value,
+        retention_name: selectedRetention ? selectedRetention.name : ''
+      }));
+    } else {
+      setCurrentEntity((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
     }
   };
 
-  const confirmDelete = (rowIndex: number) => {
-    confirmDialog({
-      message: "¿Estás seguro de eliminar esta entidad?",
-      header: "Confirmación",
-      icon: "pi pi-exclamation-triangle",
-      acceptLabel: "Sí",
-      rejectLabel: "No",
-      accept: () => {
-        const newRows = [...entityRows];
-        newRows.splice(rowIndex, 1);
-        setEntityRows(newRows);
-      },
-    });
+  const addEntityRow = () => {
+    if (currentEntity.entity_id && currentEntity.price > 0) {
+      const newRow: EntityRow = {
+        entity_id: currentEntity.entity_id,
+        entity_name: currentEntity.entity_name,
+        price: currentEntity.price,
+        tax_charge_id: currentEntity.tax_charge_id || '',
+        tax_name: currentEntity.tax_name || 'N/A',
+        withholding_tax_id: currentEntity.withholding_tax_id || '',
+        retention_name: currentEntity.retention_name || 'N/A',
+      };
+
+      setEntityRows([...entityRows, newRow]);
+
+      // Reset current entity
+      setCurrentEntity({
+        entity_id: '',
+        entity_name: '',
+        price: 0,
+        tax_charge_id: '',
+        tax_name: '',
+        withholding_tax_id: '',
+        retention_name: '',
+      });
+    } else {
+      console.log('Cannot add entity row - missing entity_id or price:', currentEntity);
+    }
   };
 
-  const actionBodyTemplate = (
-    rowData: any,
-    { rowIndex }: { rowIndex: number }
-  ) => {
-    return (
-      <Button
-        type="button"
-        className="p-button-danger p-button-sm"
-        onClick={(e) => {
-          e.preventDefault, confirmDelete(rowIndex);
-        }}
-      >
-        <i className="fa-solid fa-trash"></i>
-      </Button>
-    );
-  };
-
-  const priceBodyTemplate = (rowData: EntityRow) => {
-    return `$${rowData.price.toFixed(2)}`;
-  };
-
-  const entityBodyTemplate = (rowData: EntityRow) => {
-    return (
-      entitiesData.find((e) => e.value === rowData.entity_id)?.label ||
-      rowData.entity_id
-    );
+  const removeEntityRow = (rowIndex: number) => {
+    if (window.confirm('¿Estás seguro de eliminar esta entidad?')) {
+      const newRows = [...entityRows];
+      newRows.splice(rowIndex, 1);
+      setEntityRows(newRows);
+    }
   };
 
   return (
-    <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Datos de producto</h5>
-
+    <div className="card mt-4">
+      <div className="card-body">
+        <h5 className="card-title">Datos de producto</h5>
+        <form className="row g-3" id={formId} onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register("product_id")} />
-
-          <div className="mb-3">
+          
+          <div className="col-12">
             <Controller
               name="name"
               control={control}
               rules={{ required: "Este campo es requerido" }}
               render={({ field, fieldState }) => (
-                <>
-                  <label htmlFor={field.name} className="form-label">
-                    Nombre del item *
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Nombre del item
                   </label>
                   <InputText
+                    className={`w-100 ${fieldState.error ? 'p-invalid' : ''}`}
                     id={field.name}
-                    className={classNames("w-100", {
-                      "p-invalid": fieldState.error,
-                    })}
                     placeholder="Nombre del item"
                     {...field}
                   />
                   {getFormErrorMessage("name")}
-                </>
+                </div>
               )}
             />
           </div>
-
-          <div className="mb-3">
+          
+          <div className="col-md-6">
             <Controller
               name="curp"
               control={control}
               rules={{ required: "Este campo es requerido" }}
               render={({ field, fieldState }) => (
-                <>
-                  <label htmlFor={field.name} className="form-label">
-                    Código Cups *
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Cups
                   </label>
                   <InputText
+                    className={`w-100 ${fieldState.error ? 'p-invalid' : ''}`}
                     id={field.name}
-                    className={classNames("w-100", {
-                      "p-invalid": fieldState.error,
-                    })}
                     placeholder="Código Cups"
                     {...field}
                   />
                   {getFormErrorMessage("curp")}
-                </>
+                </div>
               )}
             />
           </div>
-
-          <div className="mb-3">
+          
+          <div className="col-md-6">
             <Controller
               name="attention_type"
               control={control}
               rules={{ required: "Este campo es requerido" }}
               render={({ field, fieldState }) => (
-                <>
-                  <label htmlFor={field.name} className="form-label">
-                    Tipo de atención *
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Tipo de atención
                   </label>
                   <Dropdown
+                    className={`w-100 ${fieldState.error ? 'p-invalid' : ''}`}
                     id={field.name}
-                    options={attentionTypes}
-                    className={classNames("w-100", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    options={[
+                      { label: "Procedimiento", value: "PROCEDURE" },
+                      { label: "Consulta", value: "CONSULTATION" },
+                      { label: "Laboratorio", value: "LABORATORY" },
+                      { label: "Rehabilitación", value: "REHABILITATION" },
+                      { label: "Optometría", value: "OPTOMETRY" }
+                    ]}
                     placeholder="Seleccionar..."
-                    {...field}
                   />
                   {getFormErrorMessage("attention_type")}
-                </>
+                </div>
               )}
             />
           </div>
-
+          
           {showExamType && (
-            <div className="mb-3">
+            <div className="col-12">
               <Controller
                 name="exam_type_id"
                 control={control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <label htmlFor={field.name} className="form-label">
+                render={({ field }) => (
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor={field.name}>
                       Examen
                     </label>
                     <Dropdown
+                      className="w-100"
                       id={field.name}
-                      options={examTypesData}
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      optionLabel="name"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e.value);
+                      }}
+                      options={examTypesData.map((exam) => ({
+                        label: exam.name,
+                        value: exam.id
+                      }))}
                       placeholder="Seleccionar..."
                       filter
-                      appendTo={"self"}
-                      {...field}
+                      filterBy="label"
+                      filterPlaceholder="Buscar por nombre..."
+                      showClear
                     />
-                  </>
+                  </div>
                 )}
               />
             </div>
           )}
-
-          {showLabFields && (
-            <>
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <Controller
-                    name="sale_price"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="form-label">
-                          Precio público
-                        </label>
-                        <InputNumber
-                          inputId={field.name}
-                          mode="currency"
-                          currency="USD"
-                          locale="en-US"
-                          className={classNames("w-100", {
-                            "p-invalid": fieldState.error,
-                          })}
-                          value={field.value}
-                          onValueChange={(e) => field.onChange(e.value)}
-                          placeholder="Precio público"
-                        />
-                      </>
-                    )}
+          
+          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="sale_price"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Precio público
+                  </label>
+                  <InputNumber
+                    className="w-100"
+                    id={field.name}
+                    placeholder="Precio público"
+                    value={field.value}
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="COP"
+                    locale="es-CO"
                   />
                 </div>
-                <div className="col-md-6">
-                  <Controller
-                    name="copago"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <>
-                        <label htmlFor={field.name} className="form-label">
-                          Precio Copago
-                        </label>
-                        <InputNumber
-                          inputId={field.name}
-                          mode="currency"
-                          currency="USD"
-                          locale="en-US"
-                          className={classNames("w-100", {
-                            "p-invalid": fieldState.error,
-                          })}
-                          value={field.value}
-                          onValueChange={(e) => field.onChange(e.value)}
-                          placeholder="Precio Copago"
-                        />
-                      </>
-                    )}
+              )}
+            />
+          </div>
+          
+          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="copago"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Precio Copago
+                  </label>
+                  <InputNumber
+                    className="w-100"
+                    id={field.name}
+                    placeholder="Precio Copago"
+                    value={field.value}
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="COP"
+                    locale="es-CO"
                   />
                 </div>
-              </div>
-
-              <div className="mb-3">
-                <Controller
-                  name="purchase_price"
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <>
-                      <label htmlFor={field.name} className="form-label">
-                        Costo
-                      </label>
-                      <InputNumber
-                        inputId={field.name}
-                        mode="currency"
-                        currency="USD"
-                        locale="en-US"
-                        className={classNames("w-100", {
-                          "p-invalid": fieldState.error,
-                        })}
-                        value={field.value}
-                        onValueChange={(e) => field.onChange(e.value)}
-                        placeholder="Costo"
-                      />
-                    </>
-                  )}
-                />
-              </div>
-
-              <div className="row mb-3">
-                <div className="col-md-6">
-                  <Controller
-                    name="toggleEntities"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="form-check form-switch">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="toggleEntities"
-                          checked={field.value || false}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="toggleEntities"
-                        >
-                          Agregar entidades
-                        </label>
-                      </div>
-                    )}
+              )}
+            />
+          </div>
+          
+          <div className="col-12" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="purchase_price"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label" htmlFor={field.name}>
+                    Costo
+                  </label>
+                  <InputNumber
+                    className="w-100"
+                    id={field.name}
+                    placeholder="Costo"
+                    value={field.value}
+                    onValueChange={(e) => field.onChange(e.value)}
+                    mode="currency"
+                    currency="COP"
+                    locale="es-CO"
                   />
                 </div>
-                <div className="col-md-6">
-                  <Controller
-                    name="toggleImpuesto"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="form-check form-switch">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="toggleImpuesto"
-                          checked={field.value || false}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="toggleImpuesto"
-                        >
-                          Agregar Impuesto
-                        </label>
-                      </div>
-                    )}
+              )}
+            />
+          </div>
+          
+          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="toggleEntities"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label d-block" htmlFor="toggleEntities">
+                    Agregar entidades
+                  </label>
+                  <InputSwitch
+                    inputId="toggleEntities"
+                    checked={field.value || false}
+                    onChange={(e) => field.onChange(e.value)}
                   />
                 </div>
-              </div>
-            </>
-          )}
-
+              )}
+            />
+          </div>
+          
+          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="toggleImpuesto"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label d-block" htmlFor="toggleImpuesto">
+                    Agregar Impuesto
+                  </label>
+                  <InputSwitch
+                    inputId="toggleImpuesto"
+                    checked={field.value || false}
+                    onChange={(e) => { 
+                      field.onChange(e.value) 
+                      if (!e.value) {
+                        setValue('taxProduct_type', '0');
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            />
+          </div>
+          
           {showTax && (
-            <div className="mb-3">
+            <div className="col-12">
               <Controller
                 name="taxProduct_type"
                 control={control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <label htmlFor={field.name} className="form-label">
+                render={({ field }) => (
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor={field.name}>
                       Tipo de impuesto
                     </label>
                     <Dropdown
+                      className="w-100"
                       id={field.name}
-                      options={taxes}
-                      optionLabel="name"
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={taxes.map((tax) => ({
+                        label: tax.name,
+                        value: tax.id
+                      }))}
                       placeholder="Seleccionar..."
-                      {...field}
-                      filter
-                      appendTo={"self"}
                     />
-                  </>
+                  </div>
                 )}
               />
             </div>
           )}
-
+          
           {showEntities && (
-            <div className="mb-3">
+            <div className="col-12">
               <div className="card p-3 mt-3">
                 <div className="row g-3">
-                  <div className="col-md-4">
-                    <label className="form-label">Entidad</label>
-                    <Dropdown
-                      options={entitiesData}
-                      placeholder="Seleccionar..."
-                      className="w-100"
-                      optionLabel="name"
-                      value={currentEntity.entity_id}
-                      onChange={(e) => handleEntityChange("entity_id", e.value)}
-                      filter
-                      appendTo={"self"}
-                    />
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Entidad
+                      </label>
+                      <Dropdown
+                        className="w-100"
+                        value={currentEntity.entity_id}
+                        onChange={(e) => handleEntityChange("entity_id", e.value)}
+                        options={entitiesData.map((entity) => ({
+                          label: entity.name,
+                          value: entity.id
+                        }))}
+                        placeholder="Seleccionar..."
+                      />
+                    </div>
                   </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Precio</label>
-                    <InputNumber
-                      mode="currency"
-                      currency="USD"
-                      locale="en-US"
-                      placeholder="Precio"
-                      className="w-100"
-                      value={currentEntity.price}
-                      onValueChange={(e) =>
-                        handleEntityChange("price", e.value ?? 0)
-                      }
-                    />
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Precio
+                      </label>
+                      <InputNumber
+                        className="w-100"
+                        placeholder="Precio"
+                        value={currentEntity.price}
+                        onValueChange={(e) => handleEntityChange("price", e.value || 0)}
+                        mode="currency"
+                        currency="COP"
+                        locale="es-CO"
+                      />
+                    </div>
                   </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Tipo de impuesto</label>
-                    <Dropdown
-                      options={taxes}
-                      placeholder="Seleccionar..."
-                      className="w-100"
-                      optionLabel="name"
-                      value={currentEntity.tax_id}
-                      onChange={(e) => handleEntityChange("tax_id", e.value)}
-                      filter
-                      appendTo={"self"}
-                    />
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Tipo de impuesto
+                      </label>
+                      <Dropdown
+                        className="w-100"
+                        value={currentEntity.tax_charge_id}
+                        onChange={(e) => handleEntityChange("tax_charge_id", e.value)}
+                        options={taxes.map((tax) => ({
+                          label: tax.name,
+                          value: tax.id
+                        }))}
+                        placeholder="Seleccionar..."
+                      />
+                    </div>
                   </div>
-                  <div className="col-md-4">
-                    <label className="form-label">Tipo de retención</label>
-                    <Dropdown
-                      options={retentions}
-                      placeholder="Seleccionar..."
-                      className="w-100"
-                      optionLabel="name"
-                      value={currentEntity.retention_id}
-                      onChange={(e) =>
-                        handleEntityChange("retention_id", e.value)
-                      }
-                      filter
-                      appendTo={"self"}
-                    />
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Tipo de retención
+                      </label>
+                      <Dropdown
+                        className="w-100"
+                        value={currentEntity.withholding_tax_id}
+                        onChange={(e) => handleEntityChange("withholding_tax_id", e.value)}
+                        options={retentions.map((retention) => ({
+                          label: retention.name,
+                          value: retention.id
+                        }))}
+                        placeholder="Seleccionar..."
+                      />
+                    </div>
                   </div>
                   <div className="col-12 text-end">
-                    <Button
+                    <button
+                      className="btn btn-primary"
                       type="button"
-                      label="Agregar"
-                      icon="pi pi-plus"
                       onClick={addEntityRow}
-                    />
+                    >
+                      Agregar
+                    </button>
                   </div>
                 </div>
               </div>
-
+              
               {entityRows.length > 0 && (
                 <div className="card p-3 mt-3">
-                  <DataTable
-                    value={entityRows}
-                    stripedRows
-                    showGridlines
-                    responsiveLayout="scroll"
-                    className="p-datatable-sm"
-                    emptyMessage="No hay entidades agregadas"
-                  >
-                    <Column
-                      field="entity_id"
-                      header="Entidad"
-                      body={entityBodyTemplate}
-                      sortable
-                    ></Column>
-                    <Column
-                      field="price"
-                      header="Precio"
-                      body={priceBodyTemplate}
-                      sortable
-                    ></Column>
-                    <Column
-                      field="tax_type"
-                      header="Tipo Impuesto"
-                      body={(rowData) => rowData.tax_type || "-"}
-                      sortable
-                    ></Column>
-                    <Column
-                      field="retention_type"
-                      header="Tipo Retención"
-                      body={(rowData) => rowData.retention_type || "-"}
-                      sortable
-                    ></Column>
-                    <Column
-                      header="Acciones"
-                      body={actionBodyTemplate}
-                      style={{ width: "100px" }}
-                    ></Column>
-                  </DataTable>
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Entidad</th>
+                        <th>Precio</th>
+                        <th>Tipo Impuesto</th>
+                        <th>Tipo Retención</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entityRows.map((row, index) => (
+                        <tr key={index}>
+                          <td>{row.entity_name}</td>
+                          <td>{row.price}</td>
+                          <td>{row.tax_name || 'N/A'}</td>
+                          <td>{row.retention_name || 'N/A'}</td>
+                          <td>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              onClick={() => removeEntityRow(index)}
+                            >
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
-              <ConfirmDialog />
             </div>
           )}
-
-          <div className="d-flex justify-content-end gap-2 mt-4">
-            <Button
+          
+          <div className="col-12 text-end mt-4">
+            <button className="btn btn-primary me-2" type="submit">
+              Guardar
+            </button>
+            <button 
+              className="btn btn-outline-primary" 
               type="button"
-              label="Cancelar"
-              className="p-button-outlined"
-            />
-            <Button type="submit" label="Guardar" icon="pi pi-save" />
+              onClick={onCancel}
+            >
+              Cancelar
+            </button>
           </div>
-        </div>
+        </form>
       </div>
-    </form>
+    </div>
   );
 };
 

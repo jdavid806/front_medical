@@ -151,9 +151,8 @@ export const ControlCashFlow = () => {
       const response = await userService.getAllUsers();
       setSpecialists(
         response.map((user) => ({
-          label: `${user.first_name} ${user.last_name} - ${
-            user.specialty?.name || ""
-          }`,
+          label: `${user.first_name} ${user.last_name} - ${user.specialty?.name || ""
+            }`,
           value: user.id,
         }))
       );
@@ -244,7 +243,7 @@ export const ControlCashFlow = () => {
         fecha: formatDateUtils(item?.created_at),
         ingresos: formatCurrency(
           parseInt(item?.invoice?.total_amount) +
-            (parseInt(item?.entity_authorized_amount) || 0) || 0
+          (parseInt(item?.entity_authorized_amount) || 0) || 0
         ),
         salidas:
           item?.invoice?.status === "canceled"
@@ -318,43 +317,39 @@ export const ControlCashFlow = () => {
             </thead>
             <tbody>
               ${dataExport.reduce(
-                (acc: string, rowData: any) =>
-                  acc +
-                  `
+        (acc: string, rowData: any) =>
+          acc +
+          `
                 <tr>
-                  <td>${
-                    rowData?.invoice?.details.length <= 1
-                      ? rowData?.invoice?.details[0]?.product?.name || ""
-                      : "Laboratorio"
-                  }</td>
+                  <td>${rowData?.invoice?.details.length <= 1
+            ? rowData?.invoice?.details[0]?.product?.name || ""
+            : "Laboratorio"
+          }</td>
                   <td>${rowData?.authorization_number || ""}</td>
-                  <td>${
-                    rowData?.invoice?.type === "entity"
-                      ? formatCurrency(rowData?.invoice?.total_amount || 0)
-                      : formatCurrency(0)
-                  }</td>
-                  <td>${
-                    rowData?.invoice?.type === "public"
-                      ? formatCurrency(rowData?.invoice?.total_amount || 0)
-                      : formatCurrency(0)
-                  }</td>
+                  <td>${rowData?.invoice?.type === "entity"
+            ? formatCurrency(rowData?.invoice?.total_amount || 0)
+            : formatCurrency(0)
+          }</td>
+                  <td>${rowData?.invoice?.type === "public"
+            ? formatCurrency(rowData?.invoice?.total_amount || 0)
+            : formatCurrency(0)
+          }</td>
                   <td>${formatCurrency(
-                    rowData?.entity_authorized_amount || 0
-                  )}</td>
+            rowData?.entity_authorized_amount || 0
+          )}</td>
                   <td>${formatDateUtils(rowData.created_at)}</td>
                   <td class="right">${formatCurrency(
-                    (parseInt(rowData?.invoice?.total_amount) || 0) +
-                      (parseInt(rowData?.entity_authorized_amount) || 0)
-                  )}</td>
-                  <td class="right">${
-                    rowData?.invoice?.status === "canceled"
-                      ? formatCurrency(rowData?.invoice?.total_amount || 0)
-                      : formatCurrency(0)
-                  }</td>
+            (parseInt(rowData?.invoice?.total_amount) || 0) +
+            (parseInt(rowData?.entity_authorized_amount) || 0)
+          )}</td>
+                  <td class="right">${rowData?.invoice?.status === "canceled"
+            ? formatCurrency(rowData?.invoice?.total_amount || 0)
+            : formatCurrency(0)
+          }</td>
                 </tr>
               `,
-                ""
-              )}
+        ""
+      )}
             </tbody>
           </table>`;
       const configPDF = {
@@ -381,6 +376,18 @@ export const ControlCashFlow = () => {
     }
 
     const cashControlColumns: TableColumn[] = [
+      {
+        field: "procedure",
+        header: "# Factura",
+        body: (rowData: any) =>
+          rowData?.invoice?.id,
+      },
+      {
+        field: "procedure",
+        header: "Código de Factura",
+        body: (rowData: any) =>
+          rowData?.invoice?.invoice_code,
+      },
       {
         field: "procedure",
         header: "Procedimiento",
@@ -429,7 +436,7 @@ export const ControlCashFlow = () => {
         body: (rowData: any) =>
           formatCurrency(
             parseInt(rowData?.invoice?.total_amount) +
-              (parseInt(rowData?.entity_authorized_amount) || 0) || 0
+            (parseInt(rowData?.entity_authorized_amount) || 0) || 0
           ),
       },
       {
@@ -437,8 +444,12 @@ export const ControlCashFlow = () => {
         header: "Salidas",
         style: createColumnStyle("right"),
         body: (rowData: any) =>
-          rowData?.invoice?.status === "canceled"
-            ? formatCurrency(rowData?.invoice?.total_amount || 0)
+          rowData?.invoice?.status === "cancelled"
+            ? formatCurrency(rowData?.invoice.notes.reduce(
+              (acc: number, note: any) =>
+                acc + parseInt(note.amount) || 0,
+              0
+            ))
             : formatCurrency(0),
       },
     ];
@@ -506,93 +517,93 @@ export const ControlCashFlow = () => {
             <div className="row g-3 justify-content-between align-items-start mb-4">
               <div className="col-12">
                 <Card title="Filtros de Búsqueda" className="mb-3">
-                    <div className="row">
-                      <div className="col-12 col-md-6 mb-3">
-                        <label className="form-label" htmlFor="procedure">
-                          Procedimientos
-                        </label>
-                        <MultiSelect
-                          id="procedure"
-                          value={selectedProcedures}
-                          options={procedures}
-                          onChange={(e) => setSelectedProcedures(e.value)}
-                          placeholder="Seleccione procedimientos"
-                          display="chip"
-                          filter
-                          className="w-100"
-                        />
-                      </div>
-                      <div className="col-12 col-md-6 mb-3">
-                        <label className="form-label" htmlFor="especialistas">
-                          Especialistas
-                        </label>
-                        <MultiSelect
-                          id="especialistas"
-                          value={selectedSpecialists}
-                          options={specialists}
-                          onChange={(e) => setSelectedSpecialists(e.value)}
-                          placeholder="Seleccione especialistas"
-                          display="chip"
-                          filter
-                          className="w-100"
-                        />
-                      </div>
-                      <div className="col-12 col-md-6 mb-3">
-                        <label className="form-label" htmlFor="patients">
-                          Pacientes
-                        </label>
-                        <MultiSelect
-                          id="patients"
-                          value={selectedPatients}
-                          options={patients}
-                          onChange={(e) => setSelectedPatients(e.value)}
-                          placeholder="Seleccione pacientes"
-                          display="chip"
-                          filter
-                          className="w-100"
-                        />
-                      </div>
-                      <div className="col-12 col-md-6 mb-3">
-                        <label
-                          className="form-label"
-                          htmlFor="fechasProcedimiento"
-                        >
-                          Fecha inicio - fin Procedimiento
-                        </label>
-                        <Calendar
-                          id="fechasProcedimiento"
-                          value={dateRange}
-                          onChange={(e: any) => setDateRange(e.value)}
-                          selectionMode="range"
-                          readOnlyInput
-                          dateFormat="dd/mm/yy"
-                          placeholder="dd/mm/yyyy - dd/mm/yyyy"
-                          className="w-100"
-                        />
-                      </div>
-                      <div className="col-12 col-md-6 mb-3">
-                        <label className="form-label" htmlFor="entity">
-                          Entidad
-                        </label>
-                        <Dropdown
-                          id="entity"
-                          value={selectedEntity}
-                          options={entities}
-                          onChange={(e) => setSelectedEntity(e.value)}
-                          placeholder="Seleccione entidad"
-                          filter
-                          className="w-100"
-                        />
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-end m-2">
-                      <Button
-                        label="Filtrar"
-                        icon="pi pi-filter"
-                        onClick={handleFilter}
-                        className="p-button-primary"
+                  <div className="row">
+                    <div className="col-12 col-md-6 mb-3">
+                      <label className="form-label" htmlFor="procedure">
+                        Procedimientos
+                      </label>
+                      <MultiSelect
+                        id="procedure"
+                        value={selectedProcedures}
+                        options={procedures}
+                        onChange={(e) => setSelectedProcedures(e.value)}
+                        placeholder="Seleccione procedimientos"
+                        display="chip"
+                        filter
+                        className="w-100"
                       />
                     </div>
+                    <div className="col-12 col-md-6 mb-3">
+                      <label className="form-label" htmlFor="especialistas">
+                        Especialistas
+                      </label>
+                      <MultiSelect
+                        id="especialistas"
+                        value={selectedSpecialists}
+                        options={specialists}
+                        onChange={(e) => setSelectedSpecialists(e.value)}
+                        placeholder="Seleccione especialistas"
+                        display="chip"
+                        filter
+                        className="w-100"
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 mb-3">
+                      <label className="form-label" htmlFor="patients">
+                        Pacientes
+                      </label>
+                      <MultiSelect
+                        id="patients"
+                        value={selectedPatients}
+                        options={patients}
+                        onChange={(e) => setSelectedPatients(e.value)}
+                        placeholder="Seleccione pacientes"
+                        display="chip"
+                        filter
+                        className="w-100"
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 mb-3">
+                      <label
+                        className="form-label"
+                        htmlFor="fechasProcedimiento"
+                      >
+                        Fecha inicio - fin Procedimiento
+                      </label>
+                      <Calendar
+                        id="fechasProcedimiento"
+                        value={dateRange}
+                        onChange={(e: any) => setDateRange(e.value)}
+                        selectionMode="range"
+                        readOnlyInput
+                        dateFormat="dd/mm/yy"
+                        placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                        className="w-100"
+                      />
+                    </div>
+                    <div className="col-12 col-md-6 mb-3">
+                      <label className="form-label" htmlFor="entity">
+                        Entidad
+                      </label>
+                      <Dropdown
+                        id="entity"
+                        value={selectedEntity}
+                        options={entities}
+                        onChange={(e) => setSelectedEntity(e.value)}
+                        placeholder="Seleccione entidad"
+                        filter
+                        className="w-100"
+                      />
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end m-2">
+                    <Button
+                      label="Filtrar"
+                      icon="pi pi-filter"
+                      onClick={handleFilter}
+                      className="p-button-primary"
+                    />
+                  </div>
                 </Card>
               </div>
             </div>

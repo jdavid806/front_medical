@@ -37,18 +37,6 @@ export class TaxService extends BaseApiService {
         return await this.httpClient.delete(`${this.microservice}/${this.endpoint}/${id}`);
     }
 
-    // Métodos adicionales específicos para impuestos
-    async getTaxesByType(type) {
-        return await this.httpClient.get(
-            `${this.microservice}/${this.endpoint}/type/${type}`
-        );
-    }
-
-    async getActiveTaxes() {
-        return await this.httpClient.get(
-            `${this.microservice}/${this.endpoint}/active`
-        );
-    }
 }
 
 export default TaxService;

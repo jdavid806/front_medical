@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFetchAppointments } from "./hooks/useFetchAppointments.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import AdmissionBilling from "../admission/admission-billing/AdmissionBilling.js";
@@ -22,9 +22,11 @@ export const TodayAppointmentsTable = () => {
       sort: "-appointment_date,appointment_time"
     };
   };
-  const menu = useRef(null);
   const handleFacturarAdmision = appointment => {
-    setSelectedAppointment(appointment);
+    setSelectedAppointment({
+      ...appointment,
+      patient: appointment.patient
+    });
     setShowBillingDialog(true);
   };
   const {
@@ -37,6 +39,9 @@ export const TodayAppointmentsTable = () => {
     loading,
     perPage
   } = useFetchAppointments(customFilters);
+  useEffect(() => {
+    console.log("appointments", appointments);
+  }, [appointments]);
   const columns = [{
     field: "patientName",
     header: "Nombre",
@@ -62,28 +67,10 @@ export const TodayAppointmentsTable = () => {
     field: "actions",
     header: "Acciones",
     body: rowData => {
-      const items = [{
-        label: "Generar admisión",
-        command: () => window.location.href = `generar_admision_rd?id_cita=${rowData.id}`
-      }, {
-        label: "Facturar admisión",
-        command: () => handleFacturarAdmision(rowData)
-      }];
-      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
-        className: "btn-primary flex items-center gap-2",
-        onClick: e => menu.current.toggle(e),
-        "aria-controls": `popup_menu_${rowData.id}`,
-        "aria-haspopup": true
-      }, "Acciones", /*#__PURE__*/React.createElement("i", {
-        className: "fa fa-cog\t ml-2"
-      })), /*#__PURE__*/React.createElement(Menu, {
-        model: items,
-        popup: true,
-        ref: menu,
-        id: `popup_menu_${rowData.id}`,
-        style: {
-          zIndex: 9999
-        }
+      console.log("rowData", rowData);
+      return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(TableMenu, {
+        onFacturarAdmision: () => handleFacturarAdmision(rowData),
+        rowData: rowData
       }));
     }
   }];
@@ -162,4 +149,33 @@ export const TodayAppointmentsTable = () => {
     isOpen: showAppointmentForm,
     onClose: () => setShowAppointmentForm(false)
   })));
+};
+const TableMenu = ({
+  rowData,
+  onFacturarAdmision
+}) => {
+  const menu = useRef(null);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    className: "btn-primary flex items-center gap-2",
+    onClick: e => menu.current.toggle(e),
+    "aria-controls": `popup_menu_${rowData.id}`,
+    "aria-haspopup": true
+  }, "Acciones", /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-cog\t ml-2"
+  })), /*#__PURE__*/React.createElement(Menu, {
+    model: [{
+      label: "Generar admisión",
+      command: () => window.location.href = `generar_admision_rd?id_cita=${rowData.id}`
+    }, {
+      label: "Facturar admisión",
+      command: () => onFacturarAdmision()
+    }],
+    popup: true,
+    ref: menu,
+    id: `popup_menu_${rowData.id}`,
+    style: {
+      zIndex: 9999
+    },
+    onBlur: e => menu.current?.hide(e)
+  }));
 };

@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { TreeTable } from "primereact/treetable";
 import {
   exportDoctorsProceduresToExcel,
   exportEntityPricesToExcel,
@@ -67,7 +68,7 @@ export const SpecialistsReport = () => {
   const [patients, setPatients] = useState<any[]>([]);
   const [selectedPatients, setSelectedPatients] = useState([]);
   const [entities, setEntities] = useState<any[]>([]);
-  const [selectedEntity, setSelectedEntity] = useState(null);
+  const [selectedEntity, setSelectedEntity] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState([fiveDaysAgo, today]);
   const { company, setCompany, fetchCompany } = useCompany();
 
@@ -76,6 +77,8 @@ export const SpecialistsReport = () => {
   const [activeTab, setActiveTab] = useState("doctors-tab");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
+  const [treeNodes, setTreeNodes] = useState<any[]>([]);
+  const [keys, setKeys] = useState<any>({});
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -102,10 +105,7 @@ export const SpecialistsReport = () => {
         const defaultFilters = {
           end_date: formatDate(today),
           start_date: formatDate(fiveDaysAgo),
-          patient_ids: [],
-          product_ids: [],
           user_ids: [],
-          entity_id: null,
         };
         await loadData(defaultFilters);
       } catch (error) {
@@ -118,11 +118,78 @@ export const SpecialistsReport = () => {
     initializeData();
   }, []);
 
-  const loadData = async (filterParams = {}) => {
+  useEffect(() => {
+    if (activeTab === "productivity-tab" && reportData.length > 0) {
+      const newTreeNodes = reportData.map((user: any, userIndex) => {
+        console.log("user", user);
+        let countAppointments = user.appointments.length;
+        let countProceduresInvoiced = 0;
+        const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${
+          user.last_name ?? ""
+        } ${user.second_name ?? ""}`;
+
+        const children = user.appointments.map(
+          (appointment, appointmentIndex) => {
+            let status = "unInvoiced";
+            if (appointment.admission && appointment.admission.invoice && appointment?.admission?.invoice?.status !== "cancelled") {
+              countProceduresInvoiced++;
+              status = "invoiced";
+            }
+
+            return {
+              key: `${userIndex}-${appointmentIndex}`,
+              data: {
+                doctor: "",
+                date: appointment.appointment_date,
+                countAppointments: appointment.exam_recipe.details
+                  .map((detail) => detail.exam_type.name)
+                  .join(", "),
+                counrProceduresInvoiced:
+                  appointment?.admission?.invoice?.details
+                    .map((detail) => detail.product.name)
+                    .join(", ") ?? "Sin factura",
+                average: status,
+                isLeaf: true,
+              },
+            };
+          }
+        );
+
+        return {
+          key: userIndex.toString(),
+          data: {
+            doctor: fullName,
+            date: "",
+            countAppointments: countAppointments,
+            counrProceduresInvoiced: countProceduresInvoiced,
+            average: ((countProceduresInvoiced / countAppointments) * 100).toFixed(2) + "%",
+            isLeaf: false,
+            rawData: user.appointments,
+          },
+          children: children,
+        };
+      });
+      setTreeNodes(newTreeNodes);
+      setKeys(
+        treeNodes.reduce((acc, node) => {
+          acc[node.key] = true;
+          return acc;
+        }, {})
+      );
+    }
+  }, [reportData, activeTab]);
+
+  const loadData = async (filterParams = {}, tab = "") => {
+    let data: any = [];
     try {
       setTableLoading(true);
-      const data = await billingService.getBillingReport(filterParams);
+      if (tab == "productivity-tab") {
+        data = await billingService.productivityByDoctor(filterParams);
+      } else {
+        data = await billingService.getBillingReport(filterParams);
+      }
 
+      console.log("data", data);
       setReportData(data);
       return data; // Retornamos los datos por si se necesitan
     } catch (error) {
@@ -134,18 +201,33 @@ export const SpecialistsReport = () => {
   };
 
   const handleTabChange = async (tab: string) => {
+    setReportData([]);
     try {
       setActiveTab(tab);
-      const filterParams = {
+      const filterParams: any = {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity,
       };
 
-      await loadData(filterParams);
+      if (selectedPatients?.length) {
+        filterParams.patient_ids = selectedPatients;
+      }
+
+      if (selectedProcedures?.length) {
+        filterParams.product_ids = selectedProcedures;
+      }
+
+      if (selectedSpecialists?.length) {
+        filterParams.user_ids = selectedSpecialists;
+      } else {
+        filterParams.user_ids = [];
+      }
+
+      if (selectedEntity?.length) {
+        filterParams.entity_id = selectedEntity;
+      }
+
+      await loadData(filterParams, tab);
     } catch (error) {
       console.error("Error changing tab:", error);
     }
@@ -234,16 +316,30 @@ export const SpecialistsReport = () => {
 
   const handleFilter = async () => {
     try {
-      const filterParams = {
+      const filterParams: any = {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity,
       };
 
-      await loadData(filterParams);
+      if (selectedPatients?.length) {
+        filterParams.patient_ids = selectedPatients;
+      }
+
+      if (selectedProcedures?.length) {
+        filterParams.product_ids = selectedProcedures;
+      }
+
+      if (selectedSpecialists?.length) {
+        filterParams.user_ids = selectedSpecialists;
+      } else {
+        filterParams.user_ids = [];
+      }
+
+      if (selectedEntity?.length) {
+        filterParams.entity_id = selectedEntity;
+      }
+
+      await loadData(filterParams, activeTab);
       setFirst(0); // Reset to first page when filtering
     } catch (error) {
       console.error("Error filtering data:", error);
@@ -601,7 +697,7 @@ export const SpecialistsReport = () => {
         },
         {
           field: `${doctor}_avg`,
-          header: "Monto autorizado",
+          header: "Seguro",
           body: (rowData: any) => (
             <span
               style={{
@@ -650,7 +746,7 @@ export const SpecialistsReport = () => {
           {Array.from(doctors).flatMap((doctor) => [
             <Column key={`${doctor}_count`} header="Copago" />,
             <Column key={`${doctor}_amount`} header="Particular" />,
-            <Column key={`${doctor}_avg`} header="Monto autorizado" />,
+            <Column key={`${doctor}_avg`} header="Seguro" />,
           ])}
         </Row>
       </ColumnGroup>
@@ -721,7 +817,6 @@ export const SpecialistsReport = () => {
       Record<
         string,
         {
-          count: number; // Copago count
           amount: number; // Particular count
           avg: number; // Monto autorizado count
         }
@@ -744,7 +839,6 @@ export const SpecialistsReport = () => {
 
         if (!procedureDoctorCounts[procedureName][doctor]) {
           procedureDoctorCounts[procedureName][doctor] = {
-            count: 0,
             amount: 0,
             avg: 0,
           };
@@ -752,14 +846,12 @@ export const SpecialistsReport = () => {
 
         // Increment counts instead of summing amounts
         if (entry.sub_type === "entity") {
-          procedureDoctorCounts[procedureName][doctor].count += 1; // Count instead of sum amount
+          procedureDoctorCounts[procedureName][doctor].avg += 1; // Count instead of sum amount
         }
 
         if (entry.sub_type === "public") {
           procedureDoctorCounts[procedureName][doctor].amount += 1; // Count instead of sum amount
-        }
-
-        procedureDoctorCounts[procedureName][doctor].avg += 1; // Count for authorized amount
+        } // Count for authorized amount
       });
     });
 
@@ -767,7 +859,6 @@ export const SpecialistsReport = () => {
     const doctorTotals: Record<
       string,
       {
-        count: number;
         amount: number;
         avg: number;
         total: number;
@@ -776,7 +867,6 @@ export const SpecialistsReport = () => {
 
     Array.from(doctors).forEach((doctor: string) => {
       doctorTotals[doctor] = {
-        count: 0,
         amount: 0,
         avg: 0,
         total: 0,
@@ -788,7 +878,6 @@ export const SpecialistsReport = () => {
           amount: 0,
           avg: 0,
         };
-        doctorTotals[doctor].count += doctorData.count;
         doctorTotals[doctor].amount += doctorData.amount;
         doctorTotals[doctor].avg += doctorData.avg;
         doctorTotals[doctor].total += doctorData.amount; // Sum counts for total
@@ -807,7 +896,6 @@ export const SpecialistsReport = () => {
           avg: 0,
         };
 
-        row[`${doctor}_count`] = doctorData.count;
         row[`${doctor}_amount`] = doctorData.amount;
         row[`${doctor}_avg`] = doctorData.avg;
 
@@ -826,7 +914,6 @@ export const SpecialistsReport = () => {
     };
 
     Array.from(doctors).forEach((doctor: string) => {
-      totalsRow[`${doctor}_count`] = doctorTotals[doctor].count;
       totalsRow[`${doctor}_amount`] = doctorTotals[doctor].amount;
       totalsRow[`${doctor}_avg`] = doctorTotals[doctor].avg;
     });
@@ -862,22 +949,6 @@ export const SpecialistsReport = () => {
       },
       ...Array.from(doctors).flatMap((doctor: string) => [
         {
-          field: `${doctor}_count`,
-          header: "Copago",
-          body: (rowData: any) => (
-            <span
-              style={{
-                fontWeight: rowData.isTotal ? "bold" : "normal",
-                fontSize: rowData.isTotal ? "1.1em" : "inherit",
-              }}
-            >
-              {rowData[`${doctor}_count`] || "0"}
-            </span>
-          ),
-          style: createColumnStyle("right"),
-          headerStyle: createColumnStyle("right"),
-        },
-        {
           field: `${doctor}_amount`,
           header: "Particular",
           body: (rowData: any) => (
@@ -895,7 +966,7 @@ export const SpecialistsReport = () => {
         },
         {
           field: `${doctor}_avg`,
-          header: "Monto autorizado",
+          header: "Seguro",
           body: (rowData: any) => (
             <span
               style={{
@@ -934,15 +1005,14 @@ export const SpecialistsReport = () => {
         <Row>
           <Column header="Procedimiento" rowSpan={2} />
           {Array.from(doctors).map((doctor) => (
-            <Column key={doctor} header={doctor} colSpan={3} />
+            <Column key={doctor} header={doctor} colSpan={2} />
           ))}
           <Column header="Total General" rowSpan={2} />
         </Row>
         <Row>
           {Array.from(doctors).flatMap((doctor) => [
-            <Column key={`${doctor}_count`} header="Copago" />,
             <Column key={`${doctor}_amount`} header="Particular" />,
-            <Column key={`${doctor}_avg`} header="Monto autorizado" />,
+            <Column key={`${doctor}_avg`} header="Seguro" />,
           ])}
         </Row>
       </ColumnGroup>
@@ -1276,22 +1346,40 @@ export const SpecialistsReport = () => {
           </span>
         ),
       },
-      ...Array.from(doctors).map((doctor: string) => ({
-        field: doctor,
-        header: doctor,
-        body: (rowData: any) => (
-          <span
-            style={{
-              fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1em" : "inherit",
-            }}
-          >
-            {rowData[doctor]}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-      })),
+      ...Array.from(doctors).flatMap((doctor: string) => [
+        {
+          field: `${doctor}_amount`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1em" : "inherit",
+              }}
+            >
+              {rowData[doctor] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+        {
+          field: `${doctor}_avg`,
+          header: "Seguro",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1em" : "inherit",
+              }}
+            >
+              {rowData[doctor] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+        },
+      ]),
       {
         field: "total",
         header: "Total",
@@ -1315,6 +1403,25 @@ export const SpecialistsReport = () => {
       },
     ];
 
+    // Create header group with the new subheaders
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Entidad" rowSpan={2} />
+          {Array.from(doctors).map((doctor) => (
+            <Column key={doctor} header={doctor} colSpan={2} />
+          ))}
+          <Column header="Total" rowSpan={2} />
+        </Row>
+        <Row>
+          {Array.from(doctors).flatMap((doctor) => [
+            <Column key={`${doctor}_amount`} header="Particular" />,
+            <Column key={`${doctor}_avg`} header="Seguro" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
+
     return (
       <div className="card">
         {tableLoading ? (
@@ -1326,6 +1433,7 @@ export const SpecialistsReport = () => {
           </div>
         ) : (
           <DataTable
+            headerColumnGroup={headerGroup}
             value={tableData}
             loading={tableLoading}
             scrollable
@@ -1372,7 +1480,10 @@ export const SpecialistsReport = () => {
     }
 
     // Process data and group by professional and date
-    const doctorDateCounts: Record<string, Record<string, number>> = {};
+    const doctorDateCounts: Record<
+      string,
+      Record<string, { particular: number; seguro: number }>
+    > = {};
     const dates = new Set<string>();
     const doctors = new Set<string>();
 
@@ -1388,8 +1499,15 @@ export const SpecialistsReport = () => {
           doctorDateCounts[doctor] = {};
         }
 
-        doctorDateCounts[doctor][date] =
-          (doctorDateCounts[doctor][date] || 0) + 1;
+        if (!doctorDateCounts[doctor][date]) {
+          doctorDateCounts[doctor][date] = { particular: 0, seguro: 0 };
+        }
+
+        if (entry.sub_type === "public") {
+          doctorDateCounts[doctor][date].particular += 1;
+        } else if (entry.sub_type === "entity") {
+          doctorDateCounts[doctor][date].seguro += 1;
+        }
       }
     });
 
@@ -1397,18 +1515,31 @@ export const SpecialistsReport = () => {
     const sortedDates = Array.from(dates).sort();
 
     // Calculate column totals (dates)
-    const dateTotals: Record<string, number> = {};
+    const dateTotals: Record<string, { particular: number; seguro: number }> =
+      {};
     sortedDates.forEach((date: string) => {
-      dateTotals[date] = Array.from(doctors).reduce((sum, doctor: string) => {
-        return sum + (doctorDateCounts[doctor]?.[date] || 0);
-      }, 0);
+      dateTotals[date] = { particular: 0, seguro: 0 };
+
+      Array.from(doctors).forEach((doctor: string) => {
+        const counts = doctorDateCounts[doctor]?.[date] || {
+          particular: 0,
+          seguro: 0,
+        };
+        dateTotals[date].particular += counts.particular;
+        dateTotals[date].seguro += counts.seguro;
+      });
     });
 
     // Prepare table data
     const tableData = Array.from(doctors).map((doctor: string) => {
       const row: Record<string, any> = { doctor };
       sortedDates.forEach((date: string) => {
-        row[date] = doctorDateCounts[doctor]?.[date] || 0;
+        const counts = doctorDateCounts[doctor]?.[date] || {
+          particular: 0,
+          seguro: 0,
+        };
+        row[`${date}_particular`] = counts.particular;
+        row[`${date}_seguro`] = counts.seguro;
       });
       return row;
     });
@@ -1420,7 +1551,8 @@ export const SpecialistsReport = () => {
       style: { fontWeight: "bold", fontSize: "1em" },
     };
     sortedDates.forEach((date: string) => {
-      totalsRow[date] = dateTotals[date] || 0;
+      totalsRow[`${date}_particular`] = dateTotals[date].particular;
+      totalsRow[`${date}_seguro`] = dateTotals[date].seguro;
     });
     tableData.push(totalsRow);
 
@@ -1444,28 +1576,50 @@ export const SpecialistsReport = () => {
           </span>
         ),
       },
-      ...sortedDates.map((date: string) => ({
-        field: date,
-        header: date,
-        body: (rowData: any) => (
-          <span
-            style={{
-              fontWeight: rowData.isTotal ? "bold" : "normal",
-              fontSize: rowData.isTotal ? "1em" : "inherit",
-            }}
-          >
-            {rowData[date]}
-          </span>
-        ),
-        style: createColumnStyle("center"),
-        headerStyle: createColumnStyle("center"),
-      })),
+      ...sortedDates.flatMap((date: string) => [
+        {
+          field: `${date}_particular`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1em" : "inherit",
+              }}
+            >
+              {rowData[`${date}_particular`] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("center"),
+          headerStyle: createColumnStyle("center"),
+        },
+        {
+          field: `${date}_seguro`,
+          header: "Seguro",
+          body: (rowData: any) => (
+            <span
+              style={{
+                fontWeight: rowData.isTotal ? "bold" : "normal",
+                fontSize: rowData.isTotal ? "1em" : "inherit",
+              }}
+            >
+              {rowData[`${date}_seguro`] || "0"}
+            </span>
+          ),
+          style: createColumnStyle("center"),
+          headerStyle: createColumnStyle("center"),
+        },
+      ]),
       {
         field: "total",
         header: "Total",
         body: (rowData: any) => {
           const total = sortedDates.reduce((sum, date: string) => {
-            return sum + (rowData[date] || 0);
+            return (
+              sum +
+              (rowData[`${date}_particular`] || 0) +
+              (rowData[`${date}_seguro`] || 0)
+            );
           }, 0);
           return (
             <span
@@ -1483,6 +1637,25 @@ export const SpecialistsReport = () => {
       },
     ];
 
+    // Create header group with the new subheaders
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Profesional" rowSpan={2} />
+          {sortedDates.map((date) => (
+            <Column key={date} header={date} colSpan={2} />
+          ))}
+          <Column header="Total" rowSpan={2} />
+        </Row>
+        <Row>
+          {sortedDates.flatMap((date) => [
+            <Column key={`${date}_particular`} header="Particular" />,
+            <Column key={`${date}_seguro`} header="Seguro" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
+
     return (
       <div className="card">
         {tableLoading ? (
@@ -1494,6 +1667,7 @@ export const SpecialistsReport = () => {
           </div>
         ) : (
           <DataTable
+            headerColumnGroup={headerGroup}
             value={tableData}
             loading={tableLoading}
             scrollable
@@ -1522,6 +1696,106 @@ export const SpecialistsReport = () => {
               />
             ))}
           </DataTable>
+        )}
+      </div>
+    );
+  };
+
+  const generateTableProductivity = (isReturnData = false) => {
+    console.log("reportData", reportData);
+
+    if (!reportData || reportData.length === 0) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <span>No hay datos disponibles</span>
+        </div>
+      );
+    }
+
+    const doctorTemplate = (node: any) => <strong>{node.data.doctor}</strong>;
+    const ordersTemplate = (node: any) => (
+      <strong>{node.data.countAppointments}</strong>
+    );
+    const datesTemplate = (node: any) => (
+      <strong>{node.data.date}</strong>
+    );
+    const proceduresInvoicedTemplate = (node: any) => (
+      <strong>{node.data.counrProceduresInvoiced}</strong>
+    );
+    const averageTemplate = (node: any) =>
+      node.data.isLeaf ? (
+        <span
+          style={{
+            paddingLeft: "30px",
+            color: node.data.average === "unInvoiced" ? "red" : "green",
+          }}
+        >
+          {node.data.average == "unInvoiced" ? "No facturado" : "Facturado"}
+        </span>
+      ) : (
+        <strong>{node.data.average}</strong>
+      );
+
+    return (
+      <div className="border-top border-translucent">
+        {loading ? (
+          <div className="text-center p-5">
+            <i
+              className="pi pi-spinner pi-spin"
+              style={{ fontSize: "2rem" }}
+            ></i>
+            <p>Cargando datos...</p>
+          </div>
+        ) : (
+          <div id="purchasersSellersTable">
+            <div className="card">
+              <TreeTable
+                value={treeNodes}
+                expandedKeys={keys}
+                loading={tableLoading}
+                onToggle={(e) => setKeys(e.value)}
+                scrollable
+                scrollHeight="600px"
+              >
+                <Column
+                  field="profesional"
+                  header="Profesional"
+                  body={doctorTemplate}
+                  expander
+                />
+                <Column
+                  field="date"
+                  header="Fecha cita"
+                  body={datesTemplate}
+                />
+                <Column
+                  field="countAppointments"
+                  header="Ordenes"
+                  body={ordersTemplate}
+                />
+                <Column
+                  field="proceduresInvoiced"
+                  header="servicios facturados"
+                  body={proceduresInvoicedTemplate}
+                />
+                <Column
+                  field="average"
+                  header="Productividad %"
+                  body={averageTemplate}
+                />
+              </TreeTable>
+            </div>
+            <div className="row align-items-center justify-content-between pe-0 fs-9 mt-3">
+              <div className="col-auto d-flex">
+                <p className="mb-0 d-none d-sm-block me-3 fw-semibold text-body">
+                  Mostrando {treeNodes.length} Productividad
+                </p>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     );
@@ -1739,7 +2013,7 @@ export const SpecialistsReport = () => {
                         onClick={() => handleTabChange("precios-entidad-tab")}
                         role="tab"
                       >
-                        Entidades
+                        Entidades $
                       </a>
                     </li>
                     <li className="nav-item">
@@ -1751,7 +2025,7 @@ export const SpecialistsReport = () => {
                         onClick={() => handleTabChange("conteo-entidad-tab")}
                         role="tab"
                       >
-                        Precios - conteo
+                        Entidades #
                       </a>
                     </li>
                     <li className="nav-item">
@@ -1764,6 +2038,18 @@ export const SpecialistsReport = () => {
                         role="tab"
                       >
                         Consultas
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className={`nav-link ${
+                          activeTab === "productivity-tab" ? "active" : ""
+                        }`}
+                        id="productivity-tab"
+                        onClick={() => handleTabChange("productivity-tab")}
+                        role="tab"
+                      >
+                        Productividad
                       </a>
                     </li>
                   </ul>
@@ -1889,6 +2175,28 @@ export const SpecialistsReport = () => {
                         />
                       </div>
                       {generateConsultationsTable()}
+                    </div>
+                    <div
+                      className={`tab-pane fade ${
+                        activeTab === "productivity-tab" ? "show active" : ""
+                      }`}
+                      id="tab-productivity"
+                      role="tabpanel"
+                      aria-labelledby="productivity-tab"
+                    >
+                      <div className="d-flex justify-content-end gap-2 mb-3">
+                        <ExportButtonExcel
+                          onClick={handleExportConsultations}
+                          loading={exporting.consultations}
+                          disabled={!reportData || reportData.length === 0}
+                        />
+                        <ExportButtonPDF
+                          onClick={() => exportToPDF("productivity-tab")}
+                          loading={exporting.procedures}
+                          disabled={!reportData || reportData.length === 0}
+                        />
+                      </div>
+                      {generateTableProductivity()}
                     </div>
                   </div>
                 </div>

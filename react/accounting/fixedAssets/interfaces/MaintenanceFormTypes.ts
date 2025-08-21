@@ -10,6 +10,7 @@ export interface MaintenanceFormInputs {
   comments: string;
   cost?: number;
   nextMaintenanceDate?: Date;
+  disposedDate?: Date;
 }
 
 export interface MaintenanceModalProps {

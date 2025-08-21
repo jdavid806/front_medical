@@ -12,15 +12,22 @@ const PreviewDoneStep = ({
   formData,
   prevStep,
   onHide,
-  onPrint
+  onPrint,
+  onSubmit,
+  isSubmitting
 }) => {
   const [isDone, setIsDone] = useState(false);
   const total = calculateTotal(formData.products);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const balance = total - paid;
-  const handleFinish = () => {
-    setIsDone(true);
+  const handleFinish = async () => {
+    try {
+      await onSubmit();
+      setIsDone(true);
+    } catch (error) {
+      console.error('Error finishing invoice:', error);
+    }
   };
   const formatCurrency = value => {
     return new Intl.NumberFormat('es-DO', {
@@ -29,33 +36,6 @@ const PreviewDoneStep = ({
       minimumFractionDigits: 2
     }).format(value);
   };
-  if (isDone) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "text-center py-6 px-4 bg-light rounded-3 shadow-sm",
-      style: {
-        maxWidth: '600px',
-        margin: '0 auto'
-      }
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "pi pi-check-circle text-6xl text-success mb-4"
-    }), /*#__PURE__*/React.createElement("h2", {
-      className: "mb-3 fw-bold"
-    }, "\xA1Factura Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
-      className: "text-lg text-muted mb-5"
-    }, "La transacci\xF3n ha sido completada y guardada en el sistema"), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-center gap-3"
-    }, /*#__PURE__*/React.createElement(Button, {
-      label: "Imprimir Factura",
-      icon: "pi pi-print mr-2",
-      className: "btn btn-outline-primary btn-lg",
-      onClick: onPrint
-    }), /*#__PURE__*/React.createElement(Button, {
-      label: "Volver al Inicio",
-      icon: "pi pi-home mr-2",
-      className: "btn btn-primary btn-lg",
-      onClick: onHide
-    })));
-  }
   const paymentMethodTemplate = rowData => {
     const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
     return /*#__PURE__*/React.createElement("div", {
@@ -87,6 +67,33 @@ const PreviewDoneStep = ({
       className: "font-bold"
     }, formatCurrency(rowData.amount));
   };
+  if (isDone) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "text-center py-6 px-4 bg-light rounded-3 shadow-sm",
+      style: {
+        maxWidth: '600px',
+        margin: '0 auto'
+      }
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "pi pi-check-circle text-6xl text-success mb-4"
+    }), /*#__PURE__*/React.createElement("h2", {
+      className: "mb-3 fw-bold"
+    }, "\xA1Factura Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
+      className: "text-lg text-muted mb-5"
+    }, "La transacci\xF3n ha sido completada y guardada en el sistema"), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-center gap-3"
+    }, /*#__PURE__*/React.createElement(Button, {
+      label: "Imprimir Factura",
+      icon: "pi pi-print mr-2",
+      className: "btn btn-outline-primary btn-lg",
+      onClick: onPrint
+    }), /*#__PURE__*/React.createElement(Button, {
+      label: "Volver al Inicio",
+      icon: "pi pi-home mr-2",
+      className: "btn btn-primary btn-lg",
+      onClick: onHide
+    })));
+  }
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid"
   }, /*#__PURE__*/React.createElement("div", {
@@ -255,7 +262,8 @@ const PreviewDoneStep = ({
       className: "fa fa-cart-plus"
     }),
     className: "btn btn-primary btn-lg px-4",
-    onClick: handleFinish
+    onClick: handleFinish,
+    disabled: isSubmitting
   })));
 };
 export default PreviewDoneStep;

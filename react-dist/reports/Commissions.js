@@ -5,10 +5,11 @@ import { Calendar } from "primereact/calendar";
 import { TreeTable } from "primereact/treetable";
 import { Column } from "primereact/column";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
 import { Button } from "primereact/button";
 import { formatDate } from "../../services/utilidades.js";
+import { useServicesFormat } from "../documents-generation/hooks/reports-medical/commissions/useServicesFormat.js";
+import { useOrdersFormat } from "../documents-generation/hooks/reports-medical/commissions/useOrdersFormat.js";
 export const Commissions = () => {
   const today = new Date();
   const fiveDaysAgo = new Date();
@@ -30,6 +31,12 @@ export const Commissions = () => {
     setCompany,
     fetchCompany
   } = useCompany();
+  const {
+    generateFormatServices
+  } = useServicesFormat();
+  const {
+    generateFormatOrders
+  } = useOrdersFormat();
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
@@ -150,6 +157,8 @@ export const Commissions = () => {
             comision: commissionCalculation,
             retencion: retention,
             netAmount: netAmountCalculated,
+            invoiceCode: admission?.invoice?.invoice_code,
+            id: admission?.invoice?.id,
             isLeaf: true
           }
         };
@@ -207,87 +216,12 @@ export const Commissions = () => {
     }
   }
   function exportToPDF(data, mainNode) {
-    console.log("mainNode", mainNode);
-    const table = `
-        <style>
-        table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          margin-top: 25px;
-          font-size: 12px;
-        }
-        th { 
-          background-color: rgb(66, 74, 81); 
-          color: white; 
-          padding: 10px; 
-          text-align: left;
-          font-weight: normal;
-        }
-        td { 
-          padding: 10px 8px; 
-          border-bottom: 1px solid #eee;
-        }
-        </style>
-    
-        <div style="margin-bottom: 20px;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            <tr>
-              <td style="padding: 8px 0;"><strong>Rango de fechas liquidado:</strong></td>
-              <td style="padding: 8px 0;">${formatDate(dateRange[0], true)} - ${formatDate(dateRange[1], true)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0;"><strong>Comisión total:</strong></td>
-              <td style="padding: 8px 0;">$${mainNode.data.comision.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0;"><strong>Retención total:</strong></td>
-              <td style="padding: 8px 0;">$${mainNode.data.retencion.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0;"><strong>Neto a pagar:</strong></td>
-              <td style="padding: 8px 0;">$${mainNode.data.netAmount.toFixed(2)}</td>
-            </tr>
-          </table>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Paciente</th>
-              <th>Número de documento</th>
-              <th>Fecha</th>
-              <th>Producto</th>
-              <th>Monto entidad</th>
-              <th>Monto paciente</th>
-              <th>Monto</th>
-              <th>Base calculo</th>
-              <th>Comisión</th>
-              <th>Retención</th>
-              <th>Neto a pagar</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${data.reduce((acc, item) => acc + `
-              <tr>
-                <td>${item.patient.first_name ?? ""} ${item.patient.middle_name ?? ""} ${item.patient.last_name ?? ""} ${item.patient.second_last_name ?? ""}</td>
-                <td>${item.patient.document_number ?? ""}</td>
-                <td>${formatDate(item.created_at) ?? ""}</td>
-                <td>${item.appointment?.product?.attributes?.name ?? ""}</td>
-                <td>$${item.entity_authorized_amount ?? ""}</td>
-                <td>$${item.invoice?.total_amount ?? ""}</td>
-                <td>$${item.dataChild?.monto ?? ""}</td>
-                <td>$${item.dataChild?.base ?? ""}</td>
-                <td>$${item.dataChild?.comision ?? ""}</td>
-                <td>$${item.dataChild?.retencion ?? ""}</td>
-                <td>$${item.dataChild?.netAmount ?? ""}</td>
-              </tr>
-            `, "")}
-          </tbody>
-        </table>`;
-    const configPDF = {
-      name: "Comisiones"
-    };
-    generatePDFFromHTML(table, company, configPDF);
+    switch (activeTab) {
+      case "tab-commissions":
+        return generateFormatServices(data, mainNode, dateRange, "Impresion");
+      case "tab-orders":
+        return generateFormatOrders(data, mainNode, dateRange, "Impresion");
+    }
   }
   const exportButtonTemplate = node => {
     if (!node.data.isLeaf) {
@@ -356,15 +290,19 @@ export const Commissions = () => {
       return {
         paciente: `${item.patient.first_name ?? " "} ${item.patient.middle_name ?? " "}${item.patient.last_name ?? " "}${item.patient.second_last_name ?? " "}`,
         numero_documento: item.patient.document_number,
-        fecha: item.created_at,
+        fecha: formatDate(item.created_at, true),
         producto: item.appointment.product.attributes.name,
         monto_entidad: item.entity_authorized_amount,
-        monto_paciente: item.invoice.total_amount
+        monto_paciente: item?.invoice?.total_amount ?? 0,
+        invoice_code: item?.invoice?.invoice_code ?? "",
+        id: item?.invoice?.id ?? ""
       };
     });
     return data;
   }
   const amountTemplate = node => formatCurrency(node.data.monto);
+  const invoiceCodeTemplate = node => node.data.invoiceCode;
+  const idTemplate = node => node.data.id;
   const baseTemplate = node => formatCurrency(node.data.base);
   const commissionTemplate = node => formatCurrency(node.data.comision);
   const retentionTemplate = node => formatCurrency(node.data.retencion);
@@ -504,7 +442,7 @@ export const Commissions = () => {
     "aria-controls": "tab-commissions",
     "aria-selected": activeTab === "tab-commissions",
     onClick: () => handleTabChange("tab-commissions", obtenerFiltros())
-  }, "Entidad")), /*#__PURE__*/React.createElement("li", {
+  }, "Servicios")), /*#__PURE__*/React.createElement("li", {
     className: "nav-item"
   }, /*#__PURE__*/React.createElement("a", {
     className: `nav-link ${activeTab === "tab-orders" ? "active" : ""}`,
@@ -547,6 +485,14 @@ export const Commissions = () => {
     header: "Profesional",
     body: profesionalTemplate,
     expander: true
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "Id Factura",
+    body: idTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "invoiceCode",
+    header: "Codigo Factura",
+    body: invoiceCodeTemplate
   }), /*#__PURE__*/React.createElement(Column, {
     field: "monto",
     header: "Monto",
@@ -613,6 +559,14 @@ export const Commissions = () => {
     body: profesionalTemplate,
     expander: true
   }), /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "Id Factura",
+    body: idTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "invoiceCode",
+    header: "Codigo Factura",
+    body: invoiceCodeTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
     field: "monto",
     header: "Monto",
     body: amountTemplate
@@ -632,9 +586,6 @@ export const Commissions = () => {
     field: "netAmount",
     header: "Neto a pagar",
     body: netAmountTemplate
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "entidad",
-    header: "Factura a Entidad"
   }), /*#__PURE__*/React.createElement(Column, {
     field: "exportar",
     header: "Exportar",

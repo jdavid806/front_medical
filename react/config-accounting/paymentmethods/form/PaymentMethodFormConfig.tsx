@@ -21,6 +21,12 @@ const categories = [
   { label: "Anticipo Proveedores", value: "supplier_advance" },
 ];
 
+const TypeMethod = [
+  { label: "Compras", value: "buyy" },
+  { label: "Ventas", value: "sale" },
+
+];
+
 const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
   formId,
   onSubmit,
@@ -93,6 +99,31 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
           render={({ field }) => (
             <>
               <label htmlFor={field.name} className="form-label">
+                Tipo *
+              </label>
+              <Dropdown
+                id={field.name}
+                options={TypeMethod}
+                optionLabel="label"
+                optionValue="value"
+                className={classNames("w-100", {
+                  "p-invalid": errors.category,
+                })}
+                {...field}
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("category")}
+      </div>
+      <div className="mb-3">
+        <Controller
+          name="category"
+          control={control}
+          rules={{ required: "La categoría es requerida" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
                 Categoría *
               </label>
               <Dropdown
@@ -137,7 +168,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
                   );
                   field.onChange(selectedAccount || null);
                 }}
-                 filter
+                filter
                 filterBy="account_name,account_code"
                 showClear
                 placeholder="Seleccione una cuenta"
@@ -175,7 +206,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
             label="Cancelar"
             className="btn btn-phoenix-secondary"
             onClick={onCancel}
-            style={{padding:"0 20px", width:"200px", height:"50px", borderRadius:"0px" }}
+            style={{ padding: "0 20px", width: "200px", height: "50px", borderRadius: "0px" }}
             type="button"
             disabled={loading}
 

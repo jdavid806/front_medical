@@ -45,6 +45,13 @@ export class BillingService extends BaseApiService {
       data
     );
   }
+
+  async productivityByDoctor(data) {
+    return await this.httpClient.post(
+      `medical/admissions/billing/report/productivity`,
+      data
+    );
+  }
 }
 
 export default BillingService;

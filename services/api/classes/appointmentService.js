@@ -68,6 +68,12 @@ export class AppointmentService extends OneToManyService {
       cleanJsonObject(data)
     );
   }
+
+    async getProductsToBeInvoiced(appointmentId) {
+    return await this.httpClient.get(
+      `medical/appointments/products/to-be-invoiced/${appointmentId}`
+    );
+  }
 }
 
 export default AppointmentService;

@@ -20,8 +20,8 @@ interface Product {
     attention_type: string;
     sale_price: string;
     copayment: string;
-    tax_charge_id: string;
-    exam_type_id: string;
+    tax_charge_id: number | null;
+    exam_type_id: number | null;
     purchase_price: number;
 }
 

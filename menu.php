@@ -371,6 +371,7 @@ $_SESSION["ID"] = 1;
       "primereact/paginator":"https://esm.sh/primereact/paginator?dev",
       "primereact/steps":"https://esm.sh/primereact/steps?dev",
       "primereact/breadcrumb": "https://esm.sh/primereact/breadcrumb?dev",
+      "primereact/megamenu" : "https://esm.sh/primereact/megamenu?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
       "react-dom/server": "https://esm.sh/react-dom/server?dev"

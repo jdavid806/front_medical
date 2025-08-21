@@ -72,10 +72,12 @@ export const InvoicesByEntity = () => {
     }
   }, [reportData]);
 
-  const loadData = async (filterParams = {
-    end_date: formatDate(today),
-    start_date: formatDate(fiveDaysAgo)
-  }) => {
+  const loadData = async (
+    filterParams = {
+      end_date: formatDate(today),
+      start_date: formatDate(fiveDaysAgo),
+    }
+  ) => {
     try {
       setTableLoading(true);
       const data = await billingService.getBillingReportByEntity(filterParams);
@@ -152,9 +154,12 @@ export const InvoicesByEntity = () => {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
       };
-      if (selectedPatients && selectedPatients.length > 0) filterParams.patient_ids = selectedPatients;
-      if (selectedProcedures && selectedProcedures.length > 0) filterParams.product_ids = selectedProcedures;
-      if (selectedSpecialists && selectedSpecialists.length > 0) filterParams.user_ids = selectedSpecialists;
+      if (selectedPatients && selectedPatients.length > 0)
+        filterParams.patient_ids = selectedPatients;
+      if (selectedProcedures && selectedProcedures.length > 0)
+        filterParams.product_ids = selectedProcedures;
+      if (selectedSpecialists && selectedSpecialists.length > 0)
+        filterParams.user_ids = selectedSpecialists;
       if (selectedEntity) filterParams.entity_id = selectedEntity;
 
       await loadData(filterParams);
@@ -229,6 +234,8 @@ export const InvoicesByEntity = () => {
           numeroAutorizacion: item.admission.authorization_number || "-",
           montoPagado: montoPagado,
           fechaVencimiento: item.invoice.due_date || "-",
+          invoiceCode: item.invoice.invoice_code || "-",
+          id: item.invoice.id || "-",
         },
       });
 
@@ -315,6 +322,8 @@ export const InvoicesByEntity = () => {
       Paciente: child.data.paciente,
       Producto: child.data.producto,
       "Número Autorización": child.data.numeroAutorizacion,
+      "codigo de factura": child.data.invoiceCode,
+      "id": child.data.id,
       "Monto Pagado": child.data.montoPagado,
       "Fecha Vencimiento": child.data.fechaVencimiento,
     }));
@@ -354,22 +363,30 @@ export const InvoicesByEntity = () => {
           <th>Paciente</th>
           <th>Producto</th>
           <th>Número Autorización</th>
+          <th>codigo de factura</th>
+          <th>id</th>
           <th>Monto Pagado</th>
           <th>Fecha Vencimiento</th>
         </tr>
       </thead>
       <tbody>
         ${node.children.reduce(
-          (acc: string, child: any) => acc + `
+          (acc: string, child: any) =>
+            acc +
+            `
           <tr>
             <td>${child.data.facturador}</td>
             <td>${child.data.paciente}</td>
             <td>${child.data.producto}</td>
             <td>${child.data.numeroAutorizacion}</td>
+            <td>${child.data.invoiceCode}</td>
+            <td>${child.data.id}</td>
             <td>${child.data.montoPagado}</td>
             <td>${child.data.fechaVencimiento}</td>
           </tr>
-        `, '')}
+        `,
+          ""
+        )}
       </tbody>
     </table>`;
     const configPDF = {
@@ -631,6 +648,16 @@ export const InvoicesByEntity = () => {
                               field="numeroAutorizacion"
                               header="Número autorización"
                               style={{ minWidth: "200px" }}
+                            ></Column>
+                            <Column
+                              field="invoiceCode"
+                              header="Codigo de factura"
+                              style={{ minWidth: "150px" }}
+                            ></Column>
+                            <Column
+                              field="id"
+                              header="Id"
+                              style={{ minWidth: "150px" }}
                             ></Column>
                             <Column
                               field="montoPagado"

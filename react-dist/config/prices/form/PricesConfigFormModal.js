@@ -5,17 +5,20 @@ const PricesConfigFormModal = ({
   show,
   handleSubmit,
   initialData,
-  onHide
+  onHide,
+  entitiesData
 }) => {
   const formId = 'createUserAvailability';
   return /*#__PURE__*/React.createElement(CustomModal, {
     show: show,
     onHide: onHide,
-    title: "Configurar Precios"
+    title: initialData ? 'Editar Precio' : 'Nuevo Precio'
   }, /*#__PURE__*/React.createElement(PricesConfigForm, {
     formId: formId,
     onHandleSubmit: handleSubmit,
-    initialData: initialData
+    initialData: initialData,
+    onCancel: onHide,
+    entitiesData: entitiesData
   }));
 };
 export default PricesConfigFormModal;

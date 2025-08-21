@@ -7,6 +7,8 @@ import { CustomFormModal } from '../components/CustomFormModal';
 import { MakeRequestForm, MakeRequestFormInputs } from '../general-request/components/MakeRequestForm';
 import { SwalManager } from '../../services/alertManagerImported';
 
+
+
 export const AdmissionApp: React.FC = () => {
 
     const { admissions, fetchAdmissions, loading, totalRecords } = useAdmissions();

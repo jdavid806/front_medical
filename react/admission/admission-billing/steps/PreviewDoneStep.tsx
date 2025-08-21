@@ -14,23 +14,32 @@ interface PreviewAndDoneStepProps {
   prevStep: () => void;
   onHide: () => void;
   onPrint: () => void;
+  onSubmit: () => Promise<void>;
+  isSubmitting: boolean;
 }
 
-const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({ 
-  formData, 
-  prevStep, 
+const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
+  formData,
+  prevStep,
   onHide,
-  onPrint
+  onPrint,
+  onSubmit,
+  isSubmitting
 }) => {
   const [isDone, setIsDone] = useState(false);
-  
+
   const total = calculateTotal(formData.products);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const balance = total - paid;
 
-  const handleFinish = () => {
-    setIsDone(true);
+  const handleFinish = async () => {
+    try {
+      await onSubmit();
+      setIsDone(true);
+    } catch (error) {
+      console.error('Error finishing invoice:', error);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -41,42 +50,16 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
     }).format(value);
   };
 
-  if (isDone) {
+  const paymentMethodTemplate = (rowData: any) => {
+    const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
+
     return (
-      <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
-        <h2 className="mb-3 fw-bold">¡Factura Generada Exitosamente!</h2>
-        <p className="text-lg text-muted mb-5">La transacción ha sido completada y guardada en el sistema</p>
-        
-        <div className="d-flex justify-content-center gap-3">
-          <Button 
-            label="Imprimir Factura" 
-            icon="pi pi-print mr-2" 
-            className="btn btn-outline-primary btn-lg"
-            onClick={onPrint}
-          />
-          <Button 
-            label="Volver al Inicio" 
-            icon="pi pi-home mr-2" 
-            className="btn btn-primary btn-lg"
-            onClick={onHide}
-          />
-        </div>
+      <div className="d-flex align-items-center">
+        <i className={`pi ${rowData.method === 'CASH' ? 'pi-money-bill' : 'pi-credit-card'} mr-2`}></i>
+        <span>{methodLabel}</span>
       </div>
     );
-  }
-
-  const paymentMethodTemplate = (rowData: any) => {
-  const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
-  
-  return (
-    <div className="d-flex align-items-center">
-      <i className={`pi ${rowData.method === 'CASH' ? 'pi-money-bill' : 'pi-credit-card'} mr-2`}></i>
-      <span>{methodLabel}</span>
-    </div>
-  );
-};
-
+  };
 
   const priceBodyTemplate = (rowData: any) => {
     return <span className="fw-bold">{formatCurrency(rowData.price)}</span>;
@@ -95,6 +78,30 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
     return <span className="font-bold">{formatCurrency(rowData.amount)}</span>;
   };
 
+  if (isDone) {
+    return (
+      <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
+        <h2 className="mb-3 fw-bold">¡Factura Generada Exitosamente!</h2>
+        <p className="text-lg text-muted mb-5">La transacción ha sido completada y guardada en el sistema</p>
+
+        <div className="d-flex justify-content-center gap-3">
+          <Button
+            label="Imprimir Factura"
+            icon="pi pi-print mr-2"
+            className="btn btn-outline-primary btn-lg"
+            onClick={onPrint}
+          />
+          <Button
+            label="Volver al Inicio"
+            icon="pi pi-home mr-2"
+            className="btn btn-primary btn-lg"
+            onClick={onHide}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid">
@@ -136,8 +143,8 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
 
       <Panel header="Detalles de la Factura" toggleable className="mb-4 shadow-sm">
         <div className="mb-4">
-          <DataTable 
-            value={formData.products} 
+          <DataTable
+            value={formData.products}
             className="p-datatable-sm"
             scrollable
             scrollHeight="300px"
@@ -161,8 +168,8 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
         <div className="row">
           <div className="col-lg-6 mb-4 mb-lg-0">
             <Panel header="Métodos de Pago" toggleable>
-              <DataTable 
-                value={formData.payments} 
+              <DataTable
+                value={formData.payments}
                 className="p-datatable-sm"
                 stripedRows
                 size="small"
@@ -172,7 +179,7 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
               </DataTable>
             </Panel>
           </div>
-          
+
           <div className="col-lg-6">
             <Panel header="Resumen de Pagos" toggleable>
               <div className="p-3">
@@ -208,17 +215,18 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
       </Panel>
 
       <div className="d-flex justify-content-center gap-3 mt-5 mb-4">
-        <Button 
-          label="Imprimir Factura" 
+        <Button
+          label="Imprimir Factura"
           icon={<i className="fas fa-file-pdf"></i>}
           className="btn btn-primary btn-lg px-4"
           onClick={onPrint}
         />
-        <Button 
-          label="Guardar Factura" 
+        <Button
+          label="Guardar Factura"
           icon={<i className="fa fa-cart-plus"></i>}
           className="btn btn-primary btn-lg px-4"
           onClick={handleFinish}
+          disabled={isSubmitting}
         />
       </div>
     </div>

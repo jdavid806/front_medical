@@ -16,6 +16,7 @@ include "../../header.php";
     <div class="container-small">
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="homeContabilidad">Configuracion</a></li>
                 <li class="breadcrumb-item active" onclick="location.reload()">Precios</li>
             </ol>
@@ -23,7 +24,6 @@ include "../../header.php";
         <div class="main-content">
 
             <div class="component-container">
-                <h2>Prueba precios</h2>
                 <div id="preciosConfiguracion"></div>
             </div>
         </div>
@@ -32,7 +32,9 @@ include "../../header.php";
 <script type="module">
     import React from "react"
     import ReactDOMClient from "react-dom/client"
-    import { PricesConfig } from './react-dist/config/prices/PricesConfig.js';
+    import {
+        PricesConfig
+    } from './react-dist/config/prices/PricesConfig.js';
 
     ReactDOMClient.createRoot(document.getElementById('preciosConfiguracion')).render(
         React.createElement(PricesConfig)

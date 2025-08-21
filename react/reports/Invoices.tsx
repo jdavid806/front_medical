@@ -8,6 +8,10 @@ import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
+import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCashFormat";
+import { useProceduresCountFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCountFormat";
+import { useEntitiesFormat } from "../documents-generation/hooks/reports-medical/invoices/useEntitiesFormat";
+import { usePaymentsFormat } from "../documents-generation/hooks/reports-medical/invoices/usePaymentsFormat";
 
 // Import your services
 import {
@@ -72,6 +76,10 @@ export const InvoicesReport = () => {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const { company, setCompany, fetchCompany } = useCompany();
+  const { generateFormatProceduresCash } = useProceduresCashFormat();
+  const { generateFormatProceduresCount } = useProceduresCountFormat();
+  const { generateFormatEntities } = useEntitiesFormat();
+  const { generateFormatPayments } = usePaymentsFormat();
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -126,7 +134,9 @@ export const InvoicesReport = () => {
       currency: "DOP",
       minimumFractionDigits: 2,
     }).format(value);
-    return formatted;
+
+    // Reemplazar "RD$" por "$"
+    return formatted.replace("RD$", "$");
   };
 
   const loadProcedures = async () => {
@@ -228,72 +238,25 @@ export const InvoicesReport = () => {
 
   function exportToProceduresPDF(tab = "") {
     let dataExport: any = [];
-    let namePDF = "";
 
     switch (tab) {
       case "procedures-tab":
         dataExport = generateProceduresTable(true);
-        namePDF = "Procedimientos";
-        break;
+        return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
+      case "procedures-count-tab":
+        dataExport = generateProceduresCountTable(true);
+        return generateFormatProceduresCount(
+          dataExport,
+          dateRange,
+          "Impresion"
+        );
       case "entities-tab":
         dataExport = generateEntitiesTable(true);
-        namePDF = "Entidades";
-        break;
+        return generateFormatEntities(dataExport, dateRange, "Impresion");
       case "payments-methods-tab":
         dataExport = generatePaymentsTable(true);
-        namePDF = "Metodos_de_pago";
-        break;
+        return generateFormatPayments(dataExport, dateRange, "Impresion");
     }
-
-    const headers = dataExport[0];
-    const table = `
-        <style>
-        table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          margin-top: 25px;
-          font-size: 12px;
-        }
-        th { 
-          background-color: rgb(66, 74, 81); 
-          color: white; 
-          padding: 10px; 
-          text-align: left;
-          font-weight: normal;
-        }
-        td { 
-          padding: 10px 8px; 
-          border-bottom: 1px solid #eee;
-        }
-        </style>
-    
-        <table>
-          <thead>
-            <tr>
-              ${Object.keys(headers)
-                .map((header) => `<th>${header}</th>`)
-                .join("")}
-            </tr>
-          </thead>
-          <tbody>
-            ${dataExport.reduce(
-              (acc: string, child: any) =>
-                acc +
-                `
-              <tr>
-                ${Object.keys(headers)
-                  .map((header) => `<td>${child[header]}</td>`)
-                  .join("")}
-              </tr>
-            `,
-              ""
-            )}
-          </tbody>
-        </table>`;
-    const configPDF = {
-      name: namePDF,
-    };
-    generatePDFFromHTML(table, company, configPDF);
   }
 
   const handleExportEntities = async () => {
@@ -443,7 +406,7 @@ export const InvoicesReport = () => {
     );
 
     if (returnData) {
-      return [...tableRows, footerData];
+      return reportData;
     }
 
     // Crear columnas para la tabla
@@ -480,12 +443,14 @@ export const InvoicesReport = () => {
                   rowData.isTotal || rowData.isFooter ? "1.1em" : "inherit",
               }}
             >
-              {rowData[`${user}_count`] || "-"}
+              {rowData[`${user}_count`]
+                ? formatCurrency(rowData[`${user}_count`])
+                : "-"}
             </span>
           ),
           footer: () => (
             <span style={{ fontWeight: "bold" }}>
-              {footerData[`${user}_count`]}
+              {formatCurrency(footerData[`${user}_count`])}
             </span>
           ),
           style: createColumnStyle("right"),
@@ -682,7 +647,6 @@ export const InvoicesReport = () => {
       let rowTotal = 0;
 
       users.forEach((user) => {
-
         // Conteo para Particular
         const countParticular = reportData
           .filter((item: any) => item.billing_user === user)
@@ -704,7 +668,7 @@ export const InvoicesReport = () => {
         row[`${user}_particular`] = countParticular;
         row[`${user}_autorizado`] = countAutorizado;
 
-        rowTotal +=  countParticular + countAutorizado;
+        rowTotal += countParticular + countAutorizado;
       });
 
       row["total"] = rowTotal;
@@ -735,7 +699,7 @@ export const InvoicesReport = () => {
     );
 
     if (returnData) {
-      return [...tableRows, footerData];
+      return reportData;
     }
 
     // Crear columnas para la tabla
@@ -915,488 +879,510 @@ export const InvoicesReport = () => {
   };
 
   const generateEntitiesTable = (isReturnData = false) => {
-  if (
-    !reportData ||
-    reportData.length === 0 ||
-    !reportData.some((item) => item.insurance)
-  ) {
-    return (
-      <div
-        className="flex justify-content-center align-items-center"
-        style={{ height: "200px" }}
-      >
-        <span>No hay datos disponibles</span>
-      </div>
-    );
-  }
-
-  const filteredData = reportData.filter((item: any) => item.insurance);
-  const entities = new Set();
-  const billingUsers = new Set();
-  
-  // Objeto para agrupar por tipo (copago o autorizado)
-  const groupedData: Record<string, Record<string, {copago: number, autorizado: number}>> = {};
-  const totals: Record<string, {copago: number, autorizado: number}> = {};
-
-  filteredData.forEach((entry) => {
-    const { billing_user, insurance, billed_procedure, sub_type }: any = entry;
-    const insuranceName = insurance?.name;
-
-    entities.add(insuranceName);
-    billingUsers.add(billing_user);
-
-    if (!groupedData[insuranceName]) {
-      groupedData[insuranceName] = {};
-    }
-
-    if (!groupedData[insuranceName][billing_user]) {
-      groupedData[insuranceName][billing_user] = { copago: 0, autorizado: 0 };
-    }
-
-    if (!totals[billing_user]) {
-      totals[billing_user] = { copago: 0, autorizado: 0 };
-    }
-
-    billed_procedure?.forEach((proc: any) => {
-      const amount = parseFloat(proc.amount);
-      
-      if (sub_type === "entity") {
-        groupedData[insuranceName][billing_user].copago += amount;
-        totals[billing_user].copago += amount;
-      } else {
-        groupedData[insuranceName][billing_user].autorizado += amount;
-        totals[billing_user].autorizado += amount;
-      }
-    });
-  });
-
-  const tableData = Array.from(entities).map((entity: any) => {
-    const row: Record<string, any> = { entity };
-    let rowTotalCopago = 0;
-    let rowTotalAutorizado = 0;
-
-    Array.from(billingUsers).forEach((user: any) => {
-      row[`${user}_copago`] = groupedData[entity][user]?.copago || 0;
-      row[`${user}_autorizado`] = groupedData[entity][user]?.autorizado || 0;
-      
-      rowTotalCopago += row[`${user}_copago`];
-      rowTotalAutorizado += row[`${user}_autorizado`];
-    });
-
-    row["total_copago"] = rowTotalCopago;
-    row["total_autorizado"] = rowTotalAutorizado;
-    row["total_general"] = rowTotalCopago + rowTotalAutorizado;
-    return row;
-  });
-
-  // Crear columnas para la tabla
-  const entityColumns: TableColumn[] = [
-    {
-      field: "entity",
-      header: "Entidad",
-      style: createColumnStyle("left", "200px"),
-      body: (rowData: any) => (
-        <span
-          style={{
-            fontWeight: rowData.isTotal ? "bold" : "normal",
-            fontSize: rowData.isTotal ? "1.1em" : "inherit",
-          }}
-        >
-          {rowData.entity}
-        </span>
-      ),
-      footer: "TOTALES",
-      footerStyle: { fontWeight: "bold", textAlign: "left" },
-    },
-    ...Array.from(billingUsers).flatMap((user: any) => [
-      {
-        field: `${user}_copago`,
-        header: "Copago",
-        body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData[`${user}_copago`])}
-          </span>
-        ),
-        footer: () => (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user]?.copago || 0)}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-        footerStyle: { fontWeight: "bold", textAlign: "right" },
-      },
-      {
-        field: `${user}_autorizado`,
-        header: "Monto autorizado",
-        body: (rowData: any) => (
-          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-            {formatCurrency(rowData[`${user}_autorizado`])}
-          </span>
-        ),
-        footer: () => (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user].autorizado)}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-        footerStyle: { fontWeight: "bold", textAlign: "right" },
-      },
-    ]),
-    {
-      field: "total_general",
-      header: "Total General",
-      body: (rowData: any) => (
-        <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
-          {formatCurrency(rowData.total_general)}
-        </span>
-      ),
-      footer: () => {
-        const grandTotal = Object.values(totals).reduce(
-          (acc, { copago, autorizado }) => acc + copago + autorizado,
-          0
-        );
-        return (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(grandTotal)}
-          </span>
-        );
-      },
-      style: createColumnStyle("right"),
-      headerStyle: createColumnStyle("right"),
-      footerStyle: { fontWeight: "bold", textAlign: "right" },
-    },
-  ];
-
-  // Crear grupo de encabezados
-  const headerGroup = (
-    <ColumnGroup>
-      <Row>
-        <Column header="Entidad" rowSpan={2} />
-        {Array.from(billingUsers).map((user) => (
-          <Column key={user} header={user} colSpan={2} />
-        ))}
-        <Column header="Total General" rowSpan={2} />
-      </Row>
-      <Row>
-        {Array.from(billingUsers).flatMap((user) => [
-          <Column key={`${user}_copago`} header="Copago" />,
-          <Column key={`${user}_autorizado`} header="Monto autorizado" />,
-        ])}
-      </Row>
-    </ColumnGroup>
-  );
-
-  return (
-    <div className="card">
-      {tableLoading ? (
+    if (
+      !reportData ||
+      reportData.length === 0 ||
+      !reportData.some((item) => item.insurance)
+    ) {
+      return (
         <div
           className="flex justify-content-center align-items-center"
           style={{ height: "200px" }}
         >
-          <ProgressSpinner />
+          <span>No hay datos disponibles</span>
         </div>
-      ) : (
-        <DataTable
-          headerColumnGroup={headerGroup}
-          value={tableData}
-          loading={tableLoading}
-          scrollable
-          scrollHeight="flex"
-          showGridlines
-          stripedRows
-          size="small"
-          tableStyle={{ minWidth: "100%" }}
-          className="p-datatable-sm"
-          paginator
-          rows={rows}
-          first={first}
-          onPage={onPageChange}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-          footerColumnGroup={
-            <ColumnGroup>
-              <Row>
-                {entityColumns.map((col, index) => (
-                  <Column
-                    key={`footer-${index}`}
-                    footer={col.footer}
-                    footerStyle={col.footerStyle}
-                  />
-                ))}
-              </Row>
-            </ColumnGroup>
-          }
-        >
-          {entityColumns.map((col, i) => (
-            <Column
-              key={i}
-              field={col.field}
-              header={col.header}
-              body={col.body}
-              style={col.style}
-              headerStyle={col.headerStyle}
-              footer={col.footer}
-              footerStyle={col.footerStyle}
-            />
-          ))}
-        </DataTable>
-      )}
-    </div>
-  );
-};
+      );
+    }
 
-  const generatePaymentsTable = (isReturnData = false) => {
-  if (
-    !reportData ||
-    reportData.length === 0 ||
-    !reportData.some(
-      (item) => item.payment_methods && item.payment_methods.length > 0
-    )
-  ) {
-    return (
-      <div
-        className="flex justify-content-center align-items-center"
-        style={{ height: "200px" }}
-      >
-        <span>No hay datos disponibles</span>
-      </div>
-    );
-  }
+    if (isReturnData) {
+      return reportData;
+    }
 
-  const paymentMethods = new Set();
-  const billingUsers = new Set();
-  
-  // Objeto para agrupar por tipo (copago, particular o autorizado)
-  const groupedData: Record<string, Record<string, {copago: number, particular: number, autorizado: number}>> = {};
-  const totals: Record<string, {copago: number, particular: number, autorizado: number}> = {};
+    const filteredData = reportData.filter((item: any) => item.insurance);
+    const entities = new Set();
+    const billingUsers = new Set();
 
-  reportData.forEach((entry) => {
-    const { billing_user, payment_methods, sub_type }: any = entry;
-    billingUsers.add(billing_user);
+    // Objeto para agrupar por tipo (copago o autorizado)
+    const groupedData: Record<
+      string,
+      Record<string, { copago: number; autorizado: number }>
+    > = {};
+    const totals: Record<string, { copago: number; autorizado: number }> = {};
 
-    payment_methods?.forEach((pm: any) => {
-      const method = pm.payment_method.method;
-      const amount = parseFloat(pm.amount);
+    filteredData.forEach((entry) => {
+      const { billing_user, insurance, billed_procedure, sub_type }: any =
+        entry;
+      const insuranceName = insurance?.name;
 
-      paymentMethods.add(method);
+      entities.add(insuranceName);
+      billingUsers.add(billing_user);
 
-      if (!groupedData[method]) {
-        groupedData[method] = {};
+      if (!groupedData[insuranceName]) {
+        groupedData[insuranceName] = {};
       }
 
-      if (!groupedData[method][billing_user]) {
-        groupedData[method][billing_user] = { copago: 0, particular: 0, autorizado: 0 };
+      if (!groupedData[insuranceName][billing_user]) {
+        groupedData[insuranceName][billing_user] = { copago: 0, autorizado: 0 };
       }
 
       if (!totals[billing_user]) {
-        totals[billing_user] = { copago: 0, particular: 0, autorizado: 0 };
+        totals[billing_user] = { copago: 0, autorizado: 0 };
       }
 
-      // Clasificar por tipo de pago
-      if (sub_type === "entity") {
-        groupedData[method][billing_user].copago += amount;
-        totals[billing_user].copago += amount;
-      } else if (sub_type === "public") {
-        groupedData[method][billing_user].particular += amount;
-        totals[billing_user].particular += amount;
-      } else {
-        groupedData[method][billing_user].autorizado += amount;
-        totals[billing_user].autorizado += amount;
-      }
-    });
-  });
+      billed_procedure?.forEach((proc: any) => {
+        const amount = parseFloat(proc.amount);
 
-  const tableData = Array.from(paymentMethods).map((method: any) => {
-    const row: Record<string, any> = { method };
-    let rowTotal = 0;
-
-    Array.from(billingUsers).forEach((user: any) => {
-      row[`${user}_copago`] = groupedData[method][user]?.copago || 0;
-      row[`${user}_particular`] = groupedData[method][user].particular || 0;
-      row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
-      
-      rowTotal += row[`${user}_copago`] + row[`${user}_particular`] + row[`${user}_autorizado`];
+        if (sub_type === "entity") {
+          groupedData[insuranceName][billing_user].copago += amount;
+          totals[billing_user].copago += amount;
+        } else {
+          groupedData[insuranceName][billing_user].autorizado += amount;
+          totals[billing_user].autorizado += amount;
+        }
+      });
     });
 
-    row["total"] = rowTotal;
-    return row;
-  });
+    const tableData = Array.from(entities).map((entity: any) => {
+      const row: Record<string, any> = { entity };
+      let rowTotalCopago = 0;
+      let rowTotalAutorizado = 0;
 
-  // Calcular total general
-  const grandTotal = tableData.reduce((sum, row) => sum + (row.total || 0), 0);
+      Array.from(billingUsers).forEach((user: any) => {
+        row[`${user}_copago`] = groupedData[entity][user]?.copago || 0;
+        row[`${user}_autorizado`] = groupedData[entity][user]?.autorizado || 0;
 
-  if (isReturnData) {
-    return tableData;
-  }
+        rowTotalCopago += row[`${user}_copago`];
+        rowTotalAutorizado += row[`${user}_autorizado`];
+      });
 
-  // Crear columnas para la tabla
-  const paymentColumns: TableColumn[] = [
-    {
-      field: "method",
-      header: "Método de Pago",
-      style: createColumnStyle("left", "200px"),
-      body: (rowData: any) => (
-        <span style={{ fontWeight: "normal" }}>
-          {rowData.method}
-        </span>
-      ),
-      footer: "TOTALES",
-      footerStyle: { fontWeight: "bold", textAlign: "left" },
-    },
-    ...Array.from(billingUsers).flatMap((user: any) => [
+      row["total_copago"] = rowTotalCopago;
+      row["total_autorizado"] = rowTotalAutorizado;
+      row["total_general"] = rowTotalCopago + rowTotalAutorizado;
+      return row;
+    });
+
+    // Crear columnas para la tabla
+    const entityColumns: TableColumn[] = [
       {
-        field: `${user}_copago`,
-        header: "Copago",
+        field: "entity",
+        header: "Entidad",
+        style: createColumnStyle("left", "200px"),
         body: (rowData: any) => (
-          <span style={{ fontWeight: "normal" }}>
-            {formatCurrency(rowData[`${user}_copago`])}
+          <span
+            style={{
+              fontWeight: rowData.isTotal ? "bold" : "normal",
+              fontSize: rowData.isTotal ? "1.1em" : "inherit",
+            }}
+          >
+            {rowData.entity}
           </span>
         ),
-        footer: () => (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user]?.copago || 0)}
+        footer: "TOTALES",
+        footerStyle: { fontWeight: "bold", textAlign: "left" },
+      },
+      ...Array.from(billingUsers).flatMap((user: any) => [
+        {
+          field: `${user}_copago`,
+          header: "Copago",
+          body: (rowData: any) => (
+            <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+              {formatCurrency(rowData[`${user}_copago`])}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(totals[user]?.copago || 0)}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+        {
+          field: `${user}_autorizado`,
+          header: "Monto autorizado",
+          body: (rowData: any) => (
+            <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+              {formatCurrency(rowData[`${user}_autorizado`])}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(totals[user].autorizado)}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+      ]),
+      {
+        field: "total_general",
+        header: "Total General",
+        body: (rowData: any) => (
+          <span style={{ fontWeight: rowData.isTotal ? "bold" : "normal" }}>
+            {formatCurrency(rowData.total_general)}
           </span>
         ),
+        footer: () => {
+          const grandTotal = Object.values(totals).reduce(
+            (acc, { copago, autorizado }) => acc + copago + autorizado,
+            0
+          );
+          return (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(grandTotal)}
+            </span>
+          );
+        },
         style: createColumnStyle("right"),
         headerStyle: createColumnStyle("right"),
         footerStyle: { fontWeight: "bold", textAlign: "right" },
       },
-      {
-        field: `${user}_particular`,
-        header: "Particular",
-        body: (rowData: any) => (
-          <span style={{ fontWeight: "normal" }}>
-            {formatCurrency(rowData[`${user}_particular`])}
-          </span>
-        ),
-        footer: () => (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user].particular)}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-        footerStyle: { fontWeight: "bold", textAlign: "right" },
-      },
-      {
-        field: `${user}_autorizado`,
-        header: "Monto autorizado",
-        body: (rowData: any) => (
-          <span style={{ fontWeight: "normal" }}>
-            {formatCurrency(rowData[`${user}_autorizado`])}
-          </span>
-        ),
-        footer: () => (
-          <span style={{ fontWeight: "bold" }}>
-            {formatCurrency(totals[user].autorizado)}
-          </span>
-        ),
-        style: createColumnStyle("right"),
-        headerStyle: createColumnStyle("right"),
-        footerStyle: { fontWeight: "bold", textAlign: "right" },
-      },
-    ]),
-    {
-      field: "total",
-      header: "Total General",
-      body: (rowData: any) => (
-        <span style={{ fontWeight: "normal" }}>
-          {formatCurrency(rowData.total)}
-        </span>
-      ),
-      footer: () => (
-        <span style={{ fontWeight: "bold" }}>
-          {formatCurrency(grandTotal)}
-        </span>
-      ),
-      style: createColumnStyle("right"),
-      headerStyle: createColumnStyle("right"),
-      footerStyle: { fontWeight: "bold", textAlign: "right" },
-    },
-  ];
+    ];
 
-  // Crear grupo de encabezados
-  const headerGroup = (
-    <ColumnGroup>
-      <Row>
-        <Column header="Método de Pago" rowSpan={2} />
-        {Array.from(billingUsers).map((user) => (
-          <Column key={user} header={user} colSpan={3} />
-        ))}
-        <Column header="Total General" rowSpan={2} />
-      </Row>
-      <Row>
-        {Array.from(billingUsers).flatMap((user) => [
-          <Column key={`${user}_copago`} header="Copago" />,
-          <Column key={`${user}_particular`} header="Particular" />,
-          <Column key={`${user}_autorizado`} header="Monto autorizado" />,
-        ])}
-      </Row>
-    </ColumnGroup>
-  );
+    // Crear grupo de encabezados
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Entidad" rowSpan={2} />
+          {Array.from(billingUsers).map((user) => (
+            <Column key={user} header={user} colSpan={2} />
+          ))}
+          <Column header="Total General" rowSpan={2} />
+        </Row>
+        <Row>
+          {Array.from(billingUsers).flatMap((user) => [
+            <Column key={`${user}_copago`} header="Copago" />,
+            <Column key={`${user}_autorizado`} header="Monto autorizado" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
 
-  return (
-    <div className="card">
-      {tableLoading ? (
+    return (
+      <div className="card">
+        {tableLoading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{ height: "200px" }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <DataTable
+            headerColumnGroup={headerGroup}
+            value={tableData}
+            loading={tableLoading}
+            scrollable
+            scrollHeight="flex"
+            showGridlines
+            stripedRows
+            size="small"
+            tableStyle={{ minWidth: "100%" }}
+            className="p-datatable-sm"
+            paginator
+            rows={rows}
+            first={first}
+            onPage={onPageChange}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            footerColumnGroup={
+              <ColumnGroup>
+                <Row>
+                  {entityColumns.map((col, index) => (
+                    <Column
+                      key={`footer-${index}`}
+                      footer={col.footer}
+                      footerStyle={col.footerStyle}
+                    />
+                  ))}
+                </Row>
+              </ColumnGroup>
+            }
+          >
+            {entityColumns.map((col, i) => (
+              <Column
+                key={i}
+                field={col.field}
+                header={col.header}
+                body={col.body}
+                style={col.style}
+                headerStyle={col.headerStyle}
+                footer={col.footer}
+                footerStyle={col.footerStyle}
+              />
+            ))}
+          </DataTable>
+        )}
+      </div>
+    );
+  };
+
+  const generatePaymentsTable = (isReturnData = false) => {
+    if (
+      !reportData ||
+      reportData.length === 0 ||
+      !reportData.some(
+        (item) => item.payment_methods && item.payment_methods.length > 0
+      )
+    ) {
+      return (
         <div
           className="flex justify-content-center align-items-center"
           style={{ height: "200px" }}
         >
-          <ProgressSpinner />
+          <span>No hay datos disponibles</span>
         </div>
-      ) : (
-        <DataTable
-          headerColumnGroup={headerGroup}
-          value={tableData}
-          loading={tableLoading}
-          scrollable
-          scrollHeight="flex"
-          showGridlines
-          stripedRows
-          size="small"
-          tableStyle={{ minWidth: "100%" }}
-          className="p-datatable-sm"
-          paginator
-          rows={rows}
-          first={first}
-          onPage={onPageChange}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-          footerColumnGroup={
-            <ColumnGroup>
-              <Row>
-                {paymentColumns.map((col, index) => (
-                  <Column
-                    key={`footer-${index}`}
-                    footer={col.footer}
-                    footerStyle={col.footerStyle}
-                  />
-                ))}
-              </Row>
-            </ColumnGroup>
-          }
-        >
-          {paymentColumns.map((col, i) => (
-            <Column
-              key={i}
-              field={col.field}
-              header={col.header}
-              body={col.body}
-              style={col.style}
-              headerStyle={col.headerStyle}
-              footer={col.footer}
-              footerStyle={col.footerStyle}
-            />
+      );
+    }
+
+    const paymentMethods = new Set();
+    const billingUsers = new Set();
+
+    // Objeto para agrupar por tipo (copago, particular o autorizado)
+    const groupedData: Record<
+      string,
+      Record<string, { copago: number; particular: number; autorizado: number }>
+    > = {};
+    const totals: Record<
+      string,
+      { copago: number; particular: number; autorizado: number }
+    > = {};
+
+    reportData.forEach((entry) => {
+      const { billing_user, payment_methods, sub_type }: any = entry;
+      billingUsers.add(billing_user);
+
+      payment_methods?.forEach((pm: any) => {
+        const method = pm.payment_method.method;
+        const amount = parseFloat(pm.amount);
+
+        paymentMethods.add(method);
+
+        if (!groupedData[method]) {
+          groupedData[method] = {};
+        }
+
+        if (!groupedData[method][billing_user]) {
+          groupedData[method][billing_user] = {
+            copago: 0,
+            particular: 0,
+            autorizado: 0,
+          };
+        }
+
+        if (!totals[billing_user]) {
+          totals[billing_user] = { copago: 0, particular: 0, autorizado: 0 };
+        }
+
+        // Clasificar por tipo de pago
+        if (sub_type === "entity") {
+          groupedData[method][billing_user].copago += amount;
+          totals[billing_user].copago += amount;
+        } else if (sub_type === "public") {
+          groupedData[method][billing_user].particular += amount;
+          totals[billing_user].particular += amount;
+        } else {
+          groupedData[method][billing_user].autorizado += amount;
+          totals[billing_user].autorizado += amount;
+        }
+      });
+    });
+
+    const tableData = Array.from(paymentMethods).map((method: any) => {
+      const row: Record<string, any> = { method };
+      let rowTotal = 0;
+
+      Array.from(billingUsers).forEach((user: any) => {
+        row[`${user}_copago`] = groupedData[method][user]?.copago || 0;
+        row[`${user}_particular`] = groupedData[method][user].particular || 0;
+        row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
+
+        rowTotal +=
+          row[`${user}_copago`] +
+          row[`${user}_particular`] +
+          row[`${user}_autorizado`];
+      });
+
+      row["total"] = rowTotal;
+      return row;
+    });
+
+    // Calcular total general
+    const grandTotal = tableData.reduce(
+      (sum, row) => sum + (row.total || 0),
+      0
+    );
+
+    if (isReturnData) {
+      return reportData;
+    }
+
+    // Crear columnas para la tabla
+    const paymentColumns: TableColumn[] = [
+      {
+        field: "method",
+        header: "Método de Pago",
+        style: createColumnStyle("left", "200px"),
+        body: (rowData: any) => (
+          <span style={{ fontWeight: "normal" }}>{rowData.method}</span>
+        ),
+        footer: "TOTALES",
+        footerStyle: { fontWeight: "bold", textAlign: "left" },
+      },
+      ...Array.from(billingUsers).flatMap((user: any) => [
+        {
+          field: `${user}_copago`,
+          header: "Copago",
+          body: (rowData: any) => (
+            <span style={{ fontWeight: "normal" }}>
+              {formatCurrency(rowData[`${user}_copago`])}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(totals[user]?.copago || 0)}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+        {
+          field: `${user}_particular`,
+          header: "Particular",
+          body: (rowData: any) => (
+            <span style={{ fontWeight: "normal" }}>
+              {formatCurrency(rowData[`${user}_particular`])}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(totals[user].particular)}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+        {
+          field: `${user}_autorizado`,
+          header: "Monto autorizado",
+          body: (rowData: any) => (
+            <span style={{ fontWeight: "normal" }}>
+              {formatCurrency(rowData[`${user}_autorizado`])}
+            </span>
+          ),
+          footer: () => (
+            <span style={{ fontWeight: "bold" }}>
+              {formatCurrency(totals[user].autorizado)}
+            </span>
+          ),
+          style: createColumnStyle("right"),
+          headerStyle: createColumnStyle("right"),
+          footerStyle: { fontWeight: "bold", textAlign: "right" },
+        },
+      ]),
+      {
+        field: "total",
+        header: "Total General",
+        body: (rowData: any) => (
+          <span style={{ fontWeight: "normal" }}>
+            {formatCurrency(rowData.total)}
+          </span>
+        ),
+        footer: () => (
+          <span style={{ fontWeight: "bold" }}>
+            {formatCurrency(grandTotal)}
+          </span>
+        ),
+        style: createColumnStyle("right"),
+        headerStyle: createColumnStyle("right"),
+        footerStyle: { fontWeight: "bold", textAlign: "right" },
+      },
+    ];
+
+    // Crear grupo de encabezados
+    const headerGroup = (
+      <ColumnGroup>
+        <Row>
+          <Column header="Método de Pago" rowSpan={2} />
+          {Array.from(billingUsers).map((user) => (
+            <Column key={user} header={user} colSpan={3} />
           ))}
-        </DataTable>
-      )}
-    </div>
-  );
-};
+          <Column header="Total General" rowSpan={2} />
+        </Row>
+        <Row>
+          {Array.from(billingUsers).flatMap((user) => [
+            <Column key={`${user}_copago`} header="Copago" />,
+            <Column key={`${user}_particular`} header="Particular" />,
+            <Column key={`${user}_autorizado`} header="Monto autorizado" />,
+          ])}
+        </Row>
+      </ColumnGroup>
+    );
+
+    return (
+      <div className="card">
+        {tableLoading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{ height: "200px" }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <DataTable
+            headerColumnGroup={headerGroup}
+            value={tableData}
+            loading={tableLoading}
+            scrollable
+            scrollHeight="flex"
+            showGridlines
+            stripedRows
+            size="small"
+            tableStyle={{ minWidth: "100%" }}
+            className="p-datatable-sm"
+            paginator
+            rows={rows}
+            first={first}
+            onPage={onPageChange}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            footerColumnGroup={
+              <ColumnGroup>
+                <Row>
+                  {paymentColumns.map((col, index) => (
+                    <Column
+                      key={`footer-${index}`}
+                      footer={col.footer}
+                      footerStyle={col.footerStyle}
+                    />
+                  ))}
+                </Row>
+              </ColumnGroup>
+            }
+          >
+            {paymentColumns.map((col, i) => (
+              <Column
+                key={i}
+                field={col.field}
+                header={col.header}
+                body={col.body}
+                style={col.style}
+                headerStyle={col.headerStyle}
+                footer={col.footer}
+                footerStyle={col.footerStyle}
+              />
+            ))}
+          </DataTable>
+        )}
+      </div>
+    );
+  };
 
   return (
     <main className="main" id="top">

@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { TreeTable } from "primereact/treetable";
 import { exportDoctorsProceduresToExcel, exportEntityPricesToExcel, exportEntityCountsToExcel, exportConsultationsToExcel } from "./excel/ExcelSpecialist.js"; // Import your services
 import { productService, userService, patientService, billingService, entityService } from "../../services/api/index.js";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
@@ -26,7 +27,7 @@ export const SpecialistsReport = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatients, setSelectedPatients] = useState([]);
   const [entities, setEntities] = useState([]);
-  const [selectedEntity, setSelectedEntity] = useState(null);
+  const [selectedEntity, setSelectedEntity] = useState([]);
   const [dateRange, setDateRange] = useState([fiveDaysAgo, today]);
   const {
     company,
@@ -39,6 +40,8 @@ export const SpecialistsReport = () => {
   const [activeTab, setActiveTab] = useState("doctors-tab");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
+  const [treeNodes, setTreeNodes] = useState([]);
+  const [keys, setKeys] = useState({});
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -64,10 +67,7 @@ export const SpecialistsReport = () => {
         const defaultFilters = {
           end_date: formatDate(today),
           start_date: formatDate(fiveDaysAgo),
-          patient_ids: [],
-          product_ids: [],
-          user_ids: [],
-          entity_id: null
+          user_ids: []
         };
         await loadData(defaultFilters);
       } catch (error) {
@@ -78,10 +78,62 @@ export const SpecialistsReport = () => {
     };
     initializeData();
   }, []);
-  const loadData = async (filterParams = {}) => {
+  useEffect(() => {
+    if (activeTab === "productivity-tab" && reportData.length > 0) {
+      const newTreeNodes = reportData.map((user, userIndex) => {
+        console.log("user", user);
+        let countAppointments = user.appointments.length;
+        let countProceduresInvoiced = 0;
+        const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_name ?? ""}`;
+        const children = user.appointments.map((appointment, appointmentIndex) => {
+          let status = "unInvoiced";
+          if (appointment.admission && appointment.admission.invoice && appointment?.admission?.invoice?.status !== "cancelled") {
+            countProceduresInvoiced++;
+            status = "invoiced";
+          }
+          return {
+            key: `${userIndex}-${appointmentIndex}`,
+            data: {
+              doctor: "",
+              date: appointment.appointment_date,
+              countAppointments: appointment.exam_recipe.details.map(detail => detail.exam_type.name).join(", "),
+              counrProceduresInvoiced: appointment?.admission?.invoice?.details.map(detail => detail.product.name).join(", ") ?? "Sin factura",
+              average: status,
+              isLeaf: true
+            }
+          };
+        });
+        return {
+          key: userIndex.toString(),
+          data: {
+            doctor: fullName,
+            date: "",
+            countAppointments: countAppointments,
+            counrProceduresInvoiced: countProceduresInvoiced,
+            average: (countProceduresInvoiced / countAppointments * 100).toFixed(2) + "%",
+            isLeaf: false,
+            rawData: user.appointments
+          },
+          children: children
+        };
+      });
+      setTreeNodes(newTreeNodes);
+      setKeys(treeNodes.reduce((acc, node) => {
+        acc[node.key] = true;
+        return acc;
+      }, {}));
+    }
+  }, [reportData, activeTab]);
+  const loadData = async (filterParams = {}, tab = "") => {
+    let data = [];
     try {
       setTableLoading(true);
-      const data = await billingService.getBillingReport(filterParams);
+      if (tab == "productivity-tab") {
+        data = await billingService.productivityByDoctor(filterParams);
+      } else {
+        data = await billingService.getBillingReport(filterParams);
+      }
+      console.log("data", data);
       setReportData(data);
       return data; // Retornamos los datos por si se necesitan
     } catch (error) {
@@ -92,17 +144,28 @@ export const SpecialistsReport = () => {
     }
   };
   const handleTabChange = async tab => {
+    setReportData([]);
     try {
       setActiveTab(tab);
       const filterParams = {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity
+        start_date: dateRange[0] ? formatDate(dateRange[0]) : ""
       };
-      await loadData(filterParams);
+      if (selectedPatients?.length) {
+        filterParams.patient_ids = selectedPatients;
+      }
+      if (selectedProcedures?.length) {
+        filterParams.product_ids = selectedProcedures;
+      }
+      if (selectedSpecialists?.length) {
+        filterParams.user_ids = selectedSpecialists;
+      } else {
+        filterParams.user_ids = [];
+      }
+      if (selectedEntity?.length) {
+        filterParams.entity_id = selectedEntity;
+      }
+      await loadData(filterParams, tab);
     } catch (error) {
       console.error("Error changing tab:", error);
     }
@@ -174,13 +237,23 @@ export const SpecialistsReport = () => {
     try {
       const filterParams = {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity
+        start_date: dateRange[0] ? formatDate(dateRange[0]) : ""
       };
-      await loadData(filterParams);
+      if (selectedPatients?.length) {
+        filterParams.patient_ids = selectedPatients;
+      }
+      if (selectedProcedures?.length) {
+        filterParams.product_ids = selectedProcedures;
+      }
+      if (selectedSpecialists?.length) {
+        filterParams.user_ids = selectedSpecialists;
+      } else {
+        filterParams.user_ids = [];
+      }
+      if (selectedEntity?.length) {
+        filterParams.entity_id = selectedEntity;
+      }
+      await loadData(filterParams, activeTab);
       setFirst(0); // Reset to first page when filtering
     } catch (error) {
       console.error("Error filtering data:", error);
@@ -490,7 +563,7 @@ export const SpecialistsReport = () => {
       headerStyle: createColumnStyle("right")
     }, {
       field: `${doctor}_avg`,
-      header: "Monto autorizado",
+      header: "Seguro",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         style: {
           fontWeight: rowData.isTotal ? "bold" : "normal",
@@ -531,7 +604,7 @@ export const SpecialistsReport = () => {
       header: "Particular"
     }), /*#__PURE__*/React.createElement(Column, {
       key: `${doctor}_avg`,
-      header: "Monto autorizado"
+      header: "Seguro"
     })])));
     return /*#__PURE__*/React.createElement("div", {
       className: "card"
@@ -597,7 +670,6 @@ export const SpecialistsReport = () => {
         }
         if (!procedureDoctorCounts[procedureName][doctor]) {
           procedureDoctorCounts[procedureName][doctor] = {
-            count: 0,
             amount: 0,
             avg: 0
           };
@@ -605,12 +677,11 @@ export const SpecialistsReport = () => {
 
         // Increment counts instead of summing amounts
         if (entry.sub_type === "entity") {
-          procedureDoctorCounts[procedureName][doctor].count += 1; // Count instead of sum amount
+          procedureDoctorCounts[procedureName][doctor].avg += 1; // Count instead of sum amount
         }
         if (entry.sub_type === "public") {
           procedureDoctorCounts[procedureName][doctor].amount += 1; // Count instead of sum amount
-        }
-        procedureDoctorCounts[procedureName][doctor].avg += 1; // Count for authorized amount
+        } // Count for authorized amount
       });
     });
 
@@ -618,7 +689,6 @@ export const SpecialistsReport = () => {
     const doctorTotals = {};
     Array.from(doctors).forEach(doctor => {
       doctorTotals[doctor] = {
-        count: 0,
         amount: 0,
         avg: 0,
         total: 0
@@ -629,7 +699,6 @@ export const SpecialistsReport = () => {
           amount: 0,
           avg: 0
         };
-        doctorTotals[doctor].count += doctorData.count;
         doctorTotals[doctor].amount += doctorData.amount;
         doctorTotals[doctor].avg += doctorData.avg;
         doctorTotals[doctor].total += doctorData.amount; // Sum counts for total
@@ -648,7 +717,6 @@ export const SpecialistsReport = () => {
           amount: 0,
           avg: 0
         };
-        row[`${doctor}_count`] = doctorData.count;
         row[`${doctor}_amount`] = doctorData.amount;
         row[`${doctor}_avg`] = doctorData.avg;
         rowTotal += doctorData.amount; // Sum counts for row total
@@ -667,7 +735,6 @@ export const SpecialistsReport = () => {
       }
     };
     Array.from(doctors).forEach(doctor => {
-      totalsRow[`${doctor}_count`] = doctorTotals[doctor].count;
       totalsRow[`${doctor}_amount`] = doctorTotals[doctor].amount;
       totalsRow[`${doctor}_avg`] = doctorTotals[doctor].avg;
     });
@@ -690,17 +757,6 @@ export const SpecialistsReport = () => {
         }
       }, rowData.procedure)
     }, ...Array.from(doctors).flatMap(doctor => [{
-      field: `${doctor}_count`,
-      header: "Copago",
-      body: rowData => /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontWeight: rowData.isTotal ? "bold" : "normal",
-          fontSize: rowData.isTotal ? "1.1em" : "inherit"
-        }
-      }, rowData[`${doctor}_count`] || "0"),
-      style: createColumnStyle("right"),
-      headerStyle: createColumnStyle("right")
-    }, {
       field: `${doctor}_amount`,
       header: "Particular",
       body: rowData => /*#__PURE__*/React.createElement("span", {
@@ -713,7 +769,7 @@ export const SpecialistsReport = () => {
       headerStyle: createColumnStyle("right")
     }, {
       field: `${doctor}_avg`,
-      header: "Monto autorizado",
+      header: "Seguro",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         style: {
           fontWeight: rowData.isTotal ? "bold" : "normal",
@@ -742,19 +798,16 @@ export const SpecialistsReport = () => {
     }), Array.from(doctors).map(doctor => /*#__PURE__*/React.createElement(Column, {
       key: doctor,
       header: doctor,
-      colSpan: 3
+      colSpan: 2
     })), /*#__PURE__*/React.createElement(Column, {
       header: "Total General",
       rowSpan: 2
     })), /*#__PURE__*/React.createElement(Row, null, Array.from(doctors).flatMap(doctor => [/*#__PURE__*/React.createElement(Column, {
-      key: `${doctor}_count`,
-      header: "Copago"
-    }), /*#__PURE__*/React.createElement(Column, {
       key: `${doctor}_amount`,
       header: "Particular"
     }), /*#__PURE__*/React.createElement(Column, {
       key: `${doctor}_avg`,
-      header: "Monto autorizado"
+      header: "Seguro"
     })])));
     return /*#__PURE__*/React.createElement("div", {
       className: "card"
@@ -1018,18 +1071,29 @@ export const SpecialistsReport = () => {
           fontSize: rowData.isTotal ? "1em" : "inherit"
         }
       }, rowData.entity)
-    }, ...Array.from(doctors).map(doctor => ({
-      field: doctor,
-      header: doctor,
+    }, ...Array.from(doctors).flatMap(doctor => [{
+      field: `${doctor}_amount`,
+      header: "Particular",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         style: {
           fontWeight: rowData.isTotal ? "bold" : "normal",
           fontSize: rowData.isTotal ? "1em" : "inherit"
         }
-      }, rowData[doctor]),
+      }, rowData[doctor] || "0"),
       style: createColumnStyle("right"),
       headerStyle: createColumnStyle("right")
-    })), {
+    }, {
+      field: `${doctor}_avg`,
+      header: "Seguro",
+      body: rowData => /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontWeight: rowData.isTotal ? "bold" : "normal",
+          fontSize: rowData.isTotal ? "1em" : "inherit"
+        }
+      }, rowData[doctor] || "0"),
+      style: createColumnStyle("right"),
+      headerStyle: createColumnStyle("right")
+    }]), {
       field: "total",
       header: "Total",
       body: rowData => {
@@ -1046,6 +1110,25 @@ export const SpecialistsReport = () => {
       style: createColumnStyle("right"),
       headerStyle: createColumnStyle("right")
     }];
+
+    // Create header group with the new subheaders
+    const headerGroup = /*#__PURE__*/React.createElement(ColumnGroup, null, /*#__PURE__*/React.createElement(Row, null, /*#__PURE__*/React.createElement(Column, {
+      header: "Entidad",
+      rowSpan: 2
+    }), Array.from(doctors).map(doctor => /*#__PURE__*/React.createElement(Column, {
+      key: doctor,
+      header: doctor,
+      colSpan: 2
+    })), /*#__PURE__*/React.createElement(Column, {
+      header: "Total",
+      rowSpan: 2
+    })), /*#__PURE__*/React.createElement(Row, null, Array.from(doctors).flatMap(doctor => [/*#__PURE__*/React.createElement(Column, {
+      key: `${doctor}_amount`,
+      header: "Particular"
+    }), /*#__PURE__*/React.createElement(Column, {
+      key: `${doctor}_avg`,
+      header: "Seguro"
+    })])));
     return /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, tableLoading ? /*#__PURE__*/React.createElement("div", {
@@ -1054,6 +1137,7 @@ export const SpecialistsReport = () => {
         height: "200px"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
+      headerColumnGroup: headerGroup,
       value: tableData,
       loading: tableLoading,
       scrollable: true,
@@ -1104,7 +1188,17 @@ export const SpecialistsReport = () => {
         if (!doctorDateCounts[doctor]) {
           doctorDateCounts[doctor] = {};
         }
-        doctorDateCounts[doctor][date] = (doctorDateCounts[doctor][date] || 0) + 1;
+        if (!doctorDateCounts[doctor][date]) {
+          doctorDateCounts[doctor][date] = {
+            particular: 0,
+            seguro: 0
+          };
+        }
+        if (entry.sub_type === "public") {
+          doctorDateCounts[doctor][date].particular += 1;
+        } else if (entry.sub_type === "entity") {
+          doctorDateCounts[doctor][date].seguro += 1;
+        }
       }
     });
 
@@ -1114,9 +1208,18 @@ export const SpecialistsReport = () => {
     // Calculate column totals (dates)
     const dateTotals = {};
     sortedDates.forEach(date => {
-      dateTotals[date] = Array.from(doctors).reduce((sum, doctor) => {
-        return sum + (doctorDateCounts[doctor]?.[date] || 0);
-      }, 0);
+      dateTotals[date] = {
+        particular: 0,
+        seguro: 0
+      };
+      Array.from(doctors).forEach(doctor => {
+        const counts = doctorDateCounts[doctor]?.[date] || {
+          particular: 0,
+          seguro: 0
+        };
+        dateTotals[date].particular += counts.particular;
+        dateTotals[date].seguro += counts.seguro;
+      });
     });
 
     // Prepare table data
@@ -1125,7 +1228,12 @@ export const SpecialistsReport = () => {
         doctor
       };
       sortedDates.forEach(date => {
-        row[date] = doctorDateCounts[doctor]?.[date] || 0;
+        const counts = doctorDateCounts[doctor]?.[date] || {
+          particular: 0,
+          seguro: 0
+        };
+        row[`${date}_particular`] = counts.particular;
+        row[`${date}_seguro`] = counts.seguro;
       });
       return row;
     });
@@ -1140,7 +1248,8 @@ export const SpecialistsReport = () => {
       }
     };
     sortedDates.forEach(date => {
-      totalsRow[date] = dateTotals[date] || 0;
+      totalsRow[`${date}_particular`] = dateTotals[date].particular;
+      totalsRow[`${date}_seguro`] = dateTotals[date].seguro;
     });
     tableData.push(totalsRow);
     if (isReturnData) {
@@ -1156,23 +1265,34 @@ export const SpecialistsReport = () => {
           fontSize: rowData.isTotal ? "1em" : "inherit"
         }
       }, rowData.doctor)
-    }, ...sortedDates.map(date => ({
-      field: date,
-      header: date,
+    }, ...sortedDates.flatMap(date => [{
+      field: `${date}_particular`,
+      header: "Particular",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         style: {
           fontWeight: rowData.isTotal ? "bold" : "normal",
           fontSize: rowData.isTotal ? "1em" : "inherit"
         }
-      }, rowData[date]),
+      }, rowData[`${date}_particular`] || "0"),
       style: createColumnStyle("center"),
       headerStyle: createColumnStyle("center")
-    })), {
+    }, {
+      field: `${date}_seguro`,
+      header: "Seguro",
+      body: rowData => /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontWeight: rowData.isTotal ? "bold" : "normal",
+          fontSize: rowData.isTotal ? "1em" : "inherit"
+        }
+      }, rowData[`${date}_seguro`] || "0"),
+      style: createColumnStyle("center"),
+      headerStyle: createColumnStyle("center")
+    }]), {
       field: "total",
       header: "Total",
       body: rowData => {
         const total = sortedDates.reduce((sum, date) => {
-          return sum + (rowData[date] || 0);
+          return sum + (rowData[`${date}_particular`] || 0) + (rowData[`${date}_seguro`] || 0);
         }, 0);
         return /*#__PURE__*/React.createElement("span", {
           style: {
@@ -1184,6 +1304,25 @@ export const SpecialistsReport = () => {
       style: createColumnStyle("center"),
       headerStyle: createColumnStyle("center")
     }];
+
+    // Create header group with the new subheaders
+    const headerGroup = /*#__PURE__*/React.createElement(ColumnGroup, null, /*#__PURE__*/React.createElement(Row, null, /*#__PURE__*/React.createElement(Column, {
+      header: "Profesional",
+      rowSpan: 2
+    }), sortedDates.map(date => /*#__PURE__*/React.createElement(Column, {
+      key: date,
+      header: date,
+      colSpan: 2
+    })), /*#__PURE__*/React.createElement(Column, {
+      header: "Total",
+      rowSpan: 2
+    })), /*#__PURE__*/React.createElement(Row, null, sortedDates.flatMap(date => [/*#__PURE__*/React.createElement(Column, {
+      key: `${date}_particular`,
+      header: "Particular"
+    }), /*#__PURE__*/React.createElement(Column, {
+      key: `${date}_seguro`,
+      header: "Seguro"
+    })])));
     return /*#__PURE__*/React.createElement("div", {
       className: "card"
     }, tableLoading ? /*#__PURE__*/React.createElement("div", {
@@ -1192,6 +1331,7 @@ export const SpecialistsReport = () => {
         height: "200px"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
+      headerColumnGroup: headerGroup,
       value: tableData,
       loading: tableLoading,
       scrollable: true,
@@ -1218,6 +1358,75 @@ export const SpecialistsReport = () => {
       style: col.style,
       headerStyle: col.headerStyle
     }))));
+  };
+  const generateTableProductivity = (isReturnData = false) => {
+    console.log("reportData", reportData);
+    if (!reportData || reportData.length === 0) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "flex justify-content-center align-items-center",
+        style: {
+          height: "200px"
+        }
+      }, /*#__PURE__*/React.createElement("span", null, "No hay datos disponibles"));
+    }
+    const doctorTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.doctor);
+    const ordersTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.countAppointments);
+    const datesTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.date);
+    const proceduresInvoicedTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.counrProceduresInvoiced);
+    const averageTemplate = node => node.data.isLeaf ? /*#__PURE__*/React.createElement("span", {
+      style: {
+        paddingLeft: "30px",
+        color: node.data.average === "unInvoiced" ? "red" : "green"
+      }
+    }, node.data.average == "unInvoiced" ? "No facturado" : "Facturado") : /*#__PURE__*/React.createElement("strong", null, node.data.average);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "border-top border-translucent"
+    }, loading ? /*#__PURE__*/React.createElement("div", {
+      className: "text-center p-5"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "pi pi-spinner pi-spin",
+      style: {
+        fontSize: "2rem"
+      }
+    }), /*#__PURE__*/React.createElement("p", null, "Cargando datos...")) : /*#__PURE__*/React.createElement("div", {
+      id: "purchasersSellersTable"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "card"
+    }, /*#__PURE__*/React.createElement(TreeTable, {
+      value: treeNodes,
+      expandedKeys: keys,
+      loading: tableLoading,
+      onToggle: e => setKeys(e.value),
+      scrollable: true,
+      scrollHeight: "600px"
+    }, /*#__PURE__*/React.createElement(Column, {
+      field: "profesional",
+      header: "Profesional",
+      body: doctorTemplate,
+      expander: true
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "date",
+      header: "Fecha cita",
+      body: datesTemplate
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "countAppointments",
+      header: "Ordenes",
+      body: ordersTemplate
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "proceduresInvoiced",
+      header: "servicios facturados",
+      body: proceduresInvoicedTemplate
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "average",
+      header: "Productividad %",
+      body: averageTemplate
+    }))), /*#__PURE__*/React.createElement("div", {
+      className: "row align-items-center justify-content-between pe-0 fs-9 mt-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "col-auto d-flex"
+    }, /*#__PURE__*/React.createElement("p", {
+      className: "mb-0 d-none d-sm-block me-3 fw-semibold text-body"
+    }, "Mostrando ", treeNodes.length, " Productividad")))));
   };
   return /*#__PURE__*/React.createElement("main", {
     className: "main",
@@ -1379,21 +1588,28 @@ export const SpecialistsReport = () => {
     id: "precios-entidad-tab",
     onClick: () => handleTabChange("precios-entidad-tab"),
     role: "tab"
-  }, "Entidades")), /*#__PURE__*/React.createElement("li", {
+  }, "Entidades $")), /*#__PURE__*/React.createElement("li", {
     className: "nav-item"
   }, /*#__PURE__*/React.createElement("a", {
     className: `nav-link ${activeTab === "conteo-entidad-tab" ? "active" : ""}`,
     id: "conteo-entidad-tab",
     onClick: () => handleTabChange("conteo-entidad-tab"),
     role: "tab"
-  }, "Precios - conteo")), /*#__PURE__*/React.createElement("li", {
+  }, "Entidades #")), /*#__PURE__*/React.createElement("li", {
     className: "nav-item"
   }, /*#__PURE__*/React.createElement("a", {
     className: `nav-link ${activeTab === "consultas-tab" ? "active" : ""}`,
     id: "consultas-tab",
     onClick: () => handleTabChange("consultas-tab"),
     role: "tab"
-  }, "Consultas"))), /*#__PURE__*/React.createElement("div", {
+  }, "Consultas")), /*#__PURE__*/React.createElement("li", {
+    className: "nav-item"
+  }, /*#__PURE__*/React.createElement("a", {
+    className: `nav-link ${activeTab === "productivity-tab" ? "active" : ""}`,
+    id: "productivity-tab",
+    onClick: () => handleTabChange("productivity-tab"),
+    role: "tab"
+  }, "Productividad"))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-xxl-12 tab-content mt-3",
     id: "myTabContent"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1471,7 +1687,22 @@ export const SpecialistsReport = () => {
     onClick: () => exportToPDF("consultation-tab"),
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
-  })), generateConsultationsTable()))))))));
+  })), generateConsultationsTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-pane fade ${activeTab === "productivity-tab" ? "show active" : ""}`,
+    id: "tab-productivity",
+    role: "tabpanel",
+    "aria-labelledby": "productivity-tab"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end gap-2 mb-3"
+  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    onClick: handleExportConsultations,
+    loading: exporting.consultations,
+    disabled: !reportData || reportData.length === 0
+  }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
+    onClick: () => exportToPDF("productivity-tab"),
+    loading: exporting.procedures,
+    disabled: !reportData || reportData.length === 0
+  })), generateTableProductivity()))))))));
 };
 const ExportButtonExcel = ({
   onClick,

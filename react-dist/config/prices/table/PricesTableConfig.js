@@ -3,15 +3,13 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Card } from 'primereact/card';
-import { Dropdown } from 'primereact/dropdown';
-import { Calendar } from 'primereact/calendar';
+import { FilterMatchMode } from 'primereact/api';
+import { useDebounce } from 'primereact/hooks';
 export const PricesTableConfig = ({
   onEditItem,
-  prices
+  prices,
+  onDeleteItem
 }) => {
-  // Sample data
-
   // Modal state
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPrice, setSelectedPrice] = useState(null);
@@ -25,6 +23,15 @@ export const PricesTableConfig = ({
     fechaDesde: null,
     fechaHasta: null
   });
+
+  // Global search filter state
+  const [filters, setFilters] = useState({
+    global: {
+      value: null,
+      matchMode: FilterMatchMode.CONTAINS
+    }
+  });
+  const [globalFilterValue, debounceGlobalFilterValue, setGlobalFilterValue] = useDebounce('', 500);
 
   // Options for dropdowns
   const tiposAtencion = [{
@@ -77,7 +84,6 @@ export const PricesTableConfig = ({
       }
     }, /*#__PURE__*/React.createElement(Button, {
       className: "p-button-rounded p-button-text p-button-sm",
-      tooltip: "Editar",
       onClick: e => {
         e.stopPropagation();
         handleEditPrice(rowData);
@@ -86,10 +92,9 @@ export const PricesTableConfig = ({
       className: "fas fa-pencil-alt"
     })), /*#__PURE__*/React.createElement(Button, {
       className: "p-button-rounded p-button-text p-button-sm p-button-danger",
-      tooltip: "Eliminar",
       onClick: e => {
         e.stopPropagation();
-        // handleDeletePrice(rowData);
+        onDeleteItem(rowData.id.toString());
       }
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-trash"
@@ -150,72 +155,39 @@ export const PricesTableConfig = ({
       fechaHasta: null
     });
   };
+
+  // Handle global filter change
+  const onGlobalFilterChange = e => {
+    const value = e.target.value;
+    let _filters = {
+      ...filters
+    };
+
+    // @ts-ignore
+    _filters['global'].value = value;
+    setFilters(_filters);
+    setGlobalFilterValue(value);
+  };
+
+  // Table header with search
+  const tableHeader = () => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-between align-items-center"
+    }, /*#__PURE__*/React.createElement("h5", {
+      className: "mb-0"
+    }, "Listado de Precios"), /*#__PURE__*/React.createElement(InputText, {
+      value: globalFilterValue,
+      onChange: onGlobalFilterChange,
+      placeholder: "Buscar por nombre...",
+      className: "w-auto"
+    }));
+  };
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid mt-4",
     style: {
       width: '100%',
       padding: '0 15px'
     }
-  }, /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
-  }, "Tipo de atenci\xF3n"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.tipoAtencion,
-    options: tiposAtencion,
-    onChange: e => handleFilterChange('tipoAtencion', e.value),
-    optionLabel: "label",
-    placeholder: "Seleccione tipo",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
-  }, "C\xF3digo"), /*#__PURE__*/React.createElement(InputText, {
-    value: filtros.codigo || '',
-    onChange: e => handleFilterChange('codigo', e.target.value),
-    placeholder: "Buscar por c\xF3digo...",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
-  }, "Nombre"), /*#__PURE__*/React.createElement(InputText, {
-    value: filtros.nombre || '',
-    onChange: e => handleFilterChange('nombre', e.target.value),
-    placeholder: "Buscar por nombre...",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
-  }, "Fecha de creaci\xF3n"), /*#__PURE__*/React.createElement(Calendar, {
-    value: filtros.fechaDesde,
-    onChange: e => handleFilterChange('fechaDesde', e.value),
-    dateFormat: "dd/mm/yy",
-    placeholder: "Desde",
-    className: "w-100",
-    showIcon: true
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Limpiar",
-    icon: "pi pi-trash",
-    className: "p-button-secondary",
-    onClick: limpiarFiltros
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Aplicar Filtros",
-    icon: "pi pi-filter",
-    className: "p-button-primary",
-    onClick: aplicarFiltros
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Listado de Precios",
-    style: styles.card
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: prices,
     paginator: true,
@@ -226,10 +198,14 @@ export const PricesTableConfig = ({
     responsiveLayout: "scroll",
     tableStyle: {
       minWidth: '50rem'
-    }
+    },
+    globalFilterFields: ['name'],
+    filters: filters,
+    header: tableHeader
   }, /*#__PURE__*/React.createElement(Column, {
-    field: "code",
-    header: "C\xF3digo",
+    field: "Cups",
+    header: "Cups",
+    body: rowData => rowData.barcode,
     sortable: true,
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
@@ -240,21 +216,26 @@ export const PricesTableConfig = ({
   }), /*#__PURE__*/React.createElement(Column, {
     field: "attentionType",
     header: "Tipo de Atenci\xF3n",
+    body: rowData => {
+      const attentionTypeMap = {
+        PROCEDURE: "Procedimiento",
+        CONSULTATION: "Consulta",
+        LABORATORY: "Laboratorio",
+        REHABILITATION: "Rehabilitación",
+        OPTOMETRY: "Optometría"
+      };
+      return attentionTypeMap[rowData.attention_type] || rowData.attention_type || "";
+    },
     sortable: true,
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
     header: "Precio P\xFAblico",
-    body: rowData => currencyFormat(rowData.publicPrice),
+    body: rowData => currencyFormat(rowData.sale_price),
     sortable: true,
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
     header: "Copago",
     body: rowData => currencyFormat(rowData.copayment),
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "createdAt",
-    header: "Fecha Creaci\xF3n",
     sortable: true,
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
@@ -265,5 +246,5 @@ export const PricesTableConfig = ({
       width: '120px',
       textAlign: 'center'
     }
-  }))));
+  })));
 };

@@ -40,6 +40,10 @@
       font-size: 0.8em;
       color: #555;
     }
+
+    @page {
+      margin: 15px 20px 0px 20px;
+    }
   </style>
 </head>
 

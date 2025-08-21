@@ -5,7 +5,6 @@ import { EditTableAction } from "../../components/table-actions/EditTableAction.
 import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
 export const getColumns = ({
   editDisability,
-  deleteDisability,
   handlePrint,
   shareDisabilityWhatsApp
 }) => [{
@@ -52,14 +51,12 @@ export const getColumns = ({
 }, {
   field: "",
   header: "Acciones",
-  body: rowData => /*#__PURE__*/React.createElement("div", {
-    className: "text-end align-middle"
-  }, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(PrintTableAction, {
-    onTrigger: () => handlePrint()
+  body: rowData => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(PrintTableAction, {
+    onTrigger: () => handlePrint(rowData.id.toString())
   }), /*#__PURE__*/React.createElement(EditTableAction, {
     onTrigger: () => editDisability(rowData.id.toString())
   }), /*#__PURE__*/React.createElement(ShareTableAction, {
     shareType: "whatsapp",
-    onTrigger: () => shareDisabilityWhatsApp(rowData)
+    onTrigger: () => shareDisabilityWhatsApp(rowData.id.toString())
   })))
 }];

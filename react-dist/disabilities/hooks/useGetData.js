@@ -24,7 +24,6 @@ export const useGetData = patientId => {
     }));
     try {
       const response = await disabilityService.getAll(patientId);
-      console.log('ddd', response);
       const disabilities = response.data || response || [];
       setState(prev => ({
         ...prev,

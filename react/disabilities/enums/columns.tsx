@@ -8,12 +8,11 @@ import TableActionsWrapper from "../../components/table-actions/TableActionsWrap
 
 interface ColumnActionsProps {
   editDisability: (id: string) => void;
-  deleteDisability: (id: string) => void;
-  handlePrint: () => void;
-  shareDisabilityWhatsApp: (disabilityData: any) => void;
+  handlePrint: (id: string) => void;
+  shareDisabilityWhatsApp: (id: string) => void;
 }
 
-export const getColumns = ({ editDisability, deleteDisability, handlePrint, shareDisabilityWhatsApp }: ColumnActionsProps): DisabilityTableColumn[] => [
+export const getColumns = ({ editDisability, handlePrint, shareDisabilityWhatsApp }: ColumnActionsProps): DisabilityTableColumn[] => [
   { field: "id", header: "ID" },
   { 
     field: "start_date", 
@@ -67,19 +66,17 @@ export const getColumns = ({ editDisability, deleteDisability, handlePrint, shar
     field: "",
     header: "Acciones",
     body: (rowData: DisabilityData) => (
-      <div className="text-end align-middle">
+      <div>
         <TableActionsWrapper>
           <PrintTableAction
-            onTrigger={() => handlePrint()}
+            onTrigger={() => handlePrint(rowData.id.toString())}
           />
-          
           <EditTableAction
             onTrigger={() => editDisability(rowData.id.toString())}
           />
-
           <ShareTableAction
             shareType="whatsapp"
-            onTrigger={() => shareDisabilityWhatsApp(rowData)}
+            onTrigger={() => shareDisabilityWhatsApp(rowData.id.toString())}
           />
         </TableActionsWrapper>
       </div>

@@ -6,7 +6,7 @@ export class DisabilityService extends BaseApiService {
     }
 
     async getById(id) {
-        return await this.httpClient.get(`medical/patients/disabilities/${id}`);
+        return await this.httpClient.get(`medical/disabilities/${id}`);
     }
 
     async create(patientId, data) {

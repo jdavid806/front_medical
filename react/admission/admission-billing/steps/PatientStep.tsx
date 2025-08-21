@@ -1,20 +1,20 @@
-import React from "react";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
+import React, { useEffect, useState } from "react";
+import { AdmissionBillingFormData, BillingData, PatientData, PatientStepProps } from "../interfaces/AdmisionBilling";
+import { Controller, useForm } from "react-hook-form";
+import { validatePatientStep } from "../utils/helpers";
+import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
+import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { InputSwitch } from "primereact/inputswitch";
-import { Controller, useForm } from "react-hook-form";
-import { classNames } from "primereact/utils";
-
-import {
-  documentTypeOptions,
-  genderOptions,
-  bloodTypeOptions,
-} from "../utils/constants";
-import { validatePatientStep } from "../utils/helpers";
-import { PatientStepProps, FormData } from "../interfaces/AdmisionBilling";
+import { genderOptions } from "../utils/constants";
+import PatientFormModal from "../../../patients/modals/form/PatientFormModal";
+import { Patient } from "../../../models/models";
+import { usePatient } from "../../../patients/hooks/usePatient";
+import { genders } from "../../../../services/commons";
 
 const PatientStepPreview: React.FC<PatientStepProps> = ({
   formData,
@@ -27,20 +27,51 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
     handleSubmit,
     formState: { errors },
     trigger,
-  } = useForm<FormData>({
+  } = useForm<AdmissionBillingFormData>({
     defaultValues: formData,
   });
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [mappedPatient, setMappedPatient] = useState<Partial<PatientData> | null>(null);
+  const { patient } = usePatient(formData.patient.id);
 
-  const handlePatientChange = <K extends keyof FormData["patient"]>(
+  useEffect(() => {
+    if (patient) {
+      const mappedPatientData: Partial<PatientData> = {
+        id: patient.id,
+        documentType: patient.document_type || "",
+        documentNumber: patient.document_number || "",
+        firstName: patient.first_name || "",
+        middleName: patient.middle_name || "",
+        lastName: patient.last_name || "",
+        secondLastName: patient.second_last_name || "",
+        nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
+        birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
+        gender: genders[patient.gender] || "",
+        country: patient.country_id || "",
+        department: patient.department_id || "",
+        city: patient.city_id || "",
+        address: patient.address || "",
+        email: patient.email || "",
+        whatsapp: patient.whatsapp || "",
+        bloodType: patient.blood_type || "",
+        affiliateType: patient.social_security?.affiliate_type || "",
+        insurance: patient.social_security?.entity?.name || "",
+        hasCompanion: patient.companions?.length > 0 || false
+      };
+      setMappedPatient(mappedPatientData);
+    }
+  }, [patient]);
+
+  const handlePatientChange = <K extends keyof PatientData>(
     field: K,
-    value: FormData["patient"][K]
+    value: any
   ) => {
     updateFormData("patient", { [field]: value });
   };
 
-  const handleBillingChange = <K extends keyof FormData["billing"]>(
+  const handleBillingChange = <K extends keyof BillingData>(
     field: K,
-    value: FormData["billing"][K]
+    value: any
   ) => {
     updateFormData("billing", { [field]: value });
   };
@@ -63,17 +94,8 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
     handlePatientChange("hasCompanion", value);
   };
 
-  const handleNext = async () => {
-    const isValid = await trigger([
-      "patient.documentNumber",
-      "patient.nameComplet", 
-      "patient.gender",
-      "patient.whatsapp",
-      "patient.email",
-      "patient.address"
-    ] as const);
-
-    if (isValid && validatePatientStep(formData.patient, toast)) {
+  const handleNext = () => {
+    if (validatePatientStep(formData.patient, toast)) {
       nextStep();
     }
   };
@@ -96,100 +118,25 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
         <Card title="Datos Personales" className="mb-4">
           <div className="row">
             <div className="col-md-6">
-              <Controller
-                name="patient.nameComplet"
-                control={control}
-                rules={{ required: "Nombre completo es requerido" }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Nombre Paciente *</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("nameComplet", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.nameComplet")}
-                  </div>
-                )}
-              />
-              <Controller
-                name="patient.documentNumber"
-                control={control}
-                rules={{ required: "Número de documento es requerido" }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Número de documento *</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("documentNumber", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.documentNumber")}
-                  </div>
-                )}
-              />
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Nombre</b>
+                {mappedPatient?.nameComplet || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Documento</b>
+                {mappedPatient?.documentNumber || "--"}
+              </div>
             </div>
 
             <div className="col-md-6">
-              <Controller
-                name="patient.gender"
-                control={control}
-                rules={{ required: "Género es requerido" }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Género *</label>
-                    <Dropdown
-                      options={genderOptions}
-                      placeholder="Seleccione"
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.value);
-                        handlePatientChange("gender", e.value);
-                      }}
-                      appendTo="self"
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.gender")}
-                  </div>
-                )}
-              />
-              <Controller
-                name="patient.address"
-                control={control}
-                rules={{ required: "Dirección es requerido" }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Dirección *</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("address", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.address")}
-                  </div>
-                )}
-              />
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Género</b>
+                {mappedPatient?.gender || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Dirección</b>
+                {mappedPatient?.address || "--"}
+              </div>
             </div>
           </div>
         </Card>
@@ -197,119 +144,34 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
         <Card title="Información Adicional" className="mb-4">
           <div className="row">
             <div className="col-md-6">
-              <Controller
-                name="patient.whatsapp"
-                control={control}
-                rules={{ required: "WhatsApp es requerido" }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">WhatsApp *</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("whatsapp", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.whatsapp")}
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="patient.email"
-                control={control}
-                rules={{
-                  required: "Correo electrónico es requerido",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Correo electrónico no válido",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Correo electrónico *</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("email", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.email")}
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="patient.insurance"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Aseguradora</label>
-                    <InputText
-                      className="w-100"
-                      value={field.value || ""}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("insurance", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.insurance")}
-                  </div>
-                )}
-              />
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>WhatsApp</b>
+                {mappedPatient?.whatsapp || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Correo</b>
+                {mappedPatient?.email || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Aseguradora</b>
+                {mappedPatient?.insurance || "--"}
+              </div>
             </div>
 
             <div className="col-md-6">
-              <Controller
-                name="patient.city"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Ciudad</label>
-                    <InputText
-                      className={classNames("w-100", {
-                        "p-invalid": fieldState.error,
-                      })}
-                      value={field.value || ""}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("city", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.city")}
-                  </div>
-                )}
-              />
-              <Controller
-                name="patient.affiliateType"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <div className="mb-3">
-                    <label className="form-label">Tipo de afiliado</label>
-                    <InputText
-                      className="w-100"
-                      value={field.value || ""}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        handlePatientChange("affiliateType", e.target.value);
-                      }}
-                      disabled
-                    />
-                    {getFormErrorMessage("patient.affiliateType")}
-                  </div>
-                )}
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Ciudad</b>
+                {mappedPatient?.city || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Tipo de afiliado</b>
+                {mappedPatient?.affiliateType || "--"}
+              </div>
+              <Button
+                label="Actualizar Paciente"
+                className="btn btn-primary btn-sm"
+                icon="pi pi-user"
+                onClick={() => setShowUpdateModal(true)}
               />
             </div>
           </div>
@@ -323,7 +185,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                   <InputSwitch
                     checked={formData.patient.facturacionConsumidor}
                     onChange={() => toggleBillingType("consumer")}
-                    disabled={true}
                     className="me-3 bg-primary"
                   />
                   <span className="text-muted small">facturación consumidor</span>
@@ -336,7 +197,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                   <InputSwitch
                     checked={formData.patient.facturacionEntidad}
                     onChange={() => toggleBillingType("entity")}
-                    disabled={true}
                     className="me-3 bg-primary"
                   />
                   <span className="text-muted small">
@@ -381,6 +241,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                             className="w-100"
                             value={field.value}
                             onChange={(e) => {
+
                               field.onChange(e.value);
                               handleBillingChange("authorizationDate", e.value);
                             }}
@@ -429,6 +290,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                       render={({ field }) => (
                         <div className="mb-3">
                           <label className="form-label">Monto Autorizado</label>
+
                           <InputText
                             className="w-100"
                             value={field.value || ""}
@@ -451,7 +313,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
           </div>
         </div>
       </div>
-
       <div className="d-flex justify-content-end pt-4 col-12">
         <Button
           label="Siguiente"
@@ -461,6 +322,14 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
           className="btn btn-primary btn-sm"
         />
       </div>
+      <PatientFormModal
+        visible={showUpdateModal}
+        onHide={() => setShowUpdateModal(false)}
+        onSuccess={() => {
+          setShowUpdateModal(false);
+        }}
+        patientData={patient}
+      />
     </div>
   );
 };

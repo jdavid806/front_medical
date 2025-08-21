@@ -7,9 +7,13 @@ import { usePricesConfigTable } from "./hooks/usePricesConfigTable.js";
 import { usePriceConfigCreate } from "./hooks/usePriceConfigCreate.js";
 import { usePriceConfigUpdate } from "./hooks/usePriceConfigUpdate.js";
 import { usePriceConfigById } from "./hooks/usePriceConfigById.js";
+import { usePriceConfigDelete } from "./hooks/usePriceConfigDelete.js";
+import { entitiesService } from "../../../services/api/index.js";
+import { SwalManager } from "../../../services/alertManagerImported.js";
 export const PricesConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
+  const [entitiesData, setEntitiesData] = useState([]);
   const {
     fetchProducts,
     products
@@ -26,6 +30,9 @@ export const PricesConfig = () => {
     priceById,
     setPriceById
   } = usePriceConfigById();
+  const {
+    deleteProduct
+  } = usePriceConfigDelete();
   const onCreate = () => {
     setInitialData(undefined);
     setPriceById(null);
@@ -50,23 +57,45 @@ export const PricesConfig = () => {
     fetchPriceById(id);
     setShowFormModal(true);
   };
-
-  // const handleTableDelete = async (id: string) => {
-  //     const confirmed = await deletePrice(id);
-  //     if (confirmed) fetchPrices();
-  // };
-
+  const handleTableDelete = async id => {
+    const confirmed = await deleteProduct(id);
+    if (confirmed) {
+      SwalManager.success();
+      fetchProducts();
+    }
+  };
+  async function loadEntities() {
+    const entities = await entitiesService.getEntities();
+    setEntitiesData(entities.data);
+  }
+  useEffect(() => {
+    loadEntities();
+  }, []);
   useEffect(() => {
     if (priceById) {
       const data = {
+        product_id: priceById.id?.toString(),
+        // Agregar product_id para la actualización
         name: priceById.name,
         attention_type: priceById.attention_type,
         curp: priceById.barcode,
         sale_price: priceById.sale_price,
         copago: +priceById.copayment,
         taxProduct_type: priceById.tax_charge_id ?? '0',
-        exam_type_id: priceById.exam_type_id ?? '0',
-        purchase_price: priceById.purchase_price
+        exam_type_id: priceById.exam_type_id?.toString() ?? '',
+        purchase_price: priceById.purchase_price,
+        entities: priceById.entities?.map(entity => {
+          // Priorizar datos del pivot si existen, luego los datos directos
+          return {
+            entity_id: entity.pivot?.entity_id || entity.entity_id || entity.id,
+            entity_name: entitiesData.find(e => e.id === entity?.entity_id)?.name || 'N/A',
+            price: +(entity.pivot?.price || entity?.price || 0),
+            tax_charge_id: entity?.pivot?.tax_charge_id || entity?.tax_charge_id || null,
+            tax_name: entity?.tax_charge?.name || 'N/A',
+            withholding_tax_id: entity?.pivot?.withholding_tax_id || entity?.withholding_tax_id || '',
+            retention_name: entity?.withholding_tax?.name || 'N/A'
+          };
+        }) || []
       };
       setInitialData(data);
     }
@@ -91,10 +120,11 @@ export const PricesConfig = () => {
     className: "fas fa-plus me-2"
   }), "Nuevo Precio"))), /*#__PURE__*/React.createElement(PricesTableConfig, {
     prices: products,
-    onEditItem: handleTableEdit
-    // onDeleteItem={handleTableDelete}
+    onEditItem: handleTableEdit,
+    onDeleteItem: handleTableDelete
   }), /*#__PURE__*/React.createElement(PricesConfigFormModal, {
     show: showFormModal,
+    entitiesData: entitiesData,
     handleSubmit: handleSubmit,
     onHide: () => {
       setShowFormModal(false);
