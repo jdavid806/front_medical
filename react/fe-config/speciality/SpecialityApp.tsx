@@ -10,7 +10,6 @@ import SpecialityModal from './components/SpecialityModal'
 import { useSpecialty } from './hooks/useSpecialty'
 
 export default function SpecialityApp() {
-  console.log('SpecialityApp')
   const {
     // State
     specialties,

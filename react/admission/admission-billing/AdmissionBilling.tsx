@@ -7,7 +7,8 @@ import ProductsPaymentStep from "./steps/ProductsPaymentStep";
 import PreviewDoneStep from "./steps/PreviewDoneStep";
 import { calculateTotal, validatePatientStep, validatePaymentStep, validateProductsStep } from "./utils/helpers";
 import { useProductsToBeInvoiced } from '../../appointments/hooks/useProductsToBeInvoiced'
-import { AdmissionBillingFormData } from "./interfaces/AdmisionBilling";
+import { AdmissionBillingFormData, BillingData } from "./interfaces/AdmisionBilling";
+import { getUserLogged } from "../../../services/utilidades";
 interface AdmissionBillingProps {
   visible: boolean;
   onHide: () => void;
@@ -36,10 +37,9 @@ const initialFormState: AdmissionBillingFormData = {
     whatsapp: "",
     bloodType: "",
     hasCompanion: false,
-    facturacionEntidad: false,
-    facturacionConsumidor: false,
     affiliateType: "",
-    insurance: ""
+    insurance: "",
+    entity_id: ""
   },
   billing: {
     entity: "",
@@ -49,7 +49,9 @@ const initialFormState: AdmissionBillingFormData = {
     consumerName: "",
     consumerDocument: "",
     consumerEmail: "",
-    consumerPhone: ""
+    consumerPhone: "",
+    facturacionEntidad: false,
+    facturacionConsumidor: false
   },
   products: [],
   payments: [],
@@ -66,17 +68,11 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   const [activeIndex, setActiveIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [formData, setFormData] = useState<AdmissionBillingFormData>(initialFormState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDone, setIsDone] = useState(false);
-  const [invoiceNumber] = useState(`FAC-${Math.floor(Math.random() * 10000)}`);
-
 
   const idProduct = appointmentData?.id;
   const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(idProduct);
 
   const handleSubmitInvoice = async () => {
-    setIsSubmitting(true);
-
     try {
       console.log('📋 Datos del paciente:', {
         documentType: formData.patient.documentType,
@@ -87,8 +83,8 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
       });
 
       console.log('💰 Datos de facturación:', {
-        entityBilling: formData.patient.facturacionEntidad,
-        consumerBilling: formData.patient.facturacionConsumidor,
+        entityBilling: formData.billing.facturacionEntidad,
+        consumerBilling: formData.billing.facturacionConsumidor,
         entity: formData.billing.entity,
         authorizationNumber: formData.billing.authorizationNumber
       });
@@ -108,60 +104,58 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
       })));
 
       console.log('🧮 Totales:', {
-        subtotal: calculateTotal(formData.products),
+        subtotal: calculateTotal(formData.products, formData.billing.facturacionEntidad),
         taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
-        total: calculateTotal(formData.products)
+        total: calculateTotal(formData.products, formData.billing.facturacionEntidad)
       });
 
       console.log('📅 Appointment ID:', appointmentData?.id);
 
+      const userLogged = getUserLogged()
+
       const invoiceData = {
-        patient: {
-          documentType: formData.patient.documentType,
-          documentNumber: formData.patient.documentNumber,
-          name: formData.patient.nameComplet,
-          email: formData.patient.email,
-          phone: formData.patient.whatsapp,
-          address: formData.patient.address,
-          city: formData.patient.city,
-          insurance: formData.patient.insurance,
-          affiliateType: formData.patient.affiliateType
+        external_id: `${userLogged.external_id}`,
+        public_invoice: formData.billing.facturacionConsumidor,
+        admission: {
+          entity_id: formData.patient.entity_id,
+          entity_authorized_amount: formData.billing.authorizedAmount.replace('.', '') || 0,
+          authorization_number: formData.billing.facturacionEntidad ? formData.billing.authorizationNumber : "",
+          authorization_date: formData.billing.facturacionEntidad && formData.billing.authorizationDate ? formData.billing.authorizationDate.toISOString().split('T')[0] : "",
+          appointment_id: appointmentData?.id,
+          koneksi_claim_id: null,
         },
-        billing: {
-          entityBilling: formData.patient.facturacionEntidad,
-          consumerBilling: formData.patient.facturacionConsumidor,
-          entity: formData.billing.entity,
-          authorizationNumber: formData.billing.authorizationNumber,
-          authorizationDate: formData.billing.authorizationDate,
-          authorizedAmount: formData.billing.authorizedAmount
+        invoice: {
+          type: formData.billing.facturacionEntidad ? "entity" : "public",
+          status: "Pagado",
+          subtotal: calculateTotal(formData.products, formData.billing.facturacionEntidad),
+          discount: 0,
+          taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
+          total_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
+          observations: "",
+          due_date: "",
+          paid_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
+          user_id: userLogged.id,
+          third_party_id: 1,
+          sub_type: formData.billing.facturacionEntidad ? "entity" : "public",
         },
-        items: formData.products.map(product => ({
-          productId: product.id,
+        invoice_detail: formData.products.map(product => ({
+          product_id: product.id,
           description: product.description,
           quantity: product.quantity,
-          unitPrice: product.price,
-          taxRate: product.tax,
+          unit_price: product.price,
+          tax_rate: product.tax,
           discount: product.discount,
           total: product.total
         })),
         payments: formData.payments.map(payment => ({
           method: payment.method,
           amount: payment.amount,
-          authorizationNumber: payment.authorizationNumber,
+          authorization_number: payment.authorizationNumber,
           notes: payment.notes
-        })),
-        totals: {
-          subtotal: calculateTotal(formData.products),
-          taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
-          discount: formData.products.reduce((sum, product) => sum + product.discount, 0),
-          total: calculateTotal(formData.products)
-        },
-        appointmentId: appointmentData?.id,
-        invoiceNumber: invoiceNumber,
-        status: 'completed'
-      };
+        }))
+      }
 
-      console.log('📤 Datos completos a enviar:', JSON.stringify(invoiceData, null, 2));
+      console.log('📤 Datos completos a enviar:', invoiceData);
 
       console.log('🚀 Simulando envío al backend...');
       // await new Promise(resolve => setTimeout(resolve, 1500));
@@ -173,7 +167,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         life: 5000
       });
 
-      setIsDone(true);
     } catch (error) {
       console.error('❌ Error submitting invoice:', error);
       toast.current?.show({
@@ -182,8 +175,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         detail: 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
         life: 5000
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -202,17 +193,22 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
     if (appointmentData && appointmentData.patient) {
       const patient = appointmentData.patient;
       const initialProducts = productsToInvoice.length > 0
-        ? productsToInvoice.map(product => ({
-          uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
-          id: product.id,
-          code: product.code || `PROD-${product.id}`,
-          description: product.name || product.description || 'Producto sin nombre',
-          price: product.sale_price || 0,
-          quantity: 1,
-          tax: product.tax || 0,
-          discount: 0,
-          total: (product.sale_price || 0) * (1 + (product.tax || 0) / 100)
-        }))
+        ? productsToInvoice.map(product => {
+          const price = formData.billing.facturacionEntidad ? product.copayment : product.sale_price;
+          return {
+            uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
+            id: product.id,
+            code: product.code || `PROD-${product.id}`,
+            description: product.name || product.description || 'Producto sin nombre',
+            price: product.sale_price,
+            copayment: product.copayment,
+            currentPrice: price,
+            quantity: 1,
+            tax: product.tax || 0,
+            discount: 0,
+            total: (price || 0) * (1 + (product.tax || 0) / 100)
+          }
+        })
         : [];
 
       console.log('initialProducts', initialProducts);
@@ -240,7 +236,8 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
           bloodType: patient.blood_type || "",
           affiliateType: patient.social_security?.affiliate_type || "",
           insurance: patient.social_security?.entity?.name || "",
-          hasCompanion: patient.companions?.length > 0 || false
+          hasCompanion: patient.companions?.length > 0 || false,
+          entity_id: patient.social_security?.entity_id || ""
         },
         billing: {
           ...initialFormState.billing,
@@ -255,15 +252,21 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
 
   const updateFormData = <K extends keyof AdmissionBillingFormData>(section: K, data: Partial<AdmissionBillingFormData[K]>) => {
     setFormData(prev => {
-      const updatedData = section === 'products' && !Array.isArray(data)
-        ? Object.values(data || {})
-        : data;
-
       return {
         ...prev,
-        [section]: updatedData
+        [section]: data
       };
     });
+  };
+
+  const updateBillingData = <K extends keyof BillingData>(field: K, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      billing: {
+        ...prev.billing,
+        [field]: value
+      }
+    }));
   };
 
   const addPayment = (payment: any) => {
@@ -286,10 +289,10 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
   const validateCurrentStep = (index: number): boolean => {
     switch (index) {
       case 0:
-        return validatePatientStep(formData.patient, toast);
+        return validatePatientStep(formData.billing, toast);
       case 1:
         return validateProductsStep(formData.products, toast) &&
-          validatePaymentStep(formData.payments, calculateTotal(formData.products), toast);
+          validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
       default:
         return true;
     }
@@ -374,6 +377,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
             <PatientStep
               formData={formData}
               updateFormData={updateFormData}
+              updateBillingData={updateBillingData}
               nextStep={nextStep}
               toast={toast}
             />
@@ -388,6 +392,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
               nextStep={nextStep}
               prevStep={prevStep}
               toast={toast}
+              productsToInvoice={productsToInvoice}
             />
           </div>
 
@@ -398,7 +403,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
               onHide={handleHide}
               onPrint={() => window.print()}
               onSubmit={handleSubmitInvoice}
-              isSubmitting={isSubmitting}
             />
           </div>
         </div>

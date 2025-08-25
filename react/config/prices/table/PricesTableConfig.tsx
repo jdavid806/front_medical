@@ -106,7 +106,7 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
                     className="p-button-rounded p-button-text p-button-sm p-button-danger"
                     onClick={(e) => {
                         e.stopPropagation();
-                        onDeleteItem(rowData.id.toString());
+                        handleDeletePrice(rowData);
                     }}
                 >
                     <i className="fa-solid fa-trash"></i>
@@ -134,18 +134,9 @@ export const PricesTableConfig: React.FC<PriceTablesConfigProps> = ({ onEditItem
     };
 
     // Handle delete price
-    // const handleDeletePrice = (price: PriceItem) => {
-    //     confirmDialog({
-    //         message: `¿Estás seguro de eliminar el precio para "${price.name}"?`,
-    //         header: 'Confirmar eliminación',
-    //         icon: 'pi pi-exclamation-triangle',
-    //         acceptLabel: 'Sí, eliminar',
-    //         rejectLabel: 'Cancelar',
-    //         accept: () => {
-    //             setPrices(prices.filter(p => p.id !== price.id));
-    //         }
-    //     });
-    // };
+    const handleDeletePrice = (price: PriceItem) => {
+        onDeleteItem(price.id.toString());
+    };
 
 
     // Handle filter changes

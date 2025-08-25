@@ -12,8 +12,6 @@ import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccou
 export const PaymentMethodsConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
-
-  // Hooks para las operaciones CRUD
   const {
     paymentMethods,
     loading,
@@ -62,6 +60,7 @@ export const PaymentMethodsConfig = () => {
     try {
       const paymentMethodData = {
         method: data.name,
+        payment_type: data.payment_type || '',
         description: data.additionalDetails || '',
         accounting_account_id: data.account?.id || 0,
         category: data.category
@@ -100,6 +99,7 @@ export const PaymentMethodsConfig = () => {
     if (paymentMethod) {
       const data = {
         name: paymentMethod.method,
+        payment_type: paymentMethod.payment_type,
         category: paymentMethod.category || 'other',
         account: paymentMethod.accounting_account_id ? {
           id: paymentMethod.accounting_account_id,

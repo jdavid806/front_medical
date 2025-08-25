@@ -20,10 +20,9 @@ export interface PatientData {
   whatsapp: string;
   bloodType: string;
   hasCompanion: boolean;
-  facturacionEntidad: boolean;
-  facturacionConsumidor: boolean;
   insurance: string;
   affiliateType: string;
+  entity_id: string;
 }
 
 
@@ -38,6 +37,8 @@ export interface BillingData {
   consumerPhone?: string;
   invoiceNumber?: string;
   invoiceDate?: Date;
+  facturacionEntidad: boolean;
+  facturacionConsumidor: boolean;
 }
 
 export interface Product {
@@ -46,6 +47,8 @@ export interface Product {
   code: string;
   description: string;
   price: number;
+  copayment: number;
+  currentPrice: number;
   quantity: number;
   tax: number;
   discount: number;
@@ -56,6 +59,8 @@ export interface PaymentMethod {
   id: number;
   method: string;
   amount: number;
+  total: number;
+  change: number;
   reference?: string;
   authorizationNumber?: string;
   notes?: string;
@@ -63,7 +68,7 @@ export interface PaymentMethod {
 }
 
 export interface CurrentPayment {
-  method: string;
+  method: any;
   amount: number;
   authorizationNumber: string;
   notes: string;
@@ -89,7 +94,8 @@ export interface AdmissionBillingFormData {
 
 export interface PatientStepProps {
   formData: AdmissionBillingFormData;
-  updateFormData: (section: keyof AdmissionBillingFormData, data: Partial<AdmissionBillingFormData[keyof AdmissionBillingFormData]>) => void;
+  updateFormData: <K extends keyof AdmissionBillingFormData>(section: K, data: Partial<AdmissionBillingFormData[K]>) => void;
+  updateBillingData: <K extends keyof BillingData>(field: K, value: BillingData[K]) => void;
   nextStep: () => void;
 
   toast: React.RefObject<Toast | null>;

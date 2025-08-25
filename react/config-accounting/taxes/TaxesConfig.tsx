@@ -16,7 +16,6 @@ export const TaxesConfig = () => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<TaxFormInputs | undefined>(undefined);
 
-    // Hooks para las operaciones CRUD
     const { taxes, loading, error, refreshTaxes } = useTaxesConfigTable();
     const { createTax, loading: createLoading } = useTaxesCreateTable();
     const { updateTax, loading: updateLoading } = useTaxesUpdateTable();
@@ -29,39 +28,28 @@ export const TaxesConfig = () => {
         setShowFormModal(true);
     };
 
-const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
+    const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
 
+    const handleSubmit = async (data: TaxFormInputs) => {
+        try {
+            if (tax) {
+                const updateData = TaxesMapperUpdate(data);
+                await updateTax(tax.id, updateData);
+                SwalManager.success('Impuesto actualizado correctamente');
+            } else {
+                const createData = TaxesMapperCreate(data);
+                await createTax(createData);
+                SwalManager.success('Impuesto creado correctamente');
+            }
 
-const handleSubmit = async (data: TaxFormInputs) => {
-  try {
-    // Validación adicional antes de mapear
-    if (!data.accounting_account) {
-      throw new Error('La cuenta contable principal es requerida');
-    }
-    
-    if (!data.accounting_account_reverse) {
-      throw new Error('La cuenta contable reversa es requerida');
-    }
+            await refreshTaxes();
+            setShowFormModal(false);
+        } catch (error) {
+            console.error("Error al guardar impuesto:", error);
+            SwalManager.error(error.message || 'Error al guardar el impuesto');
+        }
+    };
 
-    if (tax) {
-      // Para actualización - ya no necesita type assertion
-      const updateData = TaxesMapperUpdate(data);
-      await updateTax(tax.id, updateData);
-      SwalManager.success('Impuesto actualizado correctamente');
-    } else {
-      // Para creación - ya no necesita type assertion
-      const createData = TaxesMapperCreate(data);
-      await createTax(createData);
-      SwalManager.success('Impuesto creado correctamente');
-    }
-    
-    await refreshTaxes();
-    setShowFormModal(false);
-  } catch (error) {
-    console.error("Error al guardar impuesto:", error);
-    SwalManager.error(error.message || 'Error al guardar el impuesto');
-  }
-};
     const handleTableEdit = async (id: string) => {
         try {
             await fetchTaxById(id);
@@ -80,19 +68,21 @@ const handleSubmit = async (data: TaxFormInputs) => {
         }
     };
 
-useEffect(() => {
-  if (tax && accounts) {
+    useEffect(() => {
+        if (tax && accounts) {
+            const data: TaxFormInputs = {
+                name: tax.name,
+                percentage: tax.percentage,
+                accounting_account_id: tax.accounting_account_id,
+                accounting_account_reverse_id: tax.accounting_account_reverse_id,
+                sell_accounting_account_id: tax.sell_accounting_account_id,
+                sell_reverse_accounting_account_id: tax.sell_reverse_accounting_account_id,
+                description: tax.description || ''
+            };
+            setInitialData(data);
+        }
+    }, [tax, accounts]);
 
-    const data: TaxFormInputs = {
-      name: tax.name,
-      percentage: tax.percentage,
-      accounting_account: Number(tax.accounting_account), 
-      accounting_account_reverse: tax.accounting_account_reverse_id,
-      description: tax.description || ''
-    };
-    setInitialData(data);
-  }
-}, [tax, accounts]);
     return (
         <PrimeReactProvider
             value={{
@@ -138,8 +128,8 @@ useEffect(() => {
                     setInitialData(undefined);
                 }}
                 initialData={initialData}
-  accounts={accounts}      
-            loading={createLoading || updateLoading || deleteLoading}
+                accounts={accounts}
+                loading={createLoading || updateLoading || deleteLoading}
             />
         </PrimeReactProvider>
     );

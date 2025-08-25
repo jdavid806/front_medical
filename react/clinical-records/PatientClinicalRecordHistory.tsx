@@ -137,7 +137,7 @@ export const PatientClinicalRecordHistory: React.FC<
             resolve(response.file);
           })
           .catch(reject);
-      }, 1500);
+      }, 2500);
     });
   }
 
@@ -180,6 +180,7 @@ export const PatientClinicalRecordHistory: React.FC<
         text: "Mensaje enviado correctamente",
         title: "Éxito",
       });
+      window.location.reload();
 
     },
     [sendMessageWpp]

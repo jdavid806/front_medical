@@ -4,12 +4,16 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import { InputSwitch } from 'primereact/inputswitch';
+import { Button } from 'primereact/button';
 import {
   examTypeService,
   entitiesService,
   taxesService,
   retentionsService,
 } from "../../../../services/api";
+import { CustomFormModal } from "../../../components/CustomFormModal";
+import { ExamForm } from "../../../exams/components/ExamForm";
+
 
 type EntityRow = {
   entity_id: string | number;
@@ -68,6 +72,9 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
   const [examTypesData, setExamTypesData] = useState<any[]>([]);
   const [taxes, setTaxes] = useState<any[]>([]);
   const [retentions, setRetentions] = useState<any[]>([]);
+
+  // Estado para controlar la visibilidad del modal de exámenes
+  const [showExamModal, setShowExamModal] = useState(false);
 
   const {
     control,
@@ -130,14 +137,18 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       if (initialData.product_id) {
         setValue('product_id', initialData.product_id);
       }
+
+      console.log('initialData: ', initialData);
+
       setValue('name', initialData.name);
       setValue('curp', initialData.curp);
       setValue('attention_type', initialData.attention_type);
       setValue('sale_price', initialData.sale_price);
       setValue('copago', initialData.copago);
       setValue('purchase_price', initialData.purchase_price);
+      setValue('exam_type_id', initialData.exam_type_id || '');
       setValue('taxProduct_type', initialData.taxProduct_type || '');
-      
+
       // Load entities if they exist
       if (initialData.entities && initialData.entities.length > 0) {
         setEntityRows([...initialData.entities]); // Crear nueva copia para forzar re-render
@@ -166,19 +177,9 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     }
   }, [initialData, setValue]);
 
-  // Establecer exam_type_id después de que se carguen los examTypesData
-  useEffect(() => {
-    if (initialData?.exam_type_id && examTypesData.length > 0) {
-      // Convertir a número para comparar con los IDs de examTypesData
-      const examTypeId = parseInt(initialData.exam_type_id);
-      const foundExam = examTypesData.find(exam => exam.id === examTypeId);
-      if (foundExam) {
-        setValue('exam_type_id', foundExam.id);
-      }
-    }
-  }, [initialData?.exam_type_id, examTypesData, setValue]);
-
   const onSubmit: SubmitHandler<ProductFormInputs> = (data) => {
+    console.log("data: ", data);
+    console.log("entityRows: ", entityRows);
     const submitData: ProductFormInputs = {
       ...data,
       entities: entityRows,
@@ -199,8 +200,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     );
   };
 
-
-
   async function loadExamTypes() {
     const exmaTypes = await examTypeService.getAll();
     setExamTypesData(exmaTypes);
@@ -208,11 +207,13 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
   async function loadTaxes() {
     const taxes = await taxesService.getTaxes();
+    console.log('Loaded taxes:', taxes.data);
     setTaxes(taxes.data);
   }
 
   async function loadRetentions() {
     const retentions = await retentionsService.getRetentions();
+    console.log('Loaded retentions:', retentions.data);
     setRetentions(retentions.data);
   }
 
@@ -222,6 +223,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
   ) => {
     if (field === 'entity_id') {
       const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
+      console.log('Selected entity:', selectedEntity, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         entity_id: value,
@@ -229,6 +231,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       }));
     } else if (field === 'tax_charge_id') {
       const selectedTax = value ? taxes.find(t => t.id == value) : null;
+      console.log('Selected tax:', selectedTax, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         tax_charge_id: value,
@@ -236,6 +239,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       }));
     } else if (field === 'withholding_tax_id') {
       const selectedRetention = value ? retentions.find(r => r.id == value) : null;
+      console.log('Selected retention:', selectedRetention, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         withholding_tax_id: value,
@@ -261,6 +265,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
         retention_name: currentEntity.retention_name || 'N/A',
       };
 
+      console.log('Adding entity row:', newRow);
       setEntityRows([...entityRows, newRow]);
 
       // Reset current entity
@@ -286,13 +291,23 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     }
   };
 
+  // Función para abrir el modal de exámenes
+  const handleOpenExamModal = () => {
+    setShowExamModal(true);
+  };
+
+  // Función para cerrar el modal de exámenes
+  const handleCloseExamModal = () => {
+    setShowExamModal(false);
+  };
+
   return (
     <div className="card mt-4">
       <div className="card-body">
         <h5 className="card-title">Datos de producto</h5>
         <form className="row g-3" id={formId} onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register("product_id")} />
-          
+
           <div className="col-12">
             <Controller
               name="name"
@@ -314,7 +329,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-md-6">
             <Controller
               name="curp"
@@ -336,7 +351,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-md-6">
             <Controller
               name="attention_type"
@@ -366,40 +381,45 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           {showExamType && (
             <div className="col-12">
-              <Controller
-                name="exam_type_id"
-                control={control}
-                render={({ field }) => (
-                  <div className="mb-3">
-                    <label className="form-label" htmlFor={field.name}>
-                      Examen
-                    </label>
-                    <Dropdown
-                      className="w-100"
-                      id={field.name}
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.value);
-                      }}
-                      options={examTypesData.map((exam) => ({
-                        label: exam.name,
-                        value: exam.id
-                      }))}
-                      placeholder="Seleccionar..."
-                      filter
-                      filterBy="label"
-                      filterPlaceholder="Buscar por nombre..."
-                      showClear
-                    />
-                  </div>
-                )}
-              />
+              <div className="d-flex align-items-center mb-3">
+                <Controller
+                  name="exam_type_id"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="flex-grow-1 me-2">
+                      <label className="form-label" htmlFor={field.name}>
+                        Examen
+                      </label>
+                      <Dropdown
+                        className="w-100"
+                        id={field.name}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        options={examTypesData.map((exam) => ({
+                          label: exam.name,
+                          value: exam.id
+                        }))}
+                        placeholder="Seleccionar..."
+                      />
+                    </div>
+                  )}
+                />
+                <div className="pt-4">
+                  <Button
+                    type="button"
+                    icon={<i className="fas fa-plus"></i>}
+                    className="p-button-primary"
+                    onClick={handleOpenExamModal}
+                    tooltipOptions={{ position: 'top' }}
+                  />
+                </div>
+              </div>
             </div>
           )}
-          
+
           <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="sale_price"
@@ -423,7 +443,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="copago"
@@ -447,7 +467,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-12" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="purchase_price"
@@ -471,7 +491,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="toggleEntities"
@@ -490,7 +510,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="toggleImpuesto"
@@ -503,8 +523,8 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                   <InputSwitch
                     inputId="toggleImpuesto"
                     checked={field.value || false}
-                    onChange={(e) => { 
-                      field.onChange(e.value) 
+                    onChange={(e) => {
+                      field.onChange(e.value)
                       if (!e.value) {
                         setValue('taxProduct_type', '0');
                       }
@@ -514,7 +534,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             />
           </div>
-          
+
           {showTax && (
             <div className="col-12">
               <Controller
@@ -541,7 +561,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               />
             </div>
           )}
-          
+
           {showEntities && (
             <div className="col-12">
               <div className="card p-3 mt-3">
@@ -624,7 +644,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                   </div>
                 </div>
               </div>
-              
+
               {entityRows.length > 0 && (
                 <div className="card p-3 mt-3">
                   <table className="table table-striped">
@@ -661,13 +681,13 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
               )}
             </div>
           )}
-          
+
           <div className="col-12 text-end mt-4">
             <button className="btn btn-primary me-2" type="submit">
               Guardar
             </button>
-            <button 
-              className="btn btn-outline-primary" 
+            <button
+              className="btn btn-outline-primary"
               type="button"
               onClick={onCancel}
             >
@@ -675,6 +695,17 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
             </button>
           </div>
         </form>
+
+        <CustomFormModal
+          style={{ width: "90vw", maxWidth: "600px" }}
+          formId={'createExam'}
+          show={showExamModal}
+          onHide={handleCloseExamModal}
+          title='Crear Exámenes'
+        >
+          <ExamForm
+          />
+        </CustomFormModal>
       </div>
     </div>
   );

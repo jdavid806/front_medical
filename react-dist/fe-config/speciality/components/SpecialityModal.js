@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { confirmDialog } from 'primereact/confirmdialog';
 import { CustomModal } from "../../../components/CustomModal.js";
+import { AutoComplete } from 'primereact/autocomplete';
+import { useSpecialty } from "../hooks/useSpecialty.js";
 export default function SpecialityModal({
   visible,
   selectedSpecialty,
@@ -21,6 +22,10 @@ export default function SpecialityModal({
   onClinicalRecordChange,
   onCie11CodeChange
 }) {
+  const {
+    cie11Codes,
+    loadCie11Codes
+  } = useSpecialty();
   const confirmRemove = index => {
     confirmDialog({
       message: '¿Está seguro de que desea eliminar este elemento?',
@@ -36,6 +41,9 @@ export default function SpecialityModal({
     className: "btn btn-primary my-0",
     onClick: onSave
   }, "Guardar"));
+  const searchCie11Codes = async event => {
+    await loadCie11Codes(event.query);
+  };
   return /*#__PURE__*/React.createElement(CustomModal, {
     title: "Vincular Historias Cl\xEDnicas y CIE-11",
     show: visible,
@@ -83,17 +91,31 @@ export default function SpecialityModal({
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "cie11-code",
     className: "form-label"
-  }, "Escriba un C\xF3digo CIE-11"), /*#__PURE__*/React.createElement(InputText, {
-    id: "cie11-code",
-    value: cie11Code,
-    onChange: e => onCie11CodeChange(e.target.value),
-    placeholder: "C\xF3digo CIE-11",
+  }, "Escriba un C\xF3digo CIE-11"), /*#__PURE__*/React.createElement(AutoComplete, {
+    inputId: "cie11-code",
+    placeholder: "Seleccione un CIE-11",
+    field: "label",
+    suggestions: cie11Codes,
+    completeMethod: searchCie11Codes,
+    inputClassName: "w-100",
     className: "w-100",
-    onKeyPress: e => e.key === 'Enter' && onAddCie11Code()
+    appendTo: "self",
+    value: cie11Code,
+    onChange: e => onCie11CodeChange(e.value),
+    onKeyPress: e => e.key === 'Enter' && onAddCie11Code(),
+    forceSelection: false,
+    dropdown: true,
+    showEmptyMessage: true,
+    emptyMessage: "No se encontraron c\xF3digos CIE-11",
+    delay: 1000,
+    panelStyle: {
+      zIndex: 100000,
+      width: 'auto'
+    }
   })), /*#__PURE__*/React.createElement(Button, {
     className: "btn btn-primary my-0 w-100",
     onClick: onAddCie11Code,
-    disabled: !cie11Code.trim()
+    disabled: !cie11Code
   }, "Agregar CIE-11"))), /*#__PURE__*/React.createElement("div", {
     className: "mt-4"
   }, /*#__PURE__*/React.createElement("h6", {

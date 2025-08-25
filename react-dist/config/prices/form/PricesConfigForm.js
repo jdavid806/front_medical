@@ -5,7 +5,10 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
 import { InputSwitch } from 'primereact/inputswitch';
+import { Button } from 'primereact/button';
 import { examTypeService, taxesService, retentionsService } from "../../../../services/api/index.js";
+import { CustomFormModal } from "../../../components/CustomFormModal.js";
+import { ExamForm } from "../../../exams/components/ExamForm.js";
 const PricesConfigForm = ({
   formId,
   onHandleSubmit,
@@ -30,6 +33,9 @@ const PricesConfigForm = ({
   const [examTypesData, setExamTypesData] = useState([]);
   const [taxes, setTaxes] = useState([]);
   const [retentions, setRetentions] = useState([]);
+
+  // Estado para controlar la visibilidad del modal de exámenes
+  const [showExamModal, setShowExamModal] = useState(false);
   const {
     control,
     handleSubmit,
@@ -86,12 +92,14 @@ const PricesConfigForm = ({
       if (initialData.product_id) {
         setValue('product_id', initialData.product_id);
       }
+      console.log('initialData: ', initialData);
       setValue('name', initialData.name);
       setValue('curp', initialData.curp);
       setValue('attention_type', initialData.attention_type);
       setValue('sale_price', initialData.sale_price);
       setValue('copago', initialData.copago);
       setValue('purchase_price', initialData.purchase_price);
+      setValue('exam_type_id', initialData.exam_type_id || '');
       setValue('taxProduct_type', initialData.taxProduct_type || '');
 
       // Load entities if they exist
@@ -120,19 +128,9 @@ const PricesConfigForm = ({
       setValue('toggleImpuesto', false);
     }
   }, [initialData, setValue]);
-
-  // Establecer exam_type_id después de que se carguen los examTypesData
-  useEffect(() => {
-    if (initialData?.exam_type_id && examTypesData.length > 0) {
-      // Convertir a número para comparar con los IDs de examTypesData
-      const examTypeId = parseInt(initialData.exam_type_id);
-      const foundExam = examTypesData.find(exam => exam.id === examTypeId);
-      if (foundExam) {
-        setValue('exam_type_id', foundExam.id);
-      }
-    }
-  }, [initialData?.exam_type_id, examTypesData, setValue]);
   const onSubmit = data => {
+    console.log("data: ", data);
+    console.log("entityRows: ", entityRows);
     const submitData = {
       ...data,
       entities: entityRows
@@ -155,15 +153,18 @@ const PricesConfigForm = ({
   }
   async function loadTaxes() {
     const taxes = await taxesService.getTaxes();
+    console.log('Loaded taxes:', taxes.data);
     setTaxes(taxes.data);
   }
   async function loadRetentions() {
     const retentions = await retentionsService.getRetentions();
+    console.log('Loaded retentions:', retentions.data);
     setRetentions(retentions.data);
   }
   const handleEntityChange = (field, value) => {
     if (field === 'entity_id') {
       const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
+      console.log('Selected entity:', selectedEntity, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         entity_id: value,
@@ -171,6 +172,7 @@ const PricesConfigForm = ({
       }));
     } else if (field === 'tax_charge_id') {
       const selectedTax = value ? taxes.find(t => t.id == value) : null;
+      console.log('Selected tax:', selectedTax, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         tax_charge_id: value,
@@ -178,6 +180,7 @@ const PricesConfigForm = ({
       }));
     } else if (field === 'withholding_tax_id') {
       const selectedRetention = value ? retentions.find(r => r.id == value) : null;
+      console.log('Selected retention:', selectedRetention, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         withholding_tax_id: value,
@@ -201,6 +204,7 @@ const PricesConfigForm = ({
         withholding_tax_id: currentEntity.withholding_tax_id || '',
         retention_name: currentEntity.retention_name || 'N/A'
       };
+      console.log('Adding entity row:', newRow);
       setEntityRows([...entityRows, newRow]);
 
       // Reset current entity
@@ -223,6 +227,16 @@ const PricesConfigForm = ({
       newRows.splice(rowIndex, 1);
       setEntityRows(newRows);
     }
+  };
+
+  // Función para abrir el modal de exámenes
+  const handleOpenExamModal = () => {
+    setShowExamModal(true);
+  };
+
+  // Función para cerrar el modal de exámenes
+  const handleCloseExamModal = () => {
+    setShowExamModal(false);
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "card mt-4"
@@ -319,13 +333,15 @@ const PricesConfigForm = ({
     }), getFormErrorMessage("attention_type"))
   })), showExamType && /*#__PURE__*/React.createElement("div", {
     className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "exam_type_id",
     control: control,
     render: ({
       field
     }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
+      className: "flex-grow-1 me-2"
     }, /*#__PURE__*/React.createElement("label", {
       className: "form-label",
       htmlFor: field.name
@@ -333,20 +349,26 @@ const PricesConfigForm = ({
       className: "w-100",
       id: field.name,
       value: field.value,
-      onChange: e => {
-        field.onChange(e.value);
-      },
+      onChange: e => field.onChange(e.value),
       options: examTypesData.map(exam => ({
         label: exam.name,
         value: exam.id
       })),
-      placeholder: "Seleccionar...",
-      filter: true,
-      filterBy: "label",
-      filterPlaceholder: "Buscar por nombre...",
-      showClear: true
+      placeholder: "Seleccionar..."
     }))
-  })), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "pt-4"
+  }, /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus"
+    }),
+    className: "p-button-primary",
+    onClick: handleOpenExamModal,
+    tooltipOptions: {
+      position: 'top'
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6",
     style: {
       display: showLabFields ? 'block' : 'none'
@@ -579,6 +601,15 @@ const PricesConfigForm = ({
     className: "btn btn-outline-primary",
     type: "button",
     onClick: onCancel
-  }, "Cancelar")))));
+  }, "Cancelar"))), /*#__PURE__*/React.createElement(CustomFormModal, {
+    style: {
+      width: "90vw",
+      maxWidth: "600px"
+    },
+    formId: 'createExam',
+    show: showExamModal,
+    onHide: handleCloseExamModal,
+    title: "Crear Ex\xE1menes"
+  }, /*#__PURE__*/React.createElement(ExamForm, null))));
 };
 export default PricesConfigForm;

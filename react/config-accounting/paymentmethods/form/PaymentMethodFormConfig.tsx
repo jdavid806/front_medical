@@ -22,8 +22,8 @@ const categories = [
 ];
 
 const TypeMethod = [
-  { label: "Compras", value: "buyy" },
-  { label: "Ventas", value: "sale" },
+  { label: "Compras", value: "Compras" },
+  { label: "Ventas", value: "Ventas" },
 
 ];
 
@@ -46,6 +46,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
     defaultValues: initialData || {
       name: "",
       category: "",
+      payment_type: "",
       account: null,
       additionalDetails: "",
     },
@@ -93,9 +94,9 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
 
       <div className="mb-3">
         <Controller
-          name="category"
+          name="payment_type"
           control={control}
-          rules={{ required: "La categoría es requerida" }}
+          rules={{ required: "el tipo metodo pago es requerida" }}
           render={({ field }) => (
             <>
               <label htmlFor={field.name} className="form-label">
@@ -107,14 +108,14 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
                 optionLabel="label"
                 optionValue="value"
                 className={classNames("w-100", {
-                  "p-invalid": errors.category,
+                  "p-invalid": errors.payment_type,
                 })}
                 {...field}
               />
             </>
           )}
         />
-        {getFormErrorMessage("category")}
+        {getFormErrorMessage("payment_type")}
       </div>
       <div className="mb-3">
         <Controller

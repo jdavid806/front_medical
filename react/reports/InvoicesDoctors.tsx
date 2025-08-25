@@ -33,6 +33,12 @@ import { useCompany } from "../hooks/useCompany";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
 
+import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProceduresCashFormat";
+import { useProceduresCountFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProceduresCountFormat";
+import { useEntitiesCountFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useEntitiesCountFormat";
+import { useAppointmentsFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useAppointmentsFormat";
+import { useProductivityFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProductivityFormat";
+
 type TextAlign =
   | "left"
   | "right"
@@ -84,6 +90,12 @@ export const SpecialistsReport = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
 
+  const { generateFormatProceduresCash } = useProceduresCashFormat();
+  const { generateFormatProceduresCount } = useProceduresCountFormat();
+  const { generateFormatEntitiesCount } = useEntitiesCountFormat();
+  const { generateFormatAppointments } = useAppointmentsFormat();
+  const { generateFormatProductivity } = useProductivityFormat();
+
   // Export loading states
   const [exporting, setExporting] = useState({
     procedures: false,
@@ -121,7 +133,6 @@ export const SpecialistsReport = () => {
   useEffect(() => {
     if (activeTab === "productivity-tab" && reportData.length > 0) {
       const newTreeNodes = reportData.map((user: any, userIndex) => {
-        console.log("user", user);
         let countAppointments = user.appointments.length;
         let countProceduresInvoiced = 0;
         const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${
@@ -131,7 +142,11 @@ export const SpecialistsReport = () => {
         const children = user.appointments.map(
           (appointment, appointmentIndex) => {
             let status = "unInvoiced";
-            if (appointment.admission && appointment.admission.invoice && appointment?.admission?.invoice?.status !== "cancelled") {
+            if (
+              appointment.admission &&
+              appointment.admission.invoice &&
+              appointment?.admission?.invoice?.status !== "cancelled"
+            ) {
               countProceduresInvoiced++;
               status = "invoiced";
             }
@@ -162,7 +177,9 @@ export const SpecialistsReport = () => {
             date: "",
             countAppointments: countAppointments,
             counrProceduresInvoiced: countProceduresInvoiced,
-            average: ((countProceduresInvoiced / countAppointments) * 100).toFixed(2) + "%",
+            average:
+              ((countProceduresInvoiced / countAppointments) * 100).toFixed(2) +
+              "%",
             isLeaf: false,
             rawData: user.appointments,
           },
@@ -188,8 +205,6 @@ export const SpecialistsReport = () => {
       } else {
         data = await billingService.getBillingReport(filterParams);
       }
-
-      console.log("data", data);
       setReportData(data);
       return data; // Retornamos los datos por si se necesitan
     } catch (error) {
@@ -401,20 +416,23 @@ export const SpecialistsReport = () => {
     switch (tab) {
       case "doctors-tab":
         dataExport = generateDoctorsTable(true);
-        namePDF = "Procedimientos";
-        break;
-      case "entities-tab":
+        return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
+      case "doctors-count-tab":
         dataExport = generateEntityPricesTable(true);
-        namePDF = "Entidades";
-        break;
-      case "prices-tab":
+        return generateFormatProceduresCount(
+          dataExport,
+          dateRange,
+          "Impresion"
+        );
+      case "conteo-entidad-tab":
         dataExport = generateEntityCountTable(true);
-        namePDF = "Precios";
-        break;
+        return generateFormatEntitiesCount(dataExport, dateRange, "Impresion");
       case "consultation-tab":
         dataExport = generateConsultationsTable(true);
-        namePDF = "Consultas";
-        break;
+        return generateFormatAppointments(dataExport, dateRange, "Impresion");
+      case "productivity-tab":
+        dataExport = generateTableProductivity(true);
+        return generateFormatProductivity(dataExport, dateRange, "Impresion");
     }
 
     const headers = dataExport[0];
@@ -637,7 +655,7 @@ export const SpecialistsReport = () => {
     const displayData = isReturnData ? tableData : [...tableData, totalsRow];
 
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     // Create columns for the table
@@ -1153,7 +1171,7 @@ export const SpecialistsReport = () => {
     tableData.push(totalsRow);
 
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     const entityColumns: TableColumn[] = [
@@ -1327,7 +1345,7 @@ export const SpecialistsReport = () => {
     tableData.push(totalsRow);
 
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     const countColumns: TableColumn[] = [
@@ -1557,7 +1575,7 @@ export const SpecialistsReport = () => {
     tableData.push(totalsRow);
 
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     const consultationColumns: TableColumn[] = [
@@ -1702,8 +1720,6 @@ export const SpecialistsReport = () => {
   };
 
   const generateTableProductivity = (isReturnData = false) => {
-    console.log("reportData", reportData);
-
     if (!reportData || reportData.length === 0) {
       return (
         <div
@@ -1715,13 +1731,15 @@ export const SpecialistsReport = () => {
       );
     }
 
+    if (isReturnData) {
+      return reportData;
+    }
+
     const doctorTemplate = (node: any) => <strong>{node.data.doctor}</strong>;
     const ordersTemplate = (node: any) => (
       <strong>{node.data.countAppointments}</strong>
     );
-    const datesTemplate = (node: any) => (
-      <strong>{node.data.date}</strong>
-    );
+    const datesTemplate = (node: any) => <strong>{node.data.date}</strong>;
     const proceduresInvoicedTemplate = (node: any) => (
       <strong>{node.data.counrProceduresInvoiced}</strong>
     );
@@ -1766,11 +1784,7 @@ export const SpecialistsReport = () => {
                   body={doctorTemplate}
                   expander
                 />
-                <Column
-                  field="date"
-                  header="Fecha cita"
-                  body={datesTemplate}
-                />
+                <Column field="date" header="Fecha cita" body={datesTemplate} />
                 <Column
                   field="countAppointments"
                   header="Ordenes"
@@ -2147,7 +2161,7 @@ export const SpecialistsReport = () => {
                           }
                         />
                         <ExportButtonPDF
-                          onClick={() => exportToPDF("prices-tab")}
+                          onClick={() => exportToPDF("conteo-entidad-tab")}
                           loading={exporting.procedures}
                           disabled={!reportData || reportData.length === 0}
                         />

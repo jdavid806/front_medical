@@ -2,6 +2,7 @@ import { SubmitHandler } from "react-hook-form";
 
 export interface PaymentMethodFormInputs {
   name: string;
+  payment_type: string;
   category: string;
   account: { id: number; name: string } | null;
   additionalDetails: string;
@@ -23,6 +24,7 @@ export interface PaymentMethodDTO {
   id: number;
   method: string;
   description: string;
+  payment_type: string;
   created_at: string;
   updated_at: string;
   account: string | null;

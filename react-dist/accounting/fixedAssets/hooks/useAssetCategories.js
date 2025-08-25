@@ -1,6 +1,6 @@
-// src/hooks/useAssetCategories.ts
+// hooks/useAssetCategories.ts
 import { useState, useEffect } from "react";
-import { resourcesAdminService } from "../../../../services/api/index.js";
+import { ResourcesAdminService } from "../../../../services/api/classes/resourcesAdmin.js";
 export const useAssetCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -8,17 +8,16 @@ export const useAssetCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await resourcesAdminService.getAssetCategories();
-
-        // Transformar la respuesta del API al formato para Dropdown
+        const service = new ResourcesAdminService();
+        const response = await service.getAssetCategories();
+        console.log("response: ", response);
+        // Transformar la respuesta del API al formato que necesita el Dropdown
         const formattedCategories = response.data.map(category => ({
-          label: category.attributes.name,
-          value: category.id.toString(),
-          description: category.attributes.description
+          label: category.name,
+          value: category.id.toString()
         }));
         setCategories(formattedCategories);
       } catch (err) {
-        console.error("Error fetching asset categories:", err);
         setError(err instanceof Error ? err : new Error("Error al cargar categorías"));
       } finally {
         setLoading(false);

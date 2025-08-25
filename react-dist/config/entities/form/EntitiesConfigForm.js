@@ -1,5 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
@@ -27,6 +27,7 @@ const EntitiesConfigForm = ({
   } = useForm({
     defaultValues: initialData || {
       name: "",
+      entity_code: "",
       document_type: "CC",
       document_number: "",
       email: "",
@@ -42,8 +43,6 @@ const EntitiesConfigForm = ({
   });
   const watchCountry = watch("country_id");
   const watchDepartment = watch("department_id");
-
-  // Usar el hook de ubicaciones
   const {
     countryOptions,
     departmentOptions,
@@ -54,18 +53,15 @@ const EntitiesConfigForm = ({
     handleCountryChange,
     handleDepartmentChange,
     handleCityChange,
-    loading: locationLoading,
-    setInitialValuesFromIds
+    loading: locationLoading
   } = useLocationDropdowns();
+  const [isInitialized, setIsInitialized] = useState(false);
   const onFormSubmit = data => {
-    const countryId = countryOptions.find(c => c.value === data.country_id)?.customProperties?.id;
-    const departmentId = departmentOptions.find(d => d.value === data.department_id)?.customProperties?.id;
-    const cityId = cityOptions.find(c => c.value === data.city_id)?.customProperties?.id;
     onSubmit({
       ...data,
-      country_id: countryId ? Number(countryId) : null,
-      department_id: departmentId ? Number(departmentId) : null,
-      city_id: cityId ? String(cityId) : null
+      country_id: data.country_id,
+      department_id: data.department_id,
+      city_id: data.city_id
     });
   };
   const getFormErrorMessage = name => {
@@ -74,13 +70,30 @@ const EntitiesConfigForm = ({
     }, errors[name]?.message);
   };
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !isInitialized) {
       reset(initialData);
-      if (initialData.country_id && initialData.department_id && initialData.city_id) {
-        setInitialValuesFromIds(Number(initialData.country_id), Number(initialData.department_id), Number(initialData.city_id));
+      if (initialData.country_id) {
+        const countryId = initialData.country_id.toString();
+        setValue("country_id", countryId);
+        handleCountryChange(countryId);
+        if (initialData.department_id) {
+          const departmentId = initialData.department_id.toString();
+          setTimeout(() => {
+            setValue("department_id", departmentId);
+            handleDepartmentChange(departmentId);
+            if (initialData.city_id) {
+              const cityId = initialData.city_id.toString();
+              setTimeout(() => {
+                setValue("city_id", cityId);
+                handleCityChange(cityId);
+              }, 300);
+            }
+          }, 300);
+        }
       }
+      setIsInitialized(true);
     }
-  }, [initialData, reset, setInitialValuesFromIds]);
+  }, [initialData, reset, setValue, isInitialized]);
   useEffect(() => {
     if (selectedCountry) {
       setValue("country_id", selectedCountry, {
@@ -106,6 +119,10 @@ const EntitiesConfigForm = ({
     id: formId,
     onSubmit: handleSubmit(onFormSubmit)
   }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "name",
@@ -125,6 +142,25 @@ const EntitiesConfigForm = ({
       })
     }, field)))
   }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "entity_code",
+    control: control,
+    rules: {
+      required: "El código es requerido"
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "C\xF3digo *"), /*#__PURE__*/React.createElement(InputText, _extends({
+      id: field.name,
+      className: classNames("w-100", {
+        "p-invalid": errors.entity_code
+      })
+    }, field)))
+  }), getFormErrorMessage("entity_code")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "document_type",
@@ -188,7 +224,9 @@ const EntitiesConfigForm = ({
         "p-invalid": errors.email
       })
     }, field)))
-  }), getFormErrorMessage("email")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("email"))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "address",
@@ -241,11 +279,14 @@ const EntitiesConfigForm = ({
       className: "form-label"
     }, "Pa\xEDs *"), /*#__PURE__*/React.createElement(Dropdown, {
       id: "country_id",
-      value: selectedCountry,
+      value: field.value,
       options: countryOptions,
       optionLabel: "label",
       optionValue: "value",
-      onChange: e => handleCountryChange(e.value),
+      onChange: e => {
+        field.onChange(e.value);
+        handleCountryChange(e.value);
+      },
       className: classNames("w-100", {
         "p-invalid": errors.country_id
       }),
@@ -270,11 +311,14 @@ const EntitiesConfigForm = ({
       className: "form-label"
     }, "Departamento *"), /*#__PURE__*/React.createElement(Dropdown, {
       id: "department_id",
-      value: selectedDepartment,
+      value: field.value,
       options: departmentOptions,
       optionLabel: "label",
       optionValue: "value",
-      onChange: e => handleDepartmentChange(e.value),
+      onChange: e => {
+        field.onChange(e.value);
+        handleDepartmentChange(e.value);
+      },
       className: classNames("w-100", {
         "p-invalid": errors.department_id
       }),
@@ -300,11 +344,14 @@ const EntitiesConfigForm = ({
       className: "form-label"
     }, "Ciudad *"), /*#__PURE__*/React.createElement(Dropdown, {
       id: "city_id",
-      value: selectedCity,
+      value: field.value,
       options: cityOptions,
       optionLabel: "label",
       optionValue: "value",
-      onChange: e => handleCityChange(e.value),
+      onChange: e => {
+        field.onChange(e.value);
+        handleCityChange(e.value);
+      },
       className: classNames("w-100", {
         "p-invalid": errors.city_id
       }),
@@ -315,7 +362,7 @@ const EntitiesConfigForm = ({
       filterBy: "label",
       showClear: true
     }))
-  }), getFormErrorMessage("city_id")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("city_id")))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
   }, onCancel && /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",

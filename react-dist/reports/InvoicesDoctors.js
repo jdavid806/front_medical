@@ -13,6 +13,11 @@ import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
 import { ColumnGroup } from "primereact/columngroup";
 import { Row } from "primereact/row";
+import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProceduresCashFormat.js";
+import { useProceduresCountFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProceduresCountFormat.js";
+import { useEntitiesCountFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useEntitiesCountFormat.js";
+import { useAppointmentsFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useAppointmentsFormat.js";
+import { useProductivityFormat } from "../documents-generation/hooks/reports-medical/invoicesDoctors/useProductivityFormat.js";
 export const SpecialistsReport = () => {
   // Set default date range (last 5 days)
   const today = new Date();
@@ -46,6 +51,21 @@ export const SpecialistsReport = () => {
   // Pagination state
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
+  const {
+    generateFormatProceduresCash
+  } = useProceduresCashFormat();
+  const {
+    generateFormatProceduresCount
+  } = useProceduresCountFormat();
+  const {
+    generateFormatEntitiesCount
+  } = useEntitiesCountFormat();
+  const {
+    generateFormatAppointments
+  } = useAppointmentsFormat();
+  const {
+    generateFormatProductivity
+  } = useProductivityFormat();
 
   // Export loading states
   const [exporting, setExporting] = useState({
@@ -81,7 +101,6 @@ export const SpecialistsReport = () => {
   useEffect(() => {
     if (activeTab === "productivity-tab" && reportData.length > 0) {
       const newTreeNodes = reportData.map((user, userIndex) => {
-        console.log("user", user);
         let countAppointments = user.appointments.length;
         let countProceduresInvoiced = 0;
         const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_name ?? ""}`;
@@ -133,7 +152,6 @@ export const SpecialistsReport = () => {
       } else {
         data = await billingService.getBillingReport(filterParams);
       }
-      console.log("data", data);
       setReportData(data);
       return data; // Retornamos los datos por si se necesitan
     } catch (error) {
@@ -333,20 +351,19 @@ export const SpecialistsReport = () => {
     switch (tab) {
       case "doctors-tab":
         dataExport = generateDoctorsTable(true);
-        namePDF = "Procedimientos";
-        break;
-      case "entities-tab":
+        return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
+      case "doctors-count-tab":
         dataExport = generateEntityPricesTable(true);
-        namePDF = "Entidades";
-        break;
-      case "prices-tab":
+        return generateFormatProceduresCount(dataExport, dateRange, "Impresion");
+      case "conteo-entidad-tab":
         dataExport = generateEntityCountTable(true);
-        namePDF = "Precios";
-        break;
+        return generateFormatEntitiesCount(dataExport, dateRange, "Impresion");
       case "consultation-tab":
         dataExport = generateConsultationsTable(true);
-        namePDF = "Consultas";
-        break;
+        return generateFormatAppointments(dataExport, dateRange, "Impresion");
+      case "productivity-tab":
+        dataExport = generateTableProductivity(true);
+        return generateFormatProductivity(dataExport, dateRange, "Impresion");
     }
     const headers = dataExport[0];
     const lastRowIndex = dataExport.length - 1;
@@ -524,7 +541,7 @@ export const SpecialistsReport = () => {
     // Add totals row to table data only for display (not when returning data)
     const displayData = isReturnData ? tableData : [...tableData, totalsRow];
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
 
     // Create columns for the table
@@ -922,7 +939,7 @@ export const SpecialistsReport = () => {
     });
     tableData.push(totalsRow);
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
     const entityColumns = [{
       field: "doctor",
@@ -1059,7 +1076,7 @@ export const SpecialistsReport = () => {
     });
     tableData.push(totalsRow);
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
     const countColumns = [{
       field: "entity",
@@ -1253,7 +1270,7 @@ export const SpecialistsReport = () => {
     });
     tableData.push(totalsRow);
     if (isReturnData) {
-      return tableData;
+      return reportData;
     }
     const consultationColumns = [{
       field: "doctor",
@@ -1360,7 +1377,6 @@ export const SpecialistsReport = () => {
     }))));
   };
   const generateTableProductivity = (isReturnData = false) => {
-    console.log("reportData", reportData);
     if (!reportData || reportData.length === 0) {
       return /*#__PURE__*/React.createElement("div", {
         className: "flex justify-content-center align-items-center",
@@ -1368,6 +1384,9 @@ export const SpecialistsReport = () => {
           height: "200px"
         }
       }, /*#__PURE__*/React.createElement("span", null, "No hay datos disponibles"));
+    }
+    if (isReturnData) {
+      return reportData;
     }
     const doctorTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.doctor);
     const ordersTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.countAppointments);
@@ -1669,7 +1688,7 @@ export const SpecialistsReport = () => {
     loading: exporting.entityCounts,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.insurance)
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToPDF("prices-tab"),
+    onClick: () => exportToPDF("conteo-entidad-tab"),
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
   })), generateEntityCountTable()), /*#__PURE__*/React.createElement("div", {

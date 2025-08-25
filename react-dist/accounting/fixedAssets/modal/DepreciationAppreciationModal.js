@@ -33,7 +33,7 @@ const DepreciationAppreciationModal = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CustomModal, {
     show: isVisible,
     onHide: handleCloseAttempt,
-    title: `${asset.assetName} - Ajuste de Valor`
+    title: `${asset.attributes.description} - Ajuste de Valor`
   }, /*#__PURE__*/React.createElement(DepreciationAppreciationForm, {
     formId: "depreciationAppreciationForm",
     onSubmit: handleSave,

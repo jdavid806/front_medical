@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { useAdmissions } from "./hooks/useAdmissions.js";
-import { PrimeReactProvider } from "primereact/api";
+import { PrimeReactProvider } from 'primereact/api';
 import { AdmissionTable } from "./AdmissionTable.js";
 import { useMakeRequest } from "../general-request/hooks/useMakeRequest.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
@@ -23,9 +23,10 @@ export const AdmissionApp = () => {
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState(null);
   const [filters, setFilters] = useState({
-    createdAt: [new Date(), new Date()]?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(",")
+    createdAt: [new Date(), new Date()]?.filter(date => !!date).map(date => date.toISOString().split('T')[0]).join(",")
   });
   const handlePageChange = page => {
+    console.log(page);
     const calculatedPage = Math.floor(page.first / page.rows) + 1;
     setFirst(page.first);
     setPerPage(page.rows);
@@ -35,17 +36,18 @@ export const AdmissionApp = () => {
       page: calculatedPage,
       search: search ?? "",
       ...filters,
-      sort: "-createdAt"
+      sort: '-createdAt'
     });
   };
   const handleSearchChange = _search => {
+    console.log(_search);
     setSearch(_search);
     fetchAdmissions({
       per_page: perPage,
       page: currentPage,
       search: _search,
       ...filters,
-      sort: "-createdAt"
+      sort: '-createdAt'
     });
   };
   const refresh = () => {
@@ -54,7 +56,7 @@ export const AdmissionApp = () => {
       page: currentPage,
       search: search,
       ...filters,
-      sort: "-createdAt"
+      sort: '-createdAt'
     });
   };
   const requestCancellation = id => {
@@ -83,12 +85,12 @@ export const AdmissionApp = () => {
     }
   };
   const handleFilter = filters => {
+    console.log(filters);
     setFilters({
       admittedBy: filters.selectedAdmittedBy,
       patientId: filters.selectedPatient,
       entityId: filters.selectedEntity,
-      createdAt: filters.selectedDate?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(","),
-      products: filters.selectedProduct
+      createdAt: filters.selectedDate?.filter(date => !!date).map(date => date.toISOString().split('T')[0]).join(",")
     });
   };
   useEffect(() => {
@@ -97,12 +99,12 @@ export const AdmissionApp = () => {
       page: currentPage,
       search: search,
       ...filters,
-      sort: "-createdAt"
+      sort: '-createdAt'
     });
   }, [filters]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
-      appendTo: "self",
+      appendTo: 'self',
       zIndex: {
         overlay: 100000
       }

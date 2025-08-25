@@ -97,32 +97,18 @@ export const RetentionConfig = () => {
   };
   useEffect(() => {
     if (retention && accounts) {
-      // Encontrar la cuenta principal por account_code
-      const mainAccount = accounts.find(acc => acc.account_code === retention.accounting_account || acc.id.toString() === retention.accounting_account);
-
-      // Encontrar la cuenta de reversa por id o account_code
-      const reverseAccount = accounts.find(acc => acc.id === retention.accounting_account_reverse_id || acc.account_code === retention.accounting_account_reverse_id?.toString());
       const data = {
         name: retention.name,
         percentage: retention.percentage,
-        accounting_account: mainAccount?.id || null,
-        accounting_account_reverse_id: reverseAccount?.id || null,
+        accounting_account_id: retention.accounting_account_reverse_id,
+        accounting_account_reverse_id: retention.accounting_account_reverse_id,
+        sell_accounting_account_id: retention.sell_accounting_account_id,
+        sell_reverse_accounting_account_id: retention.sell_reverse_accounting_account_id,
         description: retention.description || ''
       };
-      console.log('Setting initial data:', {
-        retentionData: retention,
-        mainAccountFound: mainAccount,
-        reverseAccountFound: reverseAccount,
-        formData: data
-      });
       setInitialData(data);
     }
   }, [retention, accounts]);
-  useEffect(() => {
-    if (showFormModal && initialData) {
-      console.log('Initial data when modal opens:', initialData);
-    }
-  }, [showFormModal, initialData]);
   const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-end gap-2"
   }, /*#__PURE__*/React.createElement(Button, {

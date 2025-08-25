@@ -6,6 +6,7 @@ export const useActiveFixed = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [success, setSuccess] = useState(false);
+  const [activeFixedAssets, setActiveFixedAssets] = useState<any[]>([]);
 
   const getActiveFixed = async () => {
     setLoading(true);
@@ -13,12 +14,20 @@ export const useActiveFixed = () => {
     setSuccess(false);
 
     try {
+
+      console.log("+++++++++++");
       const service = new ProductService();
-      await service.getProductsServicesActiveFixed();
+      console.log("---------------",service);
+      const response = await service.getProductsServicesActiveFixed();
+      console.log("response", response); 
+      const data = response?.data || response || [];
+      setActiveFixedAssets(data);
       setSuccess(true);
+      return data; // Retornamos los datos
     } catch (err) {
       setError(err as Error);
       ErrorHandler.generic(err);
+      return []; // Retornamos array vacío en caso de error
     } finally {
       setLoading(false);
     }
@@ -29,5 +38,6 @@ export const useActiveFixed = () => {
     loading,
     error,
     success,
+    activeFixedAssets,
   };
 };

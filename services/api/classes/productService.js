@@ -81,10 +81,8 @@ export class ProductService extends BaseApiService {
     );
   }
 
-  async deleteProduct(productId) {
-    return await this.httpClient.delete(
-      `api/v1/admin/products/${productId}`
-    );
+  async getProductsServicesActiveFixed() {
+    return await this.httpClient.get('api/v1/admin/products/activos-fijos');
   }
 }
 

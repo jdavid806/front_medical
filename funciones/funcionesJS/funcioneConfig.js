@@ -37,16 +37,12 @@ async function consultarQR() {
   const badIcon = document.getElementById("badIcon");
   const modalButton = document.getElementById("modalButton");
   const actionButton = document.getElementById("actionButton");
-  const createInstanceButton = document.getElementById("createInstanceButton");
 
   const modalVerQr = document.getElementById("modalVerQr");
 
-  let status = await consultarWhatssapConectado();
+  let estaConectado = await consultarWhatssapConectado();
 
-  console.log("status", status);
-
-
-  if (status == "CONECTADA") {
+  if (estaConectado) {
     if (modalVerQr.classList.contains("show")) {
       cerrarModalWhatsapp();
     } else {
@@ -55,28 +51,15 @@ async function consultarQR() {
 
       badIcon.classList.add("d-none");
       modalButton.classList.add("d-none");
-      createInstanceButton.classList.add("d-none")
 
       actionButton.onclick = () => cerrarPuerto();
     }
-  } else if (status == "NO-CONECTADA") {
+  } else {
     badIcon.classList.remove("d-none");
     modalButton.classList.remove("d-none");
 
     goodIcon.classList.add("d-none");
     actionButton.classList.add("d-none");
-    createInstanceButton.classList.add("d-none")
-
-    cargarQr();
-  } else if (status == "NO-CREADA") {
-    console.log("no ta creada xdx");
-
-    badIcon.classList.remove("d-none");
-    createInstanceButton.classList.remove("d-none");
-
-    goodIcon.classList.add("d-none");
-    actionButton.classList.add("d-none");
-    modalButton.classList.add("d-none")
 
     cargarQr();
   }

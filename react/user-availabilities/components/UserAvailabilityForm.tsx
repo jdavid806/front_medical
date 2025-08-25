@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
 import { UserDto } from '../../models/models';
 import { useModules } from '../../modules/hooks/useModules';
+import UserFormModal from '../../users/UserFormModal';
 
 export type UserAvailabilityFormInputs = {
     user_id: string
@@ -38,9 +39,15 @@ interface UserAvailabilityFormProps {
     formId: string;
     onHandleSubmit: (data: UserAvailabilityFormInputs) => void;
     initialData?: UserAvailabilityFormInputs;
+    onNewUserCreated?: () => void; // Callback cuando se crea un nuevo usuario
 }
 
-const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onHandleSubmit, initialData }) => {
+const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({
+    formId,
+    onHandleSubmit,
+    initialData,
+    onNewUserCreated
+}) => {
 
     const {
         control,
@@ -66,6 +73,8 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
             free_slots: []
         }
     })
+
+    const [showUserModal, setShowUserModal] = useState(false);
     const onSubmit: SubmitHandler<UserAvailabilityFormInputs> = (data) => onHandleSubmit(data)
 
     const { fields, append, remove, update } = useFieldArray({
@@ -76,7 +85,7 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
     const [selectedUser, setSelectedUser] = useState<UserDto | undefined>(undefined);
     const watchUserId = watch('user_id');
 
-    const { users } = useUsers()
+    const { users, fetchUsers } = useUsers()
     const [usersForSelect, setUsersForSelect] = useState<{ value: string, label: string }[]>([])
 
     const { appointmentTypes } = useAppointmentTypesForSelect()
@@ -89,6 +98,29 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
 
     const getFormErrorMessage = (name: keyof UserAvailabilityFormInputs) => {
         return errors[name] && <small className="p-error">{errors[name].message}</small>
+    };
+
+    // Función para manejar la creación de nuevo usuario
+    const handleNewUserSubmit = async (userData: any) => {
+        try {
+            // Aquí iría la lógica para crear el usuario
+            console.log("Nuevo usuario creado:", userData);
+
+            // Recargar la lista de usuarios
+            if (fetchUsers) {
+                await fetchUsers();
+            }
+
+            // Cerrar el modal
+            setShowUserModal(false);
+
+            // Ejecutar callback si existe
+            if (onNewUserCreated) {
+                onNewUserCreated();
+            }
+        } catch (error) {
+            console.error("Error al crear usuario:", error);
+        }
     };
 
     useEffect(() => {
@@ -150,9 +182,21 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
 
     return (
         <div>
+
+
             <form id={formId} className="needs-validation" noValidate onSubmit={handleSubmit(onSubmit)}>
                 <Stepper ref={stepperRef}>
                     <StepperPanel header="Información general">
+
+                        <div className="mb-3">
+                            <button
+                                className='btn btn-primary btn-sm'
+                                onClick={() => setShowUserModal(true)}
+                            >
+                                <i className="fas fa-user-plus me-2"></i>
+                                Nuevo Usuario
+                            </button>
+                        </div>
                         <div className="mb-3">
                             <Controller
                                 name='user_id'
@@ -277,32 +321,6 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                                 </div>
                             </>
                         )}
-
-                        {/* <div className="mb-3">
-                            <Controller
-                                name='branch_id'
-                                control={control}
-                                rules={{ required: 'Este campo es requerido' }}
-                                render={({ field }) =>
-                                    <>
-                                        <label htmlFor={field.name} className='form-label'>Sucursal *</label>
-                                        <Dropdown
-                                            inputId={field.name}
-                                            options={branches}
-                                            optionLabel='label'
-                                            optionValue='value'
-                                            filter
-                                            placeholder="Seleccione una sucursal"
-                                            className={classNames('w-100', { 'p-invalid': errors.branch_id })}
-                                            defaultValue={field.value}
-                                            {...field}
-                                        >
-                                        </Dropdown>
-                                    </>
-                                }
-                            />
-                            {getFormErrorMessage('branch_id')}
-                        </div> */}
 
                         <div className="mb-3">
                             <Controller
@@ -519,6 +537,19 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({ formId, onH
                     </StepperPanel>
                 </Stepper>
             </form>
+
+            <UserFormModal
+                title="Crear Nuevo Usuario"
+                show={showUserModal}
+                handleSubmit={handleNewUserSubmit}
+                onHide={() => setShowUserModal(false)}
+                initialData={undefined}
+                config={{
+                    credentials: {
+                        visible: true
+                    }
+                }}
+            />
         </div>
     );
 };

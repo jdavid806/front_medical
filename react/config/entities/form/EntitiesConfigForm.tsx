@@ -25,6 +25,7 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
     } = useForm<EntitiesFormInputs>({
         defaultValues: initialData || {
             name: "",
+            entity_code: "",
             document_type: "CC",
             document_number: "",
             email: "",
@@ -42,7 +43,6 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
     const watchCountry = watch("country_id");
     const watchDepartment = watch("department_id");
 
-    // Usar el hook de ubicaciones
     const {
         countryOptions,
         departmentOptions,
@@ -54,19 +54,16 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
         handleDepartmentChange,
         handleCityChange,
         loading: locationLoading,
-        setInitialValuesFromIds
     } = useLocationDropdowns();
 
-    const onFormSubmit: SubmitHandler<EntitiesFormInputs> = (data) => {
-        const countryId = countryOptions.find(c => c.value === data.country_id)?.customProperties?.id;
-        const departmentId = departmentOptions.find(d => d.value === data.department_id)?.customProperties?.id;
-        const cityId = cityOptions.find(c => c.value === data.city_id)?.customProperties?.id;
+    const [isInitialized, setIsInitialized] = useState(false);
 
+    const onFormSubmit: SubmitHandler<EntitiesFormInputs> = (data) => {
         onSubmit({
             ...data,
-            country_id: countryId ? Number(countryId) : null,
-            department_id: departmentId ? Number(departmentId) : null,
-            city_id: cityId ? String(cityId) : null,
+            country_id: data.country_id,
+            department_id: data.department_id,
+            city_id: data.city_id,
         });
     };
 
@@ -77,18 +74,34 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
     };
 
     useEffect(() => {
-        if (initialData) {
+        if (initialData && !isInitialized) {
             reset(initialData);
 
-            if (initialData.country_id && initialData.department_id && initialData.city_id) {
-                setInitialValuesFromIds(
-                    Number(initialData.country_id),
-                    Number(initialData.department_id),
-                    Number(initialData.city_id)
-                );
+            if (initialData.country_id) {
+                const countryId = initialData.country_id.toString();
+                setValue("country_id", countryId);
+                handleCountryChange(countryId);
+
+                if (initialData.department_id) {
+                    const departmentId = initialData.department_id.toString();
+                    setTimeout(() => {
+                        setValue("department_id", departmentId);
+                        handleDepartmentChange(departmentId);
+
+                        if (initialData.city_id) {
+                            const cityId = initialData.city_id.toString();
+                            setTimeout(() => {
+                                setValue("city_id", cityId);
+                                handleCityChange(cityId);
+                            }, 300);
+                        }
+                    }, 300);
+                }
             }
+
+            setIsInitialized(true);
         }
-    }, [initialData, reset, setInitialValuesFromIds]);
+    }, [initialData, reset, setValue, isInitialized]);
 
     useEffect(() => {
         if (selectedCountry) {
@@ -110,252 +123,292 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
 
     return (
         <form id={formId} onSubmit={handleSubmit(onFormSubmit)}>
-            <div className="mb-3">
-                <Controller
-                    name="name"
-                    control={control}
-                    rules={{ required: "El nombre es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Nombre *
-                            </label>
-                            <InputText
-                                id={field.name}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.name,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("name")}
-            </div>
+            <div className="row">
+                {/* Columna izquierda */}
+                <div className="col-md-6">
+                    <div className="mb-3">
+                        <Controller
+                            name="name"
+                            control={control}
+                            rules={{ required: "El nombre es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Nombre *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.name,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("name")}
+                    </div>
 
-            <div className="mb-3">
-                <Controller
-                    name="document_type"
-                    control={control}
-                    rules={{ required: "El tipo de documento es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Tipo de Documento *
-                            </label>
-                            <Dropdown
-                                id={field.name}
-                                options={documentTypes}
-                                optionLabel="label"
-                                optionValue="value"
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.document_type,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("document_type")}
-            </div>
+                    <div className="mb-3">
+                        <Controller
+                            name="entity_code"
+                            control={control}
+                            rules={{ required: "El código es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Código *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.entity_code,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("entity_code")}
+                    </div>
 
-            <div className="mb-3">
-                <Controller
-                    name="document_number"
-                    control={control}
-                    rules={{ required: "El número de documento es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Número de Documento *
-                            </label>
-                            <InputText
-                                id={field.name}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.document_number,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("document_number")}
-            </div>
+                    <div className="mb-3">
+                        <Controller
+                            name="document_type"
+                            control={control}
+                            rules={{ required: "El tipo de documento es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Tipo de Documento *
+                                    </label>
+                                    <Dropdown
+                                        id={field.name}
+                                        options={documentTypes}
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.document_type,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("document_type")}
+                    </div>
 
-            <div className="mb-3">
-                <Controller
-                    name="email"
-                    control={control}
-                    rules={{
-                        required: "El email es requerido",
-                        pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Email inválido",
-                        },
-                    }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Email *
-                            </label>
-                            <InputText
-                                id={field.name}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.email,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("email")}
-            </div>
+                    <div className="mb-3">
+                        <Controller
+                            name="document_number"
+                            control={control}
+                            rules={{ required: "El número de documento es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Número de Documento *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.document_number,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("document_number")}
+                    </div>
 
-            <div className="mb-3">
-                <Controller
-                    name="address"
-                    control={control}
-                    rules={{ required: "La dirección es requerida" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Dirección *
-                            </label>
-                            <InputText
-                                id={field.name}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.address,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("address")}
-            </div>
+                    <div className="mb-3">
+                        <Controller
+                            name="email"
+                            control={control}
+                            rules={{
+                                required: "El email es requerido",
+                                pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: "Email inválido",
+                                },
+                            }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Email *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.email,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("email")}
+                    </div>
+                </div>
 
-            <div className="mb-3">
-                <Controller
-                    name="phone"
-                    control={control}
-                    rules={{ required: "El teléfono es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor={field.name} className="form-label">
-                                Teléfono *
-                            </label>
-                            <InputText
-                                id={field.name}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.phone,
-                                })}
-                                {...field}
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("phone")}
-            </div>
+                {/* Columna derecha */}
+                <div className="col-md-6">
+                    <div className="mb-3">
+                        <Controller
+                            name="address"
+                            control={control}
+                            rules={{ required: "La dirección es requerida" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Dirección *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.address,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("address")}
+                    </div>
 
-            {/* Selector de País */}
-            <div className="mb-3">
-                <Controller
-                    name="country_id"
-                    control={control}
-                    rules={{ required: "El país es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor="country_id" className="form-label">
-                                País *
-                            </label>
-                            <Dropdown
-                                id="country_id"
-                                value={selectedCountry}
-                                options={countryOptions}
-                                optionLabel="label"
-                                optionValue="value"
-                                onChange={(e) => handleCountryChange(e.value)}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.country_id,
-                                })}
-                                placeholder="Selecciona un país"
-                                loading={locationLoading}
-                                filter
-                                filterBy="label"
-                                showClear
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("country_id")}
-            </div>
+                    <div className="mb-3">
+                        <Controller
+                            name="phone"
+                            control={control}
+                            rules={{ required: "El teléfono es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor={field.name} className="form-label">
+                                        Teléfono *
+                                    </label>
+                                    <InputText
+                                        id={field.name}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.phone,
+                                        })}
+                                        {...field}
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("phone")}
+                    </div>
 
-            {/* Selector de Departamento */}
-            <div className="mb-3">
-                <Controller
-                    name="department_id"
-                    control={control}
-                    rules={{ required: "El departamento es requerido" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor="department_id" className="form-label">
-                                Departamento *
-                            </label>
-                            <Dropdown
-                                id="department_id"
-                                value={selectedDepartment}
-                                options={departmentOptions}
-                                optionLabel="label"
-                                optionValue="value"
-                                onChange={(e) => handleDepartmentChange(e.value)}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.department_id,
-                                })}
-                                placeholder="Selecciona un departamento"
-                                loading={locationLoading}
-                                disabled={!watchCountry}
-                                filter
-                                filterBy="label"
-                                showClear
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("department_id")}
-            </div>
+                    {/* Selector de País */}
+                    <div className="mb-3">
+                        <Controller
+                            name="country_id"
+                            control={control}
+                            rules={{ required: "El país es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor="country_id" className="form-label">
+                                        País *
+                                    </label>
+                                    <Dropdown
+                                        id="country_id"
+                                        value={field.value}
+                                        options={countryOptions}
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        onChange={(e) => {
+                                            field.onChange(e.value);
+                                            handleCountryChange(e.value);
+                                        }}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.country_id,
+                                        })}
+                                        placeholder="Selecciona un país"
+                                        loading={locationLoading}
+                                        filter
+                                        filterBy="label"
+                                        showClear
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("country_id")}
+                    </div>
 
-            {/* Selector de Ciudad */}
-            <div className="mb-3">
-                <Controller
-                    name="city_id"
-                    control={control}
-                    rules={{ required: "La ciudad es requerida" }}
-                    render={({ field }) => (
-                        <>
-                            <label htmlFor="city_id" className="form-label">
-                                Ciudad *
-                            </label>
-                            <Dropdown
-                                id="city_id"
-                                value={selectedCity}
-                                options={cityOptions}
-                                optionLabel="label"
-                                optionValue="value"
-                                onChange={(e) => handleCityChange(e.value)}
-                                className={classNames("w-100", {
-                                    "p-invalid": errors.city_id,
-                                })}
-                                placeholder="Selecciona una ciudad"
-                                loading={locationLoading}
-                                disabled={!watchDepartment}
-                                filter
-                                filterBy="label"
-                                showClear
-                            />
-                        </>
-                    )}
-                />
-                {getFormErrorMessage("city_id")}
+                    {/* Selector de Departamento */}
+                    <div className="mb-3">
+                        <Controller
+                            name="department_id"
+                            control={control}
+                            rules={{ required: "El departamento es requerido" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor="department_id" className="form-label">
+                                        Departamento *
+                                    </label>
+                                    <Dropdown
+                                        id="department_id"
+                                        value={field.value}
+                                        options={departmentOptions}
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        onChange={(e) => {
+                                            field.onChange(e.value);
+                                            handleDepartmentChange(e.value);
+                                        }}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.department_id,
+                                        })}
+                                        placeholder="Selecciona un departamento"
+                                        loading={locationLoading}
+                                        disabled={!watchCountry}
+                                        filter
+                                        filterBy="label"
+                                        showClear
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("department_id")}
+                    </div>
+
+                    {/* Selector de Ciudad */}
+                    <div className="mb-3">
+                        <Controller
+                            name="city_id"
+                            control={control}
+                            rules={{ required: "La ciudad es requerida" }}
+                            render={({ field }) => (
+                                <>
+                                    <label htmlFor="city_id" className="form-label">
+                                        Ciudad *
+                                    </label>
+                                    <Dropdown
+                                        id="city_id"
+                                        value={field.value}
+                                        options={cityOptions}
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        onChange={(e) => {
+                                            field.onChange(e.value);
+                                            handleCityChange(e.value);
+                                        }}
+                                        className={classNames("w-100", {
+                                            "p-invalid": errors.city_id,
+                                        })}
+                                        placeholder="Selecciona una ciudad"
+                                        loading={locationLoading}
+                                        disabled={!watchDepartment}
+                                        filter
+                                        filterBy="label"
+                                        showClear
+                                    />
+                                </>
+                            )}
+                        />
+                        {getFormErrorMessage("city_id")}
+                    </div>
+                </div>
             </div>
 
             <div className="d-flex justify-content-center mt-4 gap-6">

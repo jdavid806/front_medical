@@ -8,8 +8,9 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { TabView, TabPanel } from "primereact/tabview";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
-import { useCompany } from "../hooks/useCompany.js"; // Import your services
+import { useCompany } from "../hooks/useCompany.js";
+import { useByStateFormat } from "../documents-generation/hooks/reports-medical/appointments/useByStateFormat.js";
+import { useSummaryFormat } from "../documents-generation/hooks/reports-medical/appointments/useSummaryFormat.js"; // Import your services
 import { appointmentService, userSpecialtyService, userService, appointmentStateService } from "../../services/api/index.js";
 import { appointmentStatesByKeyTwo, appointmentStateFilters } from "../../services/commons.js";
 export const Appointments = () => {
@@ -39,6 +40,12 @@ export const Appointments = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
   const [selectedDoctors, setSelectedDoctors] = useState([]);
   const [selectedStates, setSelectedStates] = useState([]);
+  const {
+    generateFormatByState
+  } = useByStateFormat();
+  const {
+    generateFormatSummary
+  } = useSummaryFormat();
   useEffect(() => {
     if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
       loadDataForTab(0);
@@ -196,52 +203,18 @@ export const Appointments = () => {
       fileName: `Citas_${state.replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
     });
   };
-  const handleExportPDF = (state, data) => {
-    const dataExport = data.map(item => ({
-      state: item.state,
-      patient: `${item.patient.first_name} ${item.patient.last_name}`,
-      document_number: item.patient.document_number,
-      city: item.patient.city_id,
-      product: item.product_id,
-      date: new Date(item.created_at).toLocaleDateString("es-DO")
-    }));
-    const table = `
-      <style>
-      table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 12px; }
-      th { background-color: rgb(66, 74, 81); color: white; padding: 10px; text-align: left; font-weight: normal; }
-      td { padding: 10px 8px; border-bottom: 1px solid #eee; }
-      </style>
-      <table>
-        <thead>
-          <tr>
-            <th>Estado</th>
-            <th>Paciente</th>
-            <th>Documento</th>
-            <th>Ciudad</th>
-            <th>Producto</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${dataExport.reduce((acc, item) => acc + `
-            <tr>
-              <td>${item.state ?? ""}</td>
-              <td>${item.patient ?? ""}</td>
-              <td>${item.document_number ?? ""}</td>
-              <td>${item.city ?? ""}</td>
-              <td>${item.product ?? ""}</td>
-              <td>${item.date}</td>
-            </tr>`, "")}
-        </tbody>
-      </table>`;
-    generatePDFFromHTML(table, company, {
-      name: "Citas - " + state
-    });
+  const handleExportPDF = (state, data, tab) => {
+    switch (tab) {
+      case "byState":
+        return generateFormatByState(data, state, dateRange, "Impresion");
+      case "summaryAppointments":
+        return generateFormatSummary(data, state, dateRange, "Impresion");
+    }
   };
   const dateTemplate = rowData => {
     return new Date(rowData.created_at).toLocaleDateString("es-DO") + ", " + (rowData.appointment_time || "");
   };
-  const headerTemplate = (state, count, data) => {
+  const headerTemplate = (state, count, data, tab) => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between align-items-center w-full p-4"
     }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, state), " - Total: ", count)), /*#__PURE__*/React.createElement("div", {
@@ -264,7 +237,7 @@ export const Appointments = () => {
       onClick: e => {
         e.stopPropagation();
         e.preventDefault();
-        handleExportPDF(state, data);
+        handleExportPDF(state, data, tab);
       },
       tooltip: `Exportar ${state} a PDF`,
       tooltipOptions: {
@@ -376,7 +349,7 @@ export const Appointments = () => {
     onTabChange: e => setActiveIndex(e.index)
   }, Object.entries(groupedByState).map(([state, appointments]) => /*#__PURE__*/React.createElement(AccordionTab, {
     key: state,
-    header: headerTemplate(state, appointments.length, appointments)
+    header: headerTemplate(state, appointments.length, appointments, "byState")
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: appointments,
     emptyMessage: `No hay citas en estado ${state}`,
@@ -430,7 +403,7 @@ export const Appointments = () => {
     const allAppointments = entries.flatMap(entry => entry.appointments);
     return /*#__PURE__*/React.createElement(AccordionTab, {
       key: state,
-      header: headerTemplate(state, totalCount, allAppointments)
+      header: headerTemplate(state, totalCount, entries, "summaryAppointments")
     }, /*#__PURE__*/React.createElement(DataTable, {
       value: entries,
       emptyMessage: `No hay citas en estado ${state}`,

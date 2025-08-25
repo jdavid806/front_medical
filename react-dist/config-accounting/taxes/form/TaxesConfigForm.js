@@ -7,18 +7,14 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 const TaxFormConfig = ({
   formId,
   onSubmit,
   initialData,
   onCancel,
-  loading = false
+  loading = false,
+  accounts
 }) => {
-  const {
-    accounts,
-    isLoading: isLoadingAccounts
-  } = useAccountingAccounts();
   const {
     control,
     handleSubmit,
@@ -32,15 +28,17 @@ const TaxFormConfig = ({
     defaultValues: initialData || {
       name: "",
       percentage: 0,
-      accounting_account: null,
-      accounting_account_reverse: null,
+      accounting_account_id: null,
+      accounting_account_reverse_id: null,
+      sell_accounting_account_id: null,
+      sell_reverse_accounting_account_id: null,
       description: ""
     }
   });
 
   // Observar cambios en las cuentas para validaciones cruzadas
-  const selectedAccount = watch("accounting_account");
-  const selectedReverseAccount = watch("accounting_account_reverse");
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -53,8 +51,10 @@ const TaxFormConfig = ({
     reset(initialData || {
       name: "",
       percentage: 0,
-      accounting_account: null,
-      accounting_account_reverse: null,
+      accounting_account_id: null,
+      accounting_account_reverse_id: null,
+      sell_accounting_account_id: null,
+      sell_reverse_accounting_account_id: null,
       description: ""
     });
   }, [initialData, reset]);
@@ -126,19 +126,17 @@ const TaxFormConfig = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "percentage",
     className: "font-medium block mb-2"
   }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account",
+    htmlFor: "accounting_account_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account",
+  }, "Cuenta Contable Compras *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_id",
     control: control,
     rules: {
-      required: "La cuenta contable es requerida"
-      // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+      required: "La cuenta contable de compras es requerida"
     },
     render: ({
       field,
@@ -157,26 +155,24 @@ const TaxFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account"))
+      loading: false
+    }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account_reverse",
+    htmlFor: "accounting_account_reverse_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable Reversa *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account_reverse",
+  }, "Cuenta Contable Reversa Compras *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_reverse_id",
     control: control,
     rules: {
-      required: "La cuenta contable reversa es requerida"
-      // validate: (value) => {
-      //   if (!value?.id) return "Seleccione una cuenta válida";
-      //   if (Number(selectedAccount?.id) === value?.id) {
-      //     return "No puede ser la misma cuenta principal";
-      //   }
-      //   return true;
-      // },
+      required: "La cuenta contable reversa de compras es requerida",
+      validate: value => {
+        if (value === selectedPurchaseAccount) {
+          return "No puede ser la misma cuenta principal de compras";
+        }
+        return true;
+      }
     },
     render: ({
       field,
@@ -185,7 +181,7 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts.filter(acc => !selectedAccount || acc.id !== selectedAccount),
+      options: accounts.filter(acc => acc.id !== selectedPurchaseAccount),
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
@@ -195,25 +191,22 @@ const TaxFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account_reverse"))
+      loading: false
+    }), getFormErrorMessage("accounting_account_reverse_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "percentage",
     className: "font-medium block mb-2"
   }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account",
+    htmlFor: "sell_accounting_account_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account",
+  }, "Cuenta Contable Ventas *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "sell_accounting_account_id",
     control: control,
     rules: {
-      required: "La cuenta contable es requerida"
-      // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+      required: "La cuenta contable de ventas es requerida"
     },
     render: ({
       field,
@@ -232,26 +225,24 @@ const TaxFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account"))
+      loading: false
+    }), getFormErrorMessage("sell_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account_reverse",
+    htmlFor: "sell_reverse_accounting_account_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable Reversa *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account_reverse",
+  }, "Cuenta Contable Reversa Ventas *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "sell_reverse_accounting_account_id",
     control: control,
     rules: {
-      required: "La cuenta contable reversa es requerida"
-      // validate: (value) => {
-      //   if (!value?.id) return "Seleccione una cuenta válida";
-      //   if (Number(selectedAccount?.id) === value?.id) {
-      //     return "No puede ser la misma cuenta principal";
-      //   }
-      //   return true;
-      // },
+      required: "La cuenta contable reversa de ventas es requerida",
+      validate: value => {
+        if (value === selectedSellAccount) {
+          return "No puede ser la misma cuenta principal de ventas";
+        }
+        return true;
+      }
     },
     render: ({
       field,
@@ -260,7 +251,7 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts.filter(acc => !selectedAccount || acc.id !== selectedAccount),
+      options: accounts.filter(acc => acc.id !== selectedSellAccount),
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
@@ -270,9 +261,8 @@ const TaxFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account_reverse"))
+      loading: false
+    }), getFormErrorMessage("sell_reverse_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -304,9 +294,7 @@ const TaxFormConfig = ({
       height: "50px",
       borderRadius: "0px"
     }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-times"
-  })), /*#__PURE__*/React.createElement(Button, {
+  }), /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",
     className: "p-button-sm",
     loading: loading,
@@ -317,8 +305,6 @@ const TaxFormConfig = ({
     },
     disabled: loading || !isDirty,
     type: "submit"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-save"
-  }))));
+  })));
 };
 export default TaxFormConfig;

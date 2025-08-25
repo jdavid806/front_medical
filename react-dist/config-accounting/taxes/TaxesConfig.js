@@ -13,8 +13,6 @@ import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccou
 export const TaxesConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
-
-  // Hooks para las operaciones CRUD
   const {
     taxes,
     loading,
@@ -49,20 +47,11 @@ export const TaxesConfig = () => {
   } = useAccountingAccounts();
   const handleSubmit = async data => {
     try {
-      // Validación adicional antes de mapear
-      if (!data.accounting_account) {
-        throw new Error('La cuenta contable principal es requerida');
-      }
-      if (!data.accounting_account_reverse) {
-        throw new Error('La cuenta contable reversa es requerida');
-      }
       if (tax) {
-        // Para actualización - ya no necesita type assertion
         const updateData = TaxesMapperUpdate(data);
         await updateTax(tax.id, updateData);
         SwalManager.success('Impuesto actualizado correctamente');
       } else {
-        // Para creación - ya no necesita type assertion
         const createData = TaxesMapperCreate(data);
         await createTax(createData);
         SwalManager.success('Impuesto creado correctamente');
@@ -95,8 +84,10 @@ export const TaxesConfig = () => {
       const data = {
         name: tax.name,
         percentage: tax.percentage,
-        accounting_account: Number(tax.accounting_account),
-        accounting_account_reverse: tax.accounting_account_reverse_id,
+        accounting_account_id: tax.accounting_account_id,
+        accounting_account_reverse_id: tax.accounting_account_reverse_id,
+        sell_accounting_account_id: tax.sell_accounting_account_id,
+        sell_reverse_accounting_account_id: tax.sell_reverse_accounting_account_id,
         description: tax.description || ''
       };
       setInitialData(data);

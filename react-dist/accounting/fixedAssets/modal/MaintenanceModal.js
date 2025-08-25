@@ -36,7 +36,7 @@ const MaintenanceModal = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dialog, {
     visible: isVisible,
     onHide: handleCloseAttempt,
-    header: `${asset.assetName} - Mantenimiento y Estado`,
+    header: `${asset.attributes.description} - Mantenimiento y Estado`,
     style: {
       width: "50vw"
     },
@@ -50,8 +50,7 @@ const MaintenanceModal = ({
     statusOptions: statusOptions,
     maintenanceTypeOptions: maintenanceTypeOptions,
     userOptions: userOptions,
-    currentStatus: asset.status,
-    currentAssignedTo: asset.assignedTo,
+    currentStatus: asset.attributes.status || "",
     asset: asset // <-- Pasar la propiedad asset
   })), /*#__PURE__*/React.createElement(Dialog, {
     visible: showConfirm,

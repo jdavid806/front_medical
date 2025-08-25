@@ -16,9 +16,9 @@ import {
   validateProductsStep,
   validatePaymentStep
 } from "../utils/helpers";
-import { paymentMethodOptions } from "../utils/constants";
 import { useAppointmentProcedures } from "../../../appointments/hooks/useAppointmentProcedures";
 import { AdmissionBillingFormData } from "../interfaces/AdmisionBilling";
+import { usePaymentMethods } from "../../../payment-methods/hooks/usePaymentMethods";
 
 interface ProductsPaymentStep {
   formData: AdmissionBillingFormData;
@@ -48,38 +48,27 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   const [modalAmount, setModalAmount] = useState(0);
   const [modalChange, setModalChange] = useState(0);
   const [selectedProcedure, setSelectedProcedure] = useState<any>(null);
+  const [filteredPaymentMethods, setFilteredPaymentMethods] = useState<any[]>([]);
 
-  const total = calculateTotal(formData.products);
+  const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const remaining = Math.max(0, total - paid);
 
 
   const { procedureOptions, loadProcedures } = useAppointmentProcedures();
-
+  const { paymentMethods, fetchPaymentMethods } = usePaymentMethods();
 
   useEffect(() => {
     loadProcedures();
   }, []);
 
-
-
-  const getPaymentMethodLabel = (value: string) => {
-    return paymentMethodOptions.find(m => m.value === value)?.label || value;
-  };
-
-  const getPaymentMethodIcon = (method: string) => {
-    const methodLabel = paymentMethodOptions.find(m => m.value === method)?.label || method;
-
-    switch (methodLabel) {
-      case 'Efectivo': return 'fa-money-bill-wave';
-      case 'Tarjeta de Crédito': return 'fa-credit-card';
-      case 'Transferencia Bancaria': return 'fa-bank';
-      case 'Cheque': return 'fa-file-invoice-dollar';
-      default: return 'fa-wallet';
+  useEffect(() => {
+    if (paymentMethods) {
+      const filtered = paymentMethods.filter((method: any) => method.category === "transactional" && method.payment_type === "Ventas");
+      setFilteredPaymentMethods(filtered);
     }
-  };
-
+  }, [paymentMethods]);
 
   const handleAddProduct = () => {
     if (!selectedProcedure) {
@@ -104,29 +93,34 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       return;
     }
 
+    const price = formData.billing.facturacionEntidad ? procedure.copayment : procedure.sale_price;
+
     const newProduct = {
       uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
       id: procedure.id,
       code: procedure.barcode || `PROC-${procedure.id}`,
       name: procedure.name || 'Procedimiento sin nombre',
       description: procedure.description || procedure.name || 'Procedimiento médico',
-      price: procedure.sale_price || 0,
+      price: procedure.sale_price,
+      copayment: procedure.copayment,
+      currentPrice: price,
       quantity: 1,
       tax: procedure.tax_charge?.percentage || 0,
       discount: 0,
-      total: (procedure.sale_price || 0) * (1 + (procedure.tax_charge?.percentage || 0) / 100)
+      total: (price || 0) * (1 + (procedure.tax_charge?.percentage || 0) / 100)
     };
 
-    formData.products.push(newProduct);
+    formData.products = [...formData.products, newProduct];
 
     setSelectedProcedure(null);
   };
 
+  useEffect(() => {
+    setModalAmount(remaining);
+    setModalChange(0);
+  }, [formData.products, formData.billing.facturacionEntidad]);
 
   const handleRemoveProduct = (uuid: string) => {
-    console.log('Eliminando producto con uuid:', uuid);
-    console.log('Productos actuales:', formData.products);
-
     const updatedProducts = formData.products.filter(product =>
       product.uuid !== uuid
     );
@@ -162,9 +156,9 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   };
 
   const handleAddPayment = () => {
-    const { method, amount } = formData.currentPayment;
+    const { method } = formData.currentPayment;
 
-    if (!method || !amount) {
+    if (!method || !modalAmount) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
@@ -174,7 +168,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       return;
     }
 
-    const paymentAmount = amount;
+    const paymentAmount = modalAmount;
     if (isNaN(paymentAmount)) {
       toast.current?.show({
         severity: "error",
@@ -186,11 +180,15 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
     }
 
     addPayment({
-      method: method,
+      method: method.method as string,
       amount: paymentAmount,
+      total: paymentAmount - modalChange,
+      change: modalChange,
       authorizationNumber: formData.currentPayment.authorizationNumber,
       notes: formData.currentPayment.notes,
     });
+
+    setModalAmount(0);
 
     updateFormData("currentPayment", {
       method: "",
@@ -204,7 +202,6 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
 
 
   const handleNext = () => {
-    console.log('Productos actuales:', formData.products);
 
     const validProducts = formData.products.filter(product =>
       product &&
@@ -223,7 +220,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       return;
     }
 
-    const total = calculateTotal(validProducts);
+    const total = calculateTotal(validProducts, formData.billing.facturacionEntidad);
 
     if (
       validateProductsStep(validProducts, toast) &&
@@ -239,12 +236,6 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       currency: 'DOP',
       minimumFractionDigits: 2
     }).format(value);
-  };
-
-  const openPaymentModal = () => {
-    setShowPaymentModal(true);
-    setModalAmount(remaining);
-    setModalChange(0);
   };
 
   const calculateModalChange = (amount: number) => {
@@ -263,7 +254,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   };
 
   const productPriceBodyTemplate = (rowData: any) => {
-    return formatCurrency(rowData.price);
+    return formatCurrency(rowData.currentPrice);
   };
 
   const productTaxBodyTemplate = (rowData: any) => {
@@ -271,20 +262,23 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   };
 
   const productTotalBodyTemplate = (rowData: any) => {
-    const total = rowData.price * rowData.quantity * (1 + rowData.tax / 100);
+    const total = rowData.currentPrice * rowData.quantity * (1 + rowData.tax / 100);
     return <strong>{formatCurrency(total)}</strong>;
   };
 
   const paymentAmountBodyTemplate = (rowData: any) => {
-    return <span className="font-bold">{formatCurrency(rowData.amount)}</span>;
+    return <span className="font-bold">{formatCurrency(rowData.total)}</span>;
+  };
+
+  const paymentChangeBodyTemplate = (rowData: any) => {
+    return <span className="font-bold">{formatCurrency(rowData.change)}</span>;
   };
 
   const paymentMethodBodyTemplate = (rowData: any) => {
-    const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
     return (
       <div className="flex align-items-center gap-2">
-        <i className={`fas ${getPaymentMethodIcon(rowData.method)} mr-2`}></i>
-        <span>{methodLabel}</span>
+        <i className={`mr-2`}></i>
+        <span>{rowData.method}</span>
       </div>
     );
   };
@@ -320,6 +314,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
   );
 
   useEffect(() => {
+    console.log('productsToInvoice', productsToInvoice);
     if (productsToInvoice.length > 0 && formData.products.length === 0) {
       const initialProducts = productsToInvoice.map(product => ({
         uuid: product.uuid,
@@ -329,6 +324,8 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
         name: product.name || product.description || `Producto ${product.id}`,
         description: product.description || product.name || `Producto ${product.id}`,
         price: product.sale_price || 0,
+        copayment: product.copayment || 0,
+        currentPrice: (formData.billing.facturacionEntidad ? product.copayment : product.sale_price) || 0,
         quantity: 1,
         tax: product.tax_charge?.percentage || 0,
         discount: 0,
@@ -336,8 +333,9 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       }));
 
       updateFormData("products", initialProducts);
+      setModalAmount(remaining);
     }
-  }, [productsToInvoice]);
+  }, [productsToInvoice, formData.billing.facturacionEntidad]);
 
 
   return (
@@ -351,30 +349,35 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           }
           className="mb-4 shadow-3"
         >
-          <div className="d-flex pt-4 justify-content-end mb-2">
-            <div className="me-2 h-full w-full">
-              <Dropdown
-                placeholder="Seleccione un procedimiento"
-                options={procedureOptions}
-                value={selectedProcedure}
-                onChange={(e) => setSelectedProcedure(e.value)}
-                optionLabel="label"
-                filter
-                showClear
-                className="w-full h-full"
-                panelClassName="shadow-3"
-                emptyMessage="No se encontraron procedimientos"
-              />
-            </div>
-            <Button
-              label="Agregar Producto"
-              className="p-button-primary"
-              icon={<i className="fas fa-plus-square"></i>}
-              onClick={handleAddProduct}
-              disabled={!selectedProcedure}
-              tooltip="Agregar procedimiento seleccionado"
-            />
-          </div>
+          {productsToInvoice.length == 0 && (
+            <>
+
+              <div className="d-flex pt-4 mb-2">
+                <div className="d-flex flex-grow-1 me-2">
+                  <Dropdown
+                    placeholder="Seleccione un procedimiento"
+                    options={procedureOptions}
+                    value={selectedProcedure}
+                    onChange={(e) => setSelectedProcedure(e.value)}
+                    optionLabel="label"
+                    filter
+                    showClear
+                    className="w-100"
+                    panelClassName="shadow-3 w-100"
+                    emptyMessage="No se encontraron procedimientos"
+                  />
+                </div>
+                <Button
+                  label="Agregar Producto"
+                  className="p-button-primary d-flex"
+                  icon={<i className="fas fa-plus-square"></i>}
+                  onClick={handleAddProduct}
+                  disabled={!selectedProcedure}
+                  tooltip="Agregar procedimiento seleccionado"
+                />
+              </div>
+            </>
+          )}
 
           <div className="border-round border-1 surface-border">
             <DataTable
@@ -440,144 +443,88 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           }
           className="mb-4 shadow-3"
         >
-          {change > 0 && (
-            <Card className="mb-4 border-left-3 border-teal-500 bg-teal-50">
-              <div className="flex justify-content-between align-items-center p-3">
-                <div className="flex align-items-center gap-2">
-                  <i className="fas fa-money-bill-wave text-teal-500"></i>
-                  <span className="text-lg font-medium">Cambio a devolver</span>
-                </div>
-                <span className="text-xl font-bold text-teal-700">
-                  {formatCurrency(change)}
-                </span>
-              </div>
-            </Card>
-          )}
+          <div className="row">
+            <div className="col-12 col-md-6 pb-4">
+              {change > 0 && (
+                <Card className="mb-4 border-left-3 border-teal-500 bg-teal-50">
+                  <div className="flex justify-content-between align-items-center p-3">
+                    <div className="flex align-items-center gap-2">
+                      <i className="fas fa-money-bill-wave text-teal-500"></i>
+                      <span className="text-lg font-medium">Cambio a devolver</span>
+                    </div>
+                    <span className="text-xl font-bold text-teal-700">
+                      {formatCurrency(change)}
+                    </span>
+                  </div>
+                </Card>
+              )}
 
-          <div className="border-round border-1 surface-border mb-4">
-            <DataTable
-              value={formData.payments}
-              className="p-datatable-sm p-datatable-gridlines"
-              emptyMessage={
-                <div className="text-center p-4">
-                  <i className="fas fa-info-circle mr-2"></i>
-                  No se han agregado métodos de pago
-                </div>
-              }
-              stripedRows
-            >
-              <Column
-                field="id"
-                header="#"
-                headerStyle={{ width: "50px" }}
-              ></Column>
-              <Column
-                field="method"
-                header="Método"
-                body={paymentMethodBodyTemplate}
-              ></Column>
-              <Column
-                field="amount"
-                header="Monto"
-                body={paymentAmountBodyTemplate}
-              ></Column>
-              <Column
-                header="Acciones"
-                body={(rowData) => (
-                  <Button
-                    icon={<i className="fas fa-trash"></i>}
-                    className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
-                    onClick={() => handleRemovePayment(rowData.id)}
-                    tooltip="Eliminar"
-                    tooltipOptions={{ position: "top" }}
+              <div className="border-round border-1 surface-border mb-4">
+                <DataTable
+                  value={formData.payments}
+                  className="p-datatable-sm p-datatable-gridlines"
+                  emptyMessage={
+                    <div className="text-center p-4">
+                      <i className="fas fa-info-circle mr-2"></i>
+                      No se han agregado métodos de pago
+                    </div>
+                  }
+                  stripedRows
+                >
+                  <Column
+                    field="id"
+                    header="#"
+                    headerStyle={{ width: "50px" }}
+                  ></Column>
+                  <Column
+                    field="method"
+                    header="Método"
+                    body={paymentMethodBodyTemplate}
+                  ></Column>
+                  <Column
+                    field="amount"
+                    header="Monto"
+                    body={paymentAmountBodyTemplate}
+                  ></Column>
+                  <Column
+                    field="change"
+                    header="Cambio"
+                    body={paymentChangeBodyTemplate}
+                  ></Column>
+                  <Column
+                    header="Acciones"
+                    body={(rowData) => (
+                      <Button
+                        icon={<i className="fas fa-trash"></i>}
+                        className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
+                        onClick={() => handleRemovePayment(rowData.id)}
+                        tooltip="Eliminar"
+                        tooltipOptions={{ position: "top" }}
+                      />
+                    )}
+                    headerStyle={{ width: '80px' }}
                   />
-                )}
-                headerStyle={{ width: '80px' }}
-              />
-            </DataTable>
-          </div>
-
-          <Dialog
-            header={
-              <div className="flex align-items-center gap-2">
-                <i className="fas fa-calculator"></i>
-                <span>Calcular Pago en Efectivo</span>
-              </div>
-            }
-            visible={showPaymentModal}
-            style={{ width: '450px' }}
-            footer={paymentModalFooter}
-            onHide={() => setShowPaymentModal(false)}
-            breakpoints={{ '960px': '75vw', '640px': '90vw' }}
-          >
-            <div className="p-fluid">
-              <div className="field">
-                <label htmlFor="remainingAmount" className="block font-medium mb-2">
-                  <i className="fas fa-receipt mr-2"></i>Total Pendiente
-                </label>
-                <InputNumber
-                  id="remainingAmount"
-                  value={remaining}
-                  mode="currency"
-                  currency="DOP"
-                  locale="es-DO"
-                  readOnly
-                  className="w-full"
-                  inputClassName="font-bold"
-                />
-              </div>
-
-              <div className="field mt-4">
-                <label htmlFor="cashAmount" className="block font-medium mb-2">
-                  <i className="fas fa-hand-holding-usd mr-2"></i>Monto Recibido
-                </label>
-                <InputNumber
-                  id="cashAmount"
-                  value={modalAmount}
-                  onValueChange={(e) => calculateModalChange(e.value || 0)}
-                  mode="currency"
-                  currency="DOP"
-                  locale="es-DO"
-                  className="w-full"
-                  inputClassName="font-bold"
-                />
-              </div>
-
-              <div className="field mt-4">
-                <label htmlFor="changeAmount" className="block font-medium mb-2">
-                  <i className="fas fa-exchange-alt mr-2"></i>Cambio a Devolver
-                </label>
-                <InputNumber
-                  id="changeAmount"
-                  value={modalChange}
-                  mode="currency"
-                  currency="DOP"
-                  locale="es-DO"
-                  readOnly
-                  className={`w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`}
-                  inputClassName={modalChange > 0 ? 'text-green-700' : ''}
-                />
+                </DataTable>
               </div>
             </div>
-          </Dialog>
 
-          <div className="surface-card p-4 border-round-lg border-1 surface-border shadow-2">
-            <div className="d-flex justify-content-end align-items-center mb-4 gap-3">
-              <h3 className="m-0 text-700 text-right">
-                <i className="fas fa-credit-card mr-3 text-xl text-primary"></i>
-                Agregar Nuevo Pago
-              </h3>
-              <Button
+            <div className="surface-card px-4 pb-4 border-round-lg border-1 surface-border shadow-2 col-12 col-md-6">
+              <div className="d-flex align-items-center mb-4 gap-3">
+                <h3 className="m-0 text-700 text-right">
+                  <i className="fas fa-credit-card mr-3 text-xl text-primary"></i>
+                  Agregar Nuevo Pago
+                </h3>
+                {/* <Button
                 label="Calcular Efectivo"
                 icon={<i className="fas fa-calculator"></i>}
                 className="p-button-primary"
                 onClick={openPaymentModal}
-              />
-            </div>
+              /> */}
+              </div>
 
-            <Card className="border-round-lg shadow-1 mb-4">
-              <div className="d-flex flex-column align-items-end gap-3">
-                <div className="w-100 text-right">
+              <Card className="border-round-lg shadow-1 mb-4">
+                <div className="d-flex flex-column gap-3">
+                  {/* <div className="w-100 text-right">
                   <label htmlFor="paymentMethod" className="block font-medium mb-2 text-700 d-flex justify-content-end align-items-center">
                     <i className="fas fa-money-check-alt mr-2"></i>
                     Método de pago <span className="text-red-500 ml-1">*</span>
@@ -652,20 +599,107 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
-            </Card>
+                )} */}
+                  <div className="p-fluid">
+                    <div className="field">
+                      <label htmlFor="paymentMethod" className="block font-medium mb-2">
+                        <i className="fas fa-money-check-alt mr-2"></i>Método de pago
+                      </label>
+                      <Dropdown
+                        inputId="paymentMethod"
+                        options={filteredPaymentMethods}
+                        value={formData.currentPayment.method}
+                        onChange={(e) => handlePaymentChange("method", e.value)}
+                        placeholder="Seleccione método..."
+                        className="w-100"
+                        optionLabel="method"
+                        panelClassName="shadow-3"
+                        showClear
+                        filter
+                        filterPlaceholder="Buscar método..."
+                        emptyFilterMessage="No se encontraron métodos"
+                      />
+                    </div>
+                    {formData.currentPayment.method.method == "Efectivo" && (<>
+                      <div className="field mt-4">
+                        <label htmlFor="remainingAmount" className="block font-medium mb-2">
+                          <i className="fas fa-receipt mr-2"></i>Total Pendiente
+                        </label>
+                        <InputNumber
+                          id="remainingAmount"
+                          value={remaining}
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          readOnly
+                          className="w-full"
+                          inputClassName="font-bold"
+                        />
+                      </div>
 
-            <div className="d-flex justify-content-end mt-4">
-              <Button
-                label="Agregar Pago"
-                icon={<i className="fas fa-cash-register"></i>}
-                className="p-button-primary"
-                onClick={handleAddPayment}
-                disabled={!formData.currentPayment.method || !formData.currentPayment.amount}
-                tooltip="Agregar este pago al registro"
-                tooltipOptions={{ position: "left" }}
-              />
+                      <div className="field mt-4">
+                        <label htmlFor="cashAmount" className="block font-medium mb-2">
+                          <i className="fas fa-hand-holding-usd mr-2"></i>Monto Recibido
+                        </label>
+                        <InputNumber
+                          id="cashAmount"
+                          value={modalAmount}
+                          onValueChange={(e) => calculateModalChange(e.value || 0)}
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          className="w-full"
+                          inputClassName="font-bold"
+                        />
+                      </div>
+
+                      <div className="field mt-4">
+                        <label htmlFor="changeAmount" className="block font-medium mb-2">
+                          <i className="fas fa-exchange-alt mr-2"></i>Cambio a Devolver
+                        </label>
+                        <InputNumber
+                          id="changeAmount"
+                          value={modalChange}
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          readOnly
+                          className={`w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`}
+                          inputClassName={modalChange > 0 ? 'text-green-700' : ''}
+                        />
+                      </div>
+                    </>)}
+                    {formData.currentPayment.method.method != "Efectivo" && (<>
+                      <div className="field mt-4">
+                        <label htmlFor="cashAmount" className="block font-medium mb-2">
+                          <i className="fas fa-hand-holding-usd mr-2"></i>Monto Recibido
+                        </label>
+                        <InputNumber
+                          id="cashAmount"
+                          value={modalAmount}
+                          onValueChange={(e) => calculateModalChange(e.value || 0)}
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          className="w-full"
+                          inputClassName="font-bold"
+                        />
+                      </div>
+                    </>)}
+                  </div>
+                </div>
+              </Card>
+
+              <div className="d-flex mt-4">
+                <Button
+                  label="Agregar Pago"
+                  icon={<i className="fas fa-cash-register"></i>}
+                  className="p-button-primary"
+                  onClick={handleAddPayment}
+                  tooltip="Agregar este pago al registro"
+                  tooltipOptions={{ position: "left" }}
+                />
+              </div>
             </div>
           </div>
         </Card>
@@ -688,6 +722,70 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
           />
         </div>
       </div>
+
+      {/* <Dialog
+        header={
+          <div className="flex align-items-center gap-2">
+            <i className="fas fa-calculator"></i>
+            <span>Calcular Pago en Efectivo</span>
+          </div>
+        }
+        visible={showPaymentModal}
+        style={{ width: '450px' }}
+        footer={paymentModalFooter}
+        onHide={() => setShowPaymentModal(false)}
+        breakpoints={{ '960px': '75vw', '640px': '90vw' }}
+      >
+        <div className="p-fluid">
+          <div className="field">
+            <label htmlFor="remainingAmount" className="block font-medium mb-2">
+              <i className="fas fa-receipt mr-2"></i>Total Pendiente
+            </label>
+            <InputNumber
+              id="remainingAmount"
+              value={remaining}
+              mode="currency"
+              currency="DOP"
+              locale="es-DO"
+              readOnly
+              className="w-full"
+              inputClassName="font-bold"
+            />
+          </div>
+
+          <div className="field mt-4">
+            <label htmlFor="cashAmount" className="block font-medium mb-2">
+              <i className="fas fa-hand-holding-usd mr-2"></i>Monto Recibido
+            </label>
+            <InputNumber
+              id="cashAmount"
+              value={modalAmount}
+              onValueChange={(e) => calculateModalChange(e.value || 0)}
+              mode="currency"
+              currency="DOP"
+              locale="es-DO"
+              className="w-full"
+              inputClassName="font-bold"
+            />
+          </div>
+
+          <div className="field mt-4">
+            <label htmlFor="changeAmount" className="block font-medium mb-2">
+              <i className="fas fa-exchange-alt mr-2"></i>Cambio a Devolver
+            </label>
+            <InputNumber
+              id="changeAmount"
+              value={modalChange}
+              mode="currency"
+              currency="DOP"
+              locale="es-DO"
+              readOnly
+              className={`w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`}
+              inputClassName={modalChange > 0 ? 'text-green-700' : ''}
+            />
+          </div>
+        </div>
+      </Dialog> */}
     </div >
   );
 };

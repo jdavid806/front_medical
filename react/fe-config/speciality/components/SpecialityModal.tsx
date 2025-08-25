@@ -7,6 +7,8 @@ import { Column } from 'primereact/column'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { CustomModal } from '../../../components/CustomModal'
 import { SpecialityModalProps } from '../interfaces'
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete'
+import { useSpecialty } from '../hooks/useSpecialty'
 
 export default function SpecialityModal({
   visible,
@@ -24,6 +26,7 @@ export default function SpecialityModal({
   onCie11CodeChange
 }: SpecialityModalProps) {
 
+  const { cie11Codes, loadCie11Codes } = useSpecialty()
   const confirmRemove = (index: number) => {
     confirmDialog({
       message: '¿Está seguro de que desea eliminar este elemento?',
@@ -49,6 +52,10 @@ export default function SpecialityModal({
       </Button>
     </>
   )
+
+  const searchCie11Codes = async (event: AutoCompleteCompleteEvent) => {
+    await loadCie11Codes(event.query)
+  };
 
   return (
     <CustomModal
@@ -98,19 +105,41 @@ export default function SpecialityModal({
           <h6 className="mb-3">Listado de CIE-11</h6>
           <div className="mb-3">
             <label htmlFor="cie11-code" className="form-label">Escriba un Código CIE-11</label>
-            <InputText
+            {/* <InputText
               id="cie11-code"
               value={cie11Code}
               onChange={(e) => onCie11CodeChange(e.target.value)}
               placeholder="Código CIE-11"
               className="w-100"
               onKeyPress={(e) => e.key === 'Enter' && onAddCie11Code()}
+            /> */}
+            <AutoComplete
+              inputId="cie11-code"
+              placeholder="Seleccione un CIE-11"
+              field="label"
+              suggestions={cie11Codes}
+              completeMethod={searchCie11Codes}
+              inputClassName="w-100"
+              className="w-100"
+              appendTo={"self"}
+              value={cie11Code}
+              onChange={(e) => onCie11CodeChange(e.value)}
+              onKeyPress={(e) => e.key === 'Enter' && onAddCie11Code()}
+              forceSelection={false}
+              dropdown={true}
+              showEmptyMessage={true}
+              emptyMessage="No se encontraron códigos CIE-11"
+              delay={1000}
+              panelStyle={{
+                zIndex: 100000,
+                width: 'auto'
+              }}
             />
           </div>
           <Button
             className="btn btn-primary my-0 w-100"
             onClick={onAddCie11Code}
-            disabled={!cie11Code.trim()}
+            disabled={!cie11Code}
           >
             Agregar CIE-11
           </Button>

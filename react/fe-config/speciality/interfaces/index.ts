@@ -21,6 +21,7 @@ export interface SpecializableElement {
 export interface Cie11Code {
   codigo: string
   descripcion: string
+  label?: string
 }
 
 export interface SpecialityTableProps {
@@ -38,12 +39,12 @@ export interface SpecialityModalProps {
   clinicalRecordTypes: ClinicalRecordType[]
   specializableElements: SpecializableElement[]
   selectedClinicalRecord: ClinicalRecordType | null
-  cie11Code: string
+  cie11Code: Cie11Code | null
   onHide: () => void
   onSave: () => void
   onAddClinicalRecord: () => void
   onAddCie11Code: () => void
   onRemoveElement: (index: number) => void
   onClinicalRecordChange: (value: ClinicalRecordType | null) => void
-  onCie11CodeChange: (value: string) => void
+  onCie11CodeChange: (value: Cie11Code | null) => void
 }

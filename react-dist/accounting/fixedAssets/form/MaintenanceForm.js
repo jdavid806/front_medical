@@ -40,7 +40,6 @@ const MaintenanceForm = ({
     }
   });
   const assetStatus = watch("assetStatus");
-  console.log("Asset Status:", assetStatus);
   const maintenanceType = watch("maintenanceType");
   const onFormSubmit = data => onSubmit(data);
   const getFormErrorMessage = name => {
@@ -148,7 +147,8 @@ const MaintenanceForm = ({
       id: "maintenanceDate",
       value: field.value,
       onChange: e => field.onChange(e.value),
-      dateFormat: "dd/mm/yy",
+      dateFormat: "dd-mm-yy",
+      readOnlyInput: false,
       showIcon: true,
       className: classNames("w-full", {
         "p-invalid": errors.maintenanceDate
@@ -193,7 +193,8 @@ const MaintenanceForm = ({
       id: "nextMaintenanceDate",
       value: field.value,
       onChange: e => field.onChange(e.value),
-      dateFormat: "dd/mm/yy",
+      dateFormat: "dd-mm-yy",
+      readOnlyInput: false,
       showIcon: true,
       className: classNames("w-full", {
         "p-invalid": errors.nextMaintenanceDate
@@ -216,7 +217,8 @@ const MaintenanceForm = ({
       id: "disposedDate",
       value: field.value,
       onChange: e => field.onChange(e.value),
-      dateFormat: "dd/mm/yy",
+      dateFormat: "dd-mm-yy",
+      readOnlyInput: false,
       showIcon: true,
       className: classNames("w-full", {
         "p-invalid": errors.disposedDate

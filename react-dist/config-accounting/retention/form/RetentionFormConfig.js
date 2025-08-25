@@ -7,18 +7,14 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 const RetentionFormConfig = ({
   formId,
   onSubmit,
   initialData,
   onCancel,
-  loading = false
+  loading = false,
+  accounts
 }) => {
-  const {
-    accounts,
-    isLoading: isLoadingAccounts
-  } = useAccountingAccounts();
   const {
     control,
     handleSubmit,
@@ -32,13 +28,17 @@ const RetentionFormConfig = ({
     defaultValues: initialData || {
       name: "",
       percentage: 0,
-      accounting_account: null,
+      accounting_account_id: null,
       accounting_account_reverse_id: null,
+      sell_accounting_account_id: null,
+      sell_reverse_accounting_account_id: null,
       description: ""
     }
   });
-  const selectedAccount = watch("accounting_account");
-  const selectedReverseAccount = watch("accounting_account_reverse_id");
+
+  // Observar cambios en las cuentas para validaciones cruzadas
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -51,8 +51,10 @@ const RetentionFormConfig = ({
     reset(initialData || {
       name: "",
       percentage: 0,
-      accounting_account: null,
+      accounting_account_id: null,
       accounting_account_reverse_id: null,
+      sell_accounting_account_id: null,
+      sell_reverse_accounting_account_id: null,
       description: ""
     });
   }, [initialData, reset]);
@@ -124,13 +126,17 @@ const RetentionFormConfig = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account",
+  }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "accounting_account_id",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable Compras *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_id",
     control: control,
     rules: {
-      required: "La cuenta contable es requerida"
+      required: "La cuenta contable de compras es requerida"
     },
     render: ({
       field,
@@ -149,23 +155,21 @@ const RetentionFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account"))
+      loading: false
+    }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_reverse_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable Reversa *"), /*#__PURE__*/React.createElement(Controller, {
+  }, "Cuenta Contable Reversa Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_reverse_id",
     control: control,
     rules: {
-      required: "La cuenta contable reversa es requerida",
+      required: "La cuenta contable reversa de compras es requerida",
       validate: value => {
-        if (!value) return "Seleccione una cuenta válida";
-        if (selectedAccount && value === Number(selectedAccount)) {
-          return "No puede ser la misma cuenta principal";
+        if (value === selectedPurchaseAccount) {
+          return "No puede ser la misma cuenta principal de compras";
         }
         return true;
       }
@@ -177,7 +181,7 @@ const RetentionFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts.filter(acc => !selectedAccount || acc.id !== Number(selectedAccount)),
+      options: accounts.filter(acc => acc.id !== selectedPurchaseAccount),
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
@@ -187,9 +191,78 @@ const RetentionFormConfig = ({
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
+      loading: false
     }), getFormErrorMessage("accounting_account_reverse_id"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "font-medium block mb-2"
+  }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "sell_accounting_account_id",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable Ventas *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "sell_accounting_account_id",
+    control: control,
+    rules: {
+      required: "La cuenta contable de ventas es requerida"
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+      id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: accounts,
+      optionValue: "id",
+      optionLabel: "account_name",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      filterBy: "account_name,account_code",
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
+      }),
+      loading: false
+    }), getFormErrorMessage("sell_accounting_account_id"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "sell_reverse_accounting_account_id",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable Reversa Ventas *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "sell_reverse_accounting_account_id",
+    control: control,
+    rules: {
+      required: "La cuenta contable reversa de ventas es requerida",
+      validate: value => {
+        if (value === selectedSellAccount) {
+          return "No puede ser la misma cuenta principal de ventas";
+        }
+        return true;
+      }
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+      id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: accounts.filter(acc => acc.id !== selectedSellAccount),
+      optionLabel: "account_name",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      optionValue: "id",
+      filterBy: "account_name,account_code",
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
+      }),
+      loading: false
+    }), getFormErrorMessage("sell_reverse_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -221,9 +294,7 @@ const RetentionFormConfig = ({
       height: "50px",
       borderRadius: "0px"
     }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-times"
-  })), /*#__PURE__*/React.createElement(Button, {
+  }), /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",
     className: "p-button-sm",
     loading: loading,
@@ -234,8 +305,6 @@ const RetentionFormConfig = ({
     },
     disabled: loading || !isDirty,
     type: "submit"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-save"
-  }))));
+  })));
 };
 export default RetentionFormConfig;

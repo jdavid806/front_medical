@@ -202,7 +202,7 @@
             let datos = {
                 nombre_del_centro_medico: nombreCentro,
                 nombre_usuario: nombreUsuario,
-                "cod pais": codPais,
+                cod_pais: codPais,
                 phone: codPais + telefono,
                 email: email
             };

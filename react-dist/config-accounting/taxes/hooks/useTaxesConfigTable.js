@@ -17,13 +17,13 @@ export const useTaxesConfigTable = () => {
           id: taxData?.id?.toString() || '',
           name: taxData?.name || '',
           percentage: taxData?.percentage || 0,
-          account: taxData?.accounting_account ? {
-            id: taxData.accounting_account.toString(),
-            name: taxData.account_name || `Cuenta ${taxData.accounting_account}`
+          account: taxData?.accounting_account_id ? {
+            id: taxData.accounting_account_id.toString(),
+            name: taxData.account_name || `Cuenta ${taxData.accounting_account_id.toString()}`
           } : null,
           returnAccount: taxData?.accounting_account_reverse_id ? {
             id: taxData.accounting_account_reverse_id.toString(),
-            name: taxData.reverse_account_name || `Cuenta ${taxData.accounting_account_reverse_id}`
+            name: taxData.account_name || `Cuenta ${taxData.accounting_account_reverse_id}`
           } : null,
           description: taxData?.description || 'Sin descripción'
         };

@@ -50,18 +50,18 @@ export class HttpClient {
             let responseData = contentType?.includes("application/json")
                 ? await response.json()
                 : await response.text();
-                
+
             if (!response.ok) {
-              if (response.status === 401) {
-                sessionStorage.clear();
-                window.location.href = "/";
-              }
-              const error = new Error(
-                responseData.message || "Error en la solicitud"
-              );
-              error.response = response;
-              error.data = responseData;
-              throw error;
+                if (response.status === 401) {
+                    sessionStorage.clear();
+                    //window.location.href = "/";
+                }
+                const error = new Error(
+                    responseData.message || "Error en la solicitud"
+                );
+                error.response = response;
+                error.data = responseData;
+                throw error;
             }
 
             return responseData;

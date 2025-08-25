@@ -11,7 +11,8 @@ export const useSpecialty = () => {
 
   // Form states
   const [selectedClinicalRecord, setSelectedClinicalRecord] = useState(null);
-  const [cie11Code, setCie11Code] = useState('');
+  const [cie11Code, setCie11Code] = useState(null);
+  const [cie11Codes, setCie11Codes] = useState([]);
 
   // DataTable filter
   const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -73,6 +74,72 @@ export const useSpecialty = () => {
     } catch (error) {
       console.error('Error loading clinical record types:', error);
       throw error;
+    }
+  };
+  const loadCie11Codes = async query => {
+    try {
+      const response = await fetch(`${getApiUrl()}/medical/cie11/search?query=${query}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      if (!response.ok) throw new Error('CIE-11 code not found');
+      const data = await response.json();
+      console.log('Raw CIE-11 data from API:', data); // Debug log
+      console.log('Data type:', typeof data, 'Is array:', Array.isArray(data)); // Debug log
+
+      // Handle different response formats
+      let dataArray = [];
+      if (Array.isArray(data)) {
+        dataArray = data;
+      } else if (data && typeof data === 'object') {
+        // Check common response wrapper patterns
+        if (Array.isArray(data.data)) {
+          dataArray = data.data;
+        } else if (Array.isArray(data.results)) {
+          dataArray = data.results;
+        } else if (Array.isArray(data.items)) {
+          dataArray = data.items;
+        } else {
+          console.warn('Unexpected data format from CIE-11 API:', data);
+          dataArray = [];
+        }
+      } else {
+        console.warn('Invalid data type from CIE-11 API:', typeof data);
+        dataArray = [];
+      }
+      console.log('Extracted data array:', dataArray); // Debug log
+
+      // Transform data to include label property for AutoComplete
+      const transformedData = dataArray.map(item => {
+        // Validate required fields
+        const codigo = item.codigo || '';
+        const descripcion = item.descripcion || '';
+
+        // Create comprehensive label with validation
+        const label = codigo || 'Sin información';
+        console.log('Transformed item:', {
+          codigo,
+          descripcion,
+          label
+        }); // Debug log
+
+        return {
+          ...item,
+          codigo,
+          descripcion,
+          label
+        };
+      });
+      console.log('Transformed CIE-11 data:', transformedData); // Debug log
+      setCie11Codes(transformedData);
+      return transformedData;
+    } catch (error) {
+      console.error('Error loading CIE-11 codes:', error);
+      setCie11Codes([]);
+      return [];
     }
   };
   const loadSpecializableElements = async specialtyName => {
@@ -168,30 +235,27 @@ export const useSpecialty = () => {
     }
   };
   const addCie11Code = async () => {
-    if (!cie11Code.trim() || !selectedSpecialty) return;
+    if (!cie11Code || !selectedSpecialty) return;
     try {
-      const cie11Data = await fetchCie11Code(cie11Code);
-      if (cie11Data) {
-        const displayName = `${cie11Data.codigo} - ${cie11Data.descripcion}`;
-        const newElement = {
-          specializable_type: 'CIE-11',
-          specializable_id: cie11Data.codigo,
-          specialty_id: selectedSpecialty.name,
-          description: cie11Data.descripcion,
-          display_name: displayName
-        };
+      const displayName = `${cie11Code.codigo} - ${cie11Code.descripcion}`;
+      const newElement = {
+        specializable_type: 'CIE-11',
+        specializable_id: cie11Code.codigo,
+        specialty_id: selectedSpecialty.name,
+        description: cie11Code.descripcion,
+        display_name: displayName
+      };
 
-        // Check if already exists
-        const exists = specializableElements.some(el => el.specializable_type === 'CIE-11' && el.specializable_id === cie11Data.codigo);
-        if (!exists) {
-          setSpecializableElements([...specializableElements, newElement]);
-          setCie11Code('');
-        } else {
-          showWarn('Este código CIE-11 ya está agregado');
-        }
+      // Check if already exists
+      const exists = specializableElements.some(el => el.specializable_type === 'CIE-11' && el.specializable_id === cie11Code.codigo);
+      if (!exists) {
+        setSpecializableElements([...specializableElements, newElement]);
+        setCie11Code(null);
+      } else {
+        showWarn('Este código CIE-11 ya está agregado');
       }
     } catch (error) {
-      showError('Código CIE-11 no encontrado');
+      showError('Error al agregar código CIE-11');
     }
   };
   const removeSpecializableElement = index => {
@@ -203,7 +267,7 @@ export const useSpecialty = () => {
     setSelectedSpecialty(null);
     setSpecializableElements([]);
     setSelectedClinicalRecord(null);
-    setCie11Code('');
+    setCie11Code(null);
   };
   const onGlobalFilterChange = e => {
     const value = e.target.value;
@@ -232,6 +296,7 @@ export const useSpecialty = () => {
     globalFilterValue,
     filters,
     toast,
+    cie11Codes,
     // Setters
     setShowConfigModal,
     setSelectedClinicalRecord,
@@ -246,6 +311,7 @@ export const useSpecialty = () => {
     onGlobalFilterChange,
     showSuccess,
     showError,
-    showWarn
+    showWarn,
+    loadCie11Codes
   };
 };

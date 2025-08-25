@@ -12,12 +12,21 @@ include "../../header.php";
                 <li class="breadcrumb-item active" onclick="location.reload()">Especialidades</li>
             </ol>
         </nav>
-        <div class="main-content">
-            <div class="component-container">
-                <?php include "../tabs/tab_specialitiesConfiguration.php";?>
-            </div>
+
+        <div id="specialities">
         </div>
     </div>
+
+    <script type="module">
+        import React from "react";
+        import ReactDOMClient from "react-dom/client";
+        import SpecialityApp from '../../react-dist/fe-config/speciality/SpecialityApp.js';
+
+        const rootElement = document.getElementById('specialities');
+        if (rootElement) {
+            ReactDOMClient.createRoot(rootElement).render(React.createElement(SpecialityApp));
+        }
+    </script>
 </div>
 
 <?php

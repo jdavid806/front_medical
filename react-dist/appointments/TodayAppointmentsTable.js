@@ -9,6 +9,8 @@ import { TicketTable } from "../tickets/components/TicketTable.js";
 import { GenerateTicket } from "../tickets/GenerateTicket.js";
 import { AppointmentFormModal } from "./AppointmentFormModal.js";
 import { Menu } from "primereact/menu";
+import { useProductsToBeInvoiced } from "./hooks/useProductsToBeInvoiced.js";
+import { getLocalTodayISODate } from "../../services/utilidades.js";
 export const TodayAppointmentsTable = () => {
   const [showBillingDialog, setShowBillingDialog] = useState(false);
   const [showTicketControl, setShowTicketControl] = useState(false);
@@ -18,7 +20,7 @@ export const TodayAppointmentsTable = () => {
   const customFilters = () => {
     return {
       appointmentState: "pending",
-      appointmentDate: new Date().toISOString().split("T")[0],
+      appointmentDate: getLocalTodayISODate(),
       sort: "-appointment_date,appointment_time"
     };
   };
@@ -39,6 +41,11 @@ export const TodayAppointmentsTable = () => {
     loading,
     perPage
   } = useFetchAppointments(customFilters);
+  const {
+    products,
+    loading: productsLoading
+  } = useProductsToBeInvoiced(selectedAppointment?.id || null);
+  console.log("products", products);
   useEffect(() => {
     console.log("appointments", appointments);
   }, [appointments]);
@@ -118,7 +125,9 @@ export const TodayAppointmentsTable = () => {
   }))), /*#__PURE__*/React.createElement(AdmissionBilling, {
     visible: showBillingDialog,
     onHide: () => setShowBillingDialog(false),
-    appointmentData: selectedAppointment
+    appointmentData: selectedAppointment,
+    productsToInvoice: products,
+    productsLoading: productsLoading
   }), /*#__PURE__*/React.createElement(Dialog, {
     header: "Control de Turnos",
     visible: showTicketControl,

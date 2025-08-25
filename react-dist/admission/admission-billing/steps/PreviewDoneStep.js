@@ -13,11 +13,10 @@ const PreviewDoneStep = ({
   prevStep,
   onHide,
   onPrint,
-  onSubmit,
-  isSubmitting
+  onSubmit
 }) => {
   const [isDone, setIsDone] = useState(false);
-  const total = calculateTotal(formData.products);
+  const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const balance = total - paid;
@@ -47,7 +46,7 @@ const PreviewDoneStep = ({
   const priceBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
       className: "fw-bold"
-    }, formatCurrency(rowData.price));
+    }, formatCurrency(rowData.currentPrice));
   };
   const taxBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement(Tag, {
@@ -57,7 +56,7 @@ const PreviewDoneStep = ({
     });
   };
   const subtotalBodyTemplate = rowData => {
-    const subtotal = rowData.price * rowData.quantity * (1 + rowData.tax / 100);
+    const subtotal = rowData.currentPrice * rowData.quantity * (1 + rowData.tax / 100);
     return /*#__PURE__*/React.createElement("span", {
       className: "fw-bold"
     }, formatCurrency(subtotal));
@@ -65,7 +64,12 @@ const PreviewDoneStep = ({
   const paymentAmountTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
       className: "font-bold"
-    }, formatCurrency(rowData.amount));
+    }, formatCurrency(rowData.total));
+  };
+  const paymentChangeTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, formatCurrency(rowData.change));
   };
   if (isDone) {
     return /*#__PURE__*/React.createElement("div", {
@@ -210,6 +214,10 @@ const PreviewDoneStep = ({
     field: "amount",
     header: "Monto",
     body: paymentAmountTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "change",
+    header: "Cambio",
+    body: paymentChangeTemplate
   })))), /*#__PURE__*/React.createElement("div", {
     className: "col-lg-6"
   }, /*#__PURE__*/React.createElement(Panel, {
@@ -262,8 +270,7 @@ const PreviewDoneStep = ({
       className: "fa fa-cart-plus"
     }),
     className: "btn btn-primary btn-lg px-4",
-    onClick: handleFinish,
-    disabled: isSubmitting
+    onClick: handleFinish
   })));
 };
 export default PreviewDoneStep;

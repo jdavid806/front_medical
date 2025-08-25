@@ -7,37 +7,37 @@ export const useTaxesConfigTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-const transformTaxData = (data: any): Tax[] => {
-    try {
-        if (!Array.isArray(data)) {
-            console.error('Expected array but received:', data);
+    const transformTaxData = (data: any): Tax[] => {
+        try {
+            if (!Array.isArray(data)) {
+                console.error('Expected array but received:', data);
+                return [];
+            }
+
+            return data.map((tax: any) => {
+                // Extraer el objeto tax_charge si existe
+                const taxData = tax.tax_charge || tax;
+
+                return {
+                    id: taxData?.id?.toString() || '',
+                    name: taxData?.name || '',
+                    percentage: taxData?.percentage || 0,
+                    account: taxData?.accounting_account_id ? {
+                        id: taxData.accounting_account_id.toString(),
+                        name: taxData.account_name || `Cuenta ${taxData.accounting_account_id.toString()}`
+                    } : null,
+                    returnAccount: taxData?.accounting_account_reverse_id ? {
+                        id: taxData.accounting_account_reverse_id.toString(),
+                        name: taxData.account_name || `Cuenta ${taxData.accounting_account_reverse_id}`
+                    } : null,
+                    description: taxData?.description || 'Sin descripción'
+                };
+            });
+        } catch (error) {
+            console.error('Error transforming tax data:', error);
             return [];
         }
-        
-        return data.map((tax: any) => {
-            // Extraer el objeto tax_charge si existe
-            const taxData = tax.tax_charge || tax;
-            
-            return {
-                id: taxData?.id?.toString() || '',
-                name: taxData?.name || '',
-                percentage: taxData?.percentage || 0,
-                account: taxData?.accounting_account ? {
-                    id: taxData.accounting_account.toString(),
-                    name: taxData.account_name || `Cuenta ${taxData.accounting_account}`
-                } : null,
-                returnAccount: taxData?.accounting_account_reverse_id ? {
-                    id: taxData.accounting_account_reverse_id.toString(),
-                    name: taxData.account_name || `Cuenta ${taxData.accounting_account_reverse_id}`
-                } : null,
-                description: taxData?.description || 'Sin descripción'
-            };
-        });
-    } catch (error) {
-        console.error('Error transforming tax data:', error);
-        return [];
-    }
-};
+    };
     const fetchTaxes = async () => {
         try {
             setLoading(true);
@@ -59,10 +59,10 @@ const transformTaxData = (data: any): Tax[] => {
         fetchTaxes();
     }, []);
 
-    return { 
-        taxes, 
-        loading, 
-        error, 
-        refreshTaxes: fetchTaxes 
+    return {
+        taxes,
+        loading,
+        error,
+        refreshTaxes: fetchTaxes
     };
 };

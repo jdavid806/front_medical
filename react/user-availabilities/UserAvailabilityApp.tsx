@@ -8,7 +8,7 @@ import { useUserAvailability } from './hooks/useUserAvailability';
 import { useUserAvailabilityUpdate } from './hooks/useUserAvailabilityUpdate';
 import { useUserAvailabilityDelete } from './hooks/useUserAvailabilityDelete';
 import { useUserAvailabilityCreate } from './hooks/useUserAvailabilityCreate';
-import { convertHHMMSSToDate } from '../../services/utilidades';
+import { convertHHMMSSToDate, convertHHMMToDate } from '../../services/utilidades';
 
 export const UserAvailabilityApp = () => {
 
@@ -68,11 +68,11 @@ export const UserAvailabilityApp = () => {
                 days_of_week: Array.isArray(userAvailability?.days_of_week)
                     ? userAvailability.days_of_week.map(day => parseInt(day))
                     : (userAvailability?.days_of_week ? [userAvailability.days_of_week] : []).map(day => parseInt(day)),
-                start_time: convertHHMMSSToDate(userAvailability?.start_time),
-                end_time: convertHHMMSSToDate(userAvailability?.end_time),
+                start_time: convertHHMMToDate(userAvailability?.start_time),
+                end_time: convertHHMMToDate(userAvailability?.end_time),
                 free_slots: userAvailability?.free_slots.map(slot => ({
-                    start_time: convertHHMMSSToDate(slot.start_time),
-                    end_time: convertHHMMSSToDate(slot.end_time)
+                    start_time: convertHHMMToDate(slot.start_time),
+                    end_time: convertHHMMToDate(slot.end_time)
                 })) ?? []
             }
             console.log(userAvailability, data);

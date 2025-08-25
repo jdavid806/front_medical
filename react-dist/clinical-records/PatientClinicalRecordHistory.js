@@ -101,7 +101,7 @@ export const PatientClinicalRecordHistory = () => {
         guardarArchivo(formData, true).then(response => {
           resolve(response.file);
         }).catch(reject);
-      }, 1500);
+      }, 2500);
     });
   }
   const sendMessageWhatsapp = useCallback(async recordHistory => {
@@ -133,6 +133,7 @@ export const PatientClinicalRecordHistory = () => {
       text: "Mensaje enviado correctamente",
       title: "Éxito"
     });
+    window.location.reload();
   }, [sendMessageWpp]);
   const seeDetail = (id, clinicalRecordType) => {
     window.location.href = `detalleConsulta?clinicalRecordId=${id}&patient_id=${patientId}&tipo_historia=${clinicalRecordType}&especialidad=${specialtyId}`;

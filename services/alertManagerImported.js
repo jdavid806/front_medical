@@ -63,8 +63,10 @@ export class SwalManager {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 await onConfirm();
+                return true;
             } else {
                 if (onCancel) onCancel();
+                return false;
             }
         });
     }

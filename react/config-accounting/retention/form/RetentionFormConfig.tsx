@@ -1,266 +1,388 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { InputNumber } from "primereact/inputnumber";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
-import { RetentionFormInputs } from "../interfaces/RetentionDTO";
-import { RetentionFormProps } from "../interfaces/RetentionFormConfigType";
+import useLocationDropdowns from "../../../cities/hooks/useLocationDropdowns";
+import { EntitiesFormInputs, EntitiesFormProps } from "../../../config/entities/interfaces/entitiesForm";
+import { documentTypes } from "../../../config/entities/interfaces/constant";
 
-const RetentionFormConfig: React.FC<RetentionFormProps> = ({
+const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
   formId,
   onSubmit,
   initialData,
   onCancel,
   loading = false,
 }) => {
-  const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
-
   const {
     control,
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-    watch,
-  } = useForm<RetentionFormInputs>({
+    setValue,
+    watch
+  } = useForm<EntitiesFormInputs>({
     defaultValues: initialData || {
       name: "",
-      percentage: 0,
-      accounting_account: null,
-      accounting_account_reverse_id: null,
-      description: "",
+      document_type: "CC",
+      document_number: "",
+      email: "",
+      address: "",
+      phone: "",
+      country_id: "",
+      department_id: "",
+      city_id: "",
+      tax_charge_id: null,
+      withholding_tax_id: null,
+      koneksi_sponsor_slug: null,
     },
   });
 
-  const selectedAccount = watch("accounting_account");
-  const selectedReverseAccount = watch("accounting_account_reverse_id");
+  const watchCountry = watch("country_id");
+  const watchDepartment = watch("department_id");
 
-  const onFormSubmit: SubmitHandler<RetentionFormInputs> = (data) => {
-    onSubmit(data);
+  const {
+    countryOptions,
+    departmentOptions,
+    cityOptions,
+    selectedCountry,
+    selectedDepartment,
+    selectedCity,
+    handleCountryChange,
+    handleDepartmentChange,
+    handleCityChange,
+    loading: locationLoading,
+    isInitialized
+  } = useLocationDropdowns({
+    initialCountryId: initialData?.country_id?.toString(),
+    initialDepartmentId: initialData?.department_id?.toString(),
+    initialCityId: initialData?.city_id?.toString()
+  });
+
+  const onFormSubmit: SubmitHandler<EntitiesFormInputs> = (data) => {
+    onSubmit({
+      ...data,
+      country_id: data.country_id ? parseInt(data.country_id) : null,
+      department_id: data.department_id ? parseInt(data.department_id) : null,
+      city_id: data.city_id ? parseInt(data.city_id) : null,
+    });
   };
 
-  const getFormErrorMessage = (name: keyof RetentionFormInputs) => {
+  const getFormErrorMessage = (name: keyof EntitiesFormInputs) => {
     return (
       errors[name] && <small className="p-error">{errors[name]?.message}</small>
     );
   };
 
   useEffect(() => {
-    reset(
-      initialData || {
-        name: "",
-        percentage: 0,
-        accounting_account: null,
-        accounting_account_reverse_id: null,
-        description: "",
+    if (isInitialized) {
+      if (selectedCountry && selectedCountry !== watchCountry) {
+        setValue("country_id", selectedCountry, { shouldValidate: true });
       }
-    );
+      if (selectedDepartment && selectedDepartment !== watchDepartment) {
+        setValue("department_id", selectedDepartment, { shouldValidate: true });
+      }
+      if (selectedCity) {
+        setValue("city_id", selectedCity, { shouldValidate: true });
+      }
+    }
+  }, [selectedCountry, selectedDepartment, selectedCity, isInitialized, setValue, watchCountry, watchDepartment]);
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        ...initialData,
+        country_id: initialData.country_id?.toString() || "",
+        department_id: initialData.department_id?.toString() || "",
+        city_id: initialData.city_id?.toString() || "",
+      });
+    }
   }, [initialData, reset]);
 
   return (
-    <form id={formId} onSubmit={handleSubmit(onFormSubmit)} className="p-fluid">
-      {/* Campo Nombre */}
-      <div className="field mb-4">
-        <label htmlFor="name" className="font-medium block mb-2">
-          Nombre de la Retención *
-        </label>
+    <form id={formId} onSubmit={handleSubmit(onFormSubmit)}>
+      <div className="mb-3">
         <Controller
           name="name"
           control={control}
-          rules={{
-            required: "El nombre de la retención es requerido",
-            maxLength: {
-              value: 100,
-              message: "El nombre no puede exceder 100 caracteres",
-            },
-          }}
-          render={({ field, fieldState }) => (
+          rules={{ required: "El nombre es requerido" }}
+          render={({ field }) => (
             <>
+              <label htmlFor={field.name} className="form-label">
+                Nombre *
+              </label>
               <InputText
                 id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.name,
+                })}
                 {...field}
-                className={classNames({ "p-invalid": fieldState.error })}
-                placeholder="Ingrese el nombre de la retención"
               />
-              {getFormErrorMessage("name")}
             </>
           )}
         />
+        {getFormErrorMessage("name")}
       </div>
 
-      {/* Campo Porcentaje */}
-      <div className="field mb-4">
-        <label htmlFor="percentage" className="font-medium block mb-2">
-          Porcentaje (%) *
-        </label>
+      <div className="mb-3">
         <Controller
-          name="percentage"
+          name="document_type"
           control={control}
-          rules={{
-            required: "El porcentaje es requerido",
-            min: {
-              value: 0,
-              message: "El porcentaje no puede ser negativo",
-            },
-            max: {
-              value: 100,
-              message: "El porcentaje no puede ser mayor a 100",
-            },
-          }}
-          render={({ field, fieldState }) => (
-            <>
-              <InputNumber
-                id={field.name}
-                value={field.value}
-                onValueChange={(e) => field.onChange(e.value)}
-                mode="decimal"
-                min={0}
-                max={100}
-                suffix="%"
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
-                placeholder="Ej: 10"
-              />
-              {getFormErrorMessage("percentage")}
-            </>
-          )}
-        />
-      </div>
-
-      {/* Campo Cuenta Contable Principal */}
-      <div className="field mb-4">
-        <label htmlFor="accounting_account" className="font-medium block mb-2">
-          Cuenta Contable *
-        </label>
-        <Controller
-          name="accounting_account"
-          control={control}
-          rules={{
-            required: "La cuenta contable es requerida",
-          }}
-          render={({ field, fieldState }) => (
-            <>
-              <Dropdown
-                id={field.name}
-                value={field.value}
-                onChange={(e) => field.onChange(e.value)}
-                options={accounts}
-                optionValue="id"
-                optionLabel="account_name"
-                placeholder="Seleccione una cuenta"
-                filter
-                filterBy="account_name,account_code"
-                showClear
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
-                loading={isLoadingAccounts}
-                appendTo="self"
-              />
-              {getFormErrorMessage("accounting_account")}
-            </>
-          )}
-        />
-      </div>
-
-      {/* Campo Cuenta Contable Reversa */}
-      <div className="field mb-4">
-        <label
-          htmlFor="accounting_account_reverse_id"
-          className="font-medium block mb-2"
-        >
-          Cuenta Contable Reversa *
-        </label>
-        <Controller
-          name="accounting_account_reverse_id"
-          control={control}
-          rules={{
-            required: "La cuenta contable reversa es requerida",
-            validate: (value) => {
-              if (!value) return "Seleccione una cuenta válida";
-              if (selectedAccount && value === Number(selectedAccount)) {
-                return "No puede ser la misma cuenta principal";
-              }
-              return true;
-            },
-          }}
-          render={({ field, fieldState }) => (
-            <>
-              <Dropdown
-                id={field.name}
-                value={field.value}
-                onChange={(e) => field.onChange(e.value)}
-                options={accounts.filter(
-                  (acc) => !selectedAccount || acc.id !== Number(selectedAccount)
-                )}
-                optionLabel="account_name"
-                placeholder="Seleccione una cuenta"
-                filter
-                optionValue="id"
-                filterBy="account_name,account_code"
-                showClear
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
-                loading={isLoadingAccounts}
-                appendTo="self"
-              />
-              {getFormErrorMessage("accounting_account_reverse_id")}
-            </>
-          )}
-        />
-      </div>
-
-      {/* Campo Descripción */}
-      <div className="field mb-4">
-        <label htmlFor="description" className="font-medium block mb-2">
-          Descripción
-        </label>
-        <Controller
-          name="description"
-          control={control}
+          rules={{ required: "El tipo de documento es requerido" }}
           render={({ field }) => (
-            <InputTextarea
-              id={field.name}
-              {...field}
-              rows={3}
-              className="w-full"
-              placeholder="Ingrese una descripción opcional"
-            />
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Tipo de Documento *
+              </label>
+              <Dropdown
+                id={field.name}
+                options={documentTypes}
+                optionLabel="label"
+                optionValue="value"
+                className={classNames("w-100", {
+                  "p-invalid": errors.document_type,
+                })}
+                {...field}
+              />
+            </>
           )}
         />
+        {getFormErrorMessage("document_type")}
       </div>
 
-      {/* Botones de acción */}
+      <div className="mb-3">
+        <Controller
+          name="document_number"
+          control={control}
+          rules={{ required: "El número de documento es requerido" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Número de Documento *
+              </label>
+              <InputText
+                id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.document_number,
+                })}
+                {...field}
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("document_number")}
+      </div>
+
+      <div className="mb-3">
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: "El email es requerido",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Email inválido",
+            },
+          }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Email *
+              </label>
+              <InputText
+                id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.email,
+                })}
+                {...field}
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("email")}
+      </div>
+
+      <div className="mb-3">
+        <Controller
+          name="address"
+          control={control}
+          rules={{ required: "La dirección es requerida" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Dirección *
+              </label>
+              <InputText
+                id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.address,
+                })}
+                {...field}
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("address")}
+      </div>
+
+      <div className="mb-3">
+        <Controller
+          name="phone"
+          control={control}
+          rules={{ required: "El teléfono es requerido" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Teléfono *
+              </label>
+              <InputText
+                id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.phone,
+                })}
+                {...field}
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("phone")}
+      </div>
+
+      {/* Selector de País */}
+      <div className="mb-3">
+        <Controller
+          name="country_id"
+          control={control}
+          rules={{ required: "El país es requerido" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor="country_id" className="form-label">
+                País *
+              </label>
+              <Dropdown
+                id="country_id"
+                value={field.value}
+                options={countryOptions}
+                optionLabel="label"
+                optionValue="value"
+                onChange={(e) => {
+                  field.onChange(e.value);
+                  handleCountryChange(e.value);
+                }}
+                className={classNames("w-100", {
+                  "p-invalid": errors.country_id,
+                })}
+                placeholder="Selecciona un país"
+                loading={locationLoading}
+                filter
+                filterBy="label"
+                showClear
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("country_id")}
+      </div>
+
+      {/* Selector de Departamento */}
+      <div className="mb-3">
+        <Controller
+          name="department_id"
+          control={control}
+          rules={{ required: "El departamento es requerido" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor="department_id" className="form-label">
+                Departamento *
+              </label>
+              <Dropdown
+                id="department_id"
+                value={field.value}
+                options={departmentOptions}
+                optionLabel="label"
+                optionValue="value"
+                onChange={(e) => {
+                  field.onChange(e.value);
+                  handleDepartmentChange(e.value);
+                }}
+                className={classNames("w-100", {
+                  "p-invalid": errors.department_id,
+                })}
+                placeholder="Selecciona un departamento"
+                loading={locationLoading}
+                disabled={!watchCountry}
+                filter
+                filterBy="label"
+                showClear
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("department_id")}
+      </div>
+
+      {/* Selector de Ciudad */}
+      <div className="mb-3">
+        <Controller
+          name="city_id"
+          control={control}
+          rules={{ required: "La ciudad es requerida" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor="city_id" className="form-label">
+                Ciudad *
+              </label>
+              <Dropdown
+                id="city_id"
+                value={field.value}
+                options={cityOptions}
+                optionLabel="label"
+                optionValue="value"
+                onChange={(e) => {
+                  field.onChange(e.value);
+                  handleCityChange(e.value);
+                }}
+                className={classNames("w-100", {
+                  "p-invalid": errors.city_id,
+                })}
+                placeholder="Selecciona una ciudad"
+                loading={locationLoading}
+                disabled={!watchDepartment}
+                filter
+                filterBy="label"
+                showClear
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("city_id")}
+      </div>
+
       <div className="d-flex justify-content-center mt-4 gap-6">
         {onCancel && (
           <Button
             label="Cancelar"
             className="btn btn-phoenix-secondary"
             onClick={onCancel}
-            disabled={loading}
+            style={{ padding: "0 20px", width: "200px", height: "50px", borderRadius: "0px" }}
             type="button"
-            style={{
-              padding: "0 20px",
-              width: "200px",
-              height: "50px",
-              borderRadius: "0px",
-            }}
+            disabled={loading}
           >
             <i className="fas fa-times"></i>
           </Button>
         )}
         <Button
+          type="submit"
           label="Guardar"
           className="p-button-sm"
-          loading={loading}
-          style={{ padding: "0 40px", width: "200px", height: "50px" }}
           disabled={loading || !isDirty}
-          type="submit"
+          style={{
+            padding: "0 40px",
+            width: "200px",
+            height: "50px",
+            borderRadius: "0px",
+          }}
         >
           <i className="fas fa-save"></i>
         </Button>
@@ -269,4 +391,4 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
   );
 };
 
-export default RetentionFormConfig;
+export default EntitiesConfigForm;

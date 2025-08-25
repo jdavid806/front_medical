@@ -16,10 +16,12 @@ import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { useUsers } from "../../users/hooks/useUsers.js";
 import { useModules } from "../../modules/hooks/useModules.js";
+import UserFormModal from "../../users/UserFormModal.js";
 const UserAvailabilityForm = ({
   formId,
   onHandleSubmit,
-  initialData
+  initialData,
+  onNewUserCreated
 }) => {
   const {
     control,
@@ -47,6 +49,7 @@ const UserAvailabilityForm = ({
       free_slots: []
     }
   });
+  const [showUserModal, setShowUserModal] = useState(false);
   const onSubmit = data => onHandleSubmit(data);
   const {
     fields,
@@ -60,7 +63,8 @@ const UserAvailabilityForm = ({
   const [selectedUser, setSelectedUser] = useState(undefined);
   const watchUserId = watch('user_id');
   const {
-    users
+    users,
+    fetchUsers
   } = useUsers();
   const [usersForSelect, setUsersForSelect] = useState([]);
   const {
@@ -81,6 +85,29 @@ const UserAvailabilityForm = ({
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, errors[name].message);
+  };
+
+  // Función para manejar la creación de nuevo usuario
+  const handleNewUserSubmit = async userData => {
+    try {
+      // Aquí iría la lógica para crear el usuario
+      console.log("Nuevo usuario creado:", userData);
+
+      // Recargar la lista de usuarios
+      if (fetchUsers) {
+        await fetchUsers();
+      }
+
+      // Cerrar el modal
+      setShowUserModal(false);
+
+      // Ejecutar callback si existe
+      if (onNewUserCreated) {
+        onNewUserCreated();
+      }
+    } catch (error) {
+      console.error("Error al crear usuario:", error);
+    }
   };
   useEffect(() => {
     reset(initialData || {
@@ -136,6 +163,13 @@ const UserAvailabilityForm = ({
   }, /*#__PURE__*/React.createElement(StepperPanel, {
     header: "Informaci\xF3n general"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-sm",
+    onClick: () => setShowUserModal(true)
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-user-plus me-2"
+  }), "Nuevo Usuario")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "user_id",
@@ -461,6 +495,17 @@ const UserAvailabilityForm = ({
       className: "fas fa-save me-1"
     }),
     iconPos: "right"
-  }))))));
+  }))))), /*#__PURE__*/React.createElement(UserFormModal, {
+    title: "Crear Nuevo Usuario",
+    show: showUserModal,
+    handleSubmit: handleNewUserSubmit,
+    onHide: () => setShowUserModal(false),
+    initialData: undefined,
+    config: {
+      credentials: {
+        visible: true
+      }
+    }
+  }));
 };
 export default UserAvailabilityForm;

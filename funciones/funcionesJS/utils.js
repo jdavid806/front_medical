@@ -385,6 +385,34 @@ function consultarTipoMensaje(nombreObjecto) {
 
 // cerrarSesion
 
+async function logoutBack() {
+  const token = sessionStorage.getItem("auth_token");
+
+  if (!token) return; // Si no hay token, no hacemos nada
+
+  try {
+    const response = await fetch(obtenerRutaPrincipal() + "/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // 🔑 Mandamos el token en el header
+        "X-DOMAIN": getDomain(),            // si tu backend lo requiere
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error en logout:", data);
+    } else {
+      console.log("Logout exitoso:", data);
+    }
+  } catch (error) {
+    console.error("Error al hacer logout:", error);
+  }
+}
+
+
 function cerrarSesion() {
   let botonSalir = document.getElementById("btn-logout");
 
@@ -397,8 +425,11 @@ function cerrarSesion() {
         showCancelButton: true,
         confirmButtonText: "Sí, salir",
         cancelButtonText: "Cancelar",
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
+
+          await logoutBack();
+          
           sessionStorage.clear();
           localStorage.clear();
 

@@ -1,6 +1,7 @@
 export interface PaymentMethodDTO {
     id: number;
     method: string;
+    payment_type: string;
     description: string;
     created_at: string;
     updated_at: string;
@@ -12,6 +13,7 @@ export interface PaymentMethodDTO {
 
 export interface CreatePaymentMethodDTO {
     method: string;
+    payment_type: string;
     description: string;
     accounting_account_id: number;
     category: string;
@@ -20,6 +22,7 @@ export interface CreatePaymentMethodDTO {
 export interface UpdatePaymentMethodDTO {
     method?: string;
     description?: string;
+    payment_type: string;
     accounting_account_id?: number;
     category?: string;
 }

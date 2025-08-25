@@ -32,6 +32,8 @@ RewriteRule ^validarKeys_Dom$ login/verificarLoginDom.php
 RewriteRule ^ConfigProfile$ Config/profile.php
 # Perfil de Usuario [FIN]
 
+RewriteRule ^LoginPrueba$ login/loginPrueba.php
+
 # Configuración[INICIO]
 RewriteRule ^RIPS_Report$ Reportes/ReportesRIPS.php
 RewriteRule ^Menu_reports$ Reportes/Menu_reports_v2.php
@@ -205,6 +207,7 @@ RewriteRule ^Print_format$ Configuracion/Print_format.php
 #mensajeria masiva
 
 RewriteRule ^Mensajes_whatsapp$ mensajeriaMasiva/mensajes_whatsapp.php
+RewriteRule ^MassMessage$ Marketing/MassMessage/massMessage.php
 
 
 #telemedicina

@@ -1,7 +1,9 @@
-export const calculateTotal = (products = []) => {
-  const productsArray = Array.isArray(products) ? products : Object.values(products);
+export const calculateTotal = (products = [], facturacionEntidad) => {
+  console.log('products', products);
+  const priceField = facturacionEntidad ? 'copayment' : 'price';
+  const productsArray = Array.isArray(products) ? products : Object.values(products || {});
   return productsArray.reduce((sum, product) => {
-    const price = Number(product?.price) || 0;
+    const price = Number(product?.[priceField]) || 0;
     const quantity = Number(product?.quantity) || 0;
     const tax = Number(product?.tax) || 0;
     return sum + price * quantity * (1 + tax / 100);
@@ -18,12 +20,23 @@ export const calculateChange = (total, paid) => {
   return Math.max(0, paid - total);
 };
 export const validatePatientStep = (patientData, toast) => {
+  if (!patientData.facturacionEntidad && !patientData.facturacionConsumidor) {
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Facturación incompleta',
+      detail: 'Debe seleccionar una opción de facturación',
+      life: 3000
+    });
+    return false;
+  }
   if (patientData.facturacionEntidad) {
+    console.log('patientData', patientData);
     const requiredBillingFields = ['entity', 'authorizationNumber'];
     const missingBillingFields = requiredBillingFields.filter(field => {
-      const value = patientData.billing?.[field];
+      const value = patientData?.[field];
       return value === undefined || value === null || value === '';
     });
+    console.log('missingBillingFields', missingBillingFields);
     if (missingBillingFields.length > 0) {
       toast.current?.show({
         severity: 'error',

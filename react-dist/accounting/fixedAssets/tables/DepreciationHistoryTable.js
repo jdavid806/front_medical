@@ -13,6 +13,7 @@ import { Divider } from "primereact/divider";
 import { ProgressBar } from "primereact/progressbar";
 import { classNames } from "primereact/utils";
 import { Badge } from "primereact/badge";
+import { useActiveFixed } from "../hooks/useActiveFixed.js";
 export const DepreciationHistoryTable = () => {
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
@@ -25,6 +26,14 @@ export const DepreciationHistoryTable = () => {
   const [maintenanceTypeFilter, setMaintenanceTypeFilter] = useState(null);
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  //traer el servicion de activo fijos
+  const {
+    getActiveFixed,
+    loading: loadingActiveFixed,
+    error: errorActiveFixed,
+    success: successActiveFixed
+  } = useActiveFixed();
   const statusOptions = [{
     label: "Activo",
     value: "active"
@@ -38,143 +47,91 @@ export const DepreciationHistoryTable = () => {
     label: "Dado de Baja",
     value: "disposed"
   }];
+  const formatProductToDepreciation = product => {
+    return [{
+      id: product.id.toString(),
+      assetId: product.id.toString(),
+      assetName: product.name,
+      internalCode: product.reference ?? `PRD-${product.id}`,
+      date: product.created_at ? new Date(product.created_at) : new Date(),
+      previousValue: product.purchase_price ?? 0,
+      newValue: product.sale_price ?? 0,
+      changeAmount: (product.sale_price ?? 0) - (product.purchase_price ?? 0),
+      changeType: (product.sale_price ?? 0) >= (product.purchase_price ?? 0) ? "appreciation" : "depreciation",
+      changePercentage: product.purchase_price && product.purchase_price > 0 ? ((product.sale_price || 0) - product.purchase_price) / product.purchase_price * 100 : 0,
+      notes: product.description ?? ""
+    }];
+  };
+  const formatProductToMaintenance = product => {
+    return [{
+      id: product.id.toString(),
+      assetId: product.id.toString(),
+      assetName: product.name,
+      internalCode: product.reference ?? `PRD-${product.id}`,
+      maintenanceDate: product.maintenance_date ?? new Date(),
+      maintenanceType: product.maintenance_type ?? "preventive",
+      maintenanceCost: product.maintenance_cost ?? 0,
+      statusBefore: product.status_before ?? "active",
+      statusAfter: product.status_after ?? "active",
+      assignedToBefore: product.assigned_to_before ?? "",
+      assignedToAfter: product.assigned_to_after ?? "",
+      nextMaintenanceDate: product.next_maintenance_date ?? new Date(),
+      comments: product.comments ?? ""
+    }];
+  };
   useEffect(() => {
-    setLoading(true);
-    // Simulando carga de datos
-    setTimeout(() => {
-      // Datos de ejemplo para mantenimiento
-      const mockMaintenanceData = [{
-        id: "m1",
-        assetId: "1",
-        assetName: "Laptop Ejecutiva",
-        internalCode: "ACT-IT-001",
-        maintenanceDate: new Date(2023, 3, 10),
-        maintenanceType: "preventive",
-        maintenanceCost: 5000,
-        statusBefore: "active",
-        statusAfter: "active",
-        assignedToBefore: "Juan Pérez",
-        assignedToAfter: "Juan Pérez",
-        nextMaintenanceDate: new Date(2023, 9, 10),
-        comments: "Mantenimiento preventivo estándar, limpieza interna y actualización de software"
-      }, {
-        id: "m2",
-        assetId: "2",
-        assetName: "Camioneta de Reparto",
-        internalCode: "ACT-VH-001",
-        maintenanceDate: new Date(2023, 4, 15),
-        maintenanceType: "corrective",
-        maintenanceCost: 25000,
-        statusBefore: "active",
-        statusAfter: "maintenance",
-        assignedToBefore: "Logística",
-        assignedToAfter: "",
-        comments: "Reparación del sistema de frenos y cambio de aceite"
-      }, {
-        id: "m3",
-        assetId: "4",
-        assetName: "Impresora Multifuncional",
-        internalCode: "ACT-IT-002",
-        maintenanceDate: new Date(2023, 2, 5),
-        maintenanceType: "calibration",
-        maintenanceCost: 3500,
-        statusBefore: "maintenance",
-        statusAfter: "active",
-        assignedToBefore: "",
-        assignedToAfter: "Departamento Contable",
-        nextMaintenanceDate: new Date(2023, 8, 5),
-        comments: "Calibración de colores y alineación de cabezales de impresión"
-      }, {
-        id: "m4",
-        assetId: "1",
-        assetName: "Laptop Ejecutiva",
-        internalCode: "ACT-IT-001",
-        maintenanceDate: new Date(2024, 1, 20),
-        maintenanceType: "corrective",
-        maintenanceCost: 12000,
-        statusBefore: "active",
-        statusAfter: "maintenance",
-        assignedToBefore: "Juan Pérez",
-        assignedToAfter: "",
-        comments: "Reemplazo de pantalla dañada y actualización de memoria RAM"
-      }];
-      setMaintenanceRecords(mockMaintenanceData);
-      setFilteredMaintenanceRecords(mockMaintenanceData);
-      const mockData = [{
-        id: "1",
-        assetId: "1",
-        assetName: "Laptop Ejecutiva",
-        internalCode: "ACT-IT-001",
-        date: new Date(2023, 0, 15),
-        previousValue: 120000,
-        newValue: 110000,
-        changeAmount: -10000,
-        changeType: "depreciation",
-        changePercentage: -8.33,
-        notes: "Depreciación anual normal"
-      }, {
-        id: "2",
-        assetId: "1",
-        assetName: "Laptop Ejecutiva",
-        internalCode: "ACT-IT-001",
-        date: new Date(2024, 0, 15),
-        previousValue: 110000,
-        newValue: 95000,
-        changeAmount: -15000,
-        changeType: "depreciation",
-        changePercentage: -13.64,
-        notes: "Depreciación acelerada por daños menores"
-      }, {
-        id: "3",
-        assetId: "2",
-        assetName: "Camioneta de Reparto",
-        internalCode: "ACT-VH-001",
-        date: new Date(2023, 5, 20),
-        previousValue: 1800000,
-        newValue: 1700000,
-        changeAmount: -100000,
-        changeType: "depreciation",
-        changePercentage: -5.56,
-        notes: "Depreciación normal por uso"
-      }, {
-        id: "4",
-        assetId: "2",
-        assetName: "Camioneta de Reparto",
-        internalCode: "ACT-VH-001",
-        date: new Date(2024, 5, 20),
-        previousValue: 1700000,
-        newValue: 1750000,
-        changeAmount: 50000,
-        changeType: "appreciation",
-        changePercentage: 2.94,
-        notes: "Revalorización por mejoras realizadas"
-      }, {
-        id: "5",
-        assetId: "3",
-        assetName: "Mesa de Conferencia",
-        internalCode: "ACT-MB-001",
-        date: new Date(2023, 2, 10),
-        previousValue: 75000,
-        newValue: 70000,
-        changeAmount: -5000,
-        changeType: "depreciation",
-        changePercentage: -6.67
-      }];
-      setRecords(mockData);
-      setFilteredRecords(mockData);
-      setLoading(false);
-    }, 800);
+    console.log("useEffect");
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const products = await getActiveFixed();
+        console.log("products", products);
+
+        // Procesar todos los productos
+        const depreciationData = [];
+        const maintenanceData = [];
+
+        // Si products es un array, procesamos cada producto
+        if (Array.isArray(products)) {
+          products.forEach(product => {
+            depreciationData.push(...formatProductToDepreciation(product));
+            maintenanceData.push(...formatProductToMaintenance(product));
+          });
+        } else if (products) {
+          // Si es un solo producto
+          depreciationData.push(...formatProductToDepreciation(products));
+          maintenanceData.push(...formatProductToMaintenance(products));
+        }
+        setRecords(depreciationData);
+        setFilteredRecords(depreciationData);
+        setMaintenanceRecords(maintenanceData);
+        setFilteredMaintenanceRecords(maintenanceData);
+      } catch (error) {
+        console.error("Error cargando productos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, []);
   const formatCurrency = value => {
-    return value.toLocaleString("es-DO", {
-      style: "currency",
-      currency: "DOP",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    try {
+      return new Intl.NumberFormat("es-DO", {
+        style: "currency",
+        currency: "DOP",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    } catch (error) {
+      // Fallback if Intl.NumberFormat is not supported
+      return `DOP $${value.toFixed(2)}`;
+    }
   };
   const formatDate = value => {
-    return value.toLocaleDateString("es-DO", {
+    if (!value) return "N/A";
+    const date = value instanceof Date ? value : new Date(value);
+    if (isNaN(date.getTime())) return "N/A";
+    return date.toLocaleDateString("es-DO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric"
@@ -259,7 +216,7 @@ export const DepreciationHistoryTable = () => {
     }), /*#__PURE__*/React.createElement("span", {
       className: color
     }, formatCurrency(Math.abs(rowData.changeAmount))), /*#__PURE__*/React.createElement(Badge, {
-      value: `${rowData.changePercentage.toFixed(2)}%`,
+      value: `${(rowData.changePercentage || 0).toFixed(2)}%`,
       severity: isDepreciation ? "danger" : "success",
       className: "ml-2"
     }));
@@ -348,7 +305,8 @@ export const DepreciationHistoryTable = () => {
     const totalDepreciation = assetRecords.filter(r => r.changeType === "depreciation").reduce((sum, r) => sum + r.changeAmount, 0);
     const totalAppreciation = assetRecords.filter(r => r.changeType === "appreciation").reduce((sum, r) => sum + r.changeAmount, 0);
     const netChange = totalDepreciation + totalAppreciation;
-    const netPercentage = netChange / assetRecords[assetRecords.length - 1].previousValue * 100;
+    const previousValue = assetRecords[assetRecords.length - 1]?.previousValue || 0;
+    const netPercentage = previousValue > 0 ? netChange / previousValue * 100 : 0;
     return /*#__PURE__*/React.createElement(Card, {
       key: assetId,
       className: "mb-4 shadow-2",
@@ -369,7 +327,7 @@ export const DepreciationHistoryTable = () => {
       className: "text-sm font-medium text-600 mb-1"
     }, "Valor Inicial"), /*#__PURE__*/React.createElement("p", {
       className: "text-xl font-bold text-900"
-    }, formatCurrency(assetRecords[assetRecords.length - 1].previousValue)))), /*#__PURE__*/React.createElement("div", {
+    }, formatCurrency(previousValue)))), /*#__PURE__*/React.createElement("div", {
       className: "col-12 md:col-6 lg:col-3"
     }, /*#__PURE__*/React.createElement("div", {
       className: "p-3 border-round bg-green-50"
@@ -406,8 +364,8 @@ export const DepreciationHistoryTable = () => {
         "text-green-500": netChange > 0,
         "text-red-500": netChange < 0
       })
-    }, netChange > 0 ? "+" : "", formatCurrency(netChange), " (", netPercentage.toFixed(2), "%)")), /*#__PURE__*/React.createElement(ProgressBar, {
-      value: Math.abs(netPercentage),
+    }, netChange > 0 ? "+" : "", formatCurrency(netChange), " (", (netPercentage || 0).toFixed(2), "%)")), /*#__PURE__*/React.createElement(ProgressBar, {
+      value: Math.abs(netPercentage || 0),
       showValue: false,
       color: netChange > 0 ? "#22C55E" : "#EF4444",
       style: {

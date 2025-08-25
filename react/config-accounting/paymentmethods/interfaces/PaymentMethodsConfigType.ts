@@ -1,7 +1,7 @@
-// interfaces/PaymentMethodsConfigTypes.ts
 export interface PaymentMethod {
   id: number;
   name: string;
+  payment_type: string;
   category: string;
   account: {
     id: number;
@@ -13,6 +13,7 @@ export interface PaymentMethod {
 export interface PaymentMethodFormInputs {
   name: string;
   category: string;
+  payment_type: string;
   account: {
     id: number;
     name: string;

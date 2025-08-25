@@ -94,7 +94,7 @@ export const PricesTableConfig = ({
       className: "p-button-rounded p-button-text p-button-sm p-button-danger",
       onClick: e => {
         e.stopPropagation();
-        onDeleteItem(rowData.id.toString());
+        handleDeletePrice(rowData);
       }
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-trash"
@@ -118,18 +118,9 @@ export const PricesTableConfig = ({
   };
 
   // Handle delete price
-  // const handleDeletePrice = (price: PriceItem) => {
-  //     confirmDialog({
-  //         message: `¿Estás seguro de eliminar el precio para "${price.name}"?`,
-  //         header: 'Confirmar eliminación',
-  //         icon: 'pi pi-exclamation-triangle',
-  //         acceptLabel: 'Sí, eliminar',
-  //         rejectLabel: 'Cancelar',
-  //         accept: () => {
-  //             setPrices(prices.filter(p => p.id !== price.id));
-  //         }
-  //     });
-  // };
+  const handleDeletePrice = price => {
+    onDeleteItem(price.id.toString());
+  };
 
   // Handle filter changes
   const handleFilterChange = (field, value) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     countryService,
     departmentService,
@@ -43,7 +43,7 @@ const useLocationData = () => {
 
             const countryOptions = response.data.map((c: any) => ({
                 label: c.name,
-                value: c.name,
+                value: c.id.toString(),
                 customProperties: c,
             }));
 
@@ -59,9 +59,9 @@ const useLocationData = () => {
         }
     };
 
-    const loadDepartments = async (countryName: string): Promise<LocationOption[]> => {
+    const loadDepartmentsByCountryId = async (countryId: string): Promise<LocationOption[]> => {
         try {
-            if (!countryName) {
+            if (!countryId) {
                 setDepartments([]);
                 return [];
             }
@@ -69,12 +69,7 @@ const useLocationData = () => {
             setLoading(true);
             setError(null);
 
-            const country = countries.find(c => c.value === countryName);
-            if (!country || !country.customProperties?.id) {
-                throw new Error(`País "${countryName}" no encontrado o sin ID`);
-            }
-
-            const response = await departmentService.getByCountry(country.customProperties.id);
+            const response = await departmentService.getByCountry(parseInt(countryId));
             const departmentsData = Array.isArray(response) ? response : response?.data || [];
 
             if (!Array.isArray(departmentsData)) {
@@ -83,7 +78,7 @@ const useLocationData = () => {
 
             const departmentOptions = departmentsData.map((d: any) => ({
                 label: d.name,
-                value: d.name,
+                value: d.id.toString(),
                 customProperties: {
                     id: d.id,
                     ...d,
@@ -102,9 +97,9 @@ const useLocationData = () => {
         }
     };
 
-    const loadCities = async (departmentName: string): Promise<LocationOption[]> => {
+    const loadCitiesByDepartmentId = async (departmentId: string): Promise<LocationOption[]> => {
         try {
-            if (!departmentName) {
+            if (!departmentId) {
                 setCities([]);
                 return [];
             }
@@ -112,12 +107,7 @@ const useLocationData = () => {
             setLoading(true);
             setError(null);
 
-            const department = departments.find(d => d.value === departmentName);
-            if (!department || !department.customProperties?.id) {
-                throw new Error(`Departamento "${departmentName}" no encontrado o sin ID`);
-            }
-
-            const response = await cityService.getByDepartment(department.customProperties.id);
+            const response = await cityService.getByDepartment(parseInt(departmentId));
             const citiesData = Array.isArray(response) ? response : response?.data || [];
 
             if (!Array.isArray(citiesData)) {
@@ -126,7 +116,7 @@ const useLocationData = () => {
 
             const cityOptions = citiesData.map((c: any) => ({
                 label: c.name,
-                value: c.name,
+                value: c.id.toString(),
                 customProperties: c,
             }));
 
@@ -142,33 +132,33 @@ const useLocationData = () => {
         }
     };
 
-    const getCountryId = (countryName: string): number | null => {
-        const country = countries.find(c => c.value === countryName);
-        return country?.customProperties?.id || null;
+    const getCountryId = (countryValue: string): number | null => {
+        const country = countries.find(c => c.value === countryValue);
+        return country ? parseInt(country.value) : null;
     };
 
-    const getDepartmentId = (departmentName: string): number | null => {
-        const department = departments.find(d => d.value === departmentName);
-        return department?.customProperties?.id || null;
+    const getDepartmentId = (departmentValue: string): number | null => {
+        const department = departments.find(d => d.value === departmentValue);
+        return department ? parseInt(department.value) : null;
     };
 
-    const getCityId = (cityName: string): number | null => {
-        const city = cities.find(c => c.value === cityName);
-        return city?.customProperties?.id || null;
+    const getCityId = (cityValue: string): number | null => {
+        const city = cities.find(c => c.value === cityValue);
+        return city ? parseInt(city.value) : null;
     };
 
     const getCountryName = (countryId: number): string => {
-        const country = countries.find(c => c.customProperties?.id === countryId);
+        const country = countries.find(c => parseInt(c.value) === countryId);
         return country?.label || "";
     };
 
     const getDepartmentName = (departmentId: number): string => {
-        const department = departments.find(d => d.customProperties?.id === departmentId);
+        const department = departments.find(d => parseInt(d.value) === departmentId);
         return department?.label || "";
     };
 
     const getCityName = (cityId: number): string => {
-        const city = cities.find(c => c.customProperties?.id === cityId);
+        const city = cities.find(c => parseInt(c.value) === cityId);
         return city?.label || "";
     };
 
@@ -182,21 +172,17 @@ const useLocationData = () => {
         departments,
         cities,
         setCities,
-
         loading,
         error,
-
         loadCountries,
-        loadDepartments,
-        loadCities,
-
+        loadDepartmentsByCountryId,
+        loadCitiesByDepartmentId,
         getCountryId,
         getDepartmentId,
         getCityId,
         getCountryName,
         getDepartmentName,
         getCityName,
-
         clearData,
     };
 };

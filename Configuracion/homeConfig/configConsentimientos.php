@@ -9,20 +9,31 @@ include "../../header.php";
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="homeConfiguracion">Configuración</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()">Configuración de Precios</li>
+                <li class="breadcrumb-item active" onclick="location.reload()">Consentimientos</li>
             </ol>
         </nav>
         <div class="main-content">
             <div class="component-container">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h2>Configuración de Consentimientos</h2>
+                <div id="consentimiento">
+
                 </div>
-                <?php include "../tabs/tab_consentTemplatesConfiguration.php";?>
             </div>
         </div>
     </div>
 </div>
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import ConsentimientoApp from './react-dist/config/consentimiento/ConsentimientoApp.js';
 
+    const rootElement = document.getElementById('consentimiento');
+    if (rootElement) {
+
+        ReactDOMClient.createRoot(rootElement).render(
+            React.createElement(ConsentimientoApp)
+        );
+    }
+</script>
 <?php
 include "../modales/modalAgregarPlantillaConsentimiento.php";
 include "../../footer.php";

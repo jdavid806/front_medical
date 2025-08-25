@@ -54,8 +54,7 @@ export const PricesConfig = () => {
     const handleTableDelete = async (id: string) => {
         const confirmed = await deleteProduct(id);
         if (confirmed) {
-            SwalManager.success();
-            fetchProducts();
+            await fetchProducts();
         }
     };
 

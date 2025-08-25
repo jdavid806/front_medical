@@ -6,7 +6,6 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
 import { TaxFormInputs } from "../interfaces/TaxesConfigDTO";
 import { TaxFormProps } from "../interfaces/TaxesFormtType";
 
@@ -16,9 +15,8 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
   initialData,
   onCancel,
   loading = false,
+  accounts,
 }) => {
-  const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
-
   const {
     control,
     handleSubmit,
@@ -29,15 +27,17 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
     defaultValues: initialData || {
       name: "",
       percentage: 0,
-      accounting_account: null,
-      accounting_account_reverse: null,
+      accounting_account_id: null,
+      accounting_account_reverse_id: null,
+      sell_accounting_account_id: null,
+      sell_reverse_accounting_account_id: null,
       description: "",
     },
   });
 
   // Observar cambios en las cuentas para validaciones cruzadas
-  const selectedAccount = watch("accounting_account");
-  const selectedReverseAccount = watch("accounting_account_reverse");
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
 
   const onFormSubmit: SubmitHandler<TaxFormInputs> = (data) => {
     onSubmit(data);
@@ -54,8 +54,10 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
       initialData || {
         name: "",
         percentage: 0,
-        accounting_account: null,
-        accounting_account_reverse: null,
+        accounting_account_id: null,
+        accounting_account_reverse_id: null,
+        sell_accounting_account_id: null,
+        sell_reverse_accounting_account_id: null,
         description: "",
       }
     );
@@ -131,22 +133,22 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
+      {/* Configuración Compras */}
       <div className="field mb-4">
-        <label htmlFor="percentage" className="font-medium block mb-2">
+        <label className="font-medium block mb-2">
           Configuración Compras *
         </label>
       </div>
 
       <div className="field mb-4">
-        <label htmlFor="accounting_account" className="font-medium block mb-2">
-          Cuenta Contable *
+        <label htmlFor="accounting_account_id" className="font-medium block mb-2">
+          Cuenta Contable Compras *
         </label>
         <Controller
-          name="accounting_account"
+          name="accounting_account_id"
           control={control}
           rules={{
-            required: "La cuenta contable es requerida",
-            // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+            required: "La cuenta contable de compras es requerida",
           }}
           render={({ field, fieldState }) => (
             <>
@@ -164,10 +166,9 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
-                loading={isLoadingAccounts}
-                appendTo="self"
+                loading={false}
               />
-              {getFormErrorMessage("accounting_account")}
+              {getFormErrorMessage("accounting_account_id")}
             </>
           )}
         />
@@ -175,23 +176,22 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
 
       <div className="field mb-4">
         <label
-          htmlFor="accounting_account_reverse"
+          htmlFor="accounting_account_reverse_id"
           className="font-medium block mb-2"
         >
-          Cuenta Contable Reversa *
+          Cuenta Contable Reversa Compras *
         </label>
         <Controller
-          name="accounting_account_reverse"
+          name="accounting_account_reverse_id"
           control={control}
           rules={{
-            required: "La cuenta contable reversa es requerida",
-            // validate: (value) => {
-            //   if (!value?.id) return "Seleccione una cuenta válida";
-            //   if (Number(selectedAccount?.id) === value?.id) {
-            //     return "No puede ser la misma cuenta principal";
-            //   }
-            //   return true;
-            // },
+            required: "La cuenta contable reversa de compras es requerida",
+            validate: (value) => {
+              if (value === selectedPurchaseAccount) {
+                return "No puede ser la misma cuenta principal de compras";
+              }
+              return true;
+            },
           }}
           render={({ field, fieldState }) => (
             <>
@@ -200,8 +200,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts.filter(
-                  (acc) =>
-                    !selectedAccount || acc.id !== selectedAccount
+                  (acc) => acc.id !== selectedPurchaseAccount
                 )}
                 optionLabel="account_name"
                 placeholder="Seleccione una cuenta"
@@ -212,33 +211,30 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
-                loading={isLoadingAccounts}
-                appendTo="self"
+                loading={false}
               />
-              {getFormErrorMessage("accounting_account_reverse")}
+              {getFormErrorMessage("accounting_account_reverse_id")}
             </>
           )}
         />
       </div>
 
-
-
+      {/* Configuración Ventas */}
       <div className="field mb-4">
-        <label htmlFor="percentage" className="font-medium block mb-2">
+        <label className="font-medium block mb-2">
           Configuración Ventas *
         </label>
       </div>
 
       <div className="field mb-4">
-        <label htmlFor="accounting_account" className="font-medium block mb-2">
-          Cuenta Contable *
+        <label htmlFor="sell_accounting_account_id" className="font-medium block mb-2">
+          Cuenta Contable Ventas *
         </label>
         <Controller
-          name="accounting_account"
+          name="sell_accounting_account_id"
           control={control}
           rules={{
-            required: "La cuenta contable es requerida",
-            // validate: (value) => !!value?.id.toString() || "Seleccione una cuenta válida",
+            required: "La cuenta contable de ventas es requerida",
           }}
           render={({ field, fieldState }) => (
             <>
@@ -256,10 +252,9 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
-                loading={isLoadingAccounts}
-                appendTo="self"
+                loading={false}
               />
-              {getFormErrorMessage("accounting_account")}
+              {getFormErrorMessage("sell_accounting_account_id")}
             </>
           )}
         />
@@ -267,23 +262,22 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
 
       <div className="field mb-4">
         <label
-          htmlFor="accounting_account_reverse"
+          htmlFor="sell_reverse_accounting_account_id"
           className="font-medium block mb-2"
         >
-          Cuenta Contable Reversa *
+          Cuenta Contable Reversa Ventas *
         </label>
         <Controller
-          name="accounting_account_reverse"
+          name="sell_reverse_accounting_account_id"
           control={control}
           rules={{
-            required: "La cuenta contable reversa es requerida",
-            // validate: (value) => {
-            //   if (!value?.id) return "Seleccione una cuenta válida";
-            //   if (Number(selectedAccount?.id) === value?.id) {
-            //     return "No puede ser la misma cuenta principal";
-            //   }
-            //   return true;
-            // },
+            required: "La cuenta contable reversa de ventas es requerida",
+            validate: (value) => {
+              if (value === selectedSellAccount) {
+                return "No puede ser la misma cuenta principal de ventas";
+              }
+              return true;
+            },
           }}
           render={({ field, fieldState }) => (
             <>
@@ -292,8 +286,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts.filter(
-                  (acc) =>
-                    !selectedAccount || acc.id !== selectedAccount
+                  (acc) => acc.id !== selectedSellAccount
                 )}
                 optionLabel="account_name"
                 placeholder="Seleccione una cuenta"
@@ -304,10 +297,9 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
-                loading={isLoadingAccounts}
-                appendTo="self"
+                loading={false}
               />
-              {getFormErrorMessage("accounting_account_reverse")}
+              {getFormErrorMessage("sell_reverse_accounting_account_id")}
             </>
           )}
         />
@@ -348,9 +340,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
               height: "50px",
               borderRadius: "0px",
             }}
-          >
-            <i className="fas fa-times"></i>
-          </Button>
+          />
         )}
         <Button
           label="Guardar"
@@ -359,9 +349,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
           style={{ padding: "0 40px", width: "200px", height: "50px" }}
           disabled={loading || !isDirty}
           type="submit"
-        >
-          <i className="fas fa-save"></i>
-        </Button>
+        />
       </div>
     </form>
   );

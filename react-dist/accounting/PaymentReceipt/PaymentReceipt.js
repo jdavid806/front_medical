@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
-import { Button, Dropdown, InputText, InputTextarea, Calendar } from 'primereact';
+import { Button, Dropdown, InputText, InputTextarea, Calendar, Dialog } from 'primereact';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-export const PaymentReceiptForm = () => {
+export const PaymentReceiptModal = ({
+  visible,
+  onHide,
+  onSubmit,
+  initialData = {}
+}) => {
   const [formData, setFormData] = useState({
     tipo: 'RP - 1 - recibo de pago egreso',
     proveedor: '',
-    fecha: '',
+    fecha: null,
     costo: '',
     dinero: '',
     valorPagado: '',
-    observaciones: ''
+    observaciones: '',
+    ...initialData
   });
   const tipoOptions = [{
     label: 'RP - 1 - recibo de pago egreso',
@@ -56,31 +62,24 @@ export const PaymentReceiptForm = () => {
       }));
     }
   };
-  const onSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    console.log('Form data submitted: ', formData);
-    // Add your submission logic here
+    onSubmit(formData);
   };
-  const onCancel = () => {
-    console.log('Form cancelled');
-    // Add your cancellation logic here
+  const handleCancel = () => {
+    onHide();
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container mt-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row justify-content-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-10 col-lg-8"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-primary text-white"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "h4 mb-0"
-  }, "Nuevo recibo de pago")), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+  return /*#__PURE__*/React.createElement(Dialog, {
+    header: "Nuevo recibo de pago",
+    visible: visible,
+    style: {
+      width: '50vw'
+    },
+    onHide: onHide,
+    modal: true,
+    className: "p-fluid"
   }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: onSubmit
+    onSubmit: handleSubmit
   }, /*#__PURE__*/React.createElement("div", {
     className: "row mb-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -183,10 +182,10 @@ export const PaymentReceiptForm = () => {
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
     className: "p-button-secondary",
-    onClick: onCancel
+    onClick: handleCancel
   }), /*#__PURE__*/React.createElement(Button, {
     label: "Guardar y descargar",
     type: "submit",
     className: "p-button-primary"
-  })))))))));
+  })))));
 };

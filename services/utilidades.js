@@ -175,6 +175,12 @@ export function formatTime(date) {
   return `${hours}:${minutes}:${seconds}`;
 }
 
+export function convertDateToHHMM(date) {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
 export function convertHHMMSSToDate(timeString) {
   // Get the current date
   const currentDate = new Date();
@@ -188,6 +194,17 @@ export function convertHHMMSSToDate(timeString) {
   currentDate.setSeconds(seconds);
 
   // Return the Date object with the specified time
+  return currentDate;
+}
+
+export function convertHHMMToDate(timeString) {
+  const currentDate = new Date();
+
+  const [hours, minutes] = timeString.split(":");
+
+  currentDate.setHours(hours);
+  currentDate.setMinutes(minutes);
+
   return currentDate;
 }
 
@@ -489,4 +506,8 @@ export function similarity(str1, str2) {
   const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
   const maxLength = Math.max(str1.length, str2.length);
   return 1 - distance / maxLength;
+}
+
+export function getLocalTodayISODate() {
+  return new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000).toISOString().split('T')[0];
 }

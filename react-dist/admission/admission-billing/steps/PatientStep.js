@@ -13,6 +13,7 @@ import { genders } from "../../../../services/commons.js";
 const PatientStepPreview = ({
   formData,
   updateFormData,
+  updateBillingData,
   nextStep,
   toast
 }) => {
@@ -29,7 +30,8 @@ const PatientStepPreview = ({
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [mappedPatient, setMappedPatient] = useState(null);
   const {
-    patient
+    patient,
+    fetchPatient
   } = usePatient(formData.patient.id);
   useEffect(() => {
     if (patient) {
@@ -64,28 +66,36 @@ const PatientStepPreview = ({
     });
   };
   const handleBillingChange = (field, value) => {
-    updateFormData("billing", {
-      [field]: value
-    });
+    updateBillingData(field, value);
   };
   const toggleBillingType = type => {
     if (type === "entity") {
-      updateFormData("patient", {
-        facturacionEntidad: !formData.patient.facturacionEntidad,
-        facturacionConsumidor: false
-      });
+      updateBillingData("facturacionEntidad", !formData.billing.facturacionEntidad);
+      updateBillingData("facturacionConsumidor", false);
+      formData.billing.facturacionEntidad = !formData.billing.facturacionEntidad;
+      formData.billing.facturacionConsumidor = false;
     } else {
-      updateFormData("patient", {
-        facturacionConsumidor: !formData.patient.facturacionConsumidor,
-        facturacionEntidad: false
-      });
+      updateBillingData("facturacionConsumidor", !formData.billing.facturacionConsumidor);
+      updateBillingData("facturacionEntidad", false);
+      formData.billing.facturacionConsumidor = !formData.billing.facturacionConsumidor;
+      formData.billing.facturacionEntidad = false;
     }
+    console.log(!formData.billing.facturacionEntidad);
+    const mappedProducts = formData.products.map(product => ({
+      ...product,
+      currentPrice: formData.billing.facturacionEntidad ? product.copayment : product.price
+    }));
+    console.log(mappedProducts);
+    formData.products = mappedProducts;
+    updateFormData("products", mappedProducts);
+    updateFormData("payments", []);
   };
   const toggleCompanion = value => {
     handlePatientChange("hasCompanion", value);
   };
   const handleNext = () => {
-    if (validatePatientStep(formData.patient, toast)) {
+    console.log('formData', formData);
+    if (validatePatientStep(formData.billing, toast)) {
       nextStep();
     }
   };
@@ -157,7 +167,7 @@ const PatientStepPreview = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-center mb-3"
   }, /*#__PURE__*/React.createElement(InputSwitch, {
-    checked: formData.patient.facturacionConsumidor,
+    checked: formData.billing.facturacionConsumidor,
     onChange: () => toggleBillingType("consumer"),
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
@@ -170,12 +180,12 @@ const PatientStepPreview = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-center mb-3"
   }, /*#__PURE__*/React.createElement(InputSwitch, {
-    checked: formData.patient.facturacionEntidad,
+    checked: formData.billing.facturacionEntidad,
     onChange: () => toggleBillingType("entity"),
     className: "me-3 bg-primary"
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-muted small"
-  }, "Activar facturaci\xF3n por entidad")), formData.patient.facturacionEntidad && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Controller, {
+  }, "Activar facturaci\xF3n por entidad")), formData.billing.facturacionEntidad && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Controller, {
     name: "billing.entity",
     control: control,
     rules: {
@@ -217,8 +227,7 @@ const PatientStepPreview = ({
       },
       dateFormat: "dd/mm/yy",
       showIcon: true,
-      appendTo: "self",
-      disabled: true
+      appendTo: "self"
     }))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "billing.authorizationNumber",
@@ -241,8 +250,7 @@ const PatientStepPreview = ({
       onChange: e => {
         field.onChange(e.target.value);
         handleBillingChange("authorizationNumber", e.target.value);
-      },
-      disabled: true
+      }
     }), getFormErrorMessage("billing.authorizationNumber"))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "billing.authorizedAmount",
@@ -259,8 +267,7 @@ const PatientStepPreview = ({
       onChange: e => {
         field.onChange(e.target.value);
         handleBillingChange("authorizedAmount", e.target.value);
-      },
-      disabled: true
+      }
     }))
   }))))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end pt-4 col-12"
@@ -276,6 +283,7 @@ const PatientStepPreview = ({
     visible: showUpdateModal,
     onHide: () => setShowUpdateModal(false),
     onSuccess: () => {
+      fetchPatient();
       setShowUpdateModal(false);
     },
     patientData: patient

@@ -53,13 +53,6 @@ export const accountingClosings = () => {
   };
   useEffect(() => {
     if (accountingClosing) {
-      console.log({
-        age: accountingClosing.data.age,
-        status: accountingClosing.data.status,
-        start_month: stringToDate(accountingClosing.data.start_month.split("T")[0]),
-        end_month: stringToDate(accountingClosing.data.end_month.split("T")[0]),
-        warning_days: accountingClosing.data.warning_days
-      });
       setInitialData({
         age: accountingClosing.data.age,
         status: accountingClosing.data.status,

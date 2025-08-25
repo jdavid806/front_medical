@@ -17,7 +17,6 @@ export const EntitiesConfig = () => {
     error,
     refreshEntities
   } = useEntitieConfigTable();
-  console.log(entities, 'entitiesentities');
   const {
     createEntities,
     loading: createLoading
@@ -35,8 +34,6 @@ export const EntitiesConfig = () => {
     deleteEntity,
     loading: deleteLoading
   } = useEntitiesConfigDelete();
-  const [cities, setCities] = useState([]);
-  const [loadingCities, setLoadingCities] = useState(false);
   const onCreate = () => {
     setInitialData(undefined);
     setEntitiesById(null);
@@ -46,33 +43,38 @@ export const EntitiesConfig = () => {
     try {
       const entitiesData = {
         name: data.name,
+        entity_code: data.entity_code,
         document_type: data.document_type,
         document_number: data.document_number,
         email: data.email,
         address: data.address,
         phone: data.phone,
         city_id: data.city_id,
+        country_id: data.country_id,
+        department_id: data.department_id,
         tax_charge_id: data.tax_charge_id || 0,
         withholding_tax_id: data.withholding_tax_id || 0,
         koneksi_sponsor_slug: data.koneksi_sponsor_slug || null
       };
       if (entitiesById) {
         await updateEntities(entitiesById.id.toString(), entitiesData);
-        SwalManager.success('Impuesto actualizado correctamente');
+        SwalManager.success('Entidad actualizada correctamente');
       } else {
         await createEntities(entitiesData);
-        SwalManager.success('Impuesto creado correctamente');
+        SwalManager.success('Entidad creada correctamente');
       }
       await refreshEntities();
       setShowFormModal(false);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error saving entity:", error);
+    }
   };
   const handleTableEdit = async id => {
     try {
       await fetchEntitiesById(id);
       setShowFormModal(true);
     } catch (error) {
-      console.error("Error fetching tax:", error);
+      console.error("Error fetching entity:", error);
     }
   };
   const handleDeleteEntities = async id => {
@@ -82,22 +84,25 @@ export const EntitiesConfig = () => {
         await refreshEntities();
       }
     } catch (error) {
-      console.error("Error deleting tax:", error);
+      console.error("Error deleting entity:", error);
     }
   };
   useEffect(() => {
     if (entitiesById) {
       const data = {
         name: entitiesById.name,
+        entity_code: entitiesById.entity_code,
         document_type: entitiesById.document_type,
         document_number: entitiesById.document_number,
         email: entitiesById.email,
         address: entitiesById.address,
         phone: entitiesById.phone,
-        city_id: entitiesById.city_id,
-        tax_charge_id: entitiesById.tax_charge_id || '' || null,
+        city_id: entitiesById.city_name || entitiesById.city_id,
+        country_id: entitiesById.country_name || entitiesById.country_id,
+        department_id: entitiesById.department_name || entitiesById.department_id,
+        tax_charge_id: entitiesById.tax_charge_id || null,
         withholding_tax_id: entitiesById.withholding_tax_id || 0,
-        koneksi_sponsor_slug: entitiesById.koneksi_sponsor_slug || '' || null
+        koneksi_sponsor_slug: entitiesById.koneksi_sponsor_slug || null
       };
       setInitialData(data);
     }

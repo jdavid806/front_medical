@@ -19,6 +19,7 @@ import { genders } from "../../../../services/commons";
 const PatientStepPreview: React.FC<PatientStepProps> = ({
   formData,
   updateFormData,
+  updateBillingData,
   nextStep,
   toast,
 }) => {
@@ -32,7 +33,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
   });
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [mappedPatient, setMappedPatient] = useState<Partial<PatientData> | null>(null);
-  const { patient } = usePatient(formData.patient.id);
+  const { patient, fetchPatient } = usePatient(formData.patient.id);
 
   useEffect(() => {
     if (patient) {
@@ -73,21 +74,32 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
     field: K,
     value: any
   ) => {
-    updateFormData("billing", { [field]: value });
+    updateBillingData(field, value);
   };
 
   const toggleBillingType = (type: "entity" | "consumer") => {
     if (type === "entity") {
-      updateFormData("patient", {
-        facturacionEntidad: !formData.patient.facturacionEntidad,
-        facturacionConsumidor: false,
-      });
+      updateBillingData("facturacionEntidad", !formData.billing.facturacionEntidad);
+      updateBillingData("facturacionConsumidor", false);
+      formData.billing.facturacionEntidad = !formData.billing.facturacionEntidad;
+      formData.billing.facturacionConsumidor = false;
     } else {
-      updateFormData("patient", {
-        facturacionConsumidor: !formData.patient.facturacionConsumidor,
-        facturacionEntidad: false,
-      });
+      updateBillingData("facturacionConsumidor", !formData.billing.facturacionConsumidor);
+      updateBillingData("facturacionEntidad", false);
+      formData.billing.facturacionConsumidor = !formData.billing.facturacionConsumidor;
+      formData.billing.facturacionEntidad = false;
     }
+    console.log(!formData.billing.facturacionEntidad);
+
+    const mappedProducts = formData.products.map(product => ({
+      ...product,
+      currentPrice: formData.billing.facturacionEntidad ? product.copayment : product.price
+    }));
+    console.log(mappedProducts);
+
+    formData.products = mappedProducts;
+    updateFormData("products", mappedProducts);
+    updateFormData("payments", []);
   };
 
   const toggleCompanion = (value: boolean) => {
@@ -95,7 +107,8 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
   };
 
   const handleNext = () => {
-    if (validatePatientStep(formData.patient, toast)) {
+    console.log('formData', formData);
+    if (validatePatientStep(formData.billing, toast)) {
       nextStep();
     }
   };
@@ -183,7 +196,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
               <Card title="Facturación Consumidor" className="h-100">
                 <div className="d-flex align-items-center mb-3">
                   <InputSwitch
-                    checked={formData.patient.facturacionConsumidor}
+                    checked={formData.billing.facturacionConsumidor}
                     onChange={() => toggleBillingType("consumer")}
                     className="me-3 bg-primary"
                   />
@@ -195,7 +208,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
               <Card title="Facturación por Entidad" className="h-100">
                 <div className="d-flex align-items-center mb-3">
                   <InputSwitch
-                    checked={formData.patient.facturacionEntidad}
+                    checked={formData.billing.facturacionEntidad}
                     onChange={() => toggleBillingType("entity")}
                     className="me-3 bg-primary"
                   />
@@ -204,7 +217,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                   </span>
                 </div>
 
-                {formData.patient.facturacionEntidad && (
+                {formData.billing.facturacionEntidad && (
                   <div>
                     <Controller
                       name="billing.entity"
@@ -248,7 +261,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                             dateFormat="dd/mm/yy"
                             showIcon
                             appendTo="self"
-                            disabled
                           />
                         </div>
                       )}
@@ -277,7 +289,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                                 e.target.value
                               );
                             }}
-                            disabled
                           />
                           {getFormErrorMessage("billing.authorizationNumber")}
                         </div>
@@ -301,7 +312,6 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
                                 e.target.value
                               );
                             }}
-                            disabled
                           />
                         </div>
                       )}
@@ -326,6 +336,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
         visible={showUpdateModal}
         onHide={() => setShowUpdateModal(false)}
         onSuccess={() => {
+          fetchPatient();
           setShowUpdateModal(false);
         }}
         patientData={patient}

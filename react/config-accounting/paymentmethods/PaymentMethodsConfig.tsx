@@ -16,28 +16,27 @@ export const PaymentMethodsConfig = () => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<PaymentMethodFormInputs | undefined>(undefined);
 
-    // Hooks para las operaciones CRUD
     const { paymentMethods, loading, error, refreshPaymentMethods } = usePaymentMethodsConfigTable();
     const { createPaymentMethod, loading: createLoading } = usePaymentMethodCreate();
     const { updatePaymentMethod, loading: updateLoading } = usePaymentMethodUpdate();
     const { fetchPaymentMethodById, paymentMethod, setPaymentMethod } = usePaymentMethodById();
-    const { deletePaymentMethod, loading: deleteLoading } = usePaymentMethodDelete(); 
-    const { accounts} = useAccountingAccounts();
+    const { deletePaymentMethod, loading: deleteLoading } = usePaymentMethodDelete();
+    const { accounts } = useAccountingAccounts();
 
 
-const enrichedPaymentMethods = paymentMethods.map(method => {
-    const account = accounts.find(acc => acc.id === method.accounting_account_id);
-    return {
-        id: method.id,
-        name: method.method,
-        category: method.category || 'other',
-        account: account ? {
-            id: account.id,
-            name: account.account_name || account.account || 'Cuenta contable'
-        } : null,
-        additionalDetails: method.description
-    };
-});
+    const enrichedPaymentMethods = paymentMethods.map(method => {
+        const account = accounts.find(acc => acc.id === method.accounting_account_id);
+        return {
+            id: method.id,
+            name: method.method,
+            category: method.category || 'other',
+            account: account ? {
+                id: account.id,
+                name: account.account_name || account.account || 'Cuenta contable'
+            } : null,
+            additionalDetails: method.description
+        };
+    });
     const onCreate = () => {
         setInitialData(undefined);
         setPaymentMethod(null);
@@ -48,6 +47,7 @@ const enrichedPaymentMethods = paymentMethods.map(method => {
         try {
             const paymentMethodData: CreatePaymentMethodDTO = {
                 method: data.name,
+                payment_type: data.payment_type || '',
                 description: data.additionalDetails || '',
                 accounting_account_id: data.account?.id || 0,
                 category: data.category
@@ -78,7 +78,7 @@ const enrichedPaymentMethods = paymentMethods.map(method => {
 
         }
     };
-   const handleDeleteMethod = async (id: string) => {
+    const handleDeleteMethod = async (id: string) => {
         try {
             const success = await deletePaymentMethod(id);
             if (success) {
@@ -93,10 +93,11 @@ const enrichedPaymentMethods = paymentMethods.map(method => {
         if (paymentMethod) {
             const data: PaymentMethodFormInputs = {
                 name: paymentMethod.method,
+                payment_type: paymentMethod.payment_type,
                 category: paymentMethod.category || 'other',
                 account: paymentMethod.accounting_account_id ? {
                     id: paymentMethod.accounting_account_id,
-                    name: 'Cuenta contable' 
+                    name: 'Cuenta contable'
                 } : null,
                 additionalDetails: paymentMethod.description
             };
@@ -134,12 +135,12 @@ const enrichedPaymentMethods = paymentMethods.map(method => {
                 </div>
             )}
 
-         <PaymentMethodsConfigTable
-            onEditItem={handleTableEdit}
-        paymentMethods={enrichedPaymentMethods}
-        onDeleteItem={handleDeleteMethod}
-        loading={loading}
-        />
+            <PaymentMethodsConfigTable
+                onEditItem={handleTableEdit}
+                paymentMethods={enrichedPaymentMethods}
+                onDeleteItem={handleDeleteMethod}
+                loading={loading}
+            />
 
             <PaymentMethodModalConfig
                 isVisible={showFormModal}

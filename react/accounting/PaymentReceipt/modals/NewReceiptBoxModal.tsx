@@ -22,7 +22,7 @@ import { useCentresCosts } from "../../../centres-cost/hooks/useCentresCosts";
 import { Card } from "primereact/card";
 import { formatDate } from "../../../../services/utilidades";
 
-const mapFormDataToPayload = (formData: any) => {
+const mapFormDataToPayload = (formData: FormData) => {
   const getUserIdFromLocalStorage = () => {
     try {
       const userDataString = localStorage.getItem("userData");
@@ -58,7 +58,6 @@ const mapFormDataToPayload = (formData: any) => {
     remaining_amount: 0,
     quantity_total: formData.quantity_total,
     third_party_id: parseInt(formData.clientes),
-    purchase_order_id: formData.id,
     user_id: userId, // Obtenido dinámicamente
     advance_role: formData.type === "purchase-order" ? "provider" : "customer",
     details: [
@@ -82,7 +81,7 @@ const mapFormDataToPayload = (formData: any) => {
         notes: "",
       },
     ],
-    invoices: formData.type === "sale-order" ? [] : [
+    invoices: [
       {
         invoice_id: Number(formData.id), // Asumiendo que númeroFactura es el ID real
         applied_amount: formData.valorPagado,
@@ -145,7 +144,7 @@ export const NewReceiptBoxModal: React.FC<NewReceiptBoxModalProps> = ({
         id: initialData?.idFactura,
         numeroFactura:
           (initialData?.invoiceType == "purchase-order" ? "OC " : "CT ") +
-          initialData?.idFactura || prev.idFactura,
+            initialData?.idFactura || prev.idFactura,
         fechaElaboracion:
           initialData?.fechaElaboracion || prev.fechaElaboracion,
         centroCosto:
@@ -560,7 +559,7 @@ export const NewReceiptBoxModal: React.FC<NewReceiptBoxModalProps> = ({
           </div>
         </div>
 
-        {/* {isShowInputs && (
+        {isShowInputs && (
           <Card
             className="w-100 h-100 summary-card mb-3"
             title="Información adicional"
@@ -621,7 +620,7 @@ export const NewReceiptBoxModal: React.FC<NewReceiptBoxModalProps> = ({
               </div>
             </div>
           </Card>
-        )} */}
+        )}
 
         {/* Botones de acción */}
         <div className="d-flex justify-content-center gap-3">

@@ -14,6 +14,7 @@ import { GenerateTicket } from "../tickets/GenerateTicket";
 import { AppointmentFormModal } from "./AppointmentFormModal";
 import { Menu } from "primereact/menu";
 import { useProductsToBeInvoiced } from "./hooks/useProductsToBeInvoiced";
+import { getLocalTodayISODate } from "../../services/utilidades";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -34,7 +35,7 @@ export const TodayAppointmentsTable: React.FC<
   const customFilters = () => {
     return {
       appointmentState: "pending",
-      appointmentDate: new Date().toISOString().split("T")[0],
+      appointmentDate: getLocalTodayISODate(),
       sort: "-appointment_date,appointment_time",
     };
   };

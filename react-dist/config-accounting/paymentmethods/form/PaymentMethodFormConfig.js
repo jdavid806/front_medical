@@ -29,10 +29,10 @@ const categories = [{
 }];
 const TypeMethod = [{
   label: "Compras",
-  value: "buyy"
+  value: "Compras"
 }, {
   label: "Ventas",
-  value: "sale"
+  value: "Ventas"
 }];
 const PaymentMethodFormConfig = ({
   formId,
@@ -58,6 +58,7 @@ const PaymentMethodFormConfig = ({
     defaultValues: initialData || {
       name: "",
       category: "",
+      payment_type: "",
       account: null,
       additionalDetails: ""
     }
@@ -98,10 +99,10 @@ const PaymentMethodFormConfig = ({
   }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
-    name: "category",
+    name: "payment_type",
     control: control,
     rules: {
-      required: "La categoría es requerida"
+      required: "el tipo metodo pago es requerida"
     },
     render: ({
       field
@@ -114,10 +115,10 @@ const PaymentMethodFormConfig = ({
       optionLabel: "label",
       optionValue: "value",
       className: classNames("w-100", {
-        "p-invalid": errors.category
+        "p-invalid": errors.payment_type
       })
     }, field)))
-  }), getFormErrorMessage("category")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("payment_type")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "category",

@@ -7,10 +7,9 @@ import { Column } from "primereact/column";
 import { InputNumber } from "primereact/inputnumber";
 import { Tag } from "primereact/tag";
 import { Divider } from "primereact/divider";
-import { Dialog } from "primereact/dialog";
 import { calculateTotal, calculatePaid, calculateChange, validateProductsStep, validatePaymentStep } from "../utils/helpers.js";
-import { paymentMethodOptions } from "../utils/constants.js";
 import { useAppointmentProcedures } from "../../../appointments/hooks/useAppointmentProcedures.js";
+import { usePaymentMethods } from "../../../payment-methods/hooks/usePaymentMethods.js";
 const ProductsPaymentStep = ({
   updateFormData,
   addPayment,
@@ -27,7 +26,8 @@ const ProductsPaymentStep = ({
   const [modalAmount, setModalAmount] = useState(0);
   const [modalChange, setModalChange] = useState(0);
   const [selectedProcedure, setSelectedProcedure] = useState(null);
-  const total = calculateTotal(formData.products);
+  const [filteredPaymentMethods, setFilteredPaymentMethods] = useState([]);
+  const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const remaining = Math.max(0, total - paid);
@@ -35,27 +35,19 @@ const ProductsPaymentStep = ({
     procedureOptions,
     loadProcedures
   } = useAppointmentProcedures();
+  const {
+    paymentMethods,
+    fetchPaymentMethods
+  } = usePaymentMethods();
   useEffect(() => {
     loadProcedures();
   }, []);
-  const getPaymentMethodLabel = value => {
-    return paymentMethodOptions.find(m => m.value === value)?.label || value;
-  };
-  const getPaymentMethodIcon = method => {
-    const methodLabel = paymentMethodOptions.find(m => m.value === method)?.label || method;
-    switch (methodLabel) {
-      case 'Efectivo':
-        return 'fa-money-bill-wave';
-      case 'Tarjeta de Crédito':
-        return 'fa-credit-card';
-      case 'Transferencia Bancaria':
-        return 'fa-bank';
-      case 'Cheque':
-        return 'fa-file-invoice-dollar';
-      default:
-        return 'fa-wallet';
+  useEffect(() => {
+    if (paymentMethods) {
+      const filtered = paymentMethods.filter(method => method.category === "transactional" && method.payment_type === "Ventas");
+      setFilteredPaymentMethods(filtered);
     }
-  };
+  }, [paymentMethods]);
   const handleAddProduct = () => {
     if (!selectedProcedure) {
       toast.current?.show({
@@ -76,24 +68,29 @@ const ProductsPaymentStep = ({
       });
       return;
     }
+    const price = formData.billing.facturacionEntidad ? procedure.copayment : procedure.sale_price;
     const newProduct = {
       uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
       id: procedure.id,
       code: procedure.barcode || `PROC-${procedure.id}`,
       name: procedure.name || 'Procedimiento sin nombre',
       description: procedure.description || procedure.name || 'Procedimiento médico',
-      price: procedure.sale_price || 0,
+      price: procedure.sale_price,
+      copayment: procedure.copayment,
+      currentPrice: price,
       quantity: 1,
       tax: procedure.tax_charge?.percentage || 0,
       discount: 0,
-      total: (procedure.sale_price || 0) * (1 + (procedure.tax_charge?.percentage || 0) / 100)
+      total: (price || 0) * (1 + (procedure.tax_charge?.percentage || 0) / 100)
     };
-    formData.products.push(newProduct);
+    formData.products = [...formData.products, newProduct];
     setSelectedProcedure(null);
   };
+  useEffect(() => {
+    setModalAmount(remaining);
+    setModalChange(0);
+  }, [formData.products, formData.billing.facturacionEntidad]);
   const handleRemoveProduct = uuid => {
-    console.log('Eliminando producto con uuid:', uuid);
-    console.log('Productos actuales:', formData.products);
     const updatedProducts = formData.products.filter(product => product.uuid !== uuid);
     updateFormData("products", updatedProducts);
     toast.current?.show({
@@ -122,10 +119,9 @@ const ProductsPaymentStep = ({
   };
   const handleAddPayment = () => {
     const {
-      method,
-      amount
+      method
     } = formData.currentPayment;
-    if (!method || !amount) {
+    if (!method || !modalAmount) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
@@ -134,7 +130,7 @@ const ProductsPaymentStep = ({
       });
       return;
     }
-    const paymentAmount = amount;
+    const paymentAmount = modalAmount;
     if (isNaN(paymentAmount)) {
       toast.current?.show({
         severity: "error",
@@ -145,11 +141,14 @@ const ProductsPaymentStep = ({
       return;
     }
     addPayment({
-      method: method,
+      method: method.method,
       amount: paymentAmount,
+      total: paymentAmount - modalChange,
+      change: modalChange,
       authorizationNumber: formData.currentPayment.authorizationNumber,
       notes: formData.currentPayment.notes
     });
+    setModalAmount(0);
     updateFormData("currentPayment", {
       method: "",
       amount: 0,
@@ -159,7 +158,6 @@ const ProductsPaymentStep = ({
     setShowChangeField(false);
   };
   const handleNext = () => {
-    console.log('Productos actuales:', formData.products);
     const validProducts = formData.products.filter(product => product && product.description && product.price !== undefined && product.quantity !== undefined);
     if (validProducts.length === 0) {
       toast.current?.show({
@@ -170,7 +168,7 @@ const ProductsPaymentStep = ({
       });
       return;
     }
-    const total = calculateTotal(validProducts);
+    const total = calculateTotal(validProducts, formData.billing.facturacionEntidad);
     if (validateProductsStep(validProducts, toast) && validatePaymentStep(formData.payments, total, toast)) {
       nextStep();
     }
@@ -181,11 +179,6 @@ const ProductsPaymentStep = ({
       currency: 'DOP',
       minimumFractionDigits: 2
     }).format(value);
-  };
-  const openPaymentModal = () => {
-    setShowPaymentModal(true);
-    setModalAmount(remaining);
-    setModalChange(0);
   };
   const calculateModalChange = amount => {
     setModalAmount(amount);
@@ -201,7 +194,7 @@ const ProductsPaymentStep = ({
     setShowChangeField(true);
   };
   const productPriceBodyTemplate = rowData => {
-    return formatCurrency(rowData.price);
+    return formatCurrency(rowData.currentPrice);
   };
   const productTaxBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement(Tag, {
@@ -210,21 +203,25 @@ const ProductsPaymentStep = ({
     });
   };
   const productTotalBodyTemplate = rowData => {
-    const total = rowData.price * rowData.quantity * (1 + rowData.tax / 100);
+    const total = rowData.currentPrice * rowData.quantity * (1 + rowData.tax / 100);
     return /*#__PURE__*/React.createElement("strong", null, formatCurrency(total));
   };
   const paymentAmountBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
       className: "font-bold"
-    }, formatCurrency(rowData.amount));
+    }, formatCurrency(rowData.total));
+  };
+  const paymentChangeBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("span", {
+      className: "font-bold"
+    }, formatCurrency(rowData.change));
   };
   const paymentMethodBodyTemplate = rowData => {
-    const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
     return /*#__PURE__*/React.createElement("div", {
       className: "flex align-items-center gap-2"
     }, /*#__PURE__*/React.createElement("i", {
-      className: `fas ${getPaymentMethodIcon(rowData.method)} mr-2`
-    }), /*#__PURE__*/React.createElement("span", null, methodLabel));
+      className: `mr-2`
+    }), /*#__PURE__*/React.createElement("span", null, rowData.method));
   };
   const actionBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement(Button, {
@@ -258,6 +255,7 @@ const ProductsPaymentStep = ({
     className: "p-button-primary me-2"
   }));
   useEffect(() => {
+    console.log('productsToInvoice', productsToInvoice);
     if (productsToInvoice.length > 0 && formData.products.length === 0) {
       const initialProducts = productsToInvoice.map(product => ({
         uuid: product.uuid,
@@ -267,14 +265,17 @@ const ProductsPaymentStep = ({
         name: product.name || product.description || `Producto ${product.id}`,
         description: product.description || product.name || `Producto ${product.id}`,
         price: product.sale_price || 0,
+        copayment: product.copayment || 0,
+        currentPrice: (formData.billing.facturacionEntidad ? product.copayment : product.sale_price) || 0,
         quantity: 1,
         tax: product.tax_charge?.percentage || 0,
         discount: 0,
         total: (product.sale_price || 0) * (1 + (product.tax_charge?.percentage || 0) / 100)
       }));
       updateFormData("products", initialProducts);
+      setModalAmount(remaining);
     }
-  }, [productsToInvoice]);
+  }, [productsToInvoice, formData.billing.facturacionEntidad]);
   return /*#__PURE__*/React.createElement("div", {
     className: "grid"
   }, /*#__PURE__*/React.createElement("div", {
@@ -284,10 +285,10 @@ const ProductsPaymentStep = ({
       className: "fas fa-shopping-cart mr-2"
     }), " Lista de Productos"),
     className: "mb-4 shadow-3"
+  }, productsToInvoice.length == 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex pt-4 mb-2"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex pt-4 justify-content-end mb-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "me-2 h-full w-full"
+    className: "d-flex flex-grow-1 me-2"
   }, /*#__PURE__*/React.createElement(Dropdown, {
     placeholder: "Seleccione un procedimiento",
     options: procedureOptions,
@@ -296,19 +297,19 @@ const ProductsPaymentStep = ({
     optionLabel: "label",
     filter: true,
     showClear: true,
-    className: "w-full h-full",
-    panelClassName: "shadow-3",
+    className: "w-100",
+    panelClassName: "shadow-3 w-100",
     emptyMessage: "No se encontraron procedimientos"
   })), /*#__PURE__*/React.createElement(Button, {
     label: "Agregar Producto",
-    className: "p-button-primary",
+    className: "p-button-primary d-flex",
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-plus-square"
     }),
     onClick: handleAddProduct,
     disabled: !selectedProcedure,
     tooltip: "Agregar procedimiento seleccionado"
-  })), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "border-round border-1 surface-border"
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: formData.products,
@@ -370,6 +371,10 @@ const ProductsPaymentStep = ({
       className: "fas fa-credit-card mr-2"
     }), " M\xE9todos de Pago"),
     className: "mb-4 shadow-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-6 pb-4"
   }, change > 0 && /*#__PURE__*/React.createElement(Card, {
     className: "mb-4 border-left-3 border-teal-500 bg-teal-50"
   }, /*#__PURE__*/React.createElement("div", {
@@ -408,6 +413,10 @@ const ProductsPaymentStep = ({
     header: "Monto",
     body: paymentAmountBodyTemplate
   }), /*#__PURE__*/React.createElement(Column, {
+    field: "change",
+    header: "Cambio",
+    body: paymentChangeBodyTemplate
+  }), /*#__PURE__*/React.createElement(Column, {
     header: "Acciones",
     body: rowData => /*#__PURE__*/React.createElement(Button, {
       icon: /*#__PURE__*/React.createElement("i", {
@@ -423,26 +432,42 @@ const ProductsPaymentStep = ({
     headerStyle: {
       width: '80px'
     }
-  }))), /*#__PURE__*/React.createElement(Dialog, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-calculator"
-    }), /*#__PURE__*/React.createElement("span", null, "Calcular Pago en Efectivo")),
-    visible: showPaymentModal,
-    style: {
-      width: '450px'
-    },
-    footer: paymentModalFooter,
-    onHide: () => setShowPaymentModal(false),
-    breakpoints: {
-      '960px': '75vw',
-      '640px': '90vw'
-    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "surface-card px-4 pb-4 border-round-lg border-1 surface-border shadow-2 col-12 col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center mb-4 gap-3"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "m-0 text-700 text-right"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-credit-card mr-3 text-xl text-primary"
+  }), "Agregar Nuevo Pago")), /*#__PURE__*/React.createElement(Card, {
+    className: "border-round-lg shadow-1 mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "p-fluid"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "paymentMethod",
+    className: "block font-medium mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-money-check-alt mr-2"
+  }), "M\xE9todo de pago"), /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "paymentMethod",
+    options: filteredPaymentMethods,
+    value: formData.currentPayment.method,
+    onChange: e => handlePaymentChange("method", e.value),
+    placeholder: "Seleccione m\xE9todo...",
+    className: "w-100",
+    optionLabel: "method",
+    panelClassName: "shadow-3",
+    showClear: true,
+    filter: true,
+    filterPlaceholder: "Buscar m\xE9todo...",
+    emptyFilterMessage: "No se encontraron m\xE9todos"
+  })), formData.currentPayment.method.method == "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "remainingAmount",
     className: "block font-medium mb-2"
@@ -489,110 +514,24 @@ const ProductsPaymentStep = ({
     readOnly: true,
     className: `w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`,
     inputClassName: modalChange > 0 ? 'text-green-700' : ''
-  })))), /*#__PURE__*/React.createElement("div", {
-    className: "surface-card p-4 border-round-lg border-1 surface-border shadow-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end align-items-center mb-4 gap-3"
-  }, /*#__PURE__*/React.createElement("h3", {
-    className: "m-0 text-700 text-right"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-credit-card mr-3 text-xl text-primary"
-  }), "Agregar Nuevo Pago"), /*#__PURE__*/React.createElement(Button, {
-    label: "Calcular Efectivo",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-calculator"
-    }),
-    className: "p-button-primary",
-    onClick: openPaymentModal
-  })), /*#__PURE__*/React.createElement(Card, {
-    className: "border-round-lg shadow-1 mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column align-items-end gap-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-100 text-right"
+  }))), formData.currentPayment.method.method != "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "paymentMethod",
-    className: "block font-medium mb-2 text-700 d-flex justify-content-end align-items-center"
+    htmlFor: "cashAmount",
+    className: "block font-medium mb-2"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-money-check-alt mr-2"
-  }), "M\xE9todo de pago ", /*#__PURE__*/React.createElement("span", {
-    className: "text-red-500 ml-1"
-  }, "*")), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
-  }, /*#__PURE__*/React.createElement(Dropdown, {
-    inputId: "paymentMethod",
-    options: paymentMethodOptions,
-    value: formData.currentPayment.method,
-    onChange: e => handlePaymentChange("method", e.value),
-    placeholder: "Seleccione m\xE9todo...",
-    className: "w-100",
-    optionLabel: "label",
-    panelClassName: "shadow-3",
-    showClear: true,
-    filter: true,
-    filterPlaceholder: "Buscar m\xE9todo...",
-    emptyFilterMessage: "No se encontraron m\xE9todos",
-    style: {
-      maxWidth: '400px'
-    }
-  })), !formData.currentPayment.method && /*#__PURE__*/React.createElement("small", {
-    className: "p-error block mt-1 text-right d-flex justify-content-end"
-  }, "Seleccione un m\xE9todo de pago")), /*#__PURE__*/React.createElement("div", {
-    className: "w-100 text-right"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "paymentAmount",
-    className: "block font-medium mb-2 text-700 d-flex justify-content-end align-items-center"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-dollar-sign mr-2"
-  }), "Monto ", /*#__PURE__*/React.createElement("span", {
-    className: "text-red-500 ml-1"
-  }, "*")), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
-  }, /*#__PURE__*/React.createElement(InputNumber, {
-    inputId: "paymentAmount",
-    value: formData.currentPayment.amount,
-    onValueChange: e => handlePaymentChange("amount", e.value),
-    className: "w-100",
+    className: "fas fa-hand-holding-usd mr-2"
+  }), "Monto Recibido"), /*#__PURE__*/React.createElement(InputNumber, {
+    id: "cashAmount",
+    value: modalAmount,
+    onValueChange: e => calculateModalChange(e.value || 0),
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    min: 0,
-    maxFractionDigits: 2,
-    showButtons: true,
-    buttonLayout: "horizontal",
-    incrementButtonIcon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-plus-square"
-    }),
-    decrementButtonIcon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-window-close"
-    }),
-    style: {
-      maxWidth: '400px'
-    }
-  })), (!formData.currentPayment.amount || formData.currentPayment.amount <= 0) && /*#__PURE__*/React.createElement("small", {
-    className: "p-error block mt-1 text-right d-flex justify-content-end"
-  }, "Ingrese un monto v\xE1lido")), showChangeField && formData.currentPayment.amount > 0 && /*#__PURE__*/React.createElement("div", {
-    className: "w-100 text-right"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "p-3 bg-green-100 border-round mb-3 border-1 border-green-200",
-    style: {
-      maxWidth: '400px',
-      width: '100%'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center gap-2"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-money-bill-wave text-green-600"
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "font-medium"
-  }, "Cambio a devolver:")), /*#__PURE__*/React.createElement("span", {
-    className: "font-bold text-green-700"
-  }, formatCurrency(calculateChange(total, formData.currentPayment.amount))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end mt-4"
+    className: "w-full",
+    inputClassName: "font-bold"
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex mt-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Agregar Pago",
     icon: /*#__PURE__*/React.createElement("i", {
@@ -600,12 +539,11 @@ const ProductsPaymentStep = ({
     }),
     className: "p-button-primary",
     onClick: handleAddPayment,
-    disabled: !formData.currentPayment.method || !formData.currentPayment.amount,
     tooltip: "Agregar este pago al registro",
     tooltipOptions: {
       position: "left"
     }
-  }))))), /*#__PURE__*/React.createElement("div", {
+  })))))), /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between pt-4"

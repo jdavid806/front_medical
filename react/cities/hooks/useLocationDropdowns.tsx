@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import useLocationData, { LocationOption } from "./useLocationData";
 
 interface UseLocationDropdownsProps {
-    initialCountry?: string;
-    initialDepartment?: string;
-    initialCity?: string;
+    initialCountryId?: string;
+    initialDepartmentId?: string;
+    initialCityId?: string;
 }
 
 const useLocationDropdowns = (props: UseLocationDropdownsProps = {}) => {
@@ -15,22 +15,14 @@ const useLocationDropdowns = (props: UseLocationDropdownsProps = {}) => {
         loading,
         error,
         loadCountries,
-        loadDepartments,
-        loadCities,
-        getCountryId,
-        getDepartmentId,
-        getCityId,
+        loadDepartmentsByCountryId,
+        loadCitiesByDepartmentId,
         clearData,
-        getCountryName,
-        getDepartmentName,
-        getCityName,
-        setCities
-
     } = useLocationData();
 
-    const [selectedCountry, setSelectedCountry] = useState<string>(props.initialCountry || "");
-    const [selectedDepartment, setSelectedDepartment] = useState<string>(props.initialDepartment || "");
-    const [selectedCity, setSelectedCity] = useState<string>(props.initialCity || "");
+    const [selectedCountry, setSelectedCountry] = useState<string>(props.initialCountryId || "");
+    const [selectedDepartment, setSelectedDepartment] = useState<string>(props.initialDepartmentId || "");
+    const [selectedCity, setSelectedCity] = useState<string>(props.initialCityId || "");
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
@@ -42,80 +34,64 @@ const useLocationDropdowns = (props: UseLocationDropdownsProps = {}) => {
         initialize();
     }, []);
 
-    const handleCountryChange = async (countryName: string) => {
-        setSelectedCountry(countryName);
+    // Efecto para cargar departamentos cuando hay un país seleccionado inicial
+    useEffect(() => {
+        if (isInitialized && selectedCountry && !departments.length) {
+            loadDepartmentsByCountryId(selectedCountry);
+        }
+    }, [isInitialized, selectedCountry, departments.length]);
+
+    // Efecto para cargar ciudades cuando hay un departamento seleccionado inicial
+    useEffect(() => {
+        if (isInitialized && selectedDepartment && !cities.length) {
+            loadCitiesByDepartmentId(selectedDepartment);
+        }
+    }, [isInitialized, selectedDepartment, cities.length]);
+
+    const handleCountryChange = async (countryId: string) => {
+        setSelectedCountry(countryId);
         setSelectedDepartment("");
         setSelectedCity("");
 
-        if (countryName) {
-            await loadDepartments(countryName);
+        if (countryId) {
+            await loadDepartmentsByCountryId(countryId);
         } else {
             clearData();
         }
     };
 
-    const handleDepartmentChange = async (departmentName: string) => {
-        setSelectedDepartment(departmentName);
+    const handleDepartmentChange = async (departmentId: string) => {
+        setSelectedDepartment(departmentId);
         setSelectedCity("");
 
-        if (departmentName) {
-            await loadCities(departmentName);
+        if (departmentId) {
+            await loadCitiesByDepartmentId(departmentId);
         } else {
-            setCities([]);
+            clearData();
         }
     };
 
-    const handleCityChange = (cityName: string) => {
-        setSelectedCity(cityName);
-    };
-
-    const setInitialValuesFromIds = async (countryId?: number, departmentId?: number, cityId?: number) => {
-        if (!isInitialized) return;
-
-        if (countryId) {
-            const countryName = getCountryName(countryId);
-            if (countryName) {
-                await handleCountryChange(countryName);
-
-                if (departmentId) {
-                    const departmentName = getDepartmentName(departmentId);
-                    if (departmentName) {
-                        await handleDepartmentChange(departmentName);
-
-                        if (cityId) {
-                            const cityName = getCityName(cityId);
-                            if (cityName) {
-                                handleCityChange(cityName);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    const handleCityChange = (cityId: string) => {
+        setSelectedCity(cityId);
     };
 
     const getCurrentIds = () => ({
-        countryId: getCountryId(selectedCountry),
-        departmentId: getDepartmentId(selectedDepartment),
-        cityId: getCityId(selectedCity),
+        countryId: selectedCountry ? parseInt(selectedCountry) : null,
+        departmentId: selectedDepartment ? parseInt(selectedDepartment) : null,
+        cityId: selectedCity ? parseInt(selectedCity) : null,
     });
 
     return {
         countryOptions: countries,
         departmentOptions: departments,
         cityOptions: cities,
-
         selectedCountry,
         selectedDepartment,
         selectedCity,
-
         handleCountryChange,
         handleDepartmentChange,
         handleCityChange,
-
         getCurrentIds,
-        setInitialValuesFromIds,
-
         loading,
         error,
         isInitialized,

@@ -4,7 +4,7 @@ include "../header.php";
 include "../ConsultasJson/dataPaciente.php";
 
 $tabs = [
-    ['icono' => 'comments', 'titulo' => 'Mensajeria masiva', 'texto' => 'Ver opciones de mensajeria masiva', 'url' => 'Mensajes_whatsapp'],
+    ['icono' => 'comments', 'titulo' => 'Mensajeria masiva', 'texto' => 'Ver opciones de mensajeria masiva', 'url' => 'MassMessage'],
     ['icono' => 'save', 'titulo' => 'Plantillas de mensajes', 'texto' => 'Ver y configurar plantillas de mensajes', 'url' => 'plantillasMensajes'],
     ['icono' => 'chart-bar', 'titulo' => 'Encuestas', 'texto' => 'Visualizar panel de encuestas', 'url' => 'panel-encuesta'],
   

@@ -3,7 +3,7 @@ import { ErrorHandler } from '../../../services/errorHandler'
 import { SwalManager } from '../../../services/alertManagerImported'
 import { UserAvailabilityFormInputs } from '../components/UserAvailabilityForm'
 import { userAvailabilityService } from '../../../services/api'
-import { formatTime } from '../../../services/utilidades'
+import { convertDateToHHMM } from '../../../services/utilidades'
 
 export const useUserAvailabilityCreate = () => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -13,12 +13,12 @@ export const useUserAvailabilityCreate = () => {
         try {
             const data = {
                 ...userAvailabilityData,
-                start_time: formatTime(userAvailabilityData.start_time),
-                end_time: formatTime(userAvailabilityData.end_time),
+                start_time: convertDateToHHMM(userAvailabilityData.start_time),
+                end_time: convertDateToHHMM(userAvailabilityData.end_time),
                 free_slots: userAvailabilityData.free_slots.map(slot => ({
                     ...slot,
-                    start_time: formatTime(slot.start_time),
-                    end_time: formatTime(slot.end_time)
+                    start_time: convertDateToHHMM(slot.start_time),
+                    end_time: convertDateToHHMM(slot.end_time)
                 }))
             }
             await userAvailabilityService.createForParent(userAvailabilityData.user_id, data)

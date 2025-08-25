@@ -9,7 +9,6 @@ import { usePriceConfigUpdate } from "./hooks/usePriceConfigUpdate.js";
 import { usePriceConfigById } from "./hooks/usePriceConfigById.js";
 import { usePriceConfigDelete } from "./hooks/usePriceConfigDelete.js";
 import { entitiesService } from "../../../services/api/index.js";
-import { SwalManager } from "../../../services/alertManagerImported.js";
 export const PricesConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -60,8 +59,7 @@ export const PricesConfig = () => {
   const handleTableDelete = async id => {
     const confirmed = await deleteProduct(id);
     if (confirmed) {
-      SwalManager.success();
-      fetchProducts();
+      await fetchProducts();
     }
   };
   async function loadEntities() {

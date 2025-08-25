@@ -11,6 +11,8 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
+import { useByStateFormat } from "../documents-generation/hooks/reports-medical/appointments/useByStateFormat";
+import { useSummaryFormat } from "../documents-generation/hooks/reports-medical/appointments/useSummaryFormat";
 
 // Import your services
 import {
@@ -93,6 +95,8 @@ export const Appointments = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<any[]>([]);
   const [selectedDoctors, setSelectedDoctors] = useState<any[]>([]);
   const [selectedStates, setSelectedStates] = useState<any[]>([]);
+  const { generateFormatByState } = useByStateFormat();
+  const { generateFormatSummary } = useSummaryFormat();
 
   useEffect(() => {
     if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
@@ -123,7 +127,9 @@ export const Appointments = () => {
       const responseFiltered = response
         .map((user: any) => ({
           ...user,
-          full_name: `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_last_name ?? ""}`
+          full_name: `${user.first_name ?? ""} ${user.middle_name ?? ""} ${
+            user.last_name ?? ""
+          } ${user.second_last_name ?? ""}`,
         }))
         .filter((user: any) => user.role.group === "DOCTOR");
       setDoctors(responseFiltered);
@@ -147,10 +153,13 @@ export const Appointments = () => {
     }
   }
 
-  const loadDataForTab = async (tabIndex: number, filterParams: any = {
-    start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-    end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-  }) => {
+  const loadDataForTab = async (
+    tabIndex: number,
+    filterParams: any = {
+      start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
+      end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
+    }
+  ) => {
     setTableLoading(true);
     try {
       const response = await appointmentService.appointmentsWithFilters(
@@ -240,13 +249,17 @@ export const Appointments = () => {
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
       };
       if (selectedStates.length > 0) {
-        filterParams.appointment_state_ids = selectedStates.map((state: any) => state.id);
+        filterParams.appointment_state_ids = selectedStates.map(
+          (state: any) => state.id
+        );
       }
       if (selectedDoctors.length > 0) {
         filterParams.user_ids = selectedDoctors.map((doctor: any) => doctor.id);
       }
       if (selectedSpecialties.length > 0) {
-        filterParams.specialty_ids = selectedSpecialties.map((specialty: any) => specialty.id);
+        filterParams.specialty_ids = selectedSpecialties.map(
+          (specialty: any) => specialty.id
+        );
       }
 
       // Cargar datos solo para el tab activo
@@ -291,54 +304,13 @@ export const Appointments = () => {
     });
   };
 
-  const handleExportPDF = (state: string, data: any[]) => {
-    const dataExport = data.map((item) => ({
-      state: item.state,
-      patient: `${item.patient.first_name} ${item.patient.last_name}`,
-      document_number: item.patient.document_number,
-      city: item.patient.city_id,
-      product: item.product_id,
-      date: new Date(item.created_at).toLocaleDateString("es-DO"),
-    }));
-
-    const table = `
-      <style>
-      table { width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 12px; }
-      th { background-color: rgb(66, 74, 81); color: white; padding: 10px; text-align: left; font-weight: normal; }
-      td { padding: 10px 8px; border-bottom: 1px solid #eee; }
-      </style>
-      <table>
-        <thead>
-          <tr>
-            <th>Estado</th>
-            <th>Paciente</th>
-            <th>Documento</th>
-            <th>Ciudad</th>
-            <th>Producto</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${dataExport.reduce(
-            (acc: string, item: any) =>
-              acc +
-              `
-            <tr>
-              <td>${item.state ?? ""}</td>
-              <td>${item.patient ?? ""}</td>
-              <td>${item.document_number ?? ""}</td>
-              <td>${item.city ?? ""}</td>
-              <td>${item.product ?? ""}</td>
-              <td>${item.date}</td>
-            </tr>`,
-            ""
-          )}
-        </tbody>
-      </table>`;
-
-    generatePDFFromHTML(table, company, {
-      name: "Citas - " + state,
-    });
+  const handleExportPDF = (state: string, data: any[], tab: string) => {
+    switch (tab) {
+      case "byState":
+        return generateFormatByState(data, state, dateRange, "Impresion");
+      case "summaryAppointments":
+        return generateFormatSummary(data, state, dateRange, "Impresion");
+    }
   };
 
   const dateTemplate = (rowData: Appointment) => {
@@ -352,7 +324,8 @@ export const Appointments = () => {
   const headerTemplate = (
     state: string,
     count: number,
-    data: Appointment[]
+    data: Appointment[] | any[],
+    tab: string
   ) => {
     return (
       <div className="d-flex justify-content-between align-items-center w-full p-4">
@@ -379,7 +352,7 @@ export const Appointments = () => {
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              handleExportPDF(state, data);
+              handleExportPDF(state, data, tab);
             }}
             tooltip={`Exportar ${state} a PDF`}
             tooltipOptions={{ position: "right" }}
@@ -431,7 +404,9 @@ export const Appointments = () => {
                   <label className="form-label">Estado</label>
                   <MultiSelect
                     value={selectedStates}
-                    onChange={(e) => { setSelectedStates(e.value)}}
+                    onChange={(e) => {
+                      setSelectedStates(e.value);
+                    }}
                     options={appointmentStates}
                     optionLabel="nameState"
                     filter
@@ -506,7 +481,8 @@ export const Appointments = () => {
                           header={headerTemplate(
                             state,
                             appointments.length,
-                            appointments
+                            appointments,
+                            "byState"
                           )}
                         >
                           <DataTable
@@ -605,7 +581,8 @@ export const Appointments = () => {
                             header={headerTemplate(
                               state,
                               totalCount,
-                              allAppointments
+                              entries,
+                              "summaryAppointments"
                             )}
                           >
                             <DataTable
