@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { FilterMatchMode } from 'primereact/api'
 import { Toast } from 'primereact/toast'
-import { 
-  Specialty, 
-  ClinicalRecordType, 
-  SpecializableElement, 
-  Cie11Code 
+import {
+  Specialty,
+  ClinicalRecordType,
+  SpecializableElement,
+  Cie11Code
 } from '../interfaces'
 
 export const useSpecialty = () => {
@@ -16,12 +16,12 @@ export const useSpecialty = () => {
   const [showConfigModal, setShowConfigModal] = useState(false)
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null)
   const [specializableElements, setSpecializableElements] = useState<SpecializableElement[]>([])
-  
+
   // Form states
   const [selectedClinicalRecord, setSelectedClinicalRecord] = useState<ClinicalRecordType | null>(null)
   const [cie11Code, setCie11Code] = useState<Cie11Code | null>(null)
   const [cie11Codes, setCie11Codes] = useState<Cie11Code[]>([])
-  
+
   // DataTable filter
   const [globalFilterValue, setGlobalFilterValue] = useState('')
   const [filters, setFilters] = useState({
@@ -88,13 +88,13 @@ export const useSpecialty = () => {
       )
       if (!response.ok) throw new Error('CIE-11 code not found')
       const data = await response.json()
-      
+
       console.log('Raw CIE-11 data from API:', data) // Debug log
       console.log('Data type:', typeof data, 'Is array:', Array.isArray(data)) // Debug log
-      
+
       // Handle different response formats
       let dataArray: Cie11Code[] = []
-      
+
       if (Array.isArray(data)) {
         dataArray = data
       } else if (data && typeof data === 'object') {
@@ -113,20 +113,22 @@ export const useSpecialty = () => {
         console.warn('Invalid data type from CIE-11 API:', typeof data)
         dataArray = []
       }
-      
+
       console.log('Extracted data array:', dataArray) // Debug log
-      
+
       // Transform data to include label property for AutoComplete
       const transformedData = dataArray.map((item: Cie11Code) => {
         // Validate required fields
         const codigo = item.codigo || ''
         const descripcion = item.descripcion || ''
-        
-        // Create comprehensive label with validation
-        const label = codigo || 'Sin información'
-        
+
+        // Create comprehensive label with code AND description
+        const label = codigo && descripcion
+          ? `${codigo} - ${descripcion}`
+          : codigo || descripcion || 'Sin información'
+
         console.log('Transformed item:', { codigo, descripcion, label }) // Debug log
-        
+
         return {
           ...item,
           codigo,
@@ -150,7 +152,7 @@ export const useSpecialty = () => {
       const response = await fetch(`${getApiUrl()}/medical/specializables/by-specialty/${specialtyName}`)
       if (!response.ok) throw new Error('Error loading specializable elements')
       const data = await response.json()
-      
+
       // Transform data to match our interface
       const transformedData = data.map((item: any) => ({
         id: item.id,
@@ -160,7 +162,7 @@ export const useSpecialty = () => {
         description: item.description,
         display_name: `${item.specializable_id} - ${item.description}`
       }))
-      
+
       setSpecializableElements(transformedData)
     } catch (error) {
       console.error('Error loading specializable elements:', error)
@@ -173,7 +175,7 @@ export const useSpecialty = () => {
       const response = await fetch(`${getApiUrl()}/medical/cie11/get-by-code/${code}`)
       if (!response.ok) throw new Error('CIE-11 code not found')
       const data = await response.json()
-      
+
       if (data && data.length > 0) {
         return data[0]
       }
@@ -235,7 +237,7 @@ export const useSpecialty = () => {
 
     const newElement: SpecializableElement = {
       specializable_type: 'Historia Clínica',
-      specializable_id: selectedClinicalRecord.id,
+      specializable_id: String(selectedClinicalRecord.id),
       specialty_id: selectedSpecialty.name,
       description: selectedClinicalRecord.name,
       display_name: selectedClinicalRecord.name
@@ -243,8 +245,8 @@ export const useSpecialty = () => {
 
     // Check if already exists
     const exists = specializableElements.some(
-      el => el.specializable_type === 'Historia Clínica' && 
-           el.specializable_id === selectedClinicalRecord.id
+      el => el.specializable_type === 'Historia Clínica' &&
+        el.specializable_id === selectedClinicalRecord.id
     )
 
     if (!exists) {
@@ -260,10 +262,10 @@ export const useSpecialty = () => {
 
     try {
       const displayName = `${cie11Code.codigo} - ${cie11Code.descripcion}`
-      
+
       const newElement: SpecializableElement = {
         specializable_type: 'CIE-11',
-        specializable_id: cie11Code.codigo,
+        specializable_id: String(cie11Code.codigo),
         specialty_id: selectedSpecialty.name,
         description: cie11Code.descripcion,
         display_name: displayName
@@ -271,8 +273,8 @@ export const useSpecialty = () => {
 
       // Check if already exists
       const exists = specializableElements.some(
-        el => el.specializable_type === 'CIE-11' && 
-             el.specializable_id === cie11Code.codigo
+        el => el.specializable_type === 'CIE-11' &&
+          el.specializable_id === cie11Code.codigo
       )
 
       if (!exists) {

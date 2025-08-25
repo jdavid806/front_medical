@@ -7,7 +7,7 @@ import { useUserAvailability } from "./hooks/useUserAvailability.js";
 import { useUserAvailabilityUpdate } from "./hooks/useUserAvailabilityUpdate.js";
 import { useUserAvailabilityDelete } from "./hooks/useUserAvailabilityDelete.js";
 import { useUserAvailabilityCreate } from "./hooks/useUserAvailabilityCreate.js";
-import { convertHHMMToDate } from "../../services/utilidades.js";
+import { convertHHMMSSToDate } from "../../services/utilidades.js";
 export const UserAvailabilityApp = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -70,11 +70,11 @@ export const UserAvailabilityApp = () => {
         branch_id: userAvailability?.branch_id?.toString() ?? '1',
         appointment_duration: userAvailability?.appointment_duration ?? 0,
         days_of_week: Array.isArray(userAvailability?.days_of_week) ? userAvailability.days_of_week.map(day => parseInt(day)) : (userAvailability?.days_of_week ? [userAvailability.days_of_week] : []).map(day => parseInt(day)),
-        start_time: convertHHMMToDate(userAvailability?.start_time),
-        end_time: convertHHMMToDate(userAvailability?.end_time),
+        start_time: convertHHMMSSToDate(userAvailability?.start_time),
+        end_time: convertHHMMSSToDate(userAvailability?.end_time),
         free_slots: userAvailability?.free_slots.map(slot => ({
-          start_time: convertHHMMToDate(slot.start_time),
-          end_time: convertHHMMToDate(slot.end_time)
+          start_time: convertHHMMSSToDate(slot.start_time),
+          end_time: convertHHMMSSToDate(slot.end_time)
         })) ?? []
       };
       console.log(userAvailability, data);

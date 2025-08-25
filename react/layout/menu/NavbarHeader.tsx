@@ -83,6 +83,65 @@ const NavbarHeader = () => {
                     width: 100%;
                 }
 
+                /* Estilos para modo claro */
+                :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-link {
+                    color: #495057 !important;
+                }
+
+                :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-link:hover {
+                    background-color: #e9ecef !important;
+                    color: #495057 !important;
+                }
+
+                :root:not(.p-dark) .custom-responsive-megamenu .p-megamenu-panel {
+                    background: #ffffff !important;
+                    border: 1px solid #e5e7eb !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+                }
+
+                :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-content:hover {
+                    background: #f8f9fa !important;
+                }
+
+                :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-text {
+                    color: #495057 !important;
+                }
+
+                /* Estilos para modo oscuro */
+                .p-dark .custom-responsive-megamenu .p-menuitem-link {
+                    color: rgba(255, 255, 255, 0.87) !important;
+                    background-color: #1f2937 !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-menuitem-link:hover {
+                    background-color: #374151 !important;
+                    color: rgba(255, 255, 255, 0.87) !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                    background: #1f2937 !important;
+                    border: 1px solid #374151 !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-menuitem-content {
+                    background: #1f2937 !important;
+                    color: rgba(255, 255, 255, 0.87) !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-menuitem-content:hover {
+                    background: #374151 !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-menuitem-text {
+                    color: rgba(255, 255, 255, 0.87) !important;
+                }
+
+                .p-dark .custom-responsive-megamenu .p-submenu-icon {
+                    color: rgba(255, 255, 255, 0.6) !important;
+                }
+
+                /* Estilos comunes */
                 .custom-responsive-megamenu .p-megamenu-root-list {
                     display: flex;
                     justify-content: center;
@@ -95,7 +154,9 @@ const NavbarHeader = () => {
                     display: flex;
                     align-items: center;
                     font-weight: 600;
-                    color: var(--text-color) !important;
+                    padding: 0.75rem 1rem !important;
+                    border-radius: 6px;
+                    transition: background-color 0.2s;
                 }
 
                 .custom-responsive-megamenu .p-menuitem-icon {
@@ -104,13 +165,7 @@ const NavbarHeader = () => {
                 }
 
                 .custom-responsive-megamenu .p-megamenu-panel {
-                    background: white !important;
-                    border: 1px solid #e5e7eb !important;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
                     border-radius: 8px !important;
-                }
-
-                .custom-responsive-megamenu .p-megamenu-grid {
                 }
 
                 .custom-responsive-megamenu .p-submenu-list {
@@ -123,18 +178,20 @@ const NavbarHeader = () => {
 
                 .custom-responsive-megamenu .p-menuitem-content {
                     border-radius: 6px !important;
-                }
-
-                .custom-responsive-megamenu .p-menuitem-content:hover {
-                    background: #f8f9fa !important;
+                    transition: background-color 0.2s;
                 }
 
                 /* Estilos responsive para móviles */
                 @media screen and (max-width: 960px) {
-
-                  .p-megamenu[pr_id_2].p-megamenu-mobile-active .p-megamenu-root-list{
-                width: 300px !important;
-                }
+                    .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                        width: 300px !important;
+                        background: #ffffff !important;
+                    }
+                    
+                    .p-dark .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                        background: #1f2937 !important;
+                    }
+                    
                     .navbar-megamenu-container {
                         margin: 0;
                     }
@@ -145,7 +202,7 @@ const NavbarHeader = () => {
                     
                     .custom-responsive-megamenu .p-menuitem-link {
                         padding: 0.75rem 1rem !important;
-                        justify-content: center;
+                        justify-content: flex-start;
                     }
                     
                     .custom-responsive-megamenu .p-megamenu-panel {
@@ -156,21 +213,24 @@ const NavbarHeader = () => {
                         border-top: 1px solid #e5e7eb !important;
                         border-radius: 0 !important;
                     }
+                    
+                    .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                        border-top: 1px solid #374151 !important;
+                    }
                 }
 
                 /* Estilos para desktop */
                 @media screen and (min-width: 961px) {
                     .navbar-megamenu-container {
                         margin: 0 auto;
-                        margin-right: 900px;
                     }
                     
                     .custom-responsive-megamenu .p-megamenu-root-list {
+                    margin-left: 450px !important;
                         justify-content: center;
                         gap: 0.5rem;
                     }
                 }
-               
             `}</style>
         </div>
     );

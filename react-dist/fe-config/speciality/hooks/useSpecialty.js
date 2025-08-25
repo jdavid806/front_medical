@@ -118,8 +118,8 @@ export const useSpecialty = () => {
         const codigo = item.codigo || '';
         const descripcion = item.descripcion || '';
 
-        // Create comprehensive label with validation
-        const label = codigo || 'Sin información';
+        // Create comprehensive label with code AND description
+        const label = codigo && descripcion ? `${codigo} - ${descripcion}` : codigo || descripcion || 'Sin información';
         console.log('Transformed item:', {
           codigo,
           descripcion,
@@ -219,7 +219,7 @@ export const useSpecialty = () => {
     if (!selectedClinicalRecord || !selectedSpecialty) return;
     const newElement = {
       specializable_type: 'Historia Clínica',
-      specializable_id: selectedClinicalRecord.id,
+      specializable_id: String(selectedClinicalRecord.id),
       specialty_id: selectedSpecialty.name,
       description: selectedClinicalRecord.name,
       display_name: selectedClinicalRecord.name
@@ -240,7 +240,7 @@ export const useSpecialty = () => {
       const displayName = `${cie11Code.codigo} - ${cie11Code.descripcion}`;
       const newElement = {
         specializable_type: 'CIE-11',
-        specializable_id: cie11Code.codigo,
+        specializable_id: String(cie11Code.codigo),
         specialty_id: selectedSpecialty.name,
         description: cie11Code.descripcion,
         display_name: displayName

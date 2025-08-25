@@ -15,23 +15,18 @@
     .choices__list--dropdown .choices__item--selectable:hover,
     .choices__list--dropdown .choices__item--selectable.is-highlighted {
         background-color: #f5f5f5;
-        /* Color de fondo al hacer hover */
         color: #333 !important;
-        /* Color del texto al hacer hover */
     }
 
-    /* Opcional: estilo para el placeholder */
     .choices__list--dropdown .choices__placeholder {
         color: #999;
     }
 
     .navbar .dropdown-menu.dropdown-menu-end.navbar-dropdown-caret {
-        /* Tus estilos existentes */
         width: auto !important;
         right: 0 !important;
     }
 
-    /* Ajustar el espaciado entre elementos */
     .row-custom {
         gap: 30px;
         /* Espacio entre elementos */
@@ -236,143 +231,7 @@
             </div>
         </li>
 
-        <li class="nav-item dropdown">
-            <a class="nav-link" id="navbarDropdownNindeDots" href="#" role="button" data-bs-toggle="dropdown"
-                aria-haspopup="true" data-bs-auto-close="outside" aria-expanded="false">
-                <svg width="16" height="16" viewbox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="2" cy="2" r="2" fill="currentColor"></circle>
-                    <circle cx="2" cy="8" r="2" fill="currentColor"></circle>
-                    <circle cx="2" cy="14" r="2" fill="currentColor"></circle>
-                    <circle cx="8" cy="8" r="2" fill="currentColor"></circle>
-                    <circle cx="8" cy="14" r="2" fill="currentColor"></circle>
-                    <circle cx="14" cy="8" r="2" fill="currentColor"></circle>
-                    <circle cx="14" cy="14" r="2" fill="currentColor"></circle>
-                    <circle cx="8" cy="2" r="2" fill="currentColor"></circle>
-                    <circle cx="14" cy="2" r="2" fill="currentColor"></circle>
-                </svg></a>
-
-            <div class="dropdown-menu-container dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-nine-dots shadow border"
-                aria-labelledby="navbarDropdownNindeDots">
-                <div class="card bg-body-emphasis position-relative border-0">
-                    <div class="card-body pt-3 px-4 pb-0 overflow-auto scrollbar">
-                        <div class="row text-center align-items-center gx-0 gy-0">
-                            <!-- <div class="col-4">
-                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="FE_FCE"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Facturación</p>
-                </a>
-              </div> -->
-                            <div class="row flex-nowrap overflow-auto py-2">
-                                <!-- Contenedor horizontal scrollable -->
-                                <!-- Columna 1 - Configuración -->
-                                <div class="col-auto mb-3">
-                                    <!-- col-auto para ancho automático -->
-                                    <a class="d-flex flex-column align-items-center bg-body-secondary-hover p-3 rounded-3 text-decoration-none h-100"
-                                        href="FE_Config" style="min-width: 100px;">
-                                        <!-- Ancho mínimo -->
-                                        <img src="assets/img/nav-icons/CashButton.png" alt="Configuración" width="30" />
-                                        <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-2">Configuración</p>
-                                    </a>
-                                </div>
-
-                                <!-- Columna 2 - Contabilidad -->
-                                <div class="col-auto mb-3">
-                                    <a class="d-flex flex-column align-items-center bg-body-secondary-hover p-3 rounded-3 text-decoration-none h-100"
-                                        href="FE_ContabilidadNueva" style="min-width: 100px;">
-                                        <img src="assets/img/nav-icons/Calculator.png" alt="Contabilidad" width="30" />
-                                        <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-2">Contabilidad</p>
-                                    </a>
-                                </div>
-
-                                <!-- Puedes agregar más columnas aquí -->
-                            </div>
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="FE_Contabilidad"><img src="assets/img/nav-icons/Calculator.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Contabilidad</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="FE_Nomina"><img src="assets/img/nav-icons/Calculator.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Nómina</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="Menu_reports"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Reportes</p>
-                </a>
-              </div> -->
-
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="caja"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Caja</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="Config_PDF"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">PDF</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="Mensajes_whatsapp"><img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Mensajería</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4"><a
-                  class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="consultas-anulacion-pendiente"><img src="assets/img/nav-icons/Container.png" alt=""
-                    width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">Anulaciones</p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4">
-                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="waiting-room">
-                  <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
-                    Sala de espera
-                  </p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4">
-                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="gestion-turnos">
-                  <img src="assets/img/nav-icons/Container.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
-                    Turnos
-                  </p>
-                </a>
-              </div> -->
-
-                            <!-- <div class="col-4">
-                <a class="d-block bg-body-secondary-hover p-2 rounded-3 text-center text-decoration-none mb-3"
-                  href="panel-encuesta">
-                  <img src="assets/img/nav-icons/IconButton.png" alt="" width="30" />
-                  <p class="mb-0 text-body-emphasis text-truncate fs-10 mt-1 pt-1">
-                    Encuentas
-                  </p>
-                </a>
-              </div> -->
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
+     
 
         <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button"
                 data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
