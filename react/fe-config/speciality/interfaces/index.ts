@@ -31,6 +31,16 @@ export interface SpecialityTableProps {
   filters: any
   onGlobalFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onConfigModalOpen: (specialty: Specialty) => void
+  onActiveSpecialty: (specialty: Specialty) => void
+}
+
+export interface CurrentSpecialtyTableProps {
+  specialties: Specialty[]
+  loading: boolean
+  globalFilterValue: string
+  filters: any
+  onGlobalFilterChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onDeactiveSpecialty: (specialty: Specialty) => void
 }
 
 export interface SpecialityModalProps {

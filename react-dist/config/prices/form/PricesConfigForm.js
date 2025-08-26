@@ -7,8 +7,8 @@ import { Dropdown } from 'primereact/dropdown';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Button } from 'primereact/button';
 import { examTypeService, taxesService, retentionsService } from "../../../../services/api/index.js";
-import { CustomFormModal } from "../../../components/CustomFormModal.js";
-import { ExamForm } from "../../../exams/components/ExamForm.js";
+import { Dialog } from "primereact/dialog";
+import { ExamConfigFormModal } from "../../../exams-config/components/ExamConfigFormModal.js";
 const PricesConfigForm = ({
   formId,
   onHandleSubmit,
@@ -141,6 +141,11 @@ const PricesConfigForm = ({
       submitData.purchase_price = 0;
     }
     onHandleSubmit(submitData);
+  };
+  const handleExamSubmit = data => {
+    console.log("Datos del examen:", data);
+    handleCloseExamModal();
+    loadExamTypes();
   };
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
@@ -601,15 +606,21 @@ const PricesConfigForm = ({
     className: "btn btn-outline-primary",
     type: "button",
     onClick: onCancel
-  }, "Cancelar"))), /*#__PURE__*/React.createElement(CustomFormModal, {
+  }, "Cancelar"))), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Crear Ex\xE1menes",
+    visible: showExamModal,
     style: {
       width: "90vw",
-      maxWidth: "600px"
+      maxWidth: "1000px",
+      height: "80vh"
     },
-    formId: 'createExam',
-    show: showExamModal,
     onHide: handleCloseExamModal,
-    title: "Crear Ex\xE1menes"
-  }, /*#__PURE__*/React.createElement(ExamForm, null))));
+    modal: true
+  }, /*#__PURE__*/React.createElement(ExamConfigFormModal, {
+    show: showExamModal,
+    handleSubmit: handleExamSubmit,
+    onHide: handleCloseExamModal,
+    title: "Crear Examen"
+  }))));
 };
 export default PricesConfigForm;

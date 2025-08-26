@@ -11,7 +11,8 @@ export default function SpecialityTable({
   globalFilterValue,
   filters,
   onGlobalFilterChange,
-  onConfigModalOpen
+  onConfigModalOpen,
+  onActiveSpecialty
 }: SpecialityTableProps) {
 
   const renderHeader = () => {
@@ -32,14 +33,23 @@ export default function SpecialityTable({
 
   const actionBodyTemplate = (rowData: any) => {
     return (
-      <Button
-        className="p-button-rounded p-button-text p-button-sm"
-        onClick={() => onConfigModalOpen(rowData)}
-        tooltip="Configurar especialidad"
-      >
-        <i className="fa-solid fa-tools"></i>
-      </Button>
-     
+      <div className="d-flex gap-2">
+        <Button
+          className="p-button-rounded p-button-text p-button-sm"
+          onClick={() => onConfigModalOpen(rowData)}
+          tooltip="Configurar especialidad"
+        >
+          <i className="fa-solid fa-tools"></i>
+        </Button>
+
+        <Button
+          className="btn btn-sm btn-text btn-success"
+          onClick={() => onActiveSpecialty(rowData)}
+          tooltip="Activar especialidad"
+        >
+          <i className="fa-solid fa-check-circle"></i>
+        </Button>
+      </div>
     )
   }
 

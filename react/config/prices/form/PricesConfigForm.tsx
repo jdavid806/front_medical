@@ -12,7 +12,9 @@ import {
   retentionsService,
 } from "../../../../services/api";
 import { CustomFormModal } from "../../../components/CustomFormModal";
-import { ExamForm } from "../../../exams/components/ExamForm";
+import { Dialog } from "primereact/dialog";
+import { ExamConfigFormModal } from "../../../exams-config/components/ExamConfigFormModal";
+import { ExamTypeInputs } from "../../../exams-config/components/ExamConfigForm";
 
 
 type EntityRow = {
@@ -192,6 +194,11 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     }
 
     onHandleSubmit(submitData);
+  };
+  const handleExamSubmit = (data: ExamTypeInputs) => {
+    console.log("Datos del examen:", data);
+    handleCloseExamModal();
+    loadExamTypes();
   };
 
   const getFormErrorMessage = (name: keyof ProductFormInputs) => {
@@ -696,16 +703,20 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
           </div>
         </form>
 
-        <CustomFormModal
-          style={{ width: "90vw", maxWidth: "600px" }}
-          formId={'createExam'}
-          show={showExamModal}
+        <Dialog
+          header="Crear Exámenes"
+          visible={showExamModal}
+          style={{ width: "90vw", maxWidth: "1000px", height: "80vh" }}
           onHide={handleCloseExamModal}
-          title='Crear Exámenes'
+          modal
         >
-          <ExamForm
+          <ExamConfigFormModal
+            show={showExamModal}
+            handleSubmit={handleExamSubmit}
+            onHide={handleCloseExamModal}
+            title="Crear Examen"
           />
-        </CustomFormModal>
+        </Dialog>
       </div>
     </div>
   );

@@ -3,21 +3,20 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-export default function SpecialityTable({
+export default function CurrentSpecialityTable({
   specialties,
   loading,
   globalFilterValue,
   filters,
   onGlobalFilterChange,
-  onConfigModalOpen,
-  onActiveSpecialty
+  onDeactiveSpecialty
 }) {
   const renderHeader = () => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between align-items-center"
     }, /*#__PURE__*/React.createElement("h4", {
       className: "m-0"
-    }, "Listado de Especialidades"), /*#__PURE__*/React.createElement("span", {
+    }, "Especialidades Activas"), /*#__PURE__*/React.createElement("span", {
       className: "p-input-icon-left"
     }, /*#__PURE__*/React.createElement("i", {
       className: "pi pi-search"
@@ -31,17 +30,11 @@ export default function SpecialityTable({
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2"
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm",
-      onClick: () => onConfigModalOpen(rowData),
-      tooltip: "Configurar especialidad"
+      className: "btn btn-sm btn-text btn-danger",
+      onClick: () => onDeactiveSpecialty(rowData),
+      tooltip: "Desactivar especialidad"
     }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-tools"
-    })), /*#__PURE__*/React.createElement(Button, {
-      className: "btn btn-sm btn-text btn-success",
-      onClick: () => onActiveSpecialty(rowData),
-      tooltip: "Activar especialidad"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-check-circle"
+      className: "fa-solid fa-xmark-circle"
     })));
   };
   return /*#__PURE__*/React.createElement("div", {

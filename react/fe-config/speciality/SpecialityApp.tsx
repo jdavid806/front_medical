@@ -8,13 +8,16 @@ import SpecialityModal from './components/SpecialityModal'
 
 // Hook
 import { useSpecialty } from './hooks/useSpecialty'
+import CurrentSpecialityTable from './components/CurrentSpecialtyTable'
 
 export default function SpecialityApp() {
   const {
     // State
     specialties,
+    currentSpecialties,
     clinicalRecordTypes,
     loading,
+    loadingCurrentSpecialties,
     showConfigModal,
     selectedSpecialty,
     specializableElements,
@@ -36,7 +39,9 @@ export default function SpecialityApp() {
     removeSpecializableElement,
     saveSpecializableElements,
     resetModalForm,
-    onGlobalFilterChange
+    onGlobalFilterChange,
+    onActiveSpecialty,
+    onDeactiveSpecialty
   } = useSpecialty()
 
   const handleModalClose = () => {
@@ -49,15 +54,32 @@ export default function SpecialityApp() {
       <Toast ref={toast} />
       <ConfirmDialog />
 
-      {/* Specialty Table */}
-      <SpecialityTable
-        specialties={specialties}
-        loading={loading}
-        globalFilterValue={globalFilterValue}
-        filters={filters}
-        onGlobalFilterChange={onGlobalFilterChange}
-        onConfigModalOpen={openConfigModal}
-      />
+      <div className='row'>
+        <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
+          {/* Specialty Table */}
+          <SpecialityTable
+            specialties={specialties}
+            loading={loading}
+            globalFilterValue={globalFilterValue}
+            filters={filters}
+            onGlobalFilterChange={onGlobalFilterChange}
+            onConfigModalOpen={openConfigModal}
+            onActiveSpecialty={onActiveSpecialty}
+          />
+        </div>
+        <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
+
+          {/* Current Specialty Table */}
+          <CurrentSpecialityTable
+            specialties={currentSpecialties}
+            loading={loadingCurrentSpecialties}
+            globalFilterValue={globalFilterValue}
+            filters={filters}
+            onGlobalFilterChange={onGlobalFilterChange}
+            onDeactiveSpecialty={onDeactiveSpecialty}
+          />
+        </div>
+      </div>
 
       {/* Configuration Modal */}
       <SpecialityModal

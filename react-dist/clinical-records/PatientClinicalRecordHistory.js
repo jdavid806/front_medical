@@ -3,8 +3,6 @@ import { PrimeReactProvider } from "primereact/api";
 import { useEffect } from "react";
 import { useState } from "react";
 import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecordsTable.js";
-import { OptometryBillingModal } from "./optometry/modal/OptometryBillingModal.js";
-import { Button } from "primereact/button";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { MakeRequestForm } from "../general-request/components/MakeRequestForm.js";
 import { useMakeRequest } from "../general-request/hooks/useMakeRequest.js";
@@ -101,7 +99,7 @@ export const PatientClinicalRecordHistory = () => {
         guardarArchivo(formData, true).then(response => {
           resolve(response.file);
         }).catch(reject);
-      }, 2500);
+      }, 1500);
     });
   }
   const sendMessageWhatsapp = useCallback(async recordHistory => {
@@ -133,7 +131,6 @@ export const PatientClinicalRecordHistory = () => {
       text: "Mensaje enviado correctamente",
       title: "Éxito"
     });
-    window.location.reload();
   }, [sendMessageWpp]);
   const seeDetail = (id, clinicalRecordType) => {
     window.location.href = `detalleConsulta?clinicalRecordId=${id}&patient_id=${patientId}&tipo_historia=${clinicalRecordType}&especialidad=${specialtyId}`;
@@ -200,12 +197,7 @@ export const PatientClinicalRecordHistory = () => {
     className: "d-flex justify-content-between align-items-center mb-2"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
     className: "mb-0"
-  }, "Historias Cl\xEDnicas - ", nombreEspecialidad)), /*#__PURE__*/React.createElement(Button, {
-    label: "Nueva Factura Optom\xE9trica",
-    icon: "pi pi-plus",
-    className: "btn btn-primary",
-    onClick: () => setShowBillingModal(true)
-  })), /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
+  }, "Historias Cl\xEDnicas - ", nombreEspecialidad))), /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
     records: clinicalRecords,
     onSeeDetail: seeDetail,
     onPrintItem: printClinicalRecord,
@@ -219,13 +211,7 @@ export const PatientClinicalRecordHistory = () => {
     onPage: handlePageChange,
     onSearch: handleSearchChange,
     onReload: refresh
-  })), /*#__PURE__*/React.createElement(OptometryBillingModal, {
-    show: showBillingModal,
-    onHide: () => setShowBillingModal(false),
-    onSaveSuccess: () => {
-      // Aquí puedes agregar lógica para refrescar datos si es necesario
-    }
-  }), /*#__PURE__*/React.createElement(CustomFormModal, {
+  })), /*#__PURE__*/React.createElement(CustomFormModal, {
     show: showCancellationModal,
     onHide: () => setShowCancellationModal(false),
     formId: "cancellationForm",

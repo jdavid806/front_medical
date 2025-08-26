@@ -6,13 +6,15 @@ import { ConfirmDialog } from 'primereact/confirmdialog';
 import SpecialityTable from "./components/SpecialityTable.js";
 import SpecialityModal from "./components/SpecialityModal.js"; // Hook
 import { useSpecialty } from "./hooks/useSpecialty.js";
+import CurrentSpecialityTable from "./components/CurrentSpecialtyTable.js";
 export default function SpecialityApp() {
-  console.log('SpecialityApp');
   const {
     // State
     specialties,
+    currentSpecialties,
     clinicalRecordTypes,
     loading,
+    loadingCurrentSpecialties,
     showConfigModal,
     selectedSpecialty,
     specializableElements,
@@ -32,7 +34,9 @@ export default function SpecialityApp() {
     removeSpecializableElement,
     saveSpecializableElements,
     resetModalForm,
-    onGlobalFilterChange
+    onGlobalFilterChange,
+    onActiveSpecialty,
+    onDeactiveSpecialty
   } = useSpecialty();
   const handleModalClose = () => {
     setShowConfigModal(false);
@@ -42,14 +46,28 @@ export default function SpecialityApp() {
     className: "container-fluid mt-4"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement(SpecialityTable, {
+  }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6 col-lg-6 col-xl-6 col-12"
+  }, /*#__PURE__*/React.createElement(SpecialityTable, {
     specialties: specialties,
     loading: loading,
     globalFilterValue: globalFilterValue,
     filters: filters,
     onGlobalFilterChange: onGlobalFilterChange,
-    onConfigModalOpen: openConfigModal
-  }), /*#__PURE__*/React.createElement(SpecialityModal, {
+    onConfigModalOpen: openConfigModal,
+    onActiveSpecialty: onActiveSpecialty
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6 col-lg-6 col-xl-6 col-12"
+  }, /*#__PURE__*/React.createElement(CurrentSpecialityTable, {
+    specialties: currentSpecialties,
+    loading: loadingCurrentSpecialties,
+    globalFilterValue: globalFilterValue,
+    filters: filters,
+    onGlobalFilterChange: onGlobalFilterChange,
+    onDeactiveSpecialty: onDeactiveSpecialty
+  }))), /*#__PURE__*/React.createElement(SpecialityModal, {
     visible: showConfigModal,
     selectedSpecialty: selectedSpecialty,
     clinicalRecordTypes: clinicalRecordTypes,

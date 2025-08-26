@@ -7,12 +7,15 @@ import {
   SpecializableElement,
   Cie11Code
 } from '../interfaces'
+import { CentralSpecialtyService } from '../../../../services/api/classes/centralSpecialtyService'
 
 export const useSpecialty = () => {
   // State management
   const [specialties, setSpecialties] = useState<Specialty[]>([])
+  const [currentSpecialties, setCurrentSpecialties] = useState<Specialty[]>([])
   const [clinicalRecordTypes, setClinicalRecordTypes] = useState<ClinicalRecordType[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingCurrentSpecialties, setLoadingCurrentSpecialties] = useState(false)
   const [showConfigModal, setShowConfigModal] = useState(false)
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null)
   const [specializableElements, setSpecializableElements] = useState<SpecializableElement[]>([])
@@ -60,6 +63,21 @@ export const useSpecialty = () => {
     } catch (error) {
       console.error('Error loading specialties:', error)
       throw error
+    }
+  }
+
+  const loadCurrentSpecialties = async () => {
+    try {
+      setLoadingCurrentSpecialties(true)
+      const response = await fetch(`${getApiUrl()}/medical/user-specialties`)
+      if (!response.ok) throw new Error('Error loading current specialties')
+      const data = await response.json()
+      setCurrentSpecialties(data)
+    } catch (error) {
+      console.error('Error loading current specialties:', error)
+      throw error
+    } finally {
+      setLoadingCurrentSpecialties(false)
     }
   }
 
@@ -136,7 +154,7 @@ export const useSpecialty = () => {
           label
         }
       })
-      
+
       console.log('Transformed CIE-11 data:', transformedData) // Debug log
       setCie11Codes(transformedData)
       return transformedData
@@ -216,6 +234,7 @@ export const useSpecialty = () => {
       setLoading(true)
       await Promise.all([
         loadSpecialties(),
+        loadCurrentSpecialties(),
         loadClinicalRecordTypes()
       ])
     } catch (error) {
@@ -309,6 +328,30 @@ export const useSpecialty = () => {
     setGlobalFilterValue(value)
   }
 
+  const onActiveSpecialty = async (specialty: Specialty) => {
+    try {
+      const service = new CentralSpecialtyService()
+      await service.activateSpecialty(specialty.name)
+      await loadCurrentSpecialties()
+      showSuccess('Especialidad activada exitosamente')
+    } catch (error) {
+      console.error('Error activating specialty:', error)
+      showError('Error al activar la especialidad')
+    }
+  }
+
+  const onDeactiveSpecialty = async (specialty: Specialty) => {
+    try {
+      const service = new CentralSpecialtyService()
+      await service.deactivateSpecialty(specialty.name)
+      await loadCurrentSpecialties()
+      showSuccess('Especialidad desactivada exitosamente')
+    } catch (error) {
+      console.error('Error deactivating specialty:', error)
+      showError('Error al desactivar la especialidad')
+    }
+  }
+
   // Initialize data on hook mount
   useEffect(() => {
     loadData()
@@ -317,8 +360,10 @@ export const useSpecialty = () => {
   return {
     // State
     specialties,
+    currentSpecialties,
     clinicalRecordTypes,
     loading,
+    loadingCurrentSpecialties,
     showConfigModal,
     selectedSpecialty,
     specializableElements,
@@ -345,6 +390,8 @@ export const useSpecialty = () => {
     showSuccess,
     showError,
     showWarn,
-    loadCie11Codes
+    loadCie11Codes,
+    onActiveSpecialty,
+    onDeactiveSpecialty
   }
 }

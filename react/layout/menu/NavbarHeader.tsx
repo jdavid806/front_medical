@@ -141,7 +141,6 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.6) !important;
                 }
 
-                /* Estilos comunes */
                 .custom-responsive-megamenu .p-megamenu-root-list {
                     display: flex;
                     justify-content: center;

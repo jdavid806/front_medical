@@ -27,7 +27,7 @@ import {
 } from "../../services/utilidades";
 import { set } from "react-hook-form";
 
-interface PatientClinicalRecordHistoryProps {}
+interface PatientClinicalRecordHistoryProps { }
 
 const specialtyId =
   new URLSearchParams(window.location.search).get("especialidad") || "";
@@ -137,16 +137,16 @@ export const PatientClinicalRecordHistory: React.FC<
             resolve(response.file);
           })
           .catch(reject);
-      }, 2500);
+      }, 1500);
     });
   }
 
   const sendMessageWhatsapp = useCallback(
     async (recordHistory) => {
-      const dataToFile:any = await generatePdfFile(recordHistory);
+      const dataToFile: any = await generatePdfFile(recordHistory);
       //@ts-ignore
       const urlPDF = getUrlImage(dataToFile.file_url.replaceAll("\\", "/"), true);
-      
+
       const replacements = {
         NOMBRE_PACIENTE: `${recordHistory.patient.first_name} ${recordHistory.patient.middle_name} ${recordHistory.patient.last_name} ${recordHistory.patient.second_last_name}`,
         ESPECIALISTA: `${recordHistory.user.first_name} ${recordHistory.user.middle_name} ${recordHistory.user.last_name} ${recordHistory.user.second_last_name}`,
@@ -164,7 +164,7 @@ export const PatientClinicalRecordHistory: React.FC<
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(recordHistory.patient.country_id) +
-            recordHistory.patient.whatsapp,
+          recordHistory.patient.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
@@ -180,7 +180,6 @@ export const PatientClinicalRecordHistory: React.FC<
         text: "Mensaje enviado correctamente",
         title: "Éxito",
       });
-      window.location.reload();
 
     },
     [sendMessageWpp]
@@ -262,12 +261,6 @@ export const PatientClinicalRecordHistory: React.FC<
           <div>
             <h2 className="mb-0">Historias Clínicas - {nombreEspecialidad}</h2>
           </div>
-          <Button
-            label="Nueva Factura Optométrica"
-            icon="pi pi-plus"
-            className="btn btn-primary"
-            onClick={() => setShowBillingModal(true)}
-          />
         </div>
         <PatientClinicalRecordsTable
           records={clinicalRecords}
@@ -286,13 +279,6 @@ export const PatientClinicalRecordHistory: React.FC<
         />
       </div>
 
-      <OptometryBillingModal
-        show={showBillingModal}
-        onHide={() => setShowBillingModal(false)}
-        onSaveSuccess={() => {
-          // Aquí puedes agregar lógica para refrescar datos si es necesario
-        }}
-      />
 
       <CustomFormModal
         show={showCancellationModal}
