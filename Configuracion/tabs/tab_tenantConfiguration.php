@@ -465,6 +465,8 @@
             <div class="col-md-6 qr-container">
               <h5>Estado WhatsApp</h5>
 
+
+
               <div class="d-flex flex-column align-items-center text-center mt-4">
                 <span id="goodIcon" class="d-none">
                   <i class="fas fa-check-circle text-success"
@@ -483,6 +485,9 @@
                     data-bs-target="#modalVerQr">
                     <i class="fas fa-times-circle"></i> Conectar WhatsApp
                   </button>
+                  <div id="createInstanceButton" class="d-none">
+                    <div id="createInstanceButtonReact"></div>
+                  </div>
                 </div>
               </div>
 
@@ -571,6 +576,17 @@
     </div>
   </div>
 </div>
+
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        BtnCreateWhatsAppInstance
+    } from './react-dist/communications/BtnCreateWhatsAppInstance.js';
+
+    const rootElement = document.getElementById('createInstanceButtonReact');
+    ReactDOMClient.createRoot(rootElement).render(React.createElement(BtnCreateWhatsAppInstance));
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
@@ -842,6 +858,7 @@
       } else {
         createSmtp(configSmtp);
       }
+      cargarDatosTenant();
     } catch (error) {
       console.error("Error al guardar configuración SMTP:", error);
       alert("Error al guardar la configuración SMTP");
