@@ -19,7 +19,7 @@ export const UserRoleApp = () => {
     const { createUserRole } = useUserRoleCreate();
     const { updateUserRole } = useUserRoleUpdate();
     const { deleteUserRole } = useUserRoleDelete();
-    const { userRole, fetchUserRole } = useUserRole();
+    const { userRole, fetchUserRole, setUserRole } = useUserRole();
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -27,9 +27,9 @@ export const UserRoleApp = () => {
     }
 
     const handleSubmit = async (data: UserRoleFormInputs) => {
-        console.log(data);
         if (userRole) {
             await updateUserRole(userRole.id, data)
+            setUserRole(null)
         } else {
             await createUserRole(data)
         }
@@ -85,7 +85,10 @@ export const UserRoleApp = () => {
                     title={userRole ? 'Editar rol de Usuario' : 'Crear rol de Usuario'}
                     show={showFormModal}
                     handleSubmit={handleSubmit}
-                    onHide={() => { setShowFormModal(false) }}
+                    onHide={() => {
+                        setShowFormModal(false)
+                        setUserRole(null)
+                    }}
                     initialData={initialData}
                 ></UserRoleFormModal>
             </PrimeReactProvider>

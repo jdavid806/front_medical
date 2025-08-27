@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { consentimientoService } from '../../../../services/api/index.js';
 
-interface Template {
+export interface Template {
   id: number;
   name: string;
   description?: string;

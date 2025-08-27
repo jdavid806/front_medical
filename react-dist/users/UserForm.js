@@ -519,7 +519,7 @@ const UserForm = ({
         "p-invalid": errors.user_role_id
       })
     }, field)))
-  }), getFormErrorMessage("user_role_id")), selectedRole && ["ADMIN", "DOCTOR"].includes(selectedRole.group) && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("user_role_id")), selectedRole && ["DOCTOR_ASSISTANT", "DOCTOR"].includes(selectedRole.group) && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "user_specialty_id",

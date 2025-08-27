@@ -596,7 +596,7 @@ const UserForm: React.FC<UserFormProps> = ({
                 {getFormErrorMessage("user_role_id")}
               </div>
               {selectedRole &&
-                ["ADMIN", "DOCTOR"].includes(selectedRole.group) && (
+                ["DOCTOR_ASSISTANT", "DOCTOR"].includes(selectedRole.group) && (
                   <>
                     <div className="col-md-6 mb-1">
                       <Controller

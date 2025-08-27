@@ -10,7 +10,15 @@ export const useUserRoleCreate = () => {
     const createUserRole = async (userRoleData: Omit<UserRoleFormInputs, 'id'>) => {
         setLoading(true)
         try {
-            await userRolesService.storeMenusPermissions(userRoleData)
+            const finalData = {
+                role: {
+                    group: userRoleData.group,
+                    name: userRoleData.name
+                },
+                menus: userRoleData.menus,
+                permissions: userRoleData.permissions
+            }
+            await userRolesService.storeMenusPermissions(finalData)
             SwalManager.success()
         } catch (error) {
             ErrorHandler.generic(error)

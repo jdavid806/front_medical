@@ -26,16 +26,17 @@ export const UserRoleApp = () => {
   } = useUserRoleDelete();
   const {
     userRole,
-    fetchUserRole
+    fetchUserRole,
+    setUserRole
   } = useUserRole();
   const onCreate = () => {
     setInitialData(undefined);
     setShowFormModal(true);
   };
   const handleSubmit = async data => {
-    console.log(data);
     if (userRole) {
       await updateUserRole(userRole.id, data);
+      setUserRole(null);
     } else {
       await createUserRole(data);
     }
@@ -86,6 +87,7 @@ export const UserRoleApp = () => {
     handleSubmit: handleSubmit,
     onHide: () => {
       setShowFormModal(false);
+      setUserRole(null);
     },
     initialData: initialData
   })));

@@ -13,7 +13,8 @@ import { Message } from "primereact/message";
 import { Tooltip } from "primereact/tooltip";
 import { InputNumber } from "primereact/inputnumber";
 import { classNames } from "primereact/utils";
-import { useAccountingAccounts } from "./hooks/useAccountingAccounts.js"; // Definición de tipos TypeScript
+import { useAccountingAccounts } from "./hooks/useAccountingAccounts.js";
+import { accountingAccountsService } from "../../services/api/index.js"; // Definición de tipos TypeScript
 // Configuración de filtros
 FilterService.register("customSearch", (value, filter) => {
   if (filter === undefined || filter === null || filter.trim() === "") {
@@ -125,12 +126,14 @@ const validateCode = (code, level, parentCode) => {
     digits,
     parentDigits
   } = levelStructure[level];
-  if (code.length !== digits) {
+
+  /*if (code.length !== digits) {
     return {
       valid: false,
-      message: `El código debe tener exactamente ${digits} dígitos`
+      message: `El código debe tener exactamente ${digits} dígitos`,
     };
-  }
+  }*/
+
   if (parentDigits && parentCode) {
     const parentPart = parentCode.substring(0, parentDigits);
     if (!code.startsWith(parentPart)) {
@@ -146,18 +149,8 @@ const validateCode = (code, level, parentCode) => {
 };
 const createAccountingAccount = async accountData => {
   try {
-    const response = await fetch("https://dev.monaros.co/api/v1/admin/accounting-accounts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}` // Asumiendo que usas JWT
-      },
-      body: JSON.stringify(accountData)
-    });
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
-    }
-    return await response.json();
+    const response = await accountingAccountsService.createAccount(accountData);
+    return response;
   } catch (error) {
     console.error("Error creating accounting account:", error);
     throw error;
@@ -485,24 +478,13 @@ export const AccountingAccounts = () => {
       };
 
       // Hacer la llamada PUT directamente
-      const response = await fetch(`https://dev.monaros.co/api/v1/admin/accounting-accounts/${selectedAccount.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(accountData)
-      });
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      const responseData = await response.json();
+      const response = await accountingAccountsService.updateAccount(selectedAccount.id, accountData);
 
       // Mostrar mensaje de éxito
       toast.current?.show({
         severity: "success",
         summary: "Cuenta actualizada",
-        detail: `La cuenta ${responseData.account_name} se ha actualizado correctamente`,
+        detail: `La cuenta ${response.account_name} se ha actualizado correctamente`,
         life: 5000
       });
 
@@ -1108,7 +1090,7 @@ export const AccountingAccounts = () => {
     ,
     onChange: e => {
       // Permitimos solo dígitos
-      const cleanValue = e.target.value.replace(/\D/g, "");
+      const cleanValue = e.target.value;
 
       // Limitamos la longitud según el tipo de cuenta
       const maxLength = {
@@ -1119,7 +1101,7 @@ export const AccountingAccounts = () => {
         auxiliar: 8,
         subauxiliar: 10
       }[newAccount.tipo];
-      const truncatedValue = cleanValue.substring(0, maxLength);
+      const truncatedValue = cleanValue.substring(0, Number.MAX_SAFE_INTEGER);
 
       // Para niveles inferiores a clase, aseguramos que comience con el código padre
       let fullCode = truncatedValue;
@@ -1131,7 +1113,7 @@ export const AccountingAccounts = () => {
           auxiliar: 6,
           subauxiliar: 8
         }[newAccount.tipo];
-        const parentPart = selectedAccount.account_code.substring(0, parentDigits);
+        const parentPart = selectedAccount.account_code.substring(0, Number.MAX_SAFE_INTEGER);
         fullCode = parentPart + truncatedValue.substring(parentPart.length);
       }
       setNewAccount(prev => ({

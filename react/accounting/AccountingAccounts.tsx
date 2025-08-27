@@ -272,7 +272,6 @@ export const AccountingAccounts: React.FC = () => {
     accountType: "asset",
   });
 
-  // Usar el hook para obtener los datos
   const {
     accounts: apiAccounts,
     isLoading,
@@ -286,7 +285,6 @@ export const AccountingAccounts: React.FC = () => {
   const validateForm = (isEditMode = false): boolean => {
     const errors: Record<string, string> = {};
 
-    // Solo validar código si no estamos en modo edición
     if (!isEditMode) {
       if (!newAccount.codigo) {
         errors.codigo = "El código es requerido";
@@ -309,7 +307,6 @@ export const AccountingAccounts: React.FC = () => {
       errors.nombre = "El nombre debe tener al menos 3 caracteres";
     }
 
-    // Validar tipo de cuenta si es nivel clase
     if (!selectedAccount && !newAccount.accountType) {
       errors.accountType = "El tipo de cuenta es requerido";
     }
@@ -321,7 +318,6 @@ export const AccountingAccounts: React.FC = () => {
   const validateEditForm = (): boolean => {
     const errors: Record<string, string> = {};
 
-    // Validar solo el nombre en modo edición
     if (!editAccount.nombre || editAccount.nombre.trim().length < 3) {
       errors.nombre =
         "El nombre es requerido y debe tener al menos 3 caracteres";
@@ -331,12 +327,10 @@ export const AccountingAccounts: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // Transformar datos de la API a estructura de árbol jerárquico
   const transformApiDataToTree = useCallback(
     (apiData: ApiAccountingAccount[]): AccountingAccount[] => {
       if (!apiData || apiData.length === 0) return [];
 
-      // 1. Crear las clases contables (nivel 1)
       const tree: AccountingAccount[] = accountClasses.map((cls) => {
         const classNode: AccountingAccount = {
           id: -cls.id,
@@ -360,11 +354,9 @@ export const AccountingAccounts: React.FC = () => {
         return classNode;
       });
 
-      // 2. Crear un mapa para acceso rápido a los nodos
       const nodeMap = new Map<string, AccountingAccount>();
       tree.forEach((cls) => nodeMap.set(cls.account_code, cls));
 
-      // 3. Procesar todas las cuentas de la API
       apiData.forEach((apiAccount) => {
         const accountType =
           apiAccount.account_type.toLowerCase() as AccountType;
@@ -374,7 +366,6 @@ export const AccountingAccounts: React.FC = () => {
         const accountClass = parseInt(apiAccount.account_code.charAt(0));
         const codeLength = apiAccount.account_code.length;
 
-        // Determinar el nivel basado en la longitud del código
         const level: AccountLevel =
           codeLength === 1
             ? "clase"
@@ -388,7 +379,6 @@ export const AccountingAccounts: React.FC = () => {
             ? "auxiliar"
             : "subauxiliar";
 
-        // Solo crear el nodo si no existe ya
         if (!nodeMap.has(apiAccount.account_code)) {
           const newNode: AccountingAccount = {
             id: apiAccount.id,
@@ -405,7 +395,6 @@ export const AccountingAccounts: React.FC = () => {
 
           nodeMap.set(apiAccount.account_code, newNode);
 
-          // Encontrar y enlazar con el padre
           const parentDigits = {
             clase: 0,
             grupo: 1,
@@ -443,10 +432,8 @@ export const AccountingAccounts: React.FC = () => {
         }
       });
 
-      // Función para ordenar recursivamente el árbol
       const sortTree = (nodes: AccountingAccount[]) => {
         nodes.sort((a, b) => {
-          // Primero por clase contable
           if (a.account_class !== b.account_class) {
             return (a.account_class || 0) - (b.account_class || 0);
           }
@@ -1033,7 +1020,7 @@ export const AccountingAccounts: React.FC = () => {
             : 10,
           "0"
         ),
-        accountType: selectedAccount.account_type, // Heredar el tipo de cuenta del padre
+        accountType: selectedAccount.account_type, 
       }));
 
       // Validar el código automático generado

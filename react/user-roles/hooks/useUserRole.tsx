@@ -21,6 +21,7 @@ export const useUserRole = () => {
     return {
         userRole,
         fetchUserRole,
-        loading
+        loading,
+        setUserRole
     };
 };

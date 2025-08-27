@@ -9,6 +9,8 @@ import { calculateTotal, validatePatientStep, validatePaymentStep, validateProdu
 import { useProductsToBeInvoiced } from '../../appointments/hooks/useProductsToBeInvoiced'
 import { AdmissionBillingFormData, BillingData } from "./interfaces/AdmisionBilling";
 import { getUserLogged } from "../../../services/utilidades";
+import { useAdmissionCreate } from "../hooks/useAdmissionCreate";
+
 interface AdmissionBillingProps {
   visible: boolean;
   onHide: () => void;
@@ -71,94 +73,13 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
 
   const idProduct = appointmentData?.id;
   const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(idProduct);
+  const { createAdmission } = useAdmissionCreate();
 
   const handleSubmitInvoice = async () => {
     try {
-      console.log('📋 Datos del paciente:', {
-        documentType: formData.patient.documentType,
-        documentNumber: formData.patient.documentNumber,
-        name: formData.patient.nameComplet,
-        email: formData.patient.email,
-        phone: formData.patient.whatsapp
-      });
+      const response = await createAdmission(formData, appointmentData);
 
-      console.log('💰 Datos de facturación:', {
-        entityBilling: formData.billing.facturacionEntidad,
-        consumerBilling: formData.billing.facturacionConsumidor,
-        entity: formData.billing.entity,
-        authorizationNumber: formData.billing.authorizationNumber
-      });
-
-      console.log('🛒 Productos:', formData.products.map(p => ({
-        id: p.id,
-        description: p.description,
-        quantity: p.quantity,
-        price: p.price,
-        tax: p.tax
-      })));
-
-      console.log('💳 Pagos:', formData.payments.map(p => ({
-        method: p.method,
-        amount: p.amount,
-        authorizationNumber: p.authorizationNumber
-      })));
-
-      console.log('🧮 Totales:', {
-        subtotal: calculateTotal(formData.products, formData.billing.facturacionEntidad),
-        taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
-        total: calculateTotal(formData.products, formData.billing.facturacionEntidad)
-      });
-
-      console.log('📅 Appointment ID:', appointmentData?.id);
-
-      const userLogged = getUserLogged()
-
-      const invoiceData = {
-        external_id: `${userLogged.external_id}`,
-        public_invoice: formData.billing.facturacionConsumidor,
-        admission: {
-          entity_id: formData.patient.entity_id,
-          entity_authorized_amount: formData.billing.authorizedAmount.replace('.', '') || 0,
-          authorization_number: formData.billing.facturacionEntidad ? formData.billing.authorizationNumber : "",
-          authorization_date: formData.billing.facturacionEntidad && formData.billing.authorizationDate ? formData.billing.authorizationDate.toISOString().split('T')[0] : "",
-          appointment_id: appointmentData?.id,
-          koneksi_claim_id: null,
-        },
-        invoice: {
-          type: formData.billing.facturacionEntidad ? "entity" : "public",
-          status: "Pagado",
-          subtotal: calculateTotal(formData.products, formData.billing.facturacionEntidad),
-          discount: 0,
-          taxes: formData.products.reduce((sum, product) => sum + (product.price * product.quantity * product.tax / 100), 0),
-          total_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
-          observations: "",
-          due_date: "",
-          paid_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
-          user_id: userLogged.id,
-          third_party_id: 1,
-          sub_type: formData.billing.facturacionEntidad ? "entity" : "public",
-        },
-        invoice_detail: formData.products.map(product => ({
-          product_id: product.id,
-          description: product.description,
-          quantity: product.quantity,
-          unit_price: product.price,
-          tax_rate: product.tax,
-          discount: product.discount,
-          total: product.total
-        })),
-        payments: formData.payments.map(payment => ({
-          method: payment.method,
-          amount: payment.amount,
-          authorization_number: payment.authorizationNumber,
-          notes: payment.notes
-        }))
-      }
-
-      console.log('📤 Datos completos a enviar:', invoiceData);
-
-      console.log('🚀 Simulando envío al backend...');
-      // await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('✅ Admisión creada exitosamente:', response);
 
       toast.current?.show({
         severity: 'success',
@@ -167,14 +88,16 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({ visible, onHide, ap
         life: 5000
       });
 
+      return response;
     } catch (error) {
       console.error('❌ Error submitting invoice:', error);
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
+        detail: error || 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
         life: 5000
       });
+      throw error;
     }
   };
 
