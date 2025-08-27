@@ -13,8 +13,6 @@ import { TicketTable } from "../tickets/components/TicketTable";
 import { GenerateTicket } from "../tickets/GenerateTicket";
 import { AppointmentFormModal } from "./AppointmentFormModal";
 import { Menu } from "primereact/menu";
-import { useProductsToBeInvoiced } from "./hooks/useProductsToBeInvoiced";
-import { getLocalTodayISODate } from "../../services/utilidades";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -35,17 +33,9 @@ export const TodayAppointmentsTable: React.FC<
   const customFilters = () => {
     return {
       appointmentState: "pending",
-      appointmentDate: getLocalTodayISODate(),
+      appointmentDate: new Date().toISOString().split("T")[0],
       sort: "-appointment_date,appointment_time",
     };
-  };
-
-  const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
-    setSelectedAppointment({
-      ...appointment,
-      patient: appointment.patient
-    });
-    setShowBillingDialog(true);
   };
 
   const {
@@ -59,16 +49,28 @@ export const TodayAppointmentsTable: React.FC<
     perPage,
   } = useFetchAppointments(customFilters);
 
-  const { products, loading: productsLoading } = useProductsToBeInvoiced(
-    selectedAppointment?.id || null
-  );
-
-  console.log("products", products);
-
   useEffect(() => {
     console.log("appointments", appointments);
-
   }, [appointments]);
+
+  const handleFacturarAdmision = (appointment: AppointmentTableItem) => {
+    setSelectedAppointment({
+      ...appointment,
+      patient: appointment.patient
+    });
+    setShowBillingDialog(true);
+  };
+
+  const handleBillingSuccess = () => {
+    setShowBillingDialog(false);
+    setSelectedAppointment(null);
+    refresh(); // Esto actualizará la tabla
+  };
+
+  const handleBillingHide = () => {
+    setShowBillingDialog(false);
+    setSelectedAppointment(null);
+  };
 
   const columns: CustomPRTableColumnProps[] = [
     {
@@ -93,7 +95,6 @@ export const TodayAppointmentsTable: React.FC<
       header: "Acciones",
       body: (rowData: AppointmentTableItem) => {
         console.log("rowData", rowData);
-
         return (
           <div>
             <TableMenu
@@ -151,11 +152,9 @@ export const TodayAppointmentsTable: React.FC<
 
       <AdmissionBilling
         visible={showBillingDialog}
-        onHide={() => setShowBillingDialog(false)}
+        onHide={handleBillingHide}
+        onSuccess={handleBillingSuccess}
         appointmentData={selectedAppointment}
-        productsToInvoice={products}
-        productsLoading={productsLoading}
-
       />
 
       <Dialog
@@ -207,12 +206,12 @@ const TableMenu: React.FC<{
   return <>
     <Button
       className="btn-primary flex items-center gap-2"
-      onClick={(e) => menu.current.toggle(e)}
+      onClick={(e) => menu.current?.toggle(e)}
       aria-controls={`popup_menu_${rowData.id}`}
       aria-haspopup
     >
       Acciones
-      <i className="fa fa-cog	 ml-2"></i>
+      <i className="fa fa-cog ml-2"></i>
     </Button>
     <Menu
       model={[
@@ -230,7 +229,6 @@ const TableMenu: React.FC<{
       ref={menu}
       id={`popup_menu_${rowData.id}`}
       style={{ zIndex: 9999 }}
-      onBlur={(e) => menu.current?.hide(e)}
     />
   </>
 };

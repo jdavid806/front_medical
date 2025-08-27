@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -13,20 +13,44 @@ const PreviewDoneStep = ({
   prevStep,
   onHide,
   onPrint,
-  onSubmit
+  onSubmit,
+  isSuccess = false,
+  setIsSuccess
 }) => {
   const [isDone, setIsDone] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMounted = useRef(true);
   const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
   const paid = calculatePaid(formData.payments);
   const change = calculateChange(total, paid);
   const balance = total - paid;
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (isSuccess && isMounted.current) {
+      setIsDone(true);
+    }
+  }, [isSuccess]);
   const handleFinish = async () => {
+    setIsSubmitting(true);
     try {
       await onSubmit();
-      setIsDone(true);
     } catch (error) {
       console.error('Error finishing invoice:', error);
+      if (isMounted.current) {
+        setIsSubmitting(false);
+      }
     }
+  };
+  const handleFinalClose = () => {
+    if (isMounted.current && setIsSuccess) {
+      setIsSuccess(false);
+    }
+    onHide();
   };
   const formatCurrency = value => {
     return new Intl.NumberFormat('es-DO', {
@@ -82,9 +106,7 @@ const PreviewDoneStep = ({
       className: "pi pi-check-circle text-6xl text-success mb-4"
     }), /*#__PURE__*/React.createElement("h2", {
       className: "mb-3 fw-bold"
-    }, "\xA1Factura Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
-      className: "text-lg text-muted mb-5"
-    }, "La transacci\xF3n ha sido completada y guardada en el sistema"), /*#__PURE__*/React.createElement("div", {
+    }, "\xA1Factura Admision Generada Exitosamente!"), /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-center gap-3"
     }, /*#__PURE__*/React.createElement(Button, {
       label: "Imprimir Factura",
@@ -93,9 +115,8 @@ const PreviewDoneStep = ({
       onClick: onPrint
     }), /*#__PURE__*/React.createElement(Button, {
       label: "Volver al Inicio",
-      icon: "pi pi-home mr-2",
       className: "btn btn-primary btn-lg",
-      onClick: onHide
+      onClick: handleFinalClose
     })));
   }
   return /*#__PURE__*/React.createElement("div", {
@@ -259,18 +280,17 @@ const PreviewDoneStep = ({
     className: "d-flex justify-content-center gap-3 mt-5 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Imprimir Factura",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-file-pdf"
-    }),
-    className: "btn btn-primary btn-lg px-4",
-    onClick: onPrint
+    icon: "pi pi-print",
+    className: "p-button-outlined p-button-lg",
+    onClick: onPrint,
+    disabled: isSubmitting
   }), /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar Factura",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-cart-plus"
-    }),
-    className: "btn btn-primary btn-lg px-4",
-    onClick: handleFinish
+    label: isSubmitting ? "Guardando..." : "Guardar Factura",
+    icon: isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check",
+    className: "p-button-lg",
+    onClick: handleFinish,
+    loading: isSubmitting,
+    disabled: isSubmitting
   })));
 };
 export default PreviewDoneStep;

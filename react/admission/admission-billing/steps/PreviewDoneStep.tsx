@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -15,6 +15,8 @@ interface PreviewAndDoneStepProps {
     onHide: () => void;
     onPrint: () => void;
     onSubmit: () => Promise<void>;
+    isSuccess?: boolean;
+    setIsSuccess?: (success: boolean) => void;
 }
 
 const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
@@ -22,22 +24,49 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
     prevStep,
     onHide,
     onPrint,
-    onSubmit
+    onSubmit,
+    isSuccess = false,
+    setIsSuccess
 }) => {
     const [isDone, setIsDone] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const isMounted = useRef(true);
 
     const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
     const paid = calculatePaid(formData.payments);
     const change = calculateChange(total, paid);
     const balance = total - paid;
 
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isSuccess && isMounted.current) {
+            setIsDone(true);
+        }
+    }, [isSuccess]);
+
     const handleFinish = async () => {
+        setIsSubmitting(true);
         try {
             await onSubmit();
-            setIsDone(true);
         } catch (error) {
             console.error('Error finishing invoice:', error);
+            if (isMounted.current) {
+                setIsSubmitting(false);
+            }
         }
+    };
+
+    const handleFinalClose = () => {
+        if (isMounted.current && setIsSuccess) {
+            setIsSuccess(false);
+        }
+        onHide();
     };
 
     const formatCurrency = (value: number) => {
@@ -84,9 +113,7 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
         return (
             <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
-                <h2 className="mb-3 fw-bold">¡Factura Generada Exitosamente!</h2>
-                <p className="text-lg text-muted mb-5">La transacción ha sido completada y guardada en el sistema</p>
-
+                <h2 className="mb-3 fw-bold">¡Factura Admision Generada Exitosamente!</h2>
                 <div className="d-flex justify-content-center gap-3">
                     <Button
                         label="Imprimir Factura"
@@ -96,9 +123,8 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
                     />
                     <Button
                         label="Volver al Inicio"
-                        icon="pi pi-home mr-2"
                         className="btn btn-primary btn-lg"
-                        onClick={onHide}
+                        onClick={handleFinalClose}
                     />
                 </div>
             </div>
@@ -220,15 +246,18 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
             <div className="d-flex justify-content-center gap-3 mt-5 mb-4">
                 <Button
                     label="Imprimir Factura"
-                    icon={<i className="fas fa-file-pdf"></i>}
-                    className="btn btn-primary btn-lg px-4"
+                    icon="pi pi-print"
+                    className="p-button-outlined p-button-lg"
                     onClick={onPrint}
+                    disabled={isSubmitting}
                 />
                 <Button
-                    label="Guardar Factura"
-                    icon={<i className="fa fa-cart-plus"></i>}
-                    className="btn btn-primary btn-lg px-4"
+                    label={isSubmitting ? "Guardando..." : "Guardar Factura"}
+                    icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                    className="p-button-lg"
                     onClick={handleFinish}
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
                 />
             </div>
         </div>

@@ -41,6 +41,7 @@ const ProductsPaymentStep = ({
   } = usePaymentMethods();
   useEffect(() => {
     loadProcedures();
+    fetchPaymentMethods();
   }, []);
   useEffect(() => {
     if (paymentMethods) {

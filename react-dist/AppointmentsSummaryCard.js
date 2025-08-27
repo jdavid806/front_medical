@@ -16,6 +16,7 @@ export const AppointmentsSummaryCard = () => {
   }), " Citas Generadas"), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-secondary-lighter",
     id: "appointmentsActiveCount"
   }, /*#__PURE__*/React.createElement("span", {
     className: "text-secondary-lighter"

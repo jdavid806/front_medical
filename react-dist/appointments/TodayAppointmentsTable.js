@@ -9,8 +9,6 @@ import { TicketTable } from "../tickets/components/TicketTable.js";
 import { GenerateTicket } from "../tickets/GenerateTicket.js";
 import { AppointmentFormModal } from "./AppointmentFormModal.js";
 import { Menu } from "primereact/menu";
-import { useProductsToBeInvoiced } from "./hooks/useProductsToBeInvoiced.js";
-import { getLocalTodayISODate } from "../../services/utilidades.js";
 export const TodayAppointmentsTable = () => {
   const [showBillingDialog, setShowBillingDialog] = useState(false);
   const [showTicketControl, setShowTicketControl] = useState(false);
@@ -20,16 +18,9 @@ export const TodayAppointmentsTable = () => {
   const customFilters = () => {
     return {
       appointmentState: "pending",
-      appointmentDate: getLocalTodayISODate(),
+      appointmentDate: new Date().toISOString().split("T")[0],
       sort: "-appointment_date,appointment_time"
     };
-  };
-  const handleFacturarAdmision = appointment => {
-    setSelectedAppointment({
-      ...appointment,
-      patient: appointment.patient
-    });
-    setShowBillingDialog(true);
   };
   const {
     appointments,
@@ -41,14 +32,25 @@ export const TodayAppointmentsTable = () => {
     loading,
     perPage
   } = useFetchAppointments(customFilters);
-  const {
-    products,
-    loading: productsLoading
-  } = useProductsToBeInvoiced(selectedAppointment?.id || null);
-  console.log("products", products);
   useEffect(() => {
     console.log("appointments", appointments);
   }, [appointments]);
+  const handleFacturarAdmision = appointment => {
+    setSelectedAppointment({
+      ...appointment,
+      patient: appointment.patient
+    });
+    setShowBillingDialog(true);
+  };
+  const handleBillingSuccess = () => {
+    setShowBillingDialog(false);
+    setSelectedAppointment(null);
+    refresh(); // Esto actualizará la tabla
+  };
+  const handleBillingHide = () => {
+    setShowBillingDialog(false);
+    setSelectedAppointment(null);
+  };
   const columns = [{
     field: "patientName",
     header: "Nombre",
@@ -124,10 +126,9 @@ export const TodayAppointmentsTable = () => {
     onReload: refresh
   }))), /*#__PURE__*/React.createElement(AdmissionBilling, {
     visible: showBillingDialog,
-    onHide: () => setShowBillingDialog(false),
-    appointmentData: selectedAppointment,
-    productsToInvoice: products,
-    productsLoading: productsLoading
+    onHide: handleBillingHide,
+    onSuccess: handleBillingSuccess,
+    appointmentData: selectedAppointment
   }), /*#__PURE__*/React.createElement(Dialog, {
     header: "Control de Turnos",
     visible: showTicketControl,
@@ -166,11 +167,11 @@ const TableMenu = ({
   const menu = useRef(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
     className: "btn-primary flex items-center gap-2",
-    onClick: e => menu.current.toggle(e),
+    onClick: e => menu.current?.toggle(e),
     "aria-controls": `popup_menu_${rowData.id}`,
     "aria-haspopup": true
   }, "Acciones", /*#__PURE__*/React.createElement("i", {
-    className: "fa fa-cog\t ml-2"
+    className: "fa fa-cog ml-2"
   })), /*#__PURE__*/React.createElement(Menu, {
     model: [{
       label: "Generar admisión",
@@ -184,7 +185,6 @@ const TableMenu = ({
     id: `popup_menu_${rowData.id}`,
     style: {
       zIndex: 9999
-    },
-    onBlur: e => menu.current?.hide(e)
+    }
   }));
 };

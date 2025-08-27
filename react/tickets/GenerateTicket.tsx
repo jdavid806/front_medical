@@ -12,6 +12,7 @@ import {
 import { useTemplate } from "../hooks/useTemplate";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
+import { TicketService } from "../../services/api/classes/ticketService";
 
 
 export const GenerateTicket = () => {
@@ -23,6 +24,7 @@ export const GenerateTicket = () => {
   });
   const [ticket, setTicket] = useState<TicketDto | any>(null); // <-- STATE DEFINIDO
   const [patient, setPatient] = useState<Patient | null>(null);
+
   const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
     ticket: false,
@@ -44,7 +46,9 @@ export const GenerateTicket = () => {
   };
   const { template, setTemplate, fetchTemplate } = useTemplate(data);
   const { company } = useCompany();
+  const ticketService = new TicketService();
 
+  const [reasons, setReasons] = useState([]);
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [
     {
@@ -106,6 +110,21 @@ export const GenerateTicket = () => {
       icon: "fas fa-child",
     },
   ];
+
+  //llamar a las opciones de motivo y prioridad
+   useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await ticketService.getAllTicketReasons();
+        console.log(response.data);
+        setReasons(response.data);
+      } catch (error) {
+        console.error("Error fetching ticket reasons:", error);
+      }
+    };
+
+    fetchReasons();
+  }, []);
 
   // Buscar paciente cuando cambia el ID
   const handleSearchPatient = async () => {

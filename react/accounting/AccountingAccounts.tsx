@@ -21,6 +21,7 @@ import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { classNames } from "primereact/utils";
 import { useAccountingAccounts } from "./hooks/useAccountingAccounts";
+import { accountingAccountsService } from "../../services/api";
 
 // Definición de tipos TypeScript
 type AccountLevel =
@@ -173,12 +174,12 @@ const validateCode = (
 
   const { digits, parentDigits } = levelStructure[level];
 
-  if (code.length !== digits) {
+  /*if (code.length !== digits) {
     return {
       valid: false,
       message: `El código debe tener exactamente ${digits} dígitos`,
     };
-  }
+  }*/
 
   if (parentDigits && parentCode) {
     const parentPart = parentCode.substring(0, parentDigits);
@@ -205,23 +206,9 @@ const createAccountingAccount = async (accountData: {
   sub_auxiliary: string;
 }) => {
   try {
-    const response = await fetch(
-      "https://dev.monaros.co/api/v1/admin/accounting-accounts",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Asumiendo que usas JWT
-        },
-        body: JSON.stringify(accountData),
-      }
-    );
+    const response = await accountingAccountsService.createAccount(accountData);
 
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
-    }
-
-    return await response.json();
+    return response;
   } catch (error) {
     console.error("Error creating accounting account:", error);
     throw error;
@@ -272,6 +259,7 @@ export const AccountingAccounts: React.FC = () => {
     accountType: "asset",
   });
 
+  // Usar el hook para obtener los datos
   const {
     accounts: apiAccounts,
     isLoading,
@@ -285,6 +273,7 @@ export const AccountingAccounts: React.FC = () => {
   const validateForm = (isEditMode = false): boolean => {
     const errors: Record<string, string> = {};
 
+    // Solo validar código si no estamos en modo edición
     if (!isEditMode) {
       if (!newAccount.codigo) {
         errors.codigo = "El código es requerido";
@@ -307,6 +296,7 @@ export const AccountingAccounts: React.FC = () => {
       errors.nombre = "El nombre debe tener al menos 3 caracteres";
     }
 
+    // Validar tipo de cuenta si es nivel clase
     if (!selectedAccount && !newAccount.accountType) {
       errors.accountType = "El tipo de cuenta es requerido";
     }
@@ -318,6 +308,7 @@ export const AccountingAccounts: React.FC = () => {
   const validateEditForm = (): boolean => {
     const errors: Record<string, string> = {};
 
+    // Validar solo el nombre en modo edición
     if (!editAccount.nombre || editAccount.nombre.trim().length < 3) {
       errors.nombre =
         "El nombre es requerido y debe tener al menos 3 caracteres";
@@ -327,10 +318,12 @@ export const AccountingAccounts: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
+  // Transformar datos de la API a estructura de árbol jerárquico
   const transformApiDataToTree = useCallback(
     (apiData: ApiAccountingAccount[]): AccountingAccount[] => {
       if (!apiData || apiData.length === 0) return [];
 
+      // 1. Crear las clases contables (nivel 1)
       const tree: AccountingAccount[] = accountClasses.map((cls) => {
         const classNode: AccountingAccount = {
           id: -cls.id,
@@ -342,8 +335,8 @@ export const AccountingAccounts: React.FC = () => {
           fiscal_difference: false,
           nature:
             cls.type === "asset" ||
-            cls.type === "expense" ||
-            cls.type === "cost"
+              cls.type === "expense" ||
+              cls.type === "cost"
               ? "Débito"
               : "Crédito",
           account_class: cls.id,
@@ -354,9 +347,11 @@ export const AccountingAccounts: React.FC = () => {
         return classNode;
       });
 
+      // 2. Crear un mapa para acceso rápido a los nodos
       const nodeMap = new Map<string, AccountingAccount>();
       tree.forEach((cls) => nodeMap.set(cls.account_code, cls));
 
+      // 3. Procesar todas las cuentas de la API
       apiData.forEach((apiAccount) => {
         const accountType =
           apiAccount.account_type.toLowerCase() as AccountType;
@@ -366,19 +361,21 @@ export const AccountingAccounts: React.FC = () => {
         const accountClass = parseInt(apiAccount.account_code.charAt(0));
         const codeLength = apiAccount.account_code.length;
 
+        // Determinar el nivel basado en la longitud del código
         const level: AccountLevel =
           codeLength === 1
             ? "clase"
             : codeLength === 2
-            ? "grupo"
-            : codeLength === 4
-            ? "cuenta"
-            : codeLength === 6
-            ? "subcuenta"
-            : codeLength === 8
-            ? "auxiliar"
-            : "subauxiliar";
+              ? "grupo"
+              : codeLength === 4
+                ? "cuenta"
+                : codeLength === 6
+                  ? "subcuenta"
+                  : codeLength === 8
+                    ? "auxiliar"
+                    : "subauxiliar";
 
+        // Solo crear el nodo si no existe ya
         if (!nodeMap.has(apiAccount.account_code)) {
           const newNode: AccountingAccount = {
             id: apiAccount.id,
@@ -395,6 +392,7 @@ export const AccountingAccounts: React.FC = () => {
 
           nodeMap.set(apiAccount.account_code, newNode);
 
+          // Encontrar y enlazar con el padre
           const parentDigits = {
             clase: 0,
             grupo: 1,
@@ -432,8 +430,10 @@ export const AccountingAccounts: React.FC = () => {
         }
       });
 
+      // Función para ordenar recursivamente el árbol
       const sortTree = (nodes: AccountingAccount[]) => {
         nodes.sort((a, b) => {
+          // Primero por clase contable
           if (a.account_class !== b.account_class) {
             return (a.account_class || 0) - (b.account_class || 0);
           }
@@ -615,29 +615,13 @@ export const AccountingAccounts: React.FC = () => {
       };
 
       // Hacer la llamada PUT directamente
-      const response = await fetch(
-        `https://dev.monaros.co/api/v1/admin/accounting-accounts/${selectedAccount.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(accountData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      const responseData = await response.json();
+      const response = await accountingAccountsService.updateAccount(selectedAccount.id, accountData)
 
       // Mostrar mensaje de éxito
       toast.current?.show({
         severity: "success",
         summary: "Cuenta actualizada",
-        detail: `La cuenta ${responseData.account_name} se ha actualizado correctamente`,
+        detail: `La cuenta ${response.account_name} se ha actualizado correctamente`,
         life: 5000,
       });
 
@@ -785,9 +769,8 @@ export const AccountingAccounts: React.FC = () => {
                 <span className="account-name">{item.account_name}</span>
                 {hasChildren && (
                   <i
-                    className={`pi pi-chevron-${
-                      isActive ? "down" : "right"
-                    } accordion-arrow`}
+                    className={`pi pi-chevron-${isActive ? "down" : "right"
+                      } accordion-arrow`}
                   />
                 )}
                 <span className={`nature-badge ${item.nature.toLowerCase()}`}>
@@ -903,6 +886,11 @@ export const AccountingAccounts: React.FC = () => {
         return;
       }
 
+      console.log("selected", selectedAccount);
+
+      return
+
+
       // Extraer los componentes del código
       const accountCode = newAccount.codigo;
       const accountParts = {
@@ -1012,15 +1000,15 @@ export const AccountingAccounts: React.FC = () => {
           nextLevel === "grupo"
             ? 2
             : nextLevel === "cuenta"
-            ? 4
-            : nextLevel === "subcuenta"
-            ? 6
-            : nextLevel === "auxiliar"
-            ? 8
-            : 10,
+              ? 4
+              : nextLevel === "subcuenta"
+                ? 6
+                : nextLevel === "auxiliar"
+                  ? 8
+                  : 10,
           "0"
         ),
-        accountType: selectedAccount.account_type, 
+        accountType: selectedAccount.account_type, // Heredar el tipo de cuenta del padre
       }));
 
       // Validar el código automático generado
@@ -1030,12 +1018,12 @@ export const AccountingAccounts: React.FC = () => {
             nextLevel === "grupo"
               ? 2
               : nextLevel === "cuenta"
-              ? 4
-              : nextLevel === "subcuenta"
-              ? 6
-              : nextLevel === "auxiliar"
-              ? 8
-              : 10,
+                ? 4
+                : nextLevel === "subcuenta"
+                  ? 6
+                  : nextLevel === "auxiliar"
+                    ? 8
+                    : 10,
             "0"
           ),
           nextLevel,
@@ -1380,8 +1368,10 @@ export const AccountingAccounts: React.FC = () => {
               id="accountCode"
               value={newAccount.codigo} // Cambiamos a mostrar el código completo
               onChange={(e) => {
+                console.log(e);
+
                 // Permitimos solo dígitos
-                const cleanValue = e.target.value.replace(/\D/g, "");
+                const cleanValue = e.target.value;
 
                 // Limitamos la longitud según el tipo de cuenta
                 const maxLength = {
@@ -1393,7 +1383,7 @@ export const AccountingAccounts: React.FC = () => {
                   subauxiliar: 10,
                 }[newAccount.tipo];
 
-                const truncatedValue = cleanValue.substring(0, maxLength);
+                const truncatedValue = cleanValue.substring(0, Number.MAX_SAFE_INTEGER);
 
                 // Para niveles inferiores a clase, aseguramos que comience con el código padre
                 let fullCode = truncatedValue;
@@ -1408,7 +1398,7 @@ export const AccountingAccounts: React.FC = () => {
 
                   const parentPart = selectedAccount.account_code.substring(
                     0,
-                    parentDigits
+                    Number.MAX_SAFE_INTEGER
                   );
                   fullCode =
                     parentPart + truncatedValue.substring(parentPart.length);
@@ -1449,16 +1439,16 @@ export const AccountingAccounts: React.FC = () => {
                   !!formErrors.codigo ||
                   (!codeValidation.valid && newAccount.codigo),
               })}
-              maxLength={
-                {
-                  clase: 1,
-                  grupo: 2,
-                  cuenta: 4,
-                  subcuenta: 6,
-                  auxiliar: 8,
-                  subauxiliar: 10,
-                }[newAccount.tipo]
-              }
+            /*maxLength={
+              {
+                clase: 1,
+                grupo: 2,
+                cuenta: 4,
+                subcuenta: 6,
+                auxiliar: 8,
+                subauxiliar: 10,
+              }[newAccount.tipo]
+            }*/
             />
             {!codeValidation.valid && newAccount.codigo && (
               <small className="p-error block mt-1">

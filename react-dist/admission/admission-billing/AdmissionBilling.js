@@ -56,12 +56,17 @@ const initialFormState = {
 const AdmissionBilling = ({
   visible,
   onHide,
+  onSuccess,
+  // Nueva prop
   appointmentData
 }) => {
   const toast = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [formData, setFormData] = useState(initialFormState);
+  const [internalVisible, setInternalVisible] = useState(false);
+  const isMounted = useRef(true);
+  const [isSuccess, setIsSuccess] = useState(false);
   const idProduct = appointmentData?.id;
   const {
     products: productsToInvoice,
@@ -70,33 +75,54 @@ const AdmissionBilling = ({
   const {
     createAdmission
   } = useAdmissionCreate();
+
+  // Efecto para manejar la visibilidad y el estado de montaje
+  useEffect(() => {
+    isMounted.current = true;
+    setInternalVisible(visible);
+    return () => {
+      isMounted.current = false;
+    };
+  }, [visible]);
   const handleSubmitInvoice = async () => {
     try {
       const response = await createAdmission(formData, appointmentData);
       console.log('✅ Admisión creada exitosamente:', response);
+      if (!isMounted.current) return;
       toast.current?.show({
         severity: 'success',
         summary: 'Factura creada',
         detail: 'La factura se ha generado correctamente',
         life: 5000
       });
+      if (isMounted.current) {
+        setIsSuccess(true);
+      }
       return response;
     } catch (error) {
       console.error('❌ Error submitting invoice:', error);
+      if (!isMounted.current) return;
       toast.current?.show({
         severity: 'error',
         summary: 'Error',
-        detail: error || 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
+        detail: error?.message || 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
         life: 5000
       });
       throw error;
     }
   };
   const handleHide = () => {
-    setFormData(initialFormState);
-    setActiveIndex(0);
-    setCompletedSteps([]);
-    onHide();
+    if (isMounted.current) {
+      setFormData(initialFormState);
+      setActiveIndex(0);
+      setCompletedSteps([]);
+      setInternalVisible(false);
+      setIsSuccess(false);
+      if (isSuccess && onSuccess) {
+        onSuccess();
+      }
+      onHide();
+    }
   };
   useEffect(() => {
     if (!visible) return;
@@ -120,43 +146,50 @@ const AdmissionBilling = ({
         };
       }) : [];
       console.log('initialProducts', initialProducts);
-      setFormData({
-        ...initialFormState,
-        patient: {
-          ...initialFormState.patient,
-          id: patient.id,
-          documentType: patient.document_type || "",
-          documentNumber: patient.document_number || "",
-          firstName: patient.first_name || "",
-          middleName: patient.middle_name || "",
-          lastName: patient.last_name || "",
-          secondLastName: patient.second_last_name || "",
-          nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
-          birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
-          gender: patient.gender || "",
-          country: patient.country_id || "",
-          department: patient.department_id || "",
-          city: patient.city_id || "",
-          address: patient.address || "",
-          email: patient.email || "",
-          whatsapp: patient.whatsapp || "",
-          bloodType: patient.blood_type || "",
-          affiliateType: patient.social_security?.affiliate_type || "",
-          insurance: patient.social_security?.entity?.name || "",
-          hasCompanion: patient.companions?.length > 0 || false,
-          entity_id: patient.social_security?.entity_id || ""
-        },
-        billing: {
-          ...initialFormState.billing,
-          entity: patient.social_security?.entity?.name || ""
-        },
-        products: initialProducts
-      });
+
+      // Verificar montaje antes de actualizar estado
+      if (isMounted.current) {
+        setFormData({
+          ...initialFormState,
+          patient: {
+            ...initialFormState.patient,
+            id: patient.id,
+            documentType: patient.document_type || "",
+            documentNumber: patient.document_number || "",
+            firstName: patient.first_name || "",
+            middleName: patient.middle_name || "",
+            lastName: patient.last_name || "",
+            secondLastName: patient.second_last_name || "",
+            nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
+            birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
+            gender: patient.gender || "",
+            country: patient.country_id || "",
+            department: patient.department_id || "",
+            city: patient.city_id || "",
+            address: patient.address || "",
+            email: patient.email || "",
+            whatsapp: patient.whatsapp || "",
+            bloodType: patient.blood_type || "",
+            affiliateType: patient.social_security?.affiliate_type || "",
+            insurance: patient.social_security?.entity?.name || "",
+            hasCompanion: patient.companions?.length > 0 || false,
+            entity_id: patient.social_security?.entity_id || ""
+          },
+          billing: {
+            ...initialFormState.billing,
+            entity: patient.social_security?.entity?.name || ""
+          },
+          products: initialProducts
+        });
+      }
     } else {
-      setFormData(initialFormState);
+      if (isMounted.current) {
+        setFormData(initialFormState);
+      }
     }
   }, [appointmentData, visible, productsToInvoice]);
   const updateFormData = (section, data) => {
+    if (!isMounted.current) return;
     setFormData(prev => {
       return {
         ...prev,
@@ -165,6 +198,7 @@ const AdmissionBilling = ({
     });
   };
   const updateBillingData = (field, value) => {
+    if (!isMounted.current) return;
     setFormData(prev => ({
       ...prev,
       billing: {
@@ -174,6 +208,7 @@ const AdmissionBilling = ({
     }));
   };
   const addPayment = payment => {
+    if (!isMounted.current) return;
     setFormData(prev => ({
       ...prev,
       payments: [...prev.payments, {
@@ -183,6 +218,7 @@ const AdmissionBilling = ({
     }));
   };
   const removePayment = id => {
+    if (!isMounted.current) return;
     setFormData(prev => ({
       ...prev,
       payments: prev.payments.filter(p => p.id !== id)
@@ -249,7 +285,7 @@ const AdmissionBilling = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement(Dialog, {
-    visible: visible,
+    visible: internalVisible,
     onHide: handleHide,
     header: "Nueva Factura",
     style: {
@@ -290,7 +326,9 @@ const AdmissionBilling = ({
     prevStep: prevStep,
     onHide: handleHide,
     onPrint: () => window.print(),
-    onSubmit: handleSubmitInvoice
+    onSubmit: handleSubmitInvoice,
+    isSuccess: isSuccess,
+    setIsSuccess: setIsSuccess
   })))));
 };
 export default AdmissionBilling;

@@ -10,4 +10,12 @@ export class TicketService extends BaseApiService {
     async lastByPatient(patientId){
         return await this.httpClient.get(`${this.microservice}/${this.endpoint}/last-by-patient/${patientId}`)
     }
+
+    async getAllTicketReasons() {
+        return await this.httpClient.get('medical/ticket-reasons')
+    }
+
+    async getAllTicketPriorities() {
+        return await this.httpClient.get('medical/ticket-priorities')
+    }
 }

@@ -675,6 +675,8 @@ export const AccountingAccounts = () => {
         });
         return;
       }
+      console.log("selected", selectedAccount);
+      return;
 
       // Extraer los componentes del código
       const accountCode = newAccount.codigo;
@@ -1089,6 +1091,8 @@ export const AccountingAccounts = () => {
     value: newAccount.codigo // Cambiamos a mostrar el código completo
     ,
     onChange: e => {
+      console.log(e);
+
       // Permitimos solo dígitos
       const cleanValue = e.target.value;
 
@@ -1145,15 +1149,17 @@ export const AccountingAccounts = () => {
     disabled: isSubmitting,
     className: classNames("w-full", {
       "p-invalid": !!formErrors.codigo || !codeValidation.valid && newAccount.codigo
-    }),
-    maxLength: {
-      clase: 1,
-      grupo: 2,
-      cuenta: 4,
-      subcuenta: 6,
-      auxiliar: 8,
-      subauxiliar: 10
-    }[newAccount.tipo]
+    })
+    /*maxLength={
+      {
+        clase: 1,
+        grupo: 2,
+        cuenta: 4,
+        subcuenta: 6,
+        auxiliar: 8,
+        subauxiliar: 10,
+      }[newAccount.tipo]
+    }*/
   }), !codeValidation.valid && newAccount.codigo && /*#__PURE__*/React.createElement("small", {
     className: "p-error block mt-1"
   }, codeValidation.message), formErrors.codigo && /*#__PURE__*/React.createElement("small", {

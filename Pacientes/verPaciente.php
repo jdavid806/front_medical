@@ -451,130 +451,138 @@ $resumenPaciente = [
   } from '../funciones/funcionesJS/massMessage.js';
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const tenant = window.location.hostname.split(".")[0];
-    const data = {
-      tenantId: tenant,
-      belongsTo: "turnos-llamadoPaciente",
-      type: "whatsapp",
-    };
-    const companies = await infoCompanyService.getCompany();
-    const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
-    const template = await templateService.getTemplate(data);
-    const infoInstance = {
-      api_key: communications.api_key,
-      instance: communications.instance
-    }
+    try {
+      const tenant = window.location.hostname.split(".")[0];
+      const data = {
+        tenantId: tenant,
+        belongsTo: "turnos-llamadoPaciente",
+        type: "whatsapp",
+      };
+      const companies = await infoCompanyService.getCompany();
+      const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
+      try {
+        const template = await templateService.getTemplate(data);
+      } catch (error) {
+        console.error('Error al obtener template:', error);
+      }
+      const infoInstance = {
+        api_key: communications.api_key,
+        instance: communications.instance
+      }
 
-    const messaging = createMassMessaging(infoInstance);
+      const messaging = createMassMessaging(infoInstance);
 
-    function sendMessageWhatsapp(data, currentAppointment) {
-      const replacements = {
-        NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
+      function sendMessageWhatsapp(data, currentAppointment) {
+        const replacements = {
+          NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
           } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
           }`,
-        TICKET: `${data?.ticket_number ?? ""}`,
-        MODULO: `${data?.module?.name ?? ""}`,
-        ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
-        CONSULTORIO: `${data?.branch?.address ?? ""}`,
-      };
+          TICKET: `${data?.ticket_number ?? ""}`,
+          MODULO: `${data?.module?.name ?? ""}`,
+          ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
+          CONSULTORIO: `${data?.branch?.address ?? ""}`,
+        };
 
-      const templateFormatted = formatWhatsAppMessage(
-        template.data.template,
-        replacements
-      );
+        const templateFormatted = formatWhatsAppMessage(
+          template.data.template,
+          replacements
+        );
 
-      const dataMessage = {
-        channel: "whatsapp",
-        message_type: "text",
-        recipients: [
-          getIndicativeByCountry(data?.patient.country_id) +
-          data?.patient.whatsapp,
-        ],
-        message: templateFormatted,
-        webhook_url: "https://example.com/webhook",
-      };
-      messaging.sendMessage(dataMessage).then(() => {});
-    }
-
-    function handleTabClick(element) {
-      const url = element.getAttribute('data-url');
-      switch (url) {
-        case 'llamar_paciente':
-          Swal.fire({
-            title: '¿Estás seguro de llamar al paciente al consultorio?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, llamar'
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              const patientId = new URLSearchParams(window.location.search).get('id') ||
-                new URLSearchParams(window.location.search).get('patient_id');
-              const patient = await patientService.get(patientId);
-              const currentAppointment = patient.appointments.find(appointment => (
-                appointment.appointment_state.name === 'pending_consultation' &&
-                appointment.appointment_date == new Date().toISOString().split('T')[0]
-              ));
-
-
-              if (currentAppointment) {
-                await appointmentService.changeStatus(currentAppointment.id, 'called');
-                await ticketService.lastByPatient(patientId).then((response) => {
-
-                  if (response?.patient?.whatsapp_notifications) {
-                    sendMessageWhatsapp(response, currentAppointment);
-                  }
-                  Swal.fire(
-                    '¡Paciente llamado!',
-                    'Se ha llamado al paciente para que se acerque al consultorio.',
-                    'success'
-                  )
-
-                });
-              } else {
-                Swal.fire(
-                  'Error',
-                  'El paciente no está en espera de consulta.',
-                  'error'
-                )
-              }
-            }
-          });
-          break;
-          // case 'verRecetasOptometria':
-          //   async function consultarDatosDoctor(doctorId) {
-          //       let data = await obtenerDatosPorId("users", doctorId);
-
-          //       let especialidad = await getSpecialtyName(data.user_specialty_id);
-          //       // pendiente consultar
-          //       // Datos firma
-          //       return {
-          //         especialidad,
-          //       };
-          //     }
-          //     (async () => {
-          //       try {
-          //         const resultado = await consultarDatosDoctor(doctorId);
-          //         url += '&especialidad=' + encodeURIComponent(resultado.especialidad);
-          //         window.location.href = url;
-          //       } catch (error) {
-          //         console.error('Error al obtener datos del doctor:', error);
-          //         window.location.href = url;
-          //       }
-          //     })();
-          //   break;
-        default:
-          window.location.href = url;
-          break;
+        const dataMessage = {
+          channel: "whatsapp",
+          message_type: "text",
+          recipients: [
+            getIndicativeByCountry(data?.patient.country_id) +
+            data?.patient.whatsapp,
+          ],
+          message: templateFormatted,
+          webhook_url: "https://example.com/webhook",
+        };
+        messaging.sendMessage(dataMessage).then(() => {});
       }
-    }
-    const buttons = document.querySelectorAll('.btn-tab');
-    buttons.forEach(button => {
-      button.addEventListener('click', function() {
-        handleTabClick(button);
+
+      function handleTabClick(element) {
+        const url = element.getAttribute('data-url');
+        switch (url) {
+          case 'llamar_paciente':
+            Swal.fire({
+              title: '¿Estás seguro de llamar al paciente al consultorio?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, llamar'
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                const patientId = new URLSearchParams(window.location.search).get('id') ||
+                  new URLSearchParams(window.location.search).get('patient_id');
+                const patient = await patientService.get(patientId);
+                const currentAppointment = patient.appointments.find(appointment => (
+                  appointment.appointment_state.name === 'pending_consultation' &&
+                  appointment.appointment_date == new Date().toISOString().split('T')[0]
+                ));
+
+
+                if (currentAppointment) {
+                  await appointmentService.changeStatus(currentAppointment.id, 'called');
+                  await ticketService.lastByPatient(patientId).then((response) => {
+
+                    if (response?.patient?.whatsapp_notifications) {
+                      sendMessageWhatsapp(response, currentAppointment);
+                    }
+                    Swal.fire(
+                      '¡Paciente llamado!',
+                      'Se ha llamado al paciente para que se acerque al consultorio.',
+                      'success'
+                    )
+
+                  });
+                } else {
+                  Swal.fire(
+                    'Error',
+                    'El paciente no está en espera de consulta.',
+                    'error'
+                  )
+                }
+              }
+            });
+            break;
+            // case 'verRecetasOptometria':
+            //   async function consultarDatosDoctor(doctorId) {
+            //       let data = await obtenerDatosPorId("users", doctorId);
+
+            //       let especialidad = await getSpecialtyName(data.user_specialty_id);
+            //       // pendiente consultar
+            //       // Datos firma
+            //       return {
+            //         especialidad,
+            //       };
+            //     }
+            //     (async () => {
+            //       try {
+            //         const resultado = await consultarDatosDoctor(doctorId);
+            //         url += '&especialidad=' + encodeURIComponent(resultado.especialidad);
+            //         window.location.href = url;
+            //       } catch (error) {
+            //         console.error('Error al obtener datos del doctor:', error);
+            //         window.location.href = url;
+            //       }
+            //     })();
+            //   break;
+          default:
+            window.location.href = url;
+            break;
+        }
+      }
+      const buttons = document.querySelectorAll('.btn-tab');
+      buttons.forEach(button => {
+        button.addEventListener('click', function() {
+          handleTabClick(button);
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error:', error);
+    }
   });
 </script>
 

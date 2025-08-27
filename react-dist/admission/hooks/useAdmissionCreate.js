@@ -10,6 +10,10 @@ export const useAdmissionCreate = () => {
     setError(null);
     try {
       const userLogged = getUserLogged();
+      const currentDate = new Date().toISOString().split('T')[0];
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 30);
+      const dueDateString = dueDate.toISOString().split('T')[0];
       const admissionData = {
         external_id: `${userLogged.external_id}`,
         public_invoice: formData.billing.facturacionConsumidor,
@@ -29,7 +33,8 @@ export const useAdmissionCreate = () => {
           taxes: formData.products.reduce((sum, product) => sum + product.price * product.quantity * product.tax / 100, 0),
           total_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
           observations: "",
-          due_date: "",
+          due_date: dueDateString,
+          // Added due date
           paid_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
           user_id: userLogged.id,
           third_party_id: 1,
@@ -44,12 +49,18 @@ export const useAdmissionCreate = () => {
           discount: product.discount,
           total: product.total
         })),
-        payments: formData.payments.map(payment => ({
-          method: payment.method,
-          amount: payment.amount,
-          authorization_number: payment.authorizationNumber,
-          notes: payment.notes
-        }))
+        payments: formData.payments.map((payment, index) => {
+          console.log("payment", payment);
+          return {
+            method: payment.method,
+            amount: payment.amount,
+            authorization_number: payment.authorizationNumber,
+            notes: payment.notes,
+            payment_method_id: payment.id,
+            payment_date: currentDate,
+            status: "completed"
+          };
+        })
       };
       const response = await admissionService.createAdmission(admissionData, formData.patient.id);
       setLoading(false);

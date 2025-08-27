@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ticketService, patientService } from "../../services/api/index.js";
+import React, { useState, useEffect } from "react";
+import { patientService } from "../../services/api/index.js";
 import { SelectButton } from "primereact/selectbutton";
 import { classNames } from "primereact/utils";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
@@ -7,6 +7,7 @@ import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/ut
 import { useTemplate } from "../hooks/useTemplate.js";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
+import { TicketService } from "../../services/api/classes/ticketService.js";
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
     patient_name: "",
@@ -43,7 +44,8 @@ export const GenerateTicket = () => {
   const {
     company
   } = useCompany();
-
+  const ticketService = new TicketService();
+  const [reasons, setReasons] = useState([]);
   // Opciones compatibles con el backend
   const REASON_OPTIONS = [{
     value: "ADMISSION_PRESCHEDULED",
@@ -91,6 +93,20 @@ export const GenerateTicket = () => {
     label: "Niño/bebé",
     icon: "fas fa-child"
   }];
+
+  //llamar a las opciones de motivo y prioridad
+  useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await ticketService.getAllTicketReasons();
+        console.log(response);
+        setReasons(response.data);
+      } catch (error) {
+        console.error("Error fetching ticket reasons:", error);
+      }
+    };
+    fetchReasons();
+  }, []);
 
   // Buscar paciente cuando cambia el ID
   const handleSearchPatient = async () => {

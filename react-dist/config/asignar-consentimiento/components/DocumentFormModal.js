@@ -11,15 +11,16 @@ const DocumentFormModal = ({
   onSubmit,
   initialData,
   loading = false,
-  templates = []
+  templates = [],
+  patient
 }) => {
-  console.log('tt', templates);
   const [SelectTemplate, setSelectTemplate] = useState();
   const [formData, setFormData] = React.useState({
     titulo: '',
     motivo: '',
     fecha: new Date().toISOString().split('T')[0]
   });
+  console.log(SelectTemplate);
   React.useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -33,7 +34,7 @@ const DocumentFormModal = ({
   }, [initialData, show]);
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formData, SelectTemplate);
   };
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -44,11 +45,27 @@ const DocumentFormModal = ({
   const handleTemplateChange = templateId => {
     const selectedTemplate = templates.find(t => String(t.id) === String(templateId));
     setSelectTemplate(selectedTemplate ?? undefined);
-    setFormData(prev => ({
-      ...prev,
-      motivo: selectedTemplate?.data || ''
-    }));
+    let age = 0;
+    if (patient?.date_of_birth) {
+      const birthDate = new Date(patient.date_of_birth);
+      const today = new Date();
+      age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || m === 0 && today.getDate() < birthDate.getDate()) {
+        age--;
+      }
+    }
+    let formatedTemplate = selectedTemplate?.data;
+    const doctor = JSON.parse(localStorage.getItem('userData'));
+    const doctorName = doctor.first_name + ' ' + doctor.last_name;
+    if (formatedTemplate) {
+      formatedTemplate = formatedTemplate.replaceAll('{{NOMBRE_PACIENTE}}', patient?.first_name + ' ' + patient?.last_name || '').replaceAll('{{DOCUMENTO}}', patient?.document_number ?? '').replaceAll('{{EDAD}}', age.toString()).replaceAll('{{FECHA_NACIMIENTO}}', patient?.date_of_birth ?? '').replaceAll('{{TELEFONO}}', patient?.phone ?? '').replaceAll('{{EMAIL}}', patient?.email ?? '').replaceAll('{{CIUDAD}}', patient?.city_id ?? '').replaceAll('{{NOMBRE_DOCTOR}}', doctorName).replaceAll('{{FECHA_ACTUAL}}', new Date().toISOString().split('T')[0]);
+    }
     if (selectedTemplate) {
+      setFormData(prev => ({
+        ...prev,
+        motivo: formatedTemplate || ''
+      }));
       setFormData(prev => ({
         ...prev,
         titulo: selectedTemplate.title

@@ -68,6 +68,7 @@ export interface PaymentMethod {
 }
 
 export interface CurrentPayment {
+
   method: any;
   amount: number;
   authorizationNumber: string;

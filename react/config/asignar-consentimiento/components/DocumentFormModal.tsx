@@ -11,7 +11,7 @@ interface DocumentFormModalProps {
   show: boolean;
   title: string;
   onHide: () => void;
-  onSubmit: (data: DocumentoConsentimiento) => void;
+  onSubmit: (data: DocumentoConsentimiento, template: ConsentimientoData) => void;
   initialData?: DocumentoConsentimiento | null;
   loading?: boolean;
   templates?: ConsentimientoData[];
@@ -28,7 +28,6 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
   templates = [],
   patient,
 }) => {
-  console.log('tt', templates);
   const [SelectTemplate, setSelectTemplate] = useState<ConsentimientoData>();
   const [formData, setFormData] = React.useState<DocumentoConsentimiento>({
     titulo: '',
@@ -36,6 +35,7 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
     fecha: new Date().toISOString().split('T')[0],
   });
 
+  console.log(SelectTemplate);
   React.useEffect(() => {
     if (initialData) {
       setFormData(initialData);
@@ -50,7 +50,7 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formData, SelectTemplate!);
   };
 
   const handleChange = (field: keyof DocumentoConsentimiento, value: string) => {
@@ -64,24 +64,40 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
     const selectedTemplate = templates.find(t => String(t.id) === String(templateId));
     setSelectTemplate(selectedTemplate ?? undefined);
 
-    console.log('patient--d', patient);
+    let age = 0;
+    if (patient?.date_of_birth) {
+      const birthDate = new Date(patient.date_of_birth);
+      const today = new Date();
+      age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+    }
 
-    const formatedTemplate = selectedTemplate?.data;
-    const NOMBRE_PACIENTE = formatedTemplate?.replace('{{NOMBRE_PACIENTE}}', patient?.first_name+' '+patient?.last_name);
-    const DOCUMENTO = formatedTemplate?.replace('{{DOCUMENTO}}', patient?.document_number ?? '');
-    const EDAD = formatedTemplate?.replace('{{EDAD}}', '25');
-    const FECHA_NACIMIENTO = formatedTemplate?.replace('{{FECHA_NACIMIENTO}}', '2000-01-01');
-    const EMAIL = formatedTemplate?.replace('{{EMAIL}}', 'juan.perez@gmail.com');
-    const CIUDAD = formatedTemplate?.replace('{{CIUDAD}}', 'Buenos Aires');
-    const NOMBRE_DOCTOR = formatedTemplate?.replace('{{NOMBRE_DOCTOR}}', 'Juan Perez');
-    const FECHA_ACTUAL = formatedTemplate?.replace('{{FECHA_ACTUAL}}', new Date().toISOString().split('T')[0]);
+    let formatedTemplate = selectedTemplate?.data;
+    const doctor = JSON.parse(localStorage.getItem('userData')!);
+    const doctorName = doctor.first_name + ' ' + doctor.last_name;
 
-    setFormData(prev => ({
-      ...prev,
-      motivo: selectedTemplate?.data || ''
-    }));
+    if (formatedTemplate) {
+      formatedTemplate = formatedTemplate
+        .replaceAll('{{NOMBRE_PACIENTE}}', patient?.first_name + ' ' + patient?.last_name || '')
+        .replaceAll('{{DOCUMENTO}}', patient?.document_number ?? '')
+        .replaceAll('{{EDAD}}', age.toString())
+        .replaceAll('{{FECHA_NACIMIENTO}}', patient?.date_of_birth ?? '')
+        .replaceAll('{{TELEFONO}}', patient?.phone ?? '')
+        .replaceAll('{{EMAIL}}', patient?.email ?? '')
+        .replaceAll('{{CIUDAD}}', patient?.city_id ?? '')
+        .replaceAll('{{NOMBRE_DOCTOR}}', doctorName)
+        .replaceAll('{{FECHA_ACTUAL}}', new Date().toISOString().split('T')[0]);
+    }
 
     if (selectedTemplate) {
+      setFormData(prev => ({
+        ...prev,
+        motivo: formatedTemplate || ''
+      }));
+
       setFormData(prev => ({
         ...prev,
         titulo: selectedTemplate.title

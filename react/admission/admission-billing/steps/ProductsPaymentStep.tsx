@@ -61,6 +61,8 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
 
   useEffect(() => {
     loadProcedures();
+    fetchPaymentMethods();
+
   }, []);
 
   useEffect(() => {

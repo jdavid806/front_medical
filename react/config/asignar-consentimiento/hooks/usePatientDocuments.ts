@@ -56,6 +56,8 @@ export const usePatientDocuments = (initialPatientId?: string): UsePatientDocume
           first_name: patient.first_name,
           last_name: patient.last_name,
           document_number: patient.document_number,
+          date_of_birth: patient.date_of_birth,
+          city_id: patient.city_id,
           phone: patient.phone,
           email: patient.email,
         }

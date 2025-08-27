@@ -7,6 +7,7 @@ import PatientBreadcrumb from "./components/PatientBreadcrumb";
 import DocumentTable from "./components/DocumentTable";
 import DocumentFormModal from "./components/DocumentFormModal";
 import { useGetData } from '../consentimiento/hooks/ConsentimientoGetData';
+import { ConsentimientoData } from '../consentimiento/enums/ConsentimientoData';
 
 const AsignarConsentimiento: React.FC = () => {
   // Obtener patient_id de la URL
@@ -55,9 +56,20 @@ const AsignarConsentimiento: React.FC = () => {
     // TODO: Implementar confirmación y eliminación
   };
 
-  const handleSubmitDocument = async (formData: any) => {
+  const handleSubmitDocument = async (formData: any, template: ConsentimientoData) => {
     try {
-      console.log('Guardar documento:', formData);
+      const doctor = JSON.parse(localStorage.getItem('userData')!);
+      const tenant_id = window.location.hostname.split('.')[0];
+      console.log('tenant_id', tenant_id);
+      const newData = {
+        ...formData,
+        patient_id: parseInt(patientId),
+        doctor_id: doctor.id,
+        consentimiento_id: parseInt(template.id!),
+        description: template.description,
+        tenant_id: tenant_id
+      }
+      console.log('Guardar documento:', newData);
       // TODO: Implementar creación/actualización de documento
       setShowDocumentFormModal(false);
       setCurrentDocument(null);

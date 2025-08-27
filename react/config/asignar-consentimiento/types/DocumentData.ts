@@ -6,6 +6,8 @@ export interface DocumentoConsentimiento {
   fecha?: string;
   titulo?: string;
   motivo?: string;
+  template_id?: number;
+  description?: string;
   patient_id?: string;
   created_at?: string;
   updated_at?: string;
@@ -27,6 +29,8 @@ export interface PatientData {
   first_name: string;
   last_name: string;
   document_number?: string;
+  date_of_birth?: string;
+  city_id?: string;
   phone?: string;
   email?: string;
 }
