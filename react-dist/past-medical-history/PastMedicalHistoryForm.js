@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { Editor } from "primereact/editor";
-import { clinicalRecordTypeService, clinicalRecordService } from "../../services/api/index.js";
+import { clinicalRecordTypeService, clinicalRecordService, userService } from "../../services/api/index.js";
 const CAMPOS = [
 // Paso 1 - Heredofamiliares
 {
@@ -209,24 +209,25 @@ export const PastMedicalHistoryForm = () => {
     acc[campo.step].push(campo);
     return acc;
   }, {});
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const formData = getFormData();
+    const loggedUser = await userService.getLoggedUser();
     const requestData = {
       clinical_record_type_id: selectedRecordType.id,
-      created_by_user_id: 1,
+      created_by_user_id: loggedUser.id,
       branch_id: 1,
       data: formData["data"]
     };
     if (selectedClinicalRecord) {
       clinicalRecordService.updateForParent(selectedClinicalRecord.id, requestData).then(response => {
-        window.location.href = "/verPaciente?id=" + patientId;
+        window.location.reload();
       }).catch(error => {
         console.error("Error:", error);
       });
     } else {
       clinicalRecordService.createForParent(patientId, requestData).then(response => {
-        window.location.href = "/verPaciente?id=" + patientId;
+        window.location.reload();
       }).catch(error => {
         console.error("Error:", error);
       });

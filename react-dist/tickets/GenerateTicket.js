@@ -99,8 +99,25 @@ export const GenerateTicket = () => {
     const fetchReasons = async () => {
       try {
         const response = await ticketService.getAllTicketReasons();
-        console.log(response);
-        setReasons(response.data);
+        const data = response.reasons;
+
+        // Mapeo de íconos según el key
+        const iconMap = {
+          ADMISSION_PRESCHEDULED: "fas fa-calendar",
+          EXIT_CONSULTATION: "fas fa-sign-out-alt",
+          CONSULTATION_GENERAL: "fas fa-file",
+          SPECIALIST: "fas fa-user-md",
+          VACCINATION: "fas fa-syringe",
+          LABORATORY: "fas fa-flask",
+          OTHER: "fas fa-ellipsis-h"
+        };
+        const formattedReasons = data.map(r => ({
+          value: r.key,
+          label: r.label,
+          icon: iconMap[r.key] || "fas fa-tag"
+        }));
+        setReasons(formattedReasons);
+        console.log(reasons);
       } catch (error) {
         console.error("Error fetching ticket reasons:", error);
       }
@@ -283,8 +300,9 @@ export const GenerateTicket = () => {
       ...formData,
       reason: e.value
     }),
-    options: REASON_OPTIONS,
+    options: reasons,
     optionLabel: "label",
+    optionValue: "value",
     itemTemplate: BadgeTemplate,
     pt: {
       root: {

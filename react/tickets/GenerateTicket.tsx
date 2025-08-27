@@ -112,19 +112,40 @@ export const GenerateTicket = () => {
   ];
 
   //llamar a las opciones de motivo y prioridad
-   useEffect(() => {
-    const fetchReasons = async () => {
-      try {
-        const response = await ticketService.getAllTicketReasons();
-        console.log(response.data);
-        setReasons(response.data);
-      } catch (error) {
-        console.error("Error fetching ticket reasons:", error);
-      }
-    };
+  useEffect(() => {
+  const fetchReasons = async () => {
+    try {
+      const response = await ticketService.getAllTicketReasons();
 
-    fetchReasons();
-  }, []);
+      const data = response.reasons;
+
+      // Mapeo de íconos según el key
+      const iconMap: Record<string, string> = {
+        ADMISSION_PRESCHEDULED: "fas fa-calendar",
+        EXIT_CONSULTATION: "fas fa-sign-out-alt",
+        CONSULTATION_GENERAL: "fas fa-file",
+        SPECIALIST: "fas fa-user-md",
+        VACCINATION: "fas fa-syringe",
+        LABORATORY: "fas fa-flask",
+        OTHER: "fas fa-ellipsis-h",
+      };
+
+      const formattedReasons = data.map((r: any) => ({
+        value: r.key,
+        label: r.label,
+        icon: iconMap[r.key] || "fas fa-tag",
+      }));
+
+      setReasons(formattedReasons);
+      console.log(reasons);
+    } catch (error) {
+      console.error("Error fetching ticket reasons:", error);
+    }
+  };
+
+  fetchReasons();
+}, []);
+
 
   // Buscar paciente cuando cambia el ID
   const handleSearchPatient = async () => {
@@ -317,8 +338,9 @@ export const GenerateTicket = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, reason: e.value })
                       }
-                      options={REASON_OPTIONS}
+                      options={reasons}
                       optionLabel="label"
+                      optionValue="value"
                       itemTemplate={BadgeTemplate}
                       pt={{
                         root: {

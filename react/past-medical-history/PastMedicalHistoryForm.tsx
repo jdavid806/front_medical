@@ -4,6 +4,7 @@ import { Editor } from "primereact/editor";
 import {
   clinicalRecordTypeService,
   clinicalRecordService,
+  userService,
 } from "../../services/api";
 
 const CAMPOS = [
@@ -243,12 +244,13 @@ export const PastMedicalHistoryForm: React.FC = () => {
       return acc;
     }, {} as Record<number, typeof CAMPOS>);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = getFormData();
+    const loggedUser = await userService.getLoggedUser();
     const requestData = {
       clinical_record_type_id: selectedRecordType.id,
-      created_by_user_id: 1,
+      created_by_user_id: loggedUser.id,
       branch_id: 1,
       data: formData["data"],
     };
@@ -257,7 +259,7 @@ export const PastMedicalHistoryForm: React.FC = () => {
       clinicalRecordService
         .updateForParent(selectedClinicalRecord.id, requestData)
         .then((response) => {
-          window.location.href = "/verPaciente?id=" + patientId;
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -266,7 +268,7 @@ export const PastMedicalHistoryForm: React.FC = () => {
       clinicalRecordService
         .createForParent(patientId, requestData)
         .then((response) => {
-          window.location.href = "/verPaciente?id=" + patientId;
+          window.location.reload();
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -357,9 +359,8 @@ export const PastMedicalHistoryForm: React.FC = () => {
           {steps.map((step) => (
             <li
               key={step.number}
-              className={`step cursor-pointer ${
-                currentStep === step.number ? "active" : ""
-              } ${step.hidden ? "d-none" : ""}`}
+              className={`step cursor-pointer ${currentStep === step.number ? "active" : ""
+                } ${step.hidden ? "d-none" : ""}`}
               data-step={step.number}
               onClick={() => setCurrentStep(step.number)}
             >
@@ -375,9 +376,8 @@ export const PastMedicalHistoryForm: React.FC = () => {
           {Object.entries(groupByStep(CAMPOS)).map(([stepNumber, campos]) => (
             <div
               key={stepNumber}
-              className={`p-3 wizard-step ${
-                currentStep === Number(stepNumber) ? "active" : ""
-              }`}
+              className={`p-3 wizard-step ${currentStep === Number(stepNumber) ? "active" : ""
+                }`}
               data-step={stepNumber}
             >
               {campos.map((campo) => (
