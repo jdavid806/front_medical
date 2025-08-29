@@ -12,8 +12,6 @@ import {
 import { useTemplate } from "../hooks/useTemplate";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
-import { TicketService } from "../../services/api/classes/ticketService";
-
 
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +22,8 @@ export const GenerateTicket = () => {
   });
   const [ticket, setTicket] = useState<TicketDto | any>(null); // <-- STATE DEFINIDO
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [reasons, setReasons] = useState([]);
+  const [priorities, setPriorities] = useState([]);
 
   const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
@@ -46,106 +46,73 @@ export const GenerateTicket = () => {
   };
   const { template, setTemplate, fetchTemplate } = useTemplate(data);
   const { company } = useCompany();
-  const ticketService = new TicketService();
 
-  const [reasons, setReasons] = useState([]);
-  // Opciones compatibles con el backend
-  const REASON_OPTIONS = [
-    {
-      value: "ADMISSION_PRESCHEDULED",
-      label: "Admisión (Cita Programada)",
-      icon: "fas fa-calendar",
-    },
-    {
-      value: "EXIT_CONSULTATION",
-      label: "Salida de Consulta",
-      icon: "fas fa-sign-out-alt",
-    },
-    {
-      value: "CONSULTATION_GENERAL",
-      label: "Consulta General",
-      icon: "fas fa-file",
-    },
-    {
-      value: "SPECIALIST",
-      label: "Especialista",
-      icon: "fas fa-user-md",
-    },
-    {
-      value: "VACCINATION",
-      label: "Vacunación",
-      icon: "fas fa-syringe",
-    },
-    {
-      value: "LABORATORY",
-      label: "Laboratorio",
-      icon: "fas fa-flask",
-    },
-  ];
-
-  const PRIORITY_OPTIONS = [
-    {
-      value: "NONE",
-      label: "Sin Prioridad",
-      icon: "fas fa-circle",
-    },
-    {
-      value: "PREGNANT",
-      label: "Embarazada",
-      icon: "fas fa-heart",
-    },
-    {
-      value: "SENIOR",
-      label: "Adulto Mayor",
-      icon: "fas fa-user",
-    },
-    {
-      value: "DISABILITY",
-      label: "Discapacidad",
-      icon: "fas fa-wheelchair",
-    },
-    {
-      value: "CHILDREN_BABY",
-      label: "Niño/bebé",
-      icon: "fas fa-child",
-    },
-  ];
-
-  //llamar a las opciones de motivo y prioridad
   useEffect(() => {
-  const fetchReasons = async () => {
-    try {
-      const response = await ticketService.getAllTicketReasons();
+    const fetchData = async () => {
+      try {
+        const [reasonsRes, prioritiesRes] = await Promise.all([
+          ticketService.getAllTicketReasons(),
+          ticketService.getAllTicketPriorities(),
+        ]);
 
-      const data = response.reasons;
+        const formattedReasons = reasonsRes.reasons.map((r: any) => ({
+          value: r.key,
+          label: r.label,
+          icon: mapReasonIcon(r.key),
+        }));
 
-      // Mapeo de íconos según el key
-      const iconMap: Record<string, string> = {
-        ADMISSION_PRESCHEDULED: "fas fa-calendar",
-        EXIT_CONSULTATION: "fas fa-sign-out-alt",
-        CONSULTATION_GENERAL: "fas fa-file",
-        SPECIALIST: "fas fa-user-md",
-        VACCINATION: "fas fa-syringe",
-        LABORATORY: "fas fa-flask",
-        OTHER: "fas fa-ellipsis-h",
-      };
+        const formattedPriorities = prioritiesRes.priorities.map((p: any) => ({
+          value: p.key,
+          label: p.label,
+          icon: mapPriorityIcon(p.key),
+        }));
+    
+        setReasons(formattedReasons);
+        setPriorities(formattedPriorities);
+      } catch (error) {
+        console.error("Error cargando reasons/priorities:", error);
+      }
+    };
 
-      const formattedReasons = data.map((r: any) => ({
-        value: r.key,
-        label: r.label,
-        icon: iconMap[r.key] || "fas fa-tag",
-      }));
+    fetchData();
+  }, []);
 
-      setReasons(formattedReasons);
-      console.log(reasons);
-    } catch (error) {
-      console.error("Error fetching ticket reasons:", error);
+  // Helpers para mapear iconos
+  const mapReasonIcon = (key: string) => {
+    switch (key) {
+      case "ADMISSION_PRESCHEDULED":
+        return "fas fa-calendar";
+      case "EXIT_CONSULTATION":
+        return "fas fa-sign-out-alt";
+      case "CONSULTATION_GENERAL":
+        return "fas fa-file";
+      case "SPECIALIST":
+        return "fas fa-user-md";
+      case "VACCINATION":
+        return "fas fa-syringe";
+      case "LABORATORY":
+        return "fas fa-flask";
+      default:
+        return "fas fa-tag";
     }
   };
 
-  fetchReasons();
-}, []);
-
+  const mapPriorityIcon = (key: string) => {
+    switch (key) {
+      case "NONE":
+        return "fas fa-circle";
+      case "PREGNANT":
+        return "fas fa-heart";
+      case "SENIOR":
+        return "fas fa-user";
+      case "DISABILITY":
+        return "fas fa-wheelchair";
+      case "CHILDREN_BABY":
+        return "fas fa-child";
+      default:
+        return "fas fa-tag";
+    }
+  };
 
   // Buscar paciente cuando cambia el ID
   const handleSearchPatient = async () => {
@@ -227,7 +194,7 @@ export const GenerateTicket = () => {
     const configPDF = {
       name: "ticket",
       dimensions: [0, 0, 212.6, 210],
-    }
+    };
     generatePDFReceipts(printContents, configPDF);
   };
 
@@ -257,7 +224,10 @@ export const GenerateTicket = () => {
     const dataMessage = {
       channel: "whatsapp",
       message_type: "text",
-      recipients: [getIndicativeByCountry(patient?.country_id || "Dominican Republic") + ticket.phone],
+      recipients: [
+        getIndicativeByCountry(patient?.country_id || "Dominican Republic") +
+          ticket.phone,
+      ],
       message: templateFormatted,
       webhook_url: "https://example.com/webhook",
     };
@@ -373,7 +343,7 @@ export const GenerateTicket = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, priority: e.value })
                       }
-                      options={PRIORITY_OPTIONS}
+                      options={priorities}
                       optionLabel="label"
                       itemTemplate={BadgeTemplate}
                       pt={{
@@ -421,7 +391,7 @@ export const GenerateTicket = () => {
           <div className="h2 fw-bold text-primary">{ticket.ticket_number}</div>
           <div className="text-muted">
             Prioridad:{" "}
-            {PRIORITY_OPTIONS.find((p) => p.value === ticket.priority)?.label}
+            {priorities.find((p) => p.value === ticket.priority)?.label}
           </div>
           <div className="mt-3">
             <button

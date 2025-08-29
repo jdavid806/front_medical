@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { patientService } from "../../services/api/index.js";
+import { ticketService, patientService } from "../../services/api/index.js";
 import { SelectButton } from "primereact/selectbutton";
 import { classNames } from "primereact/utils";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
@@ -7,7 +7,6 @@ import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/ut
 import { useTemplate } from "../hooks/useTemplate.js";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
-import { TicketService } from "../../services/api/classes/ticketService.js";
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
     patient_name: "",
@@ -17,6 +16,8 @@ export const GenerateTicket = () => {
   });
   const [ticket, setTicket] = useState(null); // <-- STATE DEFINIDO
   const [patient, setPatient] = useState(null);
+  const [reasons, setReasons] = useState([]);
+  const [priorities, setPriorities] = useState([]);
   const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
     ticket: false,
@@ -44,86 +45,64 @@ export const GenerateTicket = () => {
   const {
     company
   } = useCompany();
-  const ticketService = new TicketService();
-  const [reasons, setReasons] = useState([]);
-  // Opciones compatibles con el backend
-  const REASON_OPTIONS = [{
-    value: "ADMISSION_PRESCHEDULED",
-    label: "Admisión (Cita Programada)",
-    icon: "fas fa-calendar"
-  }, {
-    value: "EXIT_CONSULTATION",
-    label: "Salida de Consulta",
-    icon: "fas fa-sign-out-alt"
-  }, {
-    value: "CONSULTATION_GENERAL",
-    label: "Consulta General",
-    icon: "fas fa-file"
-  }, {
-    value: "SPECIALIST",
-    label: "Especialista",
-    icon: "fas fa-user-md"
-  }, {
-    value: "VACCINATION",
-    label: "Vacunación",
-    icon: "fas fa-syringe"
-  }, {
-    value: "LABORATORY",
-    label: "Laboratorio",
-    icon: "fas fa-flask"
-  }];
-  const PRIORITY_OPTIONS = [{
-    value: "NONE",
-    label: "Sin Prioridad",
-    icon: "fas fa-circle"
-  }, {
-    value: "PREGNANT",
-    label: "Embarazada",
-    icon: "fas fa-heart"
-  }, {
-    value: "SENIOR",
-    label: "Adulto Mayor",
-    icon: "fas fa-user"
-  }, {
-    value: "DISABILITY",
-    label: "Discapacidad",
-    icon: "fas fa-wheelchair"
-  }, {
-    value: "CHILDREN_BABY",
-    label: "Niño/bebé",
-    icon: "fas fa-child"
-  }];
-
-  //llamar a las opciones de motivo y prioridad
   useEffect(() => {
-    const fetchReasons = async () => {
+    const fetchData = async () => {
       try {
-        const response = await ticketService.getAllTicketReasons();
-        const data = response.reasons;
-
-        // Mapeo de íconos según el key
-        const iconMap = {
-          ADMISSION_PRESCHEDULED: "fas fa-calendar",
-          EXIT_CONSULTATION: "fas fa-sign-out-alt",
-          CONSULTATION_GENERAL: "fas fa-file",
-          SPECIALIST: "fas fa-user-md",
-          VACCINATION: "fas fa-syringe",
-          LABORATORY: "fas fa-flask",
-          OTHER: "fas fa-ellipsis-h"
-        };
-        const formattedReasons = data.map(r => ({
+        const [reasonsRes, prioritiesRes] = await Promise.all([ticketService.getAllTicketReasons(), ticketService.getAllTicketPriorities()]);
+        const formattedReasons = reasonsRes.reasons.map(r => ({
           value: r.key,
           label: r.label,
-          icon: iconMap[r.key] || "fas fa-tag"
+          icon: mapReasonIcon(r.key)
+        }));
+        const formattedPriorities = prioritiesRes.priorities.map(p => ({
+          value: p.key,
+          label: p.label,
+          icon: mapPriorityIcon(p.key)
         }));
         setReasons(formattedReasons);
-        console.log(reasons);
+        setPriorities(formattedPriorities);
       } catch (error) {
-        console.error("Error fetching ticket reasons:", error);
+        console.error("Error cargando reasons/priorities:", error);
       }
     };
-    fetchReasons();
+    fetchData();
   }, []);
+
+  // Helpers para mapear iconos
+  const mapReasonIcon = key => {
+    switch (key) {
+      case "ADMISSION_PRESCHEDULED":
+        return "fas fa-calendar";
+      case "EXIT_CONSULTATION":
+        return "fas fa-sign-out-alt";
+      case "CONSULTATION_GENERAL":
+        return "fas fa-file";
+      case "SPECIALIST":
+        return "fas fa-user-md";
+      case "VACCINATION":
+        return "fas fa-syringe";
+      case "LABORATORY":
+        return "fas fa-flask";
+      default:
+        return "fas fa-tag";
+    }
+  };
+  const mapPriorityIcon = key => {
+    switch (key) {
+      case "NONE":
+        return "fas fa-circle";
+      case "PREGNANT":
+        return "fas fa-heart";
+      case "SENIOR":
+        return "fas fa-user";
+      case "DISABILITY":
+        return "fas fa-wheelchair";
+      case "CHILDREN_BABY":
+        return "fas fa-child";
+      default:
+        return "fas fa-tag";
+    }
+  };
 
   // Buscar paciente cuando cambia el ID
   const handleSearchPatient = async () => {
@@ -330,7 +309,7 @@ export const GenerateTicket = () => {
       ...formData,
       priority: e.value
     }),
-    options: PRIORITY_OPTIONS,
+    options: priorities,
     optionLabel: "label",
     itemTemplate: BadgeTemplate,
     pt: {
@@ -360,7 +339,7 @@ export const GenerateTicket = () => {
     className: "h2 fw-bold text-primary"
   }, ticket.ticket_number), /*#__PURE__*/React.createElement("div", {
     className: "text-muted"
-  }, "Prioridad:", " ", PRIORITY_OPTIONS.find(p => p.value === ticket.priority)?.label), /*#__PURE__*/React.createElement("div", {
+  }, "Prioridad:", " ", priorities.find(p => p.value === ticket.priority)?.label), /*#__PURE__*/React.createElement("div", {
     className: "mt-3"
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",

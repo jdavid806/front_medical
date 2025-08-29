@@ -374,10 +374,17 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
               formData={formData}
               prevStep={prevStep}
               onHide={handleHide}
-              onPrint={() => window.print()}
               onSubmit={handleSubmitInvoice}
-              isSuccess={isSuccess} 
-              setIsSuccess={setIsSuccess} 
+              isSuccess={isSuccess}
+              setIsSuccess={setIsSuccess}
+              onDownload={async () => {
+                //@ts-ignore
+                await generateInvoice(idProduct, true)
+              }}
+              onPrint={async () => {
+                //@ts-ignore
+                await generateInvoice(idProduct, false)
+              }}
             />
           </div>
         </div>

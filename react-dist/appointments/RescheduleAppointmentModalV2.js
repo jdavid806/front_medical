@@ -211,7 +211,7 @@ export const RescheduleAppointmentModalV2 = ({
         console.log('appointment', appointment);
         console.log('mappedAppointment', mappedAppointment);
         setCurrentAppointment(mappedAppointment);
-        setPatientName(`${appointment.patient.first_name} ${appointment.patient.middle_name} ${appointment.patient.last_name} ${appointment.patient.second_last_name}`);
+        setPatientName(`${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}`);
         console.log('userSpecialties', userSpecialties);
         const userSpecialty = userSpecialties.find(userSpecialty => userSpecialty.id === appointment.user_availability.user.specialty.id);
         console.log('user_specialty', appointment.user_availability.user.specialty);

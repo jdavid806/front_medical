@@ -1,31 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomDataTable from "../../components/CustomDataTable.js";
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { ticketReasons } from "../../../services/commons.js";
 import { TableBasicActions } from "../../components/TableBasicActions.js";
+import { ticketService } from "../../../services/api/index.js";
 export const ModuleTable = ({
   modules,
   onEditItem,
   onDeleteItem
 }) => {
   const [tableModules, setTableModules] = useState([]);
+  const [reasonMap, setReasonMap] = useState({});
   useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await ticketService.getAllTicketReasons();
+        const map = {};
+        response.reasons.forEach(r => {
+          map[r.key] = r.label;
+        });
+        setReasonMap(map);
+      } catch (error) {
+        console.error("Error cargando razones:", error);
+      }
+    };
+    fetchReasons();
+  }, []);
+  useEffect(() => {
+    if (Object.keys(reasonMap).length === 0) return;
     const mappedModules = modules.map(module_ => {
       return {
         id: module_.id,
         moduleName: module_.name,
         branchName: module_.branch.address,
-        allowedReasons: module_.allowed_reasons.map(reason => ticketReasons[reason]).join(', ')
+        allowedReasons: module_.allowed_reasons.map(reason => reasonMap[reason] || reason).join(', ')
       };
     });
     setTableModules(mappedModules);
-  }, [modules]);
+  }, [modules, reasonMap]);
   const columns = [{
     data: 'moduleName'
-  },
-  // { data: 'branchName' },
-  {
+  }, {
     data: 'allowedReasons'
   }, {
     orderable: false,
@@ -37,7 +50,7 @@ export const ModuleTable = ({
       onDelete: () => onDeleteItem(data.id)
     })
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -52,5 +65,5 @@ export const ModuleTable = ({
   }, "Motivos de visita a atender"), /*#__PURE__*/React.createElement("th", {
     className: "text-end align-middle pe-0 border-top mb-2",
     scope: "col"
-  })))))));
+  }))))));
 };

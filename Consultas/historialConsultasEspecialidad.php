@@ -199,11 +199,22 @@ $historiasClinicas = [
     ]
 ];
 
+
+
 $especialidad = $_GET['especialidad'] ?? '';
 $nombreEspecialidad = array_key_exists($especialidad, $tiposHistorias) ? ucfirst(str_replace('_', ' ', $especialidad)) : 'Especialidad Desconocida';
 $historiasFiltradas = $historiasClinicas[$especialidad] ?? [];
 $tiposEspecialidad = $tiposHistorias[$especialidad] ?? [];
 ?>
+
+<style>
+    .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+</style>
 
 <div class="content">
     <div class="container-small">

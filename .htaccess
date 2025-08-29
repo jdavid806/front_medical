@@ -328,6 +328,7 @@ RewriteRule ^postConsultationGestion$ Citas/PostConsultationGestion.php
 
 
 RewriteRule ^cardModulos$ Configuracion/homeConfig/cardModulos.php
+RewriteRule ^cardMotivoConsulta$ Configuracion/homeConfig/cardMotivoConsulta.php
 RewriteRule ^cardComisiones$ Configuracion/homeConfig/cardComisiones.php
 RewriteRule ^cardEspecialidades$ Configuracion/homeConfig/cardEspecialidades.php
 RewriteRule ^cardHorarios$ Configuracion/homeConfig/cardHorarios.php
@@ -370,3 +371,4 @@ RewriteRule ^imprimirComprobanteContable$ PlantillasImpresion/Facturas/comproban
 RewriteRule ^imprimirBalanceGeneral$ PlantillasImpresion/Facturas/balanceGeneral.php
 RewriteRule ^medicationInventoryForm$ Inventario/medicationInventoryForm.php
 RewriteRule ^patientAsyncTableTest$ Pacientes/pacientesAsyncTableTest.php
+RewriteRule ^sendClinicalRecordMessagesHookWrapperTest$ Citas/sendClinicalRecordMessagesHookWrapperTest.php

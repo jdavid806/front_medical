@@ -201,11 +201,17 @@ include "../header.php";
 
 <script type="module">
     import {
-        patientService
+        patientService,
+        appointmentService,
+        ticketService,
+        infoCompanyService,
+        templateService,
     } from "../../services/api/index.js";
     import {
         formatDate,
-        parseFechaDMY
+        parseFechaDMY,
+        formatWhatsAppMessage,
+        getIndicativeByCountry,
     } from "../../services/utilidades.js";
     import {
         appointmentStates,
@@ -217,6 +223,9 @@ include "../header.php";
     import {
         getPatientNextAppointment
     } from "../../services/patientHelpers.js";
+    import {
+        createMassMessaging
+    } from '../funciones/funcionesJS/massMessage.js';
 
     const itemsPerPage = 8; // Número de pacientes por página
 
@@ -236,29 +245,30 @@ include "../header.php";
             const currentPage = getCurrentPage();
 
             let paginationHtml = `
-          <ul class="pagination">
-            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage - 1}'">&laquo;</a>
-            </li>`;
+      <ul class="pagination">
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage - 1}'">&laquo;</a>
+        </li>`;
 
             for (let page = 1; page <= totalPages; page++) {
                 paginationHtml += `
-            <li class="page-item ${page === currentPage ? 'active' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${page}'">${page}</a>
-            </li>`;
+        <li class="page-item ${page === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="window.location.href='?page=${page}'">${page}</a>
+        </li>`;
             }
 
             paginationHtml += `
-            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-              <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage + 1}'">&raquo;</a>
-            </li>
-          </ul>`;
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="window.location.href='?page=${currentPage + 1}'">&raquo;</a>
+        </li>
+      </ul>`;
 
             paginationControls.innerHTML = paginationHtml;
         }
     };
 
     document.addEventListener("DOMContentLoaded", async () => {
+
 
         let pacientesResponse = await patientService.getWithAppointmentsByUserAndFilter({
             per_page: 8,
@@ -325,7 +335,7 @@ include "../header.php";
 
         channel.bind('appointment.created', function(data) {
             console.log(data);
-            
+
             pacientesData.forEach(paciente => {
                 if (paciente.id === data.appointment.patient_id) {
                     paciente.appointments.push(data.appointment);
@@ -354,7 +364,7 @@ include "../header.php";
 
         channel.bind('appointment.inactivated', function(data) {
             console.log(data);
-            
+
             pacientesData.forEach(paciente => {
                 paciente.appointments.forEach(cita => {
                     if (cita.id === data.appointmentId) {
@@ -504,9 +514,15 @@ include "../header.php";
 
 
             <!-- Botón para ver el paciente -->
-            <button class="btn btn-primary btn-ver" onclick="window.location.href='verPaciente?id=${paciente.id}'">
+            <div class="d-flex flex-column gap-2 w-100">
+            <button class="btn btn-sm btn-primary btn-ver" onclick="window.location.href='verPaciente?id=${paciente.id}'">
                 Ver Paciente
             </button>
+            
+            <button class="btn btn-sm btn-primary btn-ver" data-action="llamar-paciente" data-patient-id="${paciente.id}" data-appointment-id="${pacienteFiltrado.cita.id}">Llamar paciente</button>
+            <button class="btn btn-sm btn-primary btn-ver" onclick="window.location.href='realizarConsulta?id=${paciente.id}'">Realizar Consulta</button>
+            </div>
+            </div>
         </div>
     </div>
 </div>
@@ -544,6 +560,104 @@ include "../header.php";
         // Inicializa el filtro con todos los pacientes al cargar
         filterPacientes();
     });
+
+    const tenant = window.location.hostname.split(".")[0];
+    const data = {
+        tenantId: tenant,
+        belongsTo: "turnos-llamadoPaciente",
+        type: "whatsapp",
+    };
+    const companies = await infoCompanyService.getCompany();
+    const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
+    let template;
+    try {
+        template = await templateService.getTemplate(data);
+    } catch (error) {
+        console.error('Error al obtener template:', error);
+    }
+    const infoInstance = {
+        api_key: communications.api_key,
+        instance: communications.instance
+    }
+
+    const messaging = createMassMessaging(infoInstance);
+
+    document.addEventListener("click", async (event) => {
+        if (event.target.matches(`[data-action="llamar-paciente"]`)) {
+            event.preventDefault();
+            const patientId = event.target.getAttribute("data-patient-id");
+            const appointmentId = event.target.getAttribute("data-appointment-id");
+
+            llamarPaciente(patientId, appointmentId);
+        }
+    });
+
+    function sendMessageWhatsapp(data, currentAppointment) {
+        const replacements = {
+            NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
+          } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
+          }`,
+            TICKET: `${data?.ticket_number ?? ""}`,
+            MODULO: `${data?.module?.name ?? ""}`,
+            ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
+            CONSULTORIO: `${data?.branch?.address ?? ""}`,
+        };
+
+        const templateFormatted = formatWhatsAppMessage(
+            template?.data?.template,
+            replacements
+        );
+
+        const dataMessage = {
+            channel: "whatsapp",
+            message_type: "text",
+            recipients: [
+                getIndicativeByCountry(data?.patient.country_id) +
+                data?.patient.whatsapp,
+            ],
+            message: templateFormatted,
+            webhook_url: "https://example.com/webhook",
+        };
+        messaging.sendMessage(dataMessage).then(() => {});
+    }
+
+    function llamarPaciente(patientId, appointmentId) {
+        Swal.fire({
+            title: '¿Estás seguro de llamar al paciente al consultorio?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, llamar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const patient = await patientService.get(patientId);
+                const currentAppointment = await appointmentService.get(appointmentId);
+
+                if (currentAppointment) {
+                    await appointmentService.changeStatus(currentAppointment.id, 'called');
+                    await ticketService.lastByPatient(patientId).then((response) => {
+
+                        if (response?.patient?.whatsapp_notifications) {
+                            sendMessageWhatsapp(response, currentAppointment);
+                        }
+                        Swal.fire(
+                            '¡Paciente llamado!',
+                            'Se ha llamado al paciente para que se acerque al consultorio.',
+                            'success'
+                        )
+
+                    });
+                } else {
+                    Swal.fire(
+                        'Error',
+                        'El paciente no está en espera de consulta.',
+                        'error'
+                    )
+                }
+            }
+        });
+    }
 </script>
 
 

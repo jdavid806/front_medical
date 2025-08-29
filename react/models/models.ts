@@ -664,3 +664,11 @@ export interface DetailsDto {
   type: string;
   description: string;
 }
+
+export interface TicketReasonDto {
+  id: number;
+  key: string;
+  label: string;
+  tag: string;
+  is_active: boolean;
+}

@@ -15,6 +15,22 @@ export class TicketService extends BaseApiService {
         return await this.httpClient.get('medical/ticket-reasons')
     }
 
+    async getTicketReason(id) {
+        return await this.httpClient.get(`medical/ticket-reasons/${id}`)
+    }
+
+    async createTicketReason(data) {
+        return await this.httpClient.post('medical/ticket-reasons', data)
+    }
+
+    async updateTicketReason(id, data) {
+        return await this.httpClient.put(`medical/ticket-reasons/${id}`, data)
+    }
+
+    async deleteTicketReason(id) {
+        return await this.httpClient.delete(`medical/ticket-reasons/${id}`)
+    }
+
     async getAllTicketPriorities() {
         return await this.httpClient.get('medical/ticket-priorities')
     }

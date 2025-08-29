@@ -1,18 +1,18 @@
-import React from 'react'
-import { ConfigColumns } from 'datatables.net-bs5';
-import CustomDataTable from '../../components/CustomDataTable';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { ExamOrderDto } from '../../models/models';
-import { examOrderStateColors, examOrderStates } from '../../../services/commons';
-import { PrintTableAction } from '../../components/table-actions/PrintTableAction';
-import { DownloadTableAction } from '../../components/table-actions/DownloadTableAction';
-import { ShareTableAction } from '../../components/table-actions/ShareTableAction';
-import { formatDate, ordenarPorFecha } from '../../../services/utilidades';
-import { CustomModal } from '../../components/CustomModal';
-import { examOrderService, userService } from '../../../services/api';
-import { SwalManager } from '../../../services/alertManagerImported';
-import { generarFormato } from '../../../funciones/funcionesJS/generarPDF';
+import React, { useEffect, useRef, useState } from "react";
+import { ExamOrderDto } from "../../models/models";
+import { examOrderStateColors, examOrderStates } from "../../../services/commons";
+import { formatDate, ordenarPorFecha } from "../../../services/utilidades";
+import { examOrderService, userService } from "../../../services/api";
+import { SwalManager } from "../../../services/alertManagerImported";
+import { generarFormato } from "../../../funciones/funcionesJS/generarPDF";
+
+// PrimeReact imports
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { TabView, TabPanel } from "primereact/tabview";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable";
+import { CustomModal } from "../../components/CustomModal";
 
 export type ExamTableItem = {
     id: string
@@ -25,6 +25,7 @@ export type ExamTableItem = {
     patientId: string
     appointmentId: string
     minioId?: string
+    patientName: string
     original: any
 }
 
@@ -37,6 +38,8 @@ type ExamTableProps = {
 
 export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamResults, onViewExamResults, onReload }) => {
     const [tableExams, setTableExams] = useState<ExamTableItem[]>([]);
+    const [uploadedExams, setUploadedExams] = useState<ExamTableItem[]>([]);
+    const [pendingExams, setPendingExams] = useState<ExamTableItem[]>([]);
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const [showPdfModal, setShowPdfModal] = useState(false);
@@ -61,10 +64,11 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
         })
 
         ordenarPorFecha(mappedExams, 'created_at')
-
-        console.log('Mapped exams', mappedExams);
-
         setTableExams(mappedExams);
+
+        // Separar exámenes por estado
+        setUploadedExams(mappedExams.filter(exam => exam.state === "uploaded"));
+        setPendingExams(mappedExams.filter(exam => exam.state === "generated" || exam.state === "pending"));
     }, [exams])
 
     const onUploadExamsFile = (examOrderId) => {
@@ -74,14 +78,10 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
 
     const handleUploadExamsFile = async () => {
         try {
-            // Llamar a la función guardarArchivoExamen
             //@ts-ignore
             const enviarPDf = await guardarArchivoExamen("inputPdf", selectedOrderId);
 
-            // Acceder a la PromiseResult
             if (enviarPDf !== undefined) {
-                console.log("PDF de prueba:", enviarPDf);
-                console.log("Resultado de la promesa:", enviarPDf);
                 await examOrderService.updateMinioFile(selectedOrderId, enviarPDf);
                 SwalManager.success({ text: "Resultados guardados exitosamente" });
             } else {
@@ -90,7 +90,6 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
         } catch (error) {
             console.error("Error al guardar el archivo:", error);
         } finally {
-            // Limpiar el estado después de la operación
             setShowPdfModal(false);
             setPdfFile(null);
             setPdfPreviewUrl(null);
@@ -98,123 +97,123 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
         }
     }
 
-    const columns: ConfigColumns[] = [
-        { data: 'patientName', },
-        { data: 'examName', },
-        { data: 'status' },
-        { data: 'dateTime' },
-        { orderable: false, searchable: false }
-    ]
+    // Columnas para la tabla
+    const columns: CustomPRTableColumnProps[] = [
+        {
+            field: "patientName",
+            header: "Paciente",
+            sortable: true
+        },
+        {
+            field: "examName",
+            header: "Exámenes ordenados",
+            sortable: true
+        },
+        {
+            field: "status",
+            header: "Estado",
+            body: (data: ExamTableItem) => {
+                const color = examOrderStateColors[data.state] || "secondary";
+                const text = examOrderStates[data.state] || "SIN ESTADO";
 
-    const slots = {
-        2: (cell, data: ExamTableItem) => (
-            <span className={`badge badge-phoenix badge-phoenix-${data.statusColor}`}>{data.status}</span>
-        ),
-        4: (cell, data: ExamTableItem) => (
-            <div className="d-flex justify-content-end">
-                <div className="dropdown">
-                    <button className="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i data-feather="settings"></i> Acciones
-                    </button>
-                    <ul className="dropdown-menu">
-                        {data.state === 'generated' && <>
-                            <li>
-                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onLoadExamResults(data)}>
-                                    <div className="d-flex gap-2 align-items-center">
-                                        <i className="fa-solid fa-stethoscope" style={{ width: '20px' }}></i>
-                                        <span>Realizar examen</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onUploadExamsFile(data.id)}>
-                                    <div className="d-flex gap-2 align-items-center">
-                                        <i className="fa-solid fa-file-pdf" style={{ width: '20px' }}></i>
-                                        <span>Subir examen</span>
-                                    </div>
-                                </a>
-                            </li>
-                        </>}
-                        {data.state === 'uploaded' && <>
-                            <li>
-                                <a className="dropdown-item" href="#" id="cargarResultadosBtn" onClick={() => onViewExamResults(data, data.minioId)}>
-                                    <div className="d-flex gap-2 align-items-center">
-                                        <i className="fa-solid fa-eye" style={{ width: '20px' }}></i>
-                                        <span>Visualizar resultados</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <PrintTableAction onTrigger={async () => {
-                                console.log(data);
+                const severityMap: Record<string, string> = {
+                    'success': 'success',
+                    'warning': 'warning',
+                    'danger': 'danger',
+                    'info': 'info',
+                    'primary': 'secondary',
+                    'secondary': 'secondary'
+                };
 
-                                if (data.minioId) {
-                                    //@ts-ignore
-                                    const url = await getFileUrl(data.minioId);
-                                    window.open(url, '_blank');
-                                } else {
-                                    console.log("xd");
-                                    
-                                    //@ts-ignore
-                                    generarFormato("Examen", data.original, "Impresion");
-                                }
+                const severity = severityMap[color] || 'secondary';
 
-                            }} />
-                            <DownloadTableAction onTrigger={async () => {
-                                if (data.minioId) {
-                                    try {
-                                        //@ts-ignore
-                                        const url = await getFileUrl(data.minioId);
-                                        var link = document.createElement('a');
-                                        link.href = url.replace('http', 'https');
-                                        link.download = 'file.pdf';
-                                        document.body.appendChild(link);
-                                        link.click();
-                                        document.body.removeChild(link);
-                                    } catch (error) {
-                                        console.error('Error al descargar:', error);
-                                    }
-                                } else {
-                                    //@ts-ignore
-                                    crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
-                                }
-                            }} />
-                            <li>
-                                <hr className="dropdown-divider" />
-                            </li>
-                            <li className="dropdown-header">Compartir</li>
-                            <ShareTableAction shareType='whatsapp' onTrigger={async () => {
-                                const user = await userService.getLoggedUser()
+                return (
+                    <Badge
+                        value={text}
+                        severity={severity}
+                        className="p-badge-lg"
+                    />
+                );
+            }
+        },
+        {
+            field: "dateTime",
+            header: "Fecha y hora de creación",
+            sortable: true
+        },
+        {
+            field: "actions",
+            header: "Acciones",
+            body: (data: ExamTableItem) => (
+                <TableActionsMenu
+                    data={data}
+                    onLoadExamResults={onLoadExamResults}
+                    onViewExamResults={onViewExamResults}
+                    onUploadExamsFile={onUploadExamsFile}
+                    onPrint={async () => {
+                        if (data.minioId) {
+                            //@ts-ignore
+                            const url = await getFileUrl(data.minioId);
+                            window.open(url, "_blank");
+                        } else {
+                            //@ts-ignore
+                            generarFormato("Examen", data.original, "Impresion");
+                        }
+                    }}
+                    onDownload={async () => {
+                        if (data.minioId) {
+                            try {
                                 //@ts-ignore
-                                enviarDocumento(data.id, "Descarga", "Examen", "Completa", data.patientId, user.id, "Orden de examen");
-                            }} />
-                        </>}
-                    </ul>
-                </div>
-            </div>
-        )
-    }
+                                const url = await getFileUrl(data.minioId);
+                                var link = document.createElement("a");
+                                link.href = url.replace("http", "https");
+                                link.download = "file.pdf";
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            } catch (error) {
+                                console.error("Error al descargar:", error);
+                            }
+                        } else {
+                            //@ts-ignore
+                            crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
+                        }
+                    }}
+                    onShare={async () => {
+                        const user = await userService.getLoggedUser();
+                        //@ts-ignore
+                        enviarDocumento(data.id, "Descarga", "Examen", "Completa", data.patientId, user.id, "Orden de examen");
+                    }}
+                />
+            )
+        },
+    ];
 
     return (
         <>
             <div className="card mb-3">
                 <div className="card-body">
-                    <CustomDataTable
-                        data={tableExams}
-                        slots={slots}
-                        columns={columns}
-                    >
-                        <thead>
-                            <tr>
-                                <th className="border-top custom-th">Paciente</th>
-                                <th className="border-top custom-th">Exámenes ordenados</th>
-                                <th className="border-top custom-th">Estado</th>
-                                <th className="border-top custom-th">Fecha y hora de creación</th>
-                                <th className="text-end align-middle pe-0 border-top mb-2" scope="col"></th>
-                            </tr>
-                        </thead>
-                    </CustomDataTable>
+                    <TabView>
+                        <TabPanel header="Resultados subidos">
+                            <CustomPRTable
+                                columns={columns}
+                                data={uploadedExams}
+                                lazy={false}
+                                onReload={onReload}
+                            />
+                        </TabPanel>
+                        <TabPanel header="Pendientes por cargar">
+                            <CustomPRTable
+                                columns={columns}
+                                data={pendingExams}
+                                lazy={false}
+                                onReload={onReload}
+                            />
+                        </TabPanel>
+                    </TabView>
                 </div>
             </div>
+
             <CustomModal
                 title='Subir examen'
                 show={showPdfModal}
@@ -248,9 +247,6 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                         className="btn btn-primary"
                         onClick={() => {
                             handleUploadExamsFile();
-                            setShowPdfModal(false);
-                            setPdfFile(null);
-                            setPdfPreviewUrl(null);
                         }}
                     >
                         Confirmar
@@ -269,5 +265,108 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                 )}
             </CustomModal>
         </>
-    )
-}
+    );
+};
+
+// Componente de menú de acciones
+const TableActionsMenu: React.FC<{
+    data: ExamTableItem;
+    onLoadExamResults: (id: ExamTableItem) => void;
+    onViewExamResults: (examTableItem: ExamTableItem, minioId?: string) => void;
+    onUploadExamsFile: (examOrderId: string) => void;
+    onPrint: () => void;
+    onDownload: () => void;
+    onShare: () => void;
+}> = ({ data, onLoadExamResults, onViewExamResults, onUploadExamsFile, onPrint, onDownload, onShare }) => {
+    const menu = useRef<Menu>(null);
+
+    const items = [
+        ...(data.state === "generated" ? [
+            {
+                label: "Realizar examen",
+                icon: "pi pi-stethoscope",
+                command: () => {
+                    onLoadExamResults(data);
+                    menu.current?.hide();
+                }
+            },
+            {
+                label: "Subir examen",
+                icon: "pi pi-file-pdf",
+                command: () => {
+                    onUploadExamsFile(data.id);
+                    menu.current?.hide();
+                }
+            }
+        ] : []),
+        ...(data.state === "uploaded" ? [
+            {
+                label: "Visualizar resultados",
+                icon: "pi pi-eye",
+                command: () => {
+                    onViewExamResults(data, data.minioId);
+                    menu.current?.hide();
+                }
+            },
+            {
+                label: "Imprimir",
+                icon: "pi pi-print",
+                command: () => {
+                    onPrint();
+                    menu.current?.hide();
+                }
+            },
+            {
+                label: "Descargar",
+                icon: "pi pi-download",
+                command: () => {
+                    onDownload();
+                    menu.current?.hide();
+                }
+            },
+            {
+                separator: true
+            },
+            {
+                label: "Compartir",
+                icon: "pi pi-share-alt",
+                items: [
+                    {
+                        label: "WhatsApp",
+                        icon: "pi pi-whatsapp",
+                        command: () => {
+                            onShare();
+                            menu.current?.hide();
+                        }
+                    }
+                ]
+            }
+        ] : [])
+    ];
+
+    const handleMenuHide = () => {
+    };
+
+    return (
+        <div className="table-actions-menu">
+            <Button
+                icon="pi pi-ellipsis-v"
+                className="p-button-rounded btn-primary"
+                onClick={(e) => menu.current?.toggle(e)}
+                aria-controls={`popup_menu_${data.id}`}
+                aria-haspopup
+            >
+                Acciones
+                <i className="fa fa-cog ml-2"></i>
+            </Button>
+            <Menu
+                model={items}
+                popup
+                ref={menu}
+                id={`popup_menu_${data.id}`}
+                onHide={handleMenuHide}
+                appendTo={typeof document !== 'undefined' ? document.body : undefined}
+            />
+        </div>
+    );
+};

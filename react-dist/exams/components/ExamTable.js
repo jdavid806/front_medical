@@ -1,18 +1,19 @@
-import React, { useCallback, useRef } from "react";
-import CustomDataTable from "../../components/CustomDataTable.js";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useCallback, useRef, useEffect, useState } from "react";
 import { examOrderStateColors, examOrderStates } from "../../../services/commons.js";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
 import { formatDate, ordenarPorFecha, formatWhatsAppMessage, getIndicativeByCountry } from "../../../services/utilidades.js";
-import { CustomModal } from "../../components/CustomModal.js";
 import { examOrderService } from "../../../services/api/index.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 import { useTemplate } from "../../hooks/useTemplate.js";
 import { useMassMessaging } from "../../hooks/useMassMessaging.js";
+
+// PrimeReact imports
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { TabView, TabPanel } from "primereact/tabview";
+import { CustomPRTable } from "../../components/CustomPRTable.js";
+import { CustomModal } from "../../components/CustomModal.js";
 export const ExamTable = ({
   exams,
   onLoadExamResults,
@@ -20,6 +21,8 @@ export const ExamTable = ({
   onReload
 }) => {
   const [tableExams, setTableExams] = useState([]);
+  const [uploadedExams, setUploadedExams] = useState([]);
+  const [pendingExams, setPendingExams] = useState([]);
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -71,6 +74,10 @@ export const ExamTable = ({
     });
     ordenarPorFecha(mappedExams, "created_at");
     setTableExams(mappedExams);
+
+    // Separar exámenes por estado
+    setUploadedExams(mappedExams.filter(exam => exam.state === "uploaded"));
+    setPendingExams(mappedExams.filter(exam => exam.state === "generated" || exam.state === "pending"));
   }, [exams]);
   async function generatePdfFile(exam) {
     if (exam.minioUrl) {
@@ -80,7 +87,7 @@ export const ExamTable = ({
         url: url,
         model_type: "xxxxxxx",
         model_id: 0,
-        id: 0 // Assuming the ID is the last part of the URL
+        id: 0
       };
     } else {
       //@ts-ignore
@@ -139,14 +146,11 @@ export const ExamTable = ({
   };
   const handleUploadExamsFile = async () => {
     try {
-      // Llamar a la función guardarArchivoExamen
       //@ts-ignore
       const enviarPDf = await guardarArchivoExamen("inputPdf", selectedOrderId);
       const dataRquest = {
         minio_url: enviarPDf
       };
-
-      // Acceder a la PromiseResult
       if (enviarPDf !== undefined) {
         await examOrderService.updateMinioFile(selectedOrderId, dataRquest);
         SwalManager.success({
@@ -158,78 +162,52 @@ export const ExamTable = ({
     } catch (error) {
       console.error("Error al guardar el archivo:", error);
     } finally {
-      // Limpiar el estado después de la operación
       setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);
       onReload();
     }
   };
+
+  // Columnas para la tabla
   const columns = [{
-    data: "examName"
+    field: "examName",
+    header: "Exámenes ordenados",
+    sortable: true
   }, {
-    data: "status"
+    field: "status",
+    header: "Estado",
+    body: data => {
+      const color = examOrderStateColors[data.state] || "secondary";
+      const text = examOrderStates[data.state] || "SIN ESTADO";
+      const severityMap = {
+        'success': 'success',
+        'warning': 'warning',
+        'danger': 'danger',
+        'info': 'info',
+        'primary': 'secondary',
+        'secondary': 'secondary'
+      };
+      const severity = severityMap[color] || 'secondary';
+      return /*#__PURE__*/React.createElement(Badge, {
+        value: text,
+        severity: severity,
+        className: "p-badge-lg"
+      });
+    }
   }, {
-    data: "dateTime"
+    field: "dateTime",
+    header: "Fecha y hora de creación",
+    sortable: true
   }, {
-    orderable: false,
-    searchable: false
-  }];
-  const slots = {
-    1: (cell, data) => /*#__PURE__*/React.createElement("span", {
-      className: `badge badge-phoenix badge-phoenix-${data.statusColor}`
-    }, data.status),
-    3: (cell, data) => /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-end"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "dropdown"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-primary dropdown-toggle",
-      type: "button",
-      "data-bs-toggle": "dropdown",
-      "aria-expanded": "false"
-    }, /*#__PURE__*/React.createElement("i", {
-      "data-feather": "settings"
-    }), " Acciones"), /*#__PURE__*/React.createElement("ul", {
-      className: "dropdown-menu"
-    }, data.state === "generated" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      id: "cargarResultadosBtn",
-      onClick: () => onLoadExamResults(data)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-stethoscope",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      id: "cargarResultadosBtn",
-      onClick: () => onUploadExamsFile(data.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-pdf",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Subir examen"))))), data.state === "uploaded" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      id: "cargarResultadosBtn",
-      onClick: () => onViewExamResults(data, data.minioUrl)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-eye",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Visualizar resultados")))), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: async () => {
+    field: "actions",
+    header: "Acciones",
+    body: data => /*#__PURE__*/React.createElement(TableActionsMenu, {
+      data: data,
+      onLoadExamResults: onLoadExamResults,
+      onViewExamResults: onViewExamResults,
+      onUploadExamsFile: onUploadExamsFile,
+      onPrint: async () => {
         if (data.minioUrl) {
           //@ts-ignore
           const url = await getUrlImage(data.minioUrl);
@@ -237,11 +215,9 @@ export const ExamTable = ({
         } else {
           //@ts-ignore
           generarFormato("Examen", data.original, "Impresion");
-          // crearDocumento(data.id, "Impresion", "Examen", "Completa", "Orden de examen");
         }
-      }
-    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: async () => {
+      },
+      onDownload: async () => {
         if (data.minioUrl) {
           //@ts-ignore
           const url = await getUrlImage(data.minioUrl);
@@ -254,38 +230,32 @@ export const ExamTable = ({
         } else {
           //@ts-ignore
           generarFormato("Examen", data.original, "Descarga");
-          // crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
         }
-      }
-    }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
-      className: "dropdown-divider"
-    })), /*#__PURE__*/React.createElement("li", {
-      className: "dropdown-header"
-    }, "Compartir"), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "whatsapp",
-      onTrigger: async () => {
+      },
+      onShare: async () => {
         sendMessageWhatsapp(data);
       }
-    })))))
-  };
+    })
+  }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
-  }, /*#__PURE__*/React.createElement(CustomDataTable, {
-    data: tableExams,
-    slots: slots,
-    columns: columns
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Ex\xE1menes ordenados"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Estado"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Fecha y hora de creaci\xF3n"), /*#__PURE__*/React.createElement("th", {
-    className: "text-end align-middle pe-0 border-top mb-2",
-    scope: "col"
-  })))))), /*#__PURE__*/React.createElement(CustomModal, {
+  }, /*#__PURE__*/React.createElement(TabView, null, /*#__PURE__*/React.createElement(TabPanel, {
+    header: "Resultados subidos"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: uploadedExams,
+    lazy: false,
+    onReload: onReload
+  })), /*#__PURE__*/React.createElement(TabPanel, {
+    header: "Pendientes por cargar"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: pendingExams,
+    lazy: false,
+    onReload: onReload
+  }))))), /*#__PURE__*/React.createElement(CustomModal, {
     title: "Subir examen",
     show: showPdfModal,
     onHide: () => setShowPdfModal(false),
@@ -313,9 +283,6 @@ export const ExamTable = ({
       className: "btn btn-primary",
       onClick: () => {
         handleUploadExamsFile();
-        setShowPdfModal(false);
-        setPdfFile(null);
-        setPdfPreviewUrl(null);
       }
     }, "Confirmar"))
   }, pdfPreviewUrl ? /*#__PURE__*/React.createElement("embed", {
@@ -324,4 +291,86 @@ export const ExamTable = ({
     height: "500px",
     type: "application/pdf"
   }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")));
+};
+
+// Componente de menú de acciones
+const TableActionsMenu = ({
+  data,
+  onLoadExamResults,
+  onViewExamResults,
+  onUploadExamsFile,
+  onPrint,
+  onDownload,
+  onShare
+}) => {
+  const menu = useRef(null);
+  const items = [...(data.state === "generated" ? [{
+    label: "Realizar examen",
+    icon: "pi pi-stethoscope",
+    command: () => {
+      onLoadExamResults(data);
+      menu.current?.hide();
+    }
+  }, {
+    label: "Subir examen",
+    icon: "pi pi-file-pdf",
+    command: () => {
+      onUploadExamsFile(data.id);
+      menu.current?.hide();
+    }
+  }] : []), ...(data.state === "uploaded" ? [{
+    label: "Visualizar resultados",
+    icon: "pi pi-eye",
+    command: () => {
+      onViewExamResults(data, data.minioUrl);
+      menu.current?.hide();
+    }
+  }, {
+    label: "Imprimir",
+    icon: "pi pi-print",
+    command: () => {
+      onPrint();
+      menu.current?.hide();
+    }
+  }, {
+    label: "Descargar",
+    icon: "pi pi-download",
+    command: () => {
+      onDownload();
+      menu.current?.hide();
+    }
+  }, {
+    separator: true
+  }, {
+    label: "Compartir",
+    icon: "pi pi-share-alt",
+    items: [{
+      label: "WhatsApp",
+      icon: "pi pi-whatsapp",
+      command: () => {
+        onShare();
+        menu.current?.hide();
+      }
+    }]
+  }] : [])];
+  const handleMenuHide = () => {
+    setOpenMenuId(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "table-actions-menu"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-rounded btn-primary",
+    onClick: e => menu.current?.toggle(e),
+    "aria-controls": `popup_menu_${data.id}`,
+    "aria-haspopup": true
+  }, "Acciones", /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-cog ml-2"
+  })), /*#__PURE__*/React.createElement(Menu, {
+    model: items,
+    popup: true,
+    ref: menu,
+    id: `popup_menu_${data.id}`,
+    onHide: handleMenuHide,
+    appendTo: typeof document !== 'undefined' ? document.body : undefined
+  }));
 };

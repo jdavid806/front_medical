@@ -460,8 +460,9 @@ $resumenPaciente = [
       };
       const companies = await infoCompanyService.getCompany();
       const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
+      let template;
       try {
-        const template = await templateService.getTemplate(data);
+        template = await templateService.getTemplate(data);
       } catch (error) {
         console.error('Error al obtener template:', error);
       }
@@ -484,7 +485,7 @@ $resumenPaciente = [
         };
 
         const templateFormatted = formatWhatsAppMessage(
-          template.data.template,
+          template?.data?.template,
           replacements
         );
 

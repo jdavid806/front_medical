@@ -1,18 +1,11 @@
-import React from "react";
-import { ConfigColumns } from "datatables.net-bs5";
-import CustomDataTable from "../../components/CustomDataTable";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PatientClinicalRecordDto } from "../../models/models";
-import { SeeDetailTableAction } from "../../components/table-actions/SeeDetailTableAction";
-import { RequestCancellationTableAction } from "../../components/table-actions/RequestCancellationTableAction";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction";
-import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper";
-import { CustomPRTable, CustomPRTableColumnProps, CustomPRTableProps } from "../../components/CustomPRTable";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable";
 import { clinicalRecordStateColors, clinicalRecordStates } from "../../../services/commons";
 import { HtmlRenderer } from "../../components/HtmlRenderer";
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 
 interface PatientClinicalRecordsTableItem {
   id: string;
@@ -23,6 +16,10 @@ interface PatientClinicalRecordsTableItem {
   status: string;
   patientId: string;
   patient?: any;
+  createdAt: string;
+  user: any;
+  data: any;
+  clinicalRecordTypeId: string;
 }
 
 interface PatientClinicalRecordsTableProps {
@@ -31,16 +28,17 @@ interface PatientClinicalRecordsTableProps {
   onCancelItem?: (id: string) => void;
   onPrintItem?: (data: any, id: string, title: string) => void;
   onDownloadItem?: (id: string, title: string) => void;
-  onShareItem?: (data:any, type: string) => void;
-  lazy?: boolean
-  totalRecords?: number
-  first?: number
-  rows?: number
-  loading?: boolean
-  onReload?: () => void
-  onPage?: (event: any) => void
-  onSearch?: (event: any) => void
-};
+  onShareItem?: (data: any, type: string) => void;
+  lazy?: boolean;
+  totalRecords?: number;
+  first?: number;
+  rows?: number;
+  loading?: boolean;
+  onReload?: () => void;
+  onPage?: (event: any) => void;
+  onSearch?: (event: any) => void;
+  onSort?: (event: any) => void;
+}
 
 export const PatientClinicalRecordsTable: React.FC<
   PatientClinicalRecordsTableProps
@@ -57,11 +55,14 @@ export const PatientClinicalRecordsTable: React.FC<
   loading,
   onPage,
   onReload,
-  onSearch
+  onSearch,
+  onSort
 }) => {
     const [tableRecords, setTableRecords] = useState<
       PatientClinicalRecordsTableItem[]
     >([]);
+    const [sortField, setSortField] = useState<string>('createdAt');
+    const [sortOrder, setSortOrder] = useState<-1 | 1>(1); // 1 for asc, -1 for desc
 
     useEffect(() => {
       const mappedRecords: PatientClinicalRecordsTableItem[] = records
@@ -100,18 +101,8 @@ export const PatientClinicalRecordsTable: React.FC<
             const [dayStr, monthStr, yearStr] = datePart.split(" de ");
 
             const months = [
-              "enero",
-              "febrero",
-              "marzo",
-              "abril",
-              "mayo",
-              "junio",
-              "julio",
-              "agosto",
-              "septiembre",
-              "octubre",
-              "noviembre",
-              "diciembre",
+              "enero", "febrero", "marzo", "abril", "mayo", "junio",
+              "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
             ];
 
             const day = parseInt(dayStr, 10);
@@ -130,70 +121,77 @@ export const PatientClinicalRecordsTable: React.FC<
       setTableRecords(mappedRecords);
     }, [records]);
 
+    const handleSort = (e: any) => {
+      const { sortField, sortOrder } = e;
+      setSortField(sortField);
+      setSortOrder(sortOrder === 1 ? 1 : -1);
+
+      if (onSort) {
+        onSort(e);
+      }
+    };
+
     const columns: CustomPRTableColumnProps[] = [
-      { field: "clinicalRecordName", header: "Nombre de la historia" },
-      { field: "doctorName", header: "Doctor(a)" },
-      { field: "description", header: "Observaciones", body: (data: PatientClinicalRecordsTableItem) => <HtmlRenderer htmlContent={data.description} /> },
-      { field: "createdAt", header: "Fecha de creación" },
       {
-        field: "status", header: "Estado", body: (data: PatientClinicalRecordsTableItem) => {
+        field: "clinicalRecordName",
+        header: "Nombre de la historia",
+        sortable: true
+      },
+      {
+        field: "doctorName",
+        header: "Doctor(a)",
+        sortable: true
+      },
+      {
+        field: "description",
+        header: "Observaciones",
+        body: (data: PatientClinicalRecordsTableItem) => <HtmlRenderer htmlContent={data.description} />
+      },
+      {
+        field: "createdAt",
+        header: "Fecha de creación",
+        sortable: true
+      },
+      {
+        field: "status",
+        header: "Estado",
+        body: (data: PatientClinicalRecordsTableItem) => {
           const color = clinicalRecordStateColors[data.status] || "secondary";
           const text = clinicalRecordStates[data.status] || "SIN ESTADO";
-          return (<>
-            <span className={`badge badge-phoenix badge-phoenix-${color}`}>
-              {text}
-            </span>
-          </>)
+
+          const severityMap: Record<string, string> = {
+            'success': 'success',
+            'warning': 'warning',
+            'danger': 'danger',
+            'info': 'info',
+            'primary': 'secondary',
+            'secondary': 'secondary'
+          };
+
+          const severity = severityMap[color] || 'secondary';
+
+          return (
+            <Badge
+              value={text}
+              severity={severity}
+              className="p-badge-lg"
+            />
+          );
         }
       },
       {
-        field: "", header: "Acciones", body: (data: any) => <>
-          <div className="text-end align-middle">
-            <TableActionsWrapper>
-              <SeeDetailTableAction
-                onTrigger={() =>
-                  onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
-                }
-              />
-
-
-              <RequestCancellationTableAction
-                onTrigger={() => onCancelItem && onCancelItem(data.id)}
-              />
-
-              <PrintTableAction
-                onTrigger={() =>
-                  onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
-                }
-              />
-              <DownloadTableAction
-                onTrigger={() =>
-                  onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
-                }
-              />
-
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-              <li className="dropdown-header">Compartir</li>
-
-              <ShareTableAction
-                shareType="whatsapp"
-                onTrigger={() =>
-                  onShareItem &&
-                  onShareItem(data, "whatsapp")
-                }
-              />
-              <ShareTableAction
-                shareType="email"
-                onTrigger={() =>
-                  onShareItem &&
-                  onShareItem(data, "email")
-                }
-              />
-            </TableActionsWrapper>
-          </div>
-        </>
+        field: "actions",
+        header: "Acciones",
+        body: (data: PatientClinicalRecordsTableItem) => (
+          <TableActionsMenu
+            data={data}
+            onSeeDetail={onSeeDetail}
+            onCancelItem={onCancelItem}
+            onPrintItem={onPrintItem}
+            onDownloadItem={onDownloadItem}
+            onShareItem={onShareItem}
+          />
+        )
       },
     ];
 
@@ -209,13 +207,99 @@ export const PatientClinicalRecordsTable: React.FC<
               rows={rows}
               totalRecords={totalRecords}
               loading={loading}
+              sortField={sortField}
+              sortOrder={sortOrder}
               onPage={onPage}
               onSearch={onSearch}
               onReload={onReload}
-            >
-            </CustomPRTable>
+              onSort={handleSort}
+            />
           </div>
         </div>
       </>
     );
   };
+
+const TableActionsMenu: React.FC<{
+  data: PatientClinicalRecordsTableItem;
+  onSeeDetail?: (id: string, clinicalRecordType: string) => void;
+  onCancelItem?: (id: string) => void;
+  onPrintItem?: (data: any, id: string, title: string) => void;
+  onDownloadItem?: (id: string, title: string) => void;
+  onShareItem?: (data: any, type: string) => void;
+}> = ({ data, onSeeDetail, onCancelItem, onPrintItem, onDownloadItem, onShareItem }) => {
+  const menu = useRef<Menu>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  const items = [
+    {
+      label: "Ver detalle",
+      icon: "pi pi-eye",
+      command: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
+    },
+    {
+      label: "Solicitar cancelación",
+      icon: "pi pi-times",
+      command: () => onCancelItem && onCancelItem(data.id)
+    },
+    {
+      label: "Imprimir",
+      icon: "pi pi-print",
+      command: () => onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
+    },
+    {
+      label: "Descargar",
+      icon: "pi pi-download",
+      command: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
+    },
+    {
+      separator: true
+    },
+    {
+      label: "Compartir",
+      icon: "pi pi-share-alt",
+      items: [
+        {
+          label: "WhatsApp",
+          icon: "pi pi-whatsapp",
+          command: () => onShareItem && onShareItem(data, "whatsapp")
+        },
+        {
+          label: "Email",
+          icon: "pi pi-envelope",
+          command: () => onShareItem && onShareItem(data, "email")
+        }
+      ]
+    }
+  ];
+
+
+
+  const handleMenuHide = () => {
+    setOpenMenuId(null);
+  };
+
+  return (
+    <div className="table-actions-menu">
+      <Button
+        icon="pi pi-ellipsis-v"
+        className="p-button-rounded btn-primary"
+        onClick={(e) => menu.current?.toggle(e)}
+        aria-controls={`popup_menu_${data.id}`}
+        aria-haspopup
+      >
+        Acciones
+        <i className="fa fa-cog ml-2"></i>
+
+      </Button>
+      <Menu
+        model={items}
+        popup
+        ref={menu}
+        id={`popup_menu_${data.id}`}
+        onHide={handleMenuHide}
+        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+      />
+    </div>
+  );
+};

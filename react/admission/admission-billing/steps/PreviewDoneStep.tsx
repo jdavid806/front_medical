@@ -14,6 +14,7 @@ interface PreviewAndDoneStepProps {
     prevStep: () => void;
     onHide: () => void;
     onPrint: () => void;
+    onDownload: () => void;
     onSubmit: () => Promise<void>;
     isSuccess?: boolean;
     setIsSuccess?: (success: boolean) => void;
@@ -24,6 +25,7 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
     prevStep,
     onHide,
     onPrint,
+    onDownload,
     onSubmit,
     isSuccess = false,
     setIsSuccess
@@ -117,10 +119,18 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
                 <div className="d-flex justify-content-center gap-3">
                     <Button
                         label="Imprimir Factura"
-                        icon="pi pi-print mr-2"
                         className="btn btn-outline-primary btn-lg"
+                        icon={<i className="fas fa-print mr-2"></i>}
                         onClick={onPrint}
                     />
+
+                    <Button
+                        label="Descargar Factura"
+                        icon={<i className="fas fa-file-pdf mr-2"></i>}
+                        className="btn btn-outline-primary btn-lg"
+                        onClick={onDownload}
+                    />
+
                     <Button
                         label="Volver al Inicio"
                         className="btn btn-primary btn-lg"
@@ -243,22 +253,23 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
                 </div>
             </Panel>
 
-            <div className="d-flex justify-content-center gap-3 mt-5 mb-4">
-                <Button
-                    label="Imprimir Factura"
-                    icon="pi pi-print"
-                    className="p-button-outlined p-button-lg"
-                    onClick={onPrint}
-                    disabled={isSubmitting}
-                />
-                <Button
-                    label={isSubmitting ? "Guardando..." : "Guardar Factura"}
-                    icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check"}
-                    className="p-button-lg"
-                    onClick={handleFinish}
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                />
+            <div className="col-12">
+                <div className="d-flex justify-content-between pt-4">
+                    <Button
+                        label="Atrás"
+                        icon={<i className="fas fa-arrow-left me-1"></i>}
+                        onClick={prevStep}
+                        className="p-button-secondary"
+                    />
+                    <Button
+                        label={isSubmitting ? "Guardando..." : "Guardar Factura"}
+                        icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                        className="p-button-lg"
+                        onClick={handleFinish}
+                        loading={isSubmitting}
+                        disabled={isSubmitting}
+                    />
+                </div>
             </div>
         </div>
     );

@@ -13,6 +13,7 @@ const PreviewDoneStep = ({
   prevStep,
   onHide,
   onPrint,
+  onDownload,
   onSubmit,
   isSuccess = false,
   setIsSuccess
@@ -110,9 +111,18 @@ const PreviewDoneStep = ({
       className: "d-flex justify-content-center gap-3"
     }, /*#__PURE__*/React.createElement(Button, {
       label: "Imprimir Factura",
-      icon: "pi pi-print mr-2",
       className: "btn btn-outline-primary btn-lg",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-print mr-2"
+      }),
       onClick: onPrint
+    }), /*#__PURE__*/React.createElement(Button, {
+      label: "Descargar Factura",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-pdf mr-2"
+      }),
+      className: "btn btn-outline-primary btn-lg",
+      onClick: onDownload
     }), /*#__PURE__*/React.createElement(Button, {
       label: "Volver al Inicio",
       className: "btn btn-primary btn-lg",
@@ -277,13 +287,16 @@ const PreviewDoneStep = ({
   }, "Total Factura:"), /*#__PURE__*/React.createElement("span", {
     className: "h4 mb-0 text-primary"
   }, formatCurrency(total)))))))), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-center gap-3 mt-5 mb-4"
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between pt-4"
   }, /*#__PURE__*/React.createElement(Button, {
-    label: "Imprimir Factura",
-    icon: "pi pi-print",
-    className: "p-button-outlined p-button-lg",
-    onClick: onPrint,
-    disabled: isSubmitting
+    label: "Atr\xE1s",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-arrow-left me-1"
+    }),
+    onClick: prevStep,
+    className: "p-button-secondary"
   }), /*#__PURE__*/React.createElement(Button, {
     label: isSubmitting ? "Guardando..." : "Guardar Factura",
     icon: isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check",
@@ -291,6 +304,6 @@ const PreviewDoneStep = ({
     onClick: handleFinish,
     loading: isSubmitting,
     disabled: isSubmitting
-  })));
+  }))));
 };
 export default PreviewDoneStep;

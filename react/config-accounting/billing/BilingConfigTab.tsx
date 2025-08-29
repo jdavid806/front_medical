@@ -23,7 +23,6 @@ const BillingConfigTab = () => {
     saving: false,
   });
 
-  // Form configurations for each tab
   const {
     register: registerFiscal,
     handleSubmit: handleFiscal,

@@ -22,6 +22,7 @@ const AsignarConsentimiento = () => {
   const {
     data: templates
   } = useGetData();
+  console.log('wooo', templates);
   // Extraer patient_id de la URL al cargar el componente
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

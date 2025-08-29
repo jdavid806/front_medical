@@ -295,7 +295,7 @@ export const RescheduleAppointmentModalV2 = ({ isOpen, onClose, appointmentId, o
                 console.log('mappedAppointment', mappedAppointment);
 
                 setCurrentAppointment(mappedAppointment);
-                setPatientName(`${appointment.patient.first_name} ${appointment.patient.middle_name} ${appointment.patient.last_name} ${appointment.patient.second_last_name}`);
+                setPatientName(`${appointment.patient.first_name || ''} ${appointment.patient.middle_name || ''} ${appointment.patient.last_name || ''} ${appointment.patient.second_last_name || ''}`);
 
                 console.log('userSpecialties', userSpecialties);
 

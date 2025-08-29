@@ -22,8 +22,7 @@ const AsignarConsentimiento: React.FC = () => {
   } = usePatientDocuments(patientId);
   const [showDocumentFormModal, setShowDocumentFormModal] = useState(false);
   const [currentDocument, setCurrentDocument] = useState<DocumentoConsentimiento | null>(null);
-  const { data: templates } = useGetData();
-  // Extraer patient_id de la URL al cargar el componente
+  const { data: templates } = useGetData();  // Extraer patient_id de la URL al cargar el componente
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('patient_id');

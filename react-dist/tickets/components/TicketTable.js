@@ -19,6 +19,7 @@ export const TicketTable = () => {
   } = useAllTableTickets();
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [ticketReasonsBackend, setTicketReasonsBackend] = useState({});
   const columns = [{
     data: "ticket_number"
   }, {
@@ -50,6 +51,23 @@ export const TicketTable = () => {
   } = useTemplate(dataTemplate);
   const sendMessageTicketsRef = useRef(sendMessageTickets);
   useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await ticketService.getAllTicketReasons();
+        // Transformar array a objeto { key: label }
+        const reasonsMap = response.reasons.reduce((acc, reason) => {
+          acc[reason.key] = reason.label;
+          return acc;
+        }, {});
+        console.log("first", reasonsMap);
+        setTicketReasonsBackend(reasonsMap);
+      } catch (error) {
+        console.error("Error al cargar ticket reasons:", error);
+      }
+    };
+    fetchReasons();
+  }, []);
+  useEffect(() => {
     sendMessageTicketsRef.current = sendMessageTickets;
   }, [sendMessageTickets]);
   useEffect(() => {
@@ -60,11 +78,14 @@ export const TicketTable = () => {
     var hostname = window.location.hostname.split(".")[0];
     const channel = pusher.subscribe(`tickets.${hostname}`);
     channel.bind("ticket.generated", function (data) {
+      console.log("ticketreason1", data.ticket.reason);
+      console.log("ticketReasonsBacken1", ticketReasonsBackend);
+      console.log("ticketreasonnnnn1", ticketReasonsBackend[data.ticket.reason]);
       const newTicketData = {
         id: data.ticket.id,
         ticket_number: data.ticket.ticket_number,
         phone: data.ticket.phone,
-        reason: ticketReasons[data.ticket.reason],
+        reason: ticketReasonsBackend[data.ticket.reason] || ticketReasons[data.ticket.reason],
         priority: ticketPriorities[data.ticket.priority],
         status: data.ticket.status,
         statusView: ticketStatus[data.ticket.status],
@@ -111,12 +132,14 @@ export const TicketTable = () => {
     };
   }, []);
   useEffect(() => {
+    if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
+
     setData(tickets.map(ticket => {
       return {
         id: ticket.id,
         ticket_number: ticket.ticket_number,
         phone: ticket.phone,
-        reason: ticketReasons[ticket.reason],
+        reason: ticketReasonsBackend[ticket.reason] || ticketReasons[ticket.reason] || ticket.reason,
         priority: ticketPriorities[ticket.priority],
         module_name: ticket.module?.name || "",
         status: ticket.status,
@@ -131,7 +154,7 @@ export const TicketTable = () => {
         patient: ticket.patient
       };
     }));
-  }, [tickets]);
+  }, [tickets, ticketReasonsBackend]);
   useEffect(() => {
     setFilteredData(data.filter(item => {
       return item.status == "PENDING" || item.status == "CALLED" && item.module_id == loggedUser?.today_module_id;

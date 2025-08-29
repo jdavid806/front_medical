@@ -13,7 +13,7 @@ export const ConsentimientoFormModal = ({
     onHide: onHide ?? (() => {}),
     header: title,
     style: {
-      width: '70vw'
+      width: '50rem'
     }
   }, /*#__PURE__*/React.createElement(ConsentimientoForm, {
     onHandleSubmit: handleSubmit,

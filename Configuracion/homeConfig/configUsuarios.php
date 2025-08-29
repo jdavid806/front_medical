@@ -3,13 +3,14 @@ include "../../menu.php";
 include "../../header.php";
 
 $tabs = [
-    ['icono' => 'user-plus', 'titulo' => 'Usuarios', 'texto' => 'Crea y actualiza las reglas para el maenjo de los usuarios', 'url' => 'cardUsers'],
+    ['icono' => 'user-plus', 'titulo' => 'Usuarios', 'texto' => 'Crea y actualiza las reglas para el manejo de los usuarios', 'url' => 'cardUsers'],
     ['icono' => 'users', 'titulo' => 'Roles de Usuario', 'texto' => 'Crear y actualiza los examenes del centro medico', 'url' => 'cardRoles'],
     ['icono' => 'calendar-days', 'titulo' => 'Horarios de Atención', 'texto' => 'Crea y actualiza los precios a facturar', 'url' => 'cardHorarios'],
     ['icono' => 'calendar-xmark', 'titulo' => 'Ausencias Programadas', 'texto' => 'Importa datos al sistema en formato csv', 'url' => 'cardAusencias'],
     ['icono' => 'hand-holding-dollar', 'titulo' => 'Comisiones', 'texto' => 'Crear y actualiza los formatos de consentimiento', 'url' => 'cardComisiones'],
     ['icono' => 'tablet-screen-button', 'titulo' => 'Modulos', 'texto' => 'Crear y actualiza los formatos de consentimiento', 'url' => 'cardModulos'],
     ['icono' => 'user-doctor', 'titulo' => 'Especialidades Medicas', 'texto' => 'Crear y actualiza los formatos de consentimiento', 'url' => 'cardEspecialidades'],
+    ['icono' => 'clipboard-question', 'titulo' => 'Motivo de Consulta', 'texto' => 'Crear y actualiza los motivos de consulta', 'url' => 'cardMotivoConsulta'],
     
 
 ];

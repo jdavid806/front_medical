@@ -84,15 +84,11 @@ export const PatientClinicalRecordHistory: React.FC<
   }, []);
 
   const printClinicalRecord = (data: any, id: string, title: string) => {
-    //@ts-ignore
     generarFormato("Consulta", data, "Impresion");
-    // crearDocumento(id, "Impresion", "Consulta", "Completa", title);
   };
 
   const downloadClinicalRecord = (id: string, title: string) => {
-    //@ts-ignore
     generarFormato("Consulta", data, "Descarga");
-    // crearDocumento(id, "Descarga", "Consulta", "Completa", title);
   };
 
   const shareClinicalRecord = (data, type) => {

@@ -5,7 +5,7 @@ include "../../header.php";
 $tabs = [
     ['icono' => 'toolbox', 'titulo' => 'Configuración Empresa', 'texto' => 'Ver y configurar los detalles del centro medico', 'url' => 'configuracionEmpresa'],
     ['icono' => 'building-columns', 'titulo' => 'Entidades', 'texto' => 'Crear y actualiza info de las ARS', 'url' => 'configEntidades'],
-    ['icono' => 'users', 'titulo' => 'Usuarios', 'texto' => 'Crea y actualiza las reglas para el maenjo de los usuarios', 'url' => 'configUsuarios'],
+    ['icono' => 'users', 'titulo' => 'Usuarios', 'texto' => 'Crea y actualiza las reglas para el manejo de los usuarios', 'url' => 'configUsuarios'],
     ['icono' => 'file-invoice', 'titulo' => 'Examenes', 'texto' => 'Crear y actualiza los examenes del centro medico', 'url' => 'configExamenes'],
     ['icono' => 'money-bill-1-wave', 'titulo' => 'Precios', 'texto' => 'Crea y actualiza los precios a facturar', 'url' => 'configPrecios'],
     ['icono' => 'upload', 'titulo' => 'Importaciones', 'texto' => 'Importa datos al sistema en formato csv', 'url' => 'configImportaciones'],

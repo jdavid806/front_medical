@@ -19,7 +19,7 @@ export const ConsentimientoFormModal: React.FC<FormModalProps> = ({
 }) => {
 
   return (
-    <Dialog visible={show} onHide={onHide ?? (() => {})} header={title} style={{ width: '70vw' }}>
+    <Dialog visible={show} onHide={onHide ?? (() => { })} header={title} style={{ width: '50rem' }}>
       <ConsentimientoForm
         onHandleSubmit={handleSubmit}
         initialData={initialData}

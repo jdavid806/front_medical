@@ -123,7 +123,7 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
         severity="secondary"
       />
       <Button
-        label={loading ? 'Guardando...' : `${initialData ? 'Actualizar' : 'Crear'} Consentimiento`}
+        label={loading ? 'Guardando...' : `${initialData ? 'Actualizar' : 'Asignar'} Consentimiento`}
         icon={loading ? 'pi pi-spin pi-spinner' : 'pi pi-save'}
         onClick={handleSubmit}
         disabled={loading || !formData.titulo?.trim()}

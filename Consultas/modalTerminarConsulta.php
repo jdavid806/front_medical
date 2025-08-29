@@ -956,6 +956,8 @@ include "../ConsultasJson/dataPaciente.php";
                 });
         }
 
+        console.log(data);
+
         clinicalRecordService.clinicalRecordsParamsStore(patientId, data)
             .then(async (response) => {
                 await appointmentService.changeStatus(appointmentId, 'consultation_completed')
@@ -978,8 +980,7 @@ include "../ConsultasJson/dataPaciente.php";
                                 const especialidad = new URLSearchParams(window.location
                                         .search).get('especialidad') ||
                                     'medicina_general';
-                                window.location.href =
-                                    `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
+                                //window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
                             });
                         })
                     })
@@ -990,7 +991,7 @@ include "../ConsultasJson/dataPaciente.php";
                 setTimeout(() => {
                     const patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || 0;
                     const especialidad = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general';
-                    window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
+                    //window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${especialidad}`;
                 }, 1000);
             }).catch(err => {
                 if (err.data?.errors) {

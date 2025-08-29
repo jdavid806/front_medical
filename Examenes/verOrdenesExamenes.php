@@ -19,6 +19,12 @@ $examenes = [
 ?>
 
 <style>
+       .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
     .custom-btn {
         width: 150px;
         height: 40px;

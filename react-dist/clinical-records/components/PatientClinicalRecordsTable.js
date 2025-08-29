@@ -1,16 +1,10 @@
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { SeeDetailTableAction } from "../../components/table-actions/SeeDetailTableAction.js";
-import { RequestCancellationTableAction } from "../../components/table-actions/RequestCancellationTableAction.js";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
-import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
+import React, { useEffect, useRef, useState } from "react";
 import { CustomPRTable } from "../../components/CustomPRTable.js";
 import { clinicalRecordStateColors, clinicalRecordStates } from "../../../services/commons.js";
 import { HtmlRenderer } from "../../components/HtmlRenderer.js";
-;
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 export const PatientClinicalRecordsTable = ({
   records,
   onSeeDetail,
@@ -24,9 +18,13 @@ export const PatientClinicalRecordsTable = ({
   loading,
   onPage,
   onReload,
-  onSearch
+  onSearch,
+  onSort
 }) => {
   const [tableRecords, setTableRecords] = useState([]);
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState(1); // 1 for asc, -1 for desc
+
   useEffect(() => {
     const mappedRecords = records.map(clinicalRecord => {
       const formattedDate = new Date(clinicalRecord.created_at).toLocaleString("es-ES", {
@@ -70,12 +68,25 @@ export const PatientClinicalRecordsTable = ({
     });
     setTableRecords(mappedRecords);
   }, [records]);
+  const handleSort = e => {
+    const {
+      sortField,
+      sortOrder
+    } = e;
+    setSortField(sortField);
+    setSortOrder(sortOrder === 1 ? 1 : -1);
+    if (onSort) {
+      onSort(e);
+    }
+  };
   const columns = [{
     field: "clinicalRecordName",
-    header: "Nombre de la historia"
+    header: "Nombre de la historia",
+    sortable: true
   }, {
     field: "doctorName",
-    header: "Doctor(a)"
+    header: "Doctor(a)",
+    sortable: true
   }, {
     field: "description",
     header: "Observaciones",
@@ -84,41 +95,40 @@ export const PatientClinicalRecordsTable = ({
     })
   }, {
     field: "createdAt",
-    header: "Fecha de creación"
+    header: "Fecha de creación",
+    sortable: true
   }, {
     field: "status",
     header: "Estado",
     body: data => {
       const color = clinicalRecordStateColors[data.status] || "secondary";
       const text = clinicalRecordStates[data.status] || "SIN ESTADO";
-      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-        className: `badge badge-phoenix badge-phoenix-${color}`
-      }, text));
+      const severityMap = {
+        'success': 'success',
+        'warning': 'warning',
+        'danger': 'danger',
+        'info': 'info',
+        'primary': 'secondary',
+        'secondary': 'secondary'
+      };
+      const severity = severityMap[color] || 'secondary';
+      return /*#__PURE__*/React.createElement(Badge, {
+        value: text,
+        severity: severity,
+        className: "p-badge-lg"
+      });
     }
   }, {
-    field: "",
+    field: "actions",
     header: "Acciones",
-    body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "text-end align-middle"
-    }, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(SeeDetailTableAction, {
-      onTrigger: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
-    }), /*#__PURE__*/React.createElement(RequestCancellationTableAction, {
-      onTrigger: () => onCancelItem && onCancelItem(data.id)
-    }), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
-    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
-    }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
-      className: "dropdown-divider"
-    })), /*#__PURE__*/React.createElement("li", {
-      className: "dropdown-header"
-    }, "Compartir"), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "whatsapp",
-      onTrigger: () => onShareItem && onShareItem(data, "whatsapp")
-    }), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "email",
-      onTrigger: () => onShareItem && onShareItem(data, "email")
-    }))))
+    body: data => /*#__PURE__*/React.createElement(TableActionsMenu, {
+      data: data,
+      onSeeDetail: onSeeDetail,
+      onCancelItem: onCancelItem,
+      onPrintItem: onPrintItem,
+      onDownloadItem: onDownloadItem,
+      onShareItem: onShareItem
+    })
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
@@ -132,8 +142,74 @@ export const PatientClinicalRecordsTable = ({
     rows: rows,
     totalRecords: totalRecords,
     loading: loading,
+    sortField: sortField,
+    sortOrder: sortOrder,
     onPage: onPage,
     onSearch: onSearch,
-    onReload: onReload
+    onReload: onReload,
+    onSort: handleSort
   }))));
+};
+const TableActionsMenu = ({
+  data,
+  onSeeDetail,
+  onCancelItem,
+  onPrintItem,
+  onDownloadItem,
+  onShareItem
+}) => {
+  const menu = useRef(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const items = [{
+    label: "Ver detalle",
+    icon: "pi pi-eye",
+    command: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
+  }, {
+    label: "Solicitar cancelación",
+    icon: "pi pi-times",
+    command: () => onCancelItem && onCancelItem(data.id)
+  }, {
+    label: "Imprimir",
+    icon: "pi pi-print",
+    command: () => onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
+  }, {
+    label: "Descargar",
+    icon: "pi pi-download",
+    command: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
+  }, {
+    separator: true
+  }, {
+    label: "Compartir",
+    icon: "pi pi-share-alt",
+    items: [{
+      label: "WhatsApp",
+      icon: "pi pi-whatsapp",
+      command: () => onShareItem && onShareItem(data, "whatsapp")
+    }, {
+      label: "Email",
+      icon: "pi pi-envelope",
+      command: () => onShareItem && onShareItem(data, "email")
+    }]
+  }];
+  const handleMenuHide = () => {
+    setOpenMenuId(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "table-actions-menu"
+  }, /*#__PURE__*/React.createElement(Button, {
+    icon: "pi pi-ellipsis-v",
+    className: "p-button-rounded btn-primary",
+    onClick: e => menu.current?.toggle(e),
+    "aria-controls": `popup_menu_${data.id}`,
+    "aria-haspopup": true
+  }, "Acciones", /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-cog ml-2"
+  })), /*#__PURE__*/React.createElement(Menu, {
+    model: items,
+    popup: true,
+    ref: menu,
+    id: `popup_menu_${data.id}`,
+    onHide: handleMenuHide,
+    appendTo: typeof document !== 'undefined' ? document.body : undefined
+  }));
 };

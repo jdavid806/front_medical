@@ -28,23 +28,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export async function generarFormatoOrden(orden, tipo, inputId = "") {
-  console.log("orden: ",orden);
   const patient = await consultarDatosPaciente(orden.patient_id);
   const company = await consultarData();
-  const user = await consultarDatosDoctor(orden.exam_result[0].created_by_user_id);
-  console.log("user", user);
+const user = await consultarDatosDoctor(
+  orden.exam_result?.[0]?.created_by_user_id
+) ?? {};
+
+
+  let baseUrl = window.location.origin;
    
   let userData = {
-    nombre: user.nombre,
-    especialidad: user.especialidad || "",
-    registro_medico: user.registro_medico || "",
-    sello:
-      `https://dev.monaros.co/` +
-      getUrlImage(user?.sello || ""),
-    firma:
-      `https://dev.monaros.co/` +
-      getUrlImage(user?.firma || ""),
-  };
+  nombre: user.nombre,
+  especialidad: user.especialidad || "",
+  registro_medico: user.registro_medico || "",
+  sello: `${baseUrl}/${getUrlImage(user?.sello || "")}`,
+  firma: `${baseUrl}/${getUrlImage(user?.firma || "")}`,
+};
   let state = getOrdenState(orden.exam_order_state.name);
 
   const tablePatient = generarTablaPaciente(patient, {

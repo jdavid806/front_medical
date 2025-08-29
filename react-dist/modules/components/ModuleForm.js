@@ -1,18 +1,17 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { useBranchesForSelect } from "../../branches/hooks/useBranchesForSelect.js";
-import { InputText } from 'primereact/inputtext';
-import { Controller, useForm } from 'react-hook-form';
-import { classNames } from 'primereact/utils';
-import { ticketReasons } from "../../../services/commons.js";
-import { objectToArray } from "../../../services/utilidades.js";
-import { MultiSelect } from 'primereact/multiselect';
-import { useEffect } from 'react';
+import { InputText } from "primereact/inputtext";
+import { Controller, useForm } from "react-hook-form";
+import { classNames } from "primereact/utils";
+import { ticketService } from "../../../services/api/index.js";
+import { MultiSelect } from "primereact/multiselect";
 export const ModuleForm = ({
   formId,
   onHandleSubmit,
   initialData
 }) => {
+  const [allowedReasonsOptions, setAllowedReasonsOptions] = useState([]);
   const {
     control,
     handleSubmit,
@@ -22,8 +21,8 @@ export const ModuleForm = ({
     reset
   } = useForm({
     defaultValues: initialData || {
-      name: '',
-      branch_id: '1',
+      name: "",
+      branch_id: "1",
       allowed_reasons: []
     }
   });
@@ -31,16 +30,37 @@ export const ModuleForm = ({
   const {
     branches
   } = useBranchesForSelect();
-  const allowedReasonsOptions = objectToArray(ticketReasons);
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, errors[name].message);
   };
+
+  // useEffect(() => {
+  //     reset(initialData || {
+  //         name: '',
+  //         branch_id: '1',
+  //         allowed_reasons: []
+  //     });
+  // }, [initialData, reset]);
+
   useEffect(() => {
+    const fetchReasons = async () => {
+      try {
+        const response = await ticketService.getAllTicketReasons();
+        const formatted = response.reasons.map(r => ({
+          value: r.key,
+          label: r.label
+        }));
+        setAllowedReasonsOptions(formatted);
+      } catch (error) {
+        console.error("Error al cargar motivos:", error);
+      }
+    };
+    fetchReasons();
     reset(initialData || {
-      name: '',
-      branch_id: '1',
+      name: "",
+      branch_id: "1",
       allowed_reasons: []
     });
   }, [initialData, reset]);
@@ -55,7 +75,7 @@ export const ModuleForm = ({
     name: "name",
     control: control,
     rules: {
-      required: 'Este campo es requerido'
+      required: "Este campo es requerido"
     },
     render: ({
       field
@@ -68,17 +88,17 @@ export const ModuleForm = ({
       value: field.value,
       onBlur: field.onBlur,
       onChange: field.onChange,
-      className: classNames('w-100', {
-        'p-invalid': errors.name
+      className: classNames("w-100", {
+        "p-invalid": errors.name
       })
     }))
-  }), getFormErrorMessage('name')), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "allowed_reasons",
     control: control,
     rules: {
-      required: 'Este campo es requerido'
+      required: "Este campo es requerido"
     },
     render: ({
       field
@@ -91,11 +111,12 @@ export const ModuleForm = ({
       optionLabel: "label",
       optionValue: "value",
       filter: true,
-      placeholder: "Seleccione los motivos de visita a atender",
-      className: classNames('w-100 position-relative', {
-        'p-invalid': errors.allowed_reasons
+      disabled: allowedReasonsOptions.length === 0,
+      placeholder: allowedReasonsOptions.length === 0 ? "Cargando motivos..." : "Seleccione los motivos de visita a atender",
+      className: classNames("w-100 position-relative", {
+        "p-invalid": errors.allowed_reasons
       }),
       appendTo: "self"
     }, field)))
-  }), getFormErrorMessage('allowed_reasons'))));
+  }), getFormErrorMessage("allowed_reasons"))));
 };

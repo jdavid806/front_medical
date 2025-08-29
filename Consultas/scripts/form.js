@@ -946,7 +946,7 @@ function createTextareaField(field) {
     textarea.setAttribute("placeholder", field.placeholder);
   }
 
-  // Botón de micrófono (estilo simplificado)
+  // Botón de micrófono
   let micButton = document.createElement("button");
   micButton.innerHTML = '<i class="fas fa-microphone"></i>';
   micButton.type = "button";
@@ -961,7 +961,7 @@ function createTextareaField(field) {
   micButton.style.background = "none";
   micButton.style.border = "none";
   micButton.style.cursor = "pointer";
-  micButton.style.color = "#132030"; // Color gris por defecto
+  micButton.style.color = "#132030"; 
   micButton.style.fontSize = "1rem";
 
   textareaContainer.appendChild(textarea);
@@ -1017,7 +1017,7 @@ function createTextareaField(field) {
 
     recognition.start();
     isListening = true;
-    micButton.style.color = "#dc3545"; // Rojo cuando está escuchando
+    micButton.style.color = "#dc3545"; 
     micButton.title = "Detener dictado";
   }
 
@@ -1026,7 +1026,7 @@ function createTextareaField(field) {
       recognition.stop();
     }
     isListening = false;
-    micButton.style.color = "#132030"; // Gris cuando no está escuchando
+    micButton.style.color = "#132030"; 
     micButton.title = "Dictado por voz";
   }
 
