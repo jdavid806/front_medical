@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { ConfigColumns } from "datatables.net-bs5";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PrescriptionDto, PrescriptionTableItem } from "../../models/models.js";
-import CustomDataTable from "../../components/CustomDataTable.js";
-import { TableBasicActions } from "../../components/TableBasicActions.js";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
-import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 import { useTemplate } from "../../hooks/useTemplate.js";
 import { useMassMessaging } from "../../hooks/useMassMessaging.js";
 import {
   formatWhatsAppMessage,
   getIndicativeByCountry,
-  formatDate,
 } from "../../../services/utilidades";
 import { SwalManager } from "../../../services/alertManagerImported.js";
+
+// PrimeReact imports
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable";
 
 interface PrescriptionTableProps {
   prescriptions: PrescriptionDto[];
@@ -28,10 +25,7 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
   onEditItem,
   onDeleteItem,
 }) => {
-
-  const [tablePrescriotions, setTablePrescriptions] = React.useState<
-    PrescriptionTableItem[]
-  >([]);
+  const [tablePrescriptions, setTablePrescriptions] = useState<PrescriptionTableItem[]>([]);
   const tenant = window.location.hostname.split(".")[0];
   const data = {
     tenantId: tenant,
@@ -78,15 +72,9 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
     setTablePrescriptions(mappedPrescriptions);
   }, [prescriptions]);
 
-  const columns: ConfigColumns[] = [
-    { data: "doctor" },
-    { data: "created_at" },
-    { orderable: false, searchable: false },
-  ];
-
   async function generatePdfFile(prescription) {
     //@ts-ignore
-    generarFormato("Receta", prescription, "Impresion", "prescriptionInput");
+    await generarFormato("Receta", prescription, "Impresion", "prescriptionInput");
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -110,116 +98,200 @@ const PrescriptionTable: React.FC<PrescriptionTableProps> = ({
             resolve(response.file);
           })
           .catch(reject);
-      }, 1500);
+      }, 1000);
     });
   }
 
   const sendMessageWhatsapp = useCallback(
     async (prescription) => {
       const templatePrescriptions = await fetchTemplateRef.current();
-        const dataToFile: any = await generatePdfFile(prescription);
-        //@ts-ignore
-        const urlPDF = getUrlImage(
-          dataToFile.file_url.replaceAll("\\", "/"),
-          true
-        );
+      const dataToFile: any = await generatePdfFile(prescription);
+      //@ts-ignore
+      const urlPDF = getUrlImage(
+        dataToFile.file_url.replaceAll("\\", "/"),
+        true
+      );
 
-        const replacements = {
-          NOMBRE_PACIENTE: `${prescription.patient.first_name} ${prescription.patient.middle_name} ${prescription.patient.last_name} ${prescription.patient.second_last_name}`,
-          ESPECIALISTA: `${prescription.prescriber.first_name} ${prescription.prescriber.middle_name} ${prescription.prescriber.last_name} ${prescription.prescriber.second_last_name}`,
-          ESPECIALIDAD: `${prescription.prescriber.specialty.name}`,
-          RECOMENDACIONES: `${prescription.clinical_record.description}`,
-          FECHA_RECETA: `${prescription.createdAt}`,
-          "ENLACE DOCUMENTO": "",
-        };
+      const replacements = {
+        NOMBRE_PACIENTE: `${prescription.patient.first_name} ${prescription.patient.middle_name} ${prescription.patient.last_name} ${prescription.patient.second_last_name}`,
+        ESPECIALISTA: `${prescription.prescriber.first_name} ${prescription.prescriber.middle_name} ${prescription.prescriber.last_name} ${prescription.prescriber.second_last_name}`,
+        ESPECIALIDAD: `${prescription.prescriber.specialty.name}`,
+        RECOMENDACIONES: `${prescription.clinical_record.description}`,
+        FECHA_RECETA: `${prescription.created_at}`,
+        "ENLACE DOCUMENTO": "",
+      };
 
-        const templateFormatted = formatWhatsAppMessage(
-          templatePrescriptions.template,
-          replacements
-        );
+      const templateFormatted = formatWhatsAppMessage(
+        templatePrescriptions.template,
+        replacements
+      );
 
-        const dataMessage = {
-          channel: "whatsapp",
-          recipients: [
-            getIndicativeByCountry(prescription.patient.country_id) +
-              prescription.patient.whatsapp,
-          ],
-          message_type: "media",
-          message: templateFormatted,
-          attachment_url: urlPDF,
-          attachment_type: "document",
-          minio_model_type: dataToFile?.model_type,
-          minio_model_id: dataToFile?.model_id,
-          minio_id: dataToFile?.id,
-          webhook_url: "https://example.com/webhook",
-        };
-        await sendMessageWppRef.current(dataMessage);
-        SwalManager.success({
-          text: "Mensaje enviado correctamente",
-          title: "Éxito",
-        });
+      const dataMessage = {
+        channel: "whatsapp",
+        recipients: [
+          getIndicativeByCountry(prescription.patient.country_id) +
+          prescription.patient.whatsapp,
+        ],
+        message_type: "media",
+        message: templateFormatted,
+        attachment_url: urlPDF,
+        attachment_type: "document",
+        minio_model_type: dataToFile?.model_type,
+        minio_model_id: dataToFile?.model_id,
+        minio_id: dataToFile?.id,
+        webhook_url: "https://example.com/webhook",
+      };
+      await sendMessageWppRef.current(dataMessage);
+      SwalManager.success({
+        text: "Mensaje enviado correctamente",
+        title: "Éxito",
+      });
     },
     [sendMessageWpp, fetchTemplate]
   );
 
-  const slots = {
-    2: (cell, data: PrescriptionTableItem) => (
-      <>
-        <div className="text-end flex justify-cointent-end">
-          <TableActionsWrapper>
-            <PrintTableAction
-              onTrigger={() => {
-                //@ts-ignore
-                // crearDocumento(data.id, "Impresion", "Receta", "Completa", "Receta");
-                // console.log("data", data);
-                generarFormato("Receta", data, "Impresion");
-              }}
-            />
-            <DownloadTableAction
-              onTrigger={() => {
-                //@ts-ignore
-                generarFormato("Receta", data, "Descarga");
-              }}
-            />
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-            <li className="dropdown-header">Compartir</li>
-            <ShareTableAction
-              shareType="whatsapp"
-              onTrigger={() => {
-                sendMessageWhatsapp(data);
-              }}
-            />
-          </TableActionsWrapper>
-        </div>
-      </>
-    ),
-  };
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: "doctor",
+      header: "Doctor",
+      sortable: true,
+      width: '200px'
+      
+    },
+    {
+      field: "created_at",
+      header: "Fecha de creación",
+      sortable: true,
+      width: '200px'
+    },
+    {
+      field: "actions",
+      header: "Acciones",
+      width: '10%',
+
+      body: (data: PrescriptionTableItem) => (
+        <TableActionsMenu
+          data={data}
+          onPrint={() => {
+            generarFormato("Receta", data, "Impresion");
+          }}
+          onDownload={() => {
+            generarFormato("Receta", data, "Descarga");
+          }}
+          onShare={() => {
+            sendMessageWhatsapp(data);
+          }}
+          onEdit={() => onEditItem(data.id)}
+          onDelete={() => onDeleteItem(data.id)}
+        />
+      )
+    },
+  ];
 
   return (
     <>
-      <div className="card mb-3">
+      <div className="card p-2">
         <div className="card-body">
-          <CustomDataTable
-            data={tablePrescriotions}
-            slots={slots}
+          <CustomPRTable
             columns={columns}
-          >
-            <thead>
-              <tr>
-                <th className="border-top custom-th">Doctor</th>
-                <th className="border-top custom-th">Fecha de creación</th>
-                <th
-                  className="text-end align-middle pe-0 border-top mb-2"
-                  scope="col"
-                ></th>
-              </tr>
-            </thead>
-          </CustomDataTable>
+            data={tablePrescriptions}
+            lazy={false}
+          />
         </div>
       </div>
+      <style>{`
+             .table-actions-menu{
+             }
+      `}</style>
     </>
+  );
+};
+
+const TableActionsMenu: React.FC<{
+  data: PrescriptionTableItem;
+  onPrint: () => void;
+  onDownload: () => void;
+  onShare: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}> = ({ data, onPrint, onDownload, onShare, onEdit, onDelete }) => {
+  const menu = useRef<Menu>(null);
+
+  const items = [
+    {
+      label: "Imprimir",
+      icon: "pi pi-print",
+      command: () => {
+        onPrint();
+      }
+    },
+    {
+      label: "Descargar",
+      icon: "pi pi-download",
+      command: () => {
+        onDownload();
+      }
+    },
+    {
+      separator: true
+    },
+    {
+      label: "Compartir",
+      icon: "pi pi-share-alt",
+      items: [
+        {
+          label: "WhatsApp",
+          icon: "pi pi-whatsapp",
+          command: () => {
+            onShare();
+          }
+        }
+      ]
+    },
+    {
+      separator: true
+    },
+    {
+      label: "Editar",
+      icon: "pi pi-pencil",
+      command: () => {
+        onEdit();
+      }
+    },
+    {
+      label: "Eliminar",
+      icon: "pi pi-trash",
+      command: () => {
+        onDelete();
+      }
+    }
+  ];
+
+  const handleMenuHide = () => {
+    // Función para manejar el cierre del menú
+  };
+
+  return (
+    <div className="table-actions-menu">
+      <Button
+        icon="pi pi-ellipsis-v"
+        className="p-button-rounded btn-primary"
+        onClick={(e) => menu.current?.toggle(e)}
+        aria-controls={`popup_menu_${data.id}`}
+        aria-haspopup
+      >
+        Acciones
+        <i className="fa fa-cog ml-2"></i>
+      </Button>
+      <Menu
+        model={items}
+        popup
+        ref={menu}
+        id={`popup_menu_${data.id}`}
+        onHide={handleMenuHide}
+        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+      />
+    </div>
   );
 };
 

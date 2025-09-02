@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoReceta(receta, tipo, inputId = "") {
+export async function generarFormatoReceta(receta, tipo, inputId = "") {
   let userName = [
     receta.prescriber?.first_name,
     receta.prescriber?.middle_name,
@@ -105,7 +105,7 @@ export function generarFormatoReceta(receta, tipo, inputId = "") {
   };
   // console.log(pdfConfig);
 
-  generatePDFFromHTML(contenido, company, pdfConfig, inputId);
+  await generatePDFFromHTML(contenido, company, pdfConfig, inputId);
 }
 
 export default generarFormatoReceta;

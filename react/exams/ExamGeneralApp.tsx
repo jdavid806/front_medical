@@ -18,10 +18,10 @@ const ExamGeneralApp: React.FC = () => {
         window.location.href = `cargarResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}&appointment_id=${examTableItem.appointmentId}`;
     };
 
-    const handleViewExamResults = async (examTableItem: ExamTableItem, minioId?: string) => {
-        if (minioId) {
+    const handleViewExamResults = async (examTableItem: ExamTableItem, minioUrl?: string) => {
+        if (minioUrl) {
             //@ts-ignore
-            const url = await getFileUrl(minioId);
+            const url = await getUrlImage(minioUrl);
             window.open(url, '_blank');
         } else {
             window.location.href = `verResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}`;

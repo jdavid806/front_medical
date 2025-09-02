@@ -22,7 +22,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-    watch,
   } = useForm<TaxFormInputs>({
     defaultValues: initialData || {
       name: "",
@@ -35,9 +34,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
     },
   });
 
-  // Observar cambios en las cuentas para validaciones cruzadas
-  const selectedPurchaseAccount = watch("accounting_account_id");
-  const selectedSellAccount = watch("sell_accounting_account_id");
+
 
   const onFormSubmit: SubmitHandler<TaxFormInputs> = (data) => {
     onSubmit(data);
@@ -133,7 +130,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Configuración Compras */}
       <div className="field mb-4">
         <label className="font-medium block mb-2">
           Configuración Compras *
@@ -186,12 +182,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
           control={control}
           rules={{
             required: "La cuenta contable reversa de compras es requerida",
-            validate: (value) => {
-              if (value === selectedPurchaseAccount) {
-                return "No puede ser la misma cuenta principal de compras";
-              }
-              return true;
-            },
           }}
           render={({ field, fieldState }) => (
             <>
@@ -199,9 +189,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 id={field.name}
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
-                options={accounts.filter(
-                  (acc) => acc.id !== selectedPurchaseAccount
-                )}
+                options={accounts}
                 optionLabel="account_name"
                 placeholder="Seleccione una cuenta"
                 filter
@@ -272,12 +260,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
           control={control}
           rules={{
             required: "La cuenta contable reversa de ventas es requerida",
-            validate: (value) => {
-              if (value === selectedSellAccount) {
-                return "No puede ser la misma cuenta principal de ventas";
-              }
-              return true;
-            },
           }}
           render={({ field, fieldState }) => (
             <>
@@ -285,9 +267,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 id={field.name}
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
-                options={accounts.filter(
-                  (acc) => acc.id !== selectedSellAccount
-                )}
+                options={accounts}
                 optionLabel="account_name"
                 placeholder="Seleccione una cuenta"
                 filter
@@ -305,7 +285,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Campo Descripción */}
       <div className="field mb-4">
         <label htmlFor="description" className="font-medium block mb-2">
           Descripción
@@ -325,7 +304,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
         />
       </div>
 
-      {/* Botones de acción */}
       <div className="d-flex justify-content-center mt-4 gap-6">
         {onCancel && (
           <Button

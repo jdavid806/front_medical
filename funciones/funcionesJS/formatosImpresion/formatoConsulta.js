@@ -11,7 +11,6 @@ async function consultarData() {
   const responePatient = await consultarDatosPaciente(patient_id);
 
   patient = responePatient;
-  // console.log(patient);
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
@@ -19,14 +18,12 @@ async function consultarData() {
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
   };
-  // console.log("company", company);
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
-  console.log("consulta", datosConsulta);
+export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
   let user = {
     nombre: datosConsulta?.doctorName,
     especialidad: datosConsulta.user?.user_specialty_name,
@@ -34,7 +31,6 @@ export function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
     sello: `https://dev.monaros.co/` + getUrlImage(datosConsulta.user?.image_minio_url || ""),
     firma: `https://dev.monaros.co/` + getUrlImage(datosConsulta.user?.firma_minio_url || "")
   }
-  console.log("user", user);
 
   const tablePatient = generarTablaPaciente(patient, {
     date: datosConsulta.createdAt || "--",
@@ -1032,12 +1028,10 @@ export function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
   //   const urlConsulta = obtenerUrl(`/medical/clinical-records/${consultaId}`);
   //   const datosConsulta = await obtenerDatos(urlConsulta);
 
-  //   console.log("datosConsulta", datosConsulta);
 
   //   const urlTipoHistoria = obtenerUrl(
   //     `/medical/clinical-record-types/${datosConsulta.clinicalRecordTypeId}`
   //   );
-  //   console.log("urlTipoHistoria", datosConsulta.clinicalRecordTypeId);
   //   const tipoHistoria = await obtenerDatos(urlTipoHistoria);
 
   // Generar contenido según tipo de consulta
@@ -1454,7 +1448,7 @@ export function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
   contenido += `</div>
   ${datosUsuario(user)}`;
 
-  generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTML(contenido, company, patient, inputId);
 }
 
 export default generarFormatoConsulta;

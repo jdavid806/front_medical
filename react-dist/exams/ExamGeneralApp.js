@@ -15,10 +15,10 @@ const ExamGeneralApp = () => {
   const handleLoadExamResults = examTableItem => {
     window.location.href = `cargarResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}&appointment_id=${examTableItem.appointmentId}`;
   };
-  const handleViewExamResults = async (examTableItem, minioId) => {
-    if (minioId) {
+  const handleViewExamResults = async (examTableItem, minioUrl) => {
+    if (minioUrl) {
       //@ts-ignore
-      const url = await getFileUrl(minioId);
+      const url = await getUrlImage(minioUrl);
       window.open(url, '_blank');
     } else {
       window.location.href = `verResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}`;

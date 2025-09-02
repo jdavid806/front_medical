@@ -10,8 +10,8 @@ export interface PrescriptionModalProps {
 }
 
 export interface PrescriptionFormProps {
-    formId: string;
-    handleSubmit: (data: any) => void;
+    formId?: string;
+    handleSubmit?: (data: any) => void;
     initialData?: PrescriptionFormInputs;
     ref?: React.RefObject<any>;
 }

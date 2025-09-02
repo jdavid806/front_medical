@@ -21,7 +21,10 @@ import { Badge } from "primereact/badge";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
-import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../../components/CustomPRTable";
 import { CustomModal } from "../../components/CustomModal";
 
 export type ExamTableItem = {
@@ -118,8 +121,12 @@ export const ExamTable: React.FC<ExamTableProps> = ({
     setTableExams(mappedExams);
 
     // Separar exámenes por estado
-    setUploadedExams(mappedExams.filter(exam => exam.state === "uploaded"));
-    setPendingExams(mappedExams.filter(exam => exam.state === "generated" || exam.state === "pending"));
+    setUploadedExams(mappedExams.filter((exam) => exam.state === "uploaded"));
+    setPendingExams(
+      mappedExams.filter(
+        (exam) => exam.state === "generated" || exam.state === "pending"
+      )
+    );
   }, [exams]);
 
   async function generatePdfFile(exam) {
@@ -127,14 +134,14 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       //@ts-ignore
       const url = await getUrlImage(exam.minioUrl, true);
       return {
-        url: url,
+        file_url: url,
         model_type: "xxxxxxx",
         model_id: 0,
         id: 0,
       };
     } else {
       //@ts-ignore
-      generarFormato("Examen", exam.original, "Impresion", "examInput");
+      await generarFormato("Examen", exam.original, "Impresion", "examInput");
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -154,8 +161,13 @@ export const ExamTable: React.FC<ExamTableProps> = ({
           formData.append("model_id", exam.id);
           //@ts-ignore
           guardarArchivo(formData, true)
-            .then((response) => {
-              resolve(response.file);
+            .then(async (response) => {
+              resolve({
+                file_url: await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true),
+                model_type: response.file.model_type,
+                model_id: response.file.model_id,
+                id: response.file.id,
+              });
             })
             .catch(reject);
         }, 1500);
@@ -169,9 +181,11 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       const dataToFile: any = await generatePdfFile(exam);
 
       const replacements = {
-        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${exam.patient.middle_name ?? ""
-          } ${exam.patient.last_name ?? ""} ${exam.patient.second_last_name ?? ""
-          }`,
+        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${
+          exam.patient.middle_name ?? ""
+        } ${exam.patient.last_name ?? ""} ${
+          exam.patient.second_last_name ?? ""
+        }`,
         NOMBRE_EXAMEN: `${exam.examName}`,
         FECHA_EXAMEN: `${exam.dateTime}`,
         "ENLACE DOCUMENTO": "",
@@ -186,11 +200,11 @@ export const ExamTable: React.FC<ExamTableProps> = ({
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(exam.patient.country_id) +
-          exam.patient.whatsapp,
+            exam.patient.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
-        attachment_url: dataToFile.url,
+        attachment_url: dataToFile.file_url,
         attachment_type: "document",
         minio_model_type: dataToFile?.model_type,
         minio_model_id: dataToFile?.model_id,
@@ -241,7 +255,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
     {
       field: "examName",
       header: "Exámenes ordenados",
-      sortable: true
+      sortable: true,
     },
     {
       field: "status",
@@ -251,29 +265,29 @@ export const ExamTable: React.FC<ExamTableProps> = ({
         const text = examOrderStates[data.state] || "SIN ESTADO";
 
         const severityMap: Record<string, string> = {
-          'success': 'success',
-          'warning': 'warning',
-          'danger': 'danger',
-          'info': 'info',
-          'primary': 'secondary',
-          'secondary': 'secondary'
+          success: "success",
+          warning: "warning",
+          danger: "danger",
+          info: "info",
+          primary: "secondary",
+          secondary: "secondary",
         };
 
-        const severity = severityMap[color] || 'secondary';
+        const severity = severityMap[color] || "secondary";
 
         return (
           <Badge
             value={text}
             severity={severity}
-            className="p-badge-lg"
+            className="p-badge-lg h-auto"
           />
         );
-      }
+      },
     },
     {
       field: "dateTime",
       header: "Fecha y hora de creación",
-      sortable: true
+      sortable: true,
     },
     {
       field: "actions",
@@ -313,7 +327,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
             sendMessageWhatsapp(data);
           }}
         />
-      )
+      ),
     },
   ];
 
@@ -322,7 +336,6 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       <div className="card mb-3">
         <div className="card-body">
           <TabView>
-
             <TabPanel header="Resultados subidos">
               <CustomPRTable
                 columns={columns}
@@ -395,11 +408,15 @@ export const ExamTable: React.FC<ExamTableProps> = ({
           <p>Por favor, seleccione un archivo PDF.</p>
         )}
       </CustomModal>
+
+      <style>{`
+      .p-badge.p-badge-lg{
+        height: auto;
+      }`}</style>
     </>
   );
 };
 
-// Componente de menú de acciones
 const TableActionsMenu: React.FC<{
   data: ExamTableItem;
   onLoadExamResults: (id: ExamTableItem) => void;
@@ -408,77 +425,84 @@ const TableActionsMenu: React.FC<{
   onPrint: () => void;
   onDownload: () => void;
   onShare: () => void;
-}> = ({ data, onLoadExamResults, onViewExamResults, onUploadExamsFile, onPrint, onDownload, onShare }) => {
+}> = ({
+  data,
+  onLoadExamResults,
+  onViewExamResults,
+  onUploadExamsFile,
+  onPrint,
+  onDownload,
+  onShare,
+}) => {
   const menu = useRef<Menu>(null);
 
   const items = [
-    ...(data.state === "generated" ? [
-      {
-        label: "Realizar examen",
-        icon: "pi pi-stethoscope",
-        command: () => {
-          onLoadExamResults(data);
-          menu.current?.hide();
-        }
-      },
-      {
-        label: "Subir examen",
-        icon: "pi pi-file-pdf",
-        command: () => {
-          onUploadExamsFile(data.id);
-          menu.current?.hide();
-        }
-      }
-    ] : []),
-    ...(data.state === "uploaded" ? [
-      {
-        label: "Visualizar resultados",
-        icon: "pi pi-eye",
-        command: () => {
-          onViewExamResults(data, data.minioUrl);
-          menu.current?.hide();
-        }
-      },
-      {
-        label: "Imprimir",
-        icon: "pi pi-print",
-        command: () => {
-          onPrint();
-          menu.current?.hide();
-        }
-      },
-      {
-        label: "Descargar",
-        icon: "pi pi-download",
-        command: () => {
-          onDownload();
-          menu.current?.hide();
-        }
-      },
-      {
-        separator: true
-      },
-      {
-        label: "Compartir",
-        icon: "pi pi-share-alt",
-        items: [
+    ...(data.state === "generated"
+      ? [
           {
-            label: "WhatsApp",
-            icon: "pi pi-whatsapp",
+            label: "Realizar examen",
+            icon: "pi pi-stethoscope",
             command: () => {
-              onShare();
-              menu.current?.hide();
-            }
-          }
+              onLoadExamResults(data);
+            },
+          },
+          {
+            label: "Subir examen",
+            icon: "pi pi-file-pdf",
+            command: () => {
+              onUploadExamsFile(data.id);
+            },
+          },
         ]
-      }
-    ] : [])
+      : []),
+    ...(data.state === "uploaded"
+      ? [
+          {
+            label: "Visualizar resultados",
+            icon: "pi pi-eye",
+            command: (e) => {
+              e.originalEvent?.stopPropagation();
+              onViewExamResults(data, data.minioUrl);
+            },
+          },
+          {
+            label: "Imprimir",
+            icon: "pi pi-print",
+            command: (e) => {
+              e.originalEvent?.stopPropagation();
+              onPrint();
+            },
+          },
+          {
+            label: "Descargar",
+            icon: "pi pi-download",
+            command: (e) => {
+              e.originalEvent?.stopPropagation();
+              onDownload();
+            },
+          },
+          {
+            separator: true,
+          },
+          {
+            label: "Compartir",
+            icon: "pi pi-share-alt",
+            items: [
+              {
+                label: "WhatsApp",
+                icon: "pi pi-whatsapp",
+                command: (e) => {
+                  e.originalEvent?.stopPropagation();
+                  onShare();
+                },
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
-  const handleMenuHide = () => {
-    setOpenMenuId(null);
-
-  };
+  const handleMenuHide = () => {};
 
   return (
     <div className="table-actions-menu">
@@ -497,7 +521,7 @@ const TableActionsMenu: React.FC<{
         ref={menu}
         id={`popup_menu_${data.id}`}
         onHide={handleMenuHide}
-        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+        appendTo={typeof document !== "undefined" ? document.body : undefined}
       />
     </div>
   );

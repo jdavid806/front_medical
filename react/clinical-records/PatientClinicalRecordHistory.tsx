@@ -48,7 +48,6 @@ export const PatientClinicalRecordHistory: React.FC<
   const [selectedClinicalRecord, setSelectedClinicalRecord] = useState<
     string | null
   >(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [first, setFirst] = useState(0);
   const [perPage, setPerPage] = useState(10);
@@ -104,7 +103,7 @@ export const PatientClinicalRecordHistory: React.FC<
 
   async function generatePdfFile(recordHistory) {
     //@ts-ignore
-    generarFormato(
+    await generarFormato(
       "Consulta",
       recordHistory,
       "Impresion",
@@ -133,7 +132,7 @@ export const PatientClinicalRecordHistory: React.FC<
             resolve(response.file);
           })
           .catch(reject);
-      }, 1500);
+      }, 1000);
     });
   }
 

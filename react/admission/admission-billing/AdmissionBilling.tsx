@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Steps } from "primereact/steps";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
@@ -8,13 +8,17 @@ import PreviewDoneStep from "./steps/PreviewDoneStep";
 import { calculateTotal, validatePatientStep, validatePaymentStep, validateProductsStep } from "./utils/helpers";
 import { useProductsToBeInvoiced } from '../../appointments/hooks/useProductsToBeInvoiced'
 import { AdmissionBillingFormData, BillingData } from "./interfaces/AdmisionBilling";
-import { getUserLogged } from "../../../services/utilidades";
+import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from "../../../services/utilidades";
 import { useAdmissionCreate } from "../hooks/useAdmissionCreate";
+import { useMassMessaging } from "../../hooks/useMassMessaging";
+import { useTemplate } from "../../hooks/useTemplate";
+import { SwalManager } from "../../../services/alertManagerImported";
+import { generarFormato } from "../../../funciones/funcionesJS/generarPDF";
 
 interface AdmissionBillingProps {
   visible: boolean;
   onHide: () => void;
-  onSuccess?: () => void; // Nueva prop
+  onSuccess?: () => void;
   appointmentData?: any;
   productsToInvoice: any;
   productsLoading?: boolean
@@ -69,7 +73,7 @@ const initialFormState: AdmissionBillingFormData = {
 const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   visible,
   onHide,
-  onSuccess, // Nueva prop
+  onSuccess,
   appointmentData
 }) => {
   const toast = useRef<Toast>(null);
@@ -79,12 +83,135 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   const [internalVisible, setInternalVisible] = useState(false);
   const isMounted = useRef(true);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
 
-  const idProduct = appointmentData?.id;
-  const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(idProduct);
+  const appointmentId = appointmentData?.id;
+  const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(appointmentId);
   const { createAdmission } = useAdmissionCreate();
+  const tenant = window.location.hostname.split(".")[0];
+  const templateData = {
+    tenantId: tenant,
+    belongsTo: "facturacion-creacion",
+    type: "whatsapp",
+  };
 
-  // Efecto para manejar la visibilidad y el estado de montaje
+  const { template, fetchTemplate } = useTemplate(templateData);
+  const { sendMessage: sendMessageHook, loading: loadingMessage } = useMassMessaging();
+
+  const sendMessage = useRef(sendMessageHook);
+  useEffect(() => {
+    sendMessage.current = sendMessageHook;
+  }, [sendMessageHook]);
+
+
+  const handleSendWhatsApp = async () => {
+    setSendingWhatsApp(true);
+    try {
+      await sendMessageWhatsapp(formData);
+    } catch (error) {
+      console.error("Error enviando WhatsApp:", error);
+    } finally {
+      setSendingWhatsApp(false);
+    }
+  };
+
+
+  async function generatePdfFile(admissionData: any) {
+
+    //@ts-ignore - Esta función debería existir en tu entorno
+    console.log('peter parkerrr')
+    await generarFormato(
+      "Factura",
+      admissionData,
+      "Impresion",
+      "admissionInput"
+    );
+    console.log('elduendeverdeee')
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let fileInput: any = document.getElementById(
+          "pdf-input-hidden-to-admissionInput"
+        );
+        let file = fileInput?.files[0];
+
+        if (!file) {
+          resolve(null);
+          return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("model_type", "App\\Models\\Admission");
+        formData.append("model_id", admissionData.id);
+        //@ts-ignore - Esta función debería existir en tu entorno
+        guardarArchivo(formData, true)
+          .then((response) => {
+            resolve(response.file);
+          })
+          .catch(reject);
+      }, 1000);
+    });
+  }
+
+
+  const sendMessageWhatsapp = useCallback(
+    async (admissionData: any) => {
+      try {
+        // Generar el PDF primero
+        // @ts-ignore
+        const formattedAdmissionData = await getAdmissionFormatData(261);//appointmentId);
+        console.log('formattedAdmissionData', formattedAdmissionData);
+        const dataToFile: any = await generatePdfFile(formattedAdmissionData);
+        //@ts-ignore - Esta función debería existir en tu entorno
+        const urlPDF = getUrlImage(dataToFile.file_url.replaceAll("\\", "/"), true);
+
+        if (!template) {
+          await fetchTemplate();
+        }
+
+        const replacements = {
+          NOMBRE_PACIENTE: `${formData.patient.firstName} ${formData.patient.middleName} ${formData.patient.lastName} ${formData.patient.secondLastName}`,
+          NUMERO_FACTURA: admissionData.invoice_number || admissionData.id,
+          FECHA_FACTURA: new Date().toLocaleDateString(),
+          TOTAL_FACTURA: calculateTotal(formData.products, formData.billing.facturacionEntidad).toFixed(2),
+          "ENLACE DOCUMENTO": "",
+        };
+
+        const templateFormatted = formatWhatsAppMessage(template?.template || "", replacements);
+
+        const dataMessage = {
+          channel: "whatsapp",
+          recipients: [
+            getIndicativeByCountry(formData.patient.country) +
+            formData.patient.whatsapp,
+          ],
+          message_type: "media",
+          message: templateFormatted,
+          attachment_url: urlPDF,
+          attachment_type: "document",
+          minio_model_type: dataToFile?.model_type,
+          minio_model_id: dataToFile?.model_id,
+          minio_id: dataToFile?.id,
+          webhook_url: "https://example.com/webhook",
+        };
+
+        await sendMessage.current(dataMessage);
+
+        SwalManager.success({
+          text: "Mensaje enviado correctamente",
+          title: "Éxito",
+        });
+      } catch (error) {
+        console.error("Error enviando mensaje por WhatsApp:", error);
+        SwalManager.error({
+          text: "Error al enviar el mensaje por WhatsApp",
+          title: "Error",
+        });
+      }
+    },
+    [template, formData, sendMessage]
+  );
+
   useEffect(() => {
     isMounted.current = true;
     setInternalVisible(visible);
@@ -97,7 +224,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   const handleSubmitInvoice = async () => {
     try {
       const response = await createAdmission(formData, appointmentData);
-
       console.log('✅ Admisión creada exitosamente:', response);
 
       if (!isMounted.current) return;
@@ -108,6 +234,10 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         detail: 'La factura se ha generado correctamente',
         life: 5000
       });
+
+      if (response && response.data) {
+        await sendMessageWhatsapp(response.data);
+      }
 
       if (isMounted.current) {
         setIsSuccess(true);
@@ -128,7 +258,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
       throw error;
     }
   };
-
 
   const handleHide = () => {
     if (isMounted.current) {
@@ -347,6 +476,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
 
         <div className="step-content">
           <div className={activeIndex === 0 ? "" : "d-none"}>
+            <button onClick={sendMessageWhatsapp}>Enviar WhatsApp</button>
             <PatientStep
               formData={formData}
               updateFormData={updateFormData}
@@ -374,17 +504,19 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
               formData={formData}
               prevStep={prevStep}
               onHide={handleHide}
-              onSubmit={handleSubmitInvoice}
-              isSuccess={isSuccess}
-              setIsSuccess={setIsSuccess}
               onDownload={async () => {
                 //@ts-ignore
-                await generateInvoice(idProduct, true)
+                await generateInvoice(appointmentId, true)
               }}
               onPrint={async () => {
                 //@ts-ignore
-                await generateInvoice(idProduct, false)
+                await generateInvoice(appointmentId, false)
               }}
+              onSubmit={handleSubmitInvoice}
+              isSuccess={isSuccess}
+              setIsSuccess={setIsSuccess}
+              onSendWhatsApp={handleSendWhatsApp}
+              sendingWhatsApp={sendingWhatsApp}
             />
           </div>
         </div>

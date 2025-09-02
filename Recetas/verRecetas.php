@@ -12,6 +12,12 @@ include "../header.php";
     justify-content: center;
     margin-bottom: 5px;
   }
+     .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
 
   .custom-btn i {
     margin-right: 5px;

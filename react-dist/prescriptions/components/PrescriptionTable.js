@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import CustomDataTable from "../../components/CustomDataTable.js";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
-import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 import { useTemplate } from "../../hooks/useTemplate.js";
 import { useMassMessaging } from "../../hooks/useMassMessaging.js";
 import { formatWhatsAppMessage, getIndicativeByCountry } from "../../../services/utilidades.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
+
+// PrimeReact imports
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
+import { CustomPRTable } from "../../components/CustomPRTable.js";
 const PrescriptionTable = ({
   prescriptions,
   onEditItem,
   onDeleteItem
 }) => {
-  const [tablePrescriotions, setTablePrescriptions] = React.useState([]);
+  const [tablePrescriptions, setTablePrescriptions] = useState([]);
   const tenant = window.location.hostname.split(".")[0];
   const data = {
     tenantId: tenant,
@@ -58,17 +58,9 @@ const PrescriptionTable = ({
     }));
     setTablePrescriptions(mappedPrescriptions);
   }, [prescriptions]);
-  const columns = [{
-    data: "doctor"
-  }, {
-    data: "created_at"
-  }, {
-    orderable: false,
-    searchable: false
-  }];
   async function generatePdfFile(prescription) {
     //@ts-ignore
-    generarFormato("Receta", prescription, "Impresion", "prescriptionInput");
+    await generarFormato("Receta", prescription, "Impresion", "prescriptionInput");
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         let fileInput = document.getElementById("pdf-input-hidden-to-prescriptionInput");
@@ -85,7 +77,7 @@ const PrescriptionTable = ({
         guardarArchivo(formData, true).then(response => {
           resolve(response.file);
         }).catch(reject);
-      }, 1500);
+      }, 1000);
     });
   }
   const sendMessageWhatsapp = useCallback(async prescription => {
@@ -98,7 +90,7 @@ const PrescriptionTable = ({
       ESPECIALISTA: `${prescription.prescriber.first_name} ${prescription.prescriber.middle_name} ${prescription.prescriber.last_name} ${prescription.prescriber.second_last_name}`,
       ESPECIALIDAD: `${prescription.prescriber.specialty.name}`,
       RECOMENDACIONES: `${prescription.clinical_record.description}`,
-      FECHA_RECETA: `${prescription.createdAt}`,
+      FECHA_RECETA: `${prescription.created_at}`,
       "ENLACE DOCUMENTO": ""
     };
     const templateFormatted = formatWhatsAppMessage(templatePrescriptions.template, replacements);
@@ -120,47 +112,116 @@ const PrescriptionTable = ({
       title: "Éxito"
     });
   }, [sendMessageWpp, fetchTemplate]);
-  const slots = {
-    2: (cell, data) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "text-end flex justify-cointent-end"
-    }, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
-        // crearDocumento(data.id, "Impresion", "Receta", "Completa", "Receta");
-        // console.log("data", data);
+  const columns = [{
+    field: "doctor",
+    header: "Doctor",
+    sortable: true,
+    width: '200px'
+  }, {
+    field: "created_at",
+    header: "Fecha de creación",
+    sortable: true,
+    width: '200px'
+  }, {
+    field: "actions",
+    header: "Acciones",
+    width: '10%',
+    body: data => /*#__PURE__*/React.createElement(TableActionsMenu, {
+      data: data,
+      onPrint: () => {
         generarFormato("Receta", data, "Impresion");
-      }
-    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
+      },
+      onDownload: () => {
         generarFormato("Receta", data, "Descarga");
-      }
-    }), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("hr", {
-      className: "dropdown-divider"
-    })), /*#__PURE__*/React.createElement("li", {
-      className: "dropdown-header"
-    }, "Compartir"), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "whatsapp",
-      onTrigger: () => {
+      },
+      onShare: () => {
         sendMessageWhatsapp(data);
-      }
-    }))))
-  };
+      },
+      onEdit: () => onEditItem(data.id),
+      onDelete: () => onDeleteItem(data.id)
+    })
+  }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "card p-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
-  }, /*#__PURE__*/React.createElement(CustomDataTable, {
-    data: tablePrescriotions,
-    slots: slots,
-    columns: columns
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Doctor"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Fecha de creaci\xF3n"), /*#__PURE__*/React.createElement("th", {
-    className: "text-end align-middle pe-0 border-top mb-2",
-    scope: "col"
-  })))))));
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tablePrescriptions,
+    lazy: false
+  }))), /*#__PURE__*/React.createElement("style", null, `
+             .table-actions-menu{
+             }
+      `));
+};
+const TableActionsMenu = ({
+  data,
+  onPrint,
+  onDownload,
+  onShare,
+  onEdit,
+  onDelete
+}) => {
+  const menu = useRef(null);
+  const items = [{
+    label: "Imprimir",
+    icon: "pi pi-print",
+    command: () => {
+      onPrint();
+    }
+  }, {
+    label: "Descargar",
+    icon: "pi pi-download",
+    command: () => {
+      onDownload();
+    }
+  }, {
+    separator: true
+  }, {
+    label: "Compartir",
+    icon: "pi pi-share-alt",
+    items: [{
+      label: "WhatsApp",
+      icon: "pi pi-whatsapp",
+      command: () => {
+        onShare();
+      }
+    }]
+  }, {
+    separator: true
+  }, {
+    label: "Editar",
+    icon: "pi pi-pencil",
+    command: () => {
+      onEdit();
+    }
+  }, {
+    label: "Eliminar",
+    icon: "pi pi-trash",
+    command: () => {
+      onDelete();
+    }
+  }];
+  const handleMenuHide = () => {
+    // Función para manejar el cierre del menú
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "table-actions-menu"
+  }, /*#__PURE__*/React.createElement(Button, {
+    icon: "pi pi-ellipsis-v",
+    className: "p-button-rounded btn-primary",
+    onClick: e => menu.current?.toggle(e),
+    "aria-controls": `popup_menu_${data.id}`,
+    "aria-haspopup": true
+  }, "Acciones", /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-cog ml-2"
+  })), /*#__PURE__*/React.createElement(Menu, {
+    model: items,
+    popup: true,
+    ref: menu,
+    id: `popup_menu_${data.id}`,
+    onHide: handleMenuHide,
+    appendTo: typeof document !== 'undefined' ? document.body : undefined
+  }));
 };
 export default PrescriptionTable;

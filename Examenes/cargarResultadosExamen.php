@@ -1,8 +1,8 @@
 <?php
 include "../menu.php";
 include "../header.php";
-include "./ModalNuevoExamen.php";
-include './modalCargarResultados.php';
+// include "./ModalNuevoExamen.php";
+// include './modalCargarResultados.php';
 
 
 $examenes = [
@@ -63,10 +63,21 @@ $examenes = [
         examOrderService,
         examOrderStateService,
         patientService,
-        appointmentService
+        appointmentService,
+        templateService,
+        infoCompanyService,
     } from "./services/api/index.js";
     import AlertManager from "./services/alertManager.js";
     import UserManager from "./services/userManager.js";
+    import {
+        formatWhatsAppMessage,
+        getIndicativeByCountry,
+        formatDate,
+    } from "../services/utilidades";
+    import {
+        createMassMessaging
+    } from '../funciones/funcionesJS/massMessage.js';
+    import { generarFormato } from '../funciones/funcionesJS/generarPDF.js';
 
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const examId = new URLSearchParams(window.location.search).get('exam_id');
@@ -86,6 +97,105 @@ $examenes = [
         examOrdersPromise,
         examOrderStatesPromise
     ]);
+
+    let messaging = null;
+    let templateExam;
+
+    const tenant = window.location.hostname.split(".")[0];
+    const data = {
+        tenantId: tenant,
+        belongsTo: "examenes-creacion",
+        type: "whatsapp",
+    };
+    const companies = await infoCompanyService.getCompany();
+    const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
+    try {
+        templateExam = await templateService.getTemplate(data);
+    } catch (error) {
+        console.error('Error al obtener template:', error);
+    }
+    const infoInstance = {
+        api_key: communications.api_key,
+        instance: communications.instance
+    }
+
+    messaging = createMassMessaging(infoInstance);
+
+
+    async function generatePdfFile(exam) {
+
+        await generarFormato("Examen", exam.exam_order, "Impresion", "examInput");
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                let fileInput = document.getElementById(
+                    "pdf-input-hidden-to-examInput"
+                );
+                let file = fileInput?.files[0];
+
+                if (!file) {
+                    resolve(null);
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append("file", file);
+                formData.append("model_type", "App\\Models\\exam");
+                formData.append("model_id", exam.id);
+                //@ts-ignore
+                guardarArchivo(formData, true)
+                    .then(async (response) => {
+                        resolve({
+                            file_url: await getUrlImage(
+                                response.file.file_url.replaceAll("\\", "/"),
+                                true
+                            ),
+                            model_type: response.file.model_type,
+                            model_id: response.file.model_id,
+                            id: response.file.id,
+                        });
+                    })
+                    .catch(reject);
+            }, 1000);
+        });
+    }
+
+    async function sendMessageWhatsapp(exam) {
+        const dataToFile = await generatePdfFile(exam);
+
+        const replacements = {
+            NOMBRE_PACIENTE: `${exam.exam_order.patient.first_name ?? ""} ${
+          exam.exam_order.patient.middle_name ?? ""
+        } ${exam.exam_order.patient.last_name ?? ""} ${
+          exam.exam_order.patient.second_last_name ?? ""
+        }`,
+            NOMBRE_EXAMEN: `${exam.exam_order.exam_type.name}`,
+            FECHA_EXAMEN: `${formatDate(exam.created_at, true)}`,
+            "ENLACE DOCUMENTO": "",
+        };
+
+        const templateFormatted = formatWhatsAppMessage(
+            templateExam.data.template,
+            replacements
+        );
+
+        const dataMessage = {
+            channel: "whatsapp",
+            recipients: [
+                getIndicativeByCountry(exam.exam_order.patient.country_id) +
+                exam.exam_order.patient.whatsapp,
+            ],
+            message_type: "media",
+            message: templateFormatted,
+            attachment_url: dataToFile.file_url,
+            attachment_type: "document",
+            minio_model_type: dataToFile?.model_type,
+            minio_model_id: dataToFile?.model_id,
+            minio_id: dataToFile?.id,
+            webhook_url: "https://example.com/webhook",
+        };
+        messaging.sendMessage(dataMessage).then(() => {});
+    }
 
     await appointmentService.changeStatus(appointmentId, 'in_consultation')
 
@@ -120,16 +230,18 @@ $examenes = [
                     "created_by_user_id": UserManager.getUser().id,
                     "results": data
                 })
-                .then(async () => {
-                    await appointmentService.changeStatus(appointmentId, 'consultation_completed')
+                .then(async (response) => {
+                    await appointmentService.changeStatus(appointmentId, 'consultation_completed');
+                    await sendMessageWhatsapp(response);
                     AlertManager.success({
                         text: 'Se ha creado el registro exitosamente'
                     })
-                    setTimeout(() => {
-                        history.back()
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     history.back()
+                    // }, 1000);
                 })
                 .catch(err => {
+                    console.error("Error al crear el resultado del examen:", err);
                     if (err.data?.errors) {
                         AlertManager.formErrors(err.data.errors);
                     } else {

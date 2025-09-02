@@ -3,7 +3,7 @@ import { SwalManager } from "../../../services/alertManagerImported.js";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 async function generatePdfFile(disabilityHistory) {
   //@ts-ignore
-  generarFormato("Incapacidad", disabilityHistory, "Impresion", "recordDisabilityInput");
+  await generarFormato("Incapacidad", disabilityHistory, "Impresion", "recordDisabilityInput");
   return new Promise((resolve, reject) => {
     const checkForFile = (attempts = 0) => {
       const maxAttempts = 20; // Máximo 10 segundos (20 * 500ms)

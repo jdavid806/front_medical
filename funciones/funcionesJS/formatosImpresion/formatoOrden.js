@@ -8,10 +8,6 @@ let patient_id = new URLSearchParams(window.location.search).get("patient_id");
 async function consultarData() {
   const response = await consultarDatosEmpresa();
 
-  // console.log("-------------------------------------");
-  
-  console.log(response);
-
   let company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
@@ -20,7 +16,6 @@ async function consultarData() {
     email: response.datos_consultorio[3].Correo,
   };
 
-  console.log(company);
   return company;
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -110,8 +105,5 @@ contenido += `</div>
   </div>
   `;
 
-  // console.log(company);
-  
-
-  generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTML(contenido, company, patient, inputId);
 }

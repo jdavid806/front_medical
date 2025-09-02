@@ -7,37 +7,43 @@ import { generarFormatoRecetaOrden } from "./formatosImpresion/formatoRecetaOrde
 import { generarFormatoOrden } from "./formatosImpresion/formatoOrden.js";
 import { generarFormatoRecetaOptometria } from "./formatosImpresion/formatoRecetaOptometria.js";
 import { generarFormatoCita } from "./formatosImpresion/formatoCita.js";
+import { generarFormatoFactura } from "./formatosImpresion/formatoAdmisionFactura.js";
 
-export function generarFormato(name, object, tipo, inputId = "") {
+
+export async function generarFormato(name, object, tipo, inputId = "") {
   switch (name) {
     case "Incapacidad":
-      generarFormatoIncapacidad(object, tipo, inputId);
+      await generarFormatoIncapacidad(object, tipo, inputId);
       break;
     case "Consentimiento":
       generarFormatoConsentimiento(object, tipo);
       break;
     case "Consulta":
-      generarFormatoConsulta(object, tipo, inputId);
+      await generarFormatoConsulta(object, tipo, inputId);
       break;
     case "RecetaExamen":
-      generarFormatoRecetaOrden(object, tipo, inputId);
+      await generarFormatoRecetaOrden(object, tipo, inputId);
       break;
     case "Receta":
-      generarFormatoReceta(object, tipo, inputId);
+      await generarFormatoReceta(object, tipo, inputId);
       break;
     case "Examen":
-      console.log("aa");
-      
-      generarFormatoOrden(object, tipo, inputId);
+      await generarFormatoOrden(object, tipo, inputId);
       break;
     case "RecetaOptometria":
-      generarFormatoRecetaOptometria(object, tipo, inputId);
+      await generarFormatoRecetaOptometria(object, tipo, inputId);
       break;
     case "ReciboCaja":
       generarFormatoReciboCaja(object, tipo);
       break;
     case "Cita":
       generarFormatoCita(object, tipo, inputId);
+      break;
+
+    case "Factura":
+      await generarFormatoFactura(object, tipo, inputId);
+      break;
+
     default:
       break;
   }

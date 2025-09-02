@@ -11,6 +11,7 @@ export interface CustomPRTableColumnProps {
     body?: (rowData: any) => ReactNode;
     sortable?: boolean
     frozen?: boolean
+    width?: string;
 }
 
 export interface CustomPRTableProps {
@@ -27,6 +28,7 @@ export interface CustomPRTableProps {
     globalFilterFields?: string[]
     customFilters?: DataTableFilterMeta
     disableSearch?: boolean
+    disableReload?: boolean
     onSelectedRow?: (rowData: any) => void
     onReload?: () => void
     onSort?: (event: DataTableStateEvent) => void
@@ -46,7 +48,8 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
     selectionActive,
     globalFilterFields,
     customFilters,
-    disableSearch,
+    disableSearch = false,
+    disableReload = false,
     onSelectedRow,
     onReload,
     loading,
@@ -82,12 +85,12 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
     const header = () => {
         return (
             <div className="d-flex justify-content-between">
-                <button
+                {!disableReload && <button
                     type="button"
                     className="btn btn-outline-primary me-2"
                     onClick={onReload}>
                     <i className="fas fa-sync"></i>
-                </button>
+                </button>}
                 {!disableSearch && <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar" />}
             </div>
         );
@@ -111,7 +114,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
                 globalFilterFields={globalFilterFields}
                 tableStyle={{ minWidth: '50rem' }}
                 showGridlines
-                header={header}
+                header={(!disableSearch || !disableReload) && header}
                 filters={filters}
                 selectionMode={"single"}
                 selection={selectedItem}
@@ -136,6 +139,8 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
                         sortable={column.sortable}
                         alignFrozen="right"
                         frozen={column.frozen}
+                        style={{ width: column.width || 'auto' }}
+                        headerStyle={{ width: column.width || 'auto' }}
                     />
                 ))}
             </DataTable>

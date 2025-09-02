@@ -1012,6 +1012,46 @@ export const PurchaseBilling = ({
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
+  }, "Tipo de documento *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "documentType",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(Dropdown, _extends({}, field, {
+      options: [{
+        label: "Factura de compra",
+        value: "factura_compra"
+      }, {
+        label: "Documento Soporte",
+        value: "documento_soporte"
+      }],
+      placeholder: "Seleccione tipo",
+      className: "w-100",
+      appendTo: "self",
+      disabled: disabledInputs
+    }))
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "# Comprobante fiscal *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "fiscalVoucher",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
+      placeholder: "N\xFAmero de comprobante fiscal",
+      className: "w-100",
+      disabled: disabledInputs
+    }))
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
   }, "Fecha de elaboraci\xF3n *"), /*#__PURE__*/React.createElement(Controller, {
     name: "elaborationDate",
     control: control,

@@ -18,6 +18,8 @@ interface PreviewAndDoneStepProps {
     onSubmit: () => Promise<void>;
     isSuccess?: boolean;
     setIsSuccess?: (success: boolean) => void;
+    onSendWhatsApp?: () => Promise<void>;
+    sendingWhatsApp?: boolean;
 }
 
 const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
@@ -28,7 +30,9 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
     onDownload,
     onSubmit,
     isSuccess = false,
-    setIsSuccess
+    setIsSuccess,
+    onSendWhatsApp,
+    sendingWhatsApp = false
 }) => {
     const [isDone, setIsDone] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,27 +120,45 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
             <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
                 <h2 className="mb-3 fw-bold">¡Factura Admision Generada Exitosamente!</h2>
-                <div className="d-flex justify-content-center gap-3">
+                <p className="text-muted mb-4">La factura ha sido creada y guardada en el sistema.</p>
+
+                <div className="d-flex justify-content-center gap-3 flex-wrap">
+                    <Button
+                        label="Enviar por WhatsApp"
+                        icon="pi pi-whatsapp"
+                        className="p-button-success p-button-lg"
+                        onClick={onSendWhatsApp}
+                        loading={sendingWhatsApp}
+                        disabled={sendingWhatsApp}
+                    />
+
                     <Button
                         label="Imprimir Factura"
-                        className="btn btn-outline-primary btn-lg"
-                        icon={<i className="fas fa-print mr-2"></i>}
+                        className="p-button-primary p-button-lg"
+                        icon="pi pi-print"
                         onClick={onPrint}
                     />
 
                     <Button
                         label="Descargar Factura"
-                        icon={<i className="fas fa-file-pdf mr-2"></i>}
-                        className="btn btn-outline-primary btn-lg"
+                        icon="pi pi-download"
+                        className="p-button-help p-button-lg"
                         onClick={onDownload}
                     />
 
                     <Button
                         label="Volver al Inicio"
-                        className="btn btn-primary btn-lg"
+                        className="p-button-secondary p-button-lg"
                         onClick={handleFinalClose}
                     />
                 </div>
+
+                {sendingWhatsApp && (
+                    <div className="mt-3 text-sm text-muted">
+                        <i className="pi pi-spin pi-spinner mr-2"></i>
+                        Enviando mensaje por WhatsApp...
+                    </div>
+                )}
             </div>
         );
     }
@@ -257,18 +279,21 @@ const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
                 <div className="d-flex justify-content-between pt-4">
                     <Button
                         label="Atrás"
-                        icon={<i className="fas fa-arrow-left me-1"></i>}
+                        icon="pi pi-arrow-left"
                         onClick={prevStep}
                         className="p-button-secondary"
                     />
-                    <Button
-                        label={isSubmitting ? "Guardando..." : "Guardar Factura"}
-                        icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check"}
-                        className="p-button-lg"
-                        onClick={handleFinish}
-                        loading={isSubmitting}
-                        disabled={isSubmitting}
-                    />
+
+                    <div className="d-flex gap-2">
+                        <Button
+                            label={isSubmitting ? "Guardando..." : "Guardar Factura"}
+                            icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                            className="p-button-primary"
+                            onClick={handleFinish}
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

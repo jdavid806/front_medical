@@ -94,6 +94,7 @@ export const useSpecialty = () => {
   }
 
   const loadCie11Codes = async (query: string) => {
+    if (query.length < 3) return
     try {
       const response = await fetch(`${getApiUrl()}/medical/cie11/search?query=${query}`,
         {

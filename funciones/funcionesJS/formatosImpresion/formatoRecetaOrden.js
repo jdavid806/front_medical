@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "") {
+export async function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "") {
   const tablePatient = generarTablaPaciente(patient, {
     date: datosExamen.created_at || "--",
   });
@@ -78,7 +78,7 @@ export function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "") {
     </div>
     ${datosUsuario(user)}  
     `;
-  generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTML(contenido, company, patient, inputId);
 }
 
 export default generarFormatoRecetaOrden;

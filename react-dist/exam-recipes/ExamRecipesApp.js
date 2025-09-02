@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Badge } from "primereact/badge";
 import { useExamRecipes } from "./hooks/useExamRecipes.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
-import { examRecipeService, userService } from "../../services/api/index.js";
+import { examRecipeService } from "../../services/api/index.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
 import { examRecipeStatus, examRecipeStatusColors } from "../../services/commons.js";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { Menu } from "primereact/menu";
+import { useTemplate } from "../hooks/useTemplate.js";
+import { useMassMessaging } from "../hooks/useMassMessaging.js";
+import { formatDate, formatWhatsAppMessage, getIndicativeByCountry } from "../../services/utilidades.js";
 const patientId = new URLSearchParams(window.location.search).get("patient_id");
 export const ExamRecipesApp = () => {
   const {
@@ -19,7 +22,32 @@ export const ExamRecipesApp = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
+  const tenant = window.location.hostname.split(".")[0];
+  const data = {
+    tenantId: tenant,
+    belongsTo: "examenes-compartir",
+    type: "whatsapp"
+  };
+  const {
+    template,
+    setTemplate,
+    fetchTemplate
+  } = useTemplate(data);
+  const {
+    sendMessage: sendMessageWpp,
+    responseMsg,
+    loading: loadingMessage,
+    error
+  } = useMassMessaging();
+  const sendMessageWppRef = useRef(sendMessageWpp);
+  const fetchTemplateRef = useRef(fetchTemplate);
+  useEffect(() => {
+    sendMessageWppRef.current = sendMessageWpp;
+  }, [sendMessageWpp]);
+  useEffect(() => {
+    fetchTemplateRef.current = fetchTemplate;
+  }, [fetchTemplate]);
   useEffect(() => {
     const mappedExamRecipes = examRecipes.sort((a, b) => parseInt(b.id, 10) - parseInt(a.id, 10)).map(prescription => ({
       id: prescription.id,
@@ -36,7 +64,8 @@ export const ExamRecipesApp = () => {
       status: prescription.status,
       resultMinioUrl: prescription.result?.result_minio_url,
       user: prescription.user,
-      details: prescription.details
+      details: prescription.details,
+      original: prescription
     }));
     setTableExamRecipes(mappedExamRecipes);
     setTotalRecords(mappedExamRecipes.length);
@@ -58,11 +87,77 @@ export const ExamRecipesApp = () => {
       }
     });
   };
+  async function generatePdfFile(prescription) {
+    if (prescription.result.result_minio_url) {
+      //@ts-ignore
+      const url = await getUrlImage(prescription.result.result_minio_url, true);
+      return {
+        file_url: url,
+        model_type: "xxxxxxx",
+        model_id: 0,
+        id: 0
+      };
+    } else {
+      //@ts-ignore
+      await generarFormato("RecetaExamen", prescription, "Impresion", "prescriptionInput");
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          let fileInput = document.getElementById("pdf-input-hidden-to-prescriptionInput");
+          let file = fileInput?.files[0];
+          if (!file) {
+            resolve(null);
+            return;
+          }
+          let formData = new FormData();
+          formData.append("file", file);
+          formData.append("model_type", "App\\Models\\ExamRecipes");
+          formData.append("model_id", prescription.id);
+          //@ts-ignore
+          guardarArchivo(formData, true).then(async response => {
+            resolve({
+              file_url: await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true),
+              model_type: response.file.model_type,
+              model_id: response.file.model_id,
+              id: response.file.id
+            });
+          }).catch(reject);
+        }, 1000);
+      });
+    }
+  }
+  const sendMessageWhatsapp = useCallback(async exam => {
+    const templateExam = await fetchTemplateRef.current();
+    const dataToFile = await generatePdfFile(exam);
+    const replacements = {
+      NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${exam.patient.middle_name ?? ""} ${exam.patient.last_name ?? ""} ${exam.patient.second_last_name ?? ""}`,
+      NOMBRE_EXAMEN: exam.details.map(detail => detail.exam_type.name).join(", "),
+      FECHA_EXAMEN: `${formatDate(exam.created_at)}`,
+      "ENLACE DOCUMENTO": ""
+    };
+    const templateFormatted = formatWhatsAppMessage(templateExam.template, replacements);
+    const dataMessage = {
+      channel: "whatsapp",
+      recipients: [getIndicativeByCountry(exam.patient.country_id) + exam.patient.whatsapp],
+      message_type: "media",
+      message: templateFormatted,
+      attachment_url: dataToFile?.file_url,
+      attachment_type: "document",
+      minio_model_type: dataToFile?.model_type,
+      minio_model_id: dataToFile?.model_id,
+      minio_id: dataToFile?.id,
+      webhook_url: "https://example.com/webhook"
+    };
+    await sendMessageWppRef.current(dataMessage);
+    SwalManager.success({
+      text: "Mensaje enviado correctamente",
+      title: "Éxito"
+    });
+  }, [sendMessageWpp, fetchTemplate]);
   const seeExamRecipeResults = async minioUrl => {
     if (minioUrl) {
       //@ts-ignore
       const url = await getUrlImage(minioUrl);
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     }
   };
   const handlePageChange = event => {
@@ -96,15 +191,15 @@ export const ExamRecipesApp = () => {
 
       // Mapear colores de Phoenix a PrimeReact
       const severityMap = {
-        'success': 'success',
-        'warning': 'warning',
-        'danger': 'danger',
-        'info': 'info',
-        'primary': null,
+        success: "success",
+        warning: "warning",
+        danger: "danger",
+        info: "info",
+        primary: null,
         // No hay equivalente directo, usar secondary
-        'secondary': null
+        secondary: null
       };
-      const severity = severityMap[color] || 'secondary';
+      const severity = severityMap[color] || "secondary";
       return /*#__PURE__*/React.createElement(Badge, {
         value: text,
         severity: severity,
@@ -125,9 +220,19 @@ export const ExamRecipesApp = () => {
       onViewResults: () => seeExamRecipeResults(rowData.resultMinioUrl),
       onCancel: () => cancelPrescription(rowData.id),
       onShare: async () => {
-        const user = await userService.getLoggedUser();
+        sendMessageWhatsapp(rowData.original);
+        // const user = await userService.getLoggedUser();
+
         //@ts-ignore
-        enviarDocumento(rowData.id, "Descarga", "RecetaExamen", "Completa", rowData.patientId, user.id, "Receta_de_examenes");
+        // enviarDocumento(
+        //   rowData.id,
+        //   "Descarga",
+        //   "RecetaExamen",
+        //   "Completa",
+        //   rowData.patientId,
+        //   user.id,
+        //   "Receta_de_examenes"
+        // );
       }
     })
   }];
@@ -163,28 +268,24 @@ const TableActionsMenu = ({
     icon: "pi pi-print",
     command: () => {
       onPrint();
-      menu.current?.hide(); // Cerrar el menú después de la acción
     }
   }, {
     label: "Descargar",
     icon: "pi pi-download",
     command: () => {
       onDownload();
-      menu.current?.hide(); // Cerrar el menú después de la acción
     }
   }, ...(rowData.status === "uploaded" ? [{
     label: "Visualizar resultados",
     icon: "pi pi-eye",
     command: () => {
       onViewResults();
-      menu.current?.hide(); // Cerrar el menú después de la acción
     }
   }] : []), ...(rowData.status === "pending" ? [{
     label: "Anular receta",
     icon: "pi pi-times",
     command: () => {
       onCancel();
-      menu.current?.hide(); // Cerrar el menú después de la acción
     }
   }] : []), {
     separator: true
@@ -196,7 +297,6 @@ const TableActionsMenu = ({
       icon: "pi pi-whatsapp",
       command: () => {
         onShare();
-        menu.current?.hide(); // Cerrar el menú después de la acción
       }
     }]
   }];
@@ -219,6 +319,6 @@ const TableActionsMenu = ({
     ref: menu,
     id: `popup_menu_${rowData.id}`,
     onHide: handleMenuHide,
-    appendTo: typeof document !== 'undefined' ? document.body : undefined
+    appendTo: typeof document !== "undefined" ? document.body : undefined
   }));
 };

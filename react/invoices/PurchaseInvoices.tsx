@@ -17,6 +17,7 @@ import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewRecei
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable";
+import { NewNoteModal } from "./NewNoteModal";
 
 interface Factura {
   id: number;
@@ -53,6 +54,8 @@ export const PurchaseInvoices = () => {
   const [facturaParaRecibo, setFacturaParaRecibo] = useState<Factura | null>(
     null
   );
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [tipoNota, setTipoNota] = useState<"debito" | "credito">("debito");
   const { fetchAllInvoice, loading } = useInvoicePurchase();
 
   const { company, setCompany, fetchCompany } = useCompany();
@@ -572,24 +575,33 @@ export const PurchaseInvoices = () => {
         ),
         command: () => generateReceipt(rowData),
       },
-      // {
-      //   label: "Generar Nota Debito",
-      //   template: createActionTemplate(
-      //     "money-bill-transfer",
-      //     "Generar Nota Debito",
-      //     "text-green-500"
-      //   ),
-      //   command: () => generateReceipt(rowData),
-      // },
-      // {
-      //   label: "Generar Nota credito",
-      //   template: createActionTemplate(
-      //     "money-bill-transfer",
-      //     "Generar Nota Credito",
-      //     "text-green-500"
-      //   ),
-      //   command: () => generateReceipt(rowData),
-      // },
+      {
+        label: "Generar Nota Débito",
+        template: createActionTemplate(
+          "money-bill-transfer",
+          "Generar Nota Débito",
+          "text-green-500"
+        ),
+        command: () => {
+          setFacturaParaRecibo(rowData);
+          setTipoNota("debito");
+          setShowNoteModal(true);
+        },
+      },
+      {
+        label: "Generar Nota Crédito",
+        template: createActionTemplate(
+          "money-bill-transfer",
+          "Generar Nota Crédito",
+          "text-green-500"
+        ),
+        command: () => {
+          setFacturaParaRecibo(rowData);
+          setTipoNota("credito");
+          setShowNoteModal(true);
+        },
+      },
+
       {
         label: "Descargar Excel",
         template: createActionTemplate(
@@ -885,6 +897,20 @@ export const PurchaseInvoices = () => {
           valorPagado: facturaParaRecibo?.remainingAmount || 0,
           centreCost: facturaParaRecibo?.centre_cost || null,
           invoiceType: "purchase-invoice",
+        }}
+      />
+      <NewNoteModal
+        visible={showNoteModal}
+        onHide={() => setShowNoteModal(false)}
+        factura={facturaParaRecibo}
+        tipo={tipoNota}
+        onSubmit={(data) => {
+          console.log("Nota guardada:", data);
+          showToast(
+            "success",
+            "Éxito",
+            `Nota ${data.tipo} creada correctamente`
+          );
         }}
       />
     </div>

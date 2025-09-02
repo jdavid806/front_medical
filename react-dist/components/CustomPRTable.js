@@ -16,7 +16,8 @@ export const CustomPRTable = ({
   selectionActive,
   globalFilterFields,
   customFilters,
-  disableSearch,
+  disableSearch = false,
+  disableReload = false,
   onSelectedRow,
   onReload,
   loading,
@@ -52,7 +53,7 @@ export const CustomPRTable = ({
   const header = () => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between"
-    }, /*#__PURE__*/React.createElement("button", {
+    }, !disableReload && /*#__PURE__*/React.createElement("button", {
       type: "button",
       className: "btn btn-outline-primary me-2",
       onClick: onReload
@@ -81,7 +82,7 @@ export const CustomPRTable = ({
       minWidth: '50rem'
     },
     showGridlines: true,
-    header: header,
+    header: (!disableSearch || !disableReload) && header,
     filters: filters,
     selectionMode: "single",
     selection: selectedItem,
@@ -103,6 +104,12 @@ export const CustomPRTable = ({
     body: column.body,
     sortable: column.sortable,
     alignFrozen: "right",
-    frozen: column.frozen
+    frozen: column.frozen,
+    style: {
+      width: column.width || 'auto'
+    },
+    headerStyle: {
+      width: column.width || 'auto'
+    }
   }))));
 };

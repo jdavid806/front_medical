@@ -65,7 +65,7 @@ import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
 
 export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   purchaseOrder,
-  onClose = () => { },
+  onClose = () => {},
 }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productForExpiration, setProductForExpiration] = useState<{
@@ -278,8 +278,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           }
           const discount = detail.discount
             ? (Number(detail.discount) /
-              (Number(detail.price) * Number(detail.quantity))) *
-            100
+                (Number(detail.price) * Number(detail.quantity))) *
+              100
             : 0;
 
           const subtotal = Number(detail.subtotal) - Number(detail.discount);
@@ -510,9 +510,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-            ...payment,
-            value: selectedAdvances.amount,
-          }
+              ...payment,
+              value: selectedAdvances.amount,
+            }
           : payment
       )
     );
@@ -675,9 +675,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           prev.map((p) =>
             p.id === productId
               ? {
-                ...p,
-                lotInfo: [...p.lotInfo, data],
-              }
+                  ...p,
+                  lotInfo: [...p.lotInfo, data],
+                }
               : p
           )
         );
@@ -717,8 +717,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           >
             <div className="d-flex align-items-center">
               <i
-                className={`fas fa-${product.isExpanded ? "minus" : "plus"
-                  } me-2`}
+                className={`fas fa-${
+                  product.isExpanded ? "minus" : "plus"
+                } me-2`}
               ></i>
               <span className="fw-bold">
                 {product.description || "Nuevo Producto Asignado"}
@@ -746,7 +747,10 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 {getProductColumns().map((col, i) => {
                   if (
                     col.field === "depositId" &&
-                    !(product.typeProduct === "supplies" || product.typeProduct === "inventariables")
+                    !(
+                      product.typeProduct === "supplies" ||
+                      product.typeProduct === "inventariables"
+                    )
                   ) {
                     return null;
                   }
@@ -830,7 +834,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     <FixedAssetsForm
                       formId={`fixed-asset-form-${product.id}`}
                       onSubmit={handleSaveFixedAssetLocal}
-                      onCancel={() => { }}
+                      onCancel={() => {}}
                       initialData={localFixedAssetData}
                       key={`fixed-asset-form-${product.id}`}
                     />
@@ -896,8 +900,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         prev.map((p) =>
           p.id === productForExpiration.id
             ? {
-              ...p,
-            }
+                ...p,
+              }
             : p
         )
       );
@@ -911,8 +915,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const buildInvoiceData = async (formData: any) => {
     const purchaseIdValue = purchaseOrderId
       ? {
-        purchase_order_id: purchaseOrderId,
-      }
+          purchase_order_id: purchaseOrderId,
+        }
       : {};
 
     const billing = await fetchBillingByType("purchase_invoice");
@@ -947,26 +951,26 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
         const formAssets = product?.fixedAssetInfo
           ? {
-            description: product.fixedAssetInfo.description || "",
-            brand: product.fixedAssetInfo.brand || "",
-            model: product.fixedAssetInfo.model || "",
-            serial_number: product.fixedAssetInfo.serialNumber || "",
-            internal_code: product.fixedAssetInfo.internalCode || "",
-            asset_category_id:
-              Number(product.fixedAssetInfo.asset_category_id) || null,
-            accounting_account_id: product.product,
-          }
+              description: product.fixedAssetInfo.description || "",
+              brand: product.fixedAssetInfo.brand || "",
+              model: product.fixedAssetInfo.model || "",
+              serial_number: product.fixedAssetInfo.serialNumber || "",
+              internal_code: product.fixedAssetInfo.internalCode || "",
+              asset_category_id:
+                Number(product.fixedAssetInfo.asset_category_id) || null,
+              accounting_account_id: product.product,
+            }
           : {};
 
         const formLot = infoLot
           ? {
-            expiration_date: infoLot?.expiration_date || null,
-            deposit_id: infoLot?.deposit_id || null,
-            lot_number: infoLot?.lot_number || "",
-          }
+              expiration_date: infoLot?.expiration_date || null,
+              deposit_id: infoLot?.deposit_id || null,
+              lot_number: infoLot?.lot_number || "",
+            }
           : {
-            deposit_id: product.depositId || null,
-          };
+              deposit_id: product.depositId || null,
+            };
 
         return {
           product_id:
@@ -1255,15 +1259,15 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     ];
   };
 
-  const { openModal: openThirdPartyModal, ThirdPartyModal } = useThirdPartyModal({
-    onSuccess: (data) => {
-      fetchThirdParties();
-    }
-  });
+  const { openModal: openThirdPartyModal, ThirdPartyModal } =
+    useThirdPartyModal({
+      onSuccess: (data) => {
+        fetchThirdParties();
+      },
+    });
 
   return (
     <div className="container-fluid p-4">
-
       <ThirdPartyModal />
 
       {/* Main Header Section */}
@@ -1308,6 +1312,57 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             {...field}
                             placeholder="Número de factura"
                             className="w-100"
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nuevo: Tipo de documento */}
+                  <div className="col-md-4">
+                    <div className="form-group">
+                      <label className="form-label">Tipo de documento *</label>
+                      <Controller
+                        name="documentType"
+                        control={control}
+                        render={({ field }) => (
+                          <Dropdown
+                            {...field}
+                            options={[
+                              {
+                                label: "Factura de compra",
+                                value: "factura_compra",
+                              },
+                              {
+                                label: "Documento Soporte",
+                                value: "documento_soporte",
+                              },
+                            ]}
+                            placeholder="Seleccione tipo"
+                            className="w-100"
+                            appendTo={"self"}
+                            disabled={disabledInputs}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nuevo: Comprobante fiscal */}
+                  <div className="col-md-4">
+                    <div className="form-group">
+                      <label className="form-label">
+                        # Comprobante fiscal *
+                      </label>
+                      <Controller
+                        name="fiscalVoucher"
+                        control={control}
+                        render={({ field }) => (
+                          <InputText
+                            {...field}
+                            placeholder="Número de comprobante fiscal"
+                            className="w-100"
+                            disabled={disabledInputs}
                           />
                         )}
                       />
@@ -1366,7 +1421,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         control={control}
                         render={({ field }) => (
                           <div className="d-flex">
-
                             <Dropdown
                               {...field}
                               filter
@@ -1382,7 +1436,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               type="button"
                               onClick={openThirdPartyModal}
                               icon={<i className="fa-solid fa-plus"></i>}
-                              className="p-button-primary" />
+                              className="p-button-primary"
+                            />
                           </div>
                         )}
                       />
@@ -1597,10 +1652,11 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="payment-summary">
                     <div
-                      className={`payment-summary-card ${!paymentCoverage()
+                      className={`payment-summary-card ${
+                        !paymentCoverage()
                           ? "payment-warning"
                           : "payment-success"
-                        }`}
+                      }`}
                     >
                       <div className="payment-summary-item">
                         <strong>Total factura:</strong>
@@ -2362,7 +2418,6 @@ const DepositColumnBody = ({
   value: any | null;
   disabled?: boolean;
 }) => {
-
   return (
     <Dropdown
       value={value}

@@ -10,7 +10,9 @@ $tabs = [
             'creacion' => 'Creación',
             'cancelacion' => 'Cancelación',
             'reagendamiento' => 'Reagendamiento',
-            'compartir' => 'Compartir'
+            'compartir' => 'Compartir',
+            'confirmacion' => 'Confirmación'
+
         ],
         'anexo' => false
     ],
@@ -21,6 +23,20 @@ $tabs = [
             'creacion' => 'Creación de Turno',
             'llamado' => 'Llamado a Turno',
             'llamadoPaciente' => 'Llamado a Paciente',
+        ],
+        'anexo' => false
+    ],
+     'telemedicina' => [
+        'title' => 'Telemedicina',
+        'botones' => 'Telemedicina',
+           'subtabs' => [
+            'creacion' => 'Creación',
+            'cancelacion' => 'Cancelación',
+            'enlace' => 'Enlace',
+            'reagendamiento' => 'Reagendamiento',
+            'compartir' => 'Compartir',
+            'confirmacion' => 'Confirmación'
+
         ],
         'anexo' => false
     ],
@@ -36,6 +52,15 @@ $tabs = [
     'recetas' => [
         'title' => 'Recetas',
         'botones' => 'Recetas',
+        'subtabs' => [
+            'creacion' => 'Creación',
+            'compartir' => 'Compartir'
+        ],
+        'anexo' => false
+    ],
+    'remiciones' => [
+        'title' => 'Remiciones',
+        'botones' => 'Remiciones',
         'subtabs' => [
             'creacion' => 'Creación',
             'compartir' => 'Compartir'
@@ -70,7 +95,26 @@ $tabs = [
             'compartir' => 'Compartir'
         ],
         'anexo' => false
-    ]
+    ],
+    'vacunas' => [
+        'title' => 'Vacunas',
+        'botones' => 'Vacunas',
+        'subtabs' => [
+            'creacion' => 'Creación',
+            'compartir' => 'Compartir'
+        ],
+        'anexo' => false
+    ],
+    'consentimientos' => [
+        'title' => 'Consentimientos',
+        'botones' => 'Consentimientos',
+        'subtabs' => [
+            'creacion' => 'Creación',
+            'compartir' => 'Compartir',
+            'enlace' => 'Enlace'
+        ],
+        'anexo' => false
+    ],
 ];
 ?>
 

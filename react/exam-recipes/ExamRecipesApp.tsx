@@ -1,13 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Badge } from "primereact/badge";
 import { useExamRecipes } from "./hooks/useExamRecipes";
-import { CustomPRTable, CustomPRTableColumnProps } from "../components/CustomPRTable";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../components/CustomPRTable";
 import { examRecipeService, userService } from "../../services/api";
 import { SwalManager } from "../../services/alertManagerImported";
-import { examRecipeStatus, examRecipeStatusColors } from "../../services/commons";
+import {
+  examRecipeStatus,
+  examRecipeStatusColors,
+} from "../../services/commons";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF";
 import { Menu } from "primereact/menu";
+import { useTemplate } from "../hooks/useTemplate";
+import { useMassMessaging } from "../hooks/useMassMessaging";
+import {
+  formatDate,
+  formatWhatsAppMessage,
+  getIndicativeByCountry,
+} from "../../services/utilidades";
 
 interface ExamRecipesTableItem {
   id: string;
@@ -19,27 +32,57 @@ interface ExamRecipesTableItem {
   resultMinioUrl?: string;
   user: any;
   details: any[];
+  original: any;
 }
 
 const patientId = new URLSearchParams(window.location.search).get("patient_id");
 
 export const ExamRecipesApp: React.FC = () => {
   const { examRecipes, fetchExamRecipes } = useExamRecipes(patientId);
-  const [tableExamRecipes, setTableExamRecipes] = useState<ExamRecipesTableItem[]>([]);
+  const [tableExamRecipes, setTableExamRecipes] = useState<
+    ExamRecipesTableItem[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const tenant = window.location.hostname.split(".")[0];
+  const data = {
+    tenantId: tenant,
+    belongsTo: "examenes-compartir",
+    type: "whatsapp",
+  };
+  const { template, setTemplate, fetchTemplate } = useTemplate(data);
+  const {
+    sendMessage: sendMessageWpp,
+    responseMsg,
+    loading: loadingMessage,
+    error,
+  } = useMassMessaging();
+
+  const sendMessageWppRef = useRef(sendMessageWpp);
+  const fetchTemplateRef = useRef(fetchTemplate);
+
+  useEffect(() => {
+    sendMessageWppRef.current = sendMessageWpp;
+  }, [sendMessageWpp]);
+
+  useEffect(() => {
+    fetchTemplateRef.current = fetchTemplate;
+  }, [fetchTemplate]);
 
   useEffect(() => {
     const mappedExamRecipes: ExamRecipesTableItem[] = examRecipes
       .sort((a, b) => parseInt(b.id, 10) - parseInt(a.id, 10))
       .map((prescription: any) => ({
         id: prescription.id,
-        doctor: `${prescription.user.first_name || ""} ${prescription.user.middle_name || ""
-          } ${prescription.user.last_name || ""} ${prescription.user.second_last_name || ""
-          }`,
+        doctor: `${prescription.user.first_name || ""} ${
+          prescription.user.middle_name || ""
+        } ${prescription.user.last_name || ""} ${
+          prescription.user.second_last_name || ""
+        }`,
         exams: prescription.details
           .map((detail) => detail.exam_type.name)
           .join(", "),
@@ -54,7 +97,8 @@ export const ExamRecipesApp: React.FC = () => {
         status: prescription.status,
         resultMinioUrl: prescription.result?.result_minio_url,
         user: prescription.user,
-        details: prescription.details
+        details: prescription.details,
+        original: prescription,
       }));
     setTableExamRecipes(mappedExamRecipes);
     setTotalRecords(mappedExamRecipes.length);
@@ -77,12 +121,112 @@ export const ExamRecipesApp: React.FC = () => {
       }
     });
   };
+  async function generatePdfFile(prescription) {
+    if (prescription.result.result_minio_url) {
+      //@ts-ignore
+      const url = await getUrlImage(prescription.result.result_minio_url, true);
+      return {
+        file_url: url,
+        model_type: "xxxxxxx",
+        model_id: 0,
+        id: 0,
+      };
+    } else {
+      //@ts-ignore
+      await generarFormato(
+        "RecetaExamen",
+        prescription,
+        "Impresion",
+        "prescriptionInput"
+      );
+
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          let fileInput: any = document.getElementById(
+            "pdf-input-hidden-to-prescriptionInput"
+          );
+          let file = fileInput?.files[0];
+
+          if (!file) {
+            resolve(null);
+            return;
+          }
+
+          let formData = new FormData();
+          formData.append("file", file);
+          formData.append("model_type", "App\\Models\\ExamRecipes");
+          formData.append("model_id", prescription.id);
+          //@ts-ignore
+          guardarArchivo(formData, true)
+            .then(async (response) => {
+              resolve({
+                file_url: await getUrlImage(
+                  response.file.file_url.replaceAll("\\", "/"),
+                  true
+                ),
+                model_type: response.file.model_type,
+                model_id: response.file.model_id,
+                id: response.file.id,
+              });
+            })
+            .catch(reject);
+        }, 1000);
+      });
+    }
+  }
+
+  const sendMessageWhatsapp = useCallback(
+    async (exam) => {
+      const templateExam = await fetchTemplateRef.current();
+
+      const dataToFile: any = await generatePdfFile(exam);
+      const replacements = {
+        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${
+          exam.patient.middle_name ?? ""
+        } ${exam.patient.last_name ?? ""} ${
+          exam.patient.second_last_name ?? ""
+        }`,
+        NOMBRE_EXAMEN: exam.details
+          .map((detail) => detail.exam_type.name)
+          .join(", "),
+        FECHA_EXAMEN: `${formatDate(exam.created_at)}`,
+        "ENLACE DOCUMENTO": "",
+      };
+
+      const templateFormatted = formatWhatsAppMessage(
+        templateExam.template,
+        replacements
+      );
+
+      const dataMessage = {
+        channel: "whatsapp",
+        recipients: [
+          getIndicativeByCountry(exam.patient.country_id) +
+            exam.patient.whatsapp,
+        ],
+        message_type: "media",
+        message: templateFormatted,
+        attachment_url: dataToFile?.file_url,
+        attachment_type: "document",
+        minio_model_type: dataToFile?.model_type,
+        minio_model_id: dataToFile?.model_id,
+        minio_id: dataToFile?.id,
+        webhook_url: "https://example.com/webhook",
+      };
+      await sendMessageWppRef.current(dataMessage);
+      SwalManager.success({
+        text: "Mensaje enviado correctamente",
+        title: "Éxito",
+      });
+    },
+    [sendMessageWpp, fetchTemplate]
+  );
 
   const seeExamRecipeResults = async (minioUrl: string | undefined | null) => {
     if (minioUrl) {
       //@ts-ignore
       const url = await getUrlImage(minioUrl);
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     }
   };
 
@@ -103,17 +247,17 @@ export const ExamRecipesApp: React.FC = () => {
     {
       field: "doctor",
       header: "Doctor",
-      sortable: true
+      sortable: true,
     },
     {
       field: "exams",
       header: "Exámenes recetados",
-      sortable: true
+      sortable: true,
     },
     {
       field: "created_at",
       header: "Fecha de creación",
-      sortable: true
+      sortable: true,
     },
     {
       field: "status",
@@ -124,24 +268,20 @@ export const ExamRecipesApp: React.FC = () => {
 
         // Mapear colores de Phoenix a PrimeReact
         const severityMap: Record<string, string> = {
-          'success': 'success',
-          'warning': 'warning',
-          'danger': 'danger',
-          'info': 'info',
-          'primary': null, // No hay equivalente directo, usar secondary
-          'secondary': null
+          success: "success",
+          warning: "warning",
+          danger: "danger",
+          info: "info",
+          primary: null, // No hay equivalente directo, usar secondary
+          secondary: null,
         };
 
-        const severity = severityMap[color] || 'secondary';
+        const severity = severityMap[color] || "secondary";
 
         return (
-          <Badge
-            value={text}
-            severity={severity}
-            className="p-badge-lg"
-          />
+          <Badge value={text} severity={severity} className="p-badge-lg" />
         );
-      }
+      },
     },
     {
       field: "actions",
@@ -158,21 +298,23 @@ export const ExamRecipesApp: React.FC = () => {
           onViewResults={() => seeExamRecipeResults(rowData.resultMinioUrl)}
           onCancel={() => cancelPrescription(rowData.id)}
           onShare={async () => {
-            const user = await userService.getLoggedUser();
+            sendMessageWhatsapp(rowData.original);
+            // const user = await userService.getLoggedUser();
+
             //@ts-ignore
-            enviarDocumento(
-              rowData.id,
-              "Descarga",
-              "RecetaExamen",
-              "Completa",
-              rowData.patientId,
-              user.id,
-              "Receta_de_examenes"
-            );
+            // enviarDocumento(
+            //   rowData.id,
+            //   "Descarga",
+            //   "RecetaExamen",
+            //   "Completa",
+            //   rowData.patientId,
+            //   user.id,
+            //   "Receta_de_examenes"
+            // );
           }}
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -214,35 +356,39 @@ const TableActionsMenu: React.FC<{
       icon: "pi pi-print",
       command: () => {
         onPrint();
-        menu.current?.hide(); 
-      }
+      },
     },
     {
       label: "Descargar",
       icon: "pi pi-download",
       command: () => {
         onDownload();
-        menu.current?.hide();
-      }
+      },
     },
-    ...(rowData.status === "uploaded" ? [{
-      label: "Visualizar resultados",
-      icon: "pi pi-eye",
-      command: () => {
-        onViewResults();
-        menu.current?.hide(); 
-      }
-    }] : []),
-    ...(rowData.status === "pending" ? [{
-      label: "Anular receta",
-      icon: "pi pi-times",
-      command: () => {
-        onCancel();
-        menu.current?.hide(); 
-      }
-    }] : []),
+    ...(rowData.status === "uploaded"
+      ? [
+          {
+            label: "Visualizar resultados",
+            icon: "pi pi-eye",
+            command: () => {
+              onViewResults();
+            },
+          },
+        ]
+      : []),
+    ...(rowData.status === "pending"
+      ? [
+          {
+            label: "Anular receta",
+            icon: "pi pi-times",
+            command: () => {
+              onCancel();
+            },
+          },
+        ]
+      : []),
     {
-      separator: true
+      separator: true,
     },
     {
       label: "Compartir",
@@ -253,11 +399,10 @@ const TableActionsMenu: React.FC<{
           icon: "pi pi-whatsapp",
           command: () => {
             onShare();
-            menu.current?.hide();
-          }
-        }
-      ]
-    }
+          },
+        },
+      ],
+    },
   ];
 
   const handleMenuHide = () => {
@@ -282,7 +427,7 @@ const TableActionsMenu: React.FC<{
         ref={menu}
         id={`popup_menu_${rowData.id}`}
         onHide={handleMenuHide}
-        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+        appendTo={typeof document !== "undefined" ? document.body : undefined}
       />
     </div>
   );

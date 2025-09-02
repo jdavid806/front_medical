@@ -612,6 +612,10 @@ export const SalesInvoices = () => {
 
   // Acciones para cada fila
 
+  const redirectToNotas = isDebito => {
+    console.log(isDebito);
+    window.location.href = "NotasDebitoCredito";
+  };
   const actionBodyTemplate = rowData => {
     const items = [{
       label: "Generar Recibo",
@@ -620,13 +624,13 @@ export const SalesInvoices = () => {
     }, {
       label: "Generar Nota Debito",
       template: createActionTemplate("money-bill-transfer", "Generar Nota Debito", "text-green-500"),
-      command: () => generateDebitNote(rowData),
-      visible: rowData.notes.length ? false : true
+      command: () => redirectToNotas(true)
+      // visible: rowData.notes.length ? false : true,
     }, {
       label: "Generar Nota credito",
       template: createActionTemplate("money-bill-transfer", "Generar Nota Credito", "text-green-500"),
-      command: () => generateCreditNote(rowData),
-      visible: rowData.notes.length ? false : true
+      command: () => redirectToNotas(true)
+      // visible: rowData.notes.length ? false : true,
     }, {
       label: "Descargar Excel",
       template: createActionTemplate("file-excel", "Descargar Excel", "text-green-600"),

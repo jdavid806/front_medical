@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
@@ -6,27 +6,29 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { useUsers } from "../hooks/useUsers";
+import { useUsers } from "../../users/hooks/useUsers";
 
 interface DisabilityFormInputs {
   user_id: number;
-  start_date: string | Date;
-  end_date: string | Date;
+  start_date: Date;
+  end_date: Date;
   reason: string;
   id?: number;
   isEditing?: boolean;
 }
 
 interface DisabilityFormProps {
-  onHandleSubmit: (data: DisabilityFormInputs) => void;
+  formId?: string;
+  onHandleSubmit?: (data: DisabilityFormInputs) => void;
   initialData?: DisabilityFormInputs;
 }
 
-export const DisabilityForm: React.FC<DisabilityFormProps> = ({
+export const DisabilityForm = forwardRef(({
+  formId,
   onHandleSubmit,
   initialData,
-}) => {
-  const { users, loading: usersLoading } = useUsers();
+}: DisabilityFormProps, ref) => {
+  const { users } = useUsers();
   const {
     control,
     handleSubmit,
@@ -34,44 +36,50 @@ export const DisabilityForm: React.FC<DisabilityFormProps> = ({
     reset,
     watch,
   } = useForm<DisabilityFormInputs>({
-    defaultValues: initialData || { 
+    defaultValues: initialData || {
       user_id: 0,
-      start_date: "",
-      end_date: "",
+      start_date: new Date(),
+      end_date: new Date(),
       reason: ""
     },
   });
 
   const startDate = watch("start_date");
 
+  useImperativeHandle(ref, () => ({
+    resetForm: () => {
+      reset();
+    },
+    getFormData: () => {
+      return {
+        user_id: watch("user_id"),
+        start_date: watch("start_date"),
+        end_date: watch("end_date"),
+        reason: watch("reason"),
+        id: watch("id"),
+        isEditing: watch("isEditing")
+      };
+    }
+  }));
+
   // Preparar opciones para el dropdown de usuarios
   const userOptions = users.map(user => ({
     label: `${user.first_name} ${user.middle_name || ''} ${user.last_name} ${user.second_last_name || ''}`.replace(/\s+/g, ' ').trim(),
     value: user.id,
-    specialty: user.specialty?.name || user.user_specialty_name || 'N/A'
+    specialty: user.specialty?.name || 'N/A'
   }));
 
   React.useEffect(() => {
-    reset(initialData || { 
+    reset(initialData || {
       user_id: 0,
-      start_date: "",
-      end_date: "",
+      start_date: new Date(),
+      end_date: new Date(),
       reason: ""
     });
   }, [initialData, reset]);
 
   const onSubmit = (data: DisabilityFormInputs) => {
-    // Convert dates to proper format if they are Date objects
-    const formattedData = {
-      ...data,
-      start_date: data.start_date instanceof Date 
-        ? data.start_date.toISOString().split('T')[0] 
-        : data.start_date,
-      end_date: data.end_date instanceof Date 
-        ? data.end_date.toISOString().split('T')[0] 
-        : data.end_date,
-    };
-    onHandleSubmit(formattedData);
+    onHandleSubmit?.(data);
   };
 
   const getFormErrorMessage = (name: keyof DisabilityFormInputs) => {
@@ -83,7 +91,7 @@ export const DisabilityForm: React.FC<DisabilityFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
+    <form id={formId} onSubmit={handleSubmit(onSubmit)} className="p-fluid">
       <div className="field">
         <label htmlFor="user_id" className="block mb-2">
           Médico *
@@ -103,7 +111,7 @@ export const DisabilityForm: React.FC<DisabilityFormProps> = ({
               options={userOptions}
               optionLabel="label"
               optionValue="value"
-              placeholder={usersLoading ? "Cargando médicos..." : "Seleccione un médico"}
+              placeholder="Seleccione un médico"
               filter
               filterBy="label"
               showClear
@@ -111,7 +119,6 @@ export const DisabilityForm: React.FC<DisabilityFormProps> = ({
               className={classNames({
                 "p-invalid": fieldState.error,
               })}
-              disabled={usersLoading}
               itemTemplate={(option) => (
                 <div>
                   <div style={{ fontWeight: 'bold' }}>{option.label}</div>
@@ -218,22 +225,6 @@ export const DisabilityForm: React.FC<DisabilityFormProps> = ({
         />
         {getFormErrorMessage("reason")}
       </div>
-
-      <div className="d-flex justify-content-end mt-4">
-        <Button
-          label="Cancelar"
-          icon="pi pi-times"
-          type="button"
-          className="p-button-text w-30"
-          onClick={() => reset()}
-        />
-        <Button
-          label={initialData?.isEditing ? "Actualizar" : "Guardar"}
-          icon="pi pi-check"
-          type="submit"
-          className="w-30 ml-2"
-        />
-      </div>
     </form>
   );
-};
+});

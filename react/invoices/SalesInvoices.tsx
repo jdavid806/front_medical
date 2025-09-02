@@ -723,6 +723,11 @@ export const SalesInvoices = () => {
 
   // Acciones para cada fila
 
+  const redirectToNotas = (isDebito: boolean) => {
+    console.log(isDebito);
+    window.location.href = "NotasDebitoCredito";
+  };
+
   const actionBodyTemplate = (rowData: FacturaVenta) => {
     const items: MenuItem[] = [
       {
@@ -741,8 +746,8 @@ export const SalesInvoices = () => {
           "Generar Nota Debito",
           "text-green-500"
         ),
-        command: () => generateDebitNote(rowData),
-        visible: rowData.notes.length ? false : true,
+        command: () => redirectToNotas(true),
+        // visible: rowData.notes.length ? false : true,
       },
       {
         label: "Generar Nota credito",
@@ -751,8 +756,8 @@ export const SalesInvoices = () => {
           "Generar Nota Credito",
           "text-green-500"
         ),
-        command: () => generateCreditNote(rowData),
-        visible: rowData.notes.length ? false : true,
+        command: () => redirectToNotas(true),
+        // visible: rowData.notes.length ? false : true,
       },
       {
         label: "Descargar Excel",

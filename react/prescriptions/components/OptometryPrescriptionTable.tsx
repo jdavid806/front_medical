@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ConfigColumns } from "datatables.net-bs5";
 import { PrescriptionDto, PrescriptionTableItem } from "../../models/models.js";
-import CustomDataTable from "../../components/CustomDataTable.js";
-import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
-import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable.js";
 import {
   recipeInvoiceStates,
   recipeInvoiceStateColors,
@@ -18,9 +13,11 @@ import { useMassMessaging } from "../../hooks/useMassMessaging.js";
 import {
   formatWhatsAppMessage,
   getIndicativeByCountry,
-  formatDate,
 } from "../../../services/utilidades";
 import { SwalManager } from "../../../services/alertManagerImported.js";
+import { Badge } from "primereact/badge";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 
 interface PrescriptionTableProps {
   prescriptions: PrescriptionDto[];
@@ -38,9 +35,14 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
     show: false,
     id: 0,
   });
-  const [tablePrescriotions, setTablePrescriptions] = React.useState<
-    PrescriptionTableItem[]
-  >([]);
+  const [tablePrescriptions, setTablePrescriptions] = useState<PrescriptionTableItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [sortField, setSortField] = useState<string>('created_at');
+  const [sortOrder, setSortOrder] = useState<-1 | 1>(-1);
 
   const { getRecipeInvoiceStatus } = useOptometry();
   const tenant = window.location.hostname.split(".")[0];
@@ -71,7 +73,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
   useEffect(() => {
     const mappedPrescriptions: PrescriptionTableItem[] = prescriptions
       .sort((a, b) => parseInt(b.id, 10) - parseInt(a.id, 10))
-      .map((prescription:any) => ({
+      .map((prescription: any) => ({
         id: prescription.id,
         doctor: `${prescription.prescriber.first_name} ${prescription.prescriber.last_name}`,
         patient: `${prescription.patient.first_name} ${prescription.patient.last_name}`,
@@ -89,18 +91,33 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
         prescriber: prescription.prescriber,
       }));
     setTablePrescriptions(mappedPrescriptions);
+    setTotalRecords(mappedPrescriptions.length);
   }, [prescriptions]);
 
-  const columns: ConfigColumns[] = [
-    { data: "doctor" },
-    { data: "created_at" },
-    { data: "status" },
-    { orderable: false, searchable: false },
-  ];
+  const handlePageChange = (event: any) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setGlobalFilter(value);
+  };
+
+  const handleReload = () => {
+    setLoading(true);
+    // Aquí puedes agregar lógica para recargar datos si es necesario
+    setLoading(false);
+  };
+
+  const handleSort = (e: any) => {
+    const { sortField, sortOrder } = e;
+    setSortField(sortField);
+    setSortOrder(sortOrder === 1 ? 1 : -1);
+  };
 
   async function generatePdfFile(prescription) {
     //@ts-ignore
-    generarFormato("RecetaOptometria", prescription, "Impresion", "prescriptionInput");
+    await generarFormato("RecetaOptometria", prescription, "Impresion", "prescriptionInput");
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -124,7 +141,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
             resolve(response.file);
           })
           .catch(reject);
-      }, 1500);
+      }, 1000);
     });
   }
 
@@ -143,7 +160,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
         ESPECIALISTA: `${prescription.prescriber.first_name} ${prescription.prescriber.middle_name} ${prescription.prescriber.last_name} ${prescription.prescriber.second_last_name}`,
         ESPECIALIDAD: `${prescription.prescriber.specialty.name}`,
         RECOMENDACIONES: `${prescription.clinical_record.description}`,
-        FECHA_RECETA: `${prescription.createdAt}`,
+        FECHA_RECETA: `${prescription.created_at}`,
         "ENLACE DOCUMENTO": "",
       };
 
@@ -156,7 +173,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(prescription.patient_data.country_id) +
-            prescription.patient_data.whatsapp,
+          prescription.patient_data.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
@@ -176,84 +193,97 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
     [sendMessageWpp, fetchTemplate]
   );
 
-  const slots = {
-    2: (cell, data: PrescriptionTableItem) => {
-      const text = recipeInvoiceStates[data.status] || "SIN ESTADO";
-      const color = recipeInvoiceStateColors[data.status] || "secondary";
-      return (
-        <>
-          <span className={`badge badge-phoenix badge-phoenix-${color}`}>
-            {text}
-          </span>
-        </>
-      );
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: "doctor",
+      header: "Doctor",
+      sortable: true
     },
-    3: (cell, data: PrescriptionTableItem) => (
-      <>
-        <div className="text-end flex justify-cointent-end">
-          <TableActionsWrapper>
-            <PrintTableAction
-              onTrigger={async () => {
-                const result = await getRecipeInvoiceStatus(data.id);
+    {
+      field: "created_at",
+      header: "Fecha de creación",
+      sortable: true
+    },
+    {
+      field: "status",
+      header: "Estado de facturación",
+      width:""
+      body: (data: PrescriptionTableItem) => {
+        const text = recipeInvoiceStates[data.status] || "SIN ESTADO";
+        const color = recipeInvoiceStateColors[data.status] || "secondary";
 
-                if (result.has_invoice) {
-                  //@ts-ignore
-                  generarFormato("RecetaOptometria", data, "Impresion");
-                  // crearDocumento(data.id, "Impresion", "RecetaOptometria", "Completa", "Receta optometría");
-                } else {
-                  setShowBillingModal({ show: true, id: data.id });
-                }
-              }}
-            />
-            <DownloadTableAction
-              onTrigger={async () => {
-                const result = await getRecipeInvoiceStatus(data.id);
-                if (result.has_invoice) {
-                  //@ts-ignore
-                  generarFormato("RecetaOptometria", data, "Descarga");
-                  // crearDocumento(data.id, "Descarga", "RecetaOptometria", "Completa", "Receta optometría");
-                } else {
-                  setShowBillingModal({ show: true, id: data.id });
-                }
-              }}
-            />
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-            <li className="dropdown-header">Compartir</li>
-            <ShareTableAction
-              shareType="whatsapp"
-              onTrigger={() => {
-                sendMessageWhatsapp(data);
-              }}
-            />
-          </TableActionsWrapper>
-        </div>
-      </>
-    ),
-  };
+        // Mapear colores de Phoenix a PrimeReact
+        const severityMap: Record<string, string> = {
+          'success': 'success',
+          'warning': 'warning',
+          'danger': 'danger',
+          'info': 'info',
+          'primary': 'secondary',
+          'secondary': 'secondary'
+        };
+
+        const severity = severityMap[color] || 'secondary';
+
+        return (
+          <Badge
+            value={text}
+            severity={severity}
+            className="p-badge-lg"
+          />
+        );
+      }
+    },
+    {
+      field: "actions",
+      header: "Acciones",
+      body: (data: PrescriptionTableItem) => (
+        <TableActionsMenu
+          data={data}
+          onPrint={async () => {
+            const result = await getRecipeInvoiceStatus(data.id);
+            if (result.has_invoice) {
+              //@ts-ignore
+              generarFormato("RecetaOptometria", data, "Impresion");
+            } else {
+              setShowBillingModal({ show: true, id: data.id });
+            }
+          }}
+          onDownload={async () => {
+            const result = await getRecipeInvoiceStatus(data.id);
+            if (result.has_invoice) {
+              //@ts-ignore
+              generarFormato("RecetaOptometria", data, "Descarga");
+            } else {
+              setShowBillingModal({ show: true, id: data.id });
+            }
+          }}
+          onShare={() => {
+            sendMessageWhatsapp(data);
+          }}
+        />
+      )
+    },
+  ];
 
   return (
     <>
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable
-            data={tablePrescriotions}
-            slots={slots}
+          <CustomPRTable
             columns={columns}
-          >
-            <thead>
-              <tr>
-                <th className="border-top custom-th">Doctor</th>
-                <th className="border-top custom-th">Fecha de creación</th>
-                <th className="border-top custom-th">Estado de facturación</th>
-                <th
-                  className="text-end align-middle pe-0 border-top mb-2"
-                  scope="col"
-                ></th>
-              </tr>
-            </thead>
-          </CustomDataTable>
+            data={tablePrescriptions}
+            lazy={false}
+            first={first}
+            rows={rows}
+            totalRecords={totalRecords}
+            loading={loading}
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onPage={handlePageChange}
+            onSearch={handleSearchChange}
+            onReload={handleReload}
+            onSort={handleSort}
+          />
         </div>
       </div>
       <OptometryBillingModal
@@ -265,6 +295,78 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
         }}
       />
     </>
+  );
+};
+
+const TableActionsMenu: React.FC<{
+  data: PrescriptionTableItem;
+  onPrint: () => void;
+  onDownload: () => void;
+  onShare: () => void;
+}> = ({ data, onPrint, onDownload, onShare }) => {
+  const menu = useRef<Menu>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  const items = [
+    {
+      label: "Imprimir",
+      icon: "pi pi-print",
+      command: onPrint
+    },
+    {
+      label: "Descargar",
+      icon: "pi pi-download",
+      command: onDownload
+    },
+    {
+      separator: true
+    },
+    {
+      label: "Compartir por WhatsApp",
+      icon: "pi pi-whatsapp",
+      command: onShare
+    }
+  ];
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setOpenMenuId(openMenuId === data.id ? null : data.id);
+    if (menu.current) {
+      const menuElement = menu.current as any;
+      if (openMenuId === data.id) {
+        menuElement.hide();
+      } else {
+        menuElement.show(e);
+      }
+    }
+  };
+
+  const handleMenuHide = () => {
+    setOpenMenuId(null);
+  };
+
+  return (
+    <div className="table-actions-menu">
+      <Button
+        className="p-button-rounded btn-primary"
+        onClick={(e) => menu.current?.toggle(e)}
+        aria-controls={`popup_menu_${data.id}`}
+        aria-haspopup
+      >
+        Acciones
+        <i className="fa fa-cog ml-2"></i>
+      </Button>
+      <Menu
+        model={items}
+        popup
+        ref={menu}
+        id={`popup_menu_${data.id}`}
+        onHide={handleMenuHide}
+        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+      />
+    </div>
   );
 };
 

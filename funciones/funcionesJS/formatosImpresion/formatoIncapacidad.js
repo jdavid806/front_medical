@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
+export async function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
   console.log(incapacidad);
   const tablePatient = generarTablaPaciente(patientData, {
     date: formatearFechaQuitarHora(incapacidad.created_at || "--"),
@@ -86,7 +86,7 @@ export function generarFormatoIncapacidad(incapacidad, tipo, inputId = "") {
     orientation: "landscape",
   };
 
-  generatePDFFromHTML(contenido, companyData, pdfConfig, inputId);
+  await generatePDFFromHTML(contenido, companyData, pdfConfig, inputId);
 }
 
 export default generarFormatoIncapacidad;

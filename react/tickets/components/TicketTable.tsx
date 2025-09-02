@@ -88,14 +88,11 @@ export const TicketTable = () => {
     channel.bind(
       "ticket.generated",
       function (data: { ticket: TicketDto | any } | any) {
-        console.log("ticketreason1",data.ticket.reason);
-        console.log("ticketReasonsBacken1", ticketReasonsBackend);
-        console.log("ticketreasonnnnn1", ticketReasonsBackend[data.ticket.reason]);
         const newTicketData: TicketTableItemDto | any = {
           id: data.ticket.id,
           ticket_number: data.ticket.ticket_number,
           phone: data.ticket.phone,
-          reason: ticketReasonsBackend[data.ticket.reason] || ticketReasons[data.ticket.reason],
+          reason: data.ticket.reason_label,
           priority: ticketPriorities[data.ticket.priority],
           status: data.ticket.status,
           statusView: ticketStatus[data.ticket.status],
@@ -160,7 +157,9 @@ export const TicketTable = () => {
   }, []);
 
   useEffect(() => {
-    if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
+    // console.log("ticketReasonsBackend", ticketReasonsBackend);
+    // console.log("ticket", tickets);
+    // if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
 
     setData(
       tickets.map((ticket: any) => {
@@ -168,7 +167,7 @@ export const TicketTable = () => {
           id: ticket.id,
           ticket_number: ticket.ticket_number,
           phone: ticket.phone,
-          reason: ticketReasonsBackend[ticket.reason] || ticketReasons[ticket.reason] || ticket.reason,
+          reason: ticket.reason_label,
           priority: ticketPriorities[ticket.priority],
           module_name: ticket.module?.name || "",
           status: ticket.status,

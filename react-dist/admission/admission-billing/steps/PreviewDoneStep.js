@@ -16,7 +16,9 @@ const PreviewDoneStep = ({
   onDownload,
   onSubmit,
   isSuccess = false,
-  setIsSuccess
+  setIsSuccess,
+  onSendWhatsApp,
+  sendingWhatsApp = false
 }) => {
   const [isDone, setIsDone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,27 +109,36 @@ const PreviewDoneStep = ({
       className: "pi pi-check-circle text-6xl text-success mb-4"
     }), /*#__PURE__*/React.createElement("h2", {
       className: "mb-3 fw-bold"
-    }, "\xA1Factura Admision Generada Exitosamente!"), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-center gap-3"
+    }, "\xA1Factura Admision Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
+      className: "text-muted mb-4"
+    }, "La factura ha sido creada y guardada en el sistema."), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-center gap-3 flex-wrap"
     }, /*#__PURE__*/React.createElement(Button, {
+      label: "Enviar por WhatsApp",
+      icon: "pi pi-whatsapp",
+      className: "p-button-success p-button-lg",
+      onClick: onSendWhatsApp,
+      loading: sendingWhatsApp,
+      disabled: sendingWhatsApp
+    }), /*#__PURE__*/React.createElement(Button, {
       label: "Imprimir Factura",
-      className: "btn btn-outline-primary btn-lg",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fas fa-print mr-2"
-      }),
+      className: "p-button-primary p-button-lg",
+      icon: "pi pi-print",
       onClick: onPrint
     }), /*#__PURE__*/React.createElement(Button, {
       label: "Descargar Factura",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fas fa-file-pdf mr-2"
-      }),
-      className: "btn btn-outline-primary btn-lg",
+      icon: "pi pi-download",
+      className: "p-button-help p-button-lg",
       onClick: onDownload
     }), /*#__PURE__*/React.createElement(Button, {
       label: "Volver al Inicio",
-      className: "btn btn-primary btn-lg",
+      className: "p-button-secondary p-button-lg",
       onClick: handleFinalClose
-    })));
+    })), sendingWhatsApp && /*#__PURE__*/React.createElement("div", {
+      className: "mt-3 text-sm text-muted"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "pi pi-spin pi-spinner mr-2"
+    }), "Enviando mensaje por WhatsApp..."));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid"
@@ -292,18 +303,18 @@ const PreviewDoneStep = ({
     className: "d-flex justify-content-between pt-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Atr\xE1s",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-arrow-left me-1"
-    }),
+    icon: "pi pi-arrow-left",
     onClick: prevStep,
     className: "p-button-secondary"
-  }), /*#__PURE__*/React.createElement(Button, {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
     label: isSubmitting ? "Guardando..." : "Guardar Factura",
     icon: isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-check",
-    className: "p-button-lg",
+    className: "p-button-primary",
     onClick: handleFinish,
     loading: isSubmitting,
     disabled: isSubmitting
-  }))));
+  })))));
 };
 export default PreviewDoneStep;

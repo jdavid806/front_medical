@@ -8497,7 +8497,7 @@
     font-size: 0.75rem;
     font-weight: 700;
     min-width: 1.5rem;
-    height: 1.5rem;
+    height: auto;
     line-height: 1.5rem;
   }
   .p-badge.p-badge-secondary {
@@ -8515,6 +8515,7 @@
   .p-badge.p-badge-warning {
     background-color: #ffc107;
     color: #212529;
+    height: auto !important;
   }
   .p-badge.p-badge-danger {
     background-color: #dc3545;

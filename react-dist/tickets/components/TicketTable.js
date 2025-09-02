@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useAllTableTickets } from "../hooks/useAllTableTickets.js";
 import CustomDataTable from "../../components/CustomDataTable.js";
-import { ticketPriorities, ticketReasons, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
+import { ticketPriorities, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
 import { ticketService, userService } from "../../../services/api/index.js";
 import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useLoggedUser } from "../../users/hooks/useLoggedUser.js";
@@ -78,14 +78,11 @@ export const TicketTable = () => {
     var hostname = window.location.hostname.split(".")[0];
     const channel = pusher.subscribe(`tickets.${hostname}`);
     channel.bind("ticket.generated", function (data) {
-      console.log("ticketreason1", data.ticket.reason);
-      console.log("ticketReasonsBacken1", ticketReasonsBackend);
-      console.log("ticketreasonnnnn1", ticketReasonsBackend[data.ticket.reason]);
       const newTicketData = {
         id: data.ticket.id,
         ticket_number: data.ticket.ticket_number,
         phone: data.ticket.phone,
-        reason: ticketReasonsBackend[data.ticket.reason] || ticketReasons[data.ticket.reason],
+        reason: data.ticket.reason_label,
         priority: ticketPriorities[data.ticket.priority],
         status: data.ticket.status,
         statusView: ticketStatus[data.ticket.status],
@@ -132,14 +129,16 @@ export const TicketTable = () => {
     };
   }, []);
   useEffect(() => {
-    if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
+    // console.log("ticketReasonsBackend", ticketReasonsBackend);
+    // console.log("ticket", tickets);
+    // if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
 
     setData(tickets.map(ticket => {
       return {
         id: ticket.id,
         ticket_number: ticket.ticket_number,
         phone: ticket.phone,
-        reason: ticketReasonsBackend[ticket.reason] || ticketReasons[ticket.reason] || ticket.reason,
+        reason: ticket.reason_label,
         priority: ticketPriorities[ticket.priority],
         module_name: ticket.module?.name || "",
         status: ticket.status,

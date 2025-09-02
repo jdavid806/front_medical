@@ -62,14 +62,10 @@ export const PatientClinicalRecordHistory = () => {
     });
   }, []);
   const printClinicalRecord = (data, id, title) => {
-    //@ts-ignore
     generarFormato("Consulta", data, "Impresion");
-    // crearDocumento(id, "Impresion", "Consulta", "Completa", title);
   };
   const downloadClinicalRecord = (id, title) => {
-    //@ts-ignore
     generarFormato("Consulta", data, "Descarga");
-    // crearDocumento(id, "Descarga", "Consulta", "Completa", title);
   };
   const shareClinicalRecord = (data, type) => {
     switch (type) {
@@ -82,7 +78,7 @@ export const PatientClinicalRecordHistory = () => {
   };
   async function generatePdfFile(recordHistory) {
     //@ts-ignore
-    generarFormato("Consulta", recordHistory, "Impresion", "recordHistoryInput");
+    await generarFormato("Consulta", recordHistory, "Impresion", "recordHistoryInput");
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         let fileInput = document.getElementById("pdf-input-hidden-to-recordHistoryInput");
@@ -99,7 +95,7 @@ export const PatientClinicalRecordHistory = () => {
         guardarArchivo(formData, true).then(response => {
           resolve(response.file);
         }).catch(reject);
-      }, 1500);
+      }, 1000);
     });
   }
   const sendMessageWhatsapp = useCallback(async recordHistory => {

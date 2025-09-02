@@ -54,7 +54,7 @@ export const DebitCreditNotes = () => {
     const dataMapped = data.map(note => {
       return {
         ...note,
-        cliente: note.invoice.third_party ? note.invoice.third_party.name : "Sin cliente",
+        cliente: note.invoice.third_party ? `${note.invoice.third_party.first_name ?? ""} ${note.invoice.third_party.middle_name ?? ""} ${note.invoice.third_party.last_name ?? ""} ${note.invoice.third_party.second_last_name ?? ""}` : "Sin cliente",
         tipo: note.type === "debit" ? "Débito" : "Crédito"
       };
     });

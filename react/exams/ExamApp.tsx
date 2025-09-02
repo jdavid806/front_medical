@@ -25,7 +25,10 @@ const ExamApp: React.FC = () => {
         window.location.href = `cargarResultadosExamen?patient_id=${examTableItem.patientId}&exam_id=${examTableItem.id}&appointment_id=${examTableItem.appointmentId}`;
     };
 
+    let sum = 0;
+
     const handleViewExamResults = async (examTableItem: ExamTableItem, minioUrl?: string) => {
+        console.log("entro", ++sum);
         if (minioUrl) {
             //@ts-ignore
             const url = await getUrlImage(minioUrl);

@@ -6,7 +6,7 @@ import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
 
 async function generatePdfFile(disabilityHistory) {
   //@ts-ignore
-  generarFormato(
+ await generarFormato(
     "Incapacidad",
     disabilityHistory,
     "Impresion",

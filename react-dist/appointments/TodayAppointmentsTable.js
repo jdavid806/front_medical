@@ -9,6 +9,7 @@ import { TicketTable } from "../tickets/components/TicketTable.js";
 import { GenerateTicket } from "../tickets/GenerateTicket.js";
 import { AppointmentFormModal } from "./AppointmentFormModal.js";
 import { Menu } from "primereact/menu";
+import { getLocalTodayISODate } from "../../services/utilidades.js";
 export const TodayAppointmentsTable = () => {
   const [showBillingDialog, setShowBillingDialog] = useState(false);
   const [showTicketControl, setShowTicketControl] = useState(false);
@@ -18,7 +19,7 @@ export const TodayAppointmentsTable = () => {
   const customFilters = () => {
     return {
       appointmentState: "pending",
-      appointmentDate: new Date().toISOString().split("T")[0],
+      appointmentDate: getLocalTodayISODate(),
       sort: "-appointment_date,appointment_time"
     };
   };

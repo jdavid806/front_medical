@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoRecetaOptometria(receta, tipo, inputId = "") {
+export async function generarFormatoRecetaOptometria(receta, tipo, inputId = "") {
   // console.log("receta", receta);
 
   let userName = [
@@ -224,7 +224,7 @@ export function generarFormatoRecetaOptometria(receta, tipo, inputId = "") {
     ${datosUsuario(user)}
 `;
 
-  generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTML(contenido, company, patient, inputId);
 }
 
 export default generarFormatoRecetaOptometria;

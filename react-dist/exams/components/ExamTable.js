@@ -84,14 +84,14 @@ export const ExamTable = ({
       //@ts-ignore
       const url = await getUrlImage(exam.minioUrl, true);
       return {
-        url: url,
+        file_url: url,
         model_type: "xxxxxxx",
         model_id: 0,
         id: 0
       };
     } else {
       //@ts-ignore
-      generarFormato("Examen", exam.original, "Impresion", "examInput");
+      await generarFormato("Examen", exam.original, "Impresion", "examInput");
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           let fileInput = document.getElementById("pdf-input-hidden-to-examInput");
@@ -105,8 +105,13 @@ export const ExamTable = ({
           formData.append("model_type", "App\\Models\\exam");
           formData.append("model_id", exam.id);
           //@ts-ignore
-          guardarArchivo(formData, true).then(response => {
-            resolve(response.file);
+          guardarArchivo(formData, true).then(async response => {
+            resolve({
+              file_url: await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true),
+              model_type: response.file.model_type,
+              model_id: response.file.model_id,
+              id: response.file.id
+            });
           }).catch(reject);
         }, 1500);
       });
@@ -127,7 +132,7 @@ export const ExamTable = ({
       recipients: [getIndicativeByCountry(exam.patient.country_id) + exam.patient.whatsapp],
       message_type: "media",
       message: templateFormatted,
-      attachment_url: dataToFile.url,
+      attachment_url: dataToFile.file_url,
       attachment_type: "document",
       minio_model_type: dataToFile?.model_type,
       minio_model_id: dataToFile?.model_id,
@@ -181,18 +186,18 @@ export const ExamTable = ({
       const color = examOrderStateColors[data.state] || "secondary";
       const text = examOrderStates[data.state] || "SIN ESTADO";
       const severityMap = {
-        'success': 'success',
-        'warning': 'warning',
-        'danger': 'danger',
-        'info': 'info',
-        'primary': 'secondary',
-        'secondary': 'secondary'
+        success: "success",
+        warning: "warning",
+        danger: "danger",
+        info: "info",
+        primary: "secondary",
+        secondary: "secondary"
       };
-      const severity = severityMap[color] || 'secondary';
+      const severity = severityMap[color] || "secondary";
       return /*#__PURE__*/React.createElement(Badge, {
         value: text,
         severity: severity,
-        className: "p-badge-lg"
+        className: "p-badge-lg h-auto"
       });
     }
   }, {
@@ -290,10 +295,11 @@ export const ExamTable = ({
     width: "100%",
     height: "500px",
     type: "application/pdf"
-  }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")));
+  }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")), /*#__PURE__*/React.createElement("style", null, `
+      .p-badge.p-badge-lg{
+        height: auto;
+      }`));
 };
-
-// Componente de menú de acciones
 const TableActionsMenu = ({
   data,
   onLoadExamResults,
@@ -309,35 +315,33 @@ const TableActionsMenu = ({
     icon: "pi pi-stethoscope",
     command: () => {
       onLoadExamResults(data);
-      menu.current?.hide();
     }
   }, {
     label: "Subir examen",
     icon: "pi pi-file-pdf",
     command: () => {
       onUploadExamsFile(data.id);
-      menu.current?.hide();
     }
   }] : []), ...(data.state === "uploaded" ? [{
     label: "Visualizar resultados",
     icon: "pi pi-eye",
-    command: () => {
+    command: e => {
+      e.originalEvent?.stopPropagation();
       onViewExamResults(data, data.minioUrl);
-      menu.current?.hide();
     }
   }, {
     label: "Imprimir",
     icon: "pi pi-print",
-    command: () => {
+    command: e => {
+      e.originalEvent?.stopPropagation();
       onPrint();
-      menu.current?.hide();
     }
   }, {
     label: "Descargar",
     icon: "pi pi-download",
-    command: () => {
+    command: e => {
+      e.originalEvent?.stopPropagation();
       onDownload();
-      menu.current?.hide();
     }
   }, {
     separator: true
@@ -347,15 +351,13 @@ const TableActionsMenu = ({
     items: [{
       label: "WhatsApp",
       icon: "pi pi-whatsapp",
-      command: () => {
+      command: e => {
+        e.originalEvent?.stopPropagation();
         onShare();
-        menu.current?.hide();
       }
     }]
   }] : [])];
-  const handleMenuHide = () => {
-    setOpenMenuId(null);
-  };
+  const handleMenuHide = () => {};
   return /*#__PURE__*/React.createElement("div", {
     className: "table-actions-menu"
   }, /*#__PURE__*/React.createElement(Button, {
@@ -371,6 +373,6 @@ const TableActionsMenu = ({
     ref: menu,
     id: `popup_menu_${data.id}`,
     onHide: handleMenuHide,
-    appendTo: typeof document !== 'undefined' ? document.body : undefined
+    appendTo: typeof document !== "undefined" ? document.body : undefined
   }));
 };
