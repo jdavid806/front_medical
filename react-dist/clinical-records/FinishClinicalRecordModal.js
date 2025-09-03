@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { ExamForm } from "../exams/components/ExamForm.js";
@@ -10,18 +10,37 @@ import { LeavingConsultationAppointmentForm } from "../appointments/LeavingConsu
 import { Divider } from "primereact/divider";
 import { AddVaccineForm } from "../vaccines/form/AddVaccineForm.js";
 import { Card } from "primereact/card";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useSpecialty } from "../fe-config/speciality/hooks/useSpecialty.js";
 import { AutoComplete } from "primereact/autocomplete";
 import { CustomPRTable } from "../components/CustomPRTable.js";
-export const FinishClinicalRecordModal = ({
-  patientId,
-  visible,
-  onClose
-}) => {
+import { Editor } from "primereact/editor";
+import { classNames } from "primereact/utils";
+import { appointmentService, clinicalRecordService, clinicalRecordTypeService, userService } from "../../services/api/index.js";
+import { Toast } from "primereact/toast";
+function getPurpuse(purpuse) {
+  switch (purpuse) {
+    case "Tratamiento":
+      return "TREATMENT";
+    case "Promoción":
+      return "PROMOTION";
+    case "Rehabilitación":
+      return "REHABILITATION";
+    case "Prevención":
+      return "PREVENTION";
+  }
+}
+export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) => {
+  const toast = useRef(null);
   const {
-    control,
-    resetField
+    initialExternalDynamicData,
+    appointmentId = new URLSearchParams(window.location.search).get('appointment_id') || '',
+    clinicalRecordType = new URLSearchParams(window.location.search).get('tipo_historia') || '',
+    patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '',
+    specialtyName = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general'
+  } = props;
+  const {
+    control
   } = useForm({
     defaultValues: {
       diagnosis: null,
@@ -30,8 +49,7 @@ export const FinishClinicalRecordModal = ({
   });
   const {
     append: appendDiagnosis,
-    remove: removeDiagnosis,
-    update: updateDiagnosis
+    remove: removeDiagnosis
   } = useFieldArray({
     control,
     name: "diagnoses"
@@ -40,12 +58,17 @@ export const FinishClinicalRecordModal = ({
     control,
     name: "diagnoses"
   });
+  const treatmentPlan = useWatch({
+    control,
+    name: "treatment_plan"
+  });
   const {
     cie11Codes,
     loadCie11Codes,
     cie11Code,
     setCie11Code
   } = useSpecialty();
+  const [visible, setVisible] = useState(false);
   const [activeTab, setActiveTab] = useState(null);
   const [examsActive, setExamsActive] = useState(false);
   const [disabilitiesActive, setDisabilitiesActive] = useState(false);
@@ -54,14 +77,60 @@ export const FinishClinicalRecordModal = ({
   const [remissionsActive, setRemissionsActive] = useState(false);
   const [appointmentActive, setAppointmentActive] = useState(false);
   const [turnsActive, setTurnsActive] = useState(false);
+  const [clinicalRecordTypeId, setClinicalRecordTypeId] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [currentAppointment, setCurrentAppointment] = useState(null);
+  const [externalDynamicData, setExternalDynamicData] = useState(null);
   const examFormRef = useRef(null);
   const disabilityFormRef = useRef(null);
   const prescriptionFormRef = useRef(null);
   const vaccineFormRef = useRef(null);
   const remissionFormRef = useRef(null);
   const appointmentFormRef = useRef(null);
+  const showModal = () => {
+    setVisible(true);
+  };
   const hideModal = () => {
-    onClose?.();
+    setVisible(false);
+  };
+  const updateExternalDynamicData = data => {
+    setExternalDynamicData(data);
+  };
+  const showSuccessToast = ({
+    title,
+    message
+  }) => {
+    toast.current?.show({
+      severity: 'success',
+      summary: title || "Éxito",
+      detail: message || "Operación exitosa"
+    });
+  };
+  const showErrorToast = ({
+    title,
+    message
+  }) => {
+    toast.current?.show({
+      severity: 'error',
+      summary: title || "Error",
+      detail: message || "Operación fallida"
+    });
+  };
+  const showFormErrors = ({
+    title,
+    errors
+  }) => {
+    toast.current?.show({
+      severity: 'error',
+      summary: title || "Errores de validación",
+      content: props => /*#__PURE__*/React.createElement("div", {
+        className: "text-start"
+      }, Object.entries(errors).map(([field, messages]) => /*#__PURE__*/React.createElement("div", {
+        className: "mb-2"
+      }, /*#__PURE__*/React.createElement("ul", {
+        className: "mb-0 mt-1 ps-3"
+      }, messages.map(msg => /*#__PURE__*/React.createElement("li", null, msg))))))
+    });
   };
   const tabs = [{
     key: "examinations",
@@ -73,9 +142,6 @@ export const FinishClinicalRecordModal = ({
     key: "prescriptions",
     label: "Recetas Médicas"
   }, {
-    key: "vaccinations",
-    label: "Vacunas"
-  }, {
     key: "referral",
     label: "Remisión"
   }, {
@@ -85,21 +151,152 @@ export const FinishClinicalRecordModal = ({
     key: "turns",
     label: "Turnos"
   }];
+  useEffect(() => {
+    setExternalDynamicData(initialExternalDynamicData);
+  }, [initialExternalDynamicData]);
+  useEffect(() => {
+    const fetchClinicalRecordType = async () => {
+      const clinicalRecordTypes = await clinicalRecordTypeService.getAll();
+      const currentClinicalRecordType = clinicalRecordTypes.find(type => type.key_ === clinicalRecordType);
+      if (currentClinicalRecordType) {
+        setClinicalRecordTypeId(currentClinicalRecordType.id);
+      }
+    };
+    fetchClinicalRecordType();
+  }, [clinicalRecordType]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await userService.getLoggedUser();
+      setCurrentUser(user);
+    };
+    fetchUser();
+  }, []);
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      const appointment = await appointmentService.get(appointmentId);
+      setCurrentAppointment(appointment);
+    };
+    fetchAppointment();
+  }, [appointmentId]);
   const handleFinish = async () => {
-    const exams = examFormRef.current?.getFormData();
-    const disabilities = disabilityFormRef.current?.getFormData();
-    const prescriptions = prescriptionFormRef.current?.getFormData();
-    const vaccinations = vaccineFormRef.current?.getFormData();
-    const remissions = remissionFormRef.current?.getFormData();
-    const appointment = await appointmentFormRef.current?.mapAppointmentToServer();
-    console.log(appointmentFormRef);
-    console.log(exams);
-    console.log(disabilities);
-    console.log(prescriptions);
-    console.log(vaccinations);
-    console.log(remissions);
-    console.log(appointment);
+    const mappedData = await mapToServer();
+    try {
+      const clinicalRecordRes = await clinicalRecordService.clinicalRecordsParamsStore(patientId, mappedData);
+      showSuccessToast({
+        title: "Se ha creado el registro exitosamente",
+        message: "Por favor espere un momento mientras se envía el mensaje"
+      });
+
+      // @ts-ignore
+      await createHistoryMessage(clinicalRecordRes.clinical_record.id, clinicalRecordRes.clinical_record.patient_id);
+      showSuccessToast({
+        title: "Se ha enviado el mensaje exitosamente"
+      });
+      hideModal();
+      window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+    } catch (error) {
+      console.log(error);
+      if (error.data?.errors) {
+        showFormErrors({
+          title: "Errores de validación",
+          errors: error.data.errors
+        });
+      } else {
+        showErrorToast({
+          title: "Error",
+          message: error.message || 'Ocurrió un error inesperado'
+        });
+      }
+    }
   };
+  const mapToServer = async () => {
+    const exams = examFormRef.current?.getFormData();
+    const disability = disabilityFormRef.current?.getFormData();
+    const prescriptions = prescriptionFormRef.current?.getFormData();
+    const remission = remissionFormRef.current?.getFormData();
+    const appointment = await appointmentFormRef.current?.mapAppointmentToServer();
+    const requestDataAppointment = {
+      assigned_user_specialty_id: currentAppointment.user_availability.user.user_specialty_id,
+      appointment_date: appointment.appointment_date,
+      appointment_time: appointment.appointment_time,
+      assigned_user_availability_id: appointment.assigned_user_availability_id,
+      assigned_supervisor_user_availability_id: appointment.assigned_supervisor_user_availability_id,
+      attention_type: currentAppointment.attention_type,
+      product_id: currentAppointment.product_id,
+      consultation_purpose: getPurpuse(currentAppointment.consultation_purpose),
+      consultation_type: "FOLLOW_UP",
+      external_cause: "OTHER",
+      frecuenciaCita: "",
+      numRepeticiones: 0,
+      selectPaciente: currentAppointment.patient_id,
+      telefonoPaciente: currentAppointment.patient.whatsapp,
+      correoPaciente: currentAppointment.patient.email,
+      patient_id: currentAppointment.patient_id,
+      appointment_state_id: currentAppointment.appointment_state_id,
+      assigned_user_id: appointment.assigned_user_availability_id,
+      created_by_user_id: appointment.created_by_user_id,
+      duration: currentAppointment.user_availability.appointment_duration,
+      branch_id: currentAppointment.user_availability.branch_id,
+      phone: currentAppointment.patient.whatsapp,
+      email: currentAppointment.patient.email
+    };
+    let result = {
+      appointment_id: appointmentId,
+      branch_id: "1",
+      clinical_record_type_id: clinicalRecordTypeId,
+      created_by_user_id: currentUser?.id,
+      description: treatmentPlan || "--",
+      data: {
+        ...externalDynamicData,
+        rips: diagnoses
+      },
+      consultation_duration: ""
+    };
+    if (examsActive && exams.length > 0) {
+      result.exam_order = exams.map(exam => ({
+        patient_id: patientId,
+        exam_order_item_id: exam.id,
+        exam_order_item_type: "exam_type"
+      }));
+    }
+    if (prescriptionsActive && prescriptions.length > 0) {
+      result.recipe = {
+        user_id: currentUser?.id,
+        patient_id: patientId,
+        medicines: prescriptions.map(medicine => ({
+          medication: medicine.medication,
+          concentration: medicine.concentration,
+          duration: medicine.duration,
+          frequency: medicine.frequency,
+          medication_type: medicine.medication_type,
+          observations: medicine.observations,
+          quantity: medicine.quantity,
+          take_every_hours: medicine.take_every_hours
+        })),
+        type: "general"
+      };
+    }
+    if (disabilitiesActive) {
+      result.patient_disability = {
+        user_id: currentUser?.id,
+        start_date: disability.start_date.toISOString().split("T")[0],
+        end_date: disability.end_date.toISOString().split("T")[0],
+        reason: disability.reason
+      };
+    }
+    if (remissionsActive) {
+      result.remission = remission;
+    }
+    if (appointmentActive) {
+      result.appointment = requestDataAppointment;
+    }
+    return result;
+  };
+  useImperativeHandle(ref, () => ({
+    updateExternalDynamicData,
+    showModal,
+    hideModal
+  }));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Dialog, {
     visible: visible,
     onHide: () => {
@@ -111,7 +308,9 @@ export const FinishClinicalRecordModal = ({
       width: '100vw',
       maxWidth: '100vw'
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex"
   }, /*#__PURE__*/React.createElement("div", {
     className: "p-3 border-right d-flex flex-column gap-2",
@@ -242,7 +441,9 @@ export const FinishClinicalRecordModal = ({
   }))))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", {
     className: "fs-9 text-danger"
   }, "Antes de finalizar la consulta por favor complete la siguiente informaci\xF3n:"), /*#__PURE__*/React.createElement(Card, {
-    header: "Diagn\xF3sticos"
+    header: /*#__PURE__*/React.createElement("h3", {
+      className: "p-3"
+    }, "Diagn\xF3sticos")
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement("div", {
@@ -287,7 +488,9 @@ export const FinishClinicalRecordModal = ({
         setCie11Code(null);
       }
     }
-  }))), /*#__PURE__*/React.createElement(CustomPRTable, {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
     data: diagnoses,
     columns: [{
       field: "label",
@@ -296,15 +499,43 @@ export const FinishClinicalRecordModal = ({
     disableSearch: true,
     disableReload: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "treatment_plan",
+    control: control,
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "treatment-plan",
+      className: "form-label"
+    }, "Plan de Tratamiento"), /*#__PURE__*/React.createElement(Editor, {
+      id: "treatment-plan",
+      value: field.value || "",
+      onTextChange: e => field.onChange(e.htmlValue),
+      style: {
+        height: '320px'
+      },
+      className: classNames({
+        "p-invalid": fieldState.error
+      })
+    }))
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end gap-2 mt-3"
   }, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    className: "btn btn-danger",
+    onClick: () => {
+      hideModal();
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
     label: "Finalizar",
     className: "btn btn-primary",
     onClick: () => {
       handleFinish();
     }
   }))));
-};
+});
 const Tab = ({
   tab,
   activeTab,

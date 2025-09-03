@@ -369,7 +369,7 @@ const BillingConfigTab = () => {
               value={accountingAccount}
               onChange={(e) => setValue("accounting_account", e.value)}
               filter
-              filterBy="account_name,account_code"
+              filterBy="label"
               showClear
               filterPlaceholder="Buscar cuenta..."
               className={`w-full ${errors?.accounting_account ? "p-invalid" : ""
@@ -385,7 +385,6 @@ const BillingConfigTab = () => {
           </div>
             )}
 
-          {/* Reverse Account Field (only for fiscal, consumer, and government invoices) */}
           {showReverseAccount && (
             <div className="field mb-4">
               <label
@@ -405,7 +404,7 @@ const BillingConfigTab = () => {
                   setValue("accounting_account_reverse_id", e.value)
                 }
                 filter
-                filterBy="account_name,account_code"
+                filterBy="label"
                 showClear
                 filterPlaceholder="Buscar cuenta..."
                 className={`w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""

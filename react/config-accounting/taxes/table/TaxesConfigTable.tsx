@@ -42,7 +42,6 @@ export const TaxesConfigTable: React.FC<TaxesConfigTableProps> = ({
       value: account.id.toString(),
     }));
   };
-  // Función mejorada para mostrar nombres de cuentas
 const renderAccount = (account: { id: string; name: string } | null) => {
     if (!account) return "No asignada";
     

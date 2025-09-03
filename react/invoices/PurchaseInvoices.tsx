@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -18,6 +18,7 @@ import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable";
 import { NewNoteModal } from "./NewNoteModal";
+import { useApplyNote } from "./hooks/useApplyNote";
 
 interface Factura {
   id: number;
@@ -59,6 +60,7 @@ export const PurchaseInvoices = () => {
   const { fetchAllInvoice, loading } = useInvoicePurchase();
 
   const { company, setCompany, fetchCompany } = useCompany();
+  const { applyNote, loading: loadingNote, error: errorNote } = useApplyNote();
 
   // Estado para filtros
   const [filtros, setFiltros] = useState<Filtros>({
@@ -904,13 +906,26 @@ export const PurchaseInvoices = () => {
         onHide={() => setShowNoteModal(false)}
         factura={facturaParaRecibo}
         tipo={tipoNota}
-        onSubmit={(data) => {
-          console.log("Nota guardada:", data);
-          showToast(
-            "success",
-            "Éxito",
-            `Nota ${data.tipo} creada correctamente`
-          );
+        onSubmit={async (data) => {
+          try {
+            const response = await applyNote(data);
+
+            showToast(
+              "success",
+              "Éxito",
+              `Nota ${
+                data.type === "credit" ? "Crédito" : "Débito"
+              } aplicada correctamente`
+            );
+
+            await loadFacturas();
+          } catch (err) {
+            showToast(
+              "error",
+              "Error",
+              errorNote || "No se pudo aplicar la nota"
+            );
+          }
         }}
       />
     </div>

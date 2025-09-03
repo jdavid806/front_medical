@@ -80,4 +80,8 @@ export class InvoiceService extends BaseApiService {
         return await this.httpClient.get(`api/v1/admin/notes`);
     }
 
+    async applyNote(payload) {
+        console.log(payload);
+        return await this.httpClient.post(`api/v1/admin/buy-invoices/apply-note`, payload);
+    }
 }

@@ -18,8 +18,6 @@ const BillingConfigTab = () => {
     cuentas: false,
     saving: false
   });
-
-  // Form configurations for each tab
   const {
     register: registerFiscal,
     handleSubmit: handleFiscal,
@@ -303,7 +301,7 @@ const BillingConfigTab = () => {
       value: accountingAccount,
       onChange: e => setValue("accounting_account", e.value),
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
       className: `w-full ${errors?.accounting_account ? "p-invalid" : ""}`,
@@ -325,7 +323,7 @@ const BillingConfigTab = () => {
       value: accountingAccountReverse,
       onChange: e => setValue("accounting_account_reverse_id", e.value),
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
       className: `w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""}`,

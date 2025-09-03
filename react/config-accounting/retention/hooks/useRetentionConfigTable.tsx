@@ -13,23 +13,22 @@ export const useRetentionsConfigTable = () => {
                 console.error('Expected array but received:', data);
                 return [];
             }
-            
+
             return data.map((retention: any) => {
-                // Extraer el objeto retention_charge si existe
                 const retentionData = retention.retention_charge || retention;
-                
+
                 return {
                     id: retentionData?.id?.toString() || '',
                     name: retentionData?.name || '',
                     percentage: retentionData?.percentage || 0,
-                   account: retentionData?.accounting_account ? {
-                    id: retentionData.accounting_account.toString(),
-                    name: retentionData.account_name || `Cuenta ${retentionData.accounting_account}`
-                } : null,
-                returnAccount: retentionData?.accounting_account_reverse_id ? {
-                    id: retentionData.accounting_account_reverse_id.toString(),
-                    name: retentionData.reverse_account_name || `Cuenta ${retentionData.accounting_account_reverse_id}`
-                } : null,
+                    account: retentionData?.accounting_account_id ? {
+                        id: retentionData.accounting_account_id.toString(),
+                        name: retentionData.accounting_account_name || `Cuenta ${retentionData.accounting_account_id}`
+                    } : null,
+                    returnAccount: retentionData?.accounting_account_reverse_id ? {
+                        id: retentionData.accounting_account_reverse_id.toString(),
+                        name: retentionData.accounting_account_reverse_name || `Cuenta ${retentionData.accounting_account_reverse_id}`
+                    } : null,
                     description: retentionData?.description || 'Sin descripción'
                 };
             });
@@ -60,10 +59,10 @@ export const useRetentionsConfigTable = () => {
         fetchRetentions();
     }, []);
 
-    return { 
-        retentions, 
-        loading, 
-        error, 
-        refreshRetentions: fetchRetentions 
+    return {
+        retentions,
+        loading,
+        error,
+        refreshRetentions: fetchRetentions
     };
 };

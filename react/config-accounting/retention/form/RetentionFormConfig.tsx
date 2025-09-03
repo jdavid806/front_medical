@@ -37,8 +37,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
     },
   });
 
-  const selectedPurchaseAccount = watch("accounting_account_id");
-  const selectedSellAccount = watch("sell_accounting_account_id");
+
 
   const onFormSubmit: SubmitHandler<RetentionFormInputs> = (data) => {
     onSubmit(data);
@@ -157,10 +156,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
                 optionValue="id"
-                optionLabel="account_name"
+                optionLabel="account_label" // Usamos la propiedad combinada
                 placeholder="Seleccione una cuenta"
                 filter
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_name,account_code"
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
@@ -194,11 +193,11 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
-                optionLabel="account_name"
+                optionValue="id"
+                optionLabel="account_label" // Usamos la propiedad combinada
                 placeholder="Seleccione una cuenta"
                 filter
-                optionValue="id"
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_name,account_code"
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
@@ -236,10 +235,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
                 optionValue="id"
-                optionLabel="account_name"
+                optionLabel="account_label" // Usamos la propiedad combinada
                 placeholder="Seleccione una cuenta"
                 filter
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_name,account_code"
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
@@ -272,12 +271,12 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                 id={field.name}
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
-                options={accounts} 
-                optionLabel="account_name"
+                options={accounts}
+                optionValue="id"
+                optionLabel="account_label" // Usamos la propiedad combinada
                 placeholder="Seleccione una cuenta"
                 filter
-                optionValue="id"
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_name,account_code"
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,

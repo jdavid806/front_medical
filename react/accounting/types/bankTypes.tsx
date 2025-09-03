@@ -28,7 +28,6 @@ export type FiltrosCuentasBancarias = {
 
 export type AccountingAccount = {
     id: number;
-    
     account: string;
     account_code: string;
     account_name: string;

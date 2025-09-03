@@ -37,6 +37,25 @@ export const BillingByEntity = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [taxCharges, setTaxCharges] = useState([]);
   const [taxWithholdings, setTaxWithholdings] = useState([]);
+  const regimeOptions = [{
+    label: "Subsidiado",
+    value: "Subsidiado"
+  }, {
+    label: "Contributivo",
+    value: "Contributivo"
+  }, {
+    label: "Pensionado",
+    value: "Pensionado"
+  }, {
+    label: "Privado",
+    value: "Privado"
+  }, {
+    label: "Complementario",
+    value: "Complementario"
+  }, {
+    label: "Larimar",
+    value: "Larimar"
+  }];
   const {
     control,
     handleSubmit,
@@ -59,6 +78,7 @@ export const BillingByEntity = () => {
       procedure: [],
       specialist: [],
       patient: [],
+      regime: [],
       dateRange: [],
       paymentMethod: "",
       observations: "",
@@ -160,6 +180,7 @@ export const BillingByEntity = () => {
       start_date: new Date(dateRange[0]).toISOString().slice(0, 10),
       end_date: new Date(dateRange[1]).toISOString().slice(0, 10),
       patient_ids: values.patient.map(patient => patient.id),
+      affiliate_type: values.regime.map(item => item),
       product_ids: values.procedure.map(procedure => procedure.id),
       user_ids: values.specialist.map(specialist => specialist.id),
       entity_id: values.entity?.id
@@ -175,7 +196,6 @@ export const BillingByEntity = () => {
     let totalValorUnitario = 0;
     let totalCopago = 0;
     let totalGeneral = 0;
-    console.log("Data:", data);
     const formattedData = data.map(item => {
       const child_invoice_ids = mappedBilledProcedures(item.billed_procedure);
       const price = Number(item.entity_authorized_amount || 0);
@@ -197,7 +217,6 @@ export const BillingByEntity = () => {
         total
       };
     });
-    console.log("formattedData:", formattedData);
     setBillingData(formattedData);
     setTotals({
       unitValue: totalValorUnitario,
@@ -329,7 +348,7 @@ export const BillingByEntity = () => {
       className: "text-primary"
     }, "*")), /*#__PURE__*/React.createElement("div", {
       style: {
-        position: 'relative'
+        position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Calendar, {
       id: field.name,
@@ -434,7 +453,7 @@ export const BillingByEntity = () => {
       className: "form-label"
     }, "Procedimientos"), /*#__PURE__*/React.createElement("div", {
       style: {
-        position: 'relative'
+        position: "relative"
       }
     }, /*#__PURE__*/React.createElement(MultiSelect, {
       id: field.name,
@@ -459,7 +478,7 @@ export const BillingByEntity = () => {
       className: "form-label"
     }, "Especialistas"), /*#__PURE__*/React.createElement("div", {
       style: {
-        position: 'relative'
+        position: "relative"
       }
     }, /*#__PURE__*/React.createElement(MultiSelect, {
       id: field.name,
@@ -484,13 +503,38 @@ export const BillingByEntity = () => {
       className: "form-label"
     }, "Pacientes"), /*#__PURE__*/React.createElement("div", {
       style: {
-        position: 'relative'
+        position: "relative"
       }
     }, /*#__PURE__*/React.createElement(MultiSelect, {
       id: field.name,
       value: field.value,
       optionLabel: "full_name",
       options: patients,
+      onChange: field.onChange,
+      filter: true,
+      placeholder: "Seleccione (opcional)",
+      className: "w-100",
+      appendTo: "self"
+    })))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "regime",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Regimen"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(MultiSelect, {
+      id: field.name,
+      value: field.value,
+      optionLabel: "label",
+      options: regimeOptions,
       onChange: field.onChange,
       filter: true,
       placeholder: "Seleccione (opcional)",

@@ -142,15 +142,16 @@ const TaxFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_name",
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false
+      loading: false,
+      appendTo: "self"
     }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
@@ -171,16 +172,17 @@ const TaxFormConfig = ({
       value: field.value,
       onChange: e => field.onChange(e.value),
       options: accounts,
-      optionLabel: "account_name",
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false
+      loading: false,
+      appendTo: "self"
     }), getFormErrorMessage("accounting_account_reverse_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
@@ -206,15 +208,16 @@ const TaxFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_name",
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false
+      loading: false,
+      appendTo: "self"
     }), getFormErrorMessage("sell_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
@@ -235,16 +238,17 @@ const TaxFormConfig = ({
       value: field.value,
       onChange: e => field.onChange(e.value),
       options: accounts,
-      optionLabel: "account_name",
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false
+      loading: false,
+      appendTo: "self"
     }), getFormErrorMessage("sell_reverse_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"

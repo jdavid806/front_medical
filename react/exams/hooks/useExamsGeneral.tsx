@@ -8,7 +8,6 @@ export const useExamsGeneral = () => {
     const [loading, setLoading] = useState(true);
 
     const fetchExams = async () => {
-        console.log('Fetching exams...');
 
         try {
             const [dataPromise, examTypesPromise, examStatesPromise]: [Promise<ExamOrderDto[]>, Promise<ExamTypeDto[]>, Promise<ExamOrderStateDto[]>] = [

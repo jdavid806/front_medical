@@ -183,22 +183,22 @@ include "../header.php";
                                     <div class="timer">
                                         Tiempo en consulta: <span id="timer">00:00:00</span>
                                         <script>
-                                        // let start = new Date().getTime();
-                                        // setInterval(function() {
-                                        //     let now = new Date().getTime();
-                                        //     let diff = Math.floor((now - start) /
-                                        //     1000); // Diferencia en segundos
+                                            // let start = new Date().getTime();
+                                            // setInterval(function() {
+                                            //     let now = new Date().getTime();
+                                            //     let diff = Math.floor((now - start) /
+                                            //     1000); // Diferencia en segundos
 
-                                        //     // Calcular horas, minutos y segundos
-                                        //     let hours = Math.floor(diff / 3600);
-                                        //     let remainingSeconds = diff % 3600;
-                                        //     let minutes = Math.floor(remainingSeconds / 60);
-                                        //     let seconds = remainingSeconds % 60;
+                                            //     // Calcular horas, minutos y segundos
+                                            //     let hours = Math.floor(diff / 3600);
+                                            //     let remainingSeconds = diff % 3600;
+                                            //     let minutes = Math.floor(remainingSeconds / 60);
+                                            //     let seconds = remainingSeconds % 60;
 
-                                        //     // Formatear con 2 dígitos
-                                        //     document.getElementById("timer").innerHTML =
-                                        //         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                                        // }, 1000);
+                                            //     // Formatear con 2 dígitos
+                                            //     document.getElementById("timer").innerHTML =
+                                            //         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                                            // }, 1000);
                                         </script>
                                     </div>
                                 </div>
@@ -207,15 +207,14 @@ include "../header.php";
                                         class="btn btn-danger" id="cancelBtn">Cancelar consulta</a>
                                 </div>
                                 <div class="col-3">
-                                    <button disabled class="btn btn-primary" id="finishBtn" type="button"
-                                        data-bs-toggle="modal" data-bs-target="#finishModal">Terminar consulta</button>
+                                    <button disabled class="btn btn-primary" id="finishBtn" type="button">Terminar consulta</button>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
-
+                <div id="clinicalRecordModalRoot"></div>
             </div>
         </div>
     </div>
@@ -233,7 +232,7 @@ include "../Incapacidades/modalIncapacidad.php";
 include "../Recetas/modalReceta.php";
 include "../Paraclinicos/modalParaclinico.php";
 include "../Remisiones/modalRemisiones.php";
-include "./modalTerminarConsulta.php";
+// include "./modalTerminarConsulta.php";
 ?>
 
 <script type="module" src="Consultas/scripts/form.js"></script>
@@ -241,10 +240,10 @@ include "./modalTerminarConsulta.php";
 <script src="apiVoz_3.2.js"></script> -->
 
 <script>
-// document.getElementById("mostrarFormulario").addEventListener("click", function () {
-//     var formulario = document.getElementById("formularioPrescripciones");
-//     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
-// });    
+    // document.getElementById("mostrarFormulario").addEventListener("click", function () {
+    //     var formulario = document.getElementById("formularioPrescripciones");
+    //     formulario.style.display = (formulario.style.display === "none") ? "block" : "none";
+    // });    
 </script>
 
 <!-- <script>
@@ -504,163 +503,352 @@ include "./modalTerminarConsulta.php";
 </script> -->
 
 <style>
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-}
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
+    }
 
-video {
-    display: none;
-    width: 100%;
-    max-width: 300px;
-    border-radius: 10px;
-    border: 2px solid #ddd;
-}
+    video {
+        display: none;
+        width: 100%;
+        max-width: 300px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+    }
 
-.steps-container {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
+    .steps-container {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
 
-.steps {
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    padding: 0;
-    margin: 0;
-}
+    .steps {
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        padding: 0;
+        margin: 0;
+    }
 
-.step {
-    text-align: center;
-    position: relative;
-    flex: 1;
-}
+    .step {
+        text-align: center;
+        position: relative;
+        flex: 1;
+    }
 
-.step-number {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 50%;
-    background-color: #e9ecef;
-    color: #0d6efd;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
+    .step-number {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #0d6efd;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
 
-.step.active .step-number {
-    background-color: #0d6efd;
-    color: #fff;
-}
+    .step.active .step-number {
+        background-color: #0d6efd;
+        color: #fff;
+    }
 
-.wizard-step {
-    display: none;
-}
+    .wizard-step {
+        display: none;
+    }
 
-.wizard-step.active {
-    display: block;
-}
+    .wizard-step.active {
+        display: block;
+    }
 </style>
 
 <script>
-const patientId = new URLSearchParams(window.location.search).get('patient_id');
+    const patientId = new URLSearchParams(window.location.search).get('patient_id');
 </script>
 
 <script type="module">
-import React from "react"
-import ReactDOMClient from "react-dom/client"
-import {
-    PastMedicalHistoryForm
-} from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
-import {
-    AddParaclinicalButton
-} from './react-dist/clinical-records/AddParaclinicalButton.js';
-import {
-    clinicalRecordService
-} from "./services/api/index.js";
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        PastMedicalHistoryForm
+    } from './react-dist/past-medical-history/PastMedicalHistoryForm.js';
+    import {
+        AddParaclinicalButton
+    } from './react-dist/clinical-records/AddParaclinicalButton.js';
+    import {
+        clinicalRecordService
+    } from "./services/api/index.js";
 
-ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
-    onFinishSave: () => {
-        validatePastMedicalHistory();
+    ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
+        onFinishSave: () => {
+            validatePastMedicalHistory();
+        }
+    }));
+    ReactDOMClient.createRoot(document.getElementById('addParaclinicalBtnReact')).render(React.createElement(
+        AddParaclinicalButton));
+
+    async function validatePastMedicalHistory() {
+        const antecedentes = await clinicalRecordService.ofParentByType(
+            "PAST_MEDICAL_HISTORY",
+            patientId
+        );
+
+        if (antecedentes.length === 0) {
+            const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
+            modal.show();
+            document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
+                const antecedentes2 = await clinicalRecordService.ofParentByType(
+                    "PAST_MEDICAL_HISTORY",
+                    patientId
+                );
+                if (antecedentes2.length === 0) {
+                    modal.show();
+                }
+            });
+        }
     }
-}));
-ReactDOMClient.createRoot(document.getElementById('addParaclinicalBtnReact')).render(React.createElement(
-    AddParaclinicalButton));
 
-async function validatePastMedicalHistory() {
-    const antecedentes = await clinicalRecordService.ofParentByType(
-        "PAST_MEDICAL_HISTORY",
-        patientId
-    );
+    validatePastMedicalHistory()
+</script>
 
-    if (antecedentes.length === 0) {
-        const modal = new bootstrap.Modal(document.getElementById('modalAntecedenteNecesario'));
-        modal.show();
-        document.getElementById('modalAntecedenteNecesario').addEventListener('hidden.bs.modal', async () => {
-            const antecedentes2 = await clinicalRecordService.ofParentByType(
-                "PAST_MEDICAL_HISTORY",
-                patientId
-            );
-            if (antecedentes2.length === 0) {
-                modal.show();
-            }
+<script type="module">
+    import {
+        appointmentService
+    } from "../../services/api/index.js";
+
+    const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
+
+    if (appointmentId) {
+        const appointment = await appointmentService.get(appointmentId);
+
+        console.log('Cita:', appointment);
+
+
+        if (appointment.appointment_state.name === 'pending_consultation') {
+            appointmentService.changeStatus(appointmentId, 'in_consultation')
+        }
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: 'No fue posible encontrar la cita relacionada.',
+            icon: 'error',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            //window.history.back();
         });
     }
-}
-
-validatePastMedicalHistory()
 </script>
 
 <script type="module">
-import {
-    appointmentService
-} from "../../services/api/index.js";
+    import {
+        patientService,
+        clinicalRecordService
+    } from "../../services/api/index.js";
+    import {
+        formatDate
+    } from "../../services/utilidades.js";
 
-const appointmentId = new URLSearchParams(window.location.search).get('appointment_id');
+    const patientPromise = patientService.get(patientId);
 
-if (appointmentId) {
-    const appointment = await appointmentService.get(appointmentId);
+    const [patient] = await Promise.all([patientPromise]);
 
-    console.log('Cita:', appointment);
+    document.querySelectorAll('.patientName').forEach(element => {
+        element.textContent = `${patient.first_name} ${patient.last_name}`;
+        if (element.tagName === 'A') {
+            element.href = `verPaciente?id=${patient.id}`
+        }
+    })
+</script>
 
+<script type="module">
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        FinishClinicalRecordModal
+    } from './react-dist/clinical-records/FinishClinicalRecordModal.js';
 
-    if (appointment.appointment_state.name === 'pending_consultation') {
-        appointmentService.changeStatus(appointmentId, 'in_consultation')
+    const params = new URLSearchParams(window.location.search);
+    const jsonPath = `../../ConsultasJson/${params.get("tipo_historia")}.json`;
+
+    const response = await fetch(jsonPath);
+    const formData = await response.json();
+
+    let formValues = {}
+
+    const clinicalRecordModalRef = React.createRef();
+
+    ReactDOMClient.createRoot(document.getElementById('clinicalRecordModalRoot')).render(React.createElement(
+        FinishClinicalRecordModal, {
+            ref: clinicalRecordModalRef,
+            externalDynamicData: basicCaptureFormValues(formData.form1),
+            onClose: () => {
+                ReactDOMClient.createRoot(document.getElementById('clinicalRecordModalRoot')).unmount();
+            }
+        }));
+
+    function basicCaptureFormValues(formData) {
+        const formValues = {
+            tabsStructure: [],
+            values: {}
+        };
+
+        formData.tabs.forEach((tab, tabIndex) => {
+            const tabInfo = {
+                tabName: tab.tab,
+                tabOrder: tabIndex,
+                cards: []
+            };
+
+            Object.keys(tab).forEach(key => {
+                if (key.startsWith('card') && Array.isArray(tab[key])) {
+                    const cardArray = tab[key];
+
+                    cardArray.forEach((card, cardIndex) => {
+                        const cardInfo = {
+                            cardTitle: card.title || '',
+                            cardOrder: cardIndex,
+                            fields: []
+                        };
+
+                        if (card.fields && Array.isArray(card.fields)) {
+                            card.fields.forEach(field => {
+                                // Información básica del campo
+                                const fieldInfo = {
+                                    id: field.id,
+                                    name: field.name,
+                                    type: field.type,
+                                    label: field.label || ''
+                                };
+
+                                // Incluir toggleFields en la estructura si es un checkbox y los tiene
+                                if (field.type === "checkbox" && field.toggleFields) {
+                                    fieldInfo.toggleFields = field.toggleFields.map(
+                                        toggleField => ({
+                                            type: toggleField.type,
+                                            id: toggleField.id,
+                                            name: toggleField.name,
+                                            label: toggleField.label || ''
+                                        }));
+                                }
+
+                                // Capturar valores
+                                if (field.type === "checkbox" && document.getElementById(field.id)?.checked) {
+                                    formValues.values[field.name] = document.getElementById(field.id).checked;
+
+                                    if (field.toggleFields) {
+                                        field.toggleFields.forEach(toggleField => {
+                                            if (toggleField.type === "select") {
+                                                formValues.values[toggleField.name] = document.getElementById(toggleField.id)?.value;
+                                            } else if (toggleField.type === "textarea") {
+                                                const editor = tinymce.get(toggleField.id);
+                                                if (editor) {
+                                                    formValues.values[toggleField.name] = editor.getContent();
+                                                }
+                                            } else if (toggleField.type === "radio") {
+                                                const radioGroup = document.getElementsByName(toggleField.name);
+                                                let selectedValue = null;
+                                                let selectedText = null;
+
+                                                for (let i = 0; i < radioGroup.length; i++) {
+                                                    if (radioGroup[i].checked) {
+                                                        selectedValue = radioGroup[i].value;
+                                                        const selectedOption = toggleField.options?.find(
+                                                            opt => opt.value === selectedValue);
+                                                        selectedText = selectedOption?.text || '';
+                                                        break;
+                                                    }
+                                                }
+
+                                                formValues.values[toggleField.name] = {
+                                                    value: selectedValue,
+                                                    text: selectedText
+                                                };
+                                            }
+                                        });
+                                    }
+                                } else if (field.type === "radio") {
+                                    const radioGroup = document.getElementsByName(field.name);
+                                    let selectedValue = null;
+                                    let selectedText = null;
+
+                                    // Buscar la opción seleccionada
+                                    for (let i = 0; i < radioGroup.length; i++) {
+                                        if (radioGroup[i].checked) {
+                                            selectedValue = radioGroup[i].value;
+                                            // Obtener el texto correspondiente de las opciones del campo
+                                            const selectedOption = field.options?.find(
+                                                opt => opt.value === selectedValue);
+                                            selectedText = selectedOption?.text || '';
+                                            break;
+                                        }
+                                    }
+
+                                    // Almacenar objeto con value y text en values
+                                    formValues.values[field.name] = {
+                                        value: selectedValue,
+                                        text: selectedText
+                                    };
+                                } else if (field.type !== "checkbox") {
+                                    const element = document.getElementById(field.id);
+                                    if (element) {
+                                        const fieldValue = element.value;
+
+                                        if (fieldValue) {
+                                            const fieldUnits = {
+                                                peso: " Lbs",
+                                                altura: " cm",
+                                                imc: " kg/m²",
+                                                porcentajeGrasaCorporal: " %",
+                                                tensionDiastólica: " mmHg",
+                                                tensionSistólica: " mmHg",
+                                                tensionDiastolica: " mmHg",
+                                                tensionSistolica: " mmHg",
+                                                tensionArterialMedia: " mmHg",
+                                                saturacion: " %",
+                                                circunferenciaAbdominal: " cm",
+                                                circunferenciaCintura: " cm",
+                                                perimetroCefalico: " cm",
+                                                frecuenciaRespiratoria: " rpm",
+                                                frecuenciaCardiaca: " lpm",
+                                                temperatura: " °C",
+                                                glucemia: " mg/dL"
+                                            };
+
+                                            if (fieldUnits.hasOwnProperty(field.id)) {
+                                                formValues.values[field.name] = fieldValue + fieldUnits[field.id];
+                                            } else {
+                                                formValues.values[field.name] = fieldValue;
+                                            }
+                                        }
+                                    }
+
+                                    const editor = tinymce.get(field.id);
+                                    if (editor) {
+                                        formValues.values[field.name] = editor.getContent();
+                                    }
+                                }
+
+                                cardInfo.fields.push(fieldInfo);
+                            });
+                        }
+
+                        tabInfo.cards.push(cardInfo);
+                    });
+                }
+            });
+
+            formValues.tabsStructure.push(tabInfo);
+        });
+
+        return formValues;
     }
-} else {
-    Swal.fire({
-        title: 'Error',
-        text: 'No fue posible encontrar la cita relacionada.',
-        icon: 'error',
-        timer: 2000,
-        showConfirmButton: false
-    }).then(() => {
-        //window.history.back();
+
+    document.getElementById("finishBtn").addEventListener("click", function() {
+        clinicalRecordModalRef.current.updateExternalDynamicData(basicCaptureFormValues(formData.form1));
+        clinicalRecordModalRef.current.showModal();
     });
-}
-</script>
-
-<script type="module">
-import {
-    patientService,
-    clinicalRecordService
-} from "../../services/api/index.js";
-import {
-    formatDate
-} from "../../services/utilidades.js";
-
-const patientPromise = patientService.get(patientId);
-
-const [patient] = await Promise.all([patientPromise]);
-
-document.querySelectorAll('.patientName').forEach(element => {
-    element.textContent = `${patient.first_name} ${patient.last_name}`;
-    if (element.tagName === 'A') {
-        element.href = `verPaciente?id=${patient.id}`
-    }
-})
 </script>

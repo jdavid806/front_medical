@@ -17,7 +17,7 @@ import { InvoiceEntityDto } from "../models/models.js";
 import { Menu } from "primereact/menu";
 import { SplitButton } from "primereact/splitbutton";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable";
-import { parse } from "uuid";
+import { useByEntityFormat } from "../documents-generation/hooks/billing/by-entity/useByEntityFormat.js";
 
 interface Filtros {
   facturador: string;
@@ -72,14 +72,7 @@ export const BillingEntity: React.FC = () => {
     { label: "Fecha de Vencimiento", value: "vencimiento" },
   ];
 
-  // Opciones para los selects
-  const entidades: OpcionDropdown[] = [
-    { label: "ARS Palic", value: "ARS Palic" },
-    { label: "ARS Humano", value: "ARS Humano" },
-    { label: "ARS Universal", value: "ARS Universal" },
-    { label: "ARS Monumental", value: "ARS Monumental" },
-    { label: "ARS Renacer", value: "ARS Renacer" },
-  ];
+    const { generateFormatByEntity } = useByEntityFormat();
 
   // Simular carga de datos
   useEffect(() => {
@@ -89,7 +82,6 @@ export const BillingEntity: React.FC = () => {
 
   const loadBillingReportData = async () => {
     const response = await billingService.getBillingReportByEntityDetailed();
-    console.log("response", response);
     const dataMapped = handleLoadData(response);
     setFacturas(dataMapped);
     setFacturasFiltradas(dataMapped);
@@ -140,9 +132,12 @@ export const BillingEntity: React.FC = () => {
             subtotal: price + amount,
             discount: amount,
             total_amount: total,
+            remaining_amount: Number(linked.linked_invoice.remaining_amount || 0).toFixed(2),
             products: linked.linked_invoice.details
               .map((detail: any) => detail.product.name)
               .join(","),
+            entity: linked.admission_data.entity || "",
+            created_at: linked.admission_data.created_at,
           };
         }),
       };
@@ -423,86 +418,10 @@ export const BillingEntity: React.FC = () => {
     });
   };
   const handleDescargarPDF = async (invoice: InvoiceEntityDto) => {
-    setIsGeneratingPDF(true);
-    try {
-      // Mostrar estado de carga
-      console.info("Generando PDF, por favor espere...", { autoClose: 2000 });
-
-      await exportToPDF({
-        data: invoice.invoice_linked,
-        fileName: `factura_${invoice.invoice_code || "sin_numero"}`,
-      });
-    } catch (error) {
-      console.error("Error en handleDescargarPDF:", {
-        error,
-        message: error.message,
-        stack: error.stack,
-      });
-
-      // Mostrar error específico al usuario
-      if (error.message.includes("No se pudieron cargar las librerías")) {
-        console.error(
-          "Error: No se pudieron cargar las librerías de PDF. Por favor recargue la página."
-        );
-      } else {
-        console.error(`Error al generar PDF: ${error.message}`);
-      }
-    } finally {
-      setIsGeneratingPDF(false);
-    }
+    generateFormatByEntity(invoice, [], "Impresion");
   };
-  // const handleImprimirFactura = (factura: FacturacionEntidad) => {
-  //   try {
-  //     const PDF = window.jspdf?.jsPDF || window.jsPDF;
-  //     if (!PDF) {
-  //       alert("Error: Librería de PDF no cargada");
-  //       return;
-  //     }
-
-  //     const doc = new PDF(); // Sin usar .default
-
-  //     if (!window.jsPDF) {
-  //       alert("Error: Librería de PDF no cargada");
-  //       return;
-  //     }
-
-  //     // Para imprimir, primero generamos el PDF y luego lo abrimos en una nueva ventana
-  //     const columns = [
-  //       { field: "facturador", header: "Facturador" },
-  //       { field: "numeroFactura", header: "N° Factura" },
-  //       { field: "entidad", header: "Entidad" },
-  //       { field: "montoTotal", header: "Monto Total" },
-  //       { field: "montoPagado", header: "Monto Pagado" },
-  //       { field: "fechaElaboracion", header: "Fecha Elaboración" },
-  //       { field: "fechaVencimiento", header: "Fecha Vencimiento" },
-  //       { field: "estado", header: "Estado" },
-  //     ];
-  //     doc.autoTable({
-  //       head: [columns.map((col) => col.header)],
-  //       body: columns.map((col) => {
-  //         if (col.field.includes("fecha")) {
-  //           return formatDate(
-  //             factura[col.field as keyof FacturacionEntidad] as Date
-  //           );
-  //         } else if (col.field.includes("monto")) {
-  //           return formatCurrency(
-  //             factura[col.field as keyof FacturacionEntidad] as number
-  //           );
-  //         }
-  //         return factura[col.field as keyof FacturacionEntidad];
-  //       }),
-  //     });
-
-  //     const pdfOutput = doc.output("bloburl");
-  //     window.open(pdfOutput as unknown as string, "_blank");
-  //   } catch (error) {
-  //     console.error("Error al imprimir factura:", error);
-  //     alert("Error al generar el PDF para imprimir");
-  //   }
-  // };
 
   const abrirModalRecibo = (factura: InvoiceEntityDto) => {
-    console.log("Factura seleccionada para recibo:", factura);
     setFacturaParaRecibo({...factura});
     setShowReciboModal(true);
   };
@@ -511,32 +430,6 @@ export const BillingEntity: React.FC = () => {
     setShowReciboModal(false);
     setFacturaParaRecibo(null);
   };
-
-  // const handlePagarFactura = () => {
-  //   if (!facturaSeleccionada) return;
-
-  //   setLoading(true);
-  //   // Simular llamada a API para registrar el pago
-  //   setTimeout(() => {
-  //     const facturasActualizadas = facturas.map((f) => {
-  //       if (f.id === facturaSeleccionada.id) {
-  //         const nuevoMontoPagado = f.montoPagado + montoPago;
-  //         const nuevoEstado =
-  //           nuevoMontoPagado >= f.montoTotal ? "Pagada" : "En proceso";
-
-  //         return {
-  //           ...f,
-  //           montoPagado: nuevoMontoPagado,
-  //           estado: nuevoEstado,
-  //         };
-  //       }
-  //       return f;
-  //     });
-
-  //     setFacturas(facturasActualizadas);
-  //     setLoading(false);
-  //   }, 1000);
-  // };
 
   const handleGenerarRecibo = (formData: any) => {
     // Aquí puedes manejar la generación del recibo con los datos del formulario

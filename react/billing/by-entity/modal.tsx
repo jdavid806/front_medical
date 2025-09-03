@@ -46,6 +46,14 @@ export const BillingByEntity: React.FC = () => {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [taxCharges, setTaxCharges] = useState<any[]>([]);
   const [taxWithholdings, setTaxWithholdings] = useState<any[]>([]);
+  const regimeOptions = [
+    { label: "Subsidiado", value: "Subsidiado" },
+    { label: "Contributivo", value: "Contributivo" },
+    { label: "Pensionado", value: "Pensionado" },
+    { label: "Privado", value: "Privado" },
+    { label: "Complementario", value: "Complementario" },
+    { label: "Larimar", value: "Larimar" },
+  ];
 
   const {
     control,
@@ -63,6 +71,7 @@ export const BillingByEntity: React.FC = () => {
       procedure: [],
       specialist: [],
       patient: [],
+      regime: [],
       dateRange: [],
       paymentMethod: "",
       observations: "",
@@ -174,11 +183,11 @@ export const BillingByEntity: React.FC = () => {
 
   async function getFilters() {
     const values = getValues();
-
     const paramsFilter = {
       start_date: new Date(dateRange[0]).toISOString().slice(0, 10),
       end_date: new Date(dateRange[1]).toISOString().slice(0, 10),
       patient_ids: values.patient.map((patient: any) => patient.id),
+      affiliate_type: values.regime.map((item: any) => item),
       product_ids: values.procedure.map((procedure: any) => procedure.id),
       user_ids: values.specialist.map((specialist: any) => specialist.id),
       entity_id: values.entity?.id,
@@ -200,8 +209,6 @@ export const BillingByEntity: React.FC = () => {
     let totalValorUnitario = 0;
     let totalCopago = 0;
     let totalGeneral = 0;
-
-    console.log("Data:", data);
 
     const formattedData = data.map((item) => {
       const child_invoice_ids = mappedBilledProcedures(item.billed_procedure);
@@ -233,8 +240,6 @@ export const BillingByEntity: React.FC = () => {
         total,
       };
     });
-
-    console.log("formattedData:", formattedData);
 
     setBillingData(formattedData);
     setTotals({
@@ -307,11 +312,11 @@ export const BillingByEntity: React.FC = () => {
         entity_id: `${formData.entity.id}`,
         entity_type: formData.invoiceType,
         subtotal: totals.unitValue,
-        discount: totals.copayment
+        discount: totals.copayment,
       },
       invoice_detail: [],
       payments: [],
-      observations: formData.observations
+      observations: formData.observations,
     };
 
     try {
@@ -320,7 +325,7 @@ export const BillingByEntity: React.FC = () => {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000)
+      }, 2000);
     } catch (error) {
       AlertManager.error("Error al crear la facturación");
       console.error("Error:", error);
@@ -365,7 +370,7 @@ export const BillingByEntity: React.FC = () => {
                           Fecha de elaboración{" "}
                           <span className="text-primary">*</span>
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div style={{ position: "relative" }}>
                           <Calendar
                             id={field.name}
                             value={field.value}
@@ -476,7 +481,7 @@ export const BillingByEntity: React.FC = () => {
                         <label htmlFor={field.name} className="form-label">
                           Procedimientos
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div style={{ position: "relative" }}>
                           <MultiSelect
                             id={field.name}
                             value={field.value}
@@ -489,7 +494,6 @@ export const BillingByEntity: React.FC = () => {
                             appendTo={"self"}
                           />
                         </div>
-
                       </>
                     )}
                   />
@@ -504,7 +508,7 @@ export const BillingByEntity: React.FC = () => {
                         <label htmlFor={field.name} className="form-label">
                           Especialistas
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div style={{ position: "relative" }}>
                           <MultiSelect
                             id={field.name}
                             value={field.value}
@@ -531,12 +535,39 @@ export const BillingByEntity: React.FC = () => {
                         <label htmlFor={field.name} className="form-label">
                           Pacientes
                         </label>
-                        <div style={{ position: 'relative' }}>
+                        <div style={{ position: "relative" }}>
                           <MultiSelect
                             id={field.name}
                             value={field.value}
                             optionLabel="full_name"
                             options={patients}
+                            onChange={field.onChange}
+                            filter
+                            placeholder="Seleccione (opcional)"
+                            className="w-100"
+                            appendTo={"self"}
+                          />
+                        </div>
+                      </>
+                    )}
+                  />
+                </div>
+
+                <div className="col-6 mb-3">
+                  <Controller
+                    name="regime"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label htmlFor={field.name} className="form-label">
+                          Regimen
+                        </label>
+                        <div style={{ position: "relative" }}>
+                          <MultiSelect
+                            id={field.name}
+                            value={field.value}
+                            optionLabel="label"
+                            options={regimeOptions}
                             onChange={field.onChange}
                             filter
                             placeholder="Seleccione (opcional)"

@@ -132,6 +132,12 @@ $tabs = [
     .hidden {
         display: none;
     }
+      .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
 </style>
 
 <div class="content">

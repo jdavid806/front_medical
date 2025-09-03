@@ -30,15 +30,8 @@ export const RetentionConfigTable = ({
     if (account.name && !account.name.startsWith("Cuenta ")) {
       return account.name;
     }
-    const fullAccount = accountingAccounts?.find(acc => {
-      if (acc.id.toString() === account.id) return true;
-      if (acc.account_code && acc.account_code.toString() === account.id) return true;
-      return false;
-    });
-    if (fullAccount) {
-      return fullAccount.account_name || `Cuenta ${account.id}`;
-    }
-    return account.name || `Cuenta ${account.id}`;
+    const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id || acc.account_code?.toString() === account.id);
+    return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
   };
   useEffect(() => {
     setFilteredRetentions(retentions);

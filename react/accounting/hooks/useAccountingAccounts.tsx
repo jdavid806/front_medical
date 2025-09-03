@@ -13,18 +13,28 @@ export const useAccountingAccounts = () => {
       setIsLoading(true);
       const response = await accountingAccountsService.getAllAccounts();
 
+      let accountsData: AccountingAccount[] = [];
+
       if (response && response.data) {
         if (Array.isArray(response.data)) {
-          setAccounts(response.data);
+          accountsData = response.data;
         } else if (response.data.data && Array.isArray(response.data.data)) {
-          setAccounts(response.data.data);
+          accountsData = response.data.data;
         } else {
           console.warn("Estructura inesperada pero manejable:", response.data);
-          setAccounts(response.data);
+          accountsData = response.data;
         }
       } else {
         throw new Error("Respuesta vacía o inválida del servidor");
       }
+
+      // Agregar propiedad combinada para mostrar en dropdowns
+      const accountsWithLabel = accountsData.map(account => ({
+        ...account,
+        account_label: `${account.account_code} - ${account.account_name}`
+      }));
+
+      setAccounts(accountsWithLabel);
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -41,7 +51,6 @@ export const useAccountingAccounts = () => {
     fetchAccounts();
   }, [fetchAccounts]);
 
-  // Función para refrescar los datos manualmente
   const refreshAccounts = useCallback(async () => {
     await fetchAccounts();
   }, [fetchAccounts]);
@@ -51,7 +60,7 @@ export const useAccountingAccounts = () => {
     isLoading,
     error,
     isEmpty: !isLoading && accounts.length === 0,
-    refreshAccounts, 
+    refreshAccounts,
   };
 };
 
@@ -65,15 +74,25 @@ export const useAccountingAccountsByCategory = (category: string, value: string)
       setIsLoading(true);
       const response = await accountingAccountsService.getAccountByCategory(category, value);
 
+      let accountsData: AccountingAccount[] = [];
+
       if (Array.isArray(response)) {
-        setAccounts(response);
+        accountsData = response;
       } else if (response?.data && Array.isArray(response.data)) {
-        setAccounts(response.data);
+        accountsData = response.data;
       } else {
         console.warn("Estructura inesperada:", response);
-        setAccounts([]);
+        accountsData = [];
         throw new Error("La respuesta no es un array válido");
       }
+
+      // Agregar propiedad combinada para mostrar en dropdowns
+      const accountsWithLabel = accountsData.map(account => ({
+        ...account,
+        account_label: `${account.account_code} - ${account.account_name}`
+      }));
+
+      setAccounts(accountsWithLabel);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error desconocido";
       setError(errorMessage);
@@ -103,4 +122,3 @@ export const useAccountingAccountsByCategory = (category: string, value: string)
     refreshAccounts,
   };
 };
-

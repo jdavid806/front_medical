@@ -24,7 +24,6 @@ const ExamApp = () => {
   };
   let sum = 0;
   const handleViewExamResults = async (examTableItem, minioUrl) => {
-    console.log("entro", ++sum);
     if (minioUrl) {
       //@ts-ignore
       const url = await getUrlImage(minioUrl);

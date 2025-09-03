@@ -235,7 +235,10 @@ export const ExamTable: React.FC<ExamTableProps> = ({
       };
 
       if (enviarPDf !== undefined) {
-        await examOrderService.updateMinioFile(selectedOrderId, dataRquest);
+        const responseUpdate = await examOrderService.updateMinioFile(selectedOrderId, dataRquest);
+        if(responseUpdate.success){
+          sendMessageWhatsapp(responseUpdate.data);
+        }
         SwalManager.success({ text: "Resultados guardados exitosamente" });
       } else {
         console.error("No se obtuvo un resultado válido.");

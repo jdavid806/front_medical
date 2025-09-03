@@ -384,6 +384,7 @@ include "../ConsultasJson/dataPaciente.php";
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-primary" id="finalizarConsulta">Finalizar consulta</button>
             </div>
+
         </div>
     </div>
 </div>
@@ -640,11 +641,15 @@ include "../ConsultasJson/dataPaciente.php";
     import {
         LeavingConsultationGenerateTicket
     } from './react-dist/tickets/LeavingConsultationGenerateTicket.js';
+    import {
+        FinishClinicalRecordModal
+    } from './react-dist/clinical-records/FinishClinicalRecordModal.js';
 
     import {
         getUserLogged
     } from './services/utilidades.js';
 
+    const clinicalRecordModalRef = React.createRef();
     const prescriptionFormRef = React.createRef();
     const remissionFormRef = React.createRef();
     const examFormRef = React.createRef();
@@ -654,6 +659,15 @@ include "../ConsultasJson/dataPaciente.php";
     document.addEventListener('DOMContentLoaded', async function() {
         currentAppointment = await appointmentService.get(appointmentId);
     });
+
+    ReactDOMClient.createRoot(document.getElementById('clinicalRecordModalRoot')).render(React.createElement(
+        FinishClinicalRecordModal, {
+            ref: clinicalRecordModalRef,
+            externalDynamicData: basicCaptureFormValues(formData.form1),
+            onClose: () => {
+                ReactDOMClient.createRoot(document.getElementById('clinicalRecordModalRoot')).unmount();
+            }
+        }));
 
     ReactDOMClient.createRoot(document.getElementById('prescriptionFormReact')).render(React.createElement(
         PrescriptionForm, {
@@ -1047,6 +1061,163 @@ include "../ConsultasJson/dataPaciente.php";
             resumenHistoria = responseIA.resumenHistoria;
         }
         return resumenHistoria;
+    }
+
+    function basicCaptureFormValues(formData) {
+        const formValues = {
+            tabsStructure: [],
+            values: {}
+        };
+
+        formData.tabs.forEach((tab, tabIndex) => {
+            const tabInfo = {
+                tabName: tab.tab,
+                tabOrder: tabIndex,
+                cards: []
+            };
+
+            Object.keys(tab).forEach(key => {
+                if (key.startsWith('card') && Array.isArray(tab[key])) {
+                    const cardArray = tab[key];
+
+                    cardArray.forEach((card, cardIndex) => {
+                        const cardInfo = {
+                            cardTitle: card.title || '',
+                            cardOrder: cardIndex,
+                            fields: []
+                        };
+
+                        if (card.fields && Array.isArray(card.fields)) {
+                            card.fields.forEach(field => {
+                                // Información básica del campo
+                                const fieldInfo = {
+                                    id: field.id,
+                                    name: field.name,
+                                    type: field.type,
+                                    label: field.label || ''
+                                };
+
+                                // Incluir toggleFields en la estructura si es un checkbox y los tiene
+                                if (field.type === "checkbox" && field.toggleFields) {
+                                    fieldInfo.toggleFields = field.toggleFields.map(
+                                        toggleField => ({
+                                            type: toggleField.type,
+                                            id: toggleField.id,
+                                            name: toggleField.name,
+                                            label: toggleField.label || ''
+                                        }));
+                                }
+
+                                // Capturar valores
+                                if (field.type === "checkbox" && document.getElementById(field.id)?.checked) {
+                                    formValues.values[field.name] = document.getElementById(field.id).checked;
+
+                                    if (field.toggleFields) {
+                                        field.toggleFields.forEach(toggleField => {
+                                            if (toggleField.type === "select") {
+                                                formValues.values[toggleField.name] = document.getElementById(toggleField.id)?.value;
+                                            } else if (toggleField.type === "textarea") {
+                                                const editor = tinymce.get(toggleField.id);
+                                                if (editor) {
+                                                    formValues.values[toggleField.name] = editor.getContent();
+                                                }
+                                            } else if (toggleField.type === "radio") {
+                                                const radioGroup = document.getElementsByName(toggleField.name);
+                                                let selectedValue = null;
+                                                let selectedText = null;
+
+                                                for (let i = 0; i < radioGroup.length; i++) {
+                                                    if (radioGroup[i].checked) {
+                                                        selectedValue = radioGroup[i].value;
+                                                        const selectedOption = toggleField.options?.find(
+                                                            opt => opt.value === selectedValue);
+                                                        selectedText = selectedOption?.text || '';
+                                                        break;
+                                                    }
+                                                }
+
+                                                formValues.values[toggleField.name] = {
+                                                    value: selectedValue,
+                                                    text: selectedText
+                                                };
+                                            }
+                                        });
+                                    }
+                                } else if (field.type === "radio") {
+                                    const radioGroup = document.getElementsByName(field.name);
+                                    let selectedValue = null;
+                                    let selectedText = null;
+
+                                    // Buscar la opción seleccionada
+                                    for (let i = 0; i < radioGroup.length; i++) {
+                                        if (radioGroup[i].checked) {
+                                            selectedValue = radioGroup[i].value;
+                                            // Obtener el texto correspondiente de las opciones del campo
+                                            const selectedOption = field.options?.find(
+                                                opt => opt.value === selectedValue);
+                                            selectedText = selectedOption?.text || '';
+                                            break;
+                                        }
+                                    }
+
+                                    // Almacenar objeto con value y text en values
+                                    formValues.values[field.name] = {
+                                        value: selectedValue,
+                                        text: selectedText
+                                    };
+                                } else if (field.type !== "checkbox") {
+                                    const element = document.getElementById(field.id);
+                                    if (element) {
+                                        const fieldValue = element.value;
+
+                                        if (fieldValue) {
+                                            const fieldUnits = {
+                                                peso: " Lbs",
+                                                altura: " cm",
+                                                imc: " kg/m²",
+                                                porcentajeGrasaCorporal: " %",
+                                                tensionDiastólica: " mmHg",
+                                                tensionSistólica: " mmHg",
+                                                tensionDiastolica: " mmHg",
+                                                tensionSistolica: " mmHg",
+                                                tensionArterialMedia: " mmHg",
+                                                saturacion: " %",
+                                                circunferenciaAbdominal: " cm",
+                                                circunferenciaCintura: " cm",
+                                                perimetroCefalico: " cm",
+                                                frecuenciaRespiratoria: " rpm",
+                                                frecuenciaCardiaca: " lpm",
+                                                temperatura: " °C",
+                                                glucemia: " mg/dL"
+                                            };
+
+                                            if (fieldUnits.hasOwnProperty(field.id)) {
+                                                formValues.values[field.name] = fieldValue + fieldUnits[field.id];
+                                            } else {
+                                                formValues.values[field.name] = fieldValue;
+                                            }
+                                        }
+                                    }
+
+                                    const editor = tinymce.get(field.id);
+                                    if (editor) {
+                                        formValues.values[field.name] = editor.getContent();
+                                    }
+                                }
+
+                                cardInfo.fields.push(fieldInfo);
+                            });
+                        }
+
+                        tabInfo.cards.push(cardInfo);
+                    });
+                }
+            });
+
+            formValues.tabsStructure.push(tabInfo);
+        });
+
+        return formValues;
     }
 
     function captureFormValues(formData) {

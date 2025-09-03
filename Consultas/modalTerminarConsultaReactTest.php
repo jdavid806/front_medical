@@ -18,8 +18,14 @@ include "../header.php";
 
     const rootElement = document.getElementById('appointmentModalRoot');
     ReactDOMClient.createRoot(rootElement).render(React.createElement(FinishClinicalRecordModal, {
+        appointmentId: "1",
+        clinicalRecordType: "historiaEndocrinologia",
+        externalDynamicData: {},
+        patientId: "1",
         visible: true,
-        patientId: "1"
+        onClose: () => {
+            ReactDOMClient.createRoot(rootElement).unmount();
+        }
     }));
 </script>
 

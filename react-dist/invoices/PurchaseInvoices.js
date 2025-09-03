@@ -17,6 +17,7 @@ import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
 import { NewNoteModal } from "./NewNoteModal.js";
+import { useApplyNote } from "./hooks/useApplyNote.js";
 export const PurchaseInvoices = () => {
   const {
     thirdParties
@@ -38,6 +39,11 @@ export const PurchaseInvoices = () => {
     setCompany,
     fetchCompany
   } = useCompany();
+  const {
+    applyNote,
+    loading: loadingNote,
+    error: errorNote
+  } = useApplyNote();
 
   // Estado para filtros
   const [filtros, setFiltros] = useState({
@@ -771,9 +777,14 @@ export const PurchaseInvoices = () => {
     onHide: () => setShowNoteModal(false),
     factura: facturaParaRecibo,
     tipo: tipoNota,
-    onSubmit: data => {
-      console.log("Nota guardada:", data);
-      showToast("success", "Éxito", `Nota ${data.tipo} creada correctamente`);
+    onSubmit: async data => {
+      try {
+        const response = await applyNote(data);
+        showToast("success", "Éxito", `Nota ${data.type === "credit" ? "Crédito" : "Débito"} aplicada correctamente`);
+        await loadFacturas();
+      } catch (err) {
+        showToast("error", "Error", errorNote || "No se pudo aplicar la nota");
+      }
     }
   }));
 };

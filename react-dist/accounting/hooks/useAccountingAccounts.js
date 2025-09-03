@@ -9,18 +9,26 @@ export const useAccountingAccounts = () => {
     try {
       setIsLoading(true);
       const response = await accountingAccountsService.getAllAccounts();
+      let accountsData = [];
       if (response && response.data) {
         if (Array.isArray(response.data)) {
-          setAccounts(response.data);
+          accountsData = response.data;
         } else if (response.data.data && Array.isArray(response.data.data)) {
-          setAccounts(response.data.data);
+          accountsData = response.data.data;
         } else {
           console.warn("Estructura inesperada pero manejable:", response.data);
-          setAccounts(response.data);
+          accountsData = response.data;
         }
       } else {
         throw new Error("Respuesta vacía o inválida del servidor");
       }
+
+      // Agregar propiedad combinada para mostrar en dropdowns
+      const accountsWithLabel = accountsData.map(account => ({
+        ...account,
+        account_label: `${account.account_code} - ${account.account_name}`
+      }));
+      setAccounts(accountsWithLabel);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error desconocido al obtener las cuentas contables";
       setError(errorMessage);
@@ -32,8 +40,6 @@ export const useAccountingAccounts = () => {
   useEffect(() => {
     fetchAccounts();
   }, [fetchAccounts]);
-
-  // Función para refrescar los datos manualmente
   const refreshAccounts = useCallback(async () => {
     await fetchAccounts();
   }, [fetchAccounts]);
@@ -53,15 +59,23 @@ export const useAccountingAccountsByCategory = (category, value) => {
     try {
       setIsLoading(true);
       const response = await accountingAccountsService.getAccountByCategory(category, value);
+      let accountsData = [];
       if (Array.isArray(response)) {
-        setAccounts(response);
+        accountsData = response;
       } else if (response?.data && Array.isArray(response.data)) {
-        setAccounts(response.data);
+        accountsData = response.data;
       } else {
         console.warn("Estructura inesperada:", response);
-        setAccounts([]);
+        accountsData = [];
         throw new Error("La respuesta no es un array válido");
       }
+
+      // Agregar propiedad combinada para mostrar en dropdowns
+      const accountsWithLabel = accountsData.map(account => ({
+        ...account,
+        account_label: `${account.account_code} - ${account.account_name}`
+      }));
+      setAccounts(accountsWithLabel);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error desconocido";
       setError(errorMessage);

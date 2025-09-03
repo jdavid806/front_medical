@@ -28,7 +28,6 @@ const ExamApp: React.FC = () => {
     let sum = 0;
 
     const handleViewExamResults = async (examTableItem: ExamTableItem, minioUrl?: string) => {
-        console.log("entro", ++sum);
         if (minioUrl) {
             //@ts-ignore
             const url = await getUrlImage(minioUrl);

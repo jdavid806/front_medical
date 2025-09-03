@@ -11,19 +11,18 @@ export const useRetentionsConfigTable = () => {
         return [];
       }
       return data.map(retention => {
-        // Extraer el objeto retention_charge si existe
         const retentionData = retention.retention_charge || retention;
         return {
           id: retentionData?.id?.toString() || '',
           name: retentionData?.name || '',
           percentage: retentionData?.percentage || 0,
-          account: retentionData?.accounting_account ? {
-            id: retentionData.accounting_account.toString(),
-            name: retentionData.account_name || `Cuenta ${retentionData.accounting_account}`
+          account: retentionData?.accounting_account_id ? {
+            id: retentionData.accounting_account_id.toString(),
+            name: retentionData.accounting_account_name || `Cuenta ${retentionData.accounting_account_id}`
           } : null,
           returnAccount: retentionData?.accounting_account_reverse_id ? {
             id: retentionData.accounting_account_reverse_id.toString(),
-            name: retentionData.reverse_account_name || `Cuenta ${retentionData.accounting_account_reverse_id}`
+            name: retentionData.accounting_account_reverse_name || `Cuenta ${retentionData.accounting_account_reverse_id}`
           } : null,
           description: retentionData?.description || 'Sin descripción'
         };

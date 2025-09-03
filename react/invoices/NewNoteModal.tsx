@@ -33,15 +33,15 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
 
   const handleSave = () => {
     onSubmit({
-      facturaId: factura?.id,
-      numeroNota,
-      comprobanteFiscal,
-      monto,
-      impuesto,
-      retencion,
+      invoice_id: factura?.id,
+      note_code: numeroNota,
+      resolution_number: comprobanteFiscal,
+      amount: monto,
+      tax: impuesto,
+      withholding: retencion,
       subtotal,
-      motivo,
-      tipo,
+      reason: motivo,
+      type: tipo === "credito" ? "credit" : "debit",
     });
     onHide();
   };
@@ -130,7 +130,7 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
         {/* Botones */}
         <div className="flex justify-content-end gap-2 mt-3">
           <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-          <Button label="Guardar" icon="pi pi-check" className="p-button-primary" onClick={handleSave} />
+          <Button label="Guardar" icon="pi pi-check" className="p-button-primary" disabled={!numeroNota || !comprobanteFiscal || !monto } onClick={handleSave} />
         </div>
       </div>
     </Dialog>

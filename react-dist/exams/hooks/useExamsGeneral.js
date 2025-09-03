@@ -5,7 +5,6 @@ export const useExamsGeneral = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const fetchExams = async () => {
-    console.log('Fetching exams...');
     try {
       const [dataPromise, examTypesPromise, examStatesPromise] = [examOrderService.getAll(), examTypeService.getAll(), examOrderStateService.getAll()];
       let [data, examTypes, examStates] = await Promise.all([dataPromise, examTypesPromise, examStatesPromise]);

@@ -39,8 +39,6 @@ const RetentionFormConfig = ({
       description: ""
     }
   });
-  const selectedPurchaseAccount = watch("accounting_account_id");
-  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -149,10 +147,11 @@ const RetentionFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_name",
+      optionLabel: "account_label" // Usamos la propiedad combinada
+      ,
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
@@ -179,11 +178,12 @@ const RetentionFormConfig = ({
       value: field.value,
       onChange: e => field.onChange(e.value),
       options: accounts,
-      optionLabel: "account_name",
+      optionValue: "id",
+      optionLabel: "account_label" // Usamos la propiedad combinada
+      ,
       placeholder: "Seleccione una cuenta",
       filter: true,
-      optionValue: "id",
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
@@ -215,10 +215,11 @@ const RetentionFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_name",
+      optionLabel: "account_label" // Usamos la propiedad combinada
+      ,
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
@@ -245,11 +246,12 @@ const RetentionFormConfig = ({
       value: field.value,
       onChange: e => field.onChange(e.value),
       options: accounts,
-      optionLabel: "account_name",
+      optionValue: "id",
+      optionLabel: "account_label" // Usamos la propiedad combinada
+      ,
       placeholder: "Seleccione una cuenta",
       filter: true,
-      optionValue: "id",
-      filterBy: "account_name,account_code",
+      filterBy: "account_label,account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error

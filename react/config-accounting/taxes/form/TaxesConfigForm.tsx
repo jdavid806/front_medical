@@ -34,8 +34,6 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
     },
   });
 
-
-
   const onFormSubmit: SubmitHandler<TaxFormInputs> = (data) => {
     onSubmit(data);
   };
@@ -154,15 +152,16 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
                 optionValue="id"
-                optionLabel="account_name"
+                optionLabel="account_label"
                 placeholder="Seleccione una cuenta"
                 filter
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_code" 
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
                 loading={false}
+                appendTo="self"
               />
               {getFormErrorMessage("accounting_account_id")}
             </>
@@ -190,16 +189,17 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
-                optionLabel="account_name"
+                optionLabel="account_label" 
                 placeholder="Seleccione una cuenta"
                 filter
                 optionValue="id"
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_code" 
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
                 loading={false}
+                appendTo="self" 
               />
               {getFormErrorMessage("accounting_account_reverse_id")}
             </>
@@ -232,15 +232,16 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
                 optionValue="id"
-                optionLabel="account_name"
+                optionLabel="account_label"
                 placeholder="Seleccione una cuenta"
                 filter
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_code"
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
                 loading={false}
+                appendTo="self" 
               />
               {getFormErrorMessage("sell_accounting_account_id")}
             </>
@@ -268,16 +269,17 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 value={field.value}
                 onChange={(e) => field.onChange(e.value)}
                 options={accounts}
-                optionLabel="account_name"
+                optionLabel="account_label" 
                 placeholder="Seleccione una cuenta"
                 filter
                 optionValue="id"
-                filterBy="account_name,account_code"
+                filterBy="account_label,account_code" 
                 showClear
                 className={classNames("w-full", {
                   "p-invalid": fieldState.error,
                 })}
                 loading={false}
+                appendTo="self" 
               />
               {getFormErrorMessage("sell_reverse_accounting_account_id")}
             </>

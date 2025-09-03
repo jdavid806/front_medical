@@ -23,15 +23,15 @@ export const NewNoteModal = ({
   const subtotal = monto + impuesto - retencion;
   const handleSave = () => {
     onSubmit({
-      facturaId: factura?.id,
-      numeroNota,
-      comprobanteFiscal,
-      monto,
-      impuesto,
-      retencion,
+      invoice_id: factura?.id,
+      note_code: numeroNota,
+      resolution_number: comprobanteFiscal,
+      amount: monto,
+      tax: impuesto,
+      withholding: retencion,
       subtotal,
-      motivo,
-      tipo
+      reason: motivo,
+      type: tipo === "credito" ? "credit" : "debit"
     });
     onHide();
   };
@@ -97,6 +97,7 @@ export const NewNoteModal = ({
     label: "Guardar",
     icon: "pi pi-check",
     className: "p-button-primary",
+    disabled: !numeroNota || !comprobanteFiscal || !monto,
     onClick: handleSave
   }))));
 };
