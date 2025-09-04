@@ -5,6 +5,7 @@ import { Checkbox } from "primereact/checkbox";
 import { PrimeReactProvider } from "primereact/api";
 import { forwardRef } from "react";
 import { useImperativeHandle } from "react";
+import { getUserLogged } from "../../services/utilidades.js";
 export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   const [note, setNote] = useState("");
   const [mappedServiceClinicalRecord, setMappedServiceClinicalRecord] = useState([]);
@@ -14,6 +15,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   const [checked, setChecked] = useState(false);
   const [mappedServiceUserSpecialty, setMappedServiceUserSpecialty] = useState([]);
   const [selectedUserSpecialty, setSelectedUserSpecialty] = useState([]);
+  const userLogged = getUserLogged();
   useEffect(() => {
     fetchClinicalRecords();
     fetchDoctors();
@@ -23,14 +25,12 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
     event.preventDefault();
     const newremission = {
       receiver_user_id: !checked ? selectedUser : null,
-      remitter_user_id: 1,
+      remitter_user_id: userLogged.id,
       clinical_record_id: selectedService,
       receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
       note: note
     };
-    console.log(newremission, checked);
     remissionService.createRemission(newremission, newremission.clinical_record_id).then(response => {
-      console.log("saved:", response);
       window.location.reload();
     }).catch(error => {
       console.error("Error:", error);
@@ -40,7 +40,7 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
     getFormData: () => {
       return {
         receiver_user_id: !checked ? selectedUser : null,
-        remitter_user_id: 1,
+        remitter_user_id: userLogged.id,
         //clinical_record_id: selectedService,
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
         note: note
@@ -62,7 +62,6 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   };
   const fetchDoctors = async () => {
     const data = await userService.getAll();
-    console.log(data);
     const mappedData = data.map(item => {
       return {
         value: item.id,
@@ -73,7 +72,6 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({}, ref) => {
   };
   const fetchUserSpecialties = async () => {
     const data = await userSpecialtyService.getAllItems();
-    console.log(data);
     const mappedData = data.map(item => {
       return {
         value: item.id,

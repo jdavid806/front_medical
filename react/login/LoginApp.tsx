@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { Toast } from 'primereact/toast'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { useAuth } from './hooks/useAuth'
-import { ForgotPasswordModal } from './ForgotPasswordModal'
-import { LoginForm } from './LoginForm'
-import { OTPModal } from './OTPModal'
+import { ForgotPasswordModal } from './modal/ForgotPasswordModal'
+import { LoginForm } from './form/LoginForm'
+import { OTPModal } from './modal/OTPModal'
 
 export const LoginApp = () => {
     const [currentView, setCurrentView] = useState('login')
@@ -109,7 +109,7 @@ export const LoginApp = () => {
                 />
             )}
 
-            <
+
         </div>
     )
 }

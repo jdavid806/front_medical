@@ -3,93 +3,143 @@ import React from 'react';
 const NavbarHeader = () => {
   const items = [{
     label: 'Home',
-    icon: 'pi pi-home',
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-house"
+    }),
     items: [[{
-      label: 'Home',
+      label: 'Principal',
       items: [{
         label: 'Inicio',
-        icon: 'pi pi-home',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-house"
+        }),
         url: 'Dashboard'
       }, {
         label: 'Consultas',
-        icon: 'pi pi-users',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-magnifying-glass"
+        }),
         url: 'pacientes'
       }, {
         label: 'Admisiones',
-        icon: 'pi pi-user-plus',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-bookmark"
+        }),
         url: 'citasControl'
       }, {
         label: 'Telemedicina',
-        icon: 'pi pi-video',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-stethoscope"
+        }),
         url: 'telemedicina'
       }, {
         label: 'Turnos',
-        icon: 'pi pi-desktop',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-ticket"
+        }),
         url: 'homeTurnos'
       }, {
         label: 'Farmacia',
-        icon: 'pi pi-book-open',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-shop"
+        }),
         url: 'homeFarmacia'
       }, {
         label: 'Laboratorio',
-        icon: 'pi pi-chart-line',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-flask"
+        }),
         url: 'verOrdenesExamenesGenerales'
       }]
     }]]
   }, {
     label: 'Reportes',
-    icon: 'pi pi-chart-bar',
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-excel"
+    }),
     items: [[{
+      label: 'Reportes Importantes',
       items: [{
         label: 'Facturación',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-money-bill"
+        }),
         url: 'Invoices'
       }, {
         label: 'Facturas x Entidad',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-money-bill-wave"
+        }),
         url: 'InvoicesByEntity'
       }, {
         label: 'Especialistas',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-user-doctor"
+        }),
         url: 'InvoicesDoctors'
       }, {
         label: 'Bonificaciones',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-money-bill-trend-up"
+        }),
         url: 'Commissions'
       }, {
         label: 'Citas',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-calendar-week"
+        }),
         url: 'AppointmentsReport'
       }]
     }]]
   }, {
     label: 'Administración',
-    icon: 'pi pi-cog',
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-user-gear ml-2"
+    }),
     items: [[{
+      label: 'Administrar Procesos',
       items: [{
         label: 'Marketing',
-        icon: 'pi pi-briefcase',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-folder-tree"
+        }),
         url: 'homeMarketing'
       }, {
         label: 'Configuración',
-        icon: 'pi pi-sliders-h',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-wrench"
+        }),
         url: 'homeConfiguracion'
       }, {
         label: 'Inventario',
-        icon: 'pi pi-folder',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-truck-ramp-box"
+        }),
         url: 'homeInventario'
       }, {
         label: 'Auditoria',
-        icon: 'pi pi-user-edit',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-person-chalkboard"
+        }),
         url: 'homeAuditoria'
       }, {
         label: 'Contabilidad',
-        icon: 'pi pi-file',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-money-check-dollar"
+        }),
         url: 'homeContabilidad'
       }, {
         label: 'Comunidad',
-        icon: 'pi pi-comments',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-people-roof"
+        }),
         url: 'social'
+      }, {
+        label: 'Manual De Usuario',
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-book-open"
+        }),
+        url: 'manualUsuario'
       }]
     }]]
   }];
@@ -117,6 +167,7 @@ const NavbarHeader = () => {
 
                 /* Estilos para modo claro */
                 :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-link {
+                    gap:5px;
                     color: #495057 !important;
                 }
 
@@ -173,7 +224,6 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.6) !important;
                 }
 
-                /* Estilos comunes */
                 .custom-responsive-megamenu .p-megamenu-root-list {
                     display: flex;
                     justify-content: center;
@@ -254,13 +304,13 @@ const NavbarHeader = () => {
                 /* Estilos para desktop */
                 @media screen and (min-width: 961px) {
                     .navbar-megamenu-container {
-                        margin: 0 auto;
+                        margin: 0 8rem auto;
                     }
                     
                     .custom-responsive-megamenu .p-megamenu-root-list {
-                    margin-left: 450px !important;
-                        justify-content: center;
-                        gap: 0.5rem;
+                        display:flex;
+                        justify-content: flex-end;
+                        gap: 2rem;
                     }
                 }
             `));

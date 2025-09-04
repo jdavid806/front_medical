@@ -10,7 +10,7 @@ $tabs = [
     ['icono' => 'money-bill-1-wave', 'titulo' => 'Precios', 'texto' => 'Crea y actualiza los precios a facturar', 'url' => 'configPrecios'],
     ['icono' => 'upload', 'titulo' => 'Importaciones', 'texto' => 'Importa datos al sistema en formato csv', 'url' => 'configImportaciones'],
     ['icono' => 'file-word', 'titulo' => 'Consentimientos', 'texto' => 'Crear y actualiza los formatos de consentimiento', 'url' => 'configConsentimientos'],
-
+    ['icono' => 'code-merge', 'titulo' => 'Integraciones', 'texto' => 'Crear y actualiza las integraciones del sistema', 'url' => 'configIntegraciones'],
 ];
 
 ?>

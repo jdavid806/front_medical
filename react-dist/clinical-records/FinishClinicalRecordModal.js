@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle, useCallback } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { ExamForm } from "../exams/components/ExamForm.js";
@@ -17,7 +17,12 @@ import { CustomPRTable } from "../components/CustomPRTable.js";
 import { Editor } from "primereact/editor";
 import { classNames } from "primereact/utils";
 import { appointmentService, clinicalRecordService, clinicalRecordTypeService, userService } from "../../services/api/index.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
 import { Toast } from "primereact/toast";
+import { useMassMessaging } from "../hooks/useMassMessaging.js";
+import { getIndicativeByCountry } from "../../services/utilidades.js";
+import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
+import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 function getPurpuse(purpuse) {
   switch (purpuse) {
     case "Tratamiento":
@@ -34,10 +39,10 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
   const toast = useRef(null);
   const {
     initialExternalDynamicData,
-    appointmentId = new URLSearchParams(window.location.search).get('appointment_id') || '',
-    clinicalRecordType = new URLSearchParams(window.location.search).get('tipo_historia') || '',
-    patientId = new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id') || '',
-    specialtyName = new URLSearchParams(window.location.search).get('especialidad') || 'medicina_general'
+    appointmentId = new URLSearchParams(window.location.search).get("appointment_id") || "",
+    clinicalRecordType = new URLSearchParams(window.location.search).get("tipo_historia") || "",
+    patientId = new URLSearchParams(window.location.search).get("patient_id") || new URLSearchParams(window.location.search).get("id") || "",
+    specialtyName = new URLSearchParams(window.location.search).get("especialidad") || "medicina_general"
   } = props;
   const {
     control
@@ -101,7 +106,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     message
   }) => {
     toast.current?.show({
-      severity: 'success',
+      severity: "success",
       summary: title || "Éxito",
       detail: message || "Operación exitosa"
     });
@@ -111,7 +116,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     message
   }) => {
     toast.current?.show({
-      severity: 'error',
+      severity: "error",
       summary: title || "Error",
       detail: message || "Operación fallida"
     });
@@ -121,11 +126,11 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     errors
   }) => {
     toast.current?.show({
-      severity: 'error',
+      severity: "error",
       summary: title || "Errores de validación",
       content: props => /*#__PURE__*/React.createElement("div", {
         className: "text-start"
-      }, Object.entries(errors).map(([field, messages]) => /*#__PURE__*/React.createElement("div", {
+      }, /*#__PURE__*/React.createElement("h3", null, props.message.summary), Object.entries(errors).map(([field, messages]) => /*#__PURE__*/React.createElement("div", {
         className: "mb-2"
       }, /*#__PURE__*/React.createElement("ul", {
         className: "mb-0 mt-1 ps-3"
@@ -151,6 +156,20 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     key: "turns",
     label: "Turnos"
   }];
+  const {
+    sendMessage: sendMessageWpp,
+    responseMsg,
+    loading: loadingMessage,
+    error
+  } = useMassMessaging();
+  const {
+    fetchTemplate,
+    switchTemplate
+  } = useTemplateBuilded();
+  const sendMessageWppRef = useRef(sendMessageWpp);
+  useEffect(() => {
+    sendMessageWppRef.current = sendMessageWpp;
+  }, [sendMessageWpp]);
   useEffect(() => {
     setExternalDynamicData(initialExternalDynamicData);
   }, [initialExternalDynamicData]);
@@ -178,24 +197,166 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     };
     fetchAppointment();
   }, [appointmentId]);
+  function buildDataToMessageToExams(exams) {
+    const dataMapped = {
+      ...exams[0],
+      details: exams.flatMap(exam => exam.details)
+    };
+    return dataMapped;
+  }
+  async function prepareDataToSendMessageWPP(clinicalRecordSaved) {
+    const tenant = window.location.hostname.split(".")[0];
+    //Message to exams
+    if (clinicalRecordSaved.exam_recipes.length && clinicalRecordSaved.patient.whatsapp_notifications) {
+      const dataToMessage = buildDataToMessageToExams(clinicalRecordSaved.exam_recipes);
+      const data = {
+        tenantId: tenant,
+        belongsTo: "examenes-creacion",
+        type: "whatsapp"
+      };
+      const templateExams = await fetchTemplate(data);
+      const finishTemplate = await switchTemplate(templateExams.template, "examenes", dataToMessage);
+      const pdfFile = await generatePdfFile("RecetaExamen", dataToMessage, "prescriptionInput");
+      await sendMessageWhatsapp(clinicalRecordSaved.patient, finishTemplate, pdfFile);
+    }
+    //Message to disabilities
+    if (clinicalRecordSaved.patient_disabilities.length && clinicalRecordSaved.patient.whatsapp_notifications) {
+      const data = {
+        tenantId: tenant,
+        belongsTo: "incapacidades-creacion",
+        type: "whatsapp"
+      };
+      const templateDisabilities = await fetchTemplate(data);
+      const finishTemplate = await switchTemplate(templateDisabilities.template, "disabilities", clinicalRecordSaved.patient_disabilities[0]);
+      const pdfFile = await generatePdfFile("Incapacidad", clinicalRecordSaved.patient_disabilities[0], "recordDisabilityInput");
+      await sendMessageWhatsapp(clinicalRecordSaved.patient, finishTemplate, pdfFile);
+    }
+    //Message to recipes
+    if (clinicalRecordSaved.recipes.length && clinicalRecordSaved.patient.whatsapp_notifications) {
+      const dataMapped = {
+        ...clinicalRecordSaved.recipes[0],
+        clinical_record: {
+          description: clinicalRecordSaved.description
+        },
+        recipe_items: clinicalRecordSaved.recipes.flatMap(recipe => recipe.recipe_items)
+      };
+      const data = {
+        tenantId: tenant,
+        belongsTo: "recetas-creacion",
+        type: "whatsapp"
+      };
+      const templateRecipes = await fetchTemplate(data);
+      const finishTemplate = await switchTemplate(templateRecipes.template, "recipes", dataMapped);
+      const pdfFile = await generatePdfFile("Receta", dataMapped, "prescriptionInput");
+      await sendMessageWhatsapp(clinicalRecordSaved.patient, finishTemplate, pdfFile);
+    }
+    //message to remmissions
+    if (clinicalRecordSaved.remissions.length && clinicalRecordSaved.patient.whatsapp_notifications) {
+      const dataMapped = {
+        ...clinicalRecordSaved.remissions[0],
+        clinical_record: {
+          patient: clinicalRecordSaved.patient
+        }
+      };
+      const data = {
+        tenantId: tenant,
+        belongsTo: "remiciones-creacion",
+        type: "whatsapp"
+      };
+      const templateRemissions = await fetchTemplate(data);
+      const finishTemplate = await switchTemplate(templateRemissions.template, "remissions", dataMapped);
+      const pdfFile = await generatePdfFile("Remision", dataMapped, "remisionInput");
+      await sendMessageWhatsapp(clinicalRecordSaved.patient, finishTemplate, pdfFile);
+    }
+
+    //message to appointments
+    if (clinicalRecordSaved.appointment && clinicalRecordSaved.patient.whatsapp_notifications) {
+      const data = {
+        tenantId: tenant,
+        belongsTo: "citas-creacion",
+        type: "whatsapp"
+      };
+      const templateAppointment = await fetchTemplate(data);
+      const finishTemplate = await switchTemplate(templateAppointment.template, "appointments", clinicalRecordSaved.appointment);
+      await sendMessageWhatsapp(clinicalRecordSaved.patient, finishTemplate, null);
+    }
+  }
+  async function generatePdfFile(printType, data, nameInputTemp) {
+    //@ts-ignore
+    await generarFormato(printType, data, "Impresion", nameInputTemp, true);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let fileInput = document.getElementById("pdf-input-hidden-to-" + nameInputTemp);
+        let file = fileInput?.files[0];
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("model_type", "App\\Models\\ExamRecipes");
+        formData.append("model_id", data.id);
+        //@ts-ignore
+        guardarArchivo(formData, true).then(async response => {
+          resolve({
+            //@ts-ignore
+            file_url: await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true),
+            model_type: response.file.model_type,
+            model_id: response.file.model_id,
+            id: response.file.id
+          });
+        }).catch(reject);
+      }, 1000);
+    });
+  }
+  const sendMessageWhatsapp = useCallback(async (patient, templateFormatted, dataToFile) => {
+    let dataMessage = {};
+    if (dataToFile !== null) {
+      dataMessage = {
+        channel: "whatsapp",
+        recipients: [getIndicativeByCountry(patient.country_id) + patient.whatsapp],
+        message_type: "media",
+        message: templateFormatted,
+        attachment_url: dataToFile?.file_url,
+        attachment_type: "document",
+        minio_model_type: dataToFile?.model_type,
+        minio_model_id: dataToFile?.model_id,
+        minio_id: dataToFile?.id,
+        webhook_url: "https://example.com/webhook"
+      };
+    } else {
+      dataMessage = {
+        channel: "whatsapp",
+        recipients: [getIndicativeByCountry(patient.country_id) + patient.whatsapp],
+        message_type: "text",
+        message: templateFormatted,
+        webhook_url: "https://example.com/webhook"
+      };
+    }
+    await sendMessageWppRef.current(dataMessage);
+    SwalManager.success({
+      text: "Mensaje enviado correctamente",
+      title: "Éxito"
+    });
+  }, [sendMessageWpp]);
   const handleFinish = async () => {
     const mappedData = await mapToServer();
     try {
       const clinicalRecordRes = await clinicalRecordService.clinicalRecordsParamsStore(patientId, mappedData);
+      console.log("clinicalRecordRes", clinicalRecordRes);
+      prepareDataToSendMessageWPP(clinicalRecordRes.clinical_record);
       showSuccessToast({
         title: "Se ha creado el registro exitosamente",
         message: "Por favor espere un momento mientras se envía el mensaje"
       });
-
-      // @ts-ignore
-      await createHistoryMessage(clinicalRecordRes.clinical_record.id, clinicalRecordRes.clinical_record.patient_id);
       showSuccessToast({
         title: "Se ha enviado el mensaje exitosamente"
       });
-      hideModal();
-      window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+
+      // hideModal();
+      // window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (error.data?.errors) {
         showFormErrors({
           title: "Errores de validación",
@@ -204,7 +365,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       } else {
         showErrorToast({
           title: "Error",
-          message: error.message || 'Ocurrió un error inesperado'
+          message: error.message || "Ocurrió un error inesperado"
         });
       }
     }
@@ -305,8 +466,8 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     header: "Finalizar Consulta",
     modal: true,
     style: {
-      width: '100vw',
-      maxWidth: '100vw'
+      width: "100vw",
+      maxWidth: "100vw"
     }
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
@@ -315,8 +476,8 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
   }, /*#__PURE__*/React.createElement("div", {
     className: "p-3 border-right d-flex flex-column gap-2",
     style: {
-      width: '250px',
-      minWidth: '250px'
+      width: "250px",
+      minWidth: "250px"
     }
   }, tabs.map(tab => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Tab, {
     key: tab.key,
@@ -471,7 +632,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     minLength: 3,
     panelStyle: {
       zIndex: 100000,
-      width: 'auto'
+      width: "auto"
     }
   }))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-center"
@@ -482,7 +643,6 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     }),
     disabled: !cie11Code || !cie11Code.label,
     onClick: () => {
-      console.log(cie11Code);
       if (cie11Code && cie11Code.label) {
         appendDiagnosis(cie11Code);
         setCie11Code(null);
@@ -514,7 +674,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       value: field.value || "",
       onTextChange: e => field.onChange(e.htmlValue),
       style: {
-        height: '320px'
+        height: "320px"
       },
       className: classNames({
         "p-invalid": fieldState.error

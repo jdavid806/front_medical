@@ -207,7 +207,6 @@ RewriteRule ^Print_format$ Configuracion/Print_format.php
 #mensajeria masiva
 
 RewriteRule ^Mensajes_whatsapp$ mensajeriaMasiva/mensajes_whatsapp.php
-RewriteRule ^MassMessage$ Marketing/MassMessage/massMessage.php
 
 
 #telemedicina
@@ -330,6 +329,7 @@ RewriteRule ^postConsultationGestion$ Citas/PostConsultationGestion.php
 RewriteRule ^cardModulos$ Configuracion/homeConfig/cardModulos.php
 RewriteRule ^cardComisiones$ Configuracion/homeConfig/cardComisiones.php
 RewriteRule ^cardEspecialidades$ Configuracion/homeConfig/cardEspecialidades.php
+RewriteRule ^cardMotivoConsulta$ Configuracion/homeConfig/cardMotivoConsulta.php
 RewriteRule ^cardHorarios$ Configuracion/homeConfig/cardHorarios.php
 RewriteRule ^cardUsers$ Configuracion/homeConfig/cardUsers.php
 RewriteRule ^cardRoles$ Configuracion/homeConfig/cardRoles.php
@@ -338,7 +338,8 @@ RewriteRule ^configUsuarios$ Configuracion/homeConfig/configUsuarios.php
 RewriteRule ^configImportaciones$ Configuracion/homeConfig/configImportaciones.php
 RewriteRule ^configConsentimientos$ Configuracion/homeConfig/configConsentimientos.php
 RewriteRule ^configEntidades$ Configuracion/homeConfig/configEntidades.php
-RewriteRule ^configPrecios$ Configuracion/homeConfig/ConfigPreciosPrueba.php
+RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
+RewriteRule ^configPreciosPrueba$ Configuracion/homeConfig/ConfigPreciosPrueba.php
 
 RewriteRule ^configExamenes$ Configuracion/homeConfig/configExamenes.php
 RewriteRule ^configuracionEmpresa$ Configuracion/homeConfig/configuracionEmpresa.php
@@ -370,6 +371,6 @@ RewriteRule ^imprimirComprobanteContable$ PlantillasImpresion/Facturas/comproban
 RewriteRule ^imprimirBalanceGeneral$ PlantillasImpresion/Facturas/balanceGeneral.php
 RewriteRule ^medicationInventoryForm$ Inventario/medicationInventoryForm.php
 RewriteRule ^patientAsyncTableTest$ Pacientes/pacientesAsyncTableTest.php
-RewriteRule ^sendClinicalRecordMessagesHookWrapperTest$ Citas/sendClinicalRecordMessagesHookWrapperTest.php
-RewriteRule ^modalTerminarConsultaReactTest$ Consultas/modalTerminarConsultaReactTest.php
- 
+RewriteRule ^manualUsuario$ ManualUsuario/manualUsuario.php
+RewriteRule ^configIntegraciones$ Configuracion/homeConfig/configIntegraciones.php
+RewriteRule ^arbolContableTest$ Contabilidad/arbolContableTest.php

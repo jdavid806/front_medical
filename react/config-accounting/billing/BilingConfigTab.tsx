@@ -230,10 +230,11 @@ const BillingConfigTab = () => {
         type: tipoApi,
       };
 
-      // Add reverse account for specific invoice types
-      if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
+      // Add reverse account and discount account for specific invoice types
+      if (["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo)) {
         payload.accounting_account_reverse_id =
           data.accounting_account_reverse_id;
+        payload.accounting_account_discount = data.accounting_account_discount?.toString();
       }
 
       const url = "/medical/companies/1/billings";
@@ -324,10 +325,12 @@ const BillingConfigTab = () => {
     const cuentasFiltradas = filtrarCuentas();
     const accountingAccount = watch("accounting_account");
     const accountingAccountReverse = watch("accounting_account_reverse_id");
+    const accountingAccountDiscount = watch("accounting_account_discount");
     const showReverseAccount = [
       "fiscal",
       "consumidor",
       "gubernamental",
+      "compra"
     ].includes(tipo);
 
     return (
@@ -386,38 +389,73 @@ const BillingConfigTab = () => {
             )}
 
           {showReverseAccount && (
-            <div className="field mb-4">
-              <label
-                htmlFor={`accounting_account_reverse_${tipo}`}
-                className="block text-900 font-medium mb-2"
-              >
-                Cuenta Contable Reversa
-              </label>
-              <Dropdown
-                id={`accounting_account_reverse_${tipo}`}
-                options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                  label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                  value: cuenta.id,
-                }))}
-                value={accountingAccountReverse}
-                onChange={(e) =>
-                  setValue("accounting_account_reverse_id", e.value)
-                }
-                filter
-                filterBy="label"
-                showClear
-                filterPlaceholder="Buscar cuenta..."
-                className={`w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""
-                  }`}
-                loading={loading.cuentas}
-                placeholder="Seleccione una cuenta"
-              />
-              {errors?.accounting_account_reverse_id && (
-                <small className="p-error">
-                  Favor seleccione una cuenta contable reversa.
-                </small>
-              )}
-            </div>
+            <>
+              <div className="field mb-4">
+                <label
+                  htmlFor={`accounting_account_reverse_${tipo}`}
+                  className="block text-900 font-medium mb-2"
+                >
+                  Cuenta Contable Reversa
+                </label>
+                <Dropdown
+                  id={`accounting_account_reverse_${tipo}`}
+                  options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                    label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                    value: cuenta.id,
+                  }))}
+                  value={accountingAccountReverse}
+                  onChange={(e) =>
+                    setValue("accounting_account_reverse_id", e.value)
+                  }
+                  filter
+                  filterBy="label"
+                  showClear
+                  filterPlaceholder="Buscar cuenta..."
+                  className={`w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""
+                    }`}
+                  loading={loading.cuentas}
+                  placeholder="Seleccione una cuenta"
+                />
+                {errors?.accounting_account_reverse_id && (
+                  <small className="p-error">
+                    Favor seleccione una cuenta contable reversa.
+                  </small>
+                )}
+              </div>
+
+              <div className="field mb-4">
+                <label
+                  htmlFor={`accounting_account_discount_${tipo}`}
+                  className="block text-900 font-medium mb-2"
+                >
+                  Cuenta Contable Descuento
+                </label>
+                <Dropdown
+                  id={`accounting_account_discount_${tipo}`}
+                  options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                    label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                    value: cuenta.id,
+                  }))}
+                  value={accountingAccountDiscount}
+                  onChange={(e) =>
+                    setValue("accounting_account_discount", e.value)
+                  }
+                  filter
+                  filterBy="label"
+                  showClear
+                  filterPlaceholder="Buscar cuenta..."
+                  className={`w-full ${errors?.accounting_account_discount ? "p-invalid" : ""
+                    }`}
+                  loading={loading.cuentas}
+                  placeholder="Seleccione una cuenta"
+                />
+                {errors?.accounting_account_discount && (
+                  <small className="p-error">
+                    Favor seleccione una cuenta contable para descuentos.
+                  </small>
+                )}
+              </div>
+            </>
           )}
 
           <div className="field mb-4">
@@ -739,4 +777,4 @@ const BillingConfigTab = () => {
   );
 };
 
-export default BillingConfigTab; 
+export default BillingConfigTab;

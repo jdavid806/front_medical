@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { useAuth } from "./hooks/useAuth.js";
-import { ForgotPasswordModal } from "./ForgotPasswordModal.js";
-import { LoginForm } from "./LoginForm.js";
-import { OTPModal } from "./OTPModal.js";
+import { ForgotPasswordModal } from "./modal/ForgotPasswordModal.js";
+import { LoginForm } from "./form/LoginForm.js";
+import { OTPModal } from "./modal/OTPModal.js";
 export const LoginApp = () => {
   const [currentView, setCurrentView] = useState('login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);

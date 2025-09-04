@@ -5,9 +5,6 @@ export async function generatePDFFromHTML(
   targetInputId = null
 ) {
 
-  console.log("expor5tPDFFFF");
-  
-
   try {
     const htmlContent = `
     <!DOCTYPE html>
@@ -100,8 +97,7 @@ export async function generatePDFFromHTML(
     </html>
     `;
     if (!targetInputId) {
-      console.log("entro al if");
-      
+
       // Comportamiento original (abrir en nueva ventana)
       const form = document.createElement("form");
       form.method = "POST";
@@ -160,7 +156,6 @@ export async function generatePDFFromHTML(
 }
 
 export async function generatePDFReceipts(content, configPDF) {
-
   try {
     const htmlContent = `
     <!DOCTYPE html>

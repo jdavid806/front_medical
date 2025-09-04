@@ -5,19 +5,20 @@ const NavbarHeader = () => {
     const items = [
         {
             label: 'Home',
-            icon: 'pi pi-home',
+            icon: <i className="fa-solid fa-house"></i>,
             items: [
                 [
                     {
-                        label: 'Home',
+                        label: 'Principal',
                         items: [
-                            { label: 'Inicio', icon: 'pi pi-home', url: 'Dashboard' },
-                            { label: 'Consultas', icon: 'pi pi-users', url: 'pacientes' },
-                            { label: 'Admisiones', icon: 'pi pi-user-plus', url: 'citasControl' },
-                            { label: 'Telemedicina', icon: 'pi pi-video', url: 'telemedicina' },
-                            { label: 'Turnos', icon: 'pi pi-desktop', url: 'homeTurnos' },
-                            { label: 'Farmacia', icon: 'pi pi-book-open', url: 'homeFarmacia' },
-                            { label: 'Laboratorio', icon: 'pi pi-chart-line', url: 'verOrdenesExamenesGenerales' }
+                            { label: 'Inicio', icon: <i className="fa-solid fa-house"></i>, url: 'Dashboard' },
+                            { label: 'Consultas', icon: <i className="fa-solid fa-magnifying-glass"></i>, url: 'pacientes' },
+                            { label: 'Admisiones', icon: <i className="fa-solid fa-bookmark"></i>, url: 'citasControl' },
+
+                            { label: 'Telemedicina', icon: <i className="fa-solid fa-stethoscope"></i>, url: 'telemedicina' },
+                            { label: 'Turnos', icon: <i className="fa-solid fa-ticket"></i>, url: 'homeTurnos' },
+                            { label: 'Farmacia', icon: <i className="fa-solid fa-shop"></i>, url: 'homeFarmacia' },
+                            { label: 'Laboratorio', icon: <i className="fa-solid fa-flask"></i>, url: 'verOrdenesExamenesGenerales' }
                         ]
                     }
                 ]
@@ -25,16 +26,17 @@ const NavbarHeader = () => {
         },
         {
             label: 'Reportes',
-            icon: 'pi pi-chart-bar',
+            icon: <i className="fa-solid fa-file-excel"></i>,
             items: [
                 [
                     {
+                        label: 'Reportes Importantes',
                         items: [
-                            { label: 'Facturación', icon: 'pi pi-briefcase', url: 'Invoices' },
-                            { label: 'Facturas x Entidad', icon: 'pi pi-briefcase', url: 'InvoicesByEntity' },
-                            { label: 'Especialistas', icon: 'pi pi-briefcase', url: 'InvoicesDoctors' },
-                            { label: 'Bonificaciones', icon: 'pi pi-briefcase', url: 'Commissions' },
-                            { label: 'Citas', icon: 'pi pi-briefcase', url: 'AppointmentsReport' }
+                            { label: 'Facturación', icon: <i className="fa-solid fa-money-bill"></i>, url: 'Invoices' },
+                            { label: 'Facturas x Entidad', icon: <i className="fa-solid fa-money-bill-wave"></i>, url: 'InvoicesByEntity' },
+                            { label: 'Especialistas', icon: <i className="fa-solid fa-user-doctor"></i>, url: 'InvoicesDoctors' },
+                            { label: 'Bonificaciones', icon: <i className="fa-solid fa-money-bill-trend-up"></i>, url: 'Commissions' },
+                            { label: 'Citas', icon: <i className="fa-solid fa-calendar-week"></i>, url: 'AppointmentsReport' }
                         ]
                     }
                 ]
@@ -42,17 +44,19 @@ const NavbarHeader = () => {
         },
         {
             label: 'Administración',
-            icon: 'pi pi-cog',
+            icon: <i className="fa-solid fa-user-gear ml-2"></i>,
             items: [
                 [
                     {
+                        label: 'Administrar Procesos',
                         items: [
-                            { label: 'Marketing', icon: 'pi pi-briefcase', url: 'homeMarketing' },
-                            { label: 'Configuración', icon: 'pi pi-sliders-h', url: 'homeConfiguracion' },
-                            { label: 'Inventario', icon: 'pi pi-folder', url: 'homeInventario' },
-                            { label: 'Auditoria', icon: 'pi pi-user-edit', url: 'homeAuditoria' },
-                            { label: 'Contabilidad', icon: 'pi pi-file', url: 'homeContabilidad' },
-                            { label: 'Comunidad', icon: 'pi pi-comments', url: 'social' }
+                            { label: 'Marketing', icon: <i className="fa-solid fa-folder-tree"></i>, url: 'homeMarketing' },
+                            { label: 'Configuración', icon: <i className="fa-solid fa-wrench"></i>, url: 'homeConfiguracion' },
+                            { label: 'Inventario', icon: <i className="fa-solid fa-truck-ramp-box"></i>, url: 'homeInventario' },
+                            { label: 'Auditoria', icon: <i className="fa-solid fa-person-chalkboard"></i>, url: 'homeAuditoria' },
+                            { label: 'Contabilidad', icon: <i className="fa-solid fa-money-check-dollar"></i>, url: 'homeContabilidad' },
+                            { label: 'Comunidad', icon: <i className="fa-solid fa-people-roof"></i>, url: 'social' },
+                            { label: 'Manual De Usuario', icon: <i className="fa-solid fa-book-open"></i>, url: 'manualUsuario' }
                         ]
                     }
                 ]
@@ -85,6 +89,7 @@ const NavbarHeader = () => {
 
                 /* Estilos para modo claro */
                 :root:not(.p-dark) .custom-responsive-megamenu .p-menuitem-link {
+                    gap:5px;
                     color: #495057 !important;
                 }
 
@@ -221,13 +226,13 @@ const NavbarHeader = () => {
                 /* Estilos para desktop */
                 @media screen and (min-width: 961px) {
                     .navbar-megamenu-container {
-                        margin: 0 auto;
+                        margin: 0 8rem auto;
                     }
                     
                     .custom-responsive-megamenu .p-megamenu-root-list {
-                    margin-left: 450px !important;
-                        justify-content: center;
-                        gap: 0.5rem;
+                        display:flex;
+                        justify-content: flex-end;
+                        gap: 2rem;
                     }
                 }
             `}</style>

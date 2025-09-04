@@ -220,9 +220,10 @@ const BillingConfigTab = () => {
         type: tipoApi
       };
 
-      // Add reverse account for specific invoice types
-      if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
+      // Add reverse account and discount account for specific invoice types
+      if (["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo)) {
         payload.accounting_account_reverse_id = data.accounting_account_reverse_id;
+        payload.accounting_account_discount = data.accounting_account_discount?.toString();
       }
       const url = "/medical/companies/1/billings";
       const response = await fetch(url, {
@@ -268,7 +269,8 @@ const BillingConfigTab = () => {
     const cuentasFiltradas = filtrarCuentas();
     const accountingAccount = watch("accounting_account");
     const accountingAccountReverse = watch("accounting_account_reverse_id");
-    const showReverseAccount = ["fiscal", "consumidor", "gubernamental"].includes(tipo);
+    const accountingAccountDiscount = watch("accounting_account_discount");
+    const showReverseAccount = ["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo);
     return /*#__PURE__*/React.createElement("div", {
       className: "grid p-fluid"
     }, /*#__PURE__*/React.createElement("div", {
@@ -309,7 +311,7 @@ const BillingConfigTab = () => {
       placeholder: "Seleccione una cuenta"
     }), errors?.accounting_account && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
-    }, "Favor seleccione una cuenta contable.")), showReverseAccount && /*#__PURE__*/React.createElement("div", {
+    }, "Favor seleccione una cuenta contable.")), showReverseAccount && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_reverse_${tipo}`,
@@ -332,6 +334,28 @@ const BillingConfigTab = () => {
     }), errors?.accounting_account_reverse_id && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Favor seleccione una cuenta contable reversa.")), /*#__PURE__*/React.createElement("div", {
+      className: "field mb-4"
+    }, /*#__PURE__*/React.createElement("label", {
+      htmlFor: `accounting_account_discount_${tipo}`,
+      className: "block text-900 font-medium mb-2"
+    }, "Cuenta Contable Descuento"), /*#__PURE__*/React.createElement(Dropdown, {
+      id: `accounting_account_discount_${tipo}`,
+      options: cuentasFiltradas.map(cuenta => ({
+        label: `${cuenta.account_code} - ${cuenta.account_name}`,
+        value: cuenta.id
+      })),
+      value: accountingAccountDiscount,
+      onChange: e => setValue("accounting_account_discount", e.value),
+      filter: true,
+      filterBy: "label",
+      showClear: true,
+      filterPlaceholder: "Buscar cuenta...",
+      className: `w-full ${errors?.accounting_account_discount ? "p-invalid" : ""}`,
+      loading: loading.cuentas,
+      placeholder: "Seleccione una cuenta"
+    }), errors?.accounting_account_discount && /*#__PURE__*/React.createElement("small", {
+      className: "p-error"
+    }, "Favor seleccione una cuenta contable para descuentos."))), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `resolution_number_${tipo}`,

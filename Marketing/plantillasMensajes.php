@@ -32,7 +32,6 @@ $tabs = [
            'subtabs' => [
             'creacion' => 'Creación',
             'cancelacion' => 'Cancelación',
-            'enlace' => 'Enlace',
             'reagendamiento' => 'Reagendamiento',
             'compartir' => 'Compartir',
             'confirmacion' => 'Confirmación'
@@ -111,7 +110,6 @@ $tabs = [
         'subtabs' => [
             'creacion' => 'Creación',
             'compartir' => 'Compartir',
-            'enlace' => 'Enlace'
         ],
         'anexo' => false
     ],

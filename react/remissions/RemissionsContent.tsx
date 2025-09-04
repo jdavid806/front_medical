@@ -281,7 +281,7 @@ export const RemissionsContent: React.FC = () => {
       name: "Remisión_Médica",
       isDownload: false,
     };
-    generatePDFFromHTML(printContent, company.attributes, configPDF);
+    generatePDFFromHTML(printContent, company, configPDF);
   };
 
   const handleDownload = async (rowData) => {
@@ -413,7 +413,7 @@ export const RemissionsContent: React.FC = () => {
       name: "Remisión_Médica",
       isDownload: true,
     };
-    generatePDFFromHTML(printContent, company.attributes, configPDF);
+    generatePDFFromHTML(printContent, company, configPDF);
   };
 
   const handleShare = (rowData) => {

@@ -224,7 +224,7 @@ export const RemissionsContent = () => {
       name: "Remisión_Médica",
       isDownload: false
     };
-    generatePDFFromHTML(printContent, company.attributes, configPDF);
+    generatePDFFromHTML(printContent, company, configPDF);
   };
   const handleDownload = async rowData => {
     const nameReceiverUser = `${rowData.receiver_by_user.first_name ?? ""} ${rowData.receiver_by_user.middle_name ?? ""} ${rowData.receiver_by_user.last_name ?? ""} ${rowData.receiver_by_user.second_last_name ?? ""}`;
@@ -333,7 +333,7 @@ export const RemissionsContent = () => {
       name: "Remisión_Médica",
       isDownload: true
     };
-    generatePDFFromHTML(printContent, company.attributes, configPDF);
+    generatePDFFromHTML(printContent, company, configPDF);
   };
   const handleShare = rowData => {
     console.log("Compartir", rowData);

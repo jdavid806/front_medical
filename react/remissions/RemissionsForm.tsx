@@ -10,6 +10,7 @@ import { Checkbox } from "primereact/checkbox";
 import { PrimeReactProvider } from "primereact/api";
 import { forwardRef } from "react";
 import { useImperativeHandle } from "react";
+import { getUserLogged } from "../../services/utilidades";
 interface Remission {
   receiver_user_id: null;
   remitter_user_id: number;
@@ -34,6 +35,7 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
     const [mappedServiceUserSpecialty, setMappedServiceUserSpecialty] =
       useState([]);
     const [selectedUserSpecialty, setSelectedUserSpecialty] = useState<any>([]);
+    const userLogged = getUserLogged();
 
     useEffect(() => {
       fetchClinicalRecords();
@@ -45,16 +47,14 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
       event.preventDefault();
       const newremission: Remission = {
         receiver_user_id: !checked ? selectedUser : null,
-        remitter_user_id: 1,
+        remitter_user_id: userLogged.id,
         clinical_record_id: selectedService,
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
         note: note,
       };
-      console.log(newremission, checked);
       remissionService
         .createRemission(newremission, newremission.clinical_record_id)
         .then((response) => {
-          console.log("saved:", response);
           window.location.reload();
         })
         .catch((error) => {
@@ -66,7 +66,7 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
       getFormData: () => {
         return {
           receiver_user_id: !checked ? selectedUser : null,
-          remitter_user_id: 1,
+          remitter_user_id: userLogged.id,
           //clinical_record_id: selectedService,
           receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
           note: note,
@@ -97,7 +97,6 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
 
     const fetchDoctors = async () => {
       const data = await userService.getAll();
-      console.log(data);
       const mappedData = data.map((item: any) => {
         return {
           value: item.id,
@@ -110,7 +109,6 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
 
     const fetchUserSpecialties = async () => {
       const data = await userSpecialtyService.getAllItems();
-      console.log(data);
       const mappedData = data.map((item: any) => {
         return {
           value: item.id,

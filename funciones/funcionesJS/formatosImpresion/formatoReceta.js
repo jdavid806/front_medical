@@ -23,7 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export async function generarFormatoReceta(receta, tipo, inputId = "") {
+export async function generarFormatoReceta(
+  receta,
+  tipo,
+  inputId = "",
+  configDefault = false
+) {
   let userName = [
     receta.prescriber?.first_name,
     receta.prescriber?.middle_name,
@@ -62,9 +67,7 @@ export async function generarFormatoReceta(receta, tipo, inputId = "") {
           <div style="margin-bottom: 5px; font-size: 12px">
             <p style="margin: 0;"><strong>${index + 1}. Nombre:</strong> ${
         item.medication
-      } - ${item.concentration} - <strong>Tipo:</strong> ${
-        item.medication_type
-      }
+      } - ${item.concentration} - <strong>Tipo:</strong> ${item.medication_type}
             <strong>Frecuencia:</strong> ${
               item.frequency
             } - <strong>Duración:</strong> ${
@@ -97,13 +100,22 @@ export async function generarFormatoReceta(receta, tipo, inputId = "") {
   } else if (tipo == "Descarga") {
     isDownload = true;
   }
-  const pdfConfig = {
-    name: `Receta_Medica_${patient.datos_basicos.documento}`,
-    isDownload: isDownload,
-    dimensions: [0, 0, 396, 612],
-    orientation: "landscape",
-  };
-  // console.log(pdfConfig);
+
+  let pdfConfig = {};
+  if (configDefault) {
+    pdfConfig = {
+      name: `Receta_Medica_${patient.datos_basicos.documento}`,
+      isDownload: isDownload,
+      orientation: "landscape",
+    };
+  } else {
+    pdfConfig = {
+      name: `Receta_Medica_${patient.datos_basicos.documento}`,
+      isDownload: isDownload,
+      dimensions: [0, 0, 396, 612],
+      orientation: "landscape",
+    };
+  }
 
   await generatePDFFromHTML(contenido, company, pdfConfig, inputId);
 }

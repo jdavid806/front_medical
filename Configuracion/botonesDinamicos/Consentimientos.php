@@ -8,7 +8,8 @@ $campos = [
   "FECHANACIMIENTO",
   "TELEFONO",
   "CORREOELECTRONICO",
-  "CIUDAD"
+  "CIUDAD",
+  "ENLACE_COSENTIMIENTOS",
 ];
 ?>
 
