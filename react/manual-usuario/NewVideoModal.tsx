@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
+import { Editor } from "primereact/editor"; // 👈 importar el Editor
 
 interface VideoModalProps {
   visible: boolean;
@@ -19,7 +19,7 @@ export const NewVideoModal: React.FC<VideoModalProps> = ({
   categories,
 }) => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(""); // guardará HTML
   const [url, setUrl] = useState("");
   const [categoryId, setCategoryId] = useState<number | null>(null);
 
@@ -37,7 +37,7 @@ export const NewVideoModal: React.FC<VideoModalProps> = ({
     <Dialog
       header="Nuevo Video"
       visible={visible}
-      style={{ width: "500px" }}
+      style={{ width: "600px" }}
       modal
       onHide={onHide}
     >
@@ -62,10 +62,10 @@ export const NewVideoModal: React.FC<VideoModalProps> = ({
 
         <div className="field">
           <label>Descripción</label>
-          <InputTextarea
-            rows={3}
+          <Editor
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onTextChange={(e) => setDescription(e.htmlValue ?? "")}
+            style={{ height: "200px" }}
           />
         </div>
 

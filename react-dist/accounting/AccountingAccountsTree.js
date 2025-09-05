@@ -3,21 +3,25 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Button } from 'primereact/button';
 import { useAccountingAccountsTree } from "./hooks/useAccountingAccountsTree.js";
 import { InputText } from "primereact/inputtext";
+import { natureSeverity } from "./utils/AccountingAccountUtils.js";
 export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
-  onNodeClick
+  onNodeSelect
 }, ref) => {
   const {
     fetchAccountingAccountsTree,
     searchTerm,
     setSearchTerm,
     filteredData,
-    natureSeverity,
     findNodePath
   } = useAccountingAccountsTree();
   const [expandedNodes, setExpandedNodes] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState(null);
-  const refresh = () => {
-    fetchAccountingAccountsTree();
+  const refresh = async () => {
+    const data = await fetchAccountingAccountsTree();
+    const updatedNodePath = findNodePath(data, selectedNode?.id || 0);
+    const updatedNode = updatedNodePath[updatedNodePath.length - 1];
+    setSelectedNode(updatedNode);
+    onNodeSelect?.(updatedNode, updatedNodePath);
   };
   useImperativeHandle(ref, () => ({
     refresh
@@ -33,10 +37,10 @@ export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
   };
   const renderAccountHeader = node => {
     return /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-between gap-2 align-items-center w-100"
+      className: "d-flex justify-content-between gap-2 align-items-center w-100 flex-wrap"
     }, /*#__PURE__*/React.createElement("span", {
       className: selectedNode?.account_code === node.account_code ? 'fw-bold' : 'text-primary'
-    }, node.account_code, " - ", node.account_name), /*#__PURE__*/React.createElement("div", {
+    }, node.account_label), /*#__PURE__*/React.createElement("div", {
       className: "d-flex align-items-center gap-2"
     }, /*#__PURE__*/React.createElement("span", {
       className: `badge bg-${natureSeverity(node.nature_code)} opacity-75`
@@ -55,9 +59,7 @@ export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
       onTabChange: () => {
         toggleNode(node.account_code);
         setSelectedNode(node);
-        console.log("node", node);
-        console.log("findNodePath", findNodePath(filteredData, node.id));
-        onNodeClick?.(node, findNodePath(filteredData, node.id));
+        onNodeSelect?.(node, findNodePath(filteredData, node.id));
       },
       className: "mb-2"
     }, /*#__PURE__*/React.createElement(AccordionTab, {
@@ -67,8 +69,6 @@ export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
     }, renderTree(node.children, level + 1))))));
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid py-3"
-  }, /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header"
@@ -89,5 +89,5 @@ export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
     className: "account-tree"
-  }, renderTree(filteredData))))));
+  }, renderTree(filteredData)))));
 });

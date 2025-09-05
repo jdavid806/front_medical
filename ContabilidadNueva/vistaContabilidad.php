@@ -21,7 +21,7 @@ include "../header.php";
     </nav>
     <div class="main-content">
       <div class="component-container">
-        <h2>Contable</h2>
+        <h2 class="mb-3">Contable</h2>
         <div id="NewAccountingAccount"></div>
       </div>
     </div>
@@ -30,9 +30,11 @@ include "../header.php";
 <script type="module">
   import React from "react"
   import ReactDOMClient from "react-dom/client"
-  import { AccountingAccounts } from './react-dist/accounting/AccountingAccounts.js';
+  import {
+    AccountingAccountsV2
+  } from './react-dist/accounting/AccountingAccountsV2.js';
   ReactDOMClient.createRoot(document.getElementById('NewAccountingAccount')).render(
-    React.createElement(AccountingAccounts)
+    React.createElement(AccountingAccountsV2)
   );
 </script>
 

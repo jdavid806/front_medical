@@ -1,94 +1,41 @@
-import React, { useState, useRef } from 'react';
-import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
+import React from 'react';
+import { InputOtp } from 'primereact/inputotp';
 import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
-import { authService } from "../../../services/api/index.js";
 export const OTPModal = ({
-  visible,
-  onHide,
-  onVerified
+  otp,
+  setOtp,
+  onResendOTP
 }) => {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [loading, setLoading] = useState(false);
-  const toast = useRef(null);
-  const showToast = (severity, summary, detail) => {
-    toast.current?.show({
-      severity,
-      summary,
-      detail,
-      life: 3000
-    });
-  };
-  const handleOtpChange = (index, value) => {
-    if (!/^\d?$/.test(value)) return;
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-    if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
+  const otpValue = otp.join('');
+  const handleOtpChange = e => {
+    const value = e.value?.toString() || '';
+    const newOtpArray = value.split('');
+    while (newOtpArray.length < 6) {
+      newOtpArray.push('');
     }
+    setOtp(newOtpArray);
   };
-  const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      document.getElementById(`otp-${index - 1}`)?.focus();
-    }
-  };
-  const handleVerify = async () => {
-    setLoading(true);
-    try {
-      const otpCode = otp.join('');
-      const response = await authService.validateOTP(otpCode);
-      if (response.message && response.message.includes('OTP válido')) {
-        showToast('success', 'Éxito', 'OTP verificado correctamente');
-        onVerified();
-      } else {
-        throw new Error('OTP inválido');
-      }
-    } catch (error) {
-      showToast('error', 'Error', error.message || 'Error al verificar OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-  const isOtpComplete = otp.every(digit => digit !== '');
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
-    ref: toast
-  }), /*#__PURE__*/React.createElement(Dialog, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "text-center"
-    }, /*#__PURE__*/React.createElement("img", {
-      src: "/logo_monaros_sinbg_light.png",
-      alt: "Logo",
-      className: "w-1/2 mx-auto mb-3"
-    }), /*#__PURE__*/React.createElement("h5", {
-      className: "text-lg font-semibold"
-    }, "Ingrese el c\xF3digo de verificaci\xF3n")),
-    visible: visible,
-    onHide: onHide,
-    className: "w-11/12 md:w-1/2 lg:w-1/3"
-  }, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     className: "text-center"
   }, /*#__PURE__*/React.createElement("p", {
-    className: "text-gray-600 mb-6"
-  }, "El c\xF3digo contiene 6 d\xEDgitos, no lo compartas con nadie."), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center items-center gap-2 mb-6"
-  }, otp.map((digit, index) => /*#__PURE__*/React.createElement(InputText, {
-    key: index,
-    id: `otp-${index}`,
-    value: digit,
-    onChange: e => handleOtpChange(index, e.target.value),
-    onKeyDown: e => handleKeyDown(index, e),
-    className: "w-12 h-12 text-center text-xl font-bold",
-    maxLength: 1,
-    type: "text",
-    inputMode: "numeric"
-  }))), /*#__PURE__*/React.createElement(Button, {
-    label: "Verificar",
-    icon: "pi pi-check",
-    loading: loading,
-    disabled: !isOtpComplete || loading,
-    onClick: handleVerify,
-    className: "w-full"
-  }))));
+    className: "text-gray-600 mb-4"
+  }, "Hemos enviado un c\xF3digo de 6 d\xEDgitos a tu tel\xE9fono. Ingr\xE9salo a continuaci\xF3n."), /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-center items-center mb-4"
+  }, /*#__PURE__*/React.createElement(InputOtp, {
+    value: otpValue,
+    onChange: handleOtpChange,
+    length: 6,
+    integerOnly: true,
+    className: "justify-center",
+    mask: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "text-center mt-3"
+  }, /*#__PURE__*/React.createElement("span", null, "\xBFNo recibiste el c\xF3digo? "), /*#__PURE__*/React.createElement(Button, {
+    style: {
+      padding: "0px"
+    },
+    label: "Reenviar OTP",
+    link: true,
+    onClick: onResendOTP
+  })));
 };

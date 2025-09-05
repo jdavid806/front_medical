@@ -29,6 +29,8 @@ export interface CustomPRTableProps {
     customFilters?: DataTableFilterMeta
     disableSearch?: boolean
     disableReload?: boolean
+    disablePaginator?: boolean
+    size?: "normal" | "small" | "large" | undefined
     onSelectedRow?: (rowData: any) => void
     onReload?: () => void
     onSort?: (event: DataTableStateEvent) => void
@@ -50,6 +52,8 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
     customFilters,
     disableSearch = false,
     disableReload = false,
+    disablePaginator = false,
+    size = 'normal',
     onSelectedRow,
     onReload,
     loading,
@@ -105,7 +109,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
             <DataTable
                 dataKey={"uuid"}
                 value={data}
-                paginator
+                paginator={!disablePaginator}
                 rows={rows}
                 first={first}
                 totalRecords={totalRecords}
@@ -129,6 +133,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
                 onPage={onPage}
                 onSort={onSort}
                 lazy={lazy}
+                size={size}
             >
                 {columns.map((column) => (
                     <Column

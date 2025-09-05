@@ -779,7 +779,8 @@ export const PurchaseInvoices = () => {
     tipo: tipoNota,
     onSubmit: async data => {
       try {
-        const response = await applyNote(data);
+        console.log(data);
+        await applyNote(data);
         showToast("success", "Éxito", `Nota ${data.type === "credit" ? "Crédito" : "Débito"} aplicada correctamente`);
         await loadFacturas();
       } catch (err) {

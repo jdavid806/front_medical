@@ -105,8 +105,6 @@ export const useSpecialty = () => {
       });
       if (!response.ok) throw new Error('CIE-11 code not found');
       const data = await response.json();
-      console.log('Raw CIE-11 data from API:', data); // Debug log
-      console.log('Data type:', typeof data, 'Is array:', Array.isArray(data)); // Debug log
 
       // Handle different response formats
       let dataArray = [];
@@ -128,7 +126,6 @@ export const useSpecialty = () => {
         console.warn('Invalid data type from CIE-11 API:', typeof data);
         dataArray = [];
       }
-      console.log('Extracted data array:', dataArray); // Debug log
 
       // Transform data to include label property for AutoComplete
       const transformedData = dataArray.map(item => {
@@ -138,12 +135,6 @@ export const useSpecialty = () => {
 
         // Create comprehensive label with code AND description
         const label = codigo && descripcion ? `${codigo} - ${descripcion}` : codigo || descripcion || 'Sin información';
-        console.log('Transformed item:', {
-          codigo,
-          descripcion,
-          label
-        }); // Debug log
-
         return {
           ...item,
           codigo,
@@ -151,7 +142,6 @@ export const useSpecialty = () => {
           label
         };
       });
-      console.log('Transformed CIE-11 data:', transformedData); // Debug log
       setCie11Codes(transformedData);
       return transformedData;
     } catch (error) {

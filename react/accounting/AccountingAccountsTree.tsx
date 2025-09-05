@@ -3,32 +3,36 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Button } from 'primereact/button';
 import { AccountingAccountNode, useAccountingAccountsTree } from "./hooks/useAccountingAccountsTree";
 import { InputText } from "primereact/inputtext";
-import { Tag } from 'primereact/tag';
+import { natureSeverity } from "./utils/AccountingAccountUtils";
 
 interface AccountingAccountsTreeProps {
-    onNodeClick?: (node: AccountingAccountNode, path: AccountingAccountNode[]) => void;
+    onNodeSelect?: (node: AccountingAccountNode, path: AccountingAccountNode[]) => void;
+    ref?: Ref<AccountingAccountsTreeRef>;
 }
 
-interface AccountingAccountsTreeRef {
-    refresh: () => void;
+export interface AccountingAccountsTreeRef {
+    refresh: () => Promise<void>;
 }
 
-export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = forwardRef(({ onNodeClick }, ref: Ref<AccountingAccountsTreeRef>) => {
+export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = forwardRef(({ onNodeSelect }, ref: Ref<AccountingAccountsTreeRef>) => {
 
     const {
         fetchAccountingAccountsTree,
         searchTerm,
         setSearchTerm,
         filteredData,
-        natureSeverity,
         findNodePath
     } = useAccountingAccountsTree();
 
     const [expandedNodes, setExpandedNodes] = useState(new Set());
     const [selectedNode, setSelectedNode] = useState<AccountingAccountNode | null>(null);
 
-    const refresh = () => {
-        fetchAccountingAccountsTree();
+    const refresh = async () => {
+        const data = await fetchAccountingAccountsTree();
+        const updatedNodePath = findNodePath(data, selectedNode?.id || 0);
+        const updatedNode = updatedNodePath[updatedNodePath.length - 1];
+        setSelectedNode(updatedNode);
+        onNodeSelect?.(updatedNode, updatedNodePath);
     };
 
     useImperativeHandle(ref, () => ({
@@ -47,9 +51,9 @@ export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = for
 
     const renderAccountHeader = (node: AccountingAccountNode) => {
         return (
-            <div className="d-flex justify-content-between gap-2 align-items-center w-100">
+            <div className="d-flex justify-content-between gap-2 align-items-center w-100 flex-wrap">
                 <span className={(selectedNode?.account_code === node.account_code ? 'fw-bold' : 'text-primary')}>
-                    {node.account_code} - {node.account_name}
+                    {node.account_label}
                 </span>
                 <div className="d-flex align-items-center gap-2">
                     <span className={`badge bg-${natureSeverity(node.nature_code)} opacity-75`}>{node.nature_label}</span>
@@ -68,9 +72,7 @@ export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = for
                     onTabChange={() => {
                         toggleNode(node.account_code);
                         setSelectedNode(node);
-                        console.log("node", node);
-                        console.log("findNodePath", findNodePath(filteredData, node.id));
-                        onNodeClick?.(node, findNodePath(filteredData, node.id));
+                        onNodeSelect?.(node, findNodePath(filteredData, node.id));
                     }}
                     className="mb-2"
                 >
@@ -87,27 +89,25 @@ export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = for
     };
 
     return (<>
-        <div className="container-fluid py-3">
-            <div className="card">
-                <div className="card-header">
-                    <div className="d-flex justify-content-between align-items-center w-100 gap-2">
-                        <Button
-                            label="Refrescar"
-                            icon={<i className="fas fa-sync-alt me-2"></i>}
-                            onClick={refresh}
-                            className="btn btn-outline-primary"
-                        />
-                        <InputText
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Buscar"
-                        />
-                    </div>
+        <div className="card">
+            <div className="card-header">
+                <div className="d-flex justify-content-between align-items-center w-100 gap-2">
+                    <Button
+                        label="Refrescar"
+                        icon={<i className="fas fa-sync-alt me-2"></i>}
+                        onClick={refresh}
+                        className="btn btn-outline-primary"
+                    />
+                    <InputText
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Buscar"
+                    />
                 </div>
-                <div className="card-body">
-                    <div className="account-tree">
-                        {renderTree(filteredData)}
-                    </div>
+            </div>
+            <div className="card-body">
+                <div className="account-tree">
+                    {renderTree(filteredData)}
                 </div>
             </div>
         </div>

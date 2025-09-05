@@ -18,6 +18,8 @@ export const CustomPRTable = ({
   customFilters,
   disableSearch = false,
   disableReload = false,
+  disablePaginator = false,
+  size = 'normal',
   onSelectedRow,
   onReload,
   loading,
@@ -71,7 +73,7 @@ export const CustomPRTable = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(DataTable, {
     dataKey: "uuid",
     value: data,
-    paginator: true,
+    paginator: !disablePaginator,
     rows: rows,
     first: first,
     totalRecords: totalRecords,
@@ -96,7 +98,8 @@ export const CustomPRTable = ({
     sortOrder: sortOrder || 1,
     onPage: onPage,
     onSort: onSort,
-    lazy: lazy
+    lazy: lazy,
+    size: size
   }, columns.map(column => /*#__PURE__*/React.createElement(Column, {
     key: column.field,
     field: column.field,

@@ -1,17 +1,14 @@
-
 import React, { useState, useEffect } from 'react'
 import { Toast } from 'primereact/toast'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { useAuth } from './hooks/useAuth'
 import { ForgotPasswordModal } from './modal/ForgotPasswordModal'
 import { LoginForm } from './form/LoginForm'
-import { OTPModal } from './modal/OTPModal'
 
-export const LoginApp = () => {
-    const [currentView, setCurrentView] = useState('login')
-    const [showForgotPassword, setShowForgotPassword] = useState(false)
-    const [showOTPModal, setShowOTPModal] = useState(false)
-    const [username, setUsername] = useState('')
+export const LoginApp: React.FC = () => {
+    const [currentView, setCurrentView] = useState<string>('login')
+    const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false)
+    const [username, setUsername] = useState<string>('')
     const { login } = useAuth()
 
     useEffect(() => {
@@ -32,7 +29,7 @@ export const LoginApp = () => {
         }
     }, [])
 
-    const handleLogin = async (credentials) => {
+    const handleLogin = async (credentials: { username: string; password: string }) => {
         const result = await login(credentials)
         if (result.success) {
             console.log("inicio seccion!!")
@@ -41,11 +38,6 @@ export const LoginApp = () => {
 
     const handleForgotPassword = () => {
         setShowForgotPassword(true)
-    }
-
-    const handleOTPRequest = () => {
-        setShowForgotPassword(false)
-        setShowOTPModal(true)
     }
 
     const handlePasswordChangeSuccess = () => {
@@ -65,10 +57,8 @@ export const LoginApp = () => {
                 return (
                     <ForgotPasswordModal
                         visible={true}
-                        username={username}
-                        onSuccess={handlePasswordChangeSuccess}
-                        onCancel={handleCancelForgotPassword}
                         onHide={handleCancelForgotPassword}
+                        onSuccess={handlePasswordChangeSuccess}
                     />
                 )
             default:
@@ -94,23 +84,9 @@ export const LoginApp = () => {
                 <ForgotPasswordModal
                     visible={showForgotPassword}
                     onHide={() => setShowForgotPassword(false)}
-                    onOTPSent={handleOTPRequest}
+                    onSuccess={handlePasswordChangeSuccess}
                 />
             )}
-
-            {showOTPModal && (
-                <OTPModal
-                    visible={showOTPModal}
-                    onHide={() => setShowOTPModal(false)}
-                    onVerified={() => {
-                        setShowOTPModal(false)
-                        setCurrentView('changePassword')
-                    }}
-                />
-            )}
-
-
         </div>
     )
 }
-

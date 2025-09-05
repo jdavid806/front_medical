@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
+import { Editor } from "primereact/editor"; // 👈 importar el Editor
+
 export const NewVideoModal = ({
   visible,
   onHide,
@@ -11,7 +12,7 @@ export const NewVideoModal = ({
   categories
 }) => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(""); // guardará HTML
   const [url, setUrl] = useState("");
   const [categoryId, setCategoryId] = useState(null);
   const handleSave = () => {
@@ -32,7 +33,7 @@ export const NewVideoModal = ({
     header: "Nuevo Video",
     visible: visible,
     style: {
-      width: "500px"
+      width: "600px"
     },
     modal: true,
     onHide: onHide
@@ -55,10 +56,12 @@ export const NewVideoModal = ({
     onChange: e => setTitle(e.target.value)
   })), /*#__PURE__*/React.createElement("div", {
     className: "field"
-  }, /*#__PURE__*/React.createElement("label", null, "Descripci\xF3n"), /*#__PURE__*/React.createElement(InputTextarea, {
-    rows: 3,
+  }, /*#__PURE__*/React.createElement("label", null, "Descripci\xF3n"), /*#__PURE__*/React.createElement(Editor, {
     value: description,
-    onChange: e => setDescription(e.target.value)
+    onTextChange: e => setDescription(e.htmlValue ?? ""),
+    style: {
+      height: "200px"
+    }
   })), /*#__PURE__*/React.createElement("div", {
     className: "field"
   }, /*#__PURE__*/React.createElement("label", null, "URL del Video (YouTube, Vimeo...)"), /*#__PURE__*/React.createElement(InputText, {

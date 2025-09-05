@@ -1530,6 +1530,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    justify-content: center;
   }
   .p-inputotp-input {
     text-align: center;
@@ -5617,7 +5618,7 @@
     border: 1px solid rgba(0, 0, 0, 0.2);
   }
   .p-dialog .p-dialog-header {
-    border-bottom: 1px solid #e9ecef;
+    /* border-bottom: 1px solid #e9ecef; */
     background: #ffffff;
     color: #212529;
     padding: 1rem;
@@ -7668,15 +7669,15 @@
     box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
   }
   .p-steps .p-steps-item.p-highlight .p-steps-number {
-    background: #007bff;
-    color: #ffffff;
+    background: var(--fc-button-bg-color);
+    color: var(--fc-button-text-color);
   }
   .p-steps .p-steps-item.p-highlight .p-steps-title {
     font-weight: 600;
     color: #212529;
   }
   .p-steps .p-steps-item:before {
-    content: " ";
+    /* content: " "; */
     border-top: 1px solid #dee2e6;
     width: 100%;
     top: 50%;

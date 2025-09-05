@@ -81,9 +81,12 @@ export function ManualUsuario() {
     className: "border rounded-lg p-4 shadow bg-white"
   }, /*#__PURE__*/React.createElement("h3", {
     className: "font-bold"
-  }, video.title), /*#__PURE__*/React.createElement("p", {
-    className: "text-gray-600 text-sm mb-2"
-  }, video.description), /*#__PURE__*/React.createElement("iframe", {
+  }, video.title), /*#__PURE__*/React.createElement("div", {
+    className: "text-gray-600 text-sm mb-2 prose max-w-none",
+    dangerouslySetInnerHTML: {
+      __html: video.description
+    }
+  }), /*#__PURE__*/React.createElement("iframe", {
     width: "100%",
     height: "500",
     src: video.url,

@@ -1,14 +1,32 @@
 import BaseApiService from './baseApiService.js';
 
 export class AuthService extends BaseApiService {
-    async login(data) {
-        return await this.httpClient.post(`${this.microservice}/login`, data)
+    async login(credentials) {
+        return await this.httpClient.post(`${this.microservice}/login`, credentials, {
+            headers: {
+                'X-domain': 'dev.monaros.co'
+            }
+        });
     }
 
     async register(data) {
         return await this.httpClient.post(`${this.microservice}/register`, data, {
-            "X-DOMAIN": window.location.hostname
-        })
+            headers: {
+                "X-DOMAIN": window.location.hostname
+            }
+        });
+    }
+
+    async sendOTP(data) {
+        return await this.httpClient.post(`${this.microservice}/otp/send-otp`, data);
+    }
+
+    async validateOTP(otp) {
+        return await this.httpClient.post(`${this.microservice}/otp/validate-otp`, otp);
+    }
+
+    async changePassword(data) {
+        return await this.httpClient.post(`${this.microservice}/change-password`, data);
     }
 }
 

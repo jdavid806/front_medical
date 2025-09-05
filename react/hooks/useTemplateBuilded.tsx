@@ -25,6 +25,8 @@ export const useTemplateBuilded = () => {
         return templateBuildedRemissions(template, data);
       case "appointments":
         return templateBuildedAppoinment(template, data);
+      case "clinical_records":
+        return templateBuildedClinicalRecords(template, data);
       default:
         break;
     }
@@ -126,11 +128,29 @@ export const useTemplateBuilded = () => {
       HORA_CITA: `${data.appointment_time}`,
     };
 
-    const templateFormatted = formatWhatsAppMessage(
-      template,
-      replacements
-    );
+    const templateFormatted = formatWhatsAppMessage(template, replacements);
 
+    return templateFormatted;
+  }
+
+  function templateBuildedClinicalRecords(template, data) {
+    const replacements = {
+      NOMBRE_PACIENTE: `${data.patient.first_name ?? ""} ${
+        data.patient.middle_name ?? ""
+      } ${data.patient.last_name ?? ""} ${data.patient.second_last_name ?? ""}`,
+      ESPECIALISTA: `${
+        data.appointment.assigned_user_availability.user.first_name ?? ""
+      } ${data.appointment.assigned_user_availability.user.middle_name ?? ""} ${
+        data.appointment.assigned_user_availability.user.last_name ?? ""
+      } ${
+        data.appointment.assigned_user_availability.user.second_last_name ?? ""
+      }`,
+      ESPECIALIDAD: `${data.appointment.assigned_user_availability.user.specialty.name}`,
+      FECHA_HISTORIA: `${formatDate(data.created_at)}`,
+      "ENLACE DOCUMENTO": "",
+    };
+
+    const templateFormatted = formatWhatsAppMessage(template, replacements);
     return templateFormatted;
   }
 

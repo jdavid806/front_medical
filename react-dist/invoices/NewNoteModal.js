@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 export const NewNoteModal = ({
   visible,
   onHide,
@@ -21,7 +22,38 @@ export const NewNoteModal = ({
 
   // subtotal calculado
   const subtotal = monto + impuesto - retencion;
+  const toast = useRef(null);
   const handleSave = () => {
+    if (!factura) return;
+
+    // Validaciones
+    if (monto > factura.monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El monto de la nota no puede ser mayor al monto de la factura.",
+        life: 3000
+      });
+      return;
+    }
+    if (impuesto > monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El impuesto no puede ser mayor al monto de la nota.",
+        life: 3000
+      });
+      return;
+    }
+    if (retencion > monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "La retención no puede ser mayor al monto de la nota.",
+        life: 3000
+      });
+      return;
+    }
     onSubmit({
       invoice_id: factura?.id,
       note_code: numeroNota,
@@ -31,7 +63,8 @@ export const NewNoteModal = ({
       withholding: retencion,
       subtotal,
       reason: motivo,
-      type: tipo === "credito" ? "credit" : "debit"
+      type: tipo === "credito" ? "credit" : "debit",
+      adjusted_amount: tipo === "credito" ? factura.monto + subtotal : factura.monto - subtotal
     });
     onHide();
   };
@@ -43,7 +76,9 @@ export const NewNoteModal = ({
     },
     modal: true,
     onHide: onHide
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
     className: "p-fluid"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field"
@@ -80,7 +115,7 @@ export const NewNoteModal = ({
     disabled: true
   })), /*#__PURE__*/React.createElement("div", {
     className: "field"
-  }, factura && /*#__PURE__*/React.createElement("small", null, "Factura actual: ", /*#__PURE__*/React.createElement("b", null, factura.monto), " \u2192 despu\xE9s:", " ", /*#__PURE__*/React.createElement("b", null, tipo === "credito" ? factura.monto - monto : factura.monto + monto))), /*#__PURE__*/React.createElement("div", {
+  }, factura && /*#__PURE__*/React.createElement("small", null, "Factura actual: ", /*#__PURE__*/React.createElement("b", null, factura.monto), " \u2192 despu\xE9s:", " ", /*#__PURE__*/React.createElement("b", null, tipo === "credito" ? factura.monto + subtotal : factura.monto - subtotal))), /*#__PURE__*/React.createElement("div", {
     className: "field"
   }, /*#__PURE__*/React.createElement("label", null, "Motivo"), /*#__PURE__*/React.createElement(InputTextarea, {
     rows: 3,

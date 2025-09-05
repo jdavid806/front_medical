@@ -1,0 +1,498 @@
+{
+  "form1": {
+    "tabs": [
+      {
+        "tab": "Antecedentes I",
+        "card": [
+          {
+            "title": "Perinatales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "enfermedadEmbarazo",
+                "label": "¿Padeció alguna enfermedad durante el Embarazo?",
+                "type": "checkbox",
+                "name": "enfermedadEmbarazo",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "enfermedadEmbarazoText",
+                    "label": "¿Cual(es)?",
+                    "type": "textarea",
+                    "name": "enfermedadEmbarazoText"
+                  },
+                  {
+                    "id": "tratamientoEnfermedadEmbarazo",
+                    "label": "¿Qué tipo de tratamiento recibió?",
+                    "type": "textarea",
+                    "name": "tratamientoEnfermedadEmbarazo"
+                  }
+                ]
+              },
+              {
+                "id": "golpeCaidaEmbarazo",
+                "label": "¿Sufrio algún Golpe o Caida durante el Embarazo?",
+                "type": "checkbox",
+                "name": "golpeCaidaEmbarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "consumoSustanciasEmbarazo",
+                "label": "¿Consumió algún tipo de sustancias psicoactivas (SPA) durante el Embarazo?",
+                "type": "checkbox",
+                "name": "consumoSustanciasEmbarazo",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "consumoSustanciasEmbarazoText",
+                    "label": "¿Cual(es)?",
+                    "type": "textarea",
+                    "name": "consumoSustanciasEmbarazoText"
+                  }
+                ]
+              },
+
+              {
+                "id": "trabajoEmbarazo",
+                "label": "¿Trabajó durante el embarazo?",
+                "type": "checkbox",
+                "name": "trabajoEmbarazo",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "trabajoEmbarazoDetalle",
+                    "label": "¿Qué trabajo desempeñó?",
+                    "type": "textarea",
+                    "name": "trabajoEmbarazoDetalle"
+                  },
+                  {
+                    "id": "frecuenciaTrabajoEmbarazo",
+                    "label": "¿Con que frecuencia trabajó?",
+                    "type": "textarea",
+                    "name": "frecuenciaTrabajoEmbarazo"
+                  }
+                ]
+              },
+              {
+                "id": "habitosAlimenticiosEmbarazo",
+                "label": "En general ¿Cómo considera que fueron sus habitos alimenticios durante el embarazo?",
+                "type": "textarea",
+                "name": "habitosAlimenticiosEmbarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "estadoAnimoEmbarazo",
+                "label": "En gerenal ¿Como considera que fue su estado de animo durante el embarazo?",
+                "type": "textarea",
+                "name": "estadoAnimoEmbarazo",
+                "class": "col-6"
+              },
+              {
+                "id": "motivoEstadoAnimo",
+                "label": "¿A qué atribuyó ese estado de animo?",
+                "type": "textarea",
+                "name": "motivoEstadoAnimo",
+                "class": "col-6"
+              },
+              {
+                "id": "datosAdicionalesAntPerinatales",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesAntPerinatales",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Nacimiento",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "semanasGestacion",
+                "label": "Semanas de gestación",
+                "type": "radio",
+                "name": "semanasGestacion",
+                "options": [
+                  {
+                    "id": "pretermino",
+                    "text": "Pretérmino (-38 semanas)",
+                    "value": "Pretérmino (-38 semanas)"
+                  },
+                  {
+                    "id": "termino",
+                    "text": "Término (38 semanas)",
+                    "value": "Término (38 semanas)"
+                  },
+                  {
+                    "id": "postermino",
+                    "text": "Postérmino (+42 semanas)",
+                    "value": "Postérmino (+42 semanas)"
+                  }
+                ]
+              },
+              {
+                "id": "tipoParto",
+                "label": "Tipo de parto",
+                "type": "textarea",
+                "name": "tipoParto"
+              },
+              {
+                "id": "partoInducido",
+                "label": "Inducido",
+                "type": "checkbox",
+                "name": "partoInducido",
+                "class": "col-4"
+              },
+              {
+                "id": "partoEspontaneo",
+                "label": "Espontáneo",
+                "type": "checkbox",
+                "name": "partoEspontaneo",
+                "class": "col-4"
+              },
+              {
+                "id": "partoEutosico",
+                "label": "Eutosico",
+                "type": "checkbox",
+                "name": "partoEutosico",
+                "class": "col-4"
+              },
+              {
+                "id": "partoDistosico",
+                "label": "Distosico",
+                "type": "checkbox",
+                "name": "partoDistosico",
+                "class": "col-4"
+              },
+              {
+                "id": "partoCesarea",
+                "label": "Cesarea",
+                "type": "checkbox",
+                "name": "partoCesarea",
+                "class": "col-4"
+              },
+              {
+                "id": "partoInstrumental",
+                "label": "Instrumental(Forceps)",
+                "type": "checkbox",
+                "name": "partoInstrumental",
+                "class": "col-4"
+              },
+              {
+                "id": "partoLloro",
+                "label": "Lloro",
+                "type": "text",
+                "name": "partoLloro",
+                "class": "col-3"
+              },
+              {
+                "id": "partoPeso",
+                "label": "Peso",
+                "type": "text",
+                "name": "partoPeso",
+                "class": "col-3"
+              },
+              {
+                "id": "partoTalla",
+                "label": "Talla",
+                "type": "text",
+                "name": "partoTalla",
+                "class": "col-3"
+              },
+              {
+                "id": "partoColoración",
+                "label": "Coloración",
+                "type": "text",
+                "name": "partoColoración",
+                "class": "col-3"
+              },
+              {
+                "id": "datosAdicionalesNacimiento",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesNacimiento"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Postnatales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "dificultadSuccionar",
+                "label": "¿Presentó alguna dificultad para succionar?",
+                "type": "checkbox",
+                "name": "dificultadSuccionar",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tratamientoSuccionar",
+                    "label": "¿Recibió algún tipo de tratamiento?",
+                    "type": "textarea",
+                    "name": "tratamientoSuccionar"
+                  }
+                ]
+              },
+              {
+                "id": "lactanciaMaternaDirecta",
+                "label": "¿Se alimentó por lactancia materna directa?",
+                "type": "checkbox",
+                "name": "lactanciaMaternaDirecta",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tiempoLactanciaMaternaDirecta",
+                    "label": "¿Por cuanto tiempo?",
+                    "type": "textarea",
+                    "name": "tiempoLactanciaMaternaDirecta"
+                  }
+                ]
+              },
+              {
+                "id": "alimentoElementosExternos",
+                "label": "¿Se alimentó con elementos externos (Biberon)?",
+                "type": "checkbox",
+                "name": "alimentoElementosExternos",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tiempoAlimentoElementosExternos",
+                    "label": "¿Por cuanto tiempo?",
+                    "type": "textarea",
+                    "name": "tiempoAlimentoElementosExternos"
+                  }
+                ]
+              },
+              {
+                "id": "dificultarConciliarSueño",
+                "label": "¿Presentó alguna dificultad para conciliar el sueño?",
+                "type": "checkbox",
+                "name": "dificultarConciliarSueño",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tratamientoConciliarSueño",
+                    "label": "¿Recibió algún tipo de tratamiento?",
+                    "type": "textarea",
+                    "name": "tratamientoConciliarSueño"
+                  }
+                ]
+              },
+              {
+                "id": "balbuceaba",
+                "label": "¿Balbuceaba?",
+                "type": "checkbox",
+                "name": "balbuceaba",
+                "class": "col-6"
+              },
+              {
+                "id": "intencionComunicativa",
+                "label": "¿Intencion comunicativa?",
+                "type": "checkbox",
+                "name": "intencionComunicativa",
+                "class": "col-6"
+              },
+              {
+                "id": "mesEdadHabla",
+                "label": "¿A qué mes o edad habló?",
+                "type": "textarea",
+                "name": "mesEdadHabla",
+                "class": "col-6"
+              },
+              {
+                "id": "frenoLenguaje",
+                "label": "¿Se frenó su lenguaje?",
+                "type": "checkbox",
+                "name": "frenoLenguaje",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "frenoLenguajeCuando",
+                    "label": "¿Cuando?",
+                    "type": "textarea",
+                    "name": "frenoLenguajeCuando"
+                  },
+                  {
+                    "id": "comoComunicaba",
+                    "label": "Cómo se comunicaba después?",
+                    "type": "radio",
+                    "name": "comoComunicaba",
+                    "options": [
+                      {
+                        "id": "ecolalia",
+                        "text": "Ecolalia",
+                        "value": "Ecolalia"
+                      },
+                      {
+                        "id": "lenguajeIdiosincratico",
+                        "text": "Lenguaje idiosincratico",
+                        "value": "Lenguaje idiosincratico"
+                      },
+                      {
+                        "id": "terceraPersona",
+                        "text": "Lenguaje en tercera persona",
+                        "value": "Lenguaje en tercera persona"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "jugabaBien",
+                "label": "¿Jugaba bien?",
+                "type": "textarea",
+                "class": "col-6",
+                "name": "jugabaBien"
+              },
+              {
+                "id": "queJuagaba",
+                "label": "¿A qué jugaba?",
+                "type": "textarea",
+                "class": "col-6",
+                "name": "queJuagaba"
+              },
+              {
+                "id": "dejoJugar",
+                "label": "¿Dejó de jugar?",
+                "type": "checkbox",
+                "name": "dejoJugar",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dejoJugarCuando",
+                    "label": "¿Cuando?",
+                    "type": "textarea",
+                    "name": "dejoJugarCuando"
+                  }
+                ]
+              },
+              {
+                "id": "otitisFaringitisRotavirus",
+                "label": "¿Tuvo Otitis, Faringitis o Rotavirus a repeticion en el 1er año?",
+                "type": "checkbox",
+                "name": "otitisFaringitisRotavirus",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tratamientoOtitisFaringitisRotavirus",
+                    "label": "¿Lo trataron con antibioticos de forma oral?",
+                    "type": "textarea",
+                    "name": "tratamientoOtitisFaringitisRotavirus"
+                  },
+                  {
+                    "id": "tratamientoOtitisFaringitisRotavirusVeces",
+                    "label": "¿Cuantas veces?",
+                    "type": "textarea",
+                    "name": "tratamientoOtitisFaringitisRotavirusVeces"
+                  }
+                ]
+              },
+              {
+                "id": "audiometria",
+                "label": "Audiometria",
+                "type": "textarea",
+                "name": "audiometria",
+                "class": "col-12"
+              },
+              {
+                "id": "egg",
+                "label": "EGG",
+                "type": "checkbox",
+                "name": "egg",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "eggCuantos",
+                    "label": "¿Cuantos?",
+                    "type": "text",
+                    "name": "eggCuantos",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "eggPorque",
+                    "label": "¿Por qué?",
+                    "type": "text",
+                    "name": "eggPorque",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "eggFechaResultado",
+                    "label": "Fecha resultado",
+                    "type": "date",
+                    "name": "eggFechaResultado",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "eggResultado",
+                    "label": "Resultado",
+                    "type": "textarea",
+                    "name": "eggResultado",
+                    "class": "col-12"
+                  }
+                ]
+              },
+              {
+                "id": "potencialesEvocados",
+                "label": "Potenciales evocados",
+                "type": "textarea",
+                "name": "potencialesEvocados",
+                "class": "col-12"
+              },
+              {
+                "id": "tipoPotencialesEvocados",
+                "label": "Tipo",
+                "type": "radio",
+                "name": "tipoPotencialesEvocados",
+                "class": "col-6",
+                "options": [
+                  {
+                    "id": "visual",
+                    "text": "Visual",
+                    "value": "Visual"
+                  },
+                  {
+                    "id": "auditivo",
+                    "text": "Auditivo",
+                    "value": "Auditivo"
+                  }
+                ]
+              },
+              {
+                "id": "edadPotencialesEvocados",
+                "label": "Edad",
+                "type": "text",
+                "name": "edadPotencialesEvocados",
+                "class": "col-6"
+              },
+              {
+                "id": "resultadoPotencialesEvocados",
+                "label": "Resultado",
+                "type": "textarea",
+                "name": "resultadoPotencialesEvocados",
+                "class": "col-12"
+              },
+              {
+                "id": "tac",
+                "label": "TAC",
+                "type": "textarea",
+                "name": "tac",
+                "class": "col-12"
+              },
+              {
+                "id": "estudioGenetico",
+                "label": "Estudio genético",
+                "type": "textarea",
+                "name": "estudioGenetico",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

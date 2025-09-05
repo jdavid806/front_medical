@@ -93,9 +93,11 @@ export function ManualUsuario() {
                     className="border rounded-lg p-4 shadow bg-white"
                   >
                     <h3 className="font-bold">{video.title}</h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      {video.description}
-                    </p>
+                    <div
+                      className="text-gray-600 text-sm mb-2 prose max-w-none"
+                      dangerouslySetInnerHTML={{ __html: video.description }}
+                    />
+
                     <iframe
                       width="100%"
                       height="500"

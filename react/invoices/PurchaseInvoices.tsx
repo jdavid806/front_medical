@@ -908,7 +908,8 @@ export const PurchaseInvoices = () => {
         tipo={tipoNota}
         onSubmit={async (data) => {
           try {
-            const response = await applyNote(data);
+            console.log(data)
+            await applyNote(data);
 
             showToast(
               "success",

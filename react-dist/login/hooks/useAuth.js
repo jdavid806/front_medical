@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { authService } from "../../../services/api/index.js";
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -16,8 +15,8 @@ export const useAuth = () => {
     setLoading(true);
     try {
       const response = await authService.login(credentials);
-      if (response.status === 200 && response.message === 'Authenticated') {
-        const token = response.data.token?.original?.access_token || null;
+      if (response.status === 200) {
+        const token = response.data?.token?.original?.access_token || response.data?.access_token || response.data?.token;
         if (token) {
           sessionStorage.setItem('auth_token', token);
           showToast('success', 'Éxito', 'Inicio de sesión exitoso');

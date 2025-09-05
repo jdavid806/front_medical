@@ -13,11 +13,11 @@ include "../header.php";
     import React from "react";
     import ReactDOMClient from "react-dom/client";
     import {
-        AccountingAccountsTree
-    } from './react-dist/accounting/AccountingAccountsTree.js';
+        AccountingAccountsV2
+    } from './react-dist/accounting/AccountingAccountsV2.js';
 
     const rootElement = document.getElementById('arbolContableReactRoot');
-    ReactDOMClient.createRoot(rootElement).render(React.createElement(AccountingAccountsTree));
+    ReactDOMClient.createRoot(rootElement).render(React.createElement(AccountingAccountsV2));
 </script>
 
 <?php include "../footer.php"; ?>

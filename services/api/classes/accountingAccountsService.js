@@ -23,17 +23,17 @@ export class AccountingAccountsService extends BaseApiService {
         );
     }
 
-async updateAccount(accountId, data) {
-    return await this.httpClient.put(
-        `${this.microservice}/accounting-accounts/${accountId}`,
-        data,
-        {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }
-    );
-}
+    async updateAccount(accountId, data) {
+        return await this.httpClient.put(
+            `${this.microservice}/accounting-accounts/${accountId}`,
+            data,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+    }
 
 
     async getAccountByCode(accountCode) {
@@ -45,8 +45,10 @@ async updateAccount(accountId, data) {
         return this.httpClient.get(`api/v1/admin/accounting-accounts/by-column?column=${category}&value=${value}`);
 
     }
-    
 
+    async getAccountingAccountsTree() {
+        return await this.httpClient.get(`${this.microservice}/accounting-accounts/list/tree`);
+    }
 }
 
 export default AccountingAccountsService;

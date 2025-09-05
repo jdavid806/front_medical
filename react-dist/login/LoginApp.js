@@ -4,11 +4,9 @@ import { ConfirmDialog } from 'primereact/confirmdialog';
 import { useAuth } from "./hooks/useAuth.js";
 import { ForgotPasswordModal } from "./modal/ForgotPasswordModal.js";
 import { LoginForm } from "./form/LoginForm.js";
-import { OTPModal } from "./modal/OTPModal.js";
 export const LoginApp = () => {
   const [currentView, setCurrentView] = useState('login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
   const [username, setUsername] = useState('');
   const {
     login
@@ -37,10 +35,6 @@ export const LoginApp = () => {
   const handleForgotPassword = () => {
     setShowForgotPassword(true);
   };
-  const handleOTPRequest = () => {
-    setShowForgotPassword(false);
-    setShowOTPModal(true);
-  };
   const handlePasswordChangeSuccess = () => {
     setCurrentView('login');
     setShowForgotPassword(false);
@@ -55,10 +49,8 @@ export const LoginApp = () => {
       case 'changePassword':
         return /*#__PURE__*/React.createElement(ForgotPasswordModal, {
           visible: true,
-          username: username,
-          onSuccess: handlePasswordChangeSuccess,
-          onCancel: handleCancelForgotPassword,
-          onHide: handleCancelForgotPassword
+          onHide: handleCancelForgotPassword,
+          onSuccess: handlePasswordChangeSuccess
         });
       default:
         return /*#__PURE__*/React.createElement(LoginForm, {
@@ -74,13 +66,6 @@ export const LoginApp = () => {
   }, renderCurrentView()), showForgotPassword && /*#__PURE__*/React.createElement(ForgotPasswordModal, {
     visible: showForgotPassword,
     onHide: () => setShowForgotPassword(false),
-    onOTPSent: handleOTPRequest
-  }), showOTPModal && /*#__PURE__*/React.createElement(OTPModal, {
-    visible: showOTPModal,
-    onHide: () => setShowOTPModal(false),
-    onVerified: () => {
-      setShowOTPModal(false);
-      setCurrentView('changePassword');
-    }
+    onSuccess: handlePasswordChangeSuccess
   }));
 };

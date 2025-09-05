@@ -42,6 +42,7 @@ import { useMassMessaging } from "../hooks/useMassMessaging";
 import { getIndicativeByCountry } from "../../services/utilidades";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
+import { ProgressBar } from "primereact/progressbar";
 
 interface FinishClinicalRecordModalProps {
   initialExternalDynamicData: ClinicalRecordData;
@@ -144,6 +145,9 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     const remissionFormRef = useRef<any>(null);
     const appointmentFormRef =
       useRef<LeavingConsultationAppointmentFormRef>(null);
+    const [progress, setProgress] = useState(0);
+    const [progressMessage, setProgressMessage] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const showModal = () => {
       setVisible(true);
@@ -298,194 +302,272 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       return dataMapped;
     }
 
-    async function prepareDataToSendMessageWPP(clinicalRecordSaved) {
-      const tenant = window.location.hostname.split(".")[0];
-      //Message to exams
-      if (
-        clinicalRecordSaved.exam_recipes.length &&
-        clinicalRecordSaved.patient.whatsapp_notifications
-      ) {
-        const dataToMessage = buildDataToMessageToExams(
-          clinicalRecordSaved.exam_recipes
-        );
-        const data = {
-          tenantId: tenant,
-          belongsTo: "examenes-creacion",
-          type: "whatsapp",
-        };
-        const templateExams = await fetchTemplate(data);
-        const finishTemplate = await switchTemplate(
-          templateExams.template,
-          "examenes",
-          dataToMessage
-        );
-        const pdfFile = await generatePdfFile(
-          "RecetaExamen",
-          dataToMessage,
-          "prescriptionInput"
-        );
-        await sendMessageWhatsapp(
-          clinicalRecordSaved.patient,
-          finishTemplate,
-          pdfFile
-        );
-      }
-      //Message to disabilities
-      if (
-        clinicalRecordSaved.patient_disabilities.length &&
-        clinicalRecordSaved.patient.whatsapp_notifications
-      ) {
-        const data = {
-          tenantId: tenant,
-          belongsTo: "incapacidades-creacion",
-          type: "whatsapp",
-        };
-        const templateDisabilities = await fetchTemplate(data);
-        const finishTemplate = await switchTemplate(
-          templateDisabilities.template,
-          "disabilities",
-          clinicalRecordSaved.patient_disabilities[0]
-        );
-        const pdfFile = await generatePdfFile(
-          "Incapacidad",
-          clinicalRecordSaved.patient_disabilities[0],
-          "recordDisabilityInput"
-        );
-        await sendMessageWhatsapp(
-          clinicalRecordSaved.patient,
-          finishTemplate,
-          pdfFile
-        );
-      }
-      //Message to recipes
-      if (
-        clinicalRecordSaved.recipes.length &&
-        clinicalRecordSaved.patient.whatsapp_notifications
-      ) {
-        const dataMapped = {
-          ...clinicalRecordSaved.recipes[0],
-          clinical_record: {
-            description: clinicalRecordSaved.description,
-          },
-          recipe_items: clinicalRecordSaved.recipes.flatMap(
-            (recipe) => recipe.recipe_items
-          ),
-        };
-        const data = {
-          tenantId: tenant,
-          belongsTo: "recetas-creacion",
-          type: "whatsapp",
-        };
-        const templateRecipes = await fetchTemplate(data);
-        const finishTemplate = await switchTemplate(
-          templateRecipes.template,
-          "recipes",
-          dataMapped
-        );
-        const pdfFile = await generatePdfFile(
-          "Receta",
-          dataMapped,
-          "prescriptionInput"
-        );
-        await sendMessageWhatsapp(
-          clinicalRecordSaved.patient,
-          finishTemplate,
-          pdfFile
-        );
-      }
-      //message to remmissions
-      if (
-        clinicalRecordSaved.remissions.length &&
-        clinicalRecordSaved.patient.whatsapp_notifications
-      ) {
-        const dataMapped = {
-          ...clinicalRecordSaved.remissions[0],
-          clinical_record: {
-            patient: clinicalRecordSaved.patient,
-          },
-        };
-        const data = {
-          tenantId: tenant,
-          belongsTo: "remiciones-creacion",
-          type: "whatsapp",
-        };
-        const templateRemissions = await fetchTemplate(data);
-        const finishTemplate = await switchTemplate(
-          templateRemissions.template,
-          "remissions",
-          dataMapped
-        );
-        const pdfFile = await generatePdfFile(
-          "Remision",
-          dataMapped,
-          "remisionInput"
-        );
-        await sendMessageWhatsapp(
-          clinicalRecordSaved.patient,
-          finishTemplate,
-          pdfFile
-        );
-      }
+    const prepareDataToSendMessageWPP = useCallback(
+      async (clinicalRecordSaved) => {
+        const tenant = window.location.hostname.split(".")[0];
+        // Función auxiliar para esperar
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-      //message to appointments
-      if (
-        clinicalRecordSaved.appointment &&
-        clinicalRecordSaved.patient.whatsapp_notifications
-      ) {
-        const data = {
-          tenantId: tenant,
-          belongsTo: "citas-creacion",
-          type: "whatsapp",
+        //calcular total de bloques a enviar
+        const totalBlocks = [
+          clinicalRecordSaved.exam_recipes.length > 0 &&
+            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient_disabilities.length > 0 &&
+            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.recipes.length > 0 &&
+            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.remissions.length > 0 &&
+            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved &&
+            clinicalRecordSaved.patient.whatsapp_notifications, // Historia clínica
+          clinicalRecordSaved.appointment &&
+            clinicalRecordSaved.patient.whatsapp_notifications,
+        ].filter(Boolean).length;
+
+        const progressIncrement = totalBlocks > 0 ? 100 / totalBlocks : 0;
+        let currentProgress = 0;
+
+        const updateProgress = (message) => {
+          currentProgress += progressIncrement;
+          setProgress(currentProgress);
+          setProgressMessage(message);
         };
-        const templateAppointment = await fetchTemplate(data);
-        const finishTemplate = await switchTemplate(
-          templateAppointment.template,
-          "appointments",
-          clinicalRecordSaved.appointment
-        );
-        await sendMessageWhatsapp(
-          clinicalRecordSaved.patient,
-          finishTemplate,
-          null
-        );
-      }
-    }
+
+        try {
+          //Message to exams
+          if (
+            clinicalRecordSaved.exam_recipes.length &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando exámenes...");
+            const dataToMessage = buildDataToMessageToExams(
+              clinicalRecordSaved.exam_recipes
+            );
+            const data = {
+              tenantId: tenant,
+              belongsTo: "examenes-creacion",
+              type: "whatsapp",
+            };
+            const templateExams = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateExams.template,
+              "examenes",
+              dataToMessage
+            );
+            const pdfFile = await generatePdfFile(
+              "RecetaExamen",
+              dataToMessage,
+              "prescriptionInput"
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              pdfFile
+            );
+          }
+
+          //Message to disabilities
+          if (
+            clinicalRecordSaved.patient_disabilities.length &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando incapacidades...");
+            const data = {
+              tenantId: tenant,
+              belongsTo: "incapacidades-creacion",
+              type: "whatsapp",
+            };
+            const templateDisabilities = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateDisabilities.template,
+              "disabilities",
+              clinicalRecordSaved.patient_disabilities[0]
+            );
+            const pdfFile = await generatePdfFile(
+              "Incapacidad",
+              clinicalRecordSaved.patient_disabilities[0],
+              "recordDisabilityInput"
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              pdfFile
+            );
+          }
+
+          //Message to recipes
+          if (
+            clinicalRecordSaved.recipes.length &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando recetas...");
+            const dataMapped = {
+              ...clinicalRecordSaved.recipes[0],
+              clinical_record: {
+                description: clinicalRecordSaved.description,
+              },
+              recipe_items: clinicalRecordSaved.recipes.flatMap(
+                (recipe) => recipe.recipe_items
+              ),
+            };
+            const data = {
+              tenantId: tenant,
+              belongsTo: "recetas-creacion",
+              type: "whatsapp",
+            };
+            const templateRecipes = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateRecipes.template,
+              "recipes",
+              dataMapped
+            );
+            const pdfFile = await generatePdfFile(
+              "Receta",
+              dataMapped,
+              "prescriptionInput"
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              pdfFile
+            );
+          }
+
+          //message to remmissions
+          if (
+            clinicalRecordSaved.remissions.length &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando remisiones...");
+            const dataMapped = {
+              ...clinicalRecordSaved.remissions[0],
+              clinical_record: {
+                patient: clinicalRecordSaved.patient,
+              },
+            };
+            const data = {
+              tenantId: tenant,
+              belongsTo: "remiciones-creacion",
+              type: "whatsapp",
+            };
+            const templateRemissions = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateRemissions.template,
+              "remissions",
+              dataMapped
+            );
+            const pdfFile = await generatePdfFile(
+              "Remision",
+              dataMapped,
+              "remisionInput"
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              pdfFile
+            );
+          }
+
+          //Message to clinical record
+          if (
+            clinicalRecordSaved &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando historia clínica...");
+            const data = {
+              tenantId: tenant,
+              belongsTo: "historia_clinica-creacion",
+              type: "whatsapp",
+            };
+            const templateClinicalRecord = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateClinicalRecord.template,
+              "clinical_records",
+              clinicalRecordSaved
+            );
+            const pdfFile = await generatePdfFile(
+              "Consulta",
+              clinicalRecordSaved,
+              "consultaInput"
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              pdfFile
+            );
+          }
+          //message to appointments
+          if (
+            clinicalRecordSaved.appointment &&
+            clinicalRecordSaved.patient.whatsapp_notifications
+          ) {
+            updateProgress("Procesando cita...");
+            const data = {
+              tenantId: tenant,
+              belongsTo: "citas-creacion",
+              type: "whatsapp",
+            };
+            const templateAppointment = await fetchTemplate(data);
+            const finishTemplate = await switchTemplate(
+              templateAppointment.template,
+              "appointments",
+              clinicalRecordSaved.appointment
+            );
+            await sendMessageWhatsapp(
+              clinicalRecordSaved.patient,
+              finishTemplate,
+              null
+            );
+          }
+          setProgress(100);
+          setProgressMessage("Proceso completado");
+        } catch (error) {
+          setProgressMessage(`Error: ${error.message}`);
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: error.message,
+            life: 5000,
+          });
+          throw error;
+        }
+      },
+      []
+    );
 
     async function generatePdfFile(printType, data, nameInputTemp) {
       //@ts-ignore
       await generarFormato(printType, data, "Impresion", nameInputTemp, true);
 
       return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          let fileInput: any = document.getElementById(
-            "pdf-input-hidden-to-" + nameInputTemp
-          );
-          let file = fileInput?.files[0];
-          if (!file) {
-            resolve(null);
-            return;
-          }
+        let fileInput: any = document.getElementById(
+          "pdf-input-hidden-to-" + nameInputTemp
+        );
+        let file = fileInput?.files[0];
+        if (!file) {
+          resolve(null);
+          return;
+        }
 
-          let formData = new FormData();
-          formData.append("file", file);
-          formData.append("model_type", "App\\Models\\ExamRecipes");
-          formData.append("model_id", data.id);
-          //@ts-ignore
-          guardarArchivo(formData, true)
-            .then(async (response) => {
-              resolve({
-                //@ts-ignore
-                file_url: await getUrlImage(
-                  response.file.file_url.replaceAll("\\", "/"),
-                  true
-                ),
-                model_type: response.file.model_type,
-                model_id: response.file.model_id,
-                id: response.file.id,
-              });
-            })
-            .catch(reject);
-        }, 1000);
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("model_type", "App\\Models\\ExamRecipes");
+        formData.append("model_id", data.id);
+        //@ts-ignore
+        guardarArchivo(formData, true)
+          .then(async (response) => {
+            resolve({
+              //@ts-ignore
+              file_url: await getUrlImage(
+                response.file.file_url.replaceAll("\\", "/"),
+                true
+              ),
+              model_type: response.file.model_type,
+              model_id: response.file.model_id,
+              id: response.file.id,
+            });
+          })
+          .catch(reject);
       });
     }
 
@@ -520,15 +602,14 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         }
 
         await sendMessageWppRef.current(dataMessage);
-        SwalManager.success({
-          text: "Mensaje enviado correctamente",
-          title: "Éxito",
-        });
       },
       [sendMessageWpp]
     );
 
     const handleFinish = async () => {
+      setIsProcessing(true);
+      setProgress(0);
+      setProgressMessage("Iniciando proceso...");
       const mappedData = await mapToServer();
 
       try {
@@ -538,20 +619,18 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
             mappedData
           );
 
-        console.log("clinicalRecordRes", clinicalRecordRes);
-        prepareDataToSendMessageWPP(clinicalRecordRes.clinical_record);
+        await prepareDataToSendMessageWPP(clinicalRecordRes.clinical_record);
 
-        showSuccessToast({
-          title: "Se ha creado el registro exitosamente",
-          message: "Por favor espere un momento mientras se envía el mensaje",
+        toast.current?.show({
+          severity: "success",
+          summary: "Completado",
+          detail:
+            "Se ha creado el registro exitosamente y se han enviado todos los mensajes correctamente",
+          life: 3000,
         });
 
-        showSuccessToast({
-          title: "Se ha enviado el mensaje exitosamente",
-        });
-
-        // hideModal();
-        // window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+        hideModal();
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
       } catch (error) {
         console.error(error);
         if (error.data?.errors) {
@@ -565,6 +644,8 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
             message: error.message || "Ocurrió un error inesperado",
           });
         }
+      } finally {
+        setIsProcessing(false);
       }
     };
 
@@ -679,11 +760,31 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
           onHide={() => {
             hideModal();
           }}
-          header="Finalizar Consulta"
+          header={"Finalizar Consulta"}
           modal
           style={{ width: "100vw", maxWidth: "100vw" }}
         >
           <Toast ref={toast} />
+          {isProcessing && (
+            <div
+              className="position-fixed top-0 start-0 w-100 p-3 bg-light border-bottom"
+              style={{ zIndex: 10000, height: "18%" }}
+            >
+              <div className="container-fluid h-100">
+                <div className="d-flex align-items-center justify-content-center h-100">
+                  <div className="d-flex align-items-center gap-3 w-100">
+                    <i className="pi pi-spin pi-spinner text-primary"></i>
+                    <ProgressBar value={progress} style={{ flex: 1 }} />
+                    <div className="text-center" style={{ minWidth: "100px" }}>
+                      <strong>
+                        {Math.round(progress)}% - {progressMessage}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="d-flex">
             <div
               className="p-3 border-right d-flex flex-column gap-2"
@@ -968,13 +1069,15 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
               onClick={() => {
                 hideModal();
               }}
+              disabled={isProcessing}
             />
             <Button
-              label="Finalizar"
+              label={isProcessing ? "Procesando..." : "Finalizar"}
               className="btn btn-primary"
               onClick={() => {
                 handleFinish();
               }}
+              disabled={isProcessing}
             />
           </div>
         </Dialog>

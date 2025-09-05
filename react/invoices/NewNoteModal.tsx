@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 
 interface NoteModalProps {
   visible: boolean;
@@ -31,7 +32,43 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
   // subtotal calculado
   const subtotal = monto + impuesto - retencion;
 
+  const toast = useRef<Toast>(null);
+
   const handleSave = () => {
+    if (!factura) return;
+
+    // Validaciones
+    if (monto > factura.monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          "El monto de la nota no puede ser mayor al monto de la factura.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (impuesto > monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El impuesto no puede ser mayor al monto de la nota.",
+        life: 3000,
+      });
+      return;
+    }
+
+    if (retencion > monto) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "La retención no puede ser mayor al monto de la nota.",
+        life: 3000,
+      });
+      return;
+    }
+
     onSubmit({
       invoice_id: factura?.id,
       note_code: numeroNota,
@@ -42,6 +79,7 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
       subtotal,
       reason: motivo,
       type: tipo === "credito" ? "credit" : "debit",
+      adjusted_amount: tipo === "credito" ? factura.monto + subtotal : factura.monto - subtotal,
     });
     onHide();
   };
@@ -54,17 +92,25 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
       modal
       onHide={onHide}
     >
+      <Toast ref={toast} />
+
       <div className="p-fluid">
         {/* Número de la nota */}
         <div className="field">
           <label># de la nota</label>
-          <InputText value={numeroNota} onChange={(e) => setNumeroNota(e.target.value)} />
+          <InputText
+            value={numeroNota}
+            onChange={(e) => setNumeroNota(e.target.value)}
+          />
         </div>
 
         {/* Comprobante Fiscal */}
         <div className="field">
           <label>Comprobante Fiscal</label>
-          <InputText value={comprobanteFiscal} onChange={(e) => setComprobanteFiscal(e.target.value)} />
+          <InputText
+            value={comprobanteFiscal}
+            onChange={(e) => setComprobanteFiscal(e.target.value)}
+          />
         </div>
 
         {/* Monto de la nota */}
@@ -108,11 +154,7 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
           {factura && (
             <small>
               Factura actual: <b>{factura.monto}</b> → después:{" "}
-              <b>
-                {tipo === "credito"
-                  ? factura.monto - monto
-                  : factura.monto + monto}
-              </b>
+              <b>{tipo === "credito" ? factura.monto + subtotal : factura.monto - subtotal}</b>
             </small>
           )}
         </div>
@@ -129,8 +171,19 @@ export const NewNoteModal: React.FC<NoteModalProps> = ({
 
         {/* Botones */}
         <div className="flex justify-content-end gap-2 mt-3">
-          <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={onHide} />
-          <Button label="Guardar" icon="pi pi-check" className="p-button-primary" disabled={!numeroNota || !comprobanteFiscal || !monto } onClick={handleSave} />
+          <Button
+            label="Cancelar"
+            icon="pi pi-times"
+            className="p-button-text"
+            onClick={onHide}
+          />
+          <Button
+            label="Guardar"
+            icon="pi pi-check"
+            className="p-button-primary"
+            disabled={!numeroNota || !comprobanteFiscal || !monto}
+            onClick={handleSave}
+          />
         </div>
       </div>
     </Dialog>
