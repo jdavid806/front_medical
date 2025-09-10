@@ -371,10 +371,9 @@ $_SESSION["ID"] = 1;
       "primereact/paginator":"https://esm.sh/primereact/paginator?dev",
       "primereact/steps":"https://esm.sh/primereact/steps?dev",
       "primereact/breadcrumb": "https://esm.sh/primereact/breadcrumb?dev",
-      "primereact/megamenu" : "https://esm.sh/primereact/megamenu?dev",
-      "primereact/tieredmenu" : "https://esm.sh/primereact/tieredmenu?dev",
-      "primereact/inputotp" : "https://esm.sh/primereact/inputotp?dev",
-
+      "primereact/menubar" : "https://esm.sh/primereact/menubar?dev",
+      "primereact/avatar" : "https://esm.sh/primereact/avatar?dev",
+      "primereact/inputotp" : "https://esm.sh/primereact/avatar?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
       "react-dom/server": "https://esm.sh/react-dom/server?dev"

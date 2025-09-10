@@ -68,7 +68,7 @@ import { BrandService } from "./classes/brandService.js";
 import { ThirdPartyService } from "./classes/thirdPartyService.js";
 import { DisabilityService } from "./classes/disabilityService.js";
 import { ManualUsuarioVideoService } from "./classes/manualUsuarioVideoServices.js";
-
+import { ConvenioTenantService } from "./classes/convenioTenantService.js";
 export const authService = new AuthService("api/auth");
 
 ///////////// MEDICAL /////////////
@@ -350,3 +350,4 @@ export const brandService = new BrandService("api/v1/admin", "brands");
 export const thirdPartyService = new ThirdPartyService();
 
 export const disabilityService = new DisabilityService();
+export const convenioTenantService = new ConvenioTenantService();

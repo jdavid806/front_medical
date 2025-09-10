@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -17,6 +17,8 @@ async function consultarData() {
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -117,7 +119,7 @@ export async function generarFormatoReceta(
     };
   }
 
-  await generatePDFFromHTML(contenido, company, pdfConfig, inputId);
+  await generatePDFFromHTMLV2(contenido, company, pdfConfig, inputId);
 }
 
 export default generarFormatoReceta;

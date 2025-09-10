@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { formatDate } from "../../../services/utilidades";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -18,6 +18,8 @@ async function consultarData() {
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -168,7 +170,7 @@ export async function generarFormatoRemision(rowData, tipo, inputId = "") {
     name: "Remisión_Médica",
     isDownload: false,
   };
-  await generatePDFFromHTML(printContent, company, configPDF, inputId);
+  await generatePDFFromHTMLV2(printContent, company, configPDF, inputId);
 }
 
 export default generarFormatoRemision;

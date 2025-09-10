@@ -1,78 +1,63 @@
-import { MegaMenu } from 'primereact/megamenu';
-import React from 'react';
+import { Menubar } from "primereact/menubar";
+import React, { useEffect, useState } from "react";
+import { menuService } from "../../../services/api";
+import { filterMenuItems } from "../../helpers/menuFilter";
+import { items } from "./dataMenu";
 
 const NavbarHeader = () => {
-    const items = [
-        {
-            label: 'Home',
-            icon: <i className="fa-solid fa-house"></i>,
-            items: [
-                [
-                    {
-                        label: 'Principal',
-                        items: [
-                            { label: 'Inicio', icon: <i className="fa-solid fa-house"></i>, url: 'Dashboard' },
-                            { label: 'Consultas', icon: <i className="fa-solid fa-magnifying-glass"></i>, url: 'pacientes' },
-                            { label: 'Admisiones', icon: <i className="fa-solid fa-bookmark"></i>, url: 'citasControl' },
+  const [menuItems, setMenuItems] = useState([]);
 
-                            { label: 'Telemedicina', icon: <i className="fa-solid fa-stethoscope"></i>, url: 'telemedicina' },
-                            { label: 'Turnos', icon: <i className="fa-solid fa-ticket"></i>, url: 'homeTurnos' },
-                            { label: 'Farmacia', icon: <i className="fa-solid fa-shop"></i>, url: 'homeFarmacia' },
-                            { label: 'Laboratorio', icon: <i className="fa-solid fa-flask"></i>, url: 'verOrdenesExamenesGenerales' }
-                        ]
-                    }
-                ]
-            ]
-        },
-        {
-            label: 'Reportes',
-            icon: <i className="fa-solid fa-file-excel"></i>,
-            items: [
-                [
-                    {
-                        label: 'Reportes Importantes',
-                        items: [
-                            { label: 'Facturación', icon: <i className="fa-solid fa-money-bill"></i>, url: 'Invoices' },
-                            { label: 'Facturas x Entidad', icon: <i className="fa-solid fa-money-bill-wave"></i>, url: 'InvoicesByEntity' },
-                            { label: 'Especialistas', icon: <i className="fa-solid fa-user-doctor"></i>, url: 'InvoicesDoctors' },
-                            { label: 'Bonificaciones', icon: <i className="fa-solid fa-money-bill-trend-up"></i>, url: 'Commissions' },
-                            { label: 'Citas', icon: <i className="fa-solid fa-calendar-week"></i>, url: 'AppointmentsReport' }
-                        ]
-                    }
-                ]
-            ]
-        },
-        {
-            label: 'Administración',
-            icon: <i className="fa-solid fa-user-gear ml-2"></i>,
-            items: [
-                [
-                    {
-                        label: 'Administrar Procesos',
-                        items: [
-                            { label: 'Marketing', icon: <i className="fa-solid fa-folder-tree"></i>, url: 'homeMarketing' },
-                            { label: 'Configuración', icon: <i className="fa-solid fa-wrench"></i>, url: 'homeConfiguracion' },
-                            { label: 'Inventario', icon: <i className="fa-solid fa-truck-ramp-box"></i>, url: 'homeInventario' },
-                            { label: 'Auditoria', icon: <i className="fa-solid fa-person-chalkboard"></i>, url: 'homeAuditoria' },
-                            { label: 'Contabilidad', icon: <i className="fa-solid fa-money-check-dollar"></i>, url: 'homeContabilidad' },
-                            { label: 'Comunidad', icon: <i className="fa-solid fa-people-roof"></i>, url: 'social' },
-                            { label: 'Manual De Usuario', icon: <i className="fa-solid fa-book-open"></i>, url: 'manualUsuario' }
-                        ]
-                    }
-                ]
-            ]
-        }
-    ];
+    useEffect(() => {
+    const loadMenu = async () => {
+      // 🔹 Paso 1: Obtener los permisos del backend
+      const backendMenus = JSON.parse(localStorage.getItem("menus")) || [];
+      const allowedKeys = backendMenus.map((m) => m.key); // ['pacientes', 'citas', ...]
 
-    return (
-        <div className="navbar-megamenu-container">
-            <MegaMenu
-                model={items}
-                orientation="horizontal"
-                breakpoint="960px"
-                className="custom-responsive-megamenu"
-            />
-            <style>{`
+      // 🔹 Paso 2: Obtener todos los ítems del MenuService
+      const menuMapping = await menuService.getAll(); // [{ key_: 'pacientes', route: 'pacientes' }, ...]
+
+      // 🔹 Paso 3: Filtrar los que tienen permiso
+      const allowedRoutes = menuMapping
+        .filter((menu) => allowedKeys.includes(menu.key_))
+        .map((menu) => menu.route)
+        .filter(Boolean); // por si algún `route` es undefined
+
+      // 🔹 Paso 4: Filtrar tu menú real usando los `route`
+      const filtered = filterMenuItems(items, allowedRoutes);
+      setMenuItems(filtered);
+    };
+
+    loadMenu();
+  }, []);
+
+  const iconTemplate = (iconClass) => {
+    return <i className={iconClass}></i>;
+  };
+
+  const processItems = (items) => {
+    return items.map((item) => {
+      const processedItem = { ...item };
+
+      if (item.icon) {
+        processedItem.icon = () => iconTemplate(item.icon);
+      }
+
+      if (item.items) {
+        processedItem.items = processItems(item.items);
+      }
+
+      return processedItem;
+    });
+  };
+
+  const processedItems = processItems(menuItems);
+
+  console.log("processed", processedItems);
+
+  return (
+    <div className="navbar-megamenu-container">
+      <Menubar model={processedItems} className="custom-responsive-megamenu" />
+      <style>{`
                 .navbar-megamenu-container {
                     flex-grow: 1;
                     display: flex;
@@ -84,7 +69,6 @@ const NavbarHeader = () => {
                 .custom-responsive-megamenu {
                     border: none !important;
                     background: transparent !important;
-                    width: 100%;
                 }
 
                 /* Estilos para modo claro */
@@ -98,7 +82,7 @@ const NavbarHeader = () => {
                     color: #495057 !important;
                 }
 
-                :root:not(.p-dark) .custom-responsive-megamenu .p-megamenu-panel {
+                :root:not(.p-dark) .custom-responsive-megamenu .p-submenu-list {
                     background: #ffffff !important;
                     border: 1px solid #e5e7eb !important;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
@@ -123,7 +107,7 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.87) !important;
                 }
 
-                .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                .p-dark .custom-responsive-megamenu .p-submenu-list {
                     background: #1f2937 !important;
                     border: 1px solid #374151 !important;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
@@ -146,9 +130,7 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.6) !important;
                 }
 
-                .custom-responsive-megamenu .p-megamenu-root-list {
-                    display: flex;
-                    justify-content: center;
+                .custom-responsive-megamenu .p-menubar-root-list {
                     width: 100%;
                     margin: 0;
                     padding: 0;
@@ -168,12 +150,16 @@ const NavbarHeader = () => {
                     font-size: 1.1rem;
                 }
 
-                .custom-responsive-megamenu .p-megamenu-panel {
+                .custom-responsive-megamenu .p-submenu-list {
                     border-radius: 8px !important;
+                    padding: 0.5rem 0 !important;
+                    min-width: 200px;
                 }
 
-                .custom-responsive-megamenu .p-submenu-list {
-                    padding: 0.5rem 0 !important;
+                /* Estilo específico para el tercer nivel */
+                .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                    margin-top: -0.5rem;
+                    margin-left: 0.25rem;
                 }
 
                 .custom-responsive-megamenu .p-menuitem {
@@ -187,12 +173,12 @@ const NavbarHeader = () => {
 
                 /* Estilos responsive para móviles */
                 @media screen and (max-width: 960px) {
-                    .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                    .p-menubar.p-menubar-mobile-active .p-menubar-root-list {
                         width: 300px !important;
                         background: #ffffff !important;
                     }
                     
-                    .p-dark .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                    .p-dark .p-menubar.p-menubar-mobile-active .p-menubar-root-list {
                         background: #1f2937 !important;
                     }
                     
@@ -200,7 +186,7 @@ const NavbarHeader = () => {
                         margin: 0;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-root-list {
+                    .custom-responsive-megamenu .p-menubar-root-list {
                         flex-direction: column;
                     }
                     
@@ -209,7 +195,7 @@ const NavbarHeader = () => {
                         justify-content: flex-start;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-panel {
+                    .custom-responsive-megamenu .p-submenu-list {
                         position: static !important;
                         width: 100% !important;
                         box-shadow: none !important;
@@ -218,8 +204,18 @@ const NavbarHeader = () => {
                         border-radius: 0 !important;
                     }
                     
-                    .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                    .p-dark .custom-responsive-megamenu .p-submenu-list {
                         border-top: 1px solid #374151 !important;
+                    }
+                    
+                    /* Ajustes para tercer nivel en móviles */
+                    .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                        margin-left: 1rem;
+                        border-left: 2px solid #e5e7eb;
+                    }
+                    
+                    .p-dark .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                        border-left: 2px solid #374151;
                     }
                 }
 
@@ -229,15 +225,19 @@ const NavbarHeader = () => {
                         margin: 0 8rem auto;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-root-list {
+                    .custom-responsive-megamenu .p-menubar-root-list {
                         display:flex;
                         justify-content: flex-end;
                         gap: 2rem;
                     }
+                    
+                    .custom-responsive-megamenu .p-submenu-list {
+                        max-height: 80vh;
+                    }
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default NavbarHeader;

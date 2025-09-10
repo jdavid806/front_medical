@@ -1,6 +1,9 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import datosUsuario from "./datosUsuario.js";
-import { generarTablaPaciente, generarTablaPacienteFicha } from "./tablaDatosPaciente.js";
+import {
+  generarTablaPaciente,
+  generarTablaPacienteFicha,
+} from "./tablaDatosPaciente.js";
 
 let company = {};
 let patient = {};
@@ -17,20 +20,26 @@ async function consultarData() {
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null) {
+export async function generarFormatoConsulta(
+  datosConsulta,
+  tipo,
+  inputId = null
+) {
   let user = {
     nombre: datosConsulta?.doctorName,
     especialidad: datosConsulta.user?.user_specialty_name,
     registro_medico: datosConsulta.user?.clinical_record || "",
-    sello: `https://dev.monaros.co/` + getUrlImage(datosConsulta.user?.image_minio_url || ""),
-    firma: `https://dev.monaros.co/` + getUrlImage(datosConsulta.user?.firma_minio_url || "")
-  }
+    sello: await getUrlImage(datosConsulta.user?.image_minio_url, true),
+    firma: await getUrlImage(datosConsulta.user?.firma_minio_url, true),
+  };
 
   const tablePatient = generarTablaPaciente(patient, {
     date: datosConsulta.createdAt || "--",
@@ -87,7 +96,11 @@ export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null
   <div class="container p-3 border rounded shadow-sm text-start" style="padding-top: 0;">
     <h3 class="text-primary text-center" style="margin: 0; padding: 0;">${tipoHistoria}</h3>
     <hr style="margin: 0.25rem 0;">
-    ${datosConsulta.clinicalRecordTypeId == 63 ? tablePatientFicha : tablePatient}
+    ${
+      datosConsulta.clinicalRecordTypeId == 63
+        ? tablePatientFicha
+        : tablePatient
+    }
     <hr style="margin: 0.25rem 0;">
     <div style="margin: 0;"><strong>Descripción:</strong> ${
       limpiarTextarea(descripcion) || "Sin descripción"
@@ -1028,7 +1041,6 @@ export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null
   //   const urlConsulta = obtenerUrl(`/medical/clinical-records/${consultaId}`);
   //   const datosConsulta = await obtenerDatos(urlConsulta);
 
-
   //   const urlTipoHistoria = obtenerUrl(
   //     `/medical/clinical-record-types/${datosConsulta.clinicalRecordTypeId}`
   //   );
@@ -1408,20 +1420,19 @@ export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null
           datosConsulta.data.values.tratamiento
         )}</p>`;
     }
-  // } else if (datosConsulta.clinicalRecordTypeId == 63) {
-  //   contenido += `
-  //   <h3 style="margin: 0.1rem 0;">ANAMNESIS</h3>
-  //   <hr style="margin: 0.25rem 0;">
-  //   <table style="width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.9rem;">
-  //     <tr>
-  //       <td width="30%">Habilidad manual ${datosConsulta.data.values?.habilidadManual?.text || ""}</td>
-  //       <td width="30%">Antecedentes familiares ${datosConsulta.data.values?.antecedentesFamiliares?.text || ""}</td>
-  //       <td width="30%">Dolor oido ${datosConsulta.data.values?.dolorOido?.text || ""}</td>
-  //     </tr>
-  //   </table>
-  //   `
-  }
-   else if (window.location.href.includes("verRecetasOptometria")) {
+    // } else if (datosConsulta.clinicalRecordTypeId == 63) {
+    //   contenido += `
+    //   <h3 style="margin: 0.1rem 0;">ANAMNESIS</h3>
+    //   <hr style="margin: 0.25rem 0;">
+    //   <table style="width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.9rem;">
+    //     <tr>
+    //       <td width="30%">Habilidad manual ${datosConsulta.data.values?.habilidadManual?.text || ""}</td>
+    //       <td width="30%">Antecedentes familiares ${datosConsulta.data.values?.antecedentesFamiliares?.text || ""}</td>
+    //       <td width="30%">Dolor oido ${datosConsulta.data.values?.dolorOido?.text || ""}</td>
+    //     </tr>
+    //   </table>
+    //   `
+  } else if (window.location.href.includes("verRecetasOptometria")) {
     contenido += generarTablaCristal(datosConsulta.data.values);
     contenido += `
       <p><strong>Tratamiento: </strong>${datosConsulta.data.values.tratamiento}</p>
@@ -1447,8 +1458,9 @@ export async function generarFormatoConsulta(datosConsulta, tipo, inputId = null
   // Cerrar contenedor principal
   contenido += `</div>
   ${datosUsuario(user)}`;
+  console.log("user generado:", user);
 
-  await generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTMLV2(contenido, company, patient, inputId);
 }
 
 export default generarFormatoConsulta;

@@ -41,6 +41,10 @@ export class PackagesService extends BaseApiService {
   async getPackagesBySupplies() {
     return await this.httpClient.get(`${this.microservice}/products/insumos`);
   }
+
+  async getPackagesByQuery(query) {
+    return await this.httpClient.get(`${this.microservice}/packages/query/${query}`);
+  }
 }
 
 export default PackagesService;

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { authService } from "../../../services/api/index.js";
+import Swal from 'sweetalert2';
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
@@ -14,15 +14,31 @@ export const useAuth = () => {
   const login = async credentials => {
     setLoading(true);
     try {
-      const response = await authService.login(credentials);
-      if (response.status === 200) {
-        const token = response.data?.token?.original?.access_token || response.data?.access_token || response.data?.token;
+      const apiUrl = `${window.location.origin}/api/auth/login`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Domain': window.location.hostname
+        },
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password
+        })
+      });
+      const data = await response.json();
+      if (data.status === 200 && data.message === "Authenticated") {
+        const token = data.data.token?.original?.access_token || null;
         if (token) {
           sessionStorage.setItem('auth_token', token);
-          showToast('success', 'Éxito', 'Inicio de sesión exitoso');
-          setTimeout(() => {
-            window.location.href = '/Dashboard';
-          }, 1000);
+          Swal.fire({
+            title: 'Inicio de sesión exitoso',
+            text: 'Has iniciado sesión correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Continuar'
+          }).then(() => {
+            window.location.href = "/Dashboard";
+          });
           return {
             success: true
           };
@@ -33,7 +49,7 @@ export const useAuth = () => {
         throw new Error('Credenciales incorrectas');
       }
     } catch (error) {
-      showToast('error', 'Error', error.message || 'Error en el inicio de sesión');
+      Swal.fire('Error', error.message || 'Ocurrió un error en la solicitud', 'error');
       return {
         success: false,
         error: error.message

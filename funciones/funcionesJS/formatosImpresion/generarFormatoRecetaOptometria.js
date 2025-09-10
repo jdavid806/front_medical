@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -11,13 +11,14 @@ async function consultarData() {
   const responePatient = await consultarDatosPaciente(patient_id);
 
   patient = responePatient;
-  // console.log(patient);
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,13 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function generarFormatoRecetaOptometria(receta, tipo) {
-  //   console.log("receta", receta);
   let userName = [
-  receta.created_by_user?.first_name,
-  receta.created_by_user?.middle_name,
-  receta.created_by_user?.last_name,
-  receta.created_by_user?.second_last_name
-].filter(Boolean).join(" ");
+    receta.created_by_user?.first_name,
+    receta.created_by_user?.middle_name,
+    receta.created_by_user?.last_name,
+    receta.created_by_user?.second_last_name,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   let user = {
     nombre: userName,
@@ -39,15 +41,13 @@ export function generarFormatoRecetaOptometria(receta, tipo) {
     registro_medico: receta.created_by_user?.clinical_record || "",
     sello: receta.created_by_user?.image_file || "",
     firma: receta.created_by_user?.firma_file || "",
-  }
-
+  };
 
   const tablePatient = generarTablaPaciente(patient, {
     date: receta.created_at || "--",
   });
 
   const dataJson = JSON.parse(receta.optometry_item.details);
-  console.log("dataJson", dataJson);
 
   const camposQueratometria = {
     queratometriaOjoDerecho: dataJson.queratometriaOjoDerecho,
@@ -218,7 +218,7 @@ export function generarFormatoRecetaOptometria(receta, tipo) {
     ${datosUsuario(user)}
 `;
 
-  generatePDFFromHTML(contenido, company, patient);
+  generatePDFFromHTMLV2(contenido, company, patient);
 }
 
 export default generarFormatoRecetaOptometria;

@@ -1,12 +1,13 @@
 async function cargarDatosTenant() {
-  let ruta = obtenerRutaPrincipal() + "/medical/companies?include=billings,representative,communication";
+  let ruta =
+    obtenerRutaPrincipal() +
+    "/medical/companies?include=billings,representative,communication";
   try {
     const response = await fetch(ruta);
     if (!response.ok) {
       throw new Error("Error en la solicitud");
     }
     const datosEmpresa = await response.json();
-    // console.log("debug", datosEmpresa);
 
     if (datosEmpresa && datosEmpresa.data) {
       let dataEmpresa = datosEmpresa.data[0].attributes;
@@ -15,10 +16,7 @@ async function cargarDatosTenant() {
       dataEmpresa.communication = datosEmpresa.data[0].includes.communication;
       dataEmpresa.billings = datosEmpresa.data[0].includes.billings;
 
-      console.log("dataEmpresa", dataEmpresa);
 
-
-      // console.log("debug", dataEmpresa);
       // Asignar los datos a los campos del formulario de Información General
       document.getElementById("id_Empresa").value = dataEmpresa.id;
       document.getElementById("nombre-consultorio").value =
@@ -51,6 +49,32 @@ async function cargarDatosTenant() {
         dataEmpresa.address;
       document.getElementById("pais-consultorio").value = dataEmpresa.country;
       document.getElementById("ciudad-consultorio").value = dataEmpresa.city;
+
+      if (dataEmpresa.watermark) {
+        const marcaAguaPreview = document.getElementById("marcaAguaPreview");
+        const imagenUrl = await getUrlImage(
+          dataEmpresa.watermark.replaceAll("\\", "/"),
+          true
+        );
+
+        // Quitar la clase d-none para mostrar la imagen
+        marcaAguaPreview.classList.remove("d-none");
+        // Asignar la URL al src
+        marcaAguaPreview.src = imagenUrl;
+      }
+
+      if (dataEmpresa.logo) {
+        const marcaAguaPreview = document.getElementById("logoPreview");
+        const imagenUrl = await getUrlImage(
+          dataEmpresa.logo.replaceAll("\\", "/"),
+          true
+        );
+
+        // Quitar la clase d-none para mostrar la imagen
+        marcaAguaPreview.classList.remove("d-none");
+        // Asignar la URL al src
+        marcaAguaPreview.src = imagenUrl;
+      }
 
       // Asignar los datos a los campos del formulario de Configuración SMTP
       if (dataEmpresa.communication) {

@@ -925,7 +925,7 @@
             const opcionesFrecuencia = ["Seleccione", "Diaria", "Semanal", "Mensual"];
             opcionesFrecuencia.forEach(opcion => {
                 const option = document.createElement("option");
-                option.value = opcion.toLowerCase();
+                option.value = opcion;
                 option.textContent = opcion;
                 selectFrecuencia.appendChild(option);
             });
@@ -1583,7 +1583,7 @@
                 type: "Remision",
                 prescriptions: {
                     specialty_id,
-                    note: document.getElementById('note').value
+                    reason: document.getElementById('note').value
                 }
             }];
         } else {
@@ -1591,8 +1591,8 @@
                 id: 1,
                 type: "Remision",
                 prescriptions: {
-                    user,
-                    note: document.getElementById('note').value
+                    user_id: user,
+                    reason: document.getElementById('note').value
                 }
             }];
         }
@@ -1608,6 +1608,7 @@
                 quantity: document.getElementById(`cantidad-${index}`).value,
                 instructions: document.getElementById(`indicaciones-${index}`).value,
                 id: document.getElementById(`medicamento_id-${index}`).value,
+                medication_frequency: document.getElementById(`tomarCada-${index}`).value,
                 type: 'medicamento'
             };
             medicamentosData.push(medicamentoObj);
@@ -1652,7 +1653,9 @@
                     duration_days: item.duration_days,
                     medication_type: item.medication_type,
                     quantity: item.quantity,
-                    instructions: item.instructions
+                    instructions: item.instructions,
+                    medication_frequency: item.medication_frequency,
+                    medication: item.nombre,
                 }
             }
 

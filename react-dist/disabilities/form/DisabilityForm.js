@@ -6,10 +6,13 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { useUsers } from "../../users/hooks/useUsers.js";
+import { daysBetweenDates } from "../../../services/utilidades.js";
+import { InputNumber } from "primereact/inputnumber";
 export const DisabilityForm = /*#__PURE__*/forwardRef(({
   formId,
   onHandleSubmit,
-  initialData
+  initialData,
+  formConfig
 }, ref) => {
   const {
     users
@@ -21,10 +24,12 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
       errors
     },
     reset,
-    watch
+    watch,
+    setValue
   } = useForm({
     defaultValues: initialData || {
       user_id: 0,
+      days_disability: 0,
       start_date: new Date(),
       end_date: new Date(),
       reason: ""
@@ -36,14 +41,17 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
       reset();
     },
     getFormData: () => {
-      return {
+      const data = {
         user_id: watch("user_id"),
-        start_date: watch("start_date"),
+        days_disability: watch("days_disability"),
+        start_date: new Date(),
         end_date: watch("end_date"),
         reason: watch("reason"),
         id: watch("id"),
         isEditing: watch("isEditing")
       };
+      console.log(data);
+      return data;
     }
   }));
 
@@ -56,6 +64,7 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
   React.useEffect(() => {
     reset(initialData || {
       user_id: 0,
+      days_disability: 0,
       start_date: new Date(),
       end_date: new Date(),
       reason: ""
@@ -71,11 +80,29 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
       className: "p-error"
     }, "\xA0");
   };
+  const handleDaysChange = days => {
+    if (startDate && days) {
+      const start = new Date(startDate);
+      const endDate = new Date(start);
+      endDate.setDate(start.getDate() + days);
+      setValue('end_date', endDate);
+    }
+    setValue('days_disability', days);
+  };
+  const handleEndDateChange = date => {
+    if (startDate && date) {
+      const start = new Date(startDate);
+      const end = new Date(date);
+      const days = daysBetweenDates(start, end);
+      setValue('days_disability', days);
+    }
+    setValue('end_date', date);
+  };
   return /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onSubmit),
     className: "p-fluid"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, (formConfig?.fieldsConfig?.user_id ? formConfig.fieldsConfig.user_id.visible : true) && /*#__PURE__*/React.createElement("div", {
     className: "field"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "user_id",
@@ -119,28 +146,27 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
   }), getFormErrorMessage("user_id")), /*#__PURE__*/React.createElement("div", {
     className: "field"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "start_date",
+    htmlFor: "days_disability",
     className: "block mb-2"
-  }, "Fecha de inicio *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "start_date",
+  }, "Cantidad de d\xEDas *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "days_disability",
     control: control,
     rules: {
-      required: "La fecha de inicio es requerida"
+      required: "La cantidad de días es requerida"
     },
     render: ({
       field,
       fieldState
-    }) => /*#__PURE__*/React.createElement(Calendar, {
+    }) => /*#__PURE__*/React.createElement(InputNumber, {
       id: field.name,
-      value: field.value ? new Date(field.value) : null,
-      onChange: e => field.onChange(e.value),
-      dateFormat: "yy-mm-dd",
-      showIcon: true,
-      className: classNames({
+      value: field.value,
+      onChange: e => handleDaysChange(e.value ?? 0),
+      inputClassName: "w-100",
+      className: `w-100 ${classNames({
         "p-invalid": fieldState.error
-      })
+      })}`
     })
-  }), getFormErrorMessage("start_date")), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("days_disability")), /*#__PURE__*/React.createElement("div", {
     className: "field"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "end_date",
@@ -165,7 +191,7 @@ export const DisabilityForm = /*#__PURE__*/forwardRef(({
     }) => /*#__PURE__*/React.createElement(Calendar, {
       id: field.name,
       value: field.value ? new Date(field.value) : null,
-      onChange: e => field.onChange(e.value),
+      onChange: e => handleEndDateChange(e.value ?? new Date()),
       dateFormat: "yy-mm-dd",
       showIcon: true,
       minDate: startDate ? new Date(startDate) : undefined,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useExamTypes } from '../../exams-config/hooks/useExamTypes';
 import { ExamTypeDto } from '../../models/models';
 import { forwardRef } from 'react';
@@ -8,7 +8,12 @@ import { ExamTypeInputs } from '../../exams-config/components/ExamConfigForm';
 import { useExamTypeCreate } from '../../exams-config/hooks/useExamTypeCreate';
 import { ClinicalHistoryExamConfigForm } from '../../exams-config/components/ClinicalHistoryExamConfigForm';
 
-export const ExamForm = forwardRef(({ }, ref) => {
+
+interface ExamFormProps {
+    initialSelectedExamTypes?: string[];
+}
+
+export const ExamForm = forwardRef(({ initialSelectedExamTypes }: ExamFormProps, ref) => {
     const [selectedExamType, setSelectedExamType] = useState('');
     const [selectedExamTypes, setSelectedExamTypes] = useState<ExamTypeDto[]>([]);
 
@@ -22,6 +27,14 @@ export const ExamForm = forwardRef(({ }, ref) => {
             return selectedExamTypes
         }
     }));
+
+    useEffect(() => {
+        if (initialSelectedExamTypes) {
+            setSelectedExamTypes(
+                initialSelectedExamTypes.map(id => examTypes.find(exam => exam.id == id)).filter(exam => exam !== undefined)
+            );
+        }
+    }, [initialSelectedExamTypes]);
 
     const handleAddExam = () => {
         if (!selectedExamType) {

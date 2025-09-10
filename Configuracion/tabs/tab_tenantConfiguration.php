@@ -578,19 +578,18 @@
 </div>
 
 <script type="module">
-    import React from "react";
-    import ReactDOMClient from "react-dom/client";
-    import {
-        BtnCreateWhatsAppInstance
-    } from './react-dist/communications/BtnCreateWhatsAppInstance.js';
+  import React from "react";
+  import ReactDOMClient from "react-dom/client";
+  import {
+    BtnCreateWhatsAppInstance
+  } from './react-dist/communications/BtnCreateWhatsAppInstance.js';
 
-    const rootElement = document.getElementById('createInstanceButtonReact');
-    ReactDOMClient.createRoot(rootElement).render(React.createElement(BtnCreateWhatsAppInstance));
+  const rootElement = document.getElementById('createInstanceButtonReact');
+  ReactDOMClient.createRoot(rootElement).render(React.createElement(BtnCreateWhatsAppInstance));
 </script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    console.log("Elemento botón:", document.getElementById("guardarInfoGeneral"));
     // Asignar eventos a los botones
     document.getElementById("guardarInfoGeneral").addEventListener("click", guardarInformacionGeneral);
     document.getElementById("guardarFiscal")?.addEventListener("click", guardarFacturaFiscal);
@@ -600,7 +599,6 @@
     document.getElementById("guardarRepresentante")?.addEventListener("click", guardarRepresentante);
     document.getElementById("guardarSmtp")?.addEventListener("click", guardarConfiguracionSMTP);
     // document.getElementById("guardarSedes")?.addEventListener("click", function() {
-    //   console.log("Guardar sedes - Implementar esta función");
     // });
 
     consultarQR();
@@ -649,39 +647,49 @@
   }
 
   async function guardarInformacionGeneral() {
-    console.log("hola");
     try {
       const data = await getFormData("form-general");
       if (!data) return;
 
-      const logoFile = document.getElementById("logo").files[0];
-      const marcaAguaFile = document.getElementById("marcaAgua").files[0];
+
+      const logoFile = document.getElementById("logo").files[0] || null;
+      const marcaAguaFile = document.getElementById("marcaAgua").files[0] || null;
+
 
       let logoBase64 = null;
       let marcaAguaBase64 = null;
 
-      if (logoFile) {
-        logoBase64 = await fileToBase64(logoFile);
+
+      if (logoFile !== null) {
+        logoBase64 = await saveFileMinio(logoFile, "logoFile")
+      } else {
+        logoBase64 = await getUrlImage(
+          document.getElementById("logoPreview").src.replaceAll("\\", "/"),
+          true
+        );
       }
 
-      if (marcaAguaFile) {
-        marcaAguaBase64 = await fileToBase64(marcaAguaFile);
+      if (marcaAguaFile !== null) {
+        marcaAguaBase64 = await saveFileMinio(marcaAguaFile, "waterMark")
+      } else {
+        marcaAguaBase64 = await getUrlImage(
+          document.getElementById("marcaAguaPreview").src.replaceAll("\\", "/"),
+          true
+        );
       }
 
       const infoGeneral = {
         legal_name: data.nombreconsultorio,
         document_type: data.tipoDocumentoconsultorio,
         document_number: data.documentoconsultorio,
-        logo: logoBase64,
-        watermark: marcaAguaBase64,
+        logo: logoBase64?.file_url,
+        watermark: marcaAguaBase64?.file_url,
         phone: data.telefonoconsultorio,
         email: data.correoconsultorio,
         address: data.direccionconsultorio,
         country: data.paisconsultorio,
         city: data.ciudadconsultorio
       };
-
-      console.log("infoGeneral", infoGeneral);
 
       let idEmpresa = document.getElementById("id_Empresa").value;
 
@@ -695,6 +703,33 @@
       console.error("Error al guardar información general:", error);
       alert("Error al guardar la información general");
     }
+  }
+
+  async function saveFileMinio(file, model, id) {
+
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append("file", file);
+      formData.append("model_type", "App\\Models\\" + model);
+      formData.append("model_id", 0);
+      //@ts-ignore
+      guardarArchivo(formData, true)
+        .then(async (response) => {
+          resolve({
+            //@ts-ignore
+            file_url: response.file.file_url,
+            model_type: response.file.model_type,
+            model_id: response.file.model_id,
+            id: response.file.id,
+          });
+        })
+        .catch(reject);
+    });
   }
 
   async function guardarFacturaFiscal() {
@@ -823,8 +858,6 @@
         document_number: data.documentorepresentante,
       };
 
-      console.log("Representante:", representative);
-
       if (id) {
         updateRepresentante(representative);
       } else {
@@ -850,8 +883,6 @@
         email: data.smtpUsuario,
         password: data.smtpClave
       };
-
-      console.log("Configuración SMTP:", configSmtp);
 
       if (id) {
         updateSmtp(configSmtp);

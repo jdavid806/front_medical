@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useExamTypes } from "../../exams-config/hooks/useExamTypes.js";
 import { forwardRef } from 'react';
 import { useImperativeHandle } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { useExamTypeCreate } from "../../exams-config/hooks/useExamTypeCreate.js";
 import { ClinicalHistoryExamConfigForm } from "../../exams-config/components/ClinicalHistoryExamConfigForm.js";
-export const ExamForm = /*#__PURE__*/forwardRef(({}, ref) => {
+export const ExamForm = /*#__PURE__*/forwardRef(({
+  initialSelectedExamTypes
+}, ref) => {
   const [selectedExamType, setSelectedExamType] = useState('');
   const [selectedExamTypes, setSelectedExamTypes] = useState([]);
   const [showExamForm, setShowExamForm] = useState(false);
@@ -22,6 +24,11 @@ export const ExamForm = /*#__PURE__*/forwardRef(({}, ref) => {
       return selectedExamTypes;
     }
   }));
+  useEffect(() => {
+    if (initialSelectedExamTypes) {
+      setSelectedExamTypes(initialSelectedExamTypes.map(id => examTypes.find(exam => exam.id == id)).filter(exam => exam !== undefined));
+    }
+  }, [initialSelectedExamTypes]);
   const handleAddExam = () => {
     if (!selectedExamType) {
       alert('Por favor, seleccione un examen');

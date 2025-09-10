@@ -9,8 +9,11 @@ import { Calendar } from "primereact/calendar";
 import { userAvailabilityService, userService } from "../../services/api/index.js";
 import { stringToDate } from "../../services/utilidades.js";
 import { useUserSpecialties } from "../user-specialties/hooks/useUserSpecialties.js";
+import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 export const LeavingConsultationAppointmentForm = /*#__PURE__*/forwardRef(({
-  userSpecialtyId
+  patientId,
+  userSpecialtyId,
+  userId
 }, ref) => {
   const [appointmentDateDisabled, setAppointmentDateDisabled] = useState(true);
   const [appointmentTimeDisabled, setAppointmentTimeDisabled] = useState(true);
@@ -32,7 +35,8 @@ export const LeavingConsultationAppointmentForm = /*#__PURE__*/forwardRef(({
     control,
     setValue,
     formState: {
-      errors
+      errors,
+      isValid
     }
   } = useForm({
     defaultValues: {
@@ -275,6 +279,14 @@ export const LeavingConsultationAppointmentForm = /*#__PURE__*/forwardRef(({
     setAppointmentTimeOptions(uniqueOptions);
     setValue("appointment_time", uniqueOptions[0]?.value || null);
   };
+  const printAppointment = () => {
+    // 
+    generarFormato("Cita", {
+      fechaConsulta: appointmentDate?.toISOString().split("T")[0],
+      horaConsulta: appointmentTime,
+      patientId: patientId
+    }, "Impresion");
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
     className: "needs-validation row",
     noValidate: true
@@ -414,5 +426,13 @@ export const LeavingConsultationAppointmentForm = /*#__PURE__*/forwardRef(({
       appendTo: "self",
       disabled: appointmentTimeDisabled
     }, field)))
-  }), getFormErrorMessage("appointment_time")))))));
+  }), getFormErrorMessage("appointment_time")))))), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end"
+  }, isValid && /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-secondary",
+    type: "button",
+    onClick: printAppointment
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "fa fa-print me-2"
+  }), " Imprimir Cita")));
 });

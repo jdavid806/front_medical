@@ -15,18 +15,23 @@
     .choices__list--dropdown .choices__item--selectable:hover,
     .choices__list--dropdown .choices__item--selectable.is-highlighted {
         background-color: #f5f5f5;
+        /* Color de fondo al hacer hover */
         color: #333 !important;
+        /* Color del texto al hacer hover */
     }
 
+    /* Opcional: estilo para el placeholder */
     .choices__list--dropdown .choices__placeholder {
         color: #999;
     }
 
     .navbar .dropdown-menu.dropdown-menu-end.navbar-dropdown-caret {
+        /* Tus estilos existentes */
         width: auto !important;
         right: 0 !important;
     }
 
+    /* Ajustar el espaciado entre elementos */
     .row-custom {
         gap: 30px;
         /* Espacio entre elementos */
@@ -38,61 +43,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-
- /* Estilos para el MegaMenu de PrimeReact */
-    .navbar-container {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: 0 1rem;
-    }
-    
-    .navbar-logo {
-        flex-shrink: 0;
-    }
-    
-    .navbar-megamenu-wrapper {
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        min-width: 0; /* Permite que se reduzca correctamente */
-    }
-    
-    .navbar-icons {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-    }
-    
-    /* Responsive para móviles */
-    @media screen and (max-width: 960px) {
-        .navbar-container {
-            flex-wrap: wrap;
-            padding: 0.5rem;
-        }
-        
-        .navbar-logo {
-            order: 1;
-            flex-basis: 50%;
-        }
-        
-        .navbar-icons {
-            order: 2;
-            flex-basis: 50%;
-            justify-content: flex-end;
-        }
-        
-        .navbar-megamenu-wrapper {
-            order: 3;
-            flex-basis: 100%;
-            margin-top: 0.5rem;
-        }
-    }
-
-    .navbar-megamenu-container{
-    text
-    }
 </style>
 
 
@@ -101,87 +51,27 @@
     data-move-target="#navbarVerticalNav">
     <div class="navbar-logo">
 
-        <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
-            <div class="d-flex align-items-center">
-                <div class="d-flex align-items-center" id=""><img src="/logo_monaros_sinbg_light.png" alt="phoenix"
-                        width="125" />
-
-                </div>
-            </div>
-        </a>
     </div>
-     <div class="main-content">
-            <div class="component-container">
-                <div id="NavbarHeader"></div>
+    <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center" id=""><img src="/logo_monaros_sinbg_light.png" alt="phoenix"
+                    width="125" />
+
             </div>
         </div>
-    <div class="collapse navbar-collapse navbar-top-collapse order-1 order-lg-0 justify-content-center"
-        id="navbarTopCollapse">
-   
-        <!-- <ul>
-      <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="farmacia" role="button"
-          data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
-            class="uil fs-8 me-2 uil-airplay">
-          </span>Farmacia</a>
-        <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-          <li><a class="dropdown-item" href="farmacia">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="heart"></span>Entrega de
-                medicamentos
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="insumos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="package"></span>Entrega de
-                insumos
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="caja">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="edit-2"></span>Caja
-              </div>
-            </a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <ul>
-      <li class="nav-item dropdown"><a class="nav-link dropdown-toggle lh-1" href="inventarioGeneral" role="button"
-          data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false"><span
-            class="uil fs-8 me-2 uil-folder">
-          </span>Inventarios</a>
-        <ul class="dropdown-menu navbar-dropdown-caret" style="width: 300px;">
-          <li><a class="dropdown-item" href="inventarioGeneral">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="package"></span>Inventario
-                General
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="inventarioMedicamentos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="plus-square"></span>Inventario Medicamentos
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="inventarioVacunas">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil" data-feather="edit-2"></span>Inventario
-                Vacunas
-              </div>
-            </a>
-          </li>
-          <li><a class="dropdown-item" href="inventarioInsumos">
-              <div class="dropdown-item-wrapper mt-1"><span class="me-2 uil"
-                  data-feather="thermometer"></span>Inventario
-                Insumos
-              </div>
-            </a>
-          </li>
-        </ul>
-      </li>
-    </ul> -->
+    </a>
     </div>
+
+    <ul class="navbar-nav navbar-nav-icons flex-row flex-grow-1">
+        <li class="nav-item w-100">
+            <div id="NavbarHeader"></div>
+        </li>
+    </ul>
+
     <ul class="navbar-nav navbar-nav-icons flex-row">
         <li class="nav-item">
             <div class="theme-control-toggle fa-icon-wait px-2">
+
                 <input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox"
                     data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" />
                 <label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle"
@@ -191,12 +81,18 @@
                     data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Switch theme"
                     style="height:32px;width:32px;"><span class="icon" data-feather="sun"></span></label>
             </div>
+
         </li>
+
+
+
 
         <!-- <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal"><span
                     data-feather="search" style="height:19px;width:19px;margin-bottom: 2px;"></span></a></li> -->
 
         <li class="nav-item dropdown">
+
+
             <!-- Botón de notificaciones con icono de Bootstrap -->
             <!-- <a id="btnNotificaciones" class="nav-link position-relative" href="#" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -231,7 +127,7 @@
             </div>
         </li>
 
-     
+
 
         <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button"
                 data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
@@ -283,19 +179,13 @@
     </ul>
 </nav>
 
-
 <script type="module">
     import React from "react"
     import ReactDOMClient from "react-dom/client"
-    import  NavbarHeader  from './react-dist/layout/menu/NavbarHeader.js';
+    import NavbarHeader from './react-dist/layout/menu/NavbarHeader.js';
 
-    ReactDOMClient.createRoot(document.getElementById('NavbarHeader')).render(
-        React.createElement(NavbarHeader)
-    );
-</script>
+    ReactDOMClient.createRoot(document.getElementById('NavbarHeader')).render(React.createElement(NavbarHeader));
 
-
-<script type="module">
     import {
         userService
     } from './services/api/index.js';
@@ -321,8 +211,10 @@
                     element.textContent = ' | ' + user.specialty.name;
                 }
             })
-
             console.log("user", user);
+            localStorage.setItem("roles", JSON.stringify(user.role));
+            localStorage.setItem("permissions", JSON.stringify(user.role.permissions));
+            localStorage.setItem("menus", JSON.stringify(user.role.menus));
             const avatarUrl = getUrlImage(user.minio_url);
 
             // console.log(avatarUrl);

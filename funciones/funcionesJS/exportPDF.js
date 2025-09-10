@@ -74,7 +74,7 @@ export async function generatePDFFromHTML(
 <body>
   <div class="header">
     <div class="logo-container">
-      <img src="https://monaros.co/sistema/p/cenode.jpeg" alt="Logo de la clínica">
+      <img src="${companyInfo.logo}" alt="Logo de la clínica">
     </div>
     <div class="clinic-info-container">
       <h1 class="clinic-name">${companyInfo.legal_name}</h1>

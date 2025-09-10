@@ -301,7 +301,7 @@
                 "label": "¿A qué mes o edad habló?",
                 "type": "textarea",
                 "name": "mesEdadHabla",
-                "class": "col-6"
+                "class": "col-12"
               },
               {
                 "id": "frenoLenguaje",
@@ -408,23 +408,23 @@
                   {
                     "id": "eggCuantos",
                     "label": "¿Cuantos?",
-                    "type": "text",
+                    "type": "textarea",
                     "name": "eggCuantos",
-                    "class": "col-4"
+                    "class": "col-6"
                   },
                   {
                     "id": "eggPorque",
                     "label": "¿Por qué?",
-                    "type": "text",
+                    "type": "textarea",
                     "name": "eggPorque",
-                    "class": "col-4"
+                    "class": "col-6"
                   },
                   {
                     "id": "eggFechaResultado",
                     "label": "Fecha resultado",
                     "type": "date",
                     "name": "eggFechaResultado",
-                    "class": "col-4"
+                    "class": "col-6"
                   },
                   {
                     "id": "eggResultado",
@@ -487,6 +487,1793 @@
                 "label": "Estudio genético",
                 "type": "textarea",
                 "name": "estudioGenetico",
+                "class": "col-12"
+              },
+              {
+                "id": "hipersensibilidadAuditiva",
+                "label": "Hipersensibilidad auditiva",
+                "type": "textarea",
+                "name": "hipersensibilidadAuditiva",
+                "class": "col-12"
+              },
+              {
+                "id": "datosAdicionalesPosnatales",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesPosnatales",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Antecedentes II",
+        "card": [
+          {
+            "title": "Hitos del desarrollo",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "miraOtrasPersonas",
+                "label": "¿Mira a otras personas cuando lo miran?",
+                "type": "textarea",
+                "name": "miraOtrasPersonas",
+                "class": "col-6"
+              },
+              {
+                "id": "miraPersonasPocoFrecuentadas",
+                "label": "Lo hace con personas poco frecuentadas o desconocidas?",
+                "type": "textarea",
+                "name": "miraPersonasPocoFrecuentadas",
+                "class": "col-6"
+              },
+              {
+                "id": "sonrieOtrasPersonas",
+                "label": "¿Sonrie a otras personas cuando le sonrien?",
+                "type": "textarea",
+                "name": "sonrieOtrasPersonas",
+                "class": "col-6"
+              },
+              {
+                "id": "sonriePersonasPocoFrecuentadas",
+                "label": "Lo hace con personas poco frecuentadas o desconocidas?",
+                "type": "textarea",
+                "name": "sonriePersonasPocoFrecuentadas",
+                "class": "col-6"
+              },
+              {
+                "id": "edadSostuvoCabeza",
+                "label": "¿A qué edad sostuvo su cabeza sin ayuda?",
+                "type": "textarea",
+                "name": "edadSostuvoCabeza",
+                "class": "col-6"
+              },
+              {
+                "id": "edadGatear",
+                "label": "¿A qué edad empezó a gatear?",
+                "type": "textarea",
+                "name": "edadGatear",
+                "class": "col-6"
+              },
+              {
+                "id": "edadComenzoCaminar",
+                "label": "¿A qué edad comenzo a caminar?",
+                "type": "textarea",
+                "name": "edadComenzoCaminar",
+                "class": "col-6"
+              },
+              {
+                "id": "dificultadMotriz",
+                "label": "¿Tiene algún tipo de dificultad motriz?",
+                "type": "checkbox",
+                "name": "dificultadMotriz",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dificultadMotrizText",
+                    "label": "¿De qué tipo?",
+                    "type": "textarea",
+                    "name": "dificultadMotrizText"
+                  }
+                ]
+              },
+              {
+                "id": "edadPrimerasPalabras",
+                "label": "¿A qué edad dijo sus primeras palabras?",
+                "type": "textarea",
+                "name": "edadPrimerasPalabras",
+                "class": "col-6"
+              },
+              {
+                "id": "dificultadLenguaje",
+                "label": "¿Tiene algún tipo de dificultad del lenguaje?",
+                "type": "checkbox",
+                "name": "dificultadLenguaje",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "dificultadLenguajeText",
+                    "label": "¿De qué tipo?",
+                    "type": "textarea",
+                    "name": "dificultadLenguajeText"
+                  }
+                ]
+              },
+              {
+                "id": "edadControlEsfinteres",
+                "label": "¿A qué edad comenzó a controlar esfinteres?",
+                "type": "textarea",
+                "name": "edadControlEsfinteres",
+                "class": "col-6"
+              },
+              {
+                "id": "actualidadControlEsfinteres",
+                "label": "En la actualidad ¿Tiene algúna dificultad para controlar esfinteres?",
+                "type": "checkbox",
+                "name": "actualidadControlEsfinteres",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "actualidadControlEsfinteresText",
+                    "label": "¿De qué tipo?",
+                    "type": "textarea",
+                    "name": "actualidadControlEsfinteresText"
+                  }
+                ]
+              },
+              {
+                "id": "perdidaHabilidades",
+                "label": "¿Notó en algún momento que el(la) usuario(a) perdiera habilidades que antes habia adquirido?",
+                "type": "checkbox",
+                "name": "perdidaHabilidades",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "edadPerdidaHabilidades",
+                    "label": "¿Qué edad tenia el(la) usuario(a) cuando lo notó?",
+                    "type": "textarea",
+                    "name": "edadPerdidaHabilidades",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "perdidaHabilidadesDetalle",
+                    "label": "¿Qué habilidades perdió?",
+                    "type": "textarea",
+                    "name": "perdidaHabilidadesDetalle",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesHitosDesarrollo",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesHitosDesarrollo",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Antecedentes III",
+        "card": [
+          {
+            "title": "Actualidad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "movimientosEstereotipados",
+                "label": "¿Tiene movimientos estereotipados?",
+                "type": "textarea",
+                "name": "movimientosEstereotipados",
+                "class": "col-6"
+              },
+              {
+                "id": "giraObjetos",
+                "label": "¿Tiende a dar vuelta a los objetos?",
+                "type": "textarea",
+                "name": "giraObjetos",
+                "class": "col-6"
+              },
+              {
+                "id": "fijacionObjetos",
+                "label": "¿Fijación obsesiva en una parte de los objetos?",
+                "type": "textarea",
+                "name": "fijacionObjetos",
+                "class": "col-6"
+              },
+              {
+                "id": "miradaPeriferica",
+                "label": "¿Tiene mirada periférica?",
+                "type": "textarea",
+                "name": "miradaPeriferica",
+                "class": "col-6"
+              },
+              {
+                "id": "giraEnEje",
+                "label": "¿Da vueltas en su propio eje?",
+                "type": "textarea",
+                "name": "giraEnEje",
+                "class": "col-6"
+              },
+              {
+                "id": "seBalcea",
+                "label": "¿Se balcea?",
+                "type": "textarea",
+                "name": "seBalcea",
+                "class": "col-6"
+              },
+              {
+                "id": "juegosRepetitivos",
+                "label": "¿Es repetitivo en los juegos?",
+                "type": "textarea",
+                "name": "juegosRepetitivos",
+                "class": "col-6"
+              },
+              {
+                "id": "rutinas",
+                "label": "¿Tiene rutinas?",
+                "type": "checkbox",
+                "name": "rutinas",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "rutinasCuales",
+                    "label": "¿Cuales?",
+                    "type": "textarea",
+                    "name": "rutinasCuales"
+                  }
+                ]
+              },
+              {
+                "id": "repitePalabras",
+                "label": "¿Repite palabras?",
+                "type": "textarea",
+                "name": "repitePalabras",
+                "class": "col-6"
+              },
+              {
+                "id": "tonoVozParticular",
+                "label": "¿Tiene tono de voz particular?",
+                "type": "textarea",
+                "name": "tonoVozParticular",
+                "class": "col-6"
+              },
+              {
+                "id": "caminaSinSentido",
+                "label": "¿Camina sin sentido?",
+                "type": "textarea",
+                "name": "caminaSinSentido",
+                "class": "col-6"
+              },
+              {
+                "id": "correSinSentido",
+                "label": "¿Corre sin sentido?",
+                "type": "textarea",
+                "name": "correSinSentido",
+                "class": "col-6"
+              },
+              {
+                "id": "sigueInstrucciones",
+                "label": "¿Sigue instrucciones?",
+                "type": "textarea",
+                "name": "sigueInstrucciones",
+                "class": "col-6"
+              },
+              {
+                "id": "otrosIdiomas",
+                "label": "¿Otros idiomas?",
+                "type": "textarea",
+                "name": "otrosIdiomas",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Antecedentes medicos personales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "enfermedadSignificativaActual",
+                "label": "En la actualidad ¿Sufre alguna enfermedad significativa?",
+                "type": "checkbox",
+                "name": "enfermedadSignificativaActual",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "enfermedadSignificativaActualCual",
+                    "label": "¿Cual(es)?",
+                    "type": "textarea",
+                    "name": "enfermedadSignificativaActualCual",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "enfermedadSignificativaTratamiento",
+                    "label": "Recibe tratamiento",
+                    "type": "textarea",
+                    "name": "enfermedadSignificativaTratamiento",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "convulsionesAusencias",
+                "label": "¿Presenta convulsiones o ausencias?",
+                "type": "checkbox",
+                "name": "convulsionesAusencias",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "ultimoEpisodio",
+                    "label": "¿Cuando fue su ultimo episodio?",
+                    "type": "textarea",
+                    "name": "ultimoEpisodio",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tratamientoConvulsionesAusencias",
+                    "label": "¿Recibe tratamiento?",
+                    "type": "textarea",
+                    "name": "tratamientoConvulsionesAusencias",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesAntMedicosPersonales",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesAntMedicosPersonales",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Antecedentes quirurgicos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "sometidoCirugia",
+                "label": "¿El(la) usuario(a) ha sido sometido(a) a alguna cirugia?",
+                "type": "checkbox",
+                "name": "sometidoCirugia",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "añoCirugia1",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoCirugia1",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoProcedimiento1",
+                    "label": "Tipo de procedimiento",
+                    "type": "textarea",
+                    "name": "tipoProcedimiento1",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "añoCirugia2",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoCirugia2",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoProcedimiento2",
+                    "label": "Tipo de procedimiento",
+                    "type": "textarea",
+                    "name": "tipoProcedimiento2",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "añoCirugia3",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoCirugia3",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "tipoProcedimiento3",
+                    "label": "Tipo de procedimiento",
+                    "type": "textarea",
+                    "name": "tipoProcedimiento3",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesAntQuirurgicos",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesAntQuirurgicos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Antecedentes traumaticos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "accidenteCaidaSignificativa",
+                "label": "¿El(la) usuario(a) ha sufrito un accidente o caida significativa?",
+                "type": "checkbox",
+                "name": "accidenteCaidaSignificativa",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "añoAccidente1",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoAccidente1",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "tipoTraumatismo1",
+                    "label": "Tipo de traumatismo",
+                    "type": "textarea",
+                    "name": "tipoTraumatismo1",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "secuela1",
+                    "label": "Secuela",
+                    "type": "textarea",
+                    "name": "secuela1",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "añoAccidente2",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoAccidente2",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "tipoTraumatismo2",
+                    "label": "Tipo de traumatismo",
+                    "type": "textarea",
+                    "name": "tipoTraumatismo2",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "secuela2",
+                    "label": "Secuela",
+                    "type": "textarea",
+                    "name": "secuela2",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "añoAccidente3",
+                    "label": "Año",
+                    "type": "textarea",
+                    "name": "añoAccidente3",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "tipoTraumatismo3",
+                    "label": "Tipo de procedimiento",
+                    "type": "textarea",
+                    "name": "tipoTraumatismo3",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "secuela3",
+                    "label": "Secuela",
+                    "type": "textarea",
+                    "name": "secuela3",
+                    "class": "col-4"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesAntTraumaticos",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesAntTraumaticos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Antecedentes IV",
+        "card": [
+          {
+            "title": "Antecedentes Toxico-alergicos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "alergico",
+                "label": "¿Es alergico a algo?",
+                "type": "checkbox",
+                "name": "alergico",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "alergicoText",
+                    "label": "¿A qué es alergico?",
+                    "type": "textarea",
+                    "name": "alergicoText",
+                    "class": "col-12"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesAntToxicoAlergicos",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesAntToxicoAlergicos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Medicamentos actuales",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "medicamento",
+                "label": "Actualmente ¿Consume algun tipo de medicamento?",
+                "type": "checkbox",
+                "name": "medicamento",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "medicamentoText",
+                    "label": "Indique cuales",
+                    "type": "textarea",
+                    "name": "medicamentoText",
+                    "class": "col-12"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesMedicamentos",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesMedicamentos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Tratamientos recibidos",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "intervencionTerapeutica",
+                "label": "¿Ha recibido algún tipo de intervención terapéutica?",
+                "type": "checkbox",
+                "name": "intervencionTerapeutica",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "intervencionTerapeuticaText",
+                    "label": "¿De qué tipo?",
+                    "type": "textarea",
+                    "name": "intervencionTerapeuticaText",
+                    "class": "col-12"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesTratamientosRecibidos",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesTratamientosRecibidos",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card4": [
+          {
+            "title": "Circulo familiar",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "tieneHermanos",
+                "label": "¿Tiene hermanos?",
+                "type": "checkbox",
+                "name": "tieneHermanos",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "cuantosHermanos",
+                    "label": "¿Cuantos?",
+                    "type": "textarea",
+                    "name": "cuantosHermanos",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "posicionHermanos",
+                    "label": "¿Qué posición ocupa?",
+                    "type": "textarea",
+                    "name": "posicionHermanos",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "familiarNoConvive",
+                "label": "¿Hay algún miembro de la familia que no conviva con el actualmente?",
+                "type": "checkbox",
+                "name": "familiarNoConvive",
+                "class": "col-12",
+                "toggleFields": [
+                  {
+                    "id": "quienNoConvive",
+                    "label": "¿Quien?",
+                    "type": "textarea",
+                    "name": "quienNoConvive",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "motivoNoConvive",
+                    "label": "¿Por qué motivo?",
+                    "type": "textarea",
+                    "name": "motivoNoConvive",
+                    "class": "col-4"
+                  },
+                  {
+                    "id": "comparteNoConvive",
+                    "label": "¿Comparte con el(la) usuario(a)?",
+                    "type": "textarea",
+                    "name": "comparteNoConvive",
+                    "class": "col-4"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "card5": [
+          {
+            "title": "Habitos y rutina",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "horaAcostarse",
+                "label": "¿A qué hora aproximada se acuesta?",
+                "type": "textarea",
+                "name": "horaAcostarse",
+                "class": "col-6"
+              },
+              {
+                "id": "horaLevantarse",
+                "label": "¿A qué hora aproximada se levanta?",
+                "type": "textarea",
+                "name": "horaLevantarse",
+                "class": "col-6"
+              },
+              {
+                "id": "horarioFinDeSemana",
+                "label": "¿Se mantiene este horario los fines de semana?",
+                "type": "textarea",
+                "name": "horarioFinDeSemana",
+                "class": "col-6"
+              },
+              {
+                "id": "somnolenciaDia",
+                "label": "¿Presenta somnolencia durante el día?",
+                "type": "textarea",
+                "name": "somnolenciaDia",
+                "class": "col-6"
+              },
+              {
+                "id": "insomnioNoche",
+                "label": "¿Presenta insomnio durante la noche?",
+                "type": "textarea",
+                "name": "insomnioNoche",
+                "class": "col-6"
+              },
+              {
+                "id": "consumeViaOral",
+                "label": "¿Consume alimentos por vía oral?",
+                "type": "textarea",
+                "name": "consumeViaOral",
+                "class": "col-6"
+              },
+              {
+                "id": "formaAlimentarse",
+                "label": "En caso de responder 'NO', ¿Cual es la forma de alimentarse?",
+                "type": "textarea",
+                "name": "formaAlimentarse",
+                "class": "col-6"
+              },
+              {
+                "id": "consumeLiquidos",
+                "label": "¿Consume alimentos líquidos?",
+                "type": "textarea",
+                "name": "consumeLiquidos",
+                "class": "col-6"
+              },
+              {
+                "id": "consumeSemisolidos",
+                "label": "¿Consume alimentos semisólidos? (Compotas)",
+                "type": "textarea",
+                "name": "consumeSemisolidos",
+                "class": "col-6"
+              },
+              {
+                "id": "consumeSolidos",
+                "label": "¿Consume alimentos sólidos?",
+                "type": "textarea",
+                "name": "consumeSolidos",
+                "class": "col-6"
+              },
+              {
+                "id": "cantidadComidasDia",
+                "label": "En promedio ¿Cuántas comidas recibe al día?",
+                "type": "textarea",
+                "name": "cantidadComidasDia",
+                "class": "col-6"
+              },
+              {
+                "id": "alimentacionSelectiva",
+                "label": "¿Es selectivo en la alimentación?",
+                "type": "checkbox",
+                "name": "alimentacionSelectiva",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "alimentosSelectivo",
+                    "label": "¿Con qué alimentos es selectivo?",
+                    "type": "textarea",
+                    "name": "alimentosSelectivo",
+                    "class": "col-12"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesHabitosRutina",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesHabitosRutina",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card6": [
+          {
+            "title": "Comportamiento emocional",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "miedosTemores",
+                "label": "Indique si el niño presenta miedos o temores",
+                "type": "textarea",
+                "name": "miedosTemores",
+                "class": "col-6"
+              },
+              {
+                "id": "estadoAnimoNormalmente",
+                "label": "Describa su estado de ánimo normalmente",
+                "type": "textarea",
+                "name": "estadoAnimoNormalmente",
+                "class": "col-6"
+              },
+              {
+                "id": "reaccionFrustracion",
+                "label": "¿Cómo reacciona ante la frustración?",
+                "type": "textarea",
+                "name": "reaccionFrustracion",
+                "class": "col-6"
+              },
+              {
+                "id": "datosAdicionalesComportamientoEmocional",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesComportamientoEmocional",
+                "class": "col-6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Antecedentes V",
+        "card": [
+          {
+            "title": "Funcionalidad",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "labelFuncionalidad",
+                "label": "Marque con una de las siguientes opciones la forma en que el(la) usuario(a) realiza las siguientes acciones",
+                "type": "label",
+                "name": "labelFuncionalidad",
+                "class": "col-12"
+              },
+              {
+                "id": "label1",
+                "label": "1 - Dependencia total",
+                "type": "label",
+                "name": "label1",
+                "class": "col-3"
+              },
+              {
+                "id": "label2",
+                "label": "2 - Con apoyo",
+                "type": "label",
+                "name": "label2",
+                "class": "col-3"
+              },
+              {
+                "id": "label3",
+                "label": "3 - Con supervision",
+                "type": "label",
+                "name": "label3",
+                "class": "col-3"
+              },
+              {
+                "id": "label4",
+                "label": "4 - Autónomamente",
+                "type": "label",
+                "name": "label4",
+                "class": "col-3"
+              },
+              {
+                "id": "labelActividadesBasicas",
+                "label": "Actividades basicas del cuidado (ABC)",
+                "type": "label",
+                "name": "labelActividadesBasicas",
+                "class": "col-12"
+              },
+              {
+                "id": "controlEsfinteres",
+                "label": "Control del esfínteres",
+                "type": "radio",
+                "name": "controlEsfinteres",
+                "class": "col-4",
+                "options": [
+                 {
+                   "id": "controlEsfinteres1",
+                   "text": "1",
+                   "value": "1"
+                 },
+                 {
+                   "id": "controlEsfinteres2",
+                   "text": "2",
+                   "value": "2"
+                 },
+                 {
+                   "id": "controlEsfinteres3",
+                   "text": "3",
+                   "value": "3"
+                 },
+                 {
+                   "id": "controlEsfinteres4",
+                   "text": "4",
+                   "value": "4"
+                 }
+                ]
+              },
+              {
+                "id": "baño",
+                "label": "Baño",
+                "type": "radio",
+                "name": "baño",
+                "class": "col-4",
+                "options": [
+                {
+                  "id": "baño1",
+                  "text": "1",
+                  "value": "1"
+                },
+                {
+                  "id": "baño2",
+                  "text": "2",
+                  "value": "2"
+                },
+                {
+                  "id": "baño3",
+                  "text": "3",
+                  "value": "3"
+                },
+                {
+                  "id": "baño4",
+                  "text": "4",
+                  "value": "4"
+                }
+                ]
+              },
+              {
+                "id": "cepilladoDientes",
+                "label": "Cepillado de dientes",
+                "type": "radio",
+                "name": "cepilladoDientes",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "cepilladoDientes1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "cepilladoDientes2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "cepilladoDientes3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "cepilladoDientes4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "vestirse",
+                "label": "Vestirse",
+                "type": "radio",
+                "name": "vestirse",
+                "class": "col-4",
+                "options": [
+                  { 
+                    "id": "vestirse1",
+                    "text": "1",
+                    "value": "1"
+                   },
+                  {
+                    "id": "vestirse2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "vestirse3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "vestirse4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "desvestirse",
+                "label": "Desvestirse",
+                "type": "radio",
+                "name": "desvestirse",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "desvestirse1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "desvestirse2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "desvestirse3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "desvestirse4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "amarradoZapatos",
+                "label": "Amarrado de zapatos",
+                "type": "radio",
+                "name": "amarradoZapatos",
+                "class": "col-4",
+                "options": [
+                 {
+                   "id": "amarradoZapatos1",
+                   "text": "1",
+                   "value": "1"
+                 },
+                 {
+                   "id": "amarradoZapatos2",
+                   "text": "2",
+                   "value": "2"
+                 },
+                 {
+                   "id": "amarradoZapatos3",
+                   "text": "3",
+                   "value": "3"
+                 },
+                 {
+                   "id": "amarradoZapatos4",
+                   "text": "4",
+                   "value": "4"
+                 }
+                ]
+              },
+              {
+                "id": "tomarPitillo",
+                "label": "Tomar de un pitillo",
+                "type": "radio",
+                "name": "tomarPitillo",
+                "class": "col-4",
+                "options": [
+               {
+                 "id": "tomarPitillo1",
+                 "text": "1",
+                 "value": "1"
+               },
+               {
+                 "id": "tomarPitillo2",
+                 "text": "2",
+                 "value": "2"
+               },
+               {
+                 "id": "tomarPitillo3",
+                 "text": "3",
+                 "value": "3"
+               },
+               {
+                 "id": "tomarPitillo4",
+                 "text": "4",
+                 "value": "4"
+               }
+                ]
+              },
+              {
+                "id": "tomarVaso",
+                "label": "Tomar de un vaso",
+                "type": "radio",
+                "name": "tomarVaso",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "tomarVaso1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "tomarVaso2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "tomarVaso3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "tomarVaso4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "sostenerEnvase",
+                "label": "Sostener el envase",
+                "type": "radio",
+                "name": "sostenerEnvase",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "sostenerEnvase1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "sostenerEnvase2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "sostenerEnvase3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "sostenerEnvase4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "comerMano",
+                "label": "Comer de la mano",
+                "type": "radio",
+                "name": "comerMano",
+                "class": "col-4",
+                "options": [
+                 {
+                   "id": "comerMano1",
+                   "text": "1",
+                   "value": "1"
+                 },
+                 {
+                   "id": "comerMano2",
+                   "text": "2",
+                   "value": "2"
+                 },
+                 {
+                   "id": "comerMano3",
+                   "text": "3",
+                   "value": "3"
+                 },
+                 {
+                   "id": "comerMano4",
+                   "text": "4",
+                   "value": "4"
+                 }
+                ]
+              },
+              {
+                "id": "comerCuchara",
+                "label": "Comer con cuchara",
+                "type": "radio",
+                "name": "comerCuchara",
+                "class": "col-4",
+                "options": [
+                {
+                  "id": "comerCuchara1",
+                  "text": "1",
+                  "value": "1"
+                },
+                {
+                  "id": "comerCuchara2",
+                  "text": "2",
+                  "value": "2"
+                },
+                {
+                  "id": "comerCuchara3",
+                  "text": "3",
+                  "value": "3"
+                },
+                {
+                  "id": "comerCuchara4",
+                  "text": "4",
+                  "value": "4"
+                }
+                ]
+              },
+              {
+                "id": "tenedorCuchillo",
+                "label": "Con el tenedor y cuchillo",
+                "type": "radio",
+                "name": "tenedorCuchillo",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "tenedorCuchillo1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "tenedorCuchillo2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "tenedorCuchillo3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "tenedorCuchillo4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "moverseHogar",
+                "label": "Moverse por su hogar",
+                "type": "radio",
+                "name": "moverseHogar",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "moverseHogar1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "moverseHogar2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "moverseHogar3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "moverseHogar4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "escalerasABC",
+                "label": "Subir y bajar escaleras",
+                "type": "radio",
+                "name": "escalerasABC",
+                "class": "col-4",
+                "options": [
+                 {
+                   "id": "escalerasABC1",
+                   "text": "1",
+                   "value": "1"
+                 },
+                 {
+                   "id": "escalerasABC2",
+                   "text": "2",
+                   "value": "2"
+                 },
+                 {
+                   "id": "escalerasABC3",
+                   "text": "3",
+                   "value": "3"
+                 },
+                 {
+                   "id": "escalerasABC4",
+                   "text": "4",
+                   "value": "4"
+                 }
+                ]
+              },
+              {
+                "id": "puertas",
+                "label": "Abrir y cerrar puertas",
+                "type": "radio",
+                "name": "puertas",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "puertas1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "puertas2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "puertas3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "puertas4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "labelActividadesInstrumentales",
+                "label": "Actividades Instrumentales de la Vida Diaria (AIDV)",
+                "type": "label",
+                "name": "labelActividadesInstrumentales",
+                "class": "col-12"
+              },
+              {
+                "id": "utilizarTelefono",
+                "label": "Utilizar un teléfono",
+                "type": "radio",
+                "name": "utilizarTelefono",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "utilizarTelefono1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "utilizarTelefono2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "utilizarTelefono3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "utilizarTelefono4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "manejarDinero",
+                "label": "Manejar dinero",
+                "type": "radio",
+                "name": "manejarDinero",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "manejarDinero1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "manejarDinero2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "manejarDinero3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "manejarDinero4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "hacerMandados",
+                "label": "Hacer mandados",
+                "type": "radio",
+                "name": "hacerMandados",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "hacerMandados1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "hacerMandados2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "hacerMandados3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "hacerMandados4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "tenderCama",
+                "label": "Tender la cama",
+                "type": "radio",
+                "name": "tenderCama",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "tenderCama1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "tenderCama2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "tenderCama3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "tenderCama4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "lavarLoza",
+                "label": "Lavar la loza",
+                "type": "radio",
+                "name": "lavarLoza",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "lavarLoza1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "lavarLoza2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "lavarLoza3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "lavarLoza4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "organizarCuarto",
+                "label": "Organizar su cuarto",
+                "type": "radio",
+                "name": "organizarCuarto",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "organizarCuarto1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "organizarCuarto2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "organizarCuarto3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "organizarCuarto4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "transportePublico",
+                "label": "Utilizar transporte público",
+                "type": "radio",
+                "name": "transportePublico",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "transportePublico1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "transportePublico2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "transportePublico3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "transportePublico4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "escalerasAIDV",
+                "label": "Subir y bajar escaleras",
+                "type": "radio",
+                "name": "escalerasAIDV",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "escalerasAIDV1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "escalerasAIDV2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "escalerasAIDV3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "escalerasAIDV4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "pedirAyuda",
+                "label": "Pedir ayuda",
+                "type": "radio",
+                "name": "pedirAyuda",
+                "class": "col-4",
+                "options": [
+                  {
+                    "id": "pedirAyuda1",
+                    "text": "1",
+                    "value": "1"
+                  },
+                  {
+                    "id": "pedirAyuda2",
+                    "text": "2",
+                    "value": "2"
+                  },
+                  {
+                    "id": "pedirAyuda3",
+                    "text": "3",
+                    "value": "3"
+                  },
+                  {
+                    "id": "pedirAyuda4",
+                    "text": "4",
+                    "value": "4"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesFuncionalidad",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesFuncionalidad",
+                "class": "col-12"
+              }
+            ]
+          }
+        ],
+        "card2": [
+          {
+            "title": "Comportamiento emocional y conducta social",
+            "fields": [
+              {
+                "id": "comportamientoEmocional",
+                "label": "Comportamiento emocional",
+                "type": "textarea",
+                "name": "comportamientoEmocional",
+                "class": "col-12"
+              },
+              {
+                "id": "conductaSocial",
+                "label": "Conducta social",
+                "type": "textarea",
+                "name": "conductaSocial",
+                "class": "col-12"
+              },
+              {
+                "id": "identificanEstadoEmocionalUsuario",
+                "label": "Cuando el(la) usuario(a) se expresa ¿Logran identificar su estado emocional?",
+                "type": "textarea",
+                "name": "identificanEstadoEmocionalUsuario",
+                "class": "col-6"
+              },
+              {
+                "id": "usuarioIdentificaEstadoEmocional",
+                "label": "Cuando usted(es) se expresa(n) ¿El usuario(a) logra identificar su estado emocional?",
+                "type": "textarea",
+                "name": "usuarioIdentificaEstadoEmocional",
+                "class": "col-6"
+              },
+              {
+                "id": "comparteConIguales",
+                "label": "¿Comparte con personas de su edad?",
+                "type": "textarea",
+                "name": "comparteConIguales",
+                "class": "col-6"
+              },
+              {
+                "id": "comparteConMayores",
+                "label": "¿Comparte con personas mayores?",
+                "type": "textarea",
+                "name": "comparteConMayores",
+                "class": "col-6"
+              },
+              {
+                "id": "comparteConMenores",
+                "label": "¿Comparte con personas menores?",
+                "type": "textarea",
+                "name": "comparteConMenores",
+                "class": "col-6"
+              },
+              {
+                "id": "esAgresivo",
+                "label": "¿Consideran que es agresivo?",
+                "type": "checkbox",
+                "name": "esAgresivo",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "ocasionesAgresividad",
+                    "label": "¿En qué ocasiones?",
+                    "type": "textarea",
+                    "name": "ocasionesAgresividad",
+                    "class": "col-6"
+                  },
+                  {
+                    "id": "aQuienAgrede",
+                    "label": "¿A quién suele agredir?",
+                    "type": "textarea",
+                    "name": "aQuienAgrede",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "comportamientosAtipicos",
+                "label": "¿Presenta comportamientos atípicos?",
+                "type": "checkbox",
+                "name": "comportamientosAtipicos",
+                "class": "col-6",
+                "toggleFields": [
+                  {
+                    "id": "tipoComportamientoAtipico",
+                    "label": "¿De qué tipo?",
+                    "type": "textarea",
+                    "name": "tipoComportamientoAtipico",
+                    "class": "col-6"
+                  }
+                ]
+              },
+              {
+                "id": "datosAdicionalesComportamientoSocial",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesComportamientoSocial",
+                "class": "col-12"
+              },
+              {
+                "id": "comerseUnas",
+                "label": "Comerse las uñas",
+                "type": "checkbox",
+                "name": "comerseUnas",
+                "class": "col-6"
+              },
+              {
+                "id": "molestarseRopa",
+                "label": "Molestarse la ropa",
+                "type": "checkbox",
+                "name": "molestarseRopa",
+                "class": "col-6"
+              },
+              {
+                "id": "movimientosRepetitivosExtremidades",
+                "label": "Movimientos repetitivos con manos y piernas",
+                "type": "checkbox",
+                "name": "movimientosRepetitivosExtremidades",
+                "class": "col-6"
+              },
+              {
+                "id": "chuparseDedo",
+                "label": "Chuparse el dedo",
+                "type": "checkbox",
+                "name": "chuparseDedo",
+                "class": "col-6"
+              },
+              {
+                "id": "prendaPreferida",
+                "label": "Dependencia de una prenda preferida",
+                "type": "checkbox",
+                "name": "prendaPreferida",
+                "class": "col-6"
+              },
+              {
+                "id": "molestarsePelo",
+                "label": "Molestarse el pelo",
+                "type": "checkbox",
+                "name": "molestarsePelo",
+                "class": "col-6"
+              },
+              {
+                "id": "tics",
+                "label": "Tics",
+                "type": "checkbox",
+                "name": "tics",
+                "class": "col-6"
+              },
+              {
+                "id": "movimientoCorporalExcesivo",
+                "label": "Movimiento corporal excesivo",
+                "type": "checkbox",
+                "name": "movimientoCorporalExcesivo",
+                "class": "col-6"
+              }
+            ]
+          }
+        ],
+        "card3": [
+          {
+            "title": "Sindrome de Asperger",
+            "class": "col-12",
+            "fields": [
+              {
+                "id": "frioAlHablar",
+                "label": "¿Es muy frío al hablar?",
+                "type": "textarea",
+                "name": "frioAlHablar",
+                "class": "col-6"
+              },
+              {
+                "id": "pareceAdultoAlHablar",
+                "label": "¿Parece una persona grande cuando habla?",
+                "type": "textarea",
+                "name": "pareceAdultoAlHablar",
+                "class": "col-6"
+              },
+              {
+                "id": "lenguajeAcademico",
+                "label": "¿Tiene un lenguaje académico? ¿Como si fuera grande?",
+                "type": "textarea",
+                "name": "lenguajeAcademico",
+                "class": "col-6"
+              },
+              {
+                "id": "diceCosasOfensivas",
+                "label": "¿Dice cosas que pueden ofender a las otras personas?",
+                "type": "textarea",
+                "name": "diceCosasOfensivas",
+                "class": "col-6"
+              },
+              {
+                "id": "tienePocosAmigos",
+                "label": "¿Tiene pocos amigos?",
+                "type": "textarea",
+                "name": "tienePocosAmigos",
+                "class": "col-6"
+              },
+              {
+                "id": "esObsesivo",
+                "label": "¿Es obsesivo con algunas cosas? ¿De qué tipo?",
+                "type": "textarea",
+                "name": "esObsesivo",
+                "class": "col-6"
+              },
+              {
+                "id": "conocimientoDesarrollado",
+                "label": "¿Tiene algún conocimiento más desarrollado en alguna área específica?",
+                "type": "textarea",
+                "name": "conocimientoDesarrollado",
+                "class": "col-6"
+              },
+              {
+                "id": "emocionalmenteFrio",
+                "label": "¿Es emocionalmente frío?",
+                "type": "textarea",
+                "name": "emocionalmenteFrio",
+                "class": "col-6"
+              },
+              {
+                "id": "datosAdicionalesSindromeAsperger",
+                "label": "Datos adicionales",
+                "type": "textarea",
+                "name": "datosAdicionalesSindromeAsperger",
                 "class": "col-12"
               }
             ]

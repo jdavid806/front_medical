@@ -1,5 +1,5 @@
 export function datosUsuario(user) {
-  //   console.log("user", user);
+    console.log("user", user);
   //   const userData = await consultarDatosDoctor(user.id);
   //   console.log("userData", userData);
   const html = `

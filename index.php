@@ -1,23 +1,16 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $NAME_PRODUCTO ?></title>
   <link rel="icon" href="<?= $URL_FAVICON ?>" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
   <!-- Latest compiled and minified CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Latest compiled JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
   <!-- JQUERY -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <!-- SweetAlert2 CSS -->
@@ -26,20 +19,16 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   <!-- Particles.js -->
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
   <!-- OPEN SANS -->
   <link
     href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&display=swap"
     rel="stylesheet">
   <!-- OPEN SANS -->
-
   <!-- ANIMATE.CSS -->
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
   <!-- ANIMATE.CSS -->
-
   <style>
     /* Full screen particles container */
-
     #particles-js {
       position: absolute;
       top: 0;
@@ -50,30 +39,23 @@
       /* Make sure particles are behind other content */
       overflow: hidden;
     }
-
     /* Ensure the container takes full height */
     .container {
       position: relative;
       z-index: 1;
     }
-
     * {
       font-family: "Open Sans" !important;
     }
-
     /* h1, h2, h3, h4, li, button{
           font-weight: normal !important;
         } */
   </style>
 </head>
-
 <!-- <body style="max-height: 100vh !important;height: 100vh !important;"> -->
 <!-- Particles.js container -->
-
 <body style="max-height: 100vh !important;height: 100vh !important;">
-
   <div id="particles-js"></div>
-
   <section
     style="background-color: transparent; height: 100vh; display: flex; align-items: center; justify-content: center;">
     <div class="container-fluid py-0" style="height: 100%;">
@@ -111,7 +93,6 @@
                       </div>
                       <button class="btn btn-dark w-100 mb-2" id="btn-enter" onclick="validarUsuario()"
                         type="button">Iniciar sesión</button>
-
                       <a href="#" id="forgotPasswordLink" class="d-block text-center mt-2 text-decoration-none">¿Has
                         olvidado tu contraseña?</a>
                       </form>
@@ -131,14 +112,9 @@
     </div>
     </div>
   </section>
-
-
   <script src="./login/login.js"></script>
 </body>
-
 </html>
-
-
 <script>
   $(document).ready(function () {
     document.addEventListener('keydown', function (event) {
@@ -148,9 +124,7 @@
     });
   });
 </script>
-
 <script src="./login/particles.min.js"></script>
-
 <?php
 include_once('./login/modalOTP.php');
 ?>

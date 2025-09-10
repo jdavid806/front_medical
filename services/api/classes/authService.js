@@ -4,7 +4,7 @@ export class AuthService extends BaseApiService {
     async login(credentials) {
         return await this.httpClient.post(`${this.microservice}/login`, credentials, {
             headers: {
-                'X-domain': 'dev.monaros.co'
+                'X-Domain': window.location.hostname
             }
         });
     }
@@ -26,7 +26,13 @@ export class AuthService extends BaseApiService {
     }
 
     async changePassword(data) {
-        return await this.httpClient.post(`${this.microservice}/change-password`, data);
+        console.log(window.location.hostname);
+        return await this.httpClient.post(`${this.microservice}/change-password`, data,
+            {
+                headers: {
+                    'X-DOMAIN': window.location.hostname
+                }
+            })
     }
 }
 

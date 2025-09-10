@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 
 let company = {};
@@ -10,21 +10,21 @@ async function consultarData() {
   const responePatient = await consultarDatosPaciente(patient_id);
 
   patient = responePatient;
-  // console.log(patient);
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export function generarFormatoOrden(orden, tipo) {
-  console.log("Orden", orden);
+export async function generarFormatoOrden(orden, tipo) {
 
   let state = getOrdenState(orden.exam_order_state.name);
 
@@ -83,5 +83,5 @@ export function generarFormatoOrden(orden, tipo) {
 
   contenido += `</div>`;
 
-  generatePDFFromHTML(contenido, company, patient);
+  await generatePDFFromHTMLV2(contenido, company, patient);
 }

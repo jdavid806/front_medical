@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -11,22 +11,26 @@ async function consultarData() {
   const responePatient = await consultarDatosPaciente(patient_id);
 
   patient = responePatient;
-  // console.log(patient);
+
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export async function generarFormatoRecetaOptometria(receta, tipo, inputId = "") {
-  // console.log("receta", receta);
-
+export async function generarFormatoRecetaOptometria(
+  receta,
+  tipo,
+  inputId = ""
+) {
   let userName = [
     receta.prescriber?.first_name,
     receta.prescriber?.middle_name,
@@ -53,7 +57,6 @@ export async function generarFormatoRecetaOptometria(receta, tipo, inputId = "")
   });
 
   const dataJson = JSON.parse(receta.optometry_item.details);
-  // console.log("dataJson", dataJson);
 
   const camposQueratometria = {
     queratometriaOjoDerecho: dataJson.queratometriaOjoDerecho,
@@ -224,7 +227,7 @@ export async function generarFormatoRecetaOptometria(receta, tipo, inputId = "")
     ${datosUsuario(user)}
 `;
 
-  await generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTMLV2(contenido, company, patient, inputId);
 }
 
 export default generarFormatoRecetaOptometria;

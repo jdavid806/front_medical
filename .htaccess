@@ -209,7 +209,7 @@ RewriteRule ^Mensajes_whatsapp$ mensajeriaMasiva/mensajes_whatsapp.php
 
 
 #telemedicina
-RewriteRule ^telemedicina$ Telemedicina/Pacientes.php
+RewriteRule ^telemedicina$ Telemedicina/TelemedicinaNueva.php
 
 #telemedicina video-llamada
 RewriteRule ^videoLlamada$ Telemedicina/VideoLlamada.php

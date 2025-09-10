@@ -34,8 +34,8 @@ const medicationTypeOptions = [{
   label: "Tabletas",
   value: "tabletas"
 }];
-const hoursOptions = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 24].map(h => ({
-  label: `${h} Horas`,
+const hoursOptions = [1, 2, 3, 4, 5, 6, 7, 8, 10, 9, 12, 24].map(h => ({
+  label: `${h} horas`,
   value: h
 }));
 const frequencyOptions = [{
@@ -76,6 +76,7 @@ const PrescriptionForm = /*#__PURE__*/forwardRef(({
   }));
   const medicationType = watch("medication_type");
   const showQuantity = !["tabletas", ""].includes(medicationType);
+  const disableQuantity = ["tabletas"].includes(medicationType);
   const showTimeField = ["tabletas", "jarabe"].includes(medicationType);
   const handleGroupToggle = () => {
     setUseGroup(!useGroup);
@@ -86,13 +87,28 @@ const PrescriptionForm = /*#__PURE__*/forwardRef(({
     setManualEntry(false);
     reset();
   };
+  const calculateQuantity = (duration, takeEveryHours) => {
+    return Math.ceil(duration * 24 / takeEveryHours);
+  };
   const handleMedicationChange = (index, field, value) => {
     const newFormData = [...formData];
+    let newQuantity = formData[index].quantity;
+    console.log("field", field);
+    console.log("value", value);
+    if (["duration", "take_every_hours", "medication_type"].includes(field) && (value == "tabletas" || formData[index].medication_type == "tabletas")) {
+      const finalDuration = field == "duration" ? value : formData[index].duration;
+      const finalTakeEveryHours = field == "take_every_hours" ? value : formData[index].take_every_hours;
+      console.log("duration", finalDuration);
+      console.log("take_every_hours", finalTakeEveryHours);
+      newQuantity = calculateQuantity(finalDuration, finalTakeEveryHours);
+      console.log("newQuantity", newQuantity);
+    }
     newFormData[index] = {
       ...newFormData[index],
       [field]: value,
       showQuantity: field === "medication_type" ? !["tabletas", ""].includes(value) : newFormData[index].showQuantity,
-      showTimeField: field === "medication_type" ? ["tabletas", "jarabe"].includes(value) : newFormData[index].showTimeField
+      showTimeField: field === "medication_type" ? ["tabletas", "jarabe"].includes(value) : newFormData[index].showTimeField,
+      quantity: newQuantity
     };
     setFormData(newFormData);
   };
@@ -129,6 +145,10 @@ const PrescriptionForm = /*#__PURE__*/forwardRef(({
   };
   const handleEditMedication = index => {
     const medicationToEdit = addedMedications[index];
+    if (medicationToEdit.medication_type == "tabletas") {
+      const quantity = calculateQuantity(medicationToEdit.duration, medicationToEdit.take_every_hours);
+      medicationToEdit.quantity = quantity;
+    }
     setFormData([{
       ...medicationToEdit
     }]);
@@ -329,7 +349,8 @@ const PrescriptionForm = /*#__PURE__*/forwardRef(({
               field.onChange(e.value);
               handleMedicationChange(index, "quantity", e.value);
             },
-            value: formData[index]?.quantity
+            value: formData[index]?.quantity,
+            disabled: disableQuantity
           }))
         })));
       default:

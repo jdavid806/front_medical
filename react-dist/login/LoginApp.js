@@ -5,11 +5,14 @@ import { useAuth } from "./hooks/useAuth.js";
 import { ForgotPasswordModal } from "./modal/ForgotPasswordModal.js";
 import { LoginForm } from "./form/LoginForm.js";
 export const LoginApp = () => {
+  console.log("Holaaa Renderizo");
   const [currentView, setCurrentView] = useState('login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [username, setUsername] = useState('');
   const {
-    login
+    login,
+    loading,
+    Toast: toastRef
   } = useAuth();
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -18,7 +21,6 @@ export const LoginApp = () => {
     if (firstTime === 'true' && email) {
       localStorage.setItem('complete_registration', 'true');
       localStorage.setItem('email', email);
-      window.history.replaceState({}, document.title, window.location.pathname);
     }
     const savedUsername = localStorage.getItem('username');
     if (savedUsername && window.location.pathname.includes('forgotPassword')) {
@@ -29,7 +31,7 @@ export const LoginApp = () => {
   const handleLogin = async credentials => {
     const result = await login(credentials);
     if (result.success) {
-      console.log("inicio seccion!!");
+      console.log("Inicio de sesión exitoso");
     }
   };
   const handleForgotPassword = () => {
@@ -61,7 +63,9 @@ export const LoginApp = () => {
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "app-container relative w-full h-screen overflow-hidden"
-  }, /*#__PURE__*/React.createElement(Toast, null), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toastRef
+  }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {
     className: "relative z-10 w-full h-full flex items-center justify-center p-4"
   }, renderCurrentView()), showForgotPassword && /*#__PURE__*/React.createElement(ForgotPasswordModal, {
     visible: showForgotPassword,

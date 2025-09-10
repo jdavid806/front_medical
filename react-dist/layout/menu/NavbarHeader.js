@@ -1,154 +1,53 @@
-import { MegaMenu } from 'primereact/megamenu';
-import React from 'react';
+import { Menubar } from "primereact/menubar";
+import React, { useEffect, useState } from "react";
+import { menuService } from "../../../services/api/index.js";
+import { filterMenuItems } from "../../helpers/menuFilter.js";
+import { items } from "./dataMenu.js";
 const NavbarHeader = () => {
-  const items = [{
-    label: 'Home',
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-house"
-    }),
-    items: [[{
-      label: 'Principal',
-      items: [{
-        label: 'Inicio',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-house"
-        }),
-        url: 'Dashboard'
-      }, {
-        label: 'Consultas',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-magnifying-glass"
-        }),
-        url: 'pacientes'
-      }, {
-        label: 'Admisiones',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-bookmark"
-        }),
-        url: 'citasControl'
-      }, {
-        label: 'Telemedicina',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-stethoscope"
-        }),
-        url: 'telemedicina'
-      }, {
-        label: 'Turnos',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-ticket"
-        }),
-        url: 'homeTurnos'
-      }, {
-        label: 'Farmacia',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-shop"
-        }),
-        url: 'homeFarmacia'
-      }, {
-        label: 'Laboratorio',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-flask"
-        }),
-        url: 'verOrdenesExamenesGenerales'
-      }]
-    }]]
-  }, {
-    label: 'Reportes',
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-excel"
-    }),
-    items: [[{
-      label: 'Reportes Importantes',
-      items: [{
-        label: 'Facturación',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-money-bill"
-        }),
-        url: 'Invoices'
-      }, {
-        label: 'Facturas x Entidad',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-money-bill-wave"
-        }),
-        url: 'InvoicesByEntity'
-      }, {
-        label: 'Especialistas',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-user-doctor"
-        }),
-        url: 'InvoicesDoctors'
-      }, {
-        label: 'Bonificaciones',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-money-bill-trend-up"
-        }),
-        url: 'Commissions'
-      }, {
-        label: 'Citas',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-calendar-week"
-        }),
-        url: 'AppointmentsReport'
-      }]
-    }]]
-  }, {
-    label: 'Administración',
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-user-gear ml-2"
-    }),
-    items: [[{
-      label: 'Administrar Procesos',
-      items: [{
-        label: 'Marketing',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-folder-tree"
-        }),
-        url: 'homeMarketing'
-      }, {
-        label: 'Configuración',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-wrench"
-        }),
-        url: 'homeConfiguracion'
-      }, {
-        label: 'Inventario',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-truck-ramp-box"
-        }),
-        url: 'homeInventario'
-      }, {
-        label: 'Auditoria',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-person-chalkboard"
-        }),
-        url: 'homeAuditoria'
-      }, {
-        label: 'Contabilidad',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-money-check-dollar"
-        }),
-        url: 'homeContabilidad'
-      }, {
-        label: 'Comunidad',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-people-roof"
-        }),
-        url: 'social'
-      }, {
-        label: 'Manual De Usuario',
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa-solid fa-book-open"
-        }),
-        url: 'manualUsuario'
-      }]
-    }]]
-  }];
+  const [menuItems, setMenuItems] = useState([]);
+  useEffect(() => {
+    const loadMenu = async () => {
+      // 🔹 Paso 1: Obtener los permisos del backend
+      const backendMenus = JSON.parse(localStorage.getItem("menus")) || [];
+      const allowedKeys = backendMenus.map(m => m.key); // ['pacientes', 'citas', ...]
+
+      // 🔹 Paso 2: Obtener todos los ítems del MenuService
+      const menuMapping = await menuService.getAll(); // [{ key_: 'pacientes', route: 'pacientes' }, ...]
+
+      // 🔹 Paso 3: Filtrar los que tienen permiso
+      const allowedRoutes = menuMapping.filter(menu => allowedKeys.includes(menu.key_)).map(menu => menu.route).filter(Boolean); // por si algún `route` es undefined
+
+      // 🔹 Paso 4: Filtrar tu menú real usando los `route`
+      const filtered = filterMenuItems(items, allowedRoutes);
+      setMenuItems(filtered);
+    };
+    loadMenu();
+  }, []);
+  const iconTemplate = iconClass => {
+    return /*#__PURE__*/React.createElement("i", {
+      className: iconClass
+    });
+  };
+  const processItems = items => {
+    return items.map(item => {
+      const processedItem = {
+        ...item
+      };
+      if (item.icon) {
+        processedItem.icon = () => iconTemplate(item.icon);
+      }
+      if (item.items) {
+        processedItem.items = processItems(item.items);
+      }
+      return processedItem;
+    });
+  };
+  const processedItems = processItems(menuItems);
+  console.log("processed", processedItems);
   return /*#__PURE__*/React.createElement("div", {
     className: "navbar-megamenu-container"
-  }, /*#__PURE__*/React.createElement(MegaMenu, {
-    model: items,
-    orientation: "horizontal",
-    breakpoint: "960px",
+  }, /*#__PURE__*/React.createElement(Menubar, {
+    model: processedItems,
     className: "custom-responsive-megamenu"
   }), /*#__PURE__*/React.createElement("style", null, `
                 .navbar-megamenu-container {
@@ -162,7 +61,6 @@ const NavbarHeader = () => {
                 .custom-responsive-megamenu {
                     border: none !important;
                     background: transparent !important;
-                    width: 100%;
                 }
 
                 /* Estilos para modo claro */
@@ -176,7 +74,7 @@ const NavbarHeader = () => {
                     color: #495057 !important;
                 }
 
-                :root:not(.p-dark) .custom-responsive-megamenu .p-megamenu-panel {
+                :root:not(.p-dark) .custom-responsive-megamenu .p-submenu-list {
                     background: #ffffff !important;
                     border: 1px solid #e5e7eb !important;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
@@ -201,7 +99,7 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.87) !important;
                 }
 
-                .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                .p-dark .custom-responsive-megamenu .p-submenu-list {
                     background: #1f2937 !important;
                     border: 1px solid #374151 !important;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
@@ -224,9 +122,7 @@ const NavbarHeader = () => {
                     color: rgba(255, 255, 255, 0.6) !important;
                 }
 
-                .custom-responsive-megamenu .p-megamenu-root-list {
-                    display: flex;
-                    justify-content: center;
+                .custom-responsive-megamenu .p-menubar-root-list {
                     width: 100%;
                     margin: 0;
                     padding: 0;
@@ -246,12 +142,16 @@ const NavbarHeader = () => {
                     font-size: 1.1rem;
                 }
 
-                .custom-responsive-megamenu .p-megamenu-panel {
+                .custom-responsive-megamenu .p-submenu-list {
                     border-radius: 8px !important;
+                    padding: 0.5rem 0 !important;
+                    min-width: 200px;
                 }
 
-                .custom-responsive-megamenu .p-submenu-list {
-                    padding: 0.5rem 0 !important;
+                /* Estilo específico para el tercer nivel */
+                .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                    margin-top: -0.5rem;
+                    margin-left: 0.25rem;
                 }
 
                 .custom-responsive-megamenu .p-menuitem {
@@ -265,12 +165,12 @@ const NavbarHeader = () => {
 
                 /* Estilos responsive para móviles */
                 @media screen and (max-width: 960px) {
-                    .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                    .p-menubar.p-menubar-mobile-active .p-menubar-root-list {
                         width: 300px !important;
                         background: #ffffff !important;
                     }
                     
-                    .p-dark .p-megamenu.p-megamenu-mobile-active .p-megamenu-root-list {
+                    .p-dark .p-menubar.p-menubar-mobile-active .p-menubar-root-list {
                         background: #1f2937 !important;
                     }
                     
@@ -278,7 +178,7 @@ const NavbarHeader = () => {
                         margin: 0;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-root-list {
+                    .custom-responsive-megamenu .p-menubar-root-list {
                         flex-direction: column;
                     }
                     
@@ -287,7 +187,7 @@ const NavbarHeader = () => {
                         justify-content: flex-start;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-panel {
+                    .custom-responsive-megamenu .p-submenu-list {
                         position: static !important;
                         width: 100% !important;
                         box-shadow: none !important;
@@ -296,8 +196,18 @@ const NavbarHeader = () => {
                         border-radius: 0 !important;
                     }
                     
-                    .p-dark .custom-responsive-megamenu .p-megamenu-panel {
+                    .p-dark .custom-responsive-megamenu .p-submenu-list {
                         border-top: 1px solid #374151 !important;
+                    }
+                    
+                    /* Ajustes para tercer nivel en móviles */
+                    .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                        margin-left: 1rem;
+                        border-left: 2px solid #e5e7eb;
+                    }
+                    
+                    .p-dark .custom-responsive-megamenu .p-submenu-list .p-submenu-list {
+                        border-left: 2px solid #374151;
                     }
                 }
 
@@ -307,10 +217,14 @@ const NavbarHeader = () => {
                         margin: 0 8rem auto;
                     }
                     
-                    .custom-responsive-megamenu .p-megamenu-root-list {
+                    .custom-responsive-megamenu .p-menubar-root-list {
                         display:flex;
                         justify-content: flex-end;
                         gap: 2rem;
+                    }
+                    
+                    .custom-responsive-megamenu .p-submenu-list {
+                        max-height: 80vh;
                     }
                 }
             `));

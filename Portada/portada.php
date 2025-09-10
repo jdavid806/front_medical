@@ -321,86 +321,85 @@ $baner = "";
         initialView: 'dayGridMonth',
         initialDate: TODAY,
 
-        events: async function(fetchInfo, successCallback, failureCallback) {
-          const appointments = await appointmentService.active()
-          const selectedSpecialty = specialtySelect.value;
-          const selectedDoctor = doctorSelect.value;
+        events: function(fetchInfo, successCallback, failureCallback) {
 
-          // Obtener los nombres de los productos para todas las citas
-          const appointmentsWithProducts = await Promise.all(
-            appointments.map(async (appointment) => {
-              const productName = appointment.product_id ?
-                (await inventoryService.getById(appointment.product_id))?.name :
-                'No especificado';
-              return {
-                ...appointment,
-                productName
-              };
-            })
-          );
+          (async () => {
+            try {
+              const startDate = moment(fetchInfo.start).format('YYYY-MM-DD');
+              const endDate = moment(fetchInfo.end).format('YYYY-MM-DD');
+              const selectedSpecialty = specialtySelect.value;
+              const selectedDoctor = doctorSelect.value;
 
-          // console.log("appointmentsWithProducts", appointmentsWithProducts);
+              const appointments = await appointmentService.filterAppointments({
+                per_page: 10,
+                page: 1,
+                search: "",
+                sort: "-appointment_date,appointment_time",
+                appointmentDate: startDate + "," + endDate,
+              });
 
+              const filteredEvents = appointments?.data?.data
+                .filter(appointment => {
+                  return appointment.is_active &&
+                    (
+                      (selectedDoctor ? appointment.user_availability.user_id == selectedDoctor : true) &&
+                      (selectedSpecialty ? appointment.user_availability.user.user_specialty_id == selectedSpecialty : true)
+                    )
+                })
+                .map((appointment) => {
+                  const {
+                    appointment_date,
+                    appointment_time,
+                    user_availability,
+                    patient,
+                    attention_type,
+                    consultation_purpose,
+                    consultation_type,
+                    external_cause
+                  } = appointment
 
-          successCallback(
-            appointmentsWithProducts
-            .filter(appointment => {
+                  const patientName = `${patient.first_name} ${patient.last_name}`
+                  const date = moment(appointment_date).format('D-MM-YYYY')
+                  const time = moment(appointment_time, 'HH:mm:ss').format('h:mm a')
+                  const appointmentTimeEnd = moment(appointment_time, 'HH:mm:ss').add(user_availability.appointment_duration, 'minutes')
+                  const start = `${appointment_date}T${appointment_time}`
+                  const attentionType = rips[attention_type];
+                  const consultationType = typeConsults[consultation_type];
 
-              return appointment.is_active &&
+                  const externalCause = externalCauses[external_cause];
+                  const consultationPurpose = purposeConsultations[consultation_purpose];
 
-                (
-                  (selectedDoctor ? appointment.user_availability.user_id == selectedDoctor : true) &&
-                  (selectedSpecialty ? appointment.user_availability.user.user_specialty_id == selectedSpecialty : true)
-                )
-            })
-            .map((appointment) => {
-              const {
-                appointment_date,
-                appointment_time,
-                user_availability,
-                patient,
-                attention_type,
-                consultation_purpose,
-                consultation_type,
-                external_cause,
-                productName
-              } = appointment
+                  const description = `Cita de ${patientName} el dia ${date} a las ${time}`;
+                  return {
+                    title: patientName,
+                    start: `${appointment_date}T${appointment_time}`,
+                    end: `${appointment_date}T${appointmentTimeEnd}`,
+                    description,
+                    extendedProps: {
+                      doctor_name: user_availability.user.first_name + " " + user_availability.user.last_name,
+                      end: `${appointment_date}T${appointmentTimeEnd}`,
+                      appointment: appointment
+                    }
+                  }
+                });
 
-              const patientName = `${patient.first_name} ${patient.last_name}`
-              const date = moment(appointment_date).format('D-MM-YYYY')
-              const time = moment(appointment_time, 'HH:mm:ss').format('h:mm a')
-              const appointmentTimeEnd = moment(appointment_time, 'HH:mm:ss').add(user_availability.appointment_duration, 'minutes')
-              const start = `${appointment_date}T${appointment_time}`
-              const attentionType = rips[attention_type];
-              const consultationType = typeConsults[consultation_type];
+              // ¡IMPORTANTE! Usar el callback de éxito
+              successCallback(filteredEvents);
 
-
-              const externalCause = externalCauses[external_cause];
-              const consultationPurpose = purposeConsultations[consultation_purpose];
-
-              // console.log("externalCause", externalCauses, "", external_cause);
-
-              const description = `Cita de ${patientName} el dia ${date} a las ${time} para ${productName}`;
-              return {
-                title: patientName,
-                start: `${appointment_date}T${appointment_time}`,
-                end: `${appointment_date}T${appointmentTimeEnd}`,
-                description,
-                extendedProps: {
-                  doctor_name: user_availability.user.first_name + " " + user_availability.user.last_name,
-                  end: `${appointment_date}T${appointmentTimeEnd}`,
-                  appointment: appointment
-                }
-              }
-            })
-          );
+            } catch (error) {
+              console.error("Error:", error);
+              // ¡IMPORTANTE! Usar el callback de error
+              failureCallback(error);
+            }
+          })();
         },
 
-        eventClick: function(info) {
-          // console.log("infoPacient", info);
+        eventClick: async function(info) {
+
+          const product = await inventoryService.getById(info.event._def.extendedProps.appointment.id) || "sin producto";
 
           const titulo = info.event.title || "Título no disponible";
-          const descripcion = info.event.extendedProps?.description || "Descripción no disponible";
+          const descripcion = info.event.extendedProps?.description + " para " + product.name || "Descripción no disponible";
           const url = info.event.url || "";
           const start = moment(info.event.start).format('D-MM-YYYY, h:mm a');
           const endDate = info.event.extendedProps?.end || "Fecha no disponible";
@@ -434,7 +433,6 @@ $baner = "";
           var horaInicio = fechaInicioInicial.format('HH:mm');
           var fechaFinal = fechaFinalInicial.format('YYYY-MM-DD');
           var horaFinal = fechaFinalInicial.format('HH:mm');
-          // console.log("fechaFinal", fechaFinal);
 
           // Asignar datos a los campos del modal
           document.getElementById('fechaCita').value = fechaInicio; // Asignar la fecha de inicio
@@ -449,7 +447,6 @@ $baner = "";
 
         // Esta función lo que hace es que al una cita se reagende
         eventDrop: function(arg) {
-          // console.log(arg);
 
           let FechaHoraInicio = moment(arg.event.start).format();
           var usuario_modificar_cita = arg.event.extendedProps.resourceId;
@@ -463,7 +460,6 @@ $baner = "";
             cancelButtonText: 'Cancelar'
           }).then((result) => {
             if (result.isConfirmed) {
-              // console.log("se reagndo");
             } else {
               arg.revert();
             }

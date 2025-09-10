@@ -14,6 +14,7 @@ import {
 import { stringToDate } from "../../services/utilidades";
 import { UserSpecialtyDto } from "../models/models";
 import { useUserSpecialties } from "../user-specialties/hooks/useUserSpecialties";
+import { generarFormato } from "../../funciones/funcionesJS/generarPDF";
 
 interface AppointmentFormInputs {
     user_specialty: UserSpecialtyDto | null;
@@ -24,6 +25,7 @@ interface AppointmentFormInputs {
 }
 
 interface LeavingConsultationAppointmentFormProps {
+    patientId: string;
     userSpecialtyId: string;
     userId?: string;
 }
@@ -32,7 +34,7 @@ export interface LeavingConsultationAppointmentFormRef {
     mapAppointmentToServer: () => Promise<any>;
 }
 
-export const LeavingConsultationAppointmentForm = forwardRef(({ userSpecialtyId }: LeavingConsultationAppointmentFormProps, ref) => {
+export const LeavingConsultationAppointmentForm = forwardRef(({ patientId, userSpecialtyId, userId }: LeavingConsultationAppointmentFormProps, ref) => {
 
     const [appointmentDateDisabled, setAppointmentDateDisabled] = useState(true);
     const [appointmentTimeDisabled, setAppointmentTimeDisabled] = useState(true);
@@ -63,7 +65,7 @@ export const LeavingConsultationAppointmentForm = forwardRef(({ userSpecialtyId 
     const {
         control,
         setValue,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm<AppointmentFormInputs>({
         defaultValues: {
             user_specialty: null,
@@ -402,6 +404,20 @@ export const LeavingConsultationAppointmentForm = forwardRef(({ userSpecialtyId 
         setValue("appointment_time", uniqueOptions[0]?.value || null);
     };
 
+
+
+    const printAppointment = () => {
+        // 
+        generarFormato(
+            "Cita", {
+            fechaConsulta: appointmentDate?.toISOString().split("T")[0],
+            horaConsulta: appointmentTime,
+            patientId: patientId,
+        },
+            "Impresion"
+        )
+    }
+
     return (
         <>
             {/* Columna izquierda - Formulario */}
@@ -570,6 +586,17 @@ export const LeavingConsultationAppointmentForm = forwardRef(({ userSpecialtyId 
                     </div>
                 </div>
             </form>
+            <div className="d-flex justify-content-end">
+                {isValid && (
+                    <button
+                        className="btn btn-secondary"
+                        type="button"
+                        onClick={printAppointment}
+                    >
+                        <span className="fa fa-print me-2"></span> Imprimir Cita
+                    </button>
+                )}
+            </div>
         </>
     );
 });

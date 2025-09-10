@@ -9,9 +9,9 @@ import React, {
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { ExamForm } from "../exams/components/ExamForm";
-import { DisabilityForm } from "../disabilities/form/DisabilityForm";
-import { remissionsForm as RemissionsForm } from "../remissions/RemissionsForm";
-import PrescriptionForm from "../prescriptions/components/PrescriptionForm";
+import { DisabilityForm, DisabilityFormInputs } from "../disabilities/form/DisabilityForm";
+import { Remission, remissionsForm as RemissionsForm } from "../remissions/RemissionsForm";
+import PrescriptionForm, { PrescriptionFormInputs } from "../prescriptions/components/PrescriptionForm";
 import { LeavingConsultationGenerateTicket } from "../tickets/LeavingConsultationGenerateTicket";
 import {
   LeavingConsultationAppointmentForm,
@@ -39,10 +39,15 @@ import {
 import { SwalManager } from "../../services/alertManagerImported";
 import { Toast } from "primereact/toast";
 import { useMassMessaging } from "../hooks/useMassMessaging";
-import { getIndicativeByCountry } from "../../services/utilidades";
+import { addDaysToDate, getIndicativeByCountry } from "../../services/utilidades";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { ProgressBar } from "primereact/progressbar";
+import { useClinicalPackages } from "../clinical-packages/hooks/useClinicalPackages.js";
+import { Dropdown } from "primereact/dropdown";
+import { InputSwitch } from "primereact/inputswitch";
+import { useLastPatientPrescription } from "../prescriptions/hooks/useLastPatientPrescription.js";
+import { OptometryPrescriptionForm, OptometryPrescriptionFormRef } from "../prescriptions/components/OptometryPrescriptionForm.js";
 
 interface FinishClinicalRecordModalProps {
   initialExternalDynamicData: ClinicalRecordData;
@@ -86,8 +91,8 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       patientId = new URLSearchParams(window.location.search).get(
         "patient_id"
       ) ||
-        new URLSearchParams(window.location.search).get("id") ||
-        "",
+      new URLSearchParams(window.location.search).get("id") ||
+      "",
       specialtyName = new URLSearchParams(window.location.search).get(
         "especialidad"
       ) || "medicina_general",
@@ -117,12 +122,25 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     const { cie11Codes, loadCie11Codes, cie11Code, setCie11Code } =
       useSpecialty();
 
+    const { clinicalPackages, loading, fetchClinicalPackages } = useClinicalPackages()
+
+    const [packageActive, setPackageActive] = useState<boolean>(false);
+    const [selectedPackage, setSelectedPackage] = useState<any | null>(null);
+
+    const [initialSelectedExamTypes, setInitialSelectedExamTypes] = useState<string[]>([]);
+    const [initialDisabilityFormData, setInitialDisabilityFormData] = useState<DisabilityFormInputs | undefined>(undefined);
+    const [initialRemissionData, setInitialRemissionData] = useState<Remission | undefined>(undefined);
+    const [initialPrescriptionData, setInitialPrescriptionData] = useState<PrescriptionFormInputs | undefined>(undefined);
+    const [loadLastPrescriptionCheck, setLoadLastPrescriptionCheck] = useState<boolean>(false);
+
     const [visible, setVisible] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<string | null>(null);
     const [examsActive, setExamsActive] = useState<boolean>(false);
     const [disabilitiesActive, setDisabilitiesActive] =
       useState<boolean>(false);
     const [prescriptionsActive, setPrescriptionsActive] =
+      useState<boolean>(false);
+    const [optometryActive, setOptometryActive] =
       useState<boolean>(false);
     const [vaccinationsActive, setVaccinationsActive] =
       useState<boolean>(false);
@@ -141,6 +159,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     const examFormRef = useRef<any>(null);
     const disabilityFormRef = useRef<any>(null);
     const prescriptionFormRef = useRef<any>(null);
+    const optometryFormRef = useRef<OptometryPrescriptionFormRef>(null);
     const vaccineFormRef = useRef<any>(null);
     const remissionFormRef = useRef<any>(null);
     const appointmentFormRef =
@@ -216,6 +235,20 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       });
     };
 
+    const getRecipeTab = () => {
+      if (specialtyName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "oftalmologia") {
+        return {
+          key: "optometry",
+          label: "Receta de Optometría",
+        };
+      }
+
+      return {
+        key: "prescriptions",
+        label: "Recetas Médicas",
+      }
+    };
+
     const tabs = [
       {
         key: "examinations",
@@ -225,10 +258,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         key: "incapacities",
         label: "Incapacidades Clínicas",
       },
-      {
-        key: "prescriptions",
-        label: "Recetas Médicas",
-      },
+      getRecipeTab(),
       {
         key: "referral",
         label: "Remisión",
@@ -250,6 +280,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       error,
     } = useMassMessaging();
     const { fetchTemplate, switchTemplate } = useTemplateBuilded();
+    const { lastPatientPrescription, loadLastPatientPrescription } = useLastPatientPrescription();
 
     const sendMessageWppRef = useRef(sendMessageWpp);
 
@@ -311,17 +342,17 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         //calcular total de bloques a enviar
         const totalBlocks = [
           clinicalRecordSaved.exam_recipes.length > 0 &&
-            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient.whatsapp_notifications,
           clinicalRecordSaved.patient_disabilities.length > 0 &&
-            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient.whatsapp_notifications,
           clinicalRecordSaved.recipes.length > 0 &&
-            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient.whatsapp_notifications,
           clinicalRecordSaved.remissions.length > 0 &&
-            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient.whatsapp_notifications,
           clinicalRecordSaved &&
-            clinicalRecordSaved.patient.whatsapp_notifications, // Historia clínica
+          clinicalRecordSaved.patient.whatsapp_notifications, // Historia clínica
           clinicalRecordSaved.appointment &&
-            clinicalRecordSaved.patient.whatsapp_notifications,
+          clinicalRecordSaved.patient.whatsapp_notifications,
         ].filter(Boolean).length;
 
         const progressIncrement = totalBlocks > 0 ? 100 / totalBlocks : 0;
@@ -630,7 +661,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         });
 
         hideModal();
-        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+        //window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
       } catch (error) {
         console.error(error);
         if (error.data?.errors) {
@@ -653,6 +684,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       const exams = examFormRef.current?.getFormData();
       const disability = disabilityFormRef.current?.getFormData();
       const prescriptions = prescriptionFormRef.current?.getFormData();
+      const optometry = optometryFormRef.current?.getFormData();
       const remission = remissionFormRef.current?.getFormData();
       const appointment =
         await appointmentFormRef.current?.mapAppointmentToServer();
@@ -727,6 +759,15 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         };
       }
 
+      if (optometryActive && optometry) {
+        result.recipe = {
+          user_id: currentUser?.id,
+          patient_id: patientId,
+          optometry: optometry,
+          type: "optometry",
+        };
+      }
+
       if (disabilitiesActive) {
         result.patient_disability = {
           user_id: currentUser?.id,
@@ -752,6 +793,157 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       showModal,
       hideModal,
     }));
+
+    useEffect(() => {
+      if (!packageActive) {
+        setExamsActive(false)
+        setDisabilitiesActive(false)
+        setRemissionsActive(false)
+        setPrescriptionsActive(false)
+        setSelectedPackage(undefined)
+
+        setInitialSelectedExamTypes([])
+        setInitialDisabilityFormData(undefined)
+        setInitialRemissionData(undefined)
+        setInitialPrescriptionData({
+          user_id: 0,
+          patient_id: 0,
+          is_active: true,
+          medicines: []
+        })
+        setLoadLastPrescriptionCheck(false)
+      }
+    }, [packageActive])
+
+    const onPackageChange = (e: any) => {
+      console.log(e.value);
+      setSelectedPackage(e.value);
+
+      setExamsActive(false)
+      setDisabilitiesActive(false)
+      setRemissionsActive(false)
+      setPrescriptionsActive(false)
+
+      setInitialSelectedExamTypes([])
+      setInitialDisabilityFormData(undefined)
+      setInitialRemissionData(undefined)
+      setInitialPrescriptionData(undefined)
+
+      const packageExamTypes = e.value.package_items.filter(item => item.item_type == "App\\Models\\Examen")
+      const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`)
+      console.log(packageExamTypeIds)
+
+      if (packageExamTypeIds.length > 0) {
+        setExamsActive(true)
+        setInitialSelectedExamTypes(packageExamTypeIds)
+      }
+
+      const packageDisability = e.value.package_items.find(item => item.item_type == "App\\Models\\Incapacidad")
+      if (packageDisability) {
+        setDisabilitiesActive(true)
+        setInitialDisabilityFormData({
+          user_id: 0,
+          days_disability: packageDisability.prescription.days_incapacity,
+          start_date: new Date(),
+          end_date: addDaysToDate(new Date(), packageDisability.prescription.days_incapacity),
+          reason: packageDisability.prescription.reason,
+          id: 0,
+          isEditing: false
+        })
+      }
+
+      const packageRemission = e.value.package_items.find(item => item.item_type == "App\\Models\\Remision")
+      if (packageRemission) {
+        setRemissionsActive(true)
+        setInitialRemissionData({
+          receiver_user_id: packageRemission.prescription.user_id,
+          remitter_user_id: 0,
+          clinical_record_id: 0,
+          receiver_user_specialty_id: packageRemission.prescription.specialty_id,
+          note: packageRemission.prescription.reason,
+        })
+      }
+
+      const packagePrescriptions = e.value.package_items
+      if (packagePrescriptions.length > 0) {
+        setPrescriptionsActive(true)
+        setInitialPrescriptionData({
+          user_id: 0,
+          patient_id: 0,
+          is_active: true,
+          medicines: [...packagePrescriptions.filter(item => item.item_type == "App\\Models\\medicamento").map(item => ({
+            medication: item.prescription.medication,
+            concentration: item.prescription.concentration, //
+            duration: item.prescription.duration_days, //
+            frequency: item.prescription.frequency, //
+            medication_type: item.prescription.medication_type, //
+            observations: item.prescription.instructions, //
+            quantity: item.prescription.quantity, //
+            take_every_hours: +(item.prescription.medication_frequency?.split(" ")[0]) || 0,
+            showQuantity: false,
+            showTimeField: false,
+          })), ...(lastPatientPrescription?.recipe_items || [])]
+        })
+      }
+    };
+
+    const handleLoadLastPrescriptionChange = async (e: boolean) => {
+      console.log(e)
+      console.log(selectedPackage)
+      setLoadLastPrescriptionCheck(e)
+      if (e && selectedPackage) {
+        const lastPrescription = await loadLastPatientPrescription(patientId);
+        const newMedicines = [...(initialPrescriptionData?.medicines || []), ...lastPrescription.recipe_items];
+        setInitialPrescriptionData({
+          user_id: 0,
+          patient_id: 0,
+          is_active: true,
+          medicines: newMedicines
+        });
+      } else if (e && !selectedPackage) {
+        loadLastPrescription();
+      } else if (!e && selectedPackage) {
+        setPrescriptionsActive(true)
+        setInitialPrescriptionData({
+          user_id: 0,
+          patient_id: 0,
+          is_active: true,
+          medicines: selectedPackage.package_items.filter(item => item.item_type == "App\\Models\\medicamento").map(item => ({
+            medication: item.prescription.medication,
+            concentration: item.prescription.concentration, //
+            duration: item.prescription.duration_days, //
+            frequency: item.prescription.frequency, //
+            medication_type: item.prescription.medication_type, //
+            observations: item.prescription.instructions, //
+            quantity: item.prescription.quantity, //
+            take_every_hours: +(item.prescription.medication_frequency?.split(" ")[0]) || 0,
+            showQuantity: false,
+            showTimeField: false,
+          }))
+        })
+      } else {
+        setInitialPrescriptionData({
+          user_id: 0,
+          patient_id: 0,
+          is_active: true,
+          medicines: []
+        })
+      }
+    }
+
+    const loadLastPrescription = async () => {
+      const lastRecipe = await loadLastPatientPrescription(patientId);
+      setInitialPrescriptionDataFromLastPatientPrescription(lastRecipe)
+    }
+
+    const setInitialPrescriptionDataFromLastPatientPrescription = (lastPatientPrescription: any) => {
+      setInitialPrescriptionData({
+        user_id: 0,
+        patient_id: 0,
+        is_active: true,
+        medicines: lastPatientPrescription.recipe_items
+      })
+    }
 
     return (
       <div>
@@ -785,6 +977,32 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
               </div>
             </div>
           )}
+
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <InputSwitch
+              checked={packageActive}
+              id="packageActive"
+              name="packageActive"
+              onChange={(e) => setPackageActive(e.value)}
+            />
+            <label htmlFor="packageActive">Utilizar paquete</label>
+          </div>
+          {packageActive && (
+            <div className="mb-3 d-flex flex-column gap-2">
+              <label className="form-label">Seleccione un paquete</label>
+              <Dropdown
+                value={selectedPackage}
+                options={clinicalPackages}
+                onChange={onPackageChange}
+                optionLabel="label"
+                placeholder="Seleccione un paquete"
+                className="w-100"
+                inputId="selectedPackage"
+                name="selectedPackage"
+              />
+            </div>
+          )}
+
           <div className="d-flex">
             <div
               className="p-3 border-right d-flex flex-column gap-2"
@@ -824,7 +1042,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 </div>
                 <Divider />
                 <div className={examsActive ? "d-block" : "d-none"}>
-                  <ExamForm ref={examFormRef} />
+                  <ExamForm ref={examFormRef} initialSelectedExamTypes={initialSelectedExamTypes} />
                 </div>
               </div>
               <div
@@ -849,7 +1067,17 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 </div>
                 <Divider />
                 <div className={disabilitiesActive ? "d-block" : "d-none"}>
-                  <DisabilityForm ref={disabilityFormRef} />
+                  <DisabilityForm
+                    ref={disabilityFormRef}
+                    formConfig={{
+                      fieldsConfig: {
+                        user_id: {
+                          visible: false
+                        }
+                      }
+                    }}
+                    initialData={initialDisabilityFormData}
+                  />
                 </div>
               </div>
               <div
@@ -874,7 +1102,45 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 </div>
                 <Divider />
                 <div className={prescriptionsActive ? "d-block" : "d-none"}>
-                  <PrescriptionForm ref={prescriptionFormRef} />
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <InputSwitch
+                      checked={loadLastPrescriptionCheck}
+                      onChange={e => handleLoadLastPrescriptionChange(e.value)}
+                    />
+                    <label htmlFor="loadLastPrescriptionCheck">Cargar Última Receta</label>
+                  </div>
+
+                  <PrescriptionForm
+                    ref={prescriptionFormRef}
+                    initialData={initialPrescriptionData}
+                  />
+                </div>
+              </div>
+              <div
+                className={activeTab === "optometry" ? "d-block" : "d-none"}
+              >
+                <div className="d-flex justify-content-between">
+                  <h2>Receta de Optometría</h2>
+                  {!optometryActive && (
+                    <Button
+                      label="Agregar Receta de Optometría"
+                      className="btn btn-primary"
+                      onClick={() => setOptometryActive(true)}
+                    />
+                  )}
+                  {optometryActive && (
+                    <Button
+                      label="Cancelar"
+                      className="btn btn-danger"
+                      onClick={() => setOptometryActive(false)}
+                    />
+                  )}
+                </div>
+                <Divider />
+                <div className={optometryActive ? "d-block" : "d-none"}>
+                  <OptometryPrescriptionForm
+                    ref={optometryFormRef}
+                  />
                 </div>
               </div>
               <div
@@ -922,7 +1188,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 </div>
                 <Divider />
                 <div className={remissionsActive ? "d-block" : "d-none"}>
-                  <RemissionsForm ref={remissionFormRef} />
+                  <RemissionsForm ref={remissionFormRef} initialData={initialRemissionData} />
                 </div>
               </div>
               <div
@@ -948,6 +1214,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 <Divider />
                 <div className={appointmentActive ? "d-block" : "d-none"}>
                   <LeavingConsultationAppointmentForm
+                    patientId={patientId}
                     userSpecialtyId={"1"}
                     ref={appointmentFormRef}
                   />
@@ -1032,7 +1299,28 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
             <div className="mb-3">
               <CustomPRTable
                 data={diagnoses}
-                columns={[{ field: "label", header: "Diagnóstico" }]}
+                columns={[
+                  {
+                    field: "label",
+                    header: "Diagnóstico"
+                  },
+                  {
+                    field: "actions",
+                    header: "Acciones",
+                    width: "100px",
+                    body: (row) => (
+                      <div className="d-flex align-items-center justify-content-center">
+                        <Button
+                          icon={<i className="fa fa-trash" />}
+                          rounded
+                          text
+                          severity="danger"
+                          onClick={() => removeDiagnosis(diagnoses.indexOf(row))}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
                 disableSearch
                 disableReload
               />
@@ -1095,9 +1383,8 @@ const Tab: React.FC<TabProps> = ({ tab, activeTab, onActiveTabChange }) => {
   return (
     <>
       <button
-        className={`w-100 p-3 btn btn-outline-primary ${
-          activeTab === tab.key ? "btn-primary text-white" : ""
-        } btn-sm`}
+        className={`w-100 p-3 btn btn-outline-primary ${activeTab === tab.key ? "btn-primary text-white" : ""
+          } btn-sm`}
         onClick={() => {
           if (activeTab === tab.key) {
             onActiveTabChange?.(null);

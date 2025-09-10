@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 
 let company = {};
@@ -10,13 +10,15 @@ async function consultarData() {
   const responePatient = await consultarDatosPaciente(patient_id);
 
   patient = responePatient;
-  // console.log(patient);
+
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 export function generarFormatoRecetaOrden(datosExamen, tipo) {
-  //   console.log("datosExamen", datosExamen);
   const tablePatient = generarTablaPaciente(patient, {
     date: datosExamen.created_at || "--",
   });
@@ -70,7 +71,7 @@ export function generarFormatoRecetaOrden(datosExamen, tipo) {
     </div>
   `;
 
-  generatePDFFromHTML(contenido, company, patient);
+  generatePDFFromHTMLV2(contenido, company, patient);
 }
 
 export default generarFormatoRecetaOrden;

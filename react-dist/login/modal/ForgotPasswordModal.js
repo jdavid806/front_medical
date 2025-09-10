@@ -99,6 +99,13 @@ export const ForgotPasswordModal = ({
       showToast('error', 'Error', 'Las contraseñas no coinciden');
       return;
     }
+    const isLengthValid = passwords.password.length >= 8;
+    const isUppercaseValid = /[A-Z]/.test(passwords.password);
+    const isSpecialValid = /[!@#$%^&*(),.?":{}|<>]/.test(passwords.password);
+    if (!isLengthValid || !isUppercaseValid || !isSpecialValid) {
+      showToast('error', 'Error', 'La contraseña no cumple con los requisitos');
+      return;
+    }
     setLoading(true);
     try {
       const changePasswordData = {
@@ -106,19 +113,32 @@ export const ForgotPasswordModal = ({
         password: passwords.password,
         password_confirmation: passwords.password_confirmation
       };
-      const response = await authService.changePassword(changePasswordData);
-      if (response.status === 200 || response.data?.success) {
-        showToast('success', 'Éxito', 'Contraseña cambiada correctamente');
-        setTimeout(() => {
-          onSuccess();
-          onHide();
-          resetForm();
-        }, 1500);
+      const apiUrl = `${window.location.origin}/api/auth/change-password`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(changePasswordData)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 200 || data.success) {
+          showToast('success', 'Éxito', 'Contraseña cambiada correctamente');
+          setTimeout(() => {
+            onSuccess();
+            onHide();
+            resetForm();
+          }, 1500);
+        } else {
+          throw new Error(data.message || 'Error al cambiar la contraseña');
+        }
       } else {
-        throw new Error(response.data?.message || 'Error al cambiar la contraseña');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
-      showToast('error', 'Error', error.response?.data?.message || error.message || 'Error al cambiar la contraseña');
+      showToast('error', 'Error', error.message || 'Error al cambiar la contraseña');
     } finally {
       setLoading(false);
     }

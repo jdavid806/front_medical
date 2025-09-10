@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -10,7 +10,6 @@ let user = {};
 async function consultarData() {
   const response = await consultarDatosEmpresa();
   const responePatient = await consultarDatosPaciente(patient_id);
-  
 
   patient = responePatient;
   company = {
@@ -19,13 +18,19 @@ async function consultarData() {
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 }
 document.addEventListener("DOMContentLoaded", () => {
   consultarData();
 });
 
-export async function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "") {
+export async function generarFormatoRecetaOrden(
+  datosExamen,
+  tipo,
+  inputId = ""
+) {
   const tablePatient = generarTablaPaciente(patient, {
     date: datosExamen.created_at || "--",
   });
@@ -33,9 +38,13 @@ export async function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "")
     nombre: datosExamen?.doctor,
     especialidad: datosExamen.user?.user_specialty_name,
     registro_medico: datosExamen.user?.clinical_record || "",
-    sello: `https://dev.monaros.co/` + getUrlImage(datosExamen.user?.image_minio_url || ""),
-    firma: `https://dev.monaros.co/` + getUrlImage(datosExamen.user?.firma_minio_url || "")
-  }
+    sello:
+      `https://dev.monaros.co/` +
+      getUrlImage(datosExamen.user?.image_minio_url || ""),
+    firma:
+      `https://dev.monaros.co/` +
+      getUrlImage(datosExamen.user?.firma_minio_url || ""),
+  };
   let contenido = `
    <h3 class="text-primary text-center" style="margin: 0; padding: 0;">Orden de Exámenes</h3>
       <hr style="margin: 0.25rem 0;">
@@ -78,7 +87,7 @@ export async function generarFormatoRecetaOrden(datosExamen, tipo, inputId = "")
     </div>
     ${datosUsuario(user)}  
     `;
-  await generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTMLV2(contenido, company, patient, inputId);
 }
 
 export default generarFormatoRecetaOrden;

@@ -1,3 +1,5 @@
+import { OptometryPrescriptionFormData } from "../../prescriptions/components/OptometryPrescriptionForm";
+
 export interface StoreClinicalRecordInputs {
     appointment_id: string;
     clinical_record_type_id: string;
@@ -60,7 +62,8 @@ interface Remission {
 interface Recipe {
     user_id: string;
     patient_id: string;
-    medicines: Medicine[];
+    medicines?: Medicine[];
+    optometry?: OptometryPrescriptionFormData;
     type: string;
 }
 

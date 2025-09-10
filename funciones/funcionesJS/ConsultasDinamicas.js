@@ -1,5 +1,7 @@
 async function consultarDatosWhatssap(tipo) {
-  let url = obtenerRutaPrincipal() + `/medical/companies?include=billings,representative,communication`;
+  let url =
+    obtenerRutaPrincipal() +
+    `/medical/companies?include=billings,representative,communication`;
   let datosEmpresa = await obtenerDatos(url);
   console.log("datosEmpresa ", datosEmpresa);
 
@@ -15,7 +17,7 @@ async function consultarDatosWhatssap(tipo) {
     apiMensaje: `${urlBase}message/${tipo}/${datosMensajeria?.instance}`,
     apiInstance: urlBase + "instance/" + tipo + "/" + datosMensajeria?.instance,
     testNumero: urlBase + "chat/whatsappNumbers/" + datosMensajeria?.instance,
-  })
+  });
 
   return {
     apiKey: datosMensajeria?.api_key,
@@ -30,7 +32,7 @@ async function consultarWhatssapConectado() {
 
   console.log("Datos API:", datosApi);
   if (!datosApi.apiKey) {
-    return "NO-CREADA"
+    return "NO-CREADA";
   }
 
   try {
@@ -139,11 +141,17 @@ async function consultarDatosEmpresa() {
   let datosEmpresa = await obtenerDatos(url);
   // console.log("ruta empresa", url);
   let dataEmpresa = datosEmpresa.data.attributes;
-  // console.log("dataEmpresa ", dataEmpresa);
+
   return {
-    logo_consultorio: "",
+    logo_consultorio: await getUrlImage(
+      dataEmpresa.logo.replaceAll("\\", "/"),
+      true
+    ),
     nombre_consultorio: dataEmpresa.legal_name,
-    marca_agua: dataEmpresa.watermark,
+    marca_agua: await getUrlImage(
+      dataEmpresa.watermark.replaceAll("\\", "/"),
+      true
+    ),
     datos_consultorio: [
       { RNC: dataEmpresa.document_number },
       { Dirección: dataEmpresa.address },

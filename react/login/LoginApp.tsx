@@ -6,10 +6,12 @@ import { ForgotPasswordModal } from './modal/ForgotPasswordModal'
 import { LoginForm } from './form/LoginForm'
 
 export const LoginApp: React.FC = () => {
+
+    console.log("Holaaa Renderizo");
     const [currentView, setCurrentView] = useState<string>('login')
     const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false)
     const [username, setUsername] = useState<string>('')
-    const { login } = useAuth()
+    const { login, loading, Toast: toastRef } = useAuth()
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search)
@@ -19,7 +21,6 @@ export const LoginApp: React.FC = () => {
         if (firstTime === 'true' && email) {
             localStorage.setItem('complete_registration', 'true')
             localStorage.setItem('email', email)
-            window.history.replaceState({}, document.title, window.location.pathname)
         }
 
         const savedUsername = localStorage.getItem('username')
@@ -29,10 +30,11 @@ export const LoginApp: React.FC = () => {
         }
     }, [])
 
+
     const handleLogin = async (credentials: { username: string; password: string }) => {
         const result = await login(credentials)
         if (result.success) {
-            console.log("inicio seccion!!")
+            console.log("Inicio de sesión exitoso")
         }
     }
 
@@ -73,7 +75,7 @@ export const LoginApp: React.FC = () => {
 
     return (
         <div className="app-container relative w-full h-screen overflow-hidden">
-            <Toast />
+            <Toast ref={toastRef} />
             <ConfirmDialog />
 
             <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
