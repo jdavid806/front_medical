@@ -45,6 +45,7 @@ async function obtenerDatos(apiUrl) {
 }
 
 async function guardarDatos(url, datos) {
+  console.log("guardarDatos", url, datos);
   try {
     const respuesta = await fetch(url, {
       method: "POST",

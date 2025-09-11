@@ -11,7 +11,13 @@ import { PreadmissionForm } from "./PreadmissionForm";
 import { PrintTableAction } from "../components/table-actions/PrintTableAction";
 import { DownloadTableAction } from "../components/table-actions/DownloadTableAction";
 import { ShareTableAction } from "../components/table-actions/ShareTableAction";
-import { appointmentService, templateService } from "../../services/api";
+import {
+  appointmentService,
+  templateService,
+  examOrderService,
+  examRecipeResultService,
+  examRecipeService,
+} from "../../services/api";
 import UserManager from "../../services/userManager";
 import {
   appointmentStatesColors,
@@ -34,6 +40,7 @@ import {
   CustomPRTable,
   CustomPRTableColumnProps,
 } from "../components/CustomPRTable";
+import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 
 export const AppointmentsTable: React.FC = () => {
   const patientId =
@@ -44,6 +51,7 @@ export const AppointmentsTable: React.FC = () => {
   const [selectedDate, setSelectedDate] = React.useState<
     Nullable<(Date | null)[]>
   >([new Date(new Date().setDate(new Date().getDate())), new Date()]);
+  const userLogged = getUserLogged();
 
   const getCustomFilters = () => {
     return {
@@ -71,6 +79,8 @@ export const AppointmentsTable: React.FC = () => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
+  const [selectedExamOrder, setSelectedExamOrder] = useState<any>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] =
     useState(false);
@@ -79,6 +89,8 @@ export const AppointmentsTable: React.FC = () => {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null); // Para la previsualización del PDF
   const [showPdfModal, setShowPdfModal] = useState(false); // Para controlar la visibilidad del modal de PDF
 
+  const { fetchTemplate, switchTemplate } = useTemplateBuilded();
+
   const {
     sendMessage: sendMessageAppointmentHook,
     responseMsg,
@@ -86,16 +98,6 @@ export const AppointmentsTable: React.FC = () => {
     error,
   } = useMassMessaging();
   const tenant = window.location.hostname.split(".")[0];
-  const dataTemplateShareAppointment = {
-    tenantId: tenant,
-    belongsTo: "citas-compartir",
-    type: "whatsapp",
-  };
-  const {
-    template: templateShareAppointmen,
-    setTemplate,
-    fetchTemplate,
-  } = useTemplate(dataTemplateShareAppointment);
 
   const sendMessageAppointment = useRef(sendMessageAppointmentHook);
 
@@ -228,7 +230,9 @@ export const AppointmentsTable: React.FC = () => {
                       <a
                         className="dropdown-item"
                         onClick={() => {
+                          setSelectedAppointment(data);
                           setSelectedAppointmentId(data.id);
+                          setSelectedExamOrder(data.orders[0]);
                           setShowPdfModal(true);
                         }}
                       >
@@ -289,9 +293,26 @@ export const AppointmentsTable: React.FC = () => {
                 <a
                   className="dropdown-item"
                   href="#"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.preventDefault();
-                    sendMessageWhatsapp(data, "share");
+                    const dataTemplate = {
+                      tenantId: tenant,
+                      belongsTo: "citas-compartir",
+                      type: "whatsapp",
+                    };
+                    const dataFormated = {
+                      patient: data.patient,
+                      assigned_user_availability: data.user_availability,
+                      appointment_date: data.date,
+                      appointment_time: data.time
+                    }
+                    const templateAppointments = await fetchTemplate(dataTemplate);
+                    const finishTemplate = await switchTemplate(
+                      templateAppointments.template,
+                      "appointments",
+                      dataFormated
+                    );
+                    await sendMessageWhatsapp(data.patient, finishTemplate, null);
                   }}
                 >
                   <div className="d-flex gap-2 align-items-center">
@@ -346,14 +367,28 @@ export const AppointmentsTable: React.FC = () => {
   const handleSubmit = async () => {
     try {
       // Llamar a la función guardarArchivoExamen
-      //@ ts-ignore
+      //@ts-ignore
       const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
 
       // Acceder a la PromiseResult
       if (enviarPDf !== undefined) {
-        await appointmentService.changeStatus(
-          selectedAppointmentId,
-          "consultation_completed"
+        const dataUpdate = {
+          minio_url: enviarPDf,
+        };
+        const examRecipeResultData = {
+          exam_recipe_id: selectedAppointment?.exam_recipe_id,
+          uploaded_by_user_id: userLogged.id,
+          date: new Date().toISOString(),
+          result_minio_url: enviarPDf,
+        };
+        await examOrderService.updateMinioFile(
+          selectedExamOrder?.id,
+          dataUpdate
+        );
+        await examRecipeResultService.create(examRecipeResultData);
+        await examRecipeService.changeStatus(
+          selectedAppointment?.exam_recipe_id,
+          "uploaded"
         );
         SwalManager.success({ text: "Resultados guardados exitosamente" });
       } else {
@@ -394,80 +429,58 @@ export const AppointmentsTable: React.FC = () => {
   };
 
   const handleCancelAppointment = async (data: any) => {
-    SwalManager.confirmCancel(async () => {
+    SwalManager.confirmCancel(async (data) => {
       await appointmentService.changeStatus(Number(data.id), "cancelled");
-      sendMessageWhatsapp(data, "cancel");
+      const dataTemplate = {
+        tenantId: tenant,
+        belongsTo: "cita-canelacion",
+        type: "whatsapp",
+      };
+      const templateAppointment = await fetchTemplate(dataTemplate);
+      const finishTemplate = await switchTemplate(
+        templateAppointment.template,
+        "appointments",
+        data
+      );
+      sendMessageWhatsapp(data.patient, finishTemplate, null);
       SwalManager.success({ text: "Cita cancelada exitosamente" });
     });
   };
 
   const sendMessageWhatsapp = useCallback(
-    async (appointment, type) => {
-      const appointmentData = await appointmentService.get(
-        Number(appointment.id)
-      );
+    async (patient, templateFormatted, dataToFile) => {
+      let dataMessage = {};
+      if (dataToFile !== null) {
+        dataMessage = {
+          channel: "whatsapp",
+          recipients: [
+            getIndicativeByCountry(patient.country_id) + patient.whatsapp,
+          ],
+          message_type: "media",
+          message: templateFormatted,
+          attachment_url: dataToFile?.file_url,
+          attachment_type: "document",
+          minio_model_type: dataToFile?.model_type,
+          minio_model_id: dataToFile?.model_id,
+          minio_id: dataToFile?.id,
+          webhook_url: "https://example.com/webhook",
+        };
+      } else {
+        dataMessage = {
+          channel: "whatsapp",
+          recipients: [
+            getIndicativeByCountry(patient.country_id) + patient.whatsapp,
+          ],
+          message_type: "text",
+          message: templateFormatted,
+          webhook_url: "https://example.com/webhook",
+        };
+      }
 
-      const replacements = {
-        NOMBRE_PACIENTE: `${appointmentData?.patient?.first_name ?? ""} ${appointmentData?.patient?.middle_name ?? ""
-          } ${appointmentData?.patient?.last_name ?? ""} ${appointmentData?.patient?.second_last_name ?? ""
-          }`,
-        ESPECIALISTA: `${appointmentData?.user_availability?.user.first_name ?? ""} ${appointmentData?.user_availability?.user?.middle_name ?? ""} ${appointmentData?.user_availability?.user?.last_name ?? ""} ${appointmentData?.user_availability?.user?.second_last_name ?? ""}`,
-        ESPECIALIDAD: `${appointmentData?.user_availability?.user?.specialty?.name ?? ""
-          }`,
-        FECHA_CITA: `${formatDate(appointmentData.appointment_date, true)}`,
-        HORA_CITA: `${appointmentData.appointment_time}`,
-        MOTIVO_REAGENDAMIENTO: "",
-        MOTIVO_CANCELACION: "",
-      };
-
-      const templateFormatted = await handleSwitchTemplate(type, replacements);
-
-      const dataMessage = {
-        channel: "whatsapp",
-        message_type: "text",
-        recipients: [
-          getIndicativeByCountry(appointmentData.patient.country_id) +
-          appointmentData.patient.whatsapp,
-        ],
-        message: templateFormatted,
-        webhook_url: "https://example.com/webhook",
-      };
       await sendMessageAppointment.current(dataMessage);
-      refresh();
     },
     [sendMessageAppointmentHook]
   );
-
-  async function handleSwitchTemplate(type, replacements) {
-    let templateFormatted = null;
-
-    switch (type) {
-      case "share":
-        templateFormatted = formatWhatsAppMessage(
-          templateShareAppointmen.template,
-          replacements
-        );
-        break;
-
-      case "cancel":
-        const tenant = window.location.hostname.split(".")[0];
-        const dataTemplateCancelAppointment = {
-          tenantId: tenant,
-          belongsTo: "citas-cancelacion",
-          type: "whatsapp",
-        };
-        const dataTemplateCancel = await templateService.getTemplate(
-          dataTemplateCancelAppointment
-        );
-        templateFormatted = formatWhatsAppMessage(
-          dataTemplateCancel.data.template,
-          replacements
-        );
-        break;
-    }
-
-    return templateFormatted;
-  }
 
   const openRescheduleAppointmentModal = (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);

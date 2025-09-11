@@ -75,7 +75,7 @@ export const farmaciaService = {
 
     verifyProducts: async ({ name, concentration, quantity }) => {
         const response = await fetch(
-            `${BASE_URL}/api/v1/admin/products/verify-product?name=${encodeURIComponent(name)}&concentration=${encodeURIComponent(concentration)}&quantity_to_verify=${encodeURIComponent(quantity)}`
+            `${BASE_URL}/api/v1/admin/products/check/verify-product?name=${encodeURIComponent(name)}&concentration=${encodeURIComponent(concentration)}&quantity_to_verify=${encodeURIComponent(quantity)}`
         );
         const data = await response.json();
         return {

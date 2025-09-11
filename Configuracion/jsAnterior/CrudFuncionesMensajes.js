@@ -3,12 +3,15 @@ async function guardarTemplate(datos) {
 
   let id = template.data.id;
 
+  console.log("template", template);
+
   if (laPlantillaEstaVacia(template)) {
     let url = "http://dev.medicalsoft.ai/api/v1/firma/message-templates";
-    guardarDatos(url, datos);
+    console.log("datos enviados",template, datos);
+    await guardarDatos(url, datos);
   } else {
     let url = "http://dev.medicalsoft.ai/api/v1/firma/message-templates/" + id;
-    actualizarDatos(url, datos);
+    await actualizarDatos(url, datos);
   }
 }
 

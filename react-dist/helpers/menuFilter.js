@@ -5,26 +5,21 @@ export function hasPermission(permissionKey) {
   if (bypassRoles.includes(role?.id)) return true;
   return permissions.some(p => p.key === permissionKey);
 }
-export const filterMenuItems = (items, allowedKeys, bypass = false) => {
-  if (bypass) return items;
-  return items.map(item => {
-    // Si tiene hijos, los filtramos recursivamente
-    if (item.items) {
-      const filteredSubItems = filterMenuItems(item.items, allowedKeys, bypass);
-      if (filteredSubItems.length > 0) {
-        return {
-          ...item,
-          items: filteredSubItems
-        };
+export const filterMenuItems = (menuItems, allowedRoutes) => {
+  const filterRecursive = items => {
+    return items.map(item => {
+      const newItem = {
+        ...item
+      };
+      if (item.items) {
+        newItem.items = filterRecursive(item.items);
       }
-    }
-
-    // Si tiene URL, verificamos si está permitido por los keys
-    if (item.url && allowedKeys.includes(item.url)) {
-      return item;
-    }
-
-    // Si no tiene hijos válidos ni URL válida, se elimina
-    return null;
-  }).filter(item => item !== null);
+      const isAllowed = !item.url || allowedRoutes.includes(item.url);
+      if (isAllowed || newItem.items && newItem.items.length > 0) {
+        return newItem;
+      }
+      return null;
+    }).filter(Boolean);
+  };
+  return filterRecursive(menuItems);
 };

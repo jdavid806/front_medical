@@ -126,83 +126,78 @@ export const items = [{
       url: "configuracionEmpresa"
     }, {
       label: "Entidades",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-user-tie",
       url: "configEntidades"
     }, {
       label: "Usuarios",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-users-line",
       items: [{
         label: "Usuarios",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-user-gear",
         url: "cardUsers"
       }, {
         label: "Roles de Usuario",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-users-gear",
         url: "cardRoles"
       }, {
         label: "Horarios de Atención",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-clock-rotate-left",
         url: "cardHorarios"
       }, {
         label: "Ausencias Programadas",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-business-time",
         url: "cardAusencias"
       }, {
         label: "Comisiones",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-magnifying-glass-dollar",
         url: "cardComisiones"
       }, {
         label: "Modulos",
-        icon: "fa-solid fa-lock",
-        url: "cardModulos"
-      }, {
-        label: "Modulos",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-folder-open",
         url: "cardModulos"
       }, {
         label: "Especialidades Medicas",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-file-medical",
         url: "cardEspecialidades"
       }, {
         label: "Motivo de Consulta",
-        icon: "fa-solid fa-lock",
+        icon: "fa-solid fa-user-nurse",
         url: "cardMotivoConsulta"
       }]
     }, {
       label: "Examenes",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-vials",
       url: "configExamenes"
     }, {
       label: "Precios",
-      icon: "fa-solid fa-lock"
+      icon: "fa-solid fa-circle-dollar-to-slot"
     }, {
       label: "Importaciones",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-upload",
       url: "configImportaciones"
     }, {
       label: "Consentimientos",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-cedi-sign",
       url: "configConsentimientos"
     }, {
       label: "Convenios",
-      icon: "fa-solid fa-lock",
+      icon: "fa-solid fa-handshake-angle",
       url: "configTenantConvenios"
     }]
   }, {
     label: "Inventario",
     icon: "fa-solid fa-truck-ramp-box",
-    url: "homeInventario",
     items: [{
       label: "Productos Inventariables",
       icon: "fa-solid fa-boxes-stacked",
       url: "inventarioInventariables"
     }, {
       label: "Medicamentos",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-pills",
       url: "inventarioMedicamentos"
     }, {
       label: "Vacunas",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-syringe",
       url: "inventarioVacunas"
     }]
   }, {
@@ -214,15 +209,15 @@ export const items = [{
       url: "consultas-anulacion-pendiente"
     }, {
       label: "Anulaciones de facturas",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-ban",
       url: "admisiones-anulacion-pendiente"
     }, {
       label: "Estados de las solicitudes",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-bars-progress",
       url: "general-requests"
     }, {
       label: "Logs",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-check",
       url: "logsAuditoria"
     }]
   }, {
@@ -239,83 +234,83 @@ export const items = [{
   icon: "fa-solid fa-money-check-dollar",
   items: [{
     label: "Facturacion",
-    icon: "fa-solid fa-boxes-stacked",
+    icon: "fa-solid fa-sack-dollar",
     items: [{
       label: "Facturaciónes",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-wallet",
       url: "FE_FCE"
     }, {
       label: "Recibos de Caja",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-receipt",
       url: "RecibosDeCajas"
     }, {
       label: "Cuentas x Cobrar y Pagar",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-scale-balanced",
       url: "CuentasCobrarPagar"
     }, {
       label: "Cierre de Caja",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-shop-slash",
       url: "controlCaja"
     }, {
       label: "Control Cierre de Caja",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-cash-register",
       url: "reporteCaja"
     }, {
       label: "Bancos",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-piggy-bank",
       url: "BancosContables"
     }]
   }, {
     label: "Contable",
-    icon: "fa-solid fa-boxes-stacked",
+    icon: "fa-solid fa-vault",
     items: [{
       label: "Cuentas Contables",
       icon: "fa-solid fa-boxes-stacked",
       url: "CuentasContables"
     }, {
       label: "Comprobantes Contables",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-money-bill-transfer",
       url: "ComprobantesContables"
     }, {
       label: "Cierres Contables",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-shop-lock",
       url: "CierresContables"
     }, {
       label: "Auditoria Contable",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-magnifying-glass-dollar",
       url: "FE_ContabilidadNueva"
     }]
   }, {
     label: "Configuración Contable",
-    icon: "fa-solid fa-truck",
+    icon: "fa-solid fa-toolbox",
     items: [{
       label: "Metodos de Pago",
-      icon: "fa-solid fa-boxes-stacked",
+      icon: "fa-solid fa-cart-shopping",
       url: "metodosPago"
     }, {
       label: "Impuestos",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-money-bill-trend-up",
       url: "impuestos"
     }, {
       label: "Retenciones",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-money-bill-transfer",
       url: "retenciones"
     }, {
       label: "Centros de Costo",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-money-check",
       url: "centroCosto"
     }, {
       label: "Facturacion",
-      icon: "fa-solid fa-truck",
+      icon: "fa-solid fa-file-invoice-dollar",
       url: "facturacionConfiguracion"
     }]
   }, {
     label: "Gestión de Activos",
-    icon: "fa-solid fa-truck",
+    icon: "fa-solid fa-chart-line",
     url: "ActivosFijos"
   }, {
     label: "Gestión de Terceros",
-    icon: "fa-solid fa-truck",
+    icon: "fa-solid fa-users-viewfinder",
     url: "GestionarTerceros"
   }]
 }];

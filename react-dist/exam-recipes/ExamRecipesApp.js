@@ -263,7 +263,13 @@ const TableActionsMenu = ({
 }) => {
   const menu = useRef(null);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const items = [{
+  const items = [...(rowData.status === "uploaded" ? [{
+    label: "Visualizar resultados",
+    icon: "pi pi-eye",
+    command: () => {
+      onViewResults();
+    }
+  }, {
     label: "Imprimir",
     icon: "pi pi-print",
     command: () => {
@@ -274,12 +280,6 @@ const TableActionsMenu = ({
     icon: "pi pi-download",
     command: () => {
       onDownload();
-    }
-  }, ...(rowData.status === "uploaded" ? [{
-    label: "Visualizar resultados",
-    icon: "pi pi-eye",
-    command: () => {
-      onViewResults();
     }
   }] : []), ...(rowData.status === "pending" ? [{
     label: "Anular receta",

@@ -26,7 +26,8 @@ import { useTemplate } from "../hooks/useTemplate.js";
 import { formatWhatsAppMessage, getIndicativeByCountry, formatDate } from "../../services/utilidades.js";
 import PatientFormModal from "../patients/modals/form/PatientFormModal.js";
 import { Dialog } from "primereact/dialog";
-import { PrimeReactProvider } from "primereact/api";
+import { usePRToast } from "../hooks/usePRToast.js";
+import { Toast } from "primereact/toast";
 export const AppointmentFormModal = ({
   isOpen,
   onClose
@@ -75,6 +76,13 @@ export const AppointmentFormModal = ({
     loading,
     error
   } = useMassMessaging();
+  const {
+    showSuccessToast,
+    showErrorToast,
+    showFormErrorsToast,
+    showServerErrorsToast,
+    toast
+  } = usePRToast();
   const tenant = window.location.hostname.split(".")[0];
   const data = {
     tenantId: tenant,
@@ -241,11 +249,13 @@ export const AppointmentFormModal = ({
       await createAppointmentBulk({
         appointments: data
       }, patient.id?.toString());
+      showSuccessToast();
       sendMessageWhatsapp(appointments[0]);
       setTimeout(() => {
         location.reload();
       }, 1000);
     } catch (error) {
+      showServerErrorsToast(error);
       console.error(error);
     }
   };
@@ -668,13 +678,7 @@ export const AppointmentFormModal = ({
     };
   };
   console.log("renderizando");
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
-    value: {
-      zIndex: {
-        modal: 700
-      }
-    }
-  }, /*#__PURE__*/React.createElement(PatientFormModal, {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showPatientModal,
     onHide: () => setShowPatientModal(false),
     onSuccess: () => {
@@ -690,7 +694,9 @@ export const AppointmentFormModal = ({
     },
     appendTo: "self",
     maximizable: true
-  }, /*#__PURE__*/React.createElement("form", {
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("form", {
     className: "needs-validation row",
     noValidate: true,
     onSubmit: onSubmit
@@ -1258,7 +1264,7 @@ export const AppointmentFormModal = ({
     disabled: !formValid || hasValidationErrors()
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-bookmark"
-  }), " Guardar"))))));
+  }), " Guardar")))));
 };
 const AppointmentErrorIndicator = ({
   appointmentId,

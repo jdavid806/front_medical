@@ -227,7 +227,7 @@ $tabs = [
                                                         <?php endif; ?>
                                                         <button class="btn btn-success mt-3"
                                                             id="guardar-<?= $key ?>-<?= $subkey ?>"
-                                                            onclick="guardarDataPlantilla('<?= $key ?>-<?= $subkey ?>')">
+                                                            onclick="(async () => { await guardarDataPlantilla('<?= $key ?>-<?= $subkey ?>'); })()">
                                                             <i class="fas fa-save"></i> Guardar
                                                         </button>
                                                     </div>

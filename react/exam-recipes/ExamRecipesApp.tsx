@@ -351,20 +351,6 @@ const TableActionsMenu: React.FC<{
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const items = [
-    {
-      label: "Imprimir",
-      icon: "pi pi-print",
-      command: () => {
-        onPrint();
-      },
-    },
-    {
-      label: "Descargar",
-      icon: "pi pi-download",
-      command: () => {
-        onDownload();
-      },
-    },
     ...(rowData.status === "uploaded"
       ? [
           {
@@ -372,6 +358,20 @@ const TableActionsMenu: React.FC<{
             icon: "pi pi-eye",
             command: () => {
               onViewResults();
+            },
+          },
+          {
+            label: "Imprimir",
+            icon: "pi pi-print",
+            command: () => {
+              onPrint();
+            },
+          },
+          {
+            label: "Descargar",
+            icon: "pi pi-download",
+            command: () => {
+              onDownload();
             },
           },
         ]

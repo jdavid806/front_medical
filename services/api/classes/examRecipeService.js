@@ -27,4 +27,10 @@ export class ExamRecipeService extends BaseApiService {
     );
   }
 
+  async changeStatus(id, status) {
+    return await this.httpClient.put(
+      `${this.microservice}/${this.endpoint}/change-status/${id}/${status}`
+    );
+  }
+
 }

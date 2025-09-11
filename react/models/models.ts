@@ -22,8 +22,8 @@ export interface Patient {
   social_security_id: number;
   is_active: boolean;
   blood_type: string;
-  minio_url?: string; 
-  minio_id?: string;  
+  minio_url?: string;
+  minio_id?: string;
   social_security: Socialsecurity;
   companions: Companion[];
   appointments: AppointmentDto[];
@@ -111,6 +111,8 @@ export interface AppointmentDto {
   user_availability: UserAvailability;
   appointment_state: AppointmentStateDto;
   product_id: string;
+  exam_orders?: any;
+  exam_recipe_id?: number;
 }
 
 interface AppointmentStateDto {
@@ -139,6 +141,9 @@ export interface AppointmentTableItem {
   isChecked: boolean;
   specialtyId: string;
   patient?: Patient;
+  orders?: any;
+  exam_recipe_id?: number;
+  user_availability?: any;
 }
 
 export interface Companion {

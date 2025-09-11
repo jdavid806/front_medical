@@ -66,6 +66,7 @@ $examenes = [
         appointmentService,
         templateService,
         infoCompanyService,
+        examRecipeService,
     } from "./services/api/index.js";
     import AlertManager from "./services/alertManager.js";
     import UserManager from "./services/userManager.js";
@@ -77,7 +78,9 @@ $examenes = [
     import {
         createMassMessaging
     } from '../funciones/funcionesJS/massMessage.js';
-    import { generarFormato } from '../funciones/funcionesJS/generarPDF.js';
+    import {
+        generarFormato
+    } from '../funciones/funcionesJS/generarPDF.js';
 
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const examId = new URLSearchParams(window.location.search).get('exam_id');
@@ -104,7 +107,7 @@ $examenes = [
     const tenant = window.location.hostname.split(".")[0];
     const data = {
         tenantId: tenant,
-        belongsTo: "examenes-creacion",
+        belongsTo: "examenes-cargue",
         type: "whatsapp",
     };
     const companies = await infoCompanyService.getCompany();
@@ -231,14 +234,20 @@ $examenes = [
                     "results": data
                 })
                 .then(async (response) => {
-                    await appointmentService.changeStatus(appointmentId, 'consultation_completed');
                     await sendMessageWhatsapp(response);
+                    await appointmentService.changeStatus(appointmentId, 'consultation_completed');
+                    const appointmentData = await appointmentService.get(appointmentId);
+
+                    await examRecipeService.changeStatus(
+                        appointmentData.exam_recipe_id,
+                        "uploaded"
+                    );
                     AlertManager.success({
                         text: 'Se ha creado el registro exitosamente'
                     })
-                    // setTimeout(() => {
-                    //     history.back()
-                    // }, 1000);
+                    setTimeout(() => {
+                        window.location.href = `verOrdenesExamenes?patient_id=${patientId}`
+                    }, 1000);
                 })
                 .catch(err => {
                     console.error("Error al crear el resultado del examen:", err);

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { appointmentService } from '../../../services/api'
-import { ErrorHandler } from '../../../services/errorHandler'
 
 export const useAppointmentBulkCreate = () => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -9,10 +8,8 @@ export const useAppointmentBulkCreate = () => {
         setLoading(true)
         try {
             await appointmentService.bulkCreate(appointments, patientId)
-            SwalManager.success()
         } catch (error) {
             console.log(error);
-            ErrorHandler.generic(error)
             throw error
         } finally {
             setLoading(false)

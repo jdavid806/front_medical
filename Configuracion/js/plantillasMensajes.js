@@ -1,4 +1,4 @@
-function guardarDataPlantilla(tabId) {
+async function guardarDataPlantilla(tabId) {
   const editorContainer = document.querySelector(
     `#${tabId}-content .ql-editor`
   );
@@ -21,7 +21,9 @@ function guardarDataPlantilla(tabId) {
       attached: adjuntoSeleccionado,
     };
 
-    guardarTemplate(datos);
+    console.log("Datos a guardar:", datos);
+
+    await guardarTemplate(datos);
   } else {
     console.error("No se encontró el editor Quill para el tab:", tabId);
   }

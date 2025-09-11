@@ -193,11 +193,24 @@ include "../header.php";
                 <div class="tab-pane fade" id="tab-profile" role="tabpanel" aria-labelledby="profile-tab"></div>
                 <div class="tab-pane fade" id="tab-contact" role="tabpanel" aria-labelledby="contact-tab"></div>
             </div>
+
+            <div id="patientConsultationListReact"></div>
         </div>
     </div>
 </div>
 
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+<script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+        PatientConsultationList
+    } from './react-dist/patients/PatientConsultationList.js';
+
+    const rootElement = document.getElementById('patientConsultationListReact');
+    ReactDOMClient.createRoot(rootElement).render(React.createElement(PatientConsultationList));
+</script>
 
 <script type="module">
     import {

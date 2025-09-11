@@ -24,10 +24,10 @@ import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { ProgressBar } from "primereact/progressbar";
 import { useClinicalPackages } from "../clinical-packages/hooks/useClinicalPackages.js";
-import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
 import { useLastPatientPrescription } from "../prescriptions/hooks/useLastPatientPrescription.js";
 import { OptometryPrescriptionForm } from "../prescriptions/components/OptometryPrescriptionForm.js";
+import { Dropdown } from "primereact/dropdown";
 function getPurpuse(purpuse) {
   switch (purpuse) {
     case "Tratamiento":
@@ -40,6 +40,16 @@ function getPurpuse(purpuse) {
       return "PREVENTION";
   }
 }
+const diagnosisTypeOptions = [{
+  value: 'definitivo',
+  label: 'Definitivo'
+}, {
+  value: 'presuntivo',
+  label: 'Presuntivo'
+}, {
+  value: 'diferencial',
+  label: 'Diferencial'
+}];
 export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) => {
   const toast = useRef(null);
   const {
@@ -54,7 +64,9 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
   } = useForm({
     defaultValues: {
       diagnosis: null,
-      diagnoses: []
+      diagnoses: [],
+      diagnosis_type: null,
+      treatment_plan: null
     }
   });
   const {
@@ -63,6 +75,10 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
   } = useFieldArray({
     control,
     name: "diagnoses"
+  });
+  const diagnosisType = useWatch({
+    control,
+    name: "diagnosis_type"
   });
   const diagnoses = useWatch({
     control,
@@ -79,11 +95,8 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     setCie11Code
   } = useSpecialty();
   const {
-    clinicalPackages,
-    loading,
-    fetchClinicalPackages
+    clinicalPackages
   } = useClinicalPackages();
-  const [packageActive, setPackageActive] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [initialSelectedExamTypes, setInitialSelectedExamTypes] = useState([]);
   const [initialDisabilityFormData, setInitialDisabilityFormData] = useState(undefined);
@@ -431,7 +444,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
         life: 3000
       });
       hideModal();
-      //window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+      window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
     } catch (error) {
       console.error(error);
       if (error.data?.errors) {
@@ -489,7 +502,10 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       description: treatmentPlan || "--",
       data: {
         ...externalDynamicData,
-        rips: diagnoses
+        rips: {
+          diagnosis_type: diagnosisType,
+          diagnoses
+        }
       },
       consultation_duration: ""
     };
@@ -546,28 +562,9 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     showModal,
     hideModal
   }));
-  useEffect(() => {
-    if (!packageActive) {
-      setExamsActive(false);
-      setDisabilitiesActive(false);
-      setRemissionsActive(false);
-      setPrescriptionsActive(false);
-      setSelectedPackage(undefined);
-      setInitialSelectedExamTypes([]);
-      setInitialDisabilityFormData(undefined);
-      setInitialRemissionData(undefined);
-      setInitialPrescriptionData({
-        user_id: 0,
-        patient_id: 0,
-        is_active: true,
-        medicines: []
-      });
-      setLoadLastPrescriptionCheck(false);
-    }
-  }, [packageActive]);
-  const onPackageChange = e => {
-    console.log(e.value);
-    setSelectedPackage(e.value);
+  const onPackageChange = pkg => {
+    console.log(pkg);
+    setSelectedPackage(pkg);
     setExamsActive(false);
     setDisabilitiesActive(false);
     setRemissionsActive(false);
@@ -576,14 +573,14 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     setInitialDisabilityFormData(undefined);
     setInitialRemissionData(undefined);
     setInitialPrescriptionData(undefined);
-    const packageExamTypes = e.value.package_items.filter(item => item.item_type == "App\\Models\\Examen");
+    const packageExamTypes = pkg.package_items.filter(item => item.item_type == "App\\Models\\Examen");
     const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`);
     console.log(packageExamTypeIds);
     if (packageExamTypeIds.length > 0) {
       setExamsActive(true);
       setInitialSelectedExamTypes(packageExamTypeIds);
     }
-    const packageDisability = e.value.package_items.find(item => item.item_type == "App\\Models\\Incapacidad");
+    const packageDisability = pkg.package_items.find(item => item.item_type == "App\\Models\\Incapacidad");
     if (packageDisability) {
       setDisabilitiesActive(true);
       setInitialDisabilityFormData({
@@ -596,7 +593,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
         isEditing: false
       });
     }
-    const packageRemission = e.value.package_items.find(item => item.item_type == "App\\Models\\Remision");
+    const packageRemission = pkg.package_items.find(item => item.item_type == "App\\Models\\Remision");
     if (packageRemission) {
       setRemissionsActive(true);
       setInitialRemissionData({
@@ -607,14 +604,14 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
         note: packageRemission.prescription.reason
       });
     }
-    const packagePrescriptions = e.value.package_items;
+    const packagePrescriptions = pkg.package_items.filter(item => item.item_type == "App\\Models\\medicamento");
     if (packagePrescriptions.length > 0) {
       setPrescriptionsActive(true);
       setInitialPrescriptionData({
         user_id: 0,
         patient_id: 0,
         is_active: true,
-        medicines: [...packagePrescriptions.filter(item => item.item_type == "App\\Models\\medicamento").map(item => ({
+        medicines: [...packagePrescriptions.map(item => ({
           medication: item.prescription.medication,
           concentration: item.prescription.concentration,
           //
@@ -696,6 +693,38 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       medicines: lastPatientPrescription.recipe_items
     });
   };
+  const shouldShowCIE11PackageButton = cie11Code => {
+    return clinicalPackages.some(pkg => pkg.cie11 === cie11Code);
+  };
+  const getCIE11Package = cie11Code => {
+    return clinicalPackages.find(pkg => pkg.cie11 === cie11Code);
+  };
+  const onCIE11PackageClick = cie11Code => {
+    const pkg = getCIE11Package(cie11Code);
+    if (pkg) {
+      onPackageChange(pkg);
+    }
+    showSuccessToast({
+      title: "Paquete seleccionado",
+      message: `Se ha seleccionado el paquete ${pkg.label}`
+    });
+  };
+  const shouldShowCheckIcon = tabKey => {
+    switch (tabKey) {
+      case "examinations":
+        return examsActive;
+      case "incapacities":
+        return disabilitiesActive;
+      case "referral":
+        return remissionsActive;
+      case "prescriptions":
+        return prescriptionsActive;
+      case "optometry":
+        return optometryActive;
+      default:
+        return false;
+    }
+  };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Dialog, {
     visible: visible,
     onHide: () => {
@@ -724,7 +753,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-spin pi-spinner text-primary"
   }), /*#__PURE__*/React.createElement(ProgressBar, {
-    value: progress,
+    value: progress.toFixed(2),
     style: {
       flex: 1
     }
@@ -733,41 +762,147 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     style: {
       minWidth: "100px"
     }
-  }, /*#__PURE__*/React.createElement("strong", null, Math.round(progress), "% - ", progressMessage)))))), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(InputSwitch, {
-    checked: packageActive,
-    id: "packageActive",
-    name: "packageActive",
-    onChange: e => setPackageActive(e.value)
-  }), /*#__PURE__*/React.createElement("label", {
-    htmlFor: "packageActive"
-  }, "Utilizar paquete")), packageActive && /*#__PURE__*/React.createElement("div", {
-    className: "mb-3 d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("strong", null, progress.toFixed(2), "% - ", progressMessage)))))), /*#__PURE__*/React.createElement(Card, {
+    header: /*#__PURE__*/React.createElement("h3", {
+      className: "px-3 pt-3"
+    }, "Diagn\xF3sticos")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-grow-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-100 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "cie11-code",
     className: "form-label"
-  }, "Seleccione un paquete"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: selectedPackage,
-    options: clinicalPackages,
-    onChange: onPackageChange,
-    optionLabel: "label",
-    placeholder: "Seleccione un paquete",
+  }, "Escriba un C\xF3digo CIE-11"), /*#__PURE__*/React.createElement(AutoComplete, {
+    inputId: "cie11-code",
+    placeholder: "Seleccione un CIE-11",
+    field: "label",
+    suggestions: cie11Codes,
+    completeMethod: event => loadCie11Codes(event.query),
+    inputClassName: "w-100",
     className: "w-100",
-    inputId: "selectedPackage",
-    name: "selectedPackage"
+    appendTo: "self",
+    value: cie11Code,
+    onChange: e => setCie11Code(e.value),
+    forceSelection: false,
+    showEmptyMessage: true,
+    emptyMessage: "No se encontraron c\xF3digos CIE-11",
+    delay: 1000,
+    minLength: 3,
+    panelStyle: {
+      zIndex: 100000,
+      width: "auto"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Agregar",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-plus"
+    }),
+    disabled: !cie11Code || !cie11Code.label,
+    onClick: () => {
+      if (cie11Code && cie11Code.label) {
+        appendDiagnosis(cie11Code);
+        setCie11Code(null);
+      }
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    data: diagnoses,
+    columns: [{
+      field: "label",
+      header: "Diagnóstico"
+    }, {
+      field: "actions",
+      header: "Acciones",
+      width: "100px",
+      body: row => /*#__PURE__*/React.createElement("div", {
+        className: "d-flex align-items-center justify-content-center gap-2"
+      }, shouldShowCIE11PackageButton(row.codigo) && /*#__PURE__*/React.createElement(Button, {
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-gift"
+        }),
+        rounded: true,
+        text: true,
+        severity: "success",
+        tooltip: "Utilizar paquete configurado para CIE-11",
+        tooltipOptions: {
+          position: "top"
+        },
+        onClick: () => onCIE11PackageClick(row.codigo)
+      }), /*#__PURE__*/React.createElement(Button, {
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-trash"
+        }),
+        rounded: true,
+        text: true,
+        severity: "danger",
+        onClick: () => removeDiagnosis(diagnoses.indexOf(row))
+      }))
+    }],
+    disableSearch: true,
+    disableReload: true
   })), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "diagnosis_type",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "diagnosis_type",
+      className: "form-label"
+    }, "Tipo de Diagn\xF3stico"), /*#__PURE__*/React.createElement(Dropdown, {
+      id: "diagnosis_type",
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: diagnosisTypeOptions,
+      optionLabel: "label",
+      optionValue: "value",
+      placeholder: "Seleccione un tipo de diagn\xF3stico",
+      className: "w-100",
+      showClear: true
+    }))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "treatment_plan",
+    control: control,
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "treatment-plan",
+      className: "form-label"
+    }, "Plan de Tratamiento"), /*#__PURE__*/React.createElement(Editor, {
+      id: "treatment-plan",
+      value: field.value || "",
+      onTextChange: e => field.onChange(e.htmlValue),
+      style: {
+        height: "320px"
+      },
+      className: classNames({
+        "p-invalid": fieldState.error
+      })
+    }))
+  }))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "d-flex"
   }, /*#__PURE__*/React.createElement("div", {
     className: "p-3 border-right d-flex flex-column gap-2",
     style: {
-      width: "250px",
-      minWidth: "250px"
+      width: "300px",
+      minWidth: "300px"
     }
   }, tabs.map(tab => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Tab, {
     key: tab.key,
     tab: tab,
     activeTab: activeTab,
-    onActiveTabChange: activeTab => setActiveTab(activeTab)
+    onActiveTabChange: activeTab => setActiveTab(activeTab),
+    showCheckIcon: shouldShowCheckIcon(tab.key)
   })))), /*#__PURE__*/React.createElement("div", {
     className: "p-3 flex-grow-1"
   }, /*#__PURE__*/React.createElement("div", {
@@ -918,103 +1053,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     className: turnsActive ? "d-block" : "d-none"
   }, /*#__PURE__*/React.createElement(LeavingConsultationGenerateTicket, {
     patientId: patientId
-  }))))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", {
-    className: "fs-9 text-danger"
-  }, "Antes de finalizar la consulta por favor complete la siguiente informaci\xF3n:"), /*#__PURE__*/React.createElement(Card, {
-    header: /*#__PURE__*/React.createElement("h3", {
-      className: "p-3"
-    }, "Diagn\xF3sticos")
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-grow-1"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "w-100 mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "cie11-code",
-    className: "form-label"
-  }, "Escriba un C\xF3digo CIE-11"), /*#__PURE__*/React.createElement(AutoComplete, {
-    inputId: "cie11-code",
-    placeholder: "Seleccione un CIE-11",
-    field: "label",
-    suggestions: cie11Codes,
-    completeMethod: event => loadCie11Codes(event.query),
-    inputClassName: "w-100",
-    className: "w-100",
-    appendTo: "self",
-    value: cie11Code,
-    onChange: e => setCie11Code(e.value),
-    forceSelection: false,
-    showEmptyMessage: true,
-    emptyMessage: "No se encontraron c\xF3digos CIE-11",
-    delay: 1000,
-    minLength: 3,
-    panelStyle: {
-      zIndex: 100000,
-      width: "auto"
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Agregar",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-plus"
-    }),
-    disabled: !cie11Code || !cie11Code.label,
-    onClick: () => {
-      if (cie11Code && cie11Code.label) {
-        appendDiagnosis(cie11Code);
-        setCie11Code(null);
-      }
-    }
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
-    data: diagnoses,
-    columns: [{
-      field: "label",
-      header: "Diagnóstico"
-    }, {
-      field: "actions",
-      header: "Acciones",
-      width: "100px",
-      body: row => /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center justify-content-center"
-      }, /*#__PURE__*/React.createElement(Button, {
-        icon: /*#__PURE__*/React.createElement("i", {
-          className: "fa fa-trash"
-        }),
-        rounded: true,
-        text: true,
-        severity: "danger",
-        onClick: () => removeDiagnosis(diagnoses.indexOf(row))
-      }))
-    }],
-    disableSearch: true,
-    disableReload: true
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "treatment_plan",
-    control: control,
-    render: ({
-      field,
-      fieldState
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: "treatment-plan",
-      className: "form-label"
-    }, "Plan de Tratamiento"), /*#__PURE__*/React.createElement(Editor, {
-      id: "treatment-plan",
-      value: field.value || "",
-      onTextChange: e => field.onChange(e.htmlValue),
-      style: {
-        height: "320px"
-      },
-      className: classNames({
-        "p-invalid": fieldState.error
-      })
-    }))
-  }))), /*#__PURE__*/React.createElement("div", {
+  }))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2 mt-3"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
@@ -1035,7 +1074,8 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
 const Tab = ({
   tab,
   activeTab,
-  onActiveTabChange
+  onActiveTabChange,
+  showCheckIcon
 }) => {
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     className: `w-100 p-3 btn btn-outline-primary ${activeTab === tab.key ? "btn-primary text-white" : ""} btn-sm`,
@@ -1046,5 +1086,15 @@ const Tab = ({
       }
       onActiveTabChange?.(tab.key);
     }
-  }, tab.label));
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: showCheckIcon ? "d-block" : "d-none"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `fas fa-check-circle`,
+    style: {
+      width: "20px",
+      height: "20px"
+    }
+  })), tab.label)));
 };

@@ -87,6 +87,8 @@ export const useFetchAppointments = (getCustomFilters?: () => any, customMapper?
       productId: appointment.product_id,
       stateDescription: estado, 
       user_availability: appointment?.user_availability,
+      orders: appointment?.exam_orders,
+      exam_recipe_id: appointment?.exam_recipe_id
     };
   };
 

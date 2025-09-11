@@ -44,10 +44,10 @@ import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { ProgressBar } from "primereact/progressbar";
 import { useClinicalPackages } from "../clinical-packages/hooks/useClinicalPackages.js";
-import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
 import { useLastPatientPrescription } from "../prescriptions/hooks/useLastPatientPrescription.js";
 import { OptometryPrescriptionForm, OptometryPrescriptionFormRef } from "../prescriptions/components/OptometryPrescriptionForm.js";
+import { Dropdown } from "primereact/dropdown";
 
 interface FinishClinicalRecordModalProps {
   initialExternalDynamicData: ClinicalRecordData;
@@ -60,6 +60,7 @@ interface FinishClinicalRecordModalProps {
 interface FinishClinicalRecordModalInputs {
   diagnosis: string | null;
   diagnoses: any[];
+  diagnosis_type: string | null;
   treatment_plan: string | null;
 }
 
@@ -75,6 +76,21 @@ function getPurpuse(purpuse: string): string | undefined {
       return "PREVENTION";
   }
 }
+
+const diagnosisTypeOptions = [
+  {
+    value: 'definitivo',
+    label: 'Definitivo'
+  },
+  {
+    value: 'presuntivo',
+    label: 'Presuntivo'
+  },
+  {
+    value: 'diferencial',
+    label: 'Diferencial'
+  }
+];
 
 export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps> =
   forwardRef((props, ref) => {
@@ -101,12 +117,19 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       defaultValues: {
         diagnosis: null,
         diagnoses: [],
+        diagnosis_type: null,
+        treatment_plan: null,
       },
     });
 
     const { append: appendDiagnosis, remove: removeDiagnosis } = useFieldArray({
       control,
       name: "diagnoses",
+    });
+
+    const diagnosisType = useWatch({
+      control,
+      name: "diagnosis_type",
     });
 
     const diagnoses = useWatch({
@@ -122,9 +145,8 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     const { cie11Codes, loadCie11Codes, cie11Code, setCie11Code } =
       useSpecialty();
 
-    const { clinicalPackages, loading, fetchClinicalPackages } = useClinicalPackages()
+    const { clinicalPackages } = useClinicalPackages()
 
-    const [packageActive, setPackageActive] = useState<boolean>(false);
     const [selectedPackage, setSelectedPackage] = useState<any | null>(null);
 
     const [initialSelectedExamTypes, setInitialSelectedExamTypes] = useState<string[]>([]);
@@ -661,7 +683,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         });
 
         hideModal();
-        //window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
       } catch (error) {
         console.error(error);
         if (error.data?.errors) {
@@ -728,7 +750,10 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         description: treatmentPlan || "--",
         data: {
           ...externalDynamicData,
-          rips: diagnoses,
+          rips: {
+            diagnosis_type: diagnosisType,
+            diagnoses
+          },
         },
         consultation_duration: "",
       };
@@ -794,30 +819,9 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       hideModal,
     }));
 
-    useEffect(() => {
-      if (!packageActive) {
-        setExamsActive(false)
-        setDisabilitiesActive(false)
-        setRemissionsActive(false)
-        setPrescriptionsActive(false)
-        setSelectedPackage(undefined)
-
-        setInitialSelectedExamTypes([])
-        setInitialDisabilityFormData(undefined)
-        setInitialRemissionData(undefined)
-        setInitialPrescriptionData({
-          user_id: 0,
-          patient_id: 0,
-          is_active: true,
-          medicines: []
-        })
-        setLoadLastPrescriptionCheck(false)
-      }
-    }, [packageActive])
-
-    const onPackageChange = (e: any) => {
-      console.log(e.value);
-      setSelectedPackage(e.value);
+    const onPackageChange = (pkg: any) => {
+      console.log(pkg);
+      setSelectedPackage(pkg);
 
       setExamsActive(false)
       setDisabilitiesActive(false)
@@ -829,7 +833,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       setInitialRemissionData(undefined)
       setInitialPrescriptionData(undefined)
 
-      const packageExamTypes = e.value.package_items.filter(item => item.item_type == "App\\Models\\Examen")
+      const packageExamTypes = pkg.package_items.filter(item => item.item_type == "App\\Models\\Examen")
       const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`)
       console.log(packageExamTypeIds)
 
@@ -838,7 +842,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         setInitialSelectedExamTypes(packageExamTypeIds)
       }
 
-      const packageDisability = e.value.package_items.find(item => item.item_type == "App\\Models\\Incapacidad")
+      const packageDisability = pkg.package_items.find(item => item.item_type == "App\\Models\\Incapacidad")
       if (packageDisability) {
         setDisabilitiesActive(true)
         setInitialDisabilityFormData({
@@ -852,7 +856,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         })
       }
 
-      const packageRemission = e.value.package_items.find(item => item.item_type == "App\\Models\\Remision")
+      const packageRemission = pkg.package_items.find(item => item.item_type == "App\\Models\\Remision")
       if (packageRemission) {
         setRemissionsActive(true)
         setInitialRemissionData({
@@ -864,14 +868,14 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         })
       }
 
-      const packagePrescriptions = e.value.package_items
+      const packagePrescriptions = pkg.package_items.filter(item => item.item_type == "App\\Models\\medicamento")
       if (packagePrescriptions.length > 0) {
         setPrescriptionsActive(true)
         setInitialPrescriptionData({
           user_id: 0,
           patient_id: 0,
           is_active: true,
-          medicines: [...packagePrescriptions.filter(item => item.item_type == "App\\Models\\medicamento").map(item => ({
+          medicines: [...packagePrescriptions.map(item => ({
             medication: item.prescription.medication,
             concentration: item.prescription.concentration, //
             duration: item.prescription.duration_days, //
@@ -945,6 +949,42 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
       })
     }
 
+    const shouldShowCIE11PackageButton = (cie11Code: any) => {
+      return clinicalPackages.some(pkg => pkg.cie11 === cie11Code)
+    }
+
+    const getCIE11Package = (cie11Code: any) => {
+      return clinicalPackages.find(pkg => pkg.cie11 === cie11Code)
+    }
+
+    const onCIE11PackageClick = (cie11Code: any) => {
+      const pkg = getCIE11Package(cie11Code)
+      if (pkg) {
+        onPackageChange(pkg)
+      }
+      showSuccessToast({
+        title: "Paquete seleccionado",
+        message: `Se ha seleccionado el paquete ${pkg.label}`,
+      })
+    }
+
+    const shouldShowCheckIcon = (tabKey: string): boolean => {
+      switch (tabKey) {
+        case "examinations":
+          return examsActive;
+        case "incapacities":
+          return disabilitiesActive;
+        case "referral":
+          return remissionsActive;
+        case "prescriptions":
+          return prescriptionsActive;
+        case "optometry":
+          return optometryActive;
+        default:
+          return false;
+      }
+    }
+
     return (
       <div>
         <Dialog
@@ -966,10 +1006,10 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                 <div className="d-flex align-items-center justify-content-center h-100">
                   <div className="d-flex align-items-center gap-3 w-100">
                     <i className="pi pi-spin pi-spinner text-primary"></i>
-                    <ProgressBar value={progress} style={{ flex: 1 }} />
+                    <ProgressBar value={progress.toFixed(2)} style={{ flex: 1 }} />
                     <div className="text-center" style={{ minWidth: "100px" }}>
                       <strong>
-                        {Math.round(progress)}% - {progressMessage}
+                        {progress.toFixed(2)}% - {progressMessage}
                       </strong>
                     </div>
                   </div>
@@ -978,35 +1018,149 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
             </div>
           )}
 
-          <div className="d-flex align-items-center gap-2 mb-3">
-            <InputSwitch
-              checked={packageActive}
-              id="packageActive"
-              name="packageActive"
-              onChange={(e) => setPackageActive(e.value)}
-            />
-            <label htmlFor="packageActive">Utilizar paquete</label>
-          </div>
-          {packageActive && (
-            <div className="mb-3 d-flex flex-column gap-2">
-              <label className="form-label">Seleccione un paquete</label>
-              <Dropdown
-                value={selectedPackage}
-                options={clinicalPackages}
-                onChange={onPackageChange}
-                optionLabel="label"
-                placeholder="Seleccione un paquete"
-                className="w-100"
-                inputId="selectedPackage"
-                name="selectedPackage"
+          <Card header={<h3 className="px-3 pt-3">Diagnósticos</h3>}>
+            <div className="d-flex gap-2">
+              <div className="d-flex flex-grow-1">
+                <div className="w-100 mb-3">
+                  <label htmlFor="cie11-code" className="form-label">
+                    Escriba un Código CIE-11
+                  </label>
+                  <AutoComplete
+                    inputId="cie11-code"
+                    placeholder="Seleccione un CIE-11"
+                    field="label"
+                    suggestions={cie11Codes}
+                    completeMethod={(event: AutoCompleteCompleteEvent) =>
+                      loadCie11Codes(event.query)
+                    }
+                    inputClassName="w-100"
+                    className="w-100"
+                    appendTo={"self"}
+                    value={cie11Code}
+                    onChange={(e) => setCie11Code(e.value)}
+                    forceSelection={false}
+                    showEmptyMessage={true}
+                    emptyMessage="No se encontraron códigos CIE-11"
+                    delay={1000}
+                    minLength={3}
+                    panelStyle={{
+                      zIndex: 100000,
+                      width: "auto",
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="d-flex align-items-center">
+                <Button
+                  label="Agregar"
+                  icon={<i className="fa fa-plus" />}
+                  disabled={!cie11Code || !cie11Code.label}
+                  onClick={() => {
+                    if (cie11Code && cie11Code.label) {
+                      appendDiagnosis(cie11Code);
+                      setCie11Code(null);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div className="mb-3">
+              <CustomPRTable
+                data={diagnoses}
+                columns={[
+                  {
+                    field: "label",
+                    header: "Diagnóstico"
+                  },
+                  {
+                    field: "actions",
+                    header: "Acciones",
+                    width: "100px",
+                    body: (row) => (
+                      <div className="d-flex align-items-center justify-content-center gap-2">
+                        {shouldShowCIE11PackageButton(row.codigo) && (
+                          <Button
+                            icon={<i className="fa fa-gift" />}
+                            rounded
+                            text
+                            severity="success"
+                            tooltip="Utilizar paquete configurado para CIE-11"
+                            tooltipOptions={{
+                              position: "top",
+                            }}
+                            onClick={() => onCIE11PackageClick(row.codigo)}
+                          />
+                        )}
+
+                        <Button
+                          icon={<i className="fa fa-trash" />}
+                          rounded
+                          text
+                          severity="danger"
+                          onClick={() => removeDiagnosis(diagnoses.indexOf(row))}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+                disableSearch
+                disableReload
               />
             </div>
-          )}
-
+            <div className="mb-3">
+              <Controller
+                name="diagnosis_type"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <label htmlFor="diagnosis_type" className="form-label">
+                      Tipo de Diagnóstico
+                    </label>
+                    <Dropdown
+                      id="diagnosis_type"
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={diagnosisTypeOptions}
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccione un tipo de diagnóstico"
+                      className="w-100"
+                      showClear
+                    />
+                  </>
+                )}
+              />
+            </div>
+            <div className="mb-3">
+              <Controller
+                name="treatment_plan"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <label htmlFor="treatment-plan" className="form-label">
+                      Plan de Tratamiento
+                    </label>
+                    <Editor
+                      id="treatment-plan"
+                      value={field.value || ""}
+                      onTextChange={(e: EditorTextChangeEvent) =>
+                        field.onChange(e.htmlValue)
+                      }
+                      style={{ height: "320px" }}
+                      className={classNames({
+                        "p-invalid": fieldState.error,
+                      })}
+                    />
+                  </>
+                )}
+              />
+            </div>
+          </Card>
+          <Divider />
           <div className="d-flex">
             <div
               className="p-3 border-right d-flex flex-column gap-2"
-              style={{ width: "250px", minWidth: "250px" }}
+              style={{ width: "300px", minWidth: "300px" }}
             >
               {tabs.map((tab) => (
                 <>
@@ -1015,6 +1169,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                     tab={tab}
                     activeTab={activeTab}
                     onActiveTabChange={(activeTab) => setActiveTab(activeTab)}
+                    showCheckIcon={shouldShowCheckIcon(tab.key)}
                   />
                 </>
               ))}
@@ -1245,111 +1400,6 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
               </div>
             </div>
           </div>
-          <Divider />
-          <p className="fs-9 text-danger">
-            Antes de finalizar la consulta por favor complete la siguiente
-            información:
-          </p>
-          <Card header={<h3 className="p-3">Diagnósticos</h3>}>
-            <div className="d-flex gap-2">
-              <div className="d-flex flex-grow-1">
-                <div className="w-100 mb-3">
-                  <label htmlFor="cie11-code" className="form-label">
-                    Escriba un Código CIE-11
-                  </label>
-                  <AutoComplete
-                    inputId="cie11-code"
-                    placeholder="Seleccione un CIE-11"
-                    field="label"
-                    suggestions={cie11Codes}
-                    completeMethod={(event: AutoCompleteCompleteEvent) =>
-                      loadCie11Codes(event.query)
-                    }
-                    inputClassName="w-100"
-                    className="w-100"
-                    appendTo={"self"}
-                    value={cie11Code}
-                    onChange={(e) => setCie11Code(e.value)}
-                    forceSelection={false}
-                    showEmptyMessage={true}
-                    emptyMessage="No se encontraron códigos CIE-11"
-                    delay={1000}
-                    minLength={3}
-                    panelStyle={{
-                      zIndex: 100000,
-                      width: "auto",
-                    }}
-                  />
-                </div>
-              </div>
-              <div className="d-flex align-items-center">
-                <Button
-                  label="Agregar"
-                  icon={<i className="fa fa-plus" />}
-                  disabled={!cie11Code || !cie11Code.label}
-                  onClick={() => {
-                    if (cie11Code && cie11Code.label) {
-                      appendDiagnosis(cie11Code);
-                      setCie11Code(null);
-                    }
-                  }}
-                />
-              </div>
-            </div>
-            <div className="mb-3">
-              <CustomPRTable
-                data={diagnoses}
-                columns={[
-                  {
-                    field: "label",
-                    header: "Diagnóstico"
-                  },
-                  {
-                    field: "actions",
-                    header: "Acciones",
-                    width: "100px",
-                    body: (row) => (
-                      <div className="d-flex align-items-center justify-content-center">
-                        <Button
-                          icon={<i className="fa fa-trash" />}
-                          rounded
-                          text
-                          severity="danger"
-                          onClick={() => removeDiagnosis(diagnoses.indexOf(row))}
-                        />
-                      </div>
-                    ),
-                  },
-                ]}
-                disableSearch
-                disableReload
-              />
-            </div>
-            <div className="mb-3">
-              <Controller
-                name="treatment_plan"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <label htmlFor="treatment-plan" className="form-label">
-                      Plan de Tratamiento
-                    </label>
-                    <Editor
-                      id="treatment-plan"
-                      value={field.value || ""}
-                      onTextChange={(e: EditorTextChangeEvent) =>
-                        field.onChange(e.htmlValue)
-                      }
-                      style={{ height: "320px" }}
-                      className={classNames({
-                        "p-invalid": fieldState.error,
-                      })}
-                    />
-                  </>
-                )}
-              />
-            </div>
-          </Card>
           <div className="d-flex justify-content-end gap-2 mt-3">
             <Button
               label="Cancelar"
@@ -1377,9 +1427,10 @@ interface TabProps {
   tab: { key: string; label: string };
   activeTab: string | null;
   onActiveTabChange: ((activeTab: string | null) => void) | undefined;
+  showCheckIcon: boolean;
 }
 
-const Tab: React.FC<TabProps> = ({ tab, activeTab, onActiveTabChange }) => {
+const Tab: React.FC<TabProps> = ({ tab, activeTab, onActiveTabChange, showCheckIcon }) => {
   return (
     <>
       <button
@@ -1393,7 +1444,15 @@ const Tab: React.FC<TabProps> = ({ tab, activeTab, onActiveTabChange }) => {
           onActiveTabChange?.(tab.key);
         }}
       >
-        {tab.label}
+        <div className="d-flex align-items-center gap-2">
+          <div className={showCheckIcon ? "d-block" : "d-none"}>
+            <i
+              className={`fas fa-check-circle`}
+              style={{ width: "20px", height: "20px" }}
+            />
+          </div>
+          {tab.label}
+        </div>
       </button>
     </>
   );
