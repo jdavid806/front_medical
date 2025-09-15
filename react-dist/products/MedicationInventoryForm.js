@@ -1,7 +1,9 @@
+
 import React, { useRef } from "react";
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { Button } from 'primereact/button';
+import { useForm } from "react-hook-form";
 export const MedicationInventoryForm = () => {
   const stepperRef = useRef(null);
   const handleNext = () => {
@@ -10,6 +12,22 @@ export const MedicationInventoryForm = () => {
   const handlePrev = () => {
     stepperRef?.current?.prevCallback();
   };
+  const {
+    control,
+    register,
+    reset,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: {
+      errors
+    }
+  } = useForm({
+    defaultValues: {
+      product_type_id: null,
+      presentation: null
+    }
+  });
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement(Stepper, {

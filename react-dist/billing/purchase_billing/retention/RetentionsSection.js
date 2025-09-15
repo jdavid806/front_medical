@@ -37,9 +37,7 @@ export const RetentionsSection = ({
     onRetentionsChange([...retentions, newRetention]);
   };
   const handleRemoveRetention = id => {
-    if (retentions.length > 1) {
-      onRetentionsChange(retentions.filter(r => r.id !== id));
-    }
+    onRetentionsChange(retentions.filter(r => r.id !== id));
   };
   const handleRetentionChange = (id, field, value) => {
     const updatedRetentions = retentions.map(retention => {
@@ -73,6 +71,7 @@ export const RetentionsSection = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-percentage me-2 text-primary"
   }), "Retenciones (DOP)"), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     icon: "pi pi-plus",
     label: "Agregar retenci\xF3n",
     className: "btn btn-primary",
@@ -123,9 +122,11 @@ export const RetentionsSection = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-2 d-flex align-items-end"
   }, /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     className: "p-button-danger",
-    onClick: () => handleRemoveRetention(retention.id),
-    disabled: retentions.length <= 1,
+    onClick: () => handleRemoveRetention(retention.id)
+    // disabled={retentions.length <= 1}
+    ,
     tooltip: "Eliminar retenci\xF3n"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"

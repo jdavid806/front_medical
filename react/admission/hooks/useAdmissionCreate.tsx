@@ -58,7 +58,6 @@ export const useAdmissionCreate = () => {
                     total: product.total
                 })),
                 payments: formData.payments.map((payment, index) => {
-                    console.log("payment", payment);
                     return ({
                         method: payment.method,
                         amount: payment.amount,

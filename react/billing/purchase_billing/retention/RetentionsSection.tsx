@@ -66,9 +66,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
   };
 
   const handleRemoveRetention = (id: string) => {
-    if (retentions.length > 1) {
-      onRetentionsChange(retentions.filter((r) => r.id !== id));
-    }
+    onRetentionsChange(retentions.filter((r) => r.id !== id));
   };
 
   const handleRetentionChange = (id: string, field: string, value: any) => {
@@ -107,6 +105,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
           Retenciones (DOP)
         </h2>
         <Button
+          type="button"
           icon="pi pi-plus"
           label="Agregar retención"
           className="btn btn-primary"
@@ -166,9 +165,10 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
 
                 <div className="col-md-2 d-flex align-items-end">
                   <Button
+                    type="button"
                     className="p-button-danger"
                     onClick={() => handleRemoveRetention(retention.id)}
-                    disabled={retentions.length <= 1}
+                    // disabled={retentions.length <= 1}
                     tooltip="Eliminar retención"
                   >
                     <i className="fa-solid fa-trash"></i>

@@ -45,7 +45,6 @@ async function obtenerDatos(apiUrl) {
 }
 
 async function guardarDatos(url, datos) {
-  console.log("guardarDatos", url, datos);
   try {
     const respuesta = await fetch(url, {
       method: "POST",
@@ -290,7 +289,6 @@ async function getCountryInfo(value) {
 async function getSpecialtyName(value) {
   let url = obtenerRutaPrincipal() + "/medical/specialties";
   let especialidades = await obtenerDatos(url);
-  // console.log("especialidades ", especialidades);
 
   for (const especilidad of especialidades) {
     if (value === especilidad.id) {
@@ -302,7 +300,6 @@ async function getSpecialtyName(value) {
 async function getUserSpecialtyName(value) {
   let url = obtenerRutaPrincipal() + "/medical/user-specialties";
   let especialidades = await obtenerDatos(url);
-  // console.log("especialidades ", especialidades);
 
   for (const especilidad of especialidades) {
     if (value === especilidad.id) {
@@ -406,7 +403,6 @@ async function logoutBack() {
     if (!response.ok) {
       console.error("Error en logout:", data);
     } else {
-      console.log("Logout exitoso:", data);
     }
   } catch (error) {
     console.error("Error al hacer logout:", error);

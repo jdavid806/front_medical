@@ -867,7 +867,7 @@ body {
   line-height: var(--phoenix-body-line-height);
   color: var(--phoenix-body-color);
   text-align: var(--phoenix-body-text-align);
-  background-color: var(--phoenix-body-bg);
+  background-color: #F5F7FA !important;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -1010,7 +1010,7 @@ sup {
 }
 
 a {
-  color: rgba(var(--phoenix-link-color-rgb), var(--phoenix-link-opacity, 1));
+  color: #1A99FB;
   text-decoration: none;
 }
 a:hover {

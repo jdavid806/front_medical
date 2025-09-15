@@ -12,8 +12,6 @@ export const PatientInfo = ({
   const isDetailClinicalRecord = new URLSearchParams(window.location.search).get("clinicalRecordId");
   const [showEditModal, setShowEditModal] = useState(false);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card p-fluid"
-  }, /*#__PURE__*/React.createElement("div", {
     className: "text-center mb-3 mt-3"
   }, !isDetailClinicalRecord && /*#__PURE__*/React.createElement(Button, {
     style: {
@@ -32,7 +30,7 @@ export const PatientInfo = ({
     patient: patient
   }), /*#__PURE__*/React.createElement(PatientInsuranceInfo, {
     patient: patient
-  })), /*#__PURE__*/React.createElement(PatientFormModal, {
+  }), /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showEditModal,
     onHide: () => setShowEditModal(false),
     onSuccess: () => {

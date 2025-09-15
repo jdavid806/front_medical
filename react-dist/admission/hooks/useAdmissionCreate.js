@@ -34,7 +34,6 @@ export const useAdmissionCreate = () => {
           total_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
           observations: "",
           due_date: dueDateString,
-          // Added due date
           paid_amount: calculateTotal(formData.products, formData.billing.facturacionEntidad),
           user_id: userLogged.id,
           third_party_id: 1,
@@ -50,7 +49,6 @@ export const useAdmissionCreate = () => {
           total: product.total
         })),
         payments: formData.payments.map((payment, index) => {
-          console.log("payment", payment);
           return {
             method: payment.method,
             amount: payment.amount,

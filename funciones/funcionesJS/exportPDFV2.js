@@ -96,7 +96,8 @@ export async function generatePDFFromHTMLV2(
     </html>
     `;
 
-    const pdfGenerateUrl = 'https://dev.monaros.co/api/v2/mensajeria/pdf/generate';
+    const pdfGenerateUrl =
+      "https://dev.monaros.co/api/v2/mensajeria/pdf/generate";
 
     if (!targetInputId) {
       // Comportamiento original (abrir en nueva ventana)
@@ -118,7 +119,9 @@ export async function generatePDFFromHTMLV2(
       form.appendChild(inputConfig);
 
       // Agregar token CSRF para Laravel
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      )?.content;
       if (csrfToken) {
         const csrfInput = document.createElement("input");
         csrfInput.type = "hidden";
@@ -141,16 +144,19 @@ export async function generatePDFFromHTMLV2(
 
       // Preparar FormData para la petición fetch
       const formData = new FormData();
-      formData.append('html_content', htmlContent);
-      formData.append('pdf_config', JSON.stringify(configPDF));
+      formData.append("html_content", htmlContent);
+      formData.append("pdf_config", JSON.stringify(configPDF));
 
       // Obtener token CSRF
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      )?.content;
 
-      const response = await fetch(pdfGenerateUrl, { // Cambiado a la ruta de Laravel
+      const response = await fetch(pdfGenerateUrl, {
+        // Cambiado a la ruta de Laravel
         method: "POST",
         headers: {
-          'X-CSRF-TOKEN': csrfToken || '', // Enviar token CSRF en headers
+          "X-CSRF-TOKEN": csrfToken || "", // Enviar token CSRF en headers
         },
         body: formData, // Usar FormData en lugar de URL encoded
       });
@@ -174,7 +180,7 @@ export async function generatePDFFromHTMLV2(
   }
 }
 
-export async function generatePDFReceipts(content, configPDF) {
+export async function generatePDFReceipts(content, configPDF, targetInputId = null) {
   try {
     const htmlContent = `
     <!DOCTYPE html>
@@ -210,39 +216,84 @@ export async function generatePDFReceipts(content, configPDF) {
     </body>
     </html>
     `;
+    const pdfGenerateUrl =
+      "https://dev.monaros.co/api/v2/mensajeria/pdf/generate";
 
-    // Enviar a Laravel para generar PDF
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "/pdf/generate"; // Cambiado a la ruta de Laravel
-    form.target = "_blank";
+    if (!targetInputId) {
+      // Comportamiento original (abrir en nueva ventana)
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = pdfGenerateUrl; // Cambiado a la ruta de Laravel
+      form.target = "_blank";
 
-    const inputHTML = document.createElement("input");
-    inputHTML.type = "hidden";
-    inputHTML.name = "html_content";
-    inputHTML.value = htmlContent;
-    form.appendChild(inputHTML);
+      const inputHTML = document.createElement("input");
+      inputHTML.type = "hidden";
+      inputHTML.name = "html_content";
+      inputHTML.value = htmlContent;
+      form.appendChild(inputHTML);
 
-    // Agregar el parámetro configPDF como campo oculto
-    const inputConfig = document.createElement("input");
-    inputConfig.type = "hidden";
-    inputConfig.name = "pdf_config";
-    inputConfig.value = JSON.stringify(configPDF);
-    form.appendChild(inputConfig);
+      const inputConfig = document.createElement("input");
+      inputConfig.type = "hidden";
+      inputConfig.name = "pdf_config";
+      inputConfig.value = JSON.stringify(configPDF);
+      form.appendChild(inputConfig);
 
-    // Agregar token CSRF para Laravel
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-    if (csrfToken) {
-      const csrfInput = document.createElement("input");
-      csrfInput.type = "hidden";
-      csrfInput.name = "_token";
-      csrfInput.value = csrfToken;
-      form.appendChild(csrfInput);
+      // Agregar token CSRF para Laravel
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      )?.content;
+      if (csrfToken) {
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "_token";
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+    } else {
+      const tempInputId = `pdf-input-hidden-to-${targetInputId}`;
+      const tempInput = document.createElement("input");
+      tempInput.type = "file";
+      tempInput.id = tempInputId;
+      tempInput.accept = "application/pdf";
+      tempInput.style.display = "none";
+      document.body.appendChild(tempInput);
+
+      // Preparar FormData para la petición fetch
+      const formData = new FormData();
+      formData.append("html_content", htmlContent);
+      formData.append("pdf_config", JSON.stringify(configPDF));
+
+      // Obtener token CSRF
+      const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+      )?.content;
+
+      const response = await fetch(pdfGenerateUrl, {
+        // Cambiado a la ruta de Laravel
+        method: "POST",
+        headers: {
+          "X-CSRF-TOKEN": csrfToken || "", // Enviar token CSRF en headers
+        },
+        body: formData, // Usar FormData en lugar de URL encoded
+      });
+
+      if (!response.ok) throw new Error("Error generando PDF");
+
+      const blob = await response.blob();
+      const file = new File([blob], configPDF.name || "documento.pdf", {
+        type: "application/pdf",
+      });
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      tempInput.files = dataTransfer.files;
+
+      return tempInputId;
     }
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
   } catch (error) {
     console.error("Error generando PDF:", error);
     alert("Ocurrió un error al generar el documento");

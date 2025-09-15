@@ -31,10 +31,7 @@ include "../header.php";
                             data-bs-toggle="modal" data-bs-target="#modalHerramientasIA">
                             Herramientas IA
                         </button>
-                        <button class="btn btn-primary" id="detallePacienteBtn" type="button" data-bs-toggle="modal"
-                            data-bs-target="#modalDetallePaciente">
-                            Ver Información Paciente
-                        </button>
+                        <div id="SeePatientInfoButtonReact"></div>
                     </div>
                 </div>
             </div>
@@ -181,7 +178,7 @@ include "../header.php";
                             <div class="row align-items-center">
                                 <div class="col-6">
                                     <div class="timer">
-                                        Tiempo en consulta: <span id="timer">00:00:00</span>
+                                        Tiempo en consulta: <span id="timerReact"></span>
                                         <script>
                                             // let start = new Date().getTime();
                                             // setInterval(function() {
@@ -581,6 +578,20 @@ include "../Remisiones/modalRemisiones.php";
     import {
         clinicalRecordService
     } from "./services/api/index.js";
+    import {
+        SeePatientInfoButton
+    } from './react-dist/patients/SeePatientInfoButton.js';
+    import {
+        TimerApp
+    } from './react-dist/components/timer/TimerApp.js';
+
+    ReactDOMClient.createRoot(document.getElementById('timerReact')).render(React.createElement(TimerApp));
+
+    ReactDOMClient.createRoot(document.getElementById('SeePatientInfoButtonReact')).render(React.createElement(
+        SeePatientInfoButton, {
+            patientId: patientId
+        }
+    ));
 
     ReactDOMClient.createRoot(document.getElementById('form-content')).render(React.createElement(PastMedicalHistoryForm, {
         onFinishSave: () => {

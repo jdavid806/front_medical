@@ -149,7 +149,7 @@ RewriteRule ^FE_ImprimirContrato$ Contrato/descargar.php
 RewriteRule ^Dashboard$  Portada/portada.php
 
 #Pacientes
-RewriteRule ^pacientes$  Pacientes/pacientes.php
+RewriteRule ^pacientes$  Pacientes/pacientesV2.php
 RewriteRule ^verPaciente$  Pacientes/verPaciente.php
 
 #Citas
@@ -374,3 +374,6 @@ RewriteRule ^manualUsuario$ ManualUsuario/manualUsuario.php
 RewriteRule ^configTenantConvenios$ Configuracion/homeConfig/configTenantConvenios.php
 RewriteRule ^configIntegraciones$ Configuracion/homeConfig/configIntegraciones.php
 RewriteRule ^arbolContableTest$ Contabilidad/arbolContableTest.php
+RewriteRule ^solicitarInsumosTest$ Farmacia/reactTest/solicitarInsumosTest.php
+RewriteRule ^seePatientInfoButtonTest$ Pacientes/seePatientInfoButtonTest.php
+

@@ -1,5 +1,4 @@
 export const calculateTotal = (products = [], facturacionEntidad) => {
-  console.log('products', products);
   const priceField = facturacionEntidad ? 'copayment' : 'price';
   const productsArray = Array.isArray(products) ? products : Object.values(products || {});
   return productsArray.reduce((sum, product) => {
@@ -30,13 +29,11 @@ export const validatePatientStep = (patientData, toast) => {
     return false;
   }
   if (patientData.facturacionEntidad) {
-    console.log('patientData', patientData);
     const requiredBillingFields = ['entity', 'authorizationNumber'];
     const missingBillingFields = requiredBillingFields.filter(field => {
       const value = patientData?.[field];
       return value === undefined || value === null || value === '';
     });
-    console.log('missingBillingFields', missingBillingFields);
     if (missingBillingFields.length > 0) {
       toast.current?.show({
         severity: 'error',

@@ -42,8 +42,6 @@ export const UpdateAdmissionAuthorizationForm: React.FC<UpdateAdmissionAuthoriza
 
             const response = await admissionService.update(admissionId, data);
 
-            console.log(response);
-
             SwalManager.success({
                 title: 'Actualización exitosa',
                 text: 'La autorización fue actualizada correctamente.'

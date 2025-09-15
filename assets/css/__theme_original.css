@@ -867,7 +867,7 @@ body {
   line-height: var(--phoenix-body-line-height);
   color: var(--phoenix-body-color);
   text-align: var(--phoenix-body-text-align);
-  background-color: var(--phoenix-body-bg);
+  background-color: #F5F7FA !important;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -24896,7 +24896,7 @@ pre[class*=language-] {
   height: 2rem;
   border-radius: 50%;
   color: var(--phoenix-body-color);
-  background-color: var(--phoenix-body-bg);
+  background-color: #C4CDD5 !important;
   -webkit-box-shadow: 0px 8px 24px -4px rgba(36, 40, 46, 0.12);
   box-shadow: 0px 8px 24px -4px rgba(36, 40, 46, 0.12);
   z-index: 1;

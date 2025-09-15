@@ -52,22 +52,18 @@ export const KoneksiUploadAndVisualizeExamResultsModal = ({
     fetchAdmission(admissionId);
   }, []);
   useEffect(() => {
-    console.log("admission", admission);
     if (admission) {
       fetchDispensedClaim(admission.koneksi_claim_id);
     }
   }, [admission]);
   useEffect(() => {
-    console.log("dispensedClaim", dispensedClaim);
     if (dispensedClaim) {
       fetchSupportingDocumentsPolicy({
         preauthorizationId: dispensedClaim.authorization_id
       });
     }
   }, [dispensedClaim]);
-  useEffect(() => {
-    console.log("supportingDocuments", supportingDocuments);
-  }, [supportingDocuments]);
+  useEffect(() => {}, [supportingDocuments]);
   const getFormErrorMessage = name => {
     return errors[name] && errors[name].type !== "required" && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
@@ -91,10 +87,8 @@ export const KoneksiUploadAndVisualizeExamResultsModal = ({
   };
   const onSubmit = async data => {
     if (data.document_type && file) {
-      console.log("submit", data);
       const formData = new FormData();
       formData.append('file', file);
-      console.log("formData", formData);
       try {
         const response = await addFilesToPreauthorization(dispensedClaim.authorization_request_id, formData, {
           authorization_id: dispensedClaim.authorization_id,
@@ -102,13 +96,10 @@ export const KoneksiUploadAndVisualizeExamResultsModal = ({
           coverage: dispensedClaim.transaction_type,
           product_type: dispensedClaim.product_type
         });
-        console.log("response", response);
         fetchSupportingDocumentsPolicy({
           preauthorizationId: dispensedClaim.authorization_id
         });
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {

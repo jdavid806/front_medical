@@ -7,7 +7,7 @@ import ProductsPaymentStep from "./steps/ProductsPaymentStep.js";
 import PreviewDoneStep from "./steps/PreviewDoneStep.js";
 import { calculateTotal, validatePatientStep, validatePaymentStep, validateProductsStep } from "./utils/helpers.js";
 import { useProductsToBeInvoiced } from "../../appointments/hooks/useProductsToBeInvoiced.js";
-import { formatWhatsAppMessage, getIndicativeByCountry } from "../../../services/utilidades.js";
+import { formatDate, formatWhatsAppMessage, getIndicativeByCountry } from "../../../services/utilidades.js";
 import { useAdmissionCreate } from "../hooks/useAdmissionCreate.js";
 import { useMassMessaging } from "../../hooks/useMassMessaging.js";
 import { useTemplate } from "../../hooks/useTemplate.js";
@@ -68,6 +68,7 @@ const AdmissionBilling = ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [formData, setFormData] = useState(initialFormState);
+  const [responseAdmission, setResponseAdmission] = useState(null);
   const [internalVisible, setInternalVisible] = useState(false);
   const isMounted = useRef(true);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -101,7 +102,7 @@ const AdmissionBilling = ({
   const handleSendWhatsApp = async () => {
     setSendingWhatsApp(true);
     try {
-      await sendMessageWhatsapp(formData);
+      await sendMessageWhatsapp(responseAdmission);
     } catch (error) {
       console.error("Error enviando WhatsApp:", error);
     } finally {
@@ -110,9 +111,7 @@ const AdmissionBilling = ({
   };
   async function generatePdfFile(admissionData) {
     //@ts-ignore - Esta función debería existir en tu entorno
-    console.log('peter parkerrr');
     await generarFormato("Factura", admissionData, "Impresion", "admissionInput");
-    console.log('elduendeverdeee');
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         let fileInput = document.getElementById("pdf-input-hidden-to-admissionInput");
@@ -124,7 +123,7 @@ const AdmissionBilling = ({
         let formData = new FormData();
         formData.append("file", file);
         formData.append("model_type", "App\\Models\\Admission");
-        formData.append("model_id", admissionData.id);
+        formData.append("model_id", admissionData.admission_data.id);
         //@ts-ignore - Esta función debería existir en tu entorno
         guardarArchivo(formData, true).then(response => {
           resolve(response.file);
@@ -136,19 +135,17 @@ const AdmissionBilling = ({
     try {
       // Generar el PDF primero
       // @ts-ignore
-      const formattedAdmissionData = await getAdmissionFormatData(261); //appointmentId);
-      console.log('formattedAdmissionData', formattedAdmissionData);
-      const dataToFile = await generatePdfFile(formattedAdmissionData);
+      const dataToFile = await generatePdfFile(admissionData);
       //@ts-ignore - Esta función debería existir en tu entorno
       const urlPDF = getUrlImage(dataToFile.file_url.replaceAll("\\", "/"), true);
       if (!template) {
         await fetchTemplate();
       }
       const replacements = {
-        NOMBRE_PACIENTE: `${formData.patient.firstName} ${formData.patient.middleName} ${formData.patient.lastName} ${formData.patient.secondLastName}`,
-        NUMERO_FACTURA: admissionData.invoice_number || admissionData.id,
-        FECHA_FACTURA: new Date().toLocaleDateString(),
-        TOTAL_FACTURA: calculateTotal(formData.products, formData.billing.facturacionEntidad).toFixed(2),
+        NOMBRE_PACIENTE: `${admissionData.admission_data.patient.first_name ?? ""} ${admissionData.admission_data.patient.middle_name ?? ""} ${admissionData.admission_data.patient.last_name ?? ""} ${admissionData.admission_data.patient.second_last_name ?? ""}`,
+        NUMERO_FACTURA: admissionData.data.invoice_code || admissionData.data.invoice_reminder,
+        FECHA_FACTURA: formatDate(admissionData.data_invoice.invoice.created_at),
+        MONTO_FACTURADO: "$" + admissionData.data_invoice.invoice.total_amount.toFixed(2),
         "ENLACE DOCUMENTO": ""
       };
       const templateFormatted = formatWhatsAppMessage(template?.template || "", replacements);
@@ -187,28 +184,28 @@ const AdmissionBilling = ({
   const handleSubmitInvoice = async () => {
     try {
       const response = await createAdmission(formData, appointmentData);
-      console.log('✅ Admisión creada exitosamente:', response);
       if (!isMounted.current) return;
       toast.current?.show({
-        severity: 'success',
-        summary: 'Factura creada',
-        detail: 'La factura se ha generado correctamente',
+        severity: "success",
+        summary: "Factura creada",
+        detail: "La factura se ha generado correctamente",
         life: 5000
       });
       if (response && response.data) {
-        await sendMessageWhatsapp(response.data);
+        setResponseAdmission(response);
+        await sendMessageWhatsapp(response);
       }
       if (isMounted.current) {
         setIsSuccess(true);
       }
       return response;
     } catch (error) {
-      console.error('❌ Error submitting invoice:', error);
+      console.error("❌ Error submitting invoice:", error);
       if (!isMounted.current) return;
       toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: error?.message || 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
+        severity: "error",
+        summary: "Error",
+        detail: error?.message || "Ocurrió un error al generar la factura. Por favor intente nuevamente.",
         life: 5000
       });
       throw error;
@@ -229,7 +226,6 @@ const AdmissionBilling = ({
   };
   useEffect(() => {
     if (!visible) return;
-    console.log("📦 productsToInvoice actualizado:", productsToInvoice);
     if (appointmentData && appointmentData.patient) {
       const patient = appointmentData.patient;
       const initialProducts = productsToInvoice.length > 0 ? productsToInvoice.map(product => {
@@ -238,7 +234,7 @@ const AdmissionBilling = ({
           uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
           id: product.id,
           code: product.code || `PROD-${product.id}`,
-          description: product.name || product.description || 'Producto sin nombre',
+          description: product.name || product.description || "Producto sin nombre",
           price: product.sale_price,
           copayment: product.copayment,
           currentPrice: price,
@@ -248,7 +244,6 @@ const AdmissionBilling = ({
           total: (price || 0) * (1 + (product.tax || 0) / 100)
         };
       }) : [];
-      console.log('initialProducts', initialProducts);
 
       // Verificar montaje antes de actualizar estado
       if (isMounted.current) {
@@ -263,7 +258,7 @@ const AdmissionBilling = ({
             middleName: patient.middle_name || "",
             lastName: patient.last_name || "",
             secondLastName: patient.second_last_name || "",
-            nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
+            nameComplet: `${patient.first_name || ""} ${patient.middle_name || ""} ${patient.last_name || ""} ${patient.second_last_name || ""}`,
             birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
             gender: patient.gender || "",
             country: patient.country_id || "",
@@ -352,34 +347,34 @@ const AdmissionBilling = ({
     setActiveIndex(prevIndex);
   };
   const items = [{
-    label: 'Datos del paciente',
+    label: "Datos del paciente",
     command: () => {
       setActiveIndex(0);
     }
   }, {
-    label: 'Productos y Pagos',
+    label: "Productos y Pagos",
     command: () => {
       if (validateCurrentStep(0)) {
         setActiveIndex(1);
       } else {
         toast.current?.show({
-          severity: 'warn',
-          summary: 'Paso no disponible',
-          detail: 'Completa el paso actual primero',
+          severity: "warn",
+          summary: "Paso no disponible",
+          detail: "Completa el paso actual primero",
           life: 3000
         });
       }
     }
   }, {
-    label: 'Confirmación',
+    label: "Confirmación",
     command: () => {
       if (validateCurrentStep(1)) {
         setActiveIndex(2);
       } else {
         toast.current?.show({
-          severity: 'warn',
-          summary: 'Paso no disponible',
-          detail: 'Completa el paso actual primero',
+          severity: "warn",
+          summary: "Paso no disponible",
+          detail: "Completa el paso actual primero",
           life: 3000
         });
       }
@@ -392,8 +387,8 @@ const AdmissionBilling = ({
     onHide: handleHide,
     header: "Nueva Factura",
     style: {
-      width: '100vw',
-      maxWidth: '1600px'
+      width: "100vw",
+      maxWidth: "1600px"
     },
     maximizable: true
   }, /*#__PURE__*/React.createElement(Steps, {
@@ -405,9 +400,7 @@ const AdmissionBilling = ({
     className: "step-content"
   }, /*#__PURE__*/React.createElement("div", {
     className: activeIndex === 0 ? "" : "d-none"
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: sendMessageWhatsapp
-  }, "Enviar WhatsApp"), /*#__PURE__*/React.createElement(PatientStep, {
+  }, /*#__PURE__*/React.createElement(PatientStep, {
     formData: formData,
     updateFormData: updateFormData,
     updateBillingData: updateBillingData,

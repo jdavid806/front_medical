@@ -88,9 +88,8 @@ export const PatientAsyncTable: React.FC = () => {
       return {
         id: item.id.toString(),
         patientName:
-          `${item.first_name || ""} ${item.middle_name || ""} ${
-            item.last_name || ""
-          } ${item.second_last_name || ""}`.trim() || "--",
+          `${item.first_name || ""} ${item.middle_name || ""} ${item.last_name || ""
+            } ${item.second_last_name || ""}`.trim() || "--",
         documentNumber: item.document_number,
         phone: item.whatsapp || "--",
         age: age > 0 ? `${getAge(item.date_of_birth).toString()} años` : "--",
@@ -120,39 +119,45 @@ export const PatientAsyncTable: React.FC = () => {
 
   return (
     <>
-      <div className="card-body">
-        <div className="d-flex justify-content-end align-items-center mb-4">
-          <Button
-            label="Nuevo Paciente "
-            className="btn btn-primary"
-            onClick={() => setShowPatientModal(true)}
-          >
-            <i className="fas fa-plus"></i>
-          </Button>
-        </div>
 
-        <CustomPRTable
-          columns={columns}
-          data={tableItems}
-          sortField="createdAt"
-          sortOrder={-1}
-          onPage={handlePageChange}
-          onSearch={handleSearchChange}
-          loading={loading}
-          totalRecords={totalRecords}
-          rows={perPage}
-          first={first}
-          onReload={refresh}
-          lazy
-        />
-
-        <PatientFormModal
-          visible={showPatientModal}
-          onHide={() => setShowPatientModal(false)}
-          onSuccess={handlePatientCreated}
-          
-        />
+      <div className="d-flex justify-content-end align-items-center mb-4">
+        <Button
+          label="Nuevo Paciente "
+          className="btn btn-primary"
+          onClick={() => setShowPatientModal(true)}
+        >
+          <i className="fas fa-plus"></i>
+        </Button>
       </div>
+      <div
+        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "400px" }}
+      >
+
+        <div className="card-body h-100 w-100 d-flex flex-column">
+
+          <CustomPRTable
+            columns={columns}
+            data={tableItems}
+            sortField="createdAt"
+            sortOrder={-1}
+            onPage={handlePageChange}
+            onSearch={handleSearchChange}
+            loading={loading}
+            totalRecords={totalRecords}
+            rows={perPage}
+            first={first}
+            onReload={refresh}
+            lazy
+          />
+        </div>
+      </div>
+      <PatientFormModal
+        visible={showPatientModal}
+        onHide={() => setShowPatientModal(false)}
+        onSuccess={handlePatientCreated}
+
+      />
     </>
   );
 };

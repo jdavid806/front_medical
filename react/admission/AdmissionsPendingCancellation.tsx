@@ -48,7 +48,6 @@ export const AdmissionsPendingCancellation = () => {
     }, [admissions]);
 
     const openResolveRequestModal = (requestId: string) => {
-        console.log(requestId);
 
         if (!requestId) {
             SwalManager.error({ text: "No ha sido posible obtener la solicitud", title: "Error" });
@@ -59,7 +58,6 @@ export const AdmissionsPendingCancellation = () => {
     };
 
     const handlePageChange = (page) => {
-        console.log(page);
         const calculatedPage = Math.floor(page.first / page.rows) + 1
         setFirst(page.first);
         setPerPage(page.rows);
@@ -73,7 +71,6 @@ export const AdmissionsPendingCancellation = () => {
     };
 
     const handleSearchChange = (_search: string) => {
-        console.log(_search);
 
         setSearch(_search);
         fetchAdmissions({
@@ -92,7 +89,6 @@ export const AdmissionsPendingCancellation = () => {
     });
 
     const handleSave = (data: any) => {
-        console.log(data);
         setShowResolveRequestModal(false);
         refresh();
     };

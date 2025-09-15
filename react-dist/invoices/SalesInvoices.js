@@ -58,7 +58,7 @@ export const SalesInvoices = () => {
     label: "Pendiente",
     value: "pending"
   }, {
-    label: "Parcialmente Pendiente",
+    label: "Parcialmente Pagada",
     value: "partially_pending"
   }, {
     label: "Pagada",
@@ -686,7 +686,7 @@ export const SalesInvoices = () => {
       case "pending":
         return "Pendiente";
       case "partially_pending":
-        return "Parcialmente Pendiente";
+        return "Parcialmente Pagada";
       case "cancelled":
         return "Anulada";
       case "expired":

@@ -731,6 +731,7 @@ export const PurchaseBilling = ({
     };
   };
   function hasInvalidLots() {
+    console.log("productsArray", productsArray);
     const invalidLot = productsArray.some(product => {
       if (!product.lotInfo.length && (product.typeProduct == "vaccines" || product.typeProduct == "medications")) {
         return true;
@@ -774,6 +775,15 @@ export const PurchaseBilling = ({
         severity: "error",
         summary: "Error",
         detail: "Debe agregar información de lote para productos que lo requieran",
+        life: 5000
+      });
+      return;
+    }
+    if (!formData.invoiceNumber || !formData.documentType || !formData.supplier || !formData.fiscalVoucher || !formData.elaborationDate || !formData.expirationDate || !formData.buyer || !formData.costCenter) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Por favor rellene los campos requeridos",
         life: 5000
       });
       return;
@@ -1406,7 +1416,7 @@ export const PurchaseBilling = ({
     label: "Guardar y enviar",
     icon: "pi pi-send",
     className: "btn-info",
-    onClick: handleSubmit(saveAndSend),
+    onClick: handleSubmit(save),
     disabled: !paymentCoverage()
   }))), /*#__PURE__*/React.createElement(MedicationFormModal, {
     show: showMedicamentoModal,

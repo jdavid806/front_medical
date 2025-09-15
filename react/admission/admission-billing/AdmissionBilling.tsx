@@ -5,10 +5,23 @@ import { Toast } from "primereact/toast";
 import PatientStep from "./steps/PatientStep";
 import ProductsPaymentStep from "./steps/ProductsPaymentStep";
 import PreviewDoneStep from "./steps/PreviewDoneStep";
-import { calculateTotal, validatePatientStep, validatePaymentStep, validateProductsStep } from "./utils/helpers";
-import { useProductsToBeInvoiced } from '../../appointments/hooks/useProductsToBeInvoiced'
-import { AdmissionBillingFormData, BillingData } from "./interfaces/AdmisionBilling";
-import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from "../../../services/utilidades";
+import {
+  calculateTotal,
+  validatePatientStep,
+  validatePaymentStep,
+  validateProductsStep,
+} from "./utils/helpers";
+import { useProductsToBeInvoiced } from "../../appointments/hooks/useProductsToBeInvoiced";
+import {
+  AdmissionBillingFormData,
+  BillingData,
+} from "./interfaces/AdmisionBilling";
+import {
+  formatDate,
+  formatWhatsAppMessage,
+  getIndicativeByCountry,
+  getUserLogged,
+} from "../../../services/utilidades";
 import { useAdmissionCreate } from "../hooks/useAdmissionCreate";
 import { useMassMessaging } from "../../hooks/useMassMessaging";
 import { useTemplate } from "../../hooks/useTemplate";
@@ -21,7 +34,7 @@ interface AdmissionBillingProps {
   onSuccess?: () => void;
   appointmentData?: any;
   productsToInvoice: any;
-  productsLoading?: boolean
+  productsLoading?: boolean;
 }
 
 const initialFormState: AdmissionBillingFormData = {
@@ -46,7 +59,7 @@ const initialFormState: AdmissionBillingFormData = {
     hasCompanion: false,
     affiliateType: "",
     insurance: "",
-    entity_id: ""
+    entity_id: "",
   },
   billing: {
     entity: "",
@@ -58,7 +71,7 @@ const initialFormState: AdmissionBillingFormData = {
     consumerEmail: "",
     consumerPhone: "",
     facturacionEntidad: false,
-    facturacionConsumidor: false
+    facturacionConsumidor: false,
   },
   products: [],
   payments: [],
@@ -66,27 +79,30 @@ const initialFormState: AdmissionBillingFormData = {
     method: "",
     amount: 0,
     authorizationNumber: "",
-    notes: ""
-  }
+    notes: "",
+  },
 };
 
 const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   visible,
   onHide,
   onSuccess,
-  appointmentData
+  appointmentData,
 }) => {
   const toast = useRef<Toast>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [formData, setFormData] = useState<AdmissionBillingFormData>(initialFormState);
+  const [formData, setFormData] =
+    useState<AdmissionBillingFormData>(initialFormState);
+  const [responseAdmission, setResponseAdmission] = useState<any>(null);
   const [internalVisible, setInternalVisible] = useState(false);
   const isMounted = useRef(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
 
   const appointmentId = appointmentData?.id;
-  const { products: productsToInvoice, loading: productsLoading } = useProductsToBeInvoiced(appointmentId);
+  const { products: productsToInvoice, loading: productsLoading } =
+    useProductsToBeInvoiced(appointmentId);
   const { createAdmission } = useAdmissionCreate();
   const tenant = window.location.hostname.split(".")[0];
   const templateData = {
@@ -96,18 +112,18 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   };
 
   const { template, fetchTemplate } = useTemplate(templateData);
-  const { sendMessage: sendMessageHook, loading: loadingMessage } = useMassMessaging();
+  const { sendMessage: sendMessageHook, loading: loadingMessage } =
+    useMassMessaging();
 
   const sendMessage = useRef(sendMessageHook);
   useEffect(() => {
     sendMessage.current = sendMessageHook;
   }, [sendMessageHook]);
 
-
   const handleSendWhatsApp = async () => {
     setSendingWhatsApp(true);
     try {
-      await sendMessageWhatsapp(formData);
+      await sendMessageWhatsapp(responseAdmission);
     } catch (error) {
       console.error("Error enviando WhatsApp:", error);
     } finally {
@@ -115,18 +131,14 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
     }
   };
 
-
   async function generatePdfFile(admissionData: any) {
-
     //@ts-ignore - Esta función debería existir en tu entorno
-    console.log('peter parkerrr')
     await generarFormato(
       "Factura",
       admissionData,
       "Impresion",
       "admissionInput"
     );
-    console.log('elduendeverdeee')
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         let fileInput: any = document.getElementById(
@@ -142,10 +154,10 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         let formData = new FormData();
         formData.append("file", file);
         formData.append("model_type", "App\\Models\\Admission");
-        formData.append("model_id", admissionData.id);
+        formData.append("model_id", admissionData.admission_data.id);
         //@ts-ignore - Esta función debería existir en tu entorno
         guardarArchivo(formData, true)
-          .then((response) => {
+          .then((response: any) => {
             resolve(response.file);
           })
           .catch(reject);
@@ -153,37 +165,44 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
     });
   }
 
-
   const sendMessageWhatsapp = useCallback(
     async (admissionData: any) => {
       try {
         // Generar el PDF primero
         // @ts-ignore
-        const formattedAdmissionData = await getAdmissionFormatData(261);//appointmentId);
-        console.log('formattedAdmissionData', formattedAdmissionData);
-        const dataToFile: any = await generatePdfFile(formattedAdmissionData);
+        const dataToFile: any = await generatePdfFile(admissionData);
         //@ts-ignore - Esta función debería existir en tu entorno
-        const urlPDF = getUrlImage(dataToFile.file_url.replaceAll("\\", "/"), true);
+        const urlPDF = getUrlImage(
+          dataToFile.file_url.replaceAll("\\", "/"),
+          true
+        );
 
         if (!template) {
           await fetchTemplate();
         }
 
         const replacements = {
-          NOMBRE_PACIENTE: `${formData.patient.firstName} ${formData.patient.middleName} ${formData.patient.lastName} ${formData.patient.secondLastName}`,
-          NUMERO_FACTURA: admissionData.invoice_number || admissionData.id,
-          FECHA_FACTURA: new Date().toLocaleDateString(),
-          TOTAL_FACTURA: calculateTotal(formData.products, formData.billing.facturacionEntidad).toFixed(2),
+          NOMBRE_PACIENTE: `${admissionData.admission_data.patient.first_name ?? ""} ${
+            admissionData.admission_data.patient.middle_name ?? ""
+          } ${admissionData.admission_data.patient.last_name ?? ""} ${
+            admissionData.admission_data.patient.second_last_name ?? ""
+          }`,
+          NUMERO_FACTURA: admissionData.data.invoice_code || admissionData.data.invoice_reminder,
+          FECHA_FACTURA: formatDate(admissionData.data_invoice.invoice.created_at),
+          MONTO_FACTURADO: "$" + admissionData.data_invoice.invoice.total_amount.toFixed(2),
           "ENLACE DOCUMENTO": "",
         };
 
-        const templateFormatted = formatWhatsAppMessage(template?.template || "", replacements);
+        const templateFormatted = formatWhatsAppMessage(
+          template?.template || "",
+          replacements
+        );
 
         const dataMessage = {
           channel: "whatsapp",
           recipients: [
             getIndicativeByCountry(formData.patient.country) +
-            formData.patient.whatsapp,
+              formData.patient.whatsapp,
           ],
           message_type: "media",
           message: templateFormatted,
@@ -224,19 +243,19 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   const handleSubmitInvoice = async () => {
     try {
       const response = await createAdmission(formData, appointmentData);
-      console.log('✅ Admisión creada exitosamente:', response);
 
       if (!isMounted.current) return;
 
       toast.current?.show({
-        severity: 'success',
-        summary: 'Factura creada',
-        detail: 'La factura se ha generado correctamente',
-        life: 5000
+        severity: "success",
+        summary: "Factura creada",
+        detail: "La factura se ha generado correctamente",
+        life: 5000,
       });
 
       if (response && response.data) {
-        await sendMessageWhatsapp(response.data);
+        setResponseAdmission(response);
+        await sendMessageWhatsapp(response);
       }
 
       if (isMounted.current) {
@@ -245,15 +264,17 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
 
       return response;
     } catch (error: any) {
-      console.error('❌ Error submitting invoice:', error);
+      console.error("❌ Error submitting invoice:", error);
 
       if (!isMounted.current) return;
 
       toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: error?.message || 'Ocurrió un error al generar la factura. Por favor intente nuevamente.',
-        life: 5000
+        severity: "error",
+        summary: "Error",
+        detail:
+          error?.message ||
+          "Ocurrió un error al generar la factura. Por favor intente nuevamente.",
+        life: 5000,
       });
       throw error;
     }
@@ -277,30 +298,33 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
 
   useEffect(() => {
     if (!visible) return;
-    console.log("📦 productsToInvoice actualizado:", productsToInvoice);
 
     if (appointmentData && appointmentData.patient) {
       const patient = appointmentData.patient;
-      const initialProducts = productsToInvoice.length > 0
-        ? productsToInvoice.map(product => {
-          const price = formData.billing.facturacionEntidad ? product.copayment : product.sale_price;
-          return {
-            uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
-            id: product.id,
-            code: product.code || `PROD-${product.id}`,
-            description: product.name || product.description || 'Producto sin nombre',
-            price: product.sale_price,
-            copayment: product.copayment,
-            currentPrice: price,
-            quantity: 1,
-            tax: product.tax || 0,
-            discount: 0,
-            total: (price || 0) * (1 + (product.tax || 0) / 100)
-          }
-        })
-        : [];
-
-      console.log('initialProducts', initialProducts);
+      const initialProducts =
+        productsToInvoice.length > 0
+          ? productsToInvoice.map((product) => {
+              const price = formData.billing.facturacionEntidad
+                ? product.copayment
+                : product.sale_price;
+              return {
+                uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random()
+                  .toString(36)
+                  .slice(2, 8)}`,
+                id: product.id,
+                code: product.code || `PROD-${product.id}`,
+                description:
+                  product.name || product.description || "Producto sin nombre",
+                price: product.sale_price,
+                copayment: product.copayment,
+                currentPrice: price,
+                quantity: 1,
+                tax: product.tax || 0,
+                discount: 0,
+                total: (price || 0) * (1 + (product.tax || 0) / 100),
+              };
+            })
+          : [];
 
       // Verificar montaje antes de actualizar estado
       if (isMounted.current) {
@@ -315,8 +339,12 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
             middleName: patient.middle_name || "",
             lastName: patient.last_name || "",
             secondLastName: patient.second_last_name || "",
-            nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
-            birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
+            nameComplet: `${patient.first_name || ""} ${
+              patient.middle_name || ""
+            } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
+            birthDate: patient.date_of_birth
+              ? new Date(patient.date_of_birth)
+              : null,
             gender: patient.gender || "",
             country: patient.country_id || "",
             department: patient.department_id || "",
@@ -328,13 +356,13 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
             affiliateType: patient.social_security?.affiliate_type || "",
             insurance: patient.social_security?.entity?.name || "",
             hasCompanion: patient.companions?.length > 0 || false,
-            entity_id: patient.social_security?.entity_id || ""
+            entity_id: patient.social_security?.entity_id || "",
           },
           billing: {
             ...initialFormState.billing,
-            entity: patient.social_security?.entity?.name || ""
+            entity: patient.social_security?.entity?.name || "",
           },
-          products: initialProducts
+          products: initialProducts,
         });
       }
     } else {
@@ -344,47 +372,56 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
     }
   }, [appointmentData, visible, productsToInvoice]);
 
-  const updateFormData = <K extends keyof AdmissionBillingFormData>(section: K, data: Partial<AdmissionBillingFormData[K]>) => {
+  const updateFormData = <K extends keyof AdmissionBillingFormData>(
+    section: K,
+    data: Partial<AdmissionBillingFormData[K]>
+  ) => {
     if (!isMounted.current) return;
 
-    setFormData(prev => {
+    setFormData((prev) => {
       return {
         ...prev,
-        [section]: data
+        [section]: data,
       };
     });
   };
 
-  const updateBillingData = <K extends keyof BillingData>(field: K, value: any) => {
+  const updateBillingData = <K extends keyof BillingData>(
+    field: K,
+    value: any
+  ) => {
     if (!isMounted.current) return;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       billing: {
         ...prev.billing,
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const addPayment = (payment: any) => {
     if (!isMounted.current) return;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      payments: [...prev.payments, {
-        id: prev.payments.length + 1,
-        ...payment
-      }]
+      payments: [
+        ...prev.payments,
+        {
+          id: prev.payments.length + 1,
+          ...payment,
+        },
+      ],
     }));
   };
 
   const removePayment = (id: number) => {
     if (!isMounted.current) return;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      payments: prev.payments.filter(p => p.id !== id)
+      payments: prev.payments.filter((p) => p.id !== id),
     }));
   };
 
@@ -393,8 +430,17 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
       case 0:
         return validatePatientStep(formData.billing, toast);
       case 1:
-        return validateProductsStep(formData.products, toast) &&
-          validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+        return (
+          validateProductsStep(formData.products, toast) &&
+          validatePaymentStep(
+            formData.payments,
+            calculateTotal(
+              formData.products,
+              formData.billing.facturacionEntidad
+            ),
+            toast
+          )
+        );
       default:
         return true;
     }
@@ -420,41 +466,41 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
 
   const items = [
     {
-      label: 'Datos del paciente',
+      label: "Datos del paciente",
       command: () => {
         setActiveIndex(0);
-      }
+      },
     },
     {
-      label: 'Productos y Pagos',
+      label: "Productos y Pagos",
       command: () => {
         if (validateCurrentStep(0)) {
           setActiveIndex(1);
         } else {
           toast.current?.show({
-            severity: 'warn',
-            summary: 'Paso no disponible',
-            detail: 'Completa el paso actual primero',
-            life: 3000
+            severity: "warn",
+            summary: "Paso no disponible",
+            detail: "Completa el paso actual primero",
+            life: 3000,
           });
         }
-      }
+      },
     },
     {
-      label: 'Confirmación',
+      label: "Confirmación",
       command: () => {
         if (validateCurrentStep(1)) {
           setActiveIndex(2);
         } else {
           toast.current?.show({
-            severity: 'warn',
-            summary: 'Paso no disponible',
-            detail: 'Completa el paso actual primero',
-            life: 3000
+            severity: "warn",
+            summary: "Paso no disponible",
+            detail: "Completa el paso actual primero",
+            life: 3000,
           });
         }
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -464,7 +510,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         visible={internalVisible}
         onHide={handleHide}
         header="Nueva Factura"
-        style={{ width: '100vw', maxWidth: '1600px' }}
+        style={{ width: "100vw", maxWidth: "1600px" }}
         maximizable
       >
         <Steps
@@ -476,7 +522,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
 
         <div className="step-content">
           <div className={activeIndex === 0 ? "" : "d-none"}>
-            <button onClick={sendMessageWhatsapp}>Enviar WhatsApp</button>
             <PatientStep
               formData={formData}
               updateFormData={updateFormData}
@@ -506,11 +551,11 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
               onHide={handleHide}
               onDownload={async () => {
                 //@ts-ignore
-                await generateInvoice(appointmentId, true)
+                await generateInvoice(appointmentId, true);
               }}
               onPrint={async () => {
                 //@ts-ignore
-                await generateInvoice(appointmentId, false)
+                await generateInvoice(appointmentId, false);
               }}
               onSubmit={handleSubmitInvoice}
               isSuccess={isSuccess}

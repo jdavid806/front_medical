@@ -193,9 +193,12 @@
         getJWTPayload
     } from "./services/utilidades.js";
     import UserManager from './services/userManager.js';
+    import { authMiddleware } from "./Middleware/authMiddleware.js";
+
 
     document.addEventListener('DOMContentLoaded', async function() {
-
+         // Aplicar middleware de autenticación
+        // authMiddleware();        
         const user = await userService.getByExternalId(getJWTPayload().sub);
 
         if (user) {
@@ -211,10 +214,17 @@
                     element.textContent = ' | ' + user.specialty.name;
                 }
             })
+            const menu = await userService.getMenuByRole(user.id);
+            const permissionsAuthRoute = await userService.getMenuByRolePermission(user.role.id);
             console.log("user", user);
             localStorage.setItem("roles", JSON.stringify(user.role));
-            localStorage.setItem("permissions", JSON.stringify(user.role.permissions));
-            localStorage.setItem("menus", JSON.stringify(user.role.menus));
+            localStorage.setItem("permissionsAuthRoute", JSON.stringify(permissionsAuthRoute.menus));
+            localStorage.setItem("menus", JSON.stringify(menu.menus));
+            console.log("menu",menu);
+
+            if (window.updateNavbarMenus) {
+                window.updateNavbarMenus();
+            }
             const avatarUrl = getUrlImage(user.minio_url);
 
             // console.log(avatarUrl);

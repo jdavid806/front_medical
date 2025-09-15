@@ -204,7 +204,7 @@ $_SESSION["ID"] = 1;
     }
 
     * {
-      font-family: "Open Sans" !important;
+    font-family: 'Grift', sans-serif !important;
     }
 
     h1,

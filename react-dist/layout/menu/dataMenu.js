@@ -41,10 +41,23 @@ export const items = [{
     label: "Telemedicina",
     icon: "fa-solid fa-stethoscope",
     url: "telemedicina"
-  }, {
+  }, /*Nuevo Item de turnos Agregar Vizmar Ascanio*/
+  {
     label: "Turnos",
     icon: "fa-solid fa-ticket",
-    url: "homeTurnos"
+    items: [{
+      label: "Turnos",
+      icon: "fa fa-check-square",
+      url: "gestion-turnos"
+    }, {
+      label: "Sala de Espera",
+      icon: "fas fa-chalkboard-teacher",
+      url: "waiting-room"
+    }, {
+      label: "Solicitud de Turnos",
+      icon: "fa fa-hourglass",
+      url: "solicitud-turnos"
+    }]
   }, {
     label: "Farmacia",
     icon: "fa-solid fa-shop",

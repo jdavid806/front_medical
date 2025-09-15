@@ -65,7 +65,7 @@ import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
 
 export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   purchaseOrder,
-  onClose = () => {},
+  onClose = () => { },
 }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productForExpiration, setProductForExpiration] = useState<{
@@ -278,8 +278,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           }
           const discount = detail.discount
             ? (Number(detail.discount) /
-                (Number(detail.price) * Number(detail.quantity))) *
-              100
+              (Number(detail.price) * Number(detail.quantity))) *
+            100
             : 0;
 
           const subtotal = Number(detail.subtotal) - Number(detail.discount);
@@ -510,9 +510,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-              ...payment,
-              value: selectedAdvances.amount,
-            }
+            ...payment,
+            value: selectedAdvances.amount,
+          }
           : payment
       )
     );
@@ -675,9 +675,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           prev.map((p) =>
             p.id === productId
               ? {
-                  ...p,
-                  lotInfo: [...p.lotInfo, data],
-                }
+                ...p,
+                lotInfo: [...p.lotInfo, data],
+              }
               : p
           )
         );
@@ -717,9 +717,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           >
             <div className="d-flex align-items-center">
               <i
-                className={`fas fa-${
-                  product.isExpanded ? "minus" : "plus"
-                } me-2`}
+                className={`fas fa-${product.isExpanded ? "minus" : "plus"
+                  } me-2`}
               ></i>
               <span className="fw-bold">
                 {product.description || "Nuevo Producto Asignado"}
@@ -834,7 +833,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     <FixedAssetsForm
                       formId={`fixed-asset-form-${product.id}`}
                       onSubmit={handleSaveFixedAssetLocal}
-                      onCancel={() => {}}
+                      onCancel={() => { }}
                       initialData={localFixedAssetData}
                       key={`fixed-asset-form-${product.id}`}
                     />
@@ -900,8 +899,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         prev.map((p) =>
           p.id === productForExpiration.id
             ? {
-                ...p,
-              }
+              ...p,
+            }
             : p
         )
       );
@@ -915,8 +914,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const buildInvoiceData = async (formData: any) => {
     const purchaseIdValue = purchaseOrderId
       ? {
-          purchase_order_id: purchaseOrderId,
-        }
+        purchase_order_id: purchaseOrderId,
+      }
       : {};
 
     const billing = await fetchBillingByType("purchase_invoice");
@@ -951,26 +950,26 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
         const formAssets = product?.fixedAssetInfo
           ? {
-              description: product.fixedAssetInfo.description || "",
-              brand: product.fixedAssetInfo.brand || "",
-              model: product.fixedAssetInfo.model || "",
-              serial_number: product.fixedAssetInfo.serialNumber || "",
-              internal_code: product.fixedAssetInfo.internalCode || "",
-              asset_category_id:
-                Number(product.fixedAssetInfo.asset_category_id) || null,
-              accounting_account_id: product.product,
-            }
+            description: product.fixedAssetInfo.description || "",
+            brand: product.fixedAssetInfo.brand || "",
+            model: product.fixedAssetInfo.model || "",
+            serial_number: product.fixedAssetInfo.serialNumber || "",
+            internal_code: product.fixedAssetInfo.internalCode || "",
+            asset_category_id:
+              Number(product.fixedAssetInfo.asset_category_id) || null,
+            accounting_account_id: product.product,
+          }
           : {};
 
         const formLot = infoLot
           ? {
-              expiration_date: infoLot?.expiration_date || null,
-              deposit_id: infoLot?.deposit_id || null,
-              lot_number: infoLot?.lot_number || "",
-            }
+            expiration_date: infoLot?.expiration_date || null,
+            deposit_id: infoLot?.deposit_id || null,
+            lot_number: infoLot?.lot_number || "",
+          }
           : {
-              deposit_id: product.depositId || null,
-            };
+            deposit_id: product.depositId || null,
+          };
 
         return {
           product_id:
@@ -998,6 +997,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   };
 
   function hasInvalidLots() {
+    console.log("productsArray", productsArray);
     const invalidLot = productsArray.some((product) => {
       if (
         !product.lotInfo.length &&
@@ -1051,6 +1051,25 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         summary: "Error",
         detail:
           "Debe agregar información de lote para productos que lo requieran",
+        life: 5000,
+      });
+      return;
+    }
+
+    if ((
+      !formData.invoiceNumber ||
+      !formData.documentType ||
+      !formData.supplier ||
+      !formData.fiscalVoucher ||
+      !formData.elaborationDate ||
+      !formData.expirationDate ||
+      !formData.buyer ||
+      !formData.costCenter
+    )) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Por favor rellene los campos requeridos",
         life: 5000,
       });
       return;
@@ -1652,11 +1671,10 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="payment-summary">
                     <div
-                      className={`payment-summary-card ${
-                        !paymentCoverage()
-                          ? "payment-warning"
-                          : "payment-success"
-                      }`}
+                      className={`payment-summary-card ${!paymentCoverage()
+                        ? "payment-warning"
+                        : "payment-success"
+                        }`}
                     >
                       <div className="payment-summary-item">
                         <strong>Total factura:</strong>
@@ -1843,7 +1861,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 label="Guardar y enviar"
                 icon="pi pi-send"
                 className="btn-info"
-                onClick={handleSubmit(saveAndSend)}
+                onClick={handleSubmit(save)}
                 disabled={!paymentCoverage()}
               />
             </div>

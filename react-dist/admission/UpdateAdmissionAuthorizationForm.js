@@ -31,7 +31,6 @@ export const UpdateAdmissionAuthorizationForm = ({
   const onHandleSubmit = async data => {
     try {
       const response = await admissionService.update(admissionId, data);
-      console.log(response);
       SwalManager.success({
         title: 'Actualización exitosa',
         text: 'La autorización fue actualizada correctamente.'

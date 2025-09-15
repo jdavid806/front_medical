@@ -29,7 +29,6 @@ export const AdmissionApp: React.FC = () => {
     });
 
     const handlePageChange = (page) => {
-        console.log(page);
         const calculatedPage = Math.floor(page.first / page.rows) + 1
         setFirst(page.first);
         setPerPage(page.rows);
@@ -44,7 +43,6 @@ export const AdmissionApp: React.FC = () => {
     };
 
     const handleSearchChange = (_search: string) => {
-        console.log(_search);
 
         setSearch(_search);
         fetchAdmissions({
@@ -94,7 +92,6 @@ export const AdmissionApp: React.FC = () => {
     };
 
     const handleFilter = (filters: AdmissionTableFilters) => {
-        console.log(filters);
         setFilters({
             admittedBy: filters.selectedAdmittedBy,
             patientId: filters.selectedPatient,

@@ -74,8 +74,8 @@ const ProductsPaymentStep = ({
       uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random().toString(36).slice(2, 8)}`,
       id: procedure.id,
       code: procedure.barcode || `PROC-${procedure.id}`,
-      name: procedure.name || 'Procedimiento sin nombre',
-      description: procedure.description || procedure.name || 'Procedimiento médico',
+      name: procedure.name || "Procedimiento sin nombre",
+      description: procedure.description || procedure.name || "Procedimiento médico",
       price: procedure.sale_price,
       copayment: procedure.copayment,
       currentPrice: price,
@@ -114,14 +114,23 @@ const ProductsPaymentStep = ({
     updateFormData("currentPayment", {
       [field]: value
     });
-    if (field === 'method') {
-      setShowChangeField(value === 'CASH');
+    if (field === "method") {
+      setShowChangeField(value === "CASH");
     }
   };
   const handleAddPayment = () => {
     const {
       method
     } = formData.currentPayment;
+    if (remaining <= 0) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "El pago ya ha sido completado",
+        life: 3000
+      });
+      return;
+    }
     if (!method || !modalAmount) {
       toast.current?.show({
         severity: "error",
@@ -132,11 +141,20 @@ const ProductsPaymentStep = ({
       return;
     }
     const paymentAmount = modalAmount;
-    if (isNaN(paymentAmount)) {
+    if (isNaN(paymentAmount) || paymentAmount <= 0) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "El monto debe ser un número válido",
+        detail: "El monto debe ser un número válido mayor a 0",
+        life: 3000
+      });
+      return;
+    }
+    if (paymentAmount > remaining) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: `El monto no puede exceder el saldo pendiente: ${formatCurrency(remaining)}`,
         life: 3000
       });
       return;
@@ -150,6 +168,7 @@ const ProductsPaymentStep = ({
       notes: formData.currentPayment.notes
     });
     setModalAmount(0);
+    setModalChange(0);
     updateFormData("currentPayment", {
       method: "",
       amount: 0,
@@ -162,9 +181,9 @@ const ProductsPaymentStep = ({
     const validProducts = formData.products.filter(product => product && product.description && product.price !== undefined && product.quantity !== undefined);
     if (validProducts.length === 0) {
       toast.current?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'No hay productos válidos para facturar',
+        severity: "error",
+        summary: "Error",
+        detail: "No hay productos válidos para facturar",
         life: 3000
       });
       return;
@@ -175,9 +194,9 @@ const ProductsPaymentStep = ({
     }
   };
   const formatCurrency = value => {
-    return new Intl.NumberFormat('es-DO', {
-      style: 'currency',
-      currency: 'DOP',
+    return new Intl.NumberFormat("es-DO", {
+      style: "currency",
+      currency: "DOP",
       minimumFractionDigits: 2
     }).format(value);
   };
@@ -237,26 +256,7 @@ const ProductsPaymentStep = ({
       }
     });
   };
-  const paymentModalFooter = /*#__PURE__*/React.createElement("div", {
-    className: "d-flex pt-4 justify-content-between gap-3"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Cancelar",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-times"
-    }),
-    onClick: () => setShowPaymentModal(false),
-    className: "p-button-secondary"
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Aplicar Pago",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-check"
-    }),
-    onClick: applyModalPayment,
-    disabled: modalAmount <= 0,
-    className: "p-button-primary me-2"
-  }));
   useEffect(() => {
-    console.log('productsToInvoice', productsToInvoice);
     if (productsToInvoice.length > 0 && formData.products.length === 0) {
       const initialProducts = productsToInvoice.map(product => ({
         uuid: product.uuid,
@@ -354,10 +354,10 @@ const ProductsPaymentStep = ({
       }
     }),
     headerStyle: {
-      width: '100px'
+      width: "100px"
     },
     bodyStyle: {
-      textAlign: 'center'
+      textAlign: "center"
     }
   }))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-end align-items-center gap-3 mt-3"
@@ -431,7 +431,7 @@ const ProductsPaymentStep = ({
       }
     }),
     headerStyle: {
-      width: '80px'
+      width: "80px"
     }
   })))), /*#__PURE__*/React.createElement("div", {
     className: "surface-card px-4 pb-4 border-round-lg border-1 surface-border shadow-2 col-12 col-md-6"
@@ -466,8 +466,13 @@ const ProductsPaymentStep = ({
     showClear: true,
     filter: true,
     filterPlaceholder: "Buscar m\xE9todo...",
-    emptyFilterMessage: "No se encontraron m\xE9todos"
-  })), formData.currentPayment.method.method == "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    emptyFilterMessage: "No se encontraron m\xE9todos",
+    disabled: remaining <= 0
+  }), remaining <= 0 && /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 p-3 border-round-lg bg-green-100 text-green-800"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-check-circle mr-2"
+  }), "El pago ha sido completado en su totalidad")), formData.currentPayment.method.method == "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "remainingAmount",
@@ -498,7 +503,9 @@ const ProductsPaymentStep = ({
     currency: "DOP",
     locale: "es-DO",
     className: "w-full",
-    inputClassName: "font-bold"
+    inputClassName: "font-bold",
+    max: remaining,
+    min: 0
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -513,9 +520,9 @@ const ProductsPaymentStep = ({
     currency: "DOP",
     locale: "es-DO",
     readOnly: true,
-    className: `w-full ${modalChange > 0 ? 'bg-green-100 font-bold' : ''}`,
-    inputClassName: modalChange > 0 ? 'text-green-700' : ''
-  }))), formData.currentPayment.method.method != "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: `w-full ${modalChange > 0 ? "bg-green-100 font-bold" : ""}`,
+    inputClassName: modalChange > 0 ? "text-green-700" : ""
+  }))), formData.currentPayment.method.method != "Efectivo" && remaining > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "cashAmount",

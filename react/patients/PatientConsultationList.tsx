@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Paginator } from 'primereact/paginator';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
-import { appointmentService, infoCompanyService, patientService, templateService, ticketService } from '../../services/api';
+import { appointmentService, examOrderService, examRecipeResultService, examRecipeService, infoCompanyService, patientService, templateService, ticketService } from '../../services/api';
 import { getPatientNextAppointment } from '../../services/patientHelpers';
 import { reestructurarPacientes } from '../../Pacientes/js/reestructurarPacientes';
-import { formatWhatsAppMessage, getIndicativeByCountry } from '../../services/utilidades';
+import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from '../../services/utilidades';
 import { createMassMessaging } from '../../funciones/funcionesJS/massMessage';
 
 import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useAppointmentStates } from '../appointments/hooks/useAppointmentStates';
+import { SwalManager } from '../../services/alertManagerImported';
+import UserManager from '../../services/userManager';
 
 export const PatientConsultationList = () => {
     const [patients, setPatients] = useState<any[]>([]);
@@ -25,8 +27,20 @@ export const PatientConsultationList = () => {
     const [messaging, setMessaging] = useState<any | null>(null);
     const [template, setTemplate] = useState<any | null>(null);
 
+    const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+        string | null
+    >(null);
+    const [selectedExamOrder, setSelectedExamOrder] = useState<any>(null);
+    const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+    const [showPdfModal, setShowPdfModal] = useState(false);
+
+    const [pdfFile, setPdfFile] = useState<File | null>(null); // Para almacenar el archivo PDF
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null); // Para la previsualización del PDF
+    const userLogged = getUserLogged();
+
     const itemsPerPage = 8;
     const statusOptions = [
+        { label: 'Todos', value: 'all' },
         { label: 'Pendiente', value: 'pending' },
         { label: 'En espera', value: 'pending_consultation' },
         { label: 'Llamado', value: 'called' },
@@ -36,6 +50,13 @@ export const PatientConsultationList = () => {
     ];
 
     const { appointmentStates } = useAppointmentStates();
+
+    const appointmentStatesRef = useRef(appointmentStates);
+
+    // Actualizar la referencia cuando appointmentStates cambie
+    useEffect(() => {
+        appointmentStatesRef.current = appointmentStates;
+    }, [appointmentStates]);
 
     // Obtener pacientes desde la API
     const fetchPatients = useCallback(async (page = 1) => {
@@ -106,7 +127,7 @@ export const PatientConsultationList = () => {
             }
 
             // Filtro por status
-            if (statusFilter && paciente.estado !== statusFilter) {
+            if (statusFilter && paciente.estado !== statusFilter && statusFilter !== 'all') {
                 isMatch = false;
             }
 
@@ -205,14 +226,14 @@ export const PatientConsultationList = () => {
     };
 
     const handleAppointmentStateUpdated = (data: any) => {
-        console.log('Appointment states: ', appointmentStates);
+        console.log('Appointment states: ', appointmentStatesRef.current);
         setPatients(prevPatients => {
             const updatedPatients = prevPatients.map(paciente => {
                 const updatedAppointments = paciente.appointments.map(cita => {
                     if (cita.id === data.appointmentId) {
                         return {
                             ...cita,
-                            appointment_state: appointmentStates.find(state => state.id === data.newState)
+                            appointment_state: appointmentStatesRef.current.find(state => state.id === data.newState)
                         };
                     }
                     return cita;
@@ -236,7 +257,7 @@ export const PatientConsultationList = () => {
                     if (cita.id === data.appointmentId) {
                         return {
                             ...cita,
-                            appointment_state: appointmentStates.find(state => state.name === 'cancelled')
+                            appointment_state: appointmentStatesRef.current.find(state => state.name === 'cancelled')
                         };
                     }
                     return cita;
@@ -344,6 +365,71 @@ export const PatientConsultationList = () => {
         });
     };
 
+    const handleLoadExamResults = (
+        appointmentId: string,
+        patientId: string,
+        productId: string
+    ) => {
+        window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
+    };
+
+    const handlePDFSubmit = async () => {
+        console.log("selectedExamOrder", selectedExamOrder);
+        try {
+            // Llamar a la función guardarArchivoExamen
+            //@ts-ignore
+            const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
+
+            // Acceder a la PromiseResult
+            if (enviarPDf !== undefined) {
+                const dataUpdate = {
+                    minio_url: enviarPDf,
+                };
+                const examRecipeResultData = {
+                    exam_recipe_id: selectedAppointment?.exam_recipe_id,
+                    uploaded_by_user_id: userLogged.id,
+                    date: new Date().toISOString(),
+                    result_minio_url: enviarPDf,
+                };
+                await examOrderService.updateMinioFile(
+                    selectedExamOrder?.id,
+                    dataUpdate
+                );
+                await examRecipeResultService.create(examRecipeResultData);
+                await examRecipeService.changeStatus(
+                    selectedAppointment?.exam_recipe_id,
+                    "uploaded"
+                );
+                SwalManager.success({ text: "Resultados guardados exitosamente" });
+            } else {
+                console.error("No se obtuvo un resultado válido.");
+            }
+        } catch (error) {
+            console.error("Error al guardar el archivo:", error);
+        } finally {
+            // Limpiar el estado después de la operación
+            setShowPdfModal(false);
+            setPdfFile(null);
+            setPdfPreviewUrl(null);
+            refresh();
+        }
+    };
+
+    const handleMakeClinicalRecord = (
+        patientId: string,
+        appointmentId: string
+    ) => {
+        UserManager.onAuthChange((isAuthenticated, user) => {
+            if (user) {
+                window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
+            }
+        });
+    };
+
+    const refresh = () => {
+        fetchPatients();
+    };
+
     // Renderizar tarjetas de pacientes
     const renderPatientCards = () => {
         if (loading) {
@@ -356,18 +442,14 @@ export const PatientConsultationList = () => {
 
         const pacientesReestructurados = reestructurarPacientes(filteredPatients);
 
+        console.log("pacientesReestructurados", pacientesReestructurados);
+
         return (
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 {pacientesReestructurados.map(paciente => {
-                    const idPaciente = paciente.id;
-                    const pacienteFiltrado = pacientesReestructurados.filter(
-                        p => p.id === idPaciente
-                    )[0];
 
-                    if (!pacienteFiltrado) return null;
-
-                    const estadoActual = pacienteFiltrado.appointment_state?.estadoActual || 'Sin estado';
-                    const estadoColor = pacienteFiltrado.appointment_state?.colorEstado || 'secondary';
+                    const estadoActual = paciente.appointment_state?.estadoActual || 'Sin estado';
+                    const estadoColor = paciente.appointment_state?.colorEstado || 'secondary';
 
                     return (
                         <div key={paciente.id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
@@ -401,7 +483,7 @@ export const PatientConsultationList = () => {
                                                 <p className="fw-bold mb-0">Fecha</p>
                                             </div>
                                             <p className="text-body-emphasis mb-3">
-                                                {pacienteFiltrado.cita?.appointment_date || "Fecha no disponible"}
+                                                {paciente.cita?.appointment_date || "Fecha no disponible"}
                                             </p>
                                         </div>
 
@@ -411,7 +493,7 @@ export const PatientConsultationList = () => {
                                                 <p className="fw-bold mb-0">Hora</p>
                                             </div>
                                             <p className="text-body-emphasis">
-                                                {pacienteFiltrado.cita?.appointment_time || "Hora no disponible"}
+                                                {paciente.cita?.appointment_time || "Hora no disponible"}
                                             </p>
                                         </div>
 
@@ -439,14 +521,52 @@ export const PatientConsultationList = () => {
                                         <Button
                                             label="Llamar paciente"
                                             className="btn-sm btn btn-primary"
-                                            onClick={() => llamarPaciente(paciente.id, pacienteFiltrado.cita?.id)}
+                                            onClick={() => llamarPaciente(paciente.id, paciente.cita?.id)}
                                         />
 
-                                        <Button
-                                            label="Realizar Consulta"
-                                            className="btn-sm btn btn-primary"
-                                            onClick={() => window.location.href = `realizarConsulta?id=${paciente.id}`}
-                                        />
+                                        {(paciente.appointment_state?.stateKey === "pending_consultation" ||
+                                            paciente.appointment_state?.stateKey === "called" ||
+                                            paciente.appointment_state?.stateKey === "in_consultation") &&
+                                            paciente.appointment_state?.attention_type === "CONSULTATION" &&
+                                            (
+                                                <Button
+                                                    label="Realizar Consulta"
+                                                    className="btn-sm btn btn-primary mb-2"
+                                                    onClick={() => handleMakeClinicalRecord(paciente.id, paciente.cita?.id)}
+                                                />
+                                            )}
+                                        {(paciente.appointment_state?.stateKey === "pending_consultation" ||
+                                            paciente.appointment_state?.stateKey === "called" ||
+                                            paciente.appointment_state?.stateKey === "in_consultation") &&
+                                            paciente.appointment_state?.attention_type === "PROCEDURE" &&
+                                            (
+                                                <>
+                                                    <Button
+                                                        label="Realizar Examen"
+                                                        className="btn-sm btn btn-primary"
+                                                        onClick={() => {
+                                                            handleLoadExamResults(
+                                                                paciente.cita.id,
+                                                                paciente.id,
+                                                                paciente.cita.product_id
+                                                            );
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        label="Subir Examen"
+                                                        className="btn-sm btn btn-primary"
+                                                        onClick={() => {
+                                                            console.log("paciente.cita?.exam_orders", paciente.cita?.exam_orders);
+
+                                                            setSelectedAppointment(paciente.cita);
+                                                            setSelectedAppointmentId(paciente.cita?.id);
+                                                            setSelectedExamOrder(paciente.cita?.exam_orders[0]);
+                                                            setShowPdfModal(true);
+                                                        }}
+                                                    />
+                                                </>
+                                            )}
+
                                     </div>
                                 </div>
                             </div>
@@ -509,6 +629,80 @@ export const PatientConsultationList = () => {
                 template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
             />
         </div>
+
+        {showPdfModal && (
+            <div
+                className="modal fade show"
+                style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            >
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Previsualización de PDF</h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                onClick={() => {
+                                    setPdfFile(null);
+                                    setPdfPreviewUrl(null);
+                                    setShowPdfModal(false);
+                                }}
+                            ></button>
+                        </div>
+                        <div className="modal-body">
+                            {pdfPreviewUrl ? (
+                                <embed
+                                    src={pdfPreviewUrl}
+                                    width="100%"
+                                    height="500px"
+                                    type="application/pdf"
+                                />
+                            ) : (
+                                <p>Por favor, seleccione un archivo PDF.</p>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                id="inputPdf"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    if (file) {
+                                        setPdfFile(file);
+                                        setPdfPreviewUrl(URL.createObjectURL(file));
+                                    }
+                                }}
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                    setShowPdfModal(false);
+                                    setPdfFile(null);
+                                    setPdfPreviewUrl(null);
+                                }}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    handlePDFSubmit();
+                                    setShowPdfModal(false);
+                                    setPdfFile(null);
+                                    setPdfPreviewUrl(null);
+                                }}
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
         <style>{`
                 .card-paciente {
                     display: flex;

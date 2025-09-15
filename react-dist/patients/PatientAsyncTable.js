@@ -94,8 +94,6 @@ export const PatientAsyncTable = () => {
     header: "Fecha de última consulta"
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end align-items-center mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Nuevo Paciente ",
@@ -103,7 +101,14 @@ export const PatientAsyncTable = () => {
     onClick: () => setShowPatientModal(true)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus"
-  }))), /*#__PURE__*/React.createElement(CustomPRTable, {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: tableItems,
     sortField: "createdAt",
@@ -116,9 +121,9 @@ export const PatientAsyncTable = () => {
     first: first,
     onReload: refresh,
     lazy: true
-  }), /*#__PURE__*/React.createElement(PatientFormModal, {
+  }))), /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showPatientModal,
     onHide: () => setShowPatientModal(false),
     onSuccess: handlePatientCreated
-  })));
+  }));
 };

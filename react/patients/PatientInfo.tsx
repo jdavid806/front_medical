@@ -23,24 +23,22 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({
 
   return (
     <>
-      <div className="card p-fluid">
-        <div className="text-center mb-3 mt-3">
-          {!isDetailClinicalRecord && (
-            <Button
-              style={{ maxWidth: "200px" }}
-              label="Editar Paciente"
-              onClick={() => setShowEditModal(true)}
-              className="p-button-sm p-button-primary"
-            >
-              <i className="fa-solid fa-pen-to-square me-2"></i>
-            </Button>
-          )}
-        </div>
-        <PatientGeneralData patient={patient} />
-        <PatientLocationInfo patient={patient} />
-        <PatientCompanions patient={patient} />
-        <PatientInsuranceInfo patient={patient} />
+      <div className="text-center mb-3 mt-3">
+        {!isDetailClinicalRecord && (
+          <Button
+            style={{ maxWidth: "200px" }}
+            label="Editar Paciente"
+            onClick={() => setShowEditModal(true)}
+            className="p-button-sm p-button-primary"
+          >
+            <i className="fa-solid fa-pen-to-square me-2"></i>
+          </Button>
+        )}
       </div>
+      <PatientGeneralData patient={patient} />
+      <PatientLocationInfo patient={patient} />
+      <PatientCompanions patient={patient} />
+      <PatientInsuranceInfo patient={patient} />
       <PatientFormModal
         visible={showEditModal}
         onHide={() => setShowEditModal(false)}

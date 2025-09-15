@@ -568,7 +568,7 @@ export const PurchaseInvoices = () => {
       case "pending":
         return "Pendiente";
       case "partially_pending":
-        return "Parcialmente Pendiente";
+        return "Parcialmente Pagada";
       case "cancelled":
         return "Anulada";
       case "expired":

@@ -26,4 +26,12 @@ export class UserService extends BaseApiService {
     async getLoggedUser() {
         return await this.getByExternalId(getJWTPayload().sub);
     }
+
+    async getMenuByRole(userId) {
+        return await this.httpClient.get(`${this.microservice}/menu-by-roles/${userId}`);
+    }
+
+    async getMenuByRolePermission(roleId) {
+        return await this.httpClient.get(`${this.microservice}/menus/permissions/${roleId}`);
+    }
 }

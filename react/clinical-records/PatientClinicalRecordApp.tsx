@@ -12,6 +12,7 @@ import { useClinicalRecords } from "./hooks/useClinicalRecords";
 import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecordsTable";
 import UserManager from "../../services/userManager";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF";
+import { SeePatientInfoButton } from "../patients/SeePatientInfoButton";
 
 interface PatientClinicalRecordAppProps { }
 
@@ -153,31 +154,35 @@ export const PatientClinicalRecordApp: React.FC<
                 Historias Clínicas - {nombreEspecialidad}
               </h2>
             </div>
-            <div className="dropdown">
-              <button
-                className="btn btn-primary dropdown-toggle"
-                type="button"
-                id="dropdownMenuButton"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Crear Historia Clínica
-              </button>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="dropdownMenuButton"
-              >
-                {specialtyClinicalRecords.map((record) => (
-                  <li key={record.id}>
-                    <a
-                      className="dropdown-item"
-                      href={`consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}&appointment_id=${appointmentId}`}
-                    >
-                      Crear {record.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className="d-flex align-items-center gap-2 justify-content-end">
+              <SeePatientInfoButton patientId={patientId} />
+
+              <div className="dropdown">
+                <button
+                  className="btn btn-primary dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Crear Historia Clínica
+                </button>
+                <ul
+                  className="dropdown-menu"
+                  aria-labelledby="dropdownMenuButton"
+                >
+                  {specialtyClinicalRecords.map((record) => (
+                    <li key={record.id}>
+                      <a
+                        className="dropdown-item"
+                        href={`consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}&appointment_id=${appointmentId}`}
+                      >
+                        Crear {record.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

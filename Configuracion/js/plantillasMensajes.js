@@ -21,8 +21,6 @@ async function guardarDataPlantilla(tabId) {
       attached: adjuntoSeleccionado,
     };
 
-    console.log("Datos a guardar:", datos);
-
     await guardarTemplate(datos);
   } else {
     console.error("No se encontró el editor Quill para el tab:", tabId);

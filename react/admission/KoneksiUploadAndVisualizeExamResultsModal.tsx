@@ -50,14 +50,12 @@ export const KoneksiUploadAndVisualizeExamResultsModal: React.FC<KoneksiUploadAn
     }, []);
 
     useEffect(() => {
-        console.log("admission", admission);
         if (admission) {
             fetchDispensedClaim(admission.koneksi_claim_id);
         }
     }, [admission]);
 
     useEffect(() => {
-        console.log("dispensedClaim", dispensedClaim);
         if (dispensedClaim) {
             fetchSupportingDocumentsPolicy({
                 preauthorizationId: dispensedClaim.authorization_id
@@ -66,7 +64,6 @@ export const KoneksiUploadAndVisualizeExamResultsModal: React.FC<KoneksiUploadAn
     }, [dispensedClaim]);
 
     useEffect(() => {
-        console.log("supportingDocuments", supportingDocuments);
     }, [supportingDocuments]);
 
     const getFormErrorMessage = (name: keyof KoneksiUploadAndVisualizeExamResultsModalFormInputs) => {
@@ -98,12 +95,9 @@ export const KoneksiUploadAndVisualizeExamResultsModal: React.FC<KoneksiUploadAn
 
     const onSubmit = async (data: KoneksiUploadAndVisualizeExamResultsModalFormInputs) => {
         if (data.document_type && file) {
-            console.log("submit", data);
             const formData = new FormData();
 
             formData.append('file', file);
-
-            console.log("formData", formData);
 
             try {
                 const response = await addFilesToPreauthorization(dispensedClaim.authorization_request_id, formData, {
@@ -112,13 +106,11 @@ export const KoneksiUploadAndVisualizeExamResultsModal: React.FC<KoneksiUploadAn
                     coverage: dispensedClaim.transaction_type,
                     product_type: dispensedClaim.product_type
                 });
-                console.log("response", response);
 
                 fetchSupportingDocumentsPolicy({
                     preauthorizationId: dispensedClaim.authorization_id
                 });
             } catch (error) {
-                console.log(error);
             }
         }
     };

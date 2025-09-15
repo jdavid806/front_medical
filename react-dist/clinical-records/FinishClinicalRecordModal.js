@@ -563,7 +563,6 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     hideModal
   }));
   const onPackageChange = pkg => {
-    console.log(pkg);
     setSelectedPackage(pkg);
     setExamsActive(false);
     setDisabilitiesActive(false);
@@ -575,7 +574,6 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     setInitialPrescriptionData(undefined);
     const packageExamTypes = pkg.package_items.filter(item => item.item_type == "App\\Models\\Examen");
     const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`);
-    console.log(packageExamTypeIds);
     if (packageExamTypeIds.length > 0) {
       setExamsActive(true);
       setInitialSelectedExamTypes(packageExamTypeIds);
@@ -633,8 +631,6 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     }
   };
   const handleLoadLastPrescriptionChange = async e => {
-    console.log(e);
-    console.log(selectedPackage);
     setLoadLastPrescriptionCheck(e);
     if (e && selectedPackage) {
       const lastPrescription = await loadLastPatientPrescription(patientId);

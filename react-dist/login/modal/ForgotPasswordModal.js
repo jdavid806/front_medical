@@ -250,17 +250,26 @@ export const ForgotPasswordModal = ({
     className: "w-11/12 md:w-3/4 lg:w-2/3",
     footer: /*#__PURE__*/React.createElement("div", {
       className: "flex justify-content-between align-items-center"
-    }, /*#__PURE__*/React.createElement(Button, {
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: '100px'
+      }
+    }, activeStep > 0 && /*#__PURE__*/React.createElement(Button, {
       label: "Atr\xE1s",
-      icon: "pi pi-arrow-left",
-      className: "p-button-text",
-      disabled: activeStep === 0 || loading,
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-arrow-left"
+      }),
+      className: "p-button p-component",
+      disabled: loading,
       onClick: () => setActiveStep(activeStep - 1)
-    }), /*#__PURE__*/React.createElement("div", {
-      className: "flex gap-2"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-center gap-6 mt-5 mb-4"
     }, /*#__PURE__*/React.createElement(Button, {
       label: "Cancelar",
-      className: "p-button-secondary",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-xmark"
+      }),
+      className: "p-button p-component",
       disabled: loading,
       onClick: () => {
         onHide();
@@ -268,12 +277,19 @@ export const ForgotPasswordModal = ({
       }
     }), /*#__PURE__*/React.createElement(Button, {
       label: getNextButtonLabel(),
-      icon: "pi pi-arrow-right",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-arrow-left"
+      }),
+      className: "p-button p-component",
       iconPos: "right",
       loading: loading,
       disabled: isNextDisabled(),
       onClick: handleNext
-    })))
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        minWidth: '100px'
+      }
+    }))
   }, /*#__PURE__*/React.createElement(Steps, {
     model: steps,
     activeIndex: activeStep,

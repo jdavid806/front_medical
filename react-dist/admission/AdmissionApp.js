@@ -26,7 +26,6 @@ export const AdmissionApp = () => {
     createdAt: [new Date(), new Date()]?.filter(date => !!date).map(date => date.toISOString().split('T')[0]).join(",")
   });
   const handlePageChange = page => {
-    console.log(page);
     const calculatedPage = Math.floor(page.first / page.rows) + 1;
     setFirst(page.first);
     setPerPage(page.rows);
@@ -40,7 +39,6 @@ export const AdmissionApp = () => {
     });
   };
   const handleSearchChange = _search => {
-    console.log(_search);
     setSearch(_search);
     fetchAdmissions({
       per_page: perPage,
@@ -85,7 +83,6 @@ export const AdmissionApp = () => {
     }
   };
   const handleFilter = filters => {
-    console.log(filters);
     setFilters({
       admittedBy: filters.selectedAdmittedBy,
       patientId: filters.selectedPatient,

@@ -820,7 +820,6 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     }));
 
     const onPackageChange = (pkg: any) => {
-      console.log(pkg);
       setSelectedPackage(pkg);
 
       setExamsActive(false)
@@ -835,7 +834,6 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
 
       const packageExamTypes = pkg.package_items.filter(item => item.item_type == "App\\Models\\Examen")
       const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`)
-      console.log(packageExamTypeIds)
 
       if (packageExamTypeIds.length > 0) {
         setExamsActive(true)
@@ -892,8 +890,6 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
     };
 
     const handleLoadLastPrescriptionChange = async (e: boolean) => {
-      console.log(e)
-      console.log(selectedPackage)
       setLoadLastPrescriptionCheck(e)
       if (e && selectedPackage) {
         const lastPrescription = await loadLastPatientPrescription(patientId);

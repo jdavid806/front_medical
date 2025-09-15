@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Paginator } from 'primereact/paginator';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
-import { appointmentService, infoCompanyService, patientService, templateService, ticketService } from "../../services/api/index.js";
+import { appointmentService, examOrderService, examRecipeResultService, examRecipeService, infoCompanyService, patientService, templateService, ticketService } from "../../services/api/index.js";
 import { getPatientNextAppointment } from "../../services/patientHelpers.js";
 import { reestructurarPacientes } from "../../Pacientes/js/reestructurarPacientes.js";
-import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/utilidades.js";
+import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from "../../services/utilidades.js";
 import { createMassMessaging } from "../../funciones/funcionesJS/massMessage.js";
 import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useAppointmentStates } from "../appointments/hooks/useAppointmentStates.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
+import UserManager from "../../services/userManager.js";
 export const PatientConsultationList = () => {
   const [patients, setPatients] = useState([]);
   const [filteredPatients, setFilteredPatients] = useState([]);
@@ -21,8 +23,18 @@ export const PatientConsultationList = () => {
   const [loading, setLoading] = useState(true);
   const [messaging, setMessaging] = useState(null);
   const [template, setTemplate] = useState(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const [selectedExamOrder, setSelectedExamOrder] = useState(null);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null); // Para almacenar el archivo PDF
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null); // Para la previsualización del PDF
+  const userLogged = getUserLogged();
   const itemsPerPage = 8;
   const statusOptions = [{
+    label: 'Todos',
+    value: 'all'
+  }, {
     label: 'Pendiente',
     value: 'pending'
   }, {
@@ -44,6 +56,12 @@ export const PatientConsultationList = () => {
   const {
     appointmentStates
   } = useAppointmentStates();
+  const appointmentStatesRef = useRef(appointmentStates);
+
+  // Actualizar la referencia cuando appointmentStates cambie
+  useEffect(() => {
+    appointmentStatesRef.current = appointmentStates;
+  }, [appointmentStates]);
 
   // Obtener pacientes desde la API
   const fetchPatients = useCallback(async (page = 1) => {
@@ -105,7 +123,7 @@ export const PatientConsultationList = () => {
       }
 
       // Filtro por status
-      if (statusFilter && paciente.estado !== statusFilter) {
+      if (statusFilter && paciente.estado !== statusFilter && statusFilter !== 'all') {
         isMatch = false;
       }
       return isMatch;
@@ -193,14 +211,14 @@ export const PatientConsultationList = () => {
     });
   };
   const handleAppointmentStateUpdated = data => {
-    console.log('Appointment states: ', appointmentStates);
+    console.log('Appointment states: ', appointmentStatesRef.current);
     setPatients(prevPatients => {
       const updatedPatients = prevPatients.map(paciente => {
         const updatedAppointments = paciente.appointments.map(cita => {
           if (cita.id === data.appointmentId) {
             return {
               ...cita,
-              appointment_state: appointmentStates.find(state => state.id === data.newState)
+              appointment_state: appointmentStatesRef.current.find(state => state.id === data.newState)
             };
           }
           return cita;
@@ -221,7 +239,7 @@ export const PatientConsultationList = () => {
           if (cita.id === data.appointmentId) {
             return {
               ...cita,
-              appointment_state: appointmentStates.find(state => state.name === 'cancelled')
+              appointment_state: appointmentStatesRef.current.find(state => state.name === 'cancelled')
             };
           }
           return cita;
@@ -302,6 +320,56 @@ export const PatientConsultationList = () => {
       }
     });
   };
+  const handleLoadExamResults = (appointmentId, patientId, productId) => {
+    window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
+  };
+  const handlePDFSubmit = async () => {
+    console.log("selectedExamOrder", selectedExamOrder);
+    try {
+      // Llamar a la función guardarArchivoExamen
+      //@ts-ignore
+      const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
+
+      // Acceder a la PromiseResult
+      if (enviarPDf !== undefined) {
+        const dataUpdate = {
+          minio_url: enviarPDf
+        };
+        const examRecipeResultData = {
+          exam_recipe_id: selectedAppointment?.exam_recipe_id,
+          uploaded_by_user_id: userLogged.id,
+          date: new Date().toISOString(),
+          result_minio_url: enviarPDf
+        };
+        await examOrderService.updateMinioFile(selectedExamOrder?.id, dataUpdate);
+        await examRecipeResultService.create(examRecipeResultData);
+        await examRecipeService.changeStatus(selectedAppointment?.exam_recipe_id, "uploaded");
+        SwalManager.success({
+          text: "Resultados guardados exitosamente"
+        });
+      } else {
+        console.error("No se obtuvo un resultado válido.");
+      }
+    } catch (error) {
+      console.error("Error al guardar el archivo:", error);
+    } finally {
+      // Limpiar el estado después de la operación
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+      refresh();
+    }
+  };
+  const handleMakeClinicalRecord = (patientId, appointmentId) => {
+    UserManager.onAuthChange((isAuthenticated, user) => {
+      if (user) {
+        window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
+      }
+    });
+  };
+  const refresh = () => {
+    fetchPatients();
+  };
 
   // Renderizar tarjetas de pacientes
   const renderPatientCards = () => {
@@ -316,14 +384,12 @@ export const PatientConsultationList = () => {
       }, "No se encontraron pacientes");
     }
     const pacientesReestructurados = reestructurarPacientes(filteredPatients);
+    console.log("pacientesReestructurados", pacientesReestructurados);
     return /*#__PURE__*/React.createElement("div", {
       className: "row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
     }, pacientesReestructurados.map(paciente => {
-      const idPaciente = paciente.id;
-      const pacienteFiltrado = pacientesReestructurados.filter(p => p.id === idPaciente)[0];
-      if (!pacienteFiltrado) return null;
-      const estadoActual = pacienteFiltrado.appointment_state?.estadoActual || 'Sin estado';
-      const estadoColor = pacienteFiltrado.appointment_state?.colorEstado || 'secondary';
+      const estadoActual = paciente.appointment_state?.estadoActual || 'Sin estado';
+      const estadoColor = paciente.appointment_state?.colorEstado || 'secondary';
       return /*#__PURE__*/React.createElement("div", {
         key: paciente.id,
         className: "col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
@@ -366,7 +432,7 @@ export const PatientConsultationList = () => {
         className: "fw-bold mb-0"
       }, "Fecha")), /*#__PURE__*/React.createElement("p", {
         className: "text-body-emphasis mb-3"
-      }, pacienteFiltrado.cita?.appointment_date || "Fecha no disponible")), /*#__PURE__*/React.createElement("div", {
+      }, paciente.cita?.appointment_date || "Fecha no disponible")), /*#__PURE__*/React.createElement("div", {
         className: "col-6"
       }, /*#__PURE__*/React.createElement("div", {
         className: "d-flex align-items-center"
@@ -376,7 +442,7 @@ export const PatientConsultationList = () => {
         className: "fw-bold mb-0"
       }, "Hora")), /*#__PURE__*/React.createElement("p", {
         className: "text-body-emphasis"
-      }, pacienteFiltrado.cita?.appointment_time || "Hora no disponible")), /*#__PURE__*/React.createElement("div", {
+      }, paciente.cita?.appointment_time || "Hora no disponible")), /*#__PURE__*/React.createElement("div", {
         className: "col-6"
       }, /*#__PURE__*/React.createElement("div", {
         className: "d-flex align-items-center"
@@ -395,12 +461,28 @@ export const PatientConsultationList = () => {
       }), /*#__PURE__*/React.createElement(Button, {
         label: "Llamar paciente",
         className: "btn-sm btn btn-primary",
-        onClick: () => llamarPaciente(paciente.id, pacienteFiltrado.cita?.id)
-      }), /*#__PURE__*/React.createElement(Button, {
+        onClick: () => llamarPaciente(paciente.id, paciente.cita?.id)
+      }), (paciente.appointment_state?.stateKey === "pending_consultation" || paciente.appointment_state?.stateKey === "called" || paciente.appointment_state?.stateKey === "in_consultation") && paciente.appointment_state?.attention_type === "CONSULTATION" && /*#__PURE__*/React.createElement(Button, {
         label: "Realizar Consulta",
+        className: "btn-sm btn btn-primary mb-2",
+        onClick: () => handleMakeClinicalRecord(paciente.id, paciente.cita?.id)
+      }), (paciente.appointment_state?.stateKey === "pending_consultation" || paciente.appointment_state?.stateKey === "called" || paciente.appointment_state?.stateKey === "in_consultation") && paciente.appointment_state?.attention_type === "PROCEDURE" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+        label: "Realizar Examen",
         className: "btn-sm btn btn-primary",
-        onClick: () => window.location.href = `realizarConsulta?id=${paciente.id}`
-      })))));
+        onClick: () => {
+          handleLoadExamResults(paciente.cita.id, paciente.id, paciente.cita.product_id);
+        }
+      }), /*#__PURE__*/React.createElement(Button, {
+        label: "Subir Examen",
+        className: "btn-sm btn btn-primary",
+        onClick: () => {
+          console.log("paciente.cita?.exam_orders", paciente.cita?.exam_orders);
+          setSelectedAppointment(paciente.cita);
+          setSelectedAppointmentId(paciente.cita?.id);
+          setSelectedExamOrder(paciente.cita?.exam_orders[0]);
+          setShowPdfModal(true);
+        }
+      }))))));
     }));
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -458,7 +540,66 @@ export const PatientConsultationList = () => {
     totalRecords: totalPatients,
     onPageChange: onPageChange,
     template: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
-  })), /*#__PURE__*/React.createElement("style", null, `
+  })), showPdfModal && /*#__PURE__*/React.createElement("div", {
+    className: "modal fade show",
+    style: {
+      display: "block",
+      backgroundColor: "rgba(0, 0, 0, 0.5)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-dialog modal-dialog-centered modal-lg"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/React.createElement("h5", {
+    className: "modal-title"
+  }, "Previsualizaci\xF3n de PDF"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn-close",
+    onClick: () => {
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+      setShowPdfModal(false);
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "modal-body"
+  }, pdfPreviewUrl ? /*#__PURE__*/React.createElement("embed", {
+    src: pdfPreviewUrl,
+    width: "100%",
+    height: "500px",
+    type: "application/pdf"
+  }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")), /*#__PURE__*/React.createElement("div", {
+    className: "modal-footer"
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "file",
+    accept: ".pdf",
+    id: "inputPdf",
+    onChange: e => {
+      const file = e.target.files?.[0] || null;
+      if (file) {
+        setPdfFile(file);
+        setPdfPreviewUrl(URL.createObjectURL(file));
+      }
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-secondary",
+    onClick: () => {
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  }, "Cancelar"), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    onClick: () => {
+      handlePDFSubmit();
+      setShowPdfModal(false);
+      setPdfFile(null);
+      setPdfPreviewUrl(null);
+    }
+  }, "Confirmar"))))), /*#__PURE__*/React.createElement("style", null, `
                 .card-paciente {
                     display: flex;
                     flex-direction: column;

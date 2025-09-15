@@ -8,6 +8,7 @@ import { useClinicalRecords } from "./hooks/useClinicalRecords.js";
 import { PatientClinicalRecordsTable } from "./components/PatientClinicalRecordsTable.js";
 import UserManager from "../../services/userManager.js";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
+import { SeePatientInfoButton } from "../patients/SeePatientInfoButton.js";
 const specialtyId = new URLSearchParams(window.location.search).get("especialidad");
 const patientId = new URLSearchParams(window.location.search).get("patient_id") || new URLSearchParams(window.location.search).get("id") || "";
 const appointmentId = new URLSearchParams(window.location.search).get("appointment_id") || "";
@@ -74,6 +75,10 @@ export const PatientClinicalRecordApp = () => {
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
     className: "mb-0"
   }, "Historias Cl\xEDnicas - ", nombreEspecialidad)), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center gap-2 justify-content-end"
+  }, /*#__PURE__*/React.createElement(SeePatientInfoButton, {
+    patientId: patientId
+  }), /*#__PURE__*/React.createElement("div", {
     className: "dropdown"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary dropdown-toggle",
@@ -89,7 +94,7 @@ export const PatientClinicalRecordApp = () => {
   }, /*#__PURE__*/React.createElement("a", {
     className: "dropdown-item",
     href: `consultas?patient_id=${patientId}&especialidad=${specialtyId}&tipo_historia=${record.key_}&appointment_id=${appointmentId}`
-  }, "Crear ", record.name)))))))), /*#__PURE__*/React.createElement("div", {
+  }, "Crear ", record.name))))))))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement(PatientClinicalRecordsTable, {
     records: tableClinicalRecords,

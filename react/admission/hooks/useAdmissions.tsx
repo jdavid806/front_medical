@@ -12,8 +12,6 @@ export const useAdmissions = () => {
         try {
             const data = await admissionService.filterAdmissions(cleanJsonObject(filters));
 
-            console.log(data);
-
             setTotalRecords(data.data.total);
             setAdmissions(data.data.data);
         } catch (error) {

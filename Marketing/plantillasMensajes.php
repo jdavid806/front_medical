@@ -212,7 +212,7 @@ $tabs = [
                                                                 id="plantilla-<?= $key ?>-<?= $subkey ?>"
                                                                 onchange="cambiarContenidoEditor('<?= $key ?>-<?= $subkey ?>')">
                                                                 <option value="whatsapp">WhatsApp</option>
-                                                                <option value="correo">Correo</option>
+                                                                <option value="email">Correo</option>
                                                             </select>
                                                         </div>
                                                         <?php if ($tab['anexo']): ?>

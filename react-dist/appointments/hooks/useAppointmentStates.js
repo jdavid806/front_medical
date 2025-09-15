@@ -6,6 +6,7 @@ export const useAppointmentStates = () => {
     try {
       const service = new AppointmentStateService();
       const response = await service.getAll();
+      console.log('Appointment states:', response);
       setAppointmentStates(response);
     } catch (error) {
       console.error('Error fetching appointment states:', error);
