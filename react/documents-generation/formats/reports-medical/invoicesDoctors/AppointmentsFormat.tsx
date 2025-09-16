@@ -177,7 +177,6 @@ export const AppointmentsFormat: React.FC<ConsultationsByUserProps> = ({
           key={index}
           className="user-table-container"
           style={{
-            pageBreakInside: "avoid",
             marginBottom: "2rem",
             border: "1px solid #ddd",
             padding: "1rem",
@@ -348,7 +347,6 @@ export const AppointmentsFormat: React.FC<ConsultationsByUserProps> = ({
       <div
         className="summary-table-container"
         style={{
-          pageBreakInside: "avoid",
           marginBottom: "2rem",
           border: "1px solid #ddd",
           padding: "1rem",

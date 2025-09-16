@@ -160,12 +160,12 @@ export const AppointmentsFinishedTable = () => {
       zIndex: 100000
     }
   }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      minHeight: "300px"
+      minHeight: "400px"
     }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,

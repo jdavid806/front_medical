@@ -1197,8 +1197,8 @@ export const InvoicesReport = () => {
 
       Array.from(billingUsers).forEach((user: any) => {
         row[`${user}_copago`] = groupedData[method][user]?.copago || 0;
-        row[`${user}_particular`] = groupedData[method][user].particular || 0;
-        row[`${user}_autorizado`] = groupedData[method][user].autorizado || 0;
+        row[`${user}_particular`] = groupedData[method][user]?.particular || 0;
+        row[`${user}_autorizado`] = groupedData[method][user]?.autorizado || 0;
 
         rowTotal +=
           row[`${user}_copago`] +

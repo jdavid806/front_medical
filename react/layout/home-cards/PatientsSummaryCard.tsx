@@ -2,14 +2,14 @@ import React from 'react';
 
 export const PatientsSummaryCard = () => {
     const handleViewPatients = () => {
-        window.location.href = 'pacientes';
+        window.location.href = 'pacientescontrol';
     };
 
     return (
         <div className="card bg-secondary dashboard-card">
             <div className="card-body">
                 <h5 className="card-title">
-                    <span className="ml-10" data-feather="user"></span> Pacientes
+                    <i className="fa-solid fa-restroom ml-2"></i> Pacientes
                 </h5>
                 <div className="card-content">
                     <h3 id="patientsActiveCount">Cargando...</h3>
@@ -21,7 +21,7 @@ export const PatientsSummaryCard = () => {
                         type="button"
                         onClick={handleViewPatients}
                     >
-                        <span data-feather="users"></span> Ver Consultas
+                        <i className="fa-solid fa-eye"></i> Ver Pacientes
                     </button>
                 </div>
             </div>

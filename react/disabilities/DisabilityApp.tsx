@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { PrimeReactProvider } from "primereact/api";
-import  DisabilityTable  from './components/DisabilityTable'
+import DisabilityTable from './components/DisabilityTable'
 import { getColumns } from './enums/columns'
 import { useGetData } from './hooks/useGetData'
 import { DisabilityFormModal } from './modal/DisabilityFormModal'
@@ -72,10 +72,10 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
   const editDisability = async (id: string) => {
     try {
       console.log('Editando discapacidad:', id);
-      
+
       // Buscar la incapacidad en los datos actuales
       const disabilityToEdit = data.find(disability => disability.id.toString() === id);
-      
+
       if (disabilityToEdit) {
         setCurrentDisability(disabilityToEdit);
         setInitialData({
@@ -136,7 +136,7 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
           end_date: formData.end_date,
           reason: formData.reason,
         };
-        
+
         await disabilityService.update(currentDisability.id, updateData);
         SwalManager.success({
           title: "Incapacidad actualizada",
@@ -168,7 +168,7 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
     setInitialData(null);
   };
 
-//  generarFormato("Incapacidad", disabilityData, "Impresion")
+  //  generarFormato("Incapacidad", disabilityData, "Impresion")
   const handlePrint = (id: string) => {
     if (!data || data.length === 0) {
       SwalManager.error({
@@ -186,7 +186,7 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
   if (!patientId) {
     return (
       <div className="alert alert-warning">
-        <strong>Advertencia:</strong> No se ha proporcionado un ID de paciente. 
+        <strong>Advertencia:</strong> No se ha proporcionado un ID de paciente.
         Por favor, asegúrese de que la URL incluya el parámetro <code>patient_id</code> o <code>id</code>.
       </div>
     );
@@ -196,8 +196,8 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
     return (
       <div className="alert alert-danger">
         <strong>Error:</strong> {error}
-        <button 
-          className="btn btn-sm btn-outline-danger ms-2" 
+        <button
+          className="btn btn-sm btn-outline-danger ms-2"
           onClick={reload}
         >
           Reintentar
@@ -215,39 +215,45 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
             overlay: 100000,
           },
         }}
-      >
-        <div>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="mb-1">Incapacidades</h2>
-            <div className="text-end mb-2">
-              <div className="d-flex gap-2">
-                {/* <button
+      >          <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-1">Incapacidades</h2>
+          <div className="text-end mb-2">
+            <div className="d-flex gap-2">
+              {/* <button
                   className="btn btn-primary d-flex align-items-center"
                   onClick={onCreate}
                 >
                   <i className="fas fa-plus me-2"></i>
                   Nueva Incapacidad
                 </button> */}
-              </div>
             </div>
           </div>
-          
-          <DisabilityTable 
-            data={data} 
-            columns={columns} 
-            loading={loading}
-            onReload={reload}
-          />
-
-          <DisabilityFormModal
-            title={currentDisability ? "Editar Incapacidad" : "Crear Incapacidad"}
-            show={showDisabilityFormModal}
-            handleSubmit={handleSubmit}
-            onHide={handleHideDisabilityFormModal}
-            initialData={initialData}
-          />
         </div>
-      </PrimeReactProvider>
+
+        <div
+          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "400px" }}
+        >
+
+          <div className="card-body h-100 w-100 d-flex flex-column">
+
+            <DisabilityTable
+              data={data}
+              columns={columns}
+              loading={loading}
+              onReload={reload}
+            />
+          </div>
+        </div>
+
+        <DisabilityFormModal
+          title={currentDisability ? "Editar Incapacidad" : "Crear Incapacidad"}
+          show={showDisabilityFormModal}
+          handleSubmit={handleSubmit}
+          onHide={handleHideDisabilityFormModal}
+          initialData={initialData}
+        />
+      </PrimeReactProvider >
     </>
   )
 }

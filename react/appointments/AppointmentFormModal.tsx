@@ -119,7 +119,13 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
   const { patientExamRecipes, setPatientExamRecipes, fetchPatientExamRecipes } =
     usePatientExamRecipes();
   const { sendMessage, responseMsg, loading, error } = useMassMessaging();
-  const { showSuccessToast, showErrorToast, showFormErrorsToast, showServerErrorsToast, toast } = usePRToast();
+  const {
+    showSuccessToast,
+    showErrorToast,
+    showFormErrorsToast,
+    showServerErrorsToast,
+    toast,
+  } = usePRToast();
   const tenant = window.location.hostname.split(".")[0];
   const data = {
     tenantId: tenant,
@@ -310,14 +316,18 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         },
         patient!.id?.toString()
       );
-      showSuccessToast()
-      sendMessageWhatsapp(appointments[0]);
+
+      showSuccessToast();
+
+      for (const appointment of appointments) {
+        await sendMessageWhatsapp(appointment);
+      }
 
       setTimeout(() => {
         location.reload();
       }, 1000);
     } catch (error) {
-      showServerErrorsToast(error)
+      showServerErrorsToast(error);
       console.error(error);
     }
   };
@@ -341,7 +351,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
       message_type: "text",
       recipients: [
         getIndicativeByCountry(appointment.patient.country_id) +
-        appointment.patient.whatsapp,
+          appointment.patient.whatsapp,
       ],
       message: templateFormatted,
       webhook_url: "https://example.com/webhook",
@@ -387,7 +397,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
   const assignedUserAssistantAvailabilityId = useWatch({
     control,
     name: "assigned_user_assistant_availability_id",
-  })
+  });
 
   const examRecipeId = useWatch({
     control,
@@ -489,7 +499,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
           availableBlocks,
           appointmentDate.toISOString().split("T")[0],
           assignedUserAvailability.id,
-          'doctor'
+          "doctor"
         );
       }
     } else {
@@ -503,7 +513,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         availableBlocks,
         appointmentDate.toISOString().split("T")[0],
         assignedUserAssistantAvailabilityId,
-        'assistant'
+        "assistant"
       );
     } else if (assignedUserAvailability && appointmentDate) {
       // Si se deselecciona, volver a horas del doctor
@@ -511,7 +521,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         availableBlocks,
         appointmentDate.toISOString().split("T")[0],
         assignedUserAvailability.id,
-        'doctor'
+        "doctor"
       );
     }
   }, [assignedUserAssistantAvailabilityId]);
@@ -662,17 +672,21 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         if (day.date === dateString) {
           availableDoctors.push({
             ...item,
-            full_name: `${item.user.first_name || ""} ${item.user.middle_name || ""} ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+            full_name: `${item.user.first_name || ""} ${
+              item.user.middle_name || ""
+            } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
             id: item.availability_id,
-            user_id: item.user.id // Agregamos el user_id para referencia
+            user_id: item.user.id, // Agregamos el user_id para referencia
           });
         }
       });
     });
 
     // Eliminar duplicados
-    const uniqueDoctors = availableDoctors.filter((doctor, index, self) =>
-      index === self.findIndex((d) => d.availability_id === doctor.availability_id)
+    const uniqueDoctors = availableDoctors.filter(
+      (doctor, index, self) =>
+        index ===
+        self.findIndex((d) => d.availability_id === doctor.availability_id)
     );
 
     // Actualizar opciones de doctores
@@ -690,7 +704,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         availableBlocks,
         dateString,
         firstDoctor.id,
-        'doctor'
+        "doctor"
       );
     } else {
       setAppointmentTimeOptions([]);
@@ -706,7 +720,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
 
     // Buscar el doctor seleccionado
     const selectedDoctor = userAvailabilityOptions.find(
-      doc => doc.id === doctorId
+      (doc) => doc.id === doctorId
     );
 
     if (!selectedDoctor || !selectedDoctor.user.assistants) {
@@ -720,18 +734,24 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
 
     availableBlocks.forEach((item) => {
       // Buscar disponibilidades de asistentes del doctor seleccionado
-      if (selectedDoctor.user.assistants.some(
-        (assistant: any) => assistant.id === item.user.id
-      )) {
+      if (
+        selectedDoctor.user.assistants.some(
+          (assistant: any) => assistant.id === item.user.id
+        )
+      ) {
         // Verificar que tenga disponibilidad en la fecha
-        const hasAvailability = item.days.some(day => day.date === dateString);
+        const hasAvailability = item.days.some(
+          (day) => day.date === dateString
+        );
 
         if (hasAvailability) {
           availableAssistants.push({
             ...item,
-            full_name: `${item.user.first_name || ""} ${item.user.middle_name || ""} ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+            full_name: `${item.user.first_name || ""} ${
+              item.user.middle_name || ""
+            } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
             id: item.availability_id, // Usamos el ID de disponibilidad
-            user_id: item.user.id // Guardamos también el user_id
+            user_id: item.user.id, // Guardamos también el user_id
           });
         }
       }
@@ -744,7 +764,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     availableBlocks,
     dateString: string,
     availabilityId: string,
-    professionalType: 'doctor' | 'assistant'
+    professionalType: "doctor" | "assistant"
   ) => {
     let blocks: any[] = [];
 
@@ -778,14 +798,21 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     });
 
     // Eliminar duplicados y ordenar
-    let uniqueOptions = options.filter((option, index, self) =>
-      index === self.findIndex((o) => o.value === option.value)
-    ).sort((a, b) => a.value.localeCompare(b.value));
+    let uniqueOptions = options
+      .filter(
+        (option, index, self) =>
+          index === self.findIndex((o) => o.value === option.value)
+      )
+      .sort((a, b) => a.value.localeCompare(b.value));
 
     // Filtrar horas pasadas si es la fecha actual
     const now = new Date();
-    const todayDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const todayDate = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes()
+    ).padStart(2, "0")}`;
 
     if (dateString === todayDate) {
       uniqueOptions = uniqueOptions.filter(
@@ -797,7 +824,11 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     setValue("appointment_time", uniqueOptions[0]?.value || null);
   };
 
-  const updateTimeSlotsForDoctor = (availableBlocks, dateString: string, doctorId: string) => {
+  const updateTimeSlotsForDoctor = (
+    availableBlocks,
+    dateString: string,
+    doctorId: string
+  ) => {
     let blocks: any[] = [];
 
     // Buscamos los bloques del doctor específico
@@ -830,14 +861,21 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     });
 
     // Eliminar duplicados y ordenar
-    let uniqueOptions = options.filter((option, index, self) =>
-      index === self.findIndex((o) => o.value === option.value)
-    ).sort((a, b) => a.value.localeCompare(b.value));
+    let uniqueOptions = options
+      .filter(
+        (option, index, self) =>
+          index === self.findIndex((o) => o.value === option.value)
+      )
+      .sort((a, b) => a.value.localeCompare(b.value));
 
     // Filtrar horas pasadas si es la fecha actual
     const now = new Date();
-    const todayDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const todayDate = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes()
+    ).padStart(2, "0")}`;
 
     if (dateString === todayDate) {
       uniqueOptions = uniqueOptions.filter(
@@ -881,8 +919,6 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
       specialty_name: app.specialty_name,
     };
   };
-
-  console.log("renderizando");
 
 
   return (
@@ -930,7 +966,11 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                         appendTo={"self"}
                         {...field}
                       />
-                      <button type="button" className="btn btn-primary" onClick={() => setShowPatientModal(true)}>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => setShowPatientModal(true)}
+                      >
                         <i className="fas fa-plus"></i>
                       </button>
                     </div>
@@ -1045,7 +1085,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           control={control}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Receta de examen
                               </label>
                               <Dropdown
@@ -1228,7 +1271,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           control={control}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Asistente
                               </label>
                               <Dropdown
@@ -1293,7 +1339,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           rules={{ required: "Este campo es requerido" }}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Procedimiento *
                               </label>
                               <Dropdown
@@ -1322,7 +1371,6 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
 
                   <div className="mb-3">
                     <div className="row">
-
                       <div className="col-md-6">
                         <Controller
                           name="consultation_purpose"
@@ -1330,7 +1378,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           rules={{ required: "Este campo es requerido" }}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Finalidad de la consulta *
                               </label>
                               <Dropdown
@@ -1359,7 +1410,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           rules={{ required: "Este campo es requerido" }}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Tipo de consulta *
                               </label>
                               <Dropdown
@@ -1392,7 +1446,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           control={control}
                           render={({ field }) => (
                             <>
-                              <label htmlFor={field.name} className="form-label">
+                              <label
+                                htmlFor={field.name}
+                                className="form-label"
+                              >
                                 Causa externa
                               </label>
                               <Dropdown
@@ -1492,7 +1549,8 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                       className="btn btn-primary"
                       onClick={handleSubmit(addAppointments)}
                     >
-                      {editingId && appointments.find((a) => a.uuid === editingId)
+                      {editingId &&
+                      appointments.find((a) => a.uuid === editingId)
                         ? "Actualizar cita"
                         : "Agregar cita"}
                     </button>
@@ -1515,10 +1573,12 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
 
                         return (
                           <div
-                            key={`${appointment.uuid}-${Object.keys(appointment.errors).length
-                              }`}
-                            className={`card ${hasErrors ? "border-danger" : "border-success"
-                              }`}
+                            key={`${appointment.uuid}-${
+                              Object.keys(appointment.errors).length
+                            }`}
+                            className={`card ${
+                              hasErrors ? "border-danger" : "border-success"
+                            }`}
                           >
                             <div className="card-body">
                               <div className="mb-2">
@@ -1543,14 +1603,18 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                                   <small>{appointment.appointment_time}</small>
                                 </div>
                                 <div className="w-100">
-                                  <small className="fw-bold">Profesional:</small>{" "}
+                                  <small className="fw-bold">
+                                    Profesional:
+                                  </small>{" "}
                                   <small>
                                     {getProfessional(appointment)
                                       ?.professional_name || "--"}
                                   </small>
                                 </div>
                                 <div className="w-100">
-                                  <small className="fw-bold">Especialidad:</small>{" "}
+                                  <small className="fw-bold">
+                                    Especialidad:
+                                  </small>{" "}
                                   <small>
                                     {getProfessional(appointment)
                                       ?.specialty_name || "--"}

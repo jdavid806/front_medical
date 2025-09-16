@@ -128,7 +128,6 @@ export const EntitiesFormat = ({
       key: user,
       className: "user-table-container",
       style: {
-        pageBreakInside: "avoid",
         marginBottom: "2rem",
         border: "1px solid #ddd",
         padding: "1rem",

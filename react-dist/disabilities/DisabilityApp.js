@@ -195,7 +195,7 @@ const DisabilityApp = ({
         overlay: 100000
       }
     }
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+  }, "          ", /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "mb-1"
@@ -203,17 +203,24 @@ const DisabilityApp = ({
     className: "text-end mb-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
-  }))), /*#__PURE__*/React.createElement(DisabilityTable, {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(DisabilityTable, {
     data: data,
     columns: columns,
     loading: loading,
     onReload: reload
-  }), /*#__PURE__*/React.createElement(DisabilityFormModal, {
+  }))), /*#__PURE__*/React.createElement(DisabilityFormModal, {
     title: currentDisability ? "Editar Incapacidad" : "Crear Incapacidad",
     show: showDisabilityFormModal,
     handleSubmit: handleSubmit,
     onHide: handleHideDisabilityFormModal,
     initialData: initialData
-  }))));
+  })));
 };
 export default DisabilityApp;

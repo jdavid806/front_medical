@@ -3,14 +3,14 @@ import React from 'react';
 
 export const ConsultationsSummaryCard = () => {
     const handleViewAppointments = () => {
-        window.location.href = 'citasControl';
+        window.location.href = 'pacientes';
     };
 
     return (
         <div className="card dashboard-card">
             <div className="card-body">
                 <h5 className="card-title">
-                    <span data-feather="file-text"></span> Consultas
+                    <i className="fa-solid fa-magnifying-glass"></i> Consultas
                 </h5>
                 <div className="card-content">
                     <h3>0/2</h3>
@@ -22,7 +22,7 @@ export const ConsultationsSummaryCard = () => {
                         type="button"
                         onClick={handleViewAppointments}
                     >
-                        <span data-feather="file-plus"></span> Ver Citas
+                        <i className="fa-solid fa-magnifying-glass"></i> Ver Consultas
                     </button>
                 </div>
             </div>

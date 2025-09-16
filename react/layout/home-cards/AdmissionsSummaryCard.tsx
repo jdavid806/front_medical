@@ -2,7 +2,7 @@ import React from 'react';
 
 export const AdmissionsSummaryCard = () => {
     const handleViewAdmissions = () => {
-        window.location.href = 'admisiones';
+        window.location.href = 'citasControl';
     };
 
     return (
@@ -12,7 +12,7 @@ export const AdmissionsSummaryCard = () => {
                     <i className='fas fa-hospital-user ml-2'></i> Admisiones
                 </h5>
                 <div className="card-content">
-                    <h3 id="admissionsActiveCount">Cargando...</h3>
+                    <h3 id="admissionsActiveCount">24</h3>
                     <span className="text-span-descripcion">Admisiones este mes</span>
                 </div>
                 <div className="card-button">

@@ -250,7 +250,9 @@ export const AppointmentFormModal = ({
         appointments: data
       }, patient.id?.toString());
       showSuccessToast();
-      sendMessageWhatsapp(appointments[0]);
+      for (const appointment of appointments) {
+        await sendMessageWhatsapp(appointment);
+      }
       setTimeout(() => {
         location.reload();
       }, 1000);
@@ -388,7 +390,7 @@ export const AppointmentFormModal = ({
 
       // Actualizar horas si no hay asistente seleccionado
       if (!assignedUserAssistantAvailabilityId && appointmentDate) {
-        updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAvailability.id, 'doctor');
+        updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAvailability.id, "doctor");
       }
     } else {
       setAssistantAvailabilityOptions([]);
@@ -396,10 +398,10 @@ export const AppointmentFormModal = ({
   }, [assignedUserAvailability]);
   useEffect(() => {
     if (assignedUserAssistantAvailabilityId && appointmentDate) {
-      updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAssistantAvailabilityId, 'assistant');
+      updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAssistantAvailabilityId, "assistant");
     } else if (assignedUserAvailability && appointmentDate) {
       // Si se deselecciona, volver a horas del doctor
-      updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAvailability.id, 'doctor');
+      updateTimeSlotsForProfessional(availableBlocks, appointmentDate.toISOString().split("T")[0], assignedUserAvailability.id, "doctor");
     }
   }, [assignedUserAssistantAvailabilityId]);
   useEffect(() => {
@@ -535,7 +537,7 @@ export const AppointmentFormModal = ({
 
     // Actualizar horas disponibles
     if (firstDoctor) {
-      updateTimeSlotsForProfessional(availableBlocks, dateString, firstDoctor.id, 'doctor');
+      updateTimeSlotsForProfessional(availableBlocks, dateString, firstDoctor.id, "doctor");
     } else {
       setAppointmentTimeOptions([]);
       setValue("appointment_time", null);
@@ -677,7 +679,6 @@ export const AppointmentFormModal = ({
       specialty_name: app.specialty_name
     };
   };
-  console.log("renderizando");
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showPatientModal,
     onHide: () => setShowPatientModal(false),

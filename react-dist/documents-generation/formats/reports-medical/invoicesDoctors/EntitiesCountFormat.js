@@ -110,7 +110,6 @@ export const EntitiesCountFormat = ({
     key: index,
     className: "user-table-container",
     style: {
-      pageBreakInside: "avoid",
       marginBottom: "2rem",
       border: "1px solid #ddd",
       padding: "1rem"
@@ -183,7 +182,6 @@ export const EntitiesCountFormat = ({
   }, userData.total)))))), /*#__PURE__*/React.createElement("div", {
     className: "summary-table-container",
     style: {
-      pageBreakInside: "avoid",
       marginBottom: "2rem",
       border: "1px solid #ddd",
       padding: "1rem",

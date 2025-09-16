@@ -67,12 +67,12 @@
             <i class="fa-solid fa-envelopes-bulk"></i> Comunicaciones
           </button>
         </li>
-        <!-- <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation">
           <button class="nav-link" id="sedes-tab" data-bs-toggle="tab" data-bs-target="#sedes-tab-pane" type="button"
             role="tab" aria-controls="sedes-tab-pane" aria-selected="false">
             <i class="fa-solid fa-location-dot"></i> Sedes
           </button>
-        </li> -->
+        </li>
       </ul>
 
       <!-- Contenido de los tabs -->
@@ -544,31 +544,7 @@
         <div class="tab-pane fade" id="sedes-tab-pane" role="tabpanel" aria-labelledby="sedes-tab">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5>Listado de Sedes</h5>
-            <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-              data-bs-target="#crearSede">
-              <i class="fa-solid fa-plus"></i> Agregar Sede
-            </button>
-          </div>
-          <table class="table" id="tablaSedes">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>WhatsApp</th>
-                <th>Dirección</th>
-                <th>Ciudad</th>
-                <th>Representante</th>
-                <th>Teléfono Rep.</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Filas dinámicas aquí -->
-            </tbody>
-          </table>
-          <div class="col-12">
-            <button class="btn btn-primary" type="button" id="guardarSedes">Guardar sedes</button>
+            <div id="branchComponent"></div>
           </div>
         </div>
 
@@ -895,6 +871,16 @@
       alert("Error al guardar la configuración SMTP");
     }
   }
+</script>
+
+<script type="module">
+  import React from "react"
+  import ReactDOMClient from "react-dom/client"
+  import {
+    BranchApp
+  } from './react-dist/fe-config/company/branch/BranchApp.js';
+
+  ReactDOMClient.createRoot(document.getElementById('branchComponent')).render(React.createElement(BranchApp));
 </script>
 
 <?php include "../../Configuracion/modales/ModalVincularWS.php"; ?>

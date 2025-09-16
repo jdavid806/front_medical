@@ -116,7 +116,6 @@ export const SummaryFormat: React.FC<AppointmentsSpecialtyDoctorVisualizationPro
       <div
         className="state-container"
         style={{
-          pageBreakInside: "avoid",
           marginBottom: "3rem",
           border: "1px solid #ddd",
           padding: "1.5rem",

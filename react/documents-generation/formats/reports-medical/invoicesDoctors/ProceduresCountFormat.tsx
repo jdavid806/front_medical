@@ -186,7 +186,6 @@ export const ProceduresCountFormat: React.FC<ProceduresCountByUserProps> = ({
           key={index}
           className="user-table-container"
           style={{
-            pageBreakInside: "avoid",
             marginBottom: "2rem",
             border: "1px solid #ddd",
             padding: "1rem",

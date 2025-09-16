@@ -1,5 +1,4 @@
 <?php
-
 include "../menu.php";
 include "../header.php";
 
@@ -13,9 +12,25 @@ $baner = "";
   import ReactDOMClient from "react-dom/client"
   import {
     AppointmentsSummaryCard
-  } from './react-dist/AppointmentsSummaryCard.js';
+  } from './react-dist/layout/home-cards/AppointmentsSummaryCard.js';
+  import {
+    PatientsSummaryCard
+  } from './react-dist/layout/home-cards/PatientsSummaryCard.js';
+  import {
+    ConsultationsSummaryCard
+  } from './react-dist/layout/home-cards/ConsultationsSummaryCard.js';
+    import {
+    AdmissionsSummaryCard
+  } from './react-dist/layout/home-cards/AdmissionsSummaryCard.js';
 
   ReactDOMClient.createRoot(document.getElementById('appointmentsSummaryCardReact')).render(React.createElement(AppointmentsSummaryCard));
+  
+  ReactDOMClient.createRoot(document.getElementById('patientsSummaryCardReact')).render(React.createElement(PatientsSummaryCard));
+  
+  ReactDOMClient.createRoot(document.getElementById('consultationsSummaryCardReact')).render(React.createElement(ConsultationsSummaryCard));
+
+ ReactDOMClient.createRoot(document.getElementById('AdmissionsSummaryCard')).render(React.createElement(AdmissionsSummaryCard));
+
 </script>
 
 <style type="text/css">
@@ -124,13 +139,17 @@ $baner = "";
     margin-top: auto;
   }
   
-  /* Estilos específicos para el componente React */
-  #appointmentsSummaryCardReact {
+  /* Estilos específicos para los componentes React */
+  #appointmentsSummaryCardReact,
+  #patientsSummaryCardReact,
+  #consultationsSummaryCardReact {
     display: flex;
     justify-content: center;
   }
   
-  #appointmentsSummaryCardReact .card {
+  #appointmentsSummaryCardReact .card,
+  #patientsSummaryCardReact .card,
+  #consultationsSummaryCardReact .card {
     width: 250px !important;
     height: 235px !important;
     border-radius: 10% !important;
@@ -140,7 +159,9 @@ $baner = "";
     flex-direction: column !important;
   }
   
-  #appointmentsSummaryCardReact .card-body {
+  #appointmentsSummaryCardReact .card-body,
+  #patientsSummaryCardReact .card-body,
+  #consultationsSummaryCardReact .card-body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
@@ -148,7 +169,9 @@ $baner = "";
     padding: 1.25rem !important;
   }
   
-  #appointmentsSummaryCardReact .card-title {
+  #appointmentsSummaryCardReact .card-title,
+  #patientsSummaryCardReact .card-title,
+  #consultationsSummaryCardReact .card-title {
     text-align: center !important;
     color: #f8f9fa !important;
     font-size: 1.1rem !important;
@@ -159,7 +182,9 @@ $baner = "";
     justify-content: center !important;
   }
   
-  #appointmentsSummaryCardReact .card-content {
+  #appointmentsSummaryCardReact .card-content,
+  #patientsSummaryCardReact .card-content,
+  #consultationsSummaryCardReact .card-content {
     flex-grow: 1 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -168,7 +193,9 @@ $baner = "";
     margin: 0.5rem 0 !important;
   }
   
-  #appointmentsSummaryCardReact h3 {
+  #appointmentsSummaryCardReact h3,
+  #patientsSummaryCardReact h3,
+  #consultationsSummaryCardReact h3 {
     text-align: center !important;
     color: #f8f9fa !important;
     margin-bottom: 0.5rem !important;
@@ -176,14 +203,18 @@ $baner = "";
     font-weight: bold !important;
   }
   
-  #appointmentsSummaryCardReact .text-span-descripcion {
+  #appointmentsSummaryCardReact .text-span-descripcion,
+  #patientsSummaryCardReact .text-span-descripcion,
+  #consultationsSummaryCardReact .text-span-descripcion {
     text-align: center !important;
     font-weight: 700 !important;
     color: rgba(var(--phoenix-secondary-lighter-rgb), var(--phoenix-text-opacity)) !important;
     margin-bottom: 0.5rem !important;
   }
   
-  #appointmentsSummaryCardReact .card-button {
+  #appointmentsSummaryCardReact .card-button,
+  #patientsSummaryCardReact .card-button,
+  #consultationsSummaryCardReact .card-button {
     display: flex !important;
     justify-content: center !important;
     margin-top: auto !important;
@@ -201,50 +232,23 @@ $baner = "";
       <?php endif ?>
       
       <div class="dashboard-cards-container">
-        <!-- Tarjeta de Pacientes -->
-        <div class="dashboard-card-wrapper" data-menu-role="pacientes">
-          <div class="card bg-secondary dashboard-card">
-            <div class="card-body">
-              <h5 class="card-title"><span class="ml-10" data-feather="user"></span> Pacientes</h5>
-              <div class="card-content">
-                <h3 id="patientsActiveCount">Cargando...</h3>
-                <span class="text-span-descripcion">Pacientes Creados</span>
-              </div>
-              <div class="card-button">
-                <button class="btn btn-phoenix-secondary me-1 mb-1" type="button"
-                  onclick="window.location.href='pacientes'">
-                  <span data-feather="users"></span> Ver Consultas
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Componente React -->
+        <!-- Componente React de Pacientes -->
+        <div class="dashboard-card-wrapper" id="patientsSummaryCardReact"></div>
+        
+        <!-- Componente React de Citas -->
         <div class="dashboard-card-wrapper" id="appointmentsSummaryCardReact"></div>
         
-        <!-- Tarjeta de Consultas -->
-        <div class="dashboard-card-wrapper">
-          <div class="card dashboard-card">
-            <div class="card-body">
-              <h5 class="card-title"><span data-feather="file-text"></span> Consultas</h5>
-              <div class="card-content">
-                <h3>0/2</h3>
-                <span class="text-span-descripcion">Consultas para Hoy</span>
-              </div>
-              <div class="card-button">
-                <button class="btn btn-phoenix-secondary me-1 mb-1" type="button"
-                  onclick="window.location.href='citasControl'">
-                  <span data-feather="file-plus"></span> Ver Citas
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Componente React de Consultas -->
+        <div class="dashboard-card-wrapper" id="consultationsSummaryCardReact"></div>
+        <!-- Componente React de Admisiones -->
+
+        <div class="dashboard-card-wrapper" id="AdmissionsSummaryCard"></div>
+
       </div>
       
       <hr class="bg-body-secondary mb-6 mt-4" />
 
+      <!-- El resto del contenido permanece igual -->
       <div class="accordion mb-4" id="accordionFiltros">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingFiltros">
@@ -360,41 +364,24 @@ $baner = "";
     specialtySelect.addEventListener('change', filterCalendar);
     doctorSelect.addEventListener('change', filterCalendar);
 
+    // Actualizar contador de pacientes en el componente React
     const patientsCount = await patientService.activeCount();
-    const patientsActiveCount = document.getElementById('patientsActiveCount');
-
-    if (patientsActiveCount) {
-      patientsActiveCount.textContent = patientsCount;
-    }
+    setTimeout(() => {
+      const reactPatientsCountElement = document.querySelector('#patientsSummaryCardReact [id*="patientsActiveCount"]');
+      if (reactPatientsCountElement) {
+        reactPatientsCountElement.textContent = patientsCount;
+      }
+    }, 1000);
 
     const appointmentsCount = await appointmentService.activeCount();
 
     // Buscar el elemento de conteo de citas dentro del componente React
     setTimeout(() => {
-      const reactCountElement = document.querySelector('#appointmentsSummaryCardReact [id*="appointmentsActiveCount"]');
-      if (reactCountElement) {
-        reactCountElement.textContent = appointmentsCount;
+      const reactAppointmentsCountElement = document.querySelector('#appointmentsSummaryCardReact [id*="appointmentsActiveCount"]');
+      if (reactAppointmentsCountElement) {
+        reactAppointmentsCountElement.textContent = appointmentsCount;
       }
-      
-      // Asegurar que el componente React tenga la misma estructura
-      const reactCard = document.querySelector('#appointmentsSummaryCardReact .card');
-      if (reactCard) {
-        const reactBody = reactCard.querySelector('.card-body');
-        if (reactBody && !reactBody.querySelector('.card-content')) {
-          const title = reactBody.querySelector('.card-title');
-          const content = reactBody.querySelector('.card-text');
-          const button = reactBody.querySelector('.card-button');
-          
-          if (title && content && button) {
-            // Reorganizar el contenido para que coincida con nuestra estructura
-            const newContent = document.createElement('div');
-            newContent.className = 'card-content';
-            newContent.innerHTML = content.innerHTML;
-            content.replaceWith(newContent);
-          }
-        }
-      }
-    }, 1000); // Pequeño delay para asegurar que el componente React se haya renderizado
+    }, 1000);
 
     function filterCalendar() {
       calendar.refetchEvents();

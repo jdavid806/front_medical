@@ -2,6 +2,8 @@
 include "../menu.php";
 include "../header.php";
 
+
+
 // Definir los antecedentes divididos por categoría
 $antecedentesPersonales = [
   [
@@ -133,6 +135,28 @@ $antecedentesFamiliares = [
 ];
 
 ?>
+
+<style>
+  .custom-btn {
+    width: 150px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+   .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+  .custom-btn i {
+    margin-right: 5px;
+  }
+</style>
+
 
 <div class="content">
   <div class="container-small">

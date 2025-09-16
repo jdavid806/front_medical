@@ -205,6 +205,8 @@ export const AppointmentsFinishedTable: React.FC = () => {
         >
 
           <div className="card-body h-100 w-100 d-flex flex-column">
+
+
             <CustomPRTable
               columns={columns}
               data={appointments}

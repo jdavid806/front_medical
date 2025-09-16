@@ -157,7 +157,6 @@ export const EntitiesCountFormat: React.FC<EntityCountByUserProps> = ({
           key={index}
           className="user-table-container"
           style={{
-            pageBreakInside: "avoid",
             marginBottom: "2rem",
             border: "1px solid #ddd",
             padding: "1rem",
@@ -268,7 +267,6 @@ export const EntitiesCountFormat: React.FC<EntityCountByUserProps> = ({
       <div
         className="summary-table-container"
         style={{
-          pageBreakInside: "avoid",
           marginBottom: "2rem",
           border: "1px solid #ddd",
           padding: "1rem",

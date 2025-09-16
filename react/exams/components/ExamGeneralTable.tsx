@@ -102,11 +102,9 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({
           "--",
         minioId: exam.minio_id,
         patientId: exam.patient_id,
-        patientName: `${exam.patient.first_name || ""} ${
-          exam.patient.middle_name || ""
-        } ${exam.patient?.last_name || ""} ${
-          exam.patient?.second_last_name || ""
-        }`.trim(),
+        patientName: `${exam.patient.first_name || ""} ${exam.patient.middle_name || ""
+          } ${exam.patient?.last_name || ""} ${exam.patient?.second_last_name || ""
+          }`.trim(),
         appointmentId: exam.appointment_id,
         state: exam.exam_order_state?.name || "pending",
         created_at: exam.created_at,
@@ -141,7 +139,7 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({
 
       if (enviarPDf !== undefined) {
         const responseUpdate = await examOrderService.updateMinioFile(selectedOrderId, dataUpload);
-        if(responseUpdate.success){
+        if (responseUpdate.success) {
           sendMessageWhatsapp(responseUpdate.data);
         }
         SwalManager.success({ text: "Resultados guardados exitosamente" });
@@ -213,11 +211,9 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({
       const dataToFile: any = await generatePdfFile(exam);
 
       const replacements = {
-        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${
-          exam.patient.middle_name ?? ""
-        } ${exam.patient.last_name ?? ""} ${
-          exam.patient.second_last_name ?? ""
-        }`,
+        NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${exam.patient.middle_name ?? ""
+          } ${exam.patient.last_name ?? ""} ${exam.patient.second_last_name ?? ""
+          }`,
         NOMBRE_EXAMEN: `${exam.examName}`,
         FECHA_EXAMEN: `${exam.dateTime}`,
         "ENLACE DOCUMENTO": "",
@@ -232,7 +228,7 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(exam.patient.country_id) +
-            exam.patient.whatsapp,
+          exam.patient.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
@@ -443,11 +439,11 @@ const TableActionsMenu: React.FC<{
   onDownload,
   onShare,
 }) => {
-  const menu = useRef<Menu>(null);
+    const menu = useRef<Menu>(null);
 
-  const items = [
-    ...(data.state === "generated"
-      ? [
+    const items = [
+      ...(data.state === "generated"
+        ? [
           {
             label: "Realizar examen",
             icon: "pi pi-stethoscope",
@@ -465,9 +461,9 @@ const TableActionsMenu: React.FC<{
             },
           },
         ]
-      : []),
-    ...(data.state === "uploaded"
-      ? [
+        : []),
+      ...(data.state === "uploaded"
+        ? [
           {
             label: "Visualizar resultados",
             icon: "pi pi-eye",
@@ -510,31 +506,31 @@ const TableActionsMenu: React.FC<{
             ],
           },
         ]
-      : []),
-  ];
+        : []),
+    ];
 
-  const handleMenuHide = () => {};
+    const handleMenuHide = () => { };
 
-  return (
-    <div className="table-actions-menu">
-      <Button
-        icon="pi pi-ellipsis-v"
-        className="p-button-rounded btn-primary"
-        onClick={(e) => menu.current?.toggle(e)}
-        aria-controls={`popup_menu_${data.id}`}
-        aria-haspopup
-      >
-        Acciones
-        <i className="fa fa-cog ml-2"></i>
-      </Button>
-      <Menu
-        model={items}
-        popup
-        ref={menu}
-        id={`popup_menu_${data.id}`}
-        onHide={handleMenuHide}
-        appendTo={typeof document !== "undefined" ? document.body : undefined}
-      />
-    </div>
-  );
-};
+    return (
+      <div className="table-actions-menu">
+        <Button
+          icon="pi pi-ellipsis-v"
+          className="p-button-rounded btn-primary"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${data.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={items}
+          popup
+          ref={menu}
+          id={`popup_menu_${data.id}`}
+          onHide={handleMenuHide}
+          appendTo={typeof document !== "undefined" ? document.body : undefined}
+        />
+      </div>
+    );
+  };

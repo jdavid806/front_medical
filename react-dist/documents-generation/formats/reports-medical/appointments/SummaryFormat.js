@@ -65,7 +65,6 @@ export const SummaryFormat = ({
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Estado:"), " ", state), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Fecha de inicio:"), " ", formatDate(dateRange[0])), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Fecha de fin:"), " ", formatDate(dateRange[1])), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Total citas:"), " ", totalAppointments))), /*#__PURE__*/React.createElement("div", {
     className: "state-container",
     style: {
-      pageBreakInside: "avoid",
       marginBottom: "3rem",
       border: "1px solid #ddd",
       padding: "1.5rem",

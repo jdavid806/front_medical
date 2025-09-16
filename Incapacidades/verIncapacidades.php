@@ -17,11 +17,17 @@ include "../header.php";
     .custom-btn i {
         margin-right: 5px;
     }
+
+        .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
 </style>
 
-<div class="componete">
-    <div class="content">
-        <div class="container">
+<div class="content">
+    <div class="container-small">
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mt-5">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
@@ -30,7 +36,8 @@ include "../header.php";
                     <li class="breadcrumb-item active">Incapacidades</li>
                 </ol>
             </nav>
-            <div class="pb-9">
+           <div class="main-content">
+            <div class="component-container">
                 <div id="main"></div>
             </div>
         </div>

@@ -38,7 +38,6 @@ export const OrdersFormat: React.FC<any> = ({
 
   return (
     <div style={{ 
-            pageBreakInside: "avoid", 
             marginBottom: "2rem",
             border: "1px solid #ddd",
             padding: "1rem"
