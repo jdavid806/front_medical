@@ -12,6 +12,7 @@ import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccou
 export const PaymentMethodsConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
+  const [localError, setLocalError] = useState(null);
   const {
     paymentMethods,
     loading,
@@ -36,10 +37,13 @@ export const PaymentMethodsConfig = () => {
     loading: deleteLoading
   } = usePaymentMethodDelete();
   const {
-    accounts
+    accounts,
+    isLoading: isLoadingAccounts
   } = useAccountingAccounts();
+  const safeAccounts = accounts || [];
+  console.log("cuentasscontsblees", safeAccounts);
   const enrichedPaymentMethods = paymentMethods.map(method => {
-    const account = accounts.find(acc => acc.id === method.accounting_account_id);
+    const account = safeAccounts.find(acc => acc.id === method.accounting_account_id);
     return {
       id: method.id,
       name: method.method,
@@ -55,15 +59,17 @@ export const PaymentMethodsConfig = () => {
     setInitialData(undefined);
     setPaymentMethod(null);
     setShowFormModal(true);
+    setLocalError(null);
   };
   const handleSubmit = async data => {
     try {
+      setLocalError(null);
       const paymentMethodData = {
         method: data.name,
         payment_type: data.payment_type || '',
         description: data.additionalDetails || '',
-        accounting_account_id: data.account?.id || 0,
-        category: data.category
+        accounting_account_id: data.accounting_account_id || 0,
+        category: data.category || ''
       };
       if (paymentMethod) {
         await updatePaymentMethod(paymentMethod.id.toString(), paymentMethodData);
@@ -75,23 +81,29 @@ export const PaymentMethodsConfig = () => {
       await refreshPaymentMethods();
       setShowFormModal(false);
     } catch (error) {
-      // El error ya se maneja en el hook
+      setLocalError(error.message || 'Error al guardar el método de pago');
     }
   };
   const handleTableEdit = async id => {
     try {
-      const paymentMethod = await fetchPaymentMethodById(id);
-      console.log("paymentMethod", paymentMethod);
+      setLocalError(null);
+      await fetchPaymentMethodById(id);
       setShowFormModal(true);
-    } catch (error) {}
+    } catch (error) {
+      setLocalError(error.message || 'Error al cargar el método de pago');
+      console.error("Error al obtener método de pago:", error);
+    }
   };
   const handleDeleteMethod = async id => {
     try {
+      setLocalError(null);
       const success = await deletePaymentMethod(id);
       if (success) {
         await refreshPaymentMethods();
+        SwalManager.success('Método eliminado correctamente');
       }
     } catch (error) {
+      setLocalError(error.message || 'Error al eliminar el método de pago');
       console.error("Error en eliminación:", error);
     }
   };
@@ -100,16 +112,16 @@ export const PaymentMethodsConfig = () => {
       const data = {
         name: paymentMethod.method,
         payment_type: paymentMethod.payment_type,
-        category: paymentMethod.category || 'other',
-        account: paymentMethod.accounting_account_id ? {
-          id: paymentMethod.accounting_account_id,
-          name: 'Cuenta contable'
-        } : null,
-        additionalDetails: paymentMethod.description
+        category: paymentMethod.category || '',
+        accounting_account_id: paymentMethod.accounting_account_id || null,
+        additionalDetails: paymentMethod.description || ''
       };
       setInitialData(data);
     }
   }, [paymentMethod]);
+
+  // Mostrar error local si existe, sino mostrar error del hook
+  const displayError = localError || error;
   return /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: "self",
@@ -132,10 +144,10 @@ export const PaymentMethodsConfig = () => {
     disabled: createLoading || updateLoading || deleteLoading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'))), error && /*#__PURE__*/React.createElement("div", {
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'))), displayError && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement(PaymentMethodsConfigTable, {
+  }, displayError), /*#__PURE__*/React.createElement(PaymentMethodsConfigTable, {
     onEditItem: handleTableEdit,
     paymentMethods: enrichedPaymentMethods,
     onDeleteItem: handleDeleteMethod,
@@ -147,9 +159,11 @@ export const PaymentMethodsConfig = () => {
       setShowFormModal(false);
       setPaymentMethod(null);
       setInitialData(undefined);
+      setLocalError(null);
     },
     initialData: initialData,
-    accounts: [],
+    accounts: safeAccounts,
+    isLoadingAccounts: isLoadingAccounts,
     loading: createLoading || updateLoading || deleteLoading
   }));
 };

@@ -978,6 +978,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           unit_price: product.price,
           discount: product.discount,
           tax_product: taxAmount,
+          tax_charge_id: product.taxChargeId || null,
           ...formLot,
           ...formAssets,
         };
@@ -997,7 +998,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   };
 
   function hasInvalidLots() {
-    console.log("productsArray", productsArray);
     const invalidLot = productsArray.some((product) => {
       if (
         !product.lotInfo.length &&
@@ -1077,7 +1077,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
     const invoiceData = await buildInvoiceData(formData);
 
-    console.log("invoiceData:", invoiceData);
     invoiceService
       .storePurcharseInvoice(invoiceData)
       .then((response) => {
@@ -1090,9 +1089,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           detail: "Factura de compra guardada correctamente",
           life: 3000,
         });
-        // setTimeout(() => {
-        //   window.location.href = `FE_FCE`;
-        // }, 2000);
+        setTimeout(() => {
+          window.location.href = `FE_FCE`;
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error al guardar la factura de compra:", error);
@@ -1215,9 +1214,15 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         header: "Impuestos",
         body: (rowData: InvoiceProduct) => (
           <IvaColumnBody
-            onChange={(value: string | null) =>
-              handleProductChange(rowData.id, "tax", value)
-            }
+            onChange={(value: any | null) => {
+              // value ahora es el objeto completo del impuesto
+              handleProductChange(rowData.id, "tax", value?.percentage || 0);
+              handleProductChange(
+                rowData.id,
+                "taxChargeId",
+                value?.id || null
+              );
+            }}
             value={rowData.tax}
             disabled={disabledInputs}
           />
@@ -2397,7 +2402,7 @@ const IvaColumnBody = ({
   value,
   disabled,
 }: {
-  onChange: (value: string | null) => void;
+  onChange: (value: any | null) => void;
   value: any | null;
   disabled?: boolean;
 }) => {
@@ -2406,18 +2411,24 @@ const IvaColumnBody = ({
   useEffect(() => {
     fetchTaxes();
   }, []);
+
   return (
     <Dropdown
-      value={value}
+      value={value} // Usamos el porcentaje directamente como valor
       options={taxes}
       optionLabel={(option: any) =>
         `${option.name} - ${Math.floor(option.percentage)}%`
       }
-      optionValue="percentage"
+      optionValue="percentage" // Usamos el porcentaje como valor
       placeholder="Seleccione IVA"
       className="w-100"
       onChange={(e: DropdownChangeEvent) => {
-        onChange(e.value);
+        const selectedTax = taxes.find(
+          (tax: any) => tax.percentage === e.value
+        );
+        if (selectedTax) {
+          onChange(selectedTax); // Pasamos el objeto completo
+        }
       }}
       appendTo={document.body}
       disabled={disabled}

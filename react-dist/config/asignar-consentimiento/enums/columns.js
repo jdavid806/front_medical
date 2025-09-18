@@ -75,6 +75,6 @@ export const getDocumentColumns = ({
       onSign(rowData.id ?? '');
     }
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-pencil-alt"
+    className: "fas fa-signature"
   })))
 }];

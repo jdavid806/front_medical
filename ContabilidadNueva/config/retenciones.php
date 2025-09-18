@@ -4,29 +4,22 @@ include "../../header.php";
 ?>
 
 <style>
-/* Estilos generales para el contenedor principal */
 .componente .content {
     max-width: 100%;
     width: 100%;
     margin: 0 auto;
 }
 
-
-
-
-/* Ajustes para el breadcrumb */
 .breadcrumb {
     max-width: 100%;
     overflow-x: hidden;
 }
 
-/* Ajustes para el título y botones */
 .row.mt-4 {
     max-width: 100%;
     width: 100%;
 }
 
-/* Asegurar que el contenedor principal no cause overflow */
 .container-small {
     max-width: 100%;
     width: 100%;

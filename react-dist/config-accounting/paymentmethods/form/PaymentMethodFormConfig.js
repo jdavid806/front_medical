@@ -6,7 +6,6 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 // Categories for dropdown
 const categories = [{
   label: "Transaccional",
@@ -16,7 +15,7 @@ const categories = [{
   value: "supplier_expiration"
 }, {
   label: "Transferencia",
-  value: "supplier_expiration"
+  value: "transfer"
 }, {
   label: "Vencimiento Clientes",
   value: "customer_expiration"
@@ -39,13 +38,10 @@ const PaymentMethodFormConfig = ({
   onSubmit,
   initialData,
   onCancel,
-  loading = false
+  loading = false,
+  accounts = [],
+  isLoadingAccounts = false
 }) => {
-  // Use the accounting accounts hook
-  const {
-    accounts,
-    isLoading: isLoadingAccounts
-  } = useAccountingAccounts();
   const {
     control,
     handleSubmit,
@@ -59,7 +55,7 @@ const PaymentMethodFormConfig = ({
       name: "",
       category: "",
       payment_type: "",
-      account: null,
+      accounting_account_id: null,
       additionalDetails: ""
     }
   });
@@ -76,119 +72,134 @@ const PaymentMethodFormConfig = ({
   }, [initialData, reset]);
   return /*#__PURE__*/React.createElement("form", {
     id: formId,
-    onSubmit: handleSubmit(onFormSubmit)
+    onSubmit: handleSubmit(onFormSubmit),
+    className: "p-fluid"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "name",
+    className: "font-medium block mb-2"
+  }, "Nombre del M\xE9todo *"), /*#__PURE__*/React.createElement(Controller, {
     name: "name",
     control: control,
     rules: {
-      required: "El nombre del método es requerido"
+      required: "El nombre del método es requerido",
+      maxLength: {
+        value: 100,
+        message: "El nombre no puede exceder 100 caracteres"
+      }
     },
     render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Nombre del M\xE9todo *"), /*#__PURE__*/React.createElement(InputText, _extends({
-      id: field.name,
-      className: classNames("w-100", {
-        "p-invalid": errors.name
-      })
-    }, field)))
-  }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(InputText, _extends({
+      id: field.name
+    }, field, {
+      className: classNames({
+        "p-invalid": fieldState.error
+      }),
+      placeholder: "Ingrese el nombre del m\xE9todo de pago"
+    })), getFormErrorMessage("name"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "payment_type",
+    className: "font-medium block mb-2"
+  }, "Tipo *"), /*#__PURE__*/React.createElement(Controller, {
     name: "payment_type",
     control: control,
     rules: {
-      required: "el tipo metodo pago es requerida"
+      required: "El tipo de método de pago es requerido"
     },
     render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Tipo *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
       options: TypeMethod,
       optionLabel: "label",
       optionValue: "value",
-      className: classNames("w-100", {
-        "p-invalid": errors.payment_type
+      placeholder: "Seleccione un tipo",
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
       })
-    }, field)))
-  }), getFormErrorMessage("payment_type")), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
+    }), getFormErrorMessage("payment_type"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "category",
+    className: "font-medium block mb-2"
+  }, "Categor\xEDa *"), /*#__PURE__*/React.createElement(Controller, {
     name: "category",
     control: control,
     rules: {
       required: "La categoría es requerida"
     },
     render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Categor\xEDa *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
       options: categories,
       optionLabel: "label",
       optionValue: "value",
-      className: classNames("w-100", {
-        "p-invalid": errors.category
+      placeholder: "Seleccione una categor\xEDa",
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
       })
-    }, field)))
-  }), getFormErrorMessage("category")), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "account",
+    }), getFormErrorMessage("category"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "accounting_account_id",
+    className: "font-medium block mb-2"
+  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_id",
     control: control,
     rules: {
       required: "La cuenta contable es requerida"
     },
     render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Dropdown, {
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
       options: accounts,
-      optionLabel: "account_name" // Cambiado de "name" a "account_name"
-      ,
       optionValue: "id",
-      className: classNames("w-100", {
-        "p-invalid": errors.account
+      optionLabel: "account_label",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      filterBy: "account_label,account_name,account_code",
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
       }),
       loading: isLoadingAccounts,
-      value: field.value?.id || null,
-      onChange: e => {
-        const selectedAccount = accounts.find(acc => acc.id === e.value);
-        field.onChange(selectedAccount || null);
-      },
-      filter: true,
-      filterBy: "account_name,account_code",
-      showClear: true,
-      placeholder: "Seleccione una cuenta",
       appendTo: "self"
-    }))
-  }), getFormErrorMessage("account")), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
+    }), getFormErrorMessage("accounting_account_id"))
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "additionalDetails",
+    className: "font-medium block mb-2"
+  }, "Descripci\xF3n"), /*#__PURE__*/React.createElement(Controller, {
     name: "additionalDetails",
     control: control,
     render: ({
       field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label"
-    }, "Detalles Adicionales"), /*#__PURE__*/React.createElement(InputTextarea, _extends({
-      id: field.name,
-      className: "w-100",
-      rows: 3
-    }, field)))
+    }) => /*#__PURE__*/React.createElement(InputTextarea, _extends({
+      id: field.name
+    }, field, {
+      rows: 3,
+      className: "w-full",
+      placeholder: "Ingrese una descripci\xF3n opcional"
+    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
   }, onCancel && /*#__PURE__*/React.createElement(Button, {

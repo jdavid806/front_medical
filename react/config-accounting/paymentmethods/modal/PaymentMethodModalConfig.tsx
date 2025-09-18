@@ -4,6 +4,17 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import PaymentMethodFormConfig from "../form/PaymentMethodFormConfig";
 
+interface PaymentMethodModalProps {
+  isVisible: boolean;
+  onSave: (data: any) => void;
+  initialData?: any;
+  onClose: () => void;
+  closable?: boolean;
+  accounts: any[];
+  isLoadingAccounts?: boolean;
+  loading: boolean;
+}
+
 const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
   isVisible,
   onSave,
@@ -11,6 +22,7 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
   onClose,
   closable = true,
   accounts,
+  isLoadingAccounts = false,
   loading,
 }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -25,6 +37,7 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
       }
     }
   };
+
   const handleConfirmClose = () => {
     setShowConfirm(false);
     onClose();
@@ -38,7 +51,6 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
     }
   };
 
-  // Determinar el título basado en si hay initialData (edición) o no (nuevo)
   const modalTitle =
     initialData && initialData.name
       ? `Editar Método de Pago - ${initialData.name}`
@@ -58,6 +70,7 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
           onCancel={handleCloseAttempt}
           loading={loading}
           accounts={accounts}
+          isLoadingAccounts={isLoadingAccounts}
         />
       </CustomModal>
 

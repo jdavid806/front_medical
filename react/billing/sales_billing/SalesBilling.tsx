@@ -488,6 +488,7 @@ export const SalesBilling: React.FC<any> = ({
           discount: product.discount,
           tax_product: product.taxAmount || product.iva || 0,
           tax_accounting_account_id: product.taxAccountingAccountId || null,
+          tax_charge_id: product.taxChargeId || null,
         };
       }),
       payments: paymentMethodsArray.map((payment) => {
@@ -589,6 +590,11 @@ export const SalesBilling: React.FC<any> = ({
                 rowData.id,
                 "taxAccountingAccountId",
                 value?.accounting_account_id || null
+              );
+              handleProductChange(
+                rowData.id,
+                "taxChargeId",
+                value?.id || null
               );
             }}
             value={rowData.iva} // Esto seguirá mostrando el porcentaje

@@ -1,4 +1,3 @@
-// hooks/useAccountingAccounts.ts
 import { useState, useEffect, useCallback } from "react";
 import { accountingAccountsService } from "../../../services/api/index";
 import { AccountingAccount } from "../types/bankTypes";
@@ -86,7 +85,6 @@ export const useAccountingAccountsByCategory = (category: string, value: string)
         throw new Error("La respuesta no es un array válido");
       }
 
-      // Agregar propiedad combinada para mostrar en dropdowns
       const accountsWithLabel = accountsData.map(account => ({
         ...account,
         account_label: `${account.account_code} - ${account.account_name}`

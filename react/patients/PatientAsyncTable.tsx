@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   CustomPRTable,
   CustomPRTableColumnProps,
@@ -9,6 +9,7 @@ import { usePatientsByFilters } from "./hooks/usePatientsByFilters";
 import { getAge } from "../../services/utilidades";
 import PatientFormModal from "./modals/form/PatientFormModal";
 import { Button } from "primereact/button";
+import { Menu } from "primereact/menu";
 
 type PatientAsyncTableItem = {
   id: string;
@@ -26,6 +27,8 @@ export const PatientAsyncTable: React.FC = () => {
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState<string | null>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { patients, fetchPatientsByFilters, loading, totalRecords } =
     usePatientsByFilters();
 
@@ -51,6 +54,12 @@ export const PatientAsyncTable: React.FC = () => {
     refresh(); // Refrescar la tabla después de crear un paciente
   };
 
+  const handlePatientUpdated = () => {
+    setShowEditModal(false);
+    setEditingPatient(null);
+    refresh(); // Refrescar la tabla después de editar un paciente
+  };
+
   const handleSearchChange = (_search: string) => {
     console.log(_search);
 
@@ -68,6 +77,21 @@ export const PatientAsyncTable: React.FC = () => {
       page: currentPage,
       search: search ?? "",
     });
+
+  // Función para editar paciente
+  const handleEditarPaciente = (patientId: string) => {
+    // Encuentra el paciente completo en la lista de pacientes
+    const patientToEdit = patients.find(p => p.id.toString() === patientId);
+    if (patientToEdit) {
+      setEditingPatient(patientToEdit);
+      setShowEditModal(true);
+    }
+  };
+
+  const handleActualizarPermisos = (patientId: string) => {
+    console.log("Actualizar permisos de notificaciones para paciente ID:", patientId);
+    // Aquí puedes implementar la lógica para actualizar permisos
+  };
 
   useEffect(() => {
     const mappedPatients: PatientAsyncTableItem[] = patients.map((item) => {
@@ -115,11 +139,25 @@ export const PatientAsyncTable: React.FC = () => {
     { field: "phone", header: "Teléfono" },
     { field: "age", header: "Edad" },
     { field: "dateLastAppointment", header: "Fecha de última consulta" },
+    {
+      field: "actions",
+      header: "Acciones",
+      body: (rowData: PatientAsyncTableItem) => {
+        return (
+          <div>
+            <TableMenu
+              patientId={rowData.id}
+              onEditarPaciente={handleEditarPaciente}
+              onActualizarPermisos={handleActualizarPermisos}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   return (
     <>
-
       <div className="d-flex justify-content-end align-items-center mb-4">
         <Button
           label="Nuevo Paciente "
@@ -133,9 +171,7 @@ export const PatientAsyncTable: React.FC = () => {
         className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
         style={{ minHeight: "400px" }}
       >
-
         <div className="card-body h-100 w-100 d-flex flex-column">
-
           <CustomPRTable
             columns={columns}
             data={tableItems}
@@ -152,11 +188,63 @@ export const PatientAsyncTable: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Modal para crear nuevo paciente */}
       <PatientFormModal
         visible={showPatientModal}
         onHide={() => setShowPatientModal(false)}
         onSuccess={handlePatientCreated}
+      />
 
+      {/* Modal para editar paciente existente */}
+      {editingPatient && (
+        <PatientFormModal
+          visible={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          onSuccess={handlePatientUpdated}
+          patientData={editingPatient}
+        />
+      )}
+    </>
+  );
+};
+
+// Componente del menú de acciones para cada fila
+const TableMenu: React.FC<{
+  patientId: string;
+  onEditarPaciente: (id: string) => void;
+  onActualizarPermisos: (id: string) => void;
+}> = ({ patientId, onEditarPaciente, onActualizarPermisos }) => {
+  const menu = useRef<Menu>(null);
+
+  return (
+    <>
+      <Button
+        className="btn-primary flex items-center gap-2"
+        onClick={(e) => menu.current?.toggle(e)}
+        aria-controls={`popup_menu_${patientId}`}
+        aria-haspopup
+      >
+        Acciones
+        <i className="fa fa-cog ml-2"></i>
+      </Button>
+      <Menu
+        model={[
+          {
+            label: "Editar paciente",
+            icon: <i className="fas fa-pencil-alt me-2"></i>,
+            command: () => onEditarPaciente(patientId),
+          },
+          {
+            label: "Actualizar permisos de notificaciones",
+            icon: <i className="fas fa-bell me-2"></i>,
+            command: () => onActualizarPermisos(patientId),
+          },
+        ]}
+        popup
+        ref={menu}
+        id={`popup_menu_${patientId}`}
+        style={{ zIndex: 9999 }}
       />
     </>
   );

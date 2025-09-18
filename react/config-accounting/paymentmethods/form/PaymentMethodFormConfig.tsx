@@ -5,17 +5,12 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
-import {
-  PaymentMethodFormInputs,
-  PaymentMethodFormProps,
-} from "../interfaces/PaymentMethodFormConfigTypes";
+import { PaymentMethodFormInputs, PaymentMethodFormProps } from "../interfaces/PaymentMethodFormConfigTypes";
 
-// Categories for dropdown
 const categories = [
   { label: "Transaccional", value: "transactional" },
   { label: "Vencimiento Proveedores", value: "supplier_expiration" },
-  { label: "Transferencia", value: "supplier_expiration" },
+  { label: "Transferencia", value: "transfer" },
   { label: "Vencimiento Clientes", value: "customer_expiration" },
   { label: "Anticipo Clientes", value: "customer_advance" },
   { label: "Anticipo Proveedores", value: "supplier_advance" },
@@ -24,7 +19,6 @@ const categories = [
 const TypeMethod = [
   { label: "Compras", value: "Compras" },
   { label: "Ventas", value: "Ventas" },
-
 ];
 
 const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
@@ -33,10 +27,9 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
   initialData,
   onCancel,
   loading = false,
+  accounts = [],
+  isLoadingAccounts = false,
 }) => {
-  // Use the accounting accounts hook
-  const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
-
   const {
     control,
     handleSubmit,
@@ -47,7 +40,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
       name: "",
       category: "",
       payment_type: "",
-      account: null,
+      accounting_account_id: null,
       additionalDetails: "",
     },
   });
@@ -68,135 +61,139 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
   }, [initialData, reset]);
 
   return (
-    <form id={formId} onSubmit={handleSubmit(onFormSubmit)}>
-      <div className="mb-3">
+    <form id={formId} onSubmit={handleSubmit(onFormSubmit)} className="p-fluid">
+      <div className="field mb-4">
+        <label htmlFor="name" className="font-medium block mb-2">
+          Nombre del Método *
+        </label>
         <Controller
           name="name"
           control={control}
-          rules={{ required: "El nombre del método es requerido" }}
-          render={({ field }) => (
+          rules={{
+            required: "El nombre del método es requerido",
+            maxLength: {
+              value: 100,
+              message: "El nombre no puede exceder 100 caracteres",
+            },
+          }}
+          render={({ field, fieldState }) => (
             <>
-              <label htmlFor={field.name} className="form-label">
-                Nombre del Método *
-              </label>
               <InputText
                 id={field.name}
-                className={classNames("w-100", {
-                  "p-invalid": errors.name,
-                })}
                 {...field}
+                className={classNames({ "p-invalid": fieldState.error })}
+                placeholder="Ingrese el nombre del método de pago"
               />
+              {getFormErrorMessage("name")}
             </>
           )}
         />
-        {getFormErrorMessage("name")}
       </div>
 
-      <div className="mb-3">
+      <div className="field mb-4">
+        <label htmlFor="payment_type" className="font-medium block mb-2">
+          Tipo *
+        </label>
         <Controller
           name="payment_type"
           control={control}
-          rules={{ required: "el tipo metodo pago es requerida" }}
-          render={({ field }) => (
+          rules={{ required: "El tipo de método de pago es requerido" }}
+          render={({ field, fieldState }) => (
             <>
-              <label htmlFor={field.name} className="form-label">
-                Tipo *
-              </label>
               <Dropdown
                 id={field.name}
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
                 options={TypeMethod}
                 optionLabel="label"
                 optionValue="value"
-                className={classNames("w-100", {
-                  "p-invalid": errors.payment_type,
+                placeholder="Seleccione un tipo"
+                className={classNames("w-full", {
+                  "p-invalid": fieldState.error,
                 })}
-                {...field}
               />
+              {getFormErrorMessage("payment_type")}
             </>
           )}
         />
-        {getFormErrorMessage("payment_type")}
       </div>
-      <div className="mb-3">
+
+      <div className="field mb-4">
+        <label htmlFor="category" className="font-medium block mb-2">
+          Categoría *
+        </label>
         <Controller
           name="category"
           control={control}
           rules={{ required: "La categoría es requerida" }}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <>
-              <label htmlFor={field.name} className="form-label">
-                Categoría *
-              </label>
               <Dropdown
                 id={field.name}
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
                 options={categories}
                 optionLabel="label"
                 optionValue="value"
-                className={classNames("w-100", {
-                  "p-invalid": errors.category,
+                placeholder="Seleccione una categoría"
+                className={classNames("w-full", {
+                  "p-invalid": fieldState.error,
                 })}
-                {...field}
               />
+              {getFormErrorMessage("category")}
             </>
           )}
         />
-        {getFormErrorMessage("category")}
       </div>
 
-      <div className="mb-3">
+      <div className="field mb-4">
+        <label htmlFor="accounting_account_id" className="font-medium block mb-2">
+          Cuenta Contable *
+        </label>
         <Controller
-          name="account"
+          name="accounting_account_id"
           control={control}
           rules={{ required: "La cuenta contable es requerida" }}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <>
-              <label htmlFor={field.name} className="form-label">
-                Cuenta Contable *
-              </label>
               <Dropdown
                 id={field.name}
+                value={field.value}
+                onChange={(e) => field.onChange(e.value)}
                 options={accounts}
-                optionLabel="account_name" // Cambiado de "name" a "account_name"
                 optionValue="id"
-                className={classNames("w-100", {
-                  "p-invalid": errors.account,
+                optionLabel="account_label"
+                placeholder="Seleccione una cuenta"
+                filter
+                filterBy="account_label,account_name,account_code"
+                showClear
+                className={classNames("w-full", {
+                  "p-invalid": fieldState.error,
                 })}
                 loading={isLoadingAccounts}
-                value={field.value?.id || null}
-                onChange={(e) => {
-                  const selectedAccount = accounts.find(
-                    (acc) => acc.id === e.value
-                  );
-                  field.onChange(selectedAccount || null);
-                }}
-                filter
-                filterBy="account_name,account_code"
-                showClear
-                placeholder="Seleccione una cuenta"
-                appendTo={"self"}
+                appendTo="self"
               />
+              {getFormErrorMessage("accounting_account_id")}
             </>
           )}
         />
-        {getFormErrorMessage("account")}
       </div>
 
-      <div className="mb-3">
+      <div className="field mb-4">
+        <label htmlFor="additionalDetails" className="font-medium block mb-2">
+          Descripción
+        </label>
         <Controller
           name="additionalDetails"
           control={control}
           render={({ field }) => (
-            <>
-              <label htmlFor={field.name} className="form-label">
-                Detalles Adicionales
-              </label>
-              <InputTextarea
-                id={field.name}
-                className="w-100"
-                rows={3}
-                {...field}
-              />
-            </>
+            <InputTextarea
+              id={field.name}
+              {...field}
+              rows={3}
+              className="w-full"
+              placeholder="Ingrese una descripción opcional"
+            />
           )}
         />
       </div>
@@ -210,7 +207,6 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
             style={{ padding: "0 20px", width: "200px", height: "50px", borderRadius: "0px" }}
             type="button"
             disabled={loading}
-
           >
             <i className="fas fa-times"></i>
           </Button>

@@ -12,15 +12,17 @@ import { FiltrosRecibos, ReciboCaja } from "../interface/interfaceCashRecipe";
 import { SplitButton } from "primereact/splitbutton";
 import { MenuItem } from "primereact/menuitem";
 import { NewReceiptBoxModalTable } from "./modalNewReceiptBox/NewReceiptBoxModalTable"; 
-import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable";
+import { useDataPagination } from "../../hooks/useDataPagination";
+import { cashRecipes } from "../../../services/api/index";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../../components/CustomPRTable";
+import { formatDate } from "../../../services/utilidades";
 
 export const NewReceiptBoxTable = () => {
-  const { recipes, isLoading, error } = useCashRecipes();
-  const [recibos, setRecibos] = useState<ReciboCaja[]>([]);
   const [loading, setLoading] = useState(false);
-  const [recibosFiltrados, setRecibosFiltrados] = useState<ReciboCaja[]>([]);
   const [showReciboModal, setShowReciboModal] = useState(false);
-  // Estado para controlar el tipo de recibo
   const [currentReceiptType, setCurrentReceiptType] = useState<
     "advance" | "purchase" | "quotation"
   >("advance");
@@ -45,49 +47,6 @@ export const NewReceiptBoxTable = () => {
     { label: "Reembolso", value: "Reembolso" },
   ];
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (recipes.length > 0) {
-        try {
-          console.log("recipes", recipes);
-          const recibosAdaptados: ReciboCaja[] = recipes.map((recibo: any) => {
-            const thirdParty = recibo.includes?.third_party || null;
-            const payment = recibo.includes?.payments?.[0] || null;
-
-            return {
-              id: String(recibo.id),
-              numeroRecibo: `RC-${recibo.id.toString().padStart(4, "0")}`,
-              numeroFactura: recibo.invoices?.[0]?.invoice_number ?? undefined,
-              tipoRecibo: "Ingreso",
-              cliente:
-                thirdParty?.name || thirdParty?.full_name || "No asignado",
-              identificacion:
-                thirdParty?.document_number || "Sin Identificacion",
-              origenDinero: payment?.notes || "Sin especificar",
-              fechaElaboracion: recibo.attributes?.created_at
-                ? new Date(recibo.attributes.created_at)
-                : new Date(),
-              centroCosto: "Sin asignar",
-              valor: parseFloat(payment?.amount || "0"),
-              estado:
-                recibo.attributes?.status === "pagado"
-                  ? "Aprobado"
-                  : "Pendiente",
-              ...recibo.attributes,
-            };
-          });
-          setRecibos(recibosAdaptados);
-          setRecibosFiltrados(recibosAdaptados);
-        } catch (error) {
-          console.error("Error al transformar los datos:", error);
-        }
-      } else {
-        setRecibos([]);
-        setRecibosFiltrados([]);
-      }
-    }
-  }, [recipes, isLoading]);
-
   const handleFilterChange = (field: string, value: any) => {
     setFiltros((prev) => ({
       ...prev,
@@ -95,62 +54,48 @@ export const NewReceiptBoxTable = () => {
     }));
   };
 
-  const aplicarFiltros = () => {
-    setLoading(true);
-    let resultados = [...recibos];
+  // Función para obtener recibos de caja
+  const fetchCashRecipe = async (params: any) => {
+    try {
+      // Aplicar filtros adicionales a los parámetros de paginación
+      const filters = {
+        ...params,
+        tipo_recibo: filtros.tipoRecibo,
+        estado: filtros.estado,
+        fecha_inicio: filtros.fechaRango?.[0] ? filtros.fechaRango[0].toISOString() : undefined,
+        fecha_fin: filtros.fechaRango?.[1] ? filtros.fechaRango[1].toISOString() : undefined,
+        cliente: filtros.cliente,
+        numero_recibo: filtros.numeroRecibo,
+      };
 
-    if (filtros.numeroRecibo) {
-      resultados = resultados.filter((recibo) =>
-        recibo.numeroRecibo
-          .toLowerCase()
-          .includes(filtros.numeroRecibo.toLowerCase())
-      );
+      const response = await cashRecipes.getAllCashRecipes(filters);
+      
+      return {
+        data: response.data.data || response.data, // Ajusta según la estructura de tu API
+        total: response.data.total || response.data.count || 0
+      };
+    } catch (error) {
+      console.error("Error fetching cash recipes:", error);
+      return {
+        data: [],
+        total: 0
+      };
     }
-
-    if (filtros.tipoRecibo) {
-      resultados = resultados.filter(
-        (recibo) => recibo.tipoRecibo === filtros.tipoRecibo
-      );
-    }
-
-    if (filtros.fechaRango && filtros.fechaRango[0] && filtros.fechaRango[1]) {
-      const fechaInicio = new Date(filtros.fechaRango[0]);
-      const fechaFin = new Date(filtros.fechaRango[1]);
-      fechaFin.setHours(23, 59, 59, 999);
-
-      resultados = resultados.filter((recibo) => {
-        const fechaRecibo = new Date(recibo.fechaElaboracion);
-        return fechaRecibo >= fechaInicio && fechaRecibo <= fechaFin;
-      });
-    }
-
-    if (filtros.cliente) {
-      resultados = resultados.filter((recibo) =>
-        recibo.cliente.toLowerCase().includes(filtros.cliente.toLowerCase())
-      );
-    }
-
-    if (filtros.estado) {
-      resultados = resultados.filter(
-        (recibo) => recibo.estado === filtros.estado
-      );
-    }
-
-    if (filtros.valorMinimo) {
-      resultados = resultados.filter(
-        (recibo) => recibo.valor >= filtros.valorMinimo!
-      );
-    }
-
-    if (filtros.valorMaximo) {
-      resultados = resultados.filter(
-        (recibo) => recibo.valor <= filtros.valorMaximo!
-      );
-    }
-
-    setRecibosFiltrados(resultados);
-    setLoading(false);
   };
+
+  const {
+    data: cashRecipesData,
+    loading: loadingPaginator,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh
+  } = useDataPagination({
+    fetchFunction: fetchCashRecipe,
+    defaultPerPage: 10
+  });
 
   const limpiarFiltros = () => {
     setFiltros({
@@ -165,7 +110,7 @@ export const NewReceiptBoxTable = () => {
       valorMaximo: null,
       estado: null,
     });
-    setRecibosFiltrados(recibos);
+    // Los datos se actualizarán automáticamente por el useEffect
   };
 
   const formatCurrency = (value: number) => {
@@ -177,20 +122,13 @@ export const NewReceiptBoxTable = () => {
     });
   };
 
-  const formatDate = (value: Date) => {
-    return value.toLocaleDateString("es-DO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  const generatePrintReceipt = (recibo) => {
+  const generatePrintReceipt = (recibo: ReciboCaja) => {
+    console.log("Imprimir recibo:", recibo);
     // generarFormatoContable("ReciboCaja", recibo, "Impresion");
   };
 
-  const generateCancelReceipt = (recibo) => {
-    console.log("recibo", recibo);
+  const generateCancelReceipt = (recibo: ReciboCaja) => {
+    console.log("Anular recibo:", recibo);
   };
 
   const openModalWithType = (type: "advance" | "purchase" | "quotation") => {
@@ -206,7 +144,7 @@ export const NewReceiptBoxTable = () => {
     return () => (
       <div
         className="flex align-items-center gap-2 p-2 point"
-        style={{ cursor: "pointer" }} // Agrega el cursor pointer aquí
+        style={{ cursor: "pointer" }}
       >
         <i className={`fas fa-${icon} ${colorClass}`} />
         <span>{label}</span>
@@ -214,7 +152,7 @@ export const NewReceiptBoxTable = () => {
     );
   };
 
-  const actionBodyTemplate = (rowData) => {
+  const actionBodyTemplate = (rowData: ReciboCaja) => {
     const items: MenuItem[] = [
       {
         label: "Imprimir Recibo",
@@ -251,12 +189,12 @@ export const NewReceiptBoxTable = () => {
 
   const getEstadoSeverity = (estado: string) => {
     switch (estado) {
-      case "Aprobado":
-      case "Conciliado":
+      case "approved":
+      case "completed":
         return "success";
-      case "Pendiente":
+      case "pending":
         return "warning";
-      case "Rechazado":
+      case "cancelled":
       case "Anulado":
         return "danger";
       default:
@@ -266,19 +204,74 @@ export const NewReceiptBoxTable = () => {
 
   const getTipoSeverity = (tipo: string) => {
     switch (tipo) {
-      case "Ingreso":
+      case "ingreso":
         return "success";
-      case "Egreso":
+      case "egreso":
         return "danger";
-      case "Reembolso":
+      case "reembolso":
         return "info";
       default:
         return null;
     }
   };
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // Definición de columnas para la tabla
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: "id",
+      header: "Número Recibo"
+    },
+    {
+      field: "type",
+      header: "Tipo",
+      body: (rowData: any) => (
+        <Tag
+          value={rowData.type}
+          severity={getTipoSeverity(rowData.type)}
+        />
+      )
+    },
+    {
+      field: "third_party.name",
+      header: "Cliente",
+    },
+    {
+      field: "action",
+      header: "Origen Dinero",
+    },
+    {
+      field: "created_at",
+      header: "Fecha",
+      body: (data: any) => (
+        <>
+          <span>{formatDate(data.created_at, true)}</span>
+        </>
+      ),
+    },
+    {
+      field: "total_amount",
+      header: "Valor",
+      body: (data: any) => (
+        <span>{formatCurrency(data.total_amount)}</span>
+      )
+    },
+    {
+      field: "status",
+      header: "Estado",
+      sortable: true,
+      body: (rowData: any) => (
+        <Tag
+          value={rowData.status}
+          severity={getEstadoSeverity(rowData.status)}
+        />
+      )
+    },
+    {
+      field: "actions",
+      header: "Acciones",
+      body: actionBodyTemplate
+    }
+  ];
 
   const styles = {
     card: {
@@ -321,7 +314,7 @@ export const NewReceiptBoxTable = () => {
         />
       </div>
 
-      {/* Card de Filtros - Estilo mejorado */}
+      {/* Card de Filtros */}
       <Card style={styles.card}>
         <div className="row g-3">
           {/* Tipo de Recibo */}
@@ -368,6 +361,30 @@ export const NewReceiptBoxTable = () => {
             />
           </div>
 
+          {/* Número de recibo */}
+          <div className="col-md-8 col-lg-3">
+            <label style={styles.formLabel}>Número de Recibo</label>
+            <input
+              type="text"
+              className="form-control"
+              value={filtros.numeroRecibo}
+              onChange={(e) => handleFilterChange("numeroRecibo", e.target.value)}
+              placeholder="Número de recibo"
+            />
+          </div>
+
+          {/* Cliente */}
+          <div className="col-md-8 col-lg-3">
+            <label style={styles.formLabel}>Cliente</label>
+            <input
+              type="text"
+              className="form-control"
+              value={filtros.cliente}
+              onChange={(e) => handleFilterChange("cliente", e.target.value)}
+              placeholder="Nombre del cliente"
+            />
+          </div>
+
           {/* Botones compactos */}
           <div className="col-12 d-flex justify-content-end gap-2">
             <Button
@@ -378,8 +395,8 @@ export const NewReceiptBoxTable = () => {
             <Button
               label="Aplicar filtro"
               className="btn btn-primary"
-              onClick={aplicarFiltros}
-              loading={loading}
+              onClick={refresh}
+              loading={loadingPaginator}
             />
           </div>
         </div>
@@ -387,63 +404,18 @@ export const NewReceiptBoxTable = () => {
 
       {/* Tabla de resultados */}
       <Card title="Recibos de Caja" className="shadow-2">
-        <DataTable
-          value={recibosFiltrados}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          loading={loading}
-          className="p-datatable-striped p-datatable-gridlines"
-          emptyMessage="No se encontraron recibos"
-          responsiveLayout="scroll"
-        >
-          <Column field="numeroRecibo" header="No. Recibo" sortable />
-          <Column
-            field="tipoRecibo"
-            header="Tipo"
-            sortable
-            body={(rowData) => (
-              <Tag
-                value={rowData.tipoRecibo}
-                severity={getTipoSeverity(rowData.tipoRecibo)}
-              />
-            )}
-          />
-          <Column field="cliente" header="Cliente" sortable />
-          <Column field="identificacion" header="Identificación" sortable />
-          {/* <Column field="numeroFactura" header="No. Factura" sortable /> */}
-          <Column field="origenDinero" header="Origen Dinero" sortable />
-          <Column field="centroCosto" header="Centro Costo" sortable />
-          <Column
-            field="fechaElaboracion"
-            header="Fecha"
-            sortable
-            body={(rowData) => formatDate(rowData.fechaElaboracion)}
-          />
-          <Column
-            field="valor"
-            header="Valor"
-            sortable
-            body={(rowData) => formatCurrency(rowData.valor)}
-          />
-          <Column
-            field="estado"
-            header="Estado"
-            sortable
-            body={(rowData) => (
-              <Tag
-                value={rowData.estado}
-                severity={getEstadoSeverity(rowData.estado)}
-              />
-            )}
-          />
-          <Column
-            body={actionBodyTemplate}
-            header="Acciones"
-            style={{ width: "100px" }}
-            exportable={false}
-          />
-        </DataTable>
+        <CustomPRTable
+          columns={columns}
+          data={cashRecipesData}
+          lazy
+          first={first}
+          rows={perPage}
+          totalRecords={totalRecords}
+          loading={loadingPaginator}
+          onPage={handlePageChange}
+          onSearch={handleSearchChange}
+          onReload={refresh}
+        />
       </Card>
 
       {/* Modal para nuevo recibo */}
@@ -453,6 +425,7 @@ export const NewReceiptBoxTable = () => {
         receiptType={currentReceiptType}
         onSubmit={(data) => {
           setShowReciboModal(false);
+          refresh(); // Refrescar la tabla después de crear un nuevo recibo
         }}
       />
     </div>

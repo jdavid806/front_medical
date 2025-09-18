@@ -717,6 +717,7 @@ export const PurchaseBilling = ({
           unit_price: product.price,
           discount: product.discount,
           tax_product: taxAmount,
+          tax_charge_id: product.taxChargeId || null,
           ...formLot,
           ...formAssets
         };
@@ -731,7 +732,6 @@ export const PurchaseBilling = ({
     };
   };
   function hasInvalidLots() {
-    console.log("productsArray", productsArray);
     const invalidLot = productsArray.some(product => {
       if (!product.lotInfo.length && (product.typeProduct == "vaccines" || product.typeProduct == "medications")) {
         return true;
@@ -789,7 +789,6 @@ export const PurchaseBilling = ({
       return;
     }
     const invoiceData = await buildInvoiceData(formData);
-    console.log("invoiceData:", invoiceData);
     invoiceService.storePurcharseInvoice(invoiceData).then(response => {
       if (purchaseOrderId) {
         onClose();
@@ -800,9 +799,9 @@ export const PurchaseBilling = ({
         detail: "Factura de compra guardada correctamente",
         life: 3000
       });
-      // setTimeout(() => {
-      //   window.location.href = `FE_FCE`;
-      // }, 2000);
+      setTimeout(() => {
+        window.location.href = `FE_FCE`;
+      }, 2000);
     }).catch(error => {
       console.error("Error al guardar la factura de compra:", error);
       toast.current?.show({
@@ -903,7 +902,11 @@ export const PurchaseBilling = ({
       field: "tax",
       header: "Impuestos",
       body: rowData => /*#__PURE__*/React.createElement(IvaColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "tax", value),
+        onChange: value => {
+          // value ahora es el objeto completo del impuesto
+          handleProductChange(rowData.id, "tax", value?.percentage || 0);
+          handleProductChange(rowData.id, "taxChargeId", value?.id || null);
+        },
         value: rowData.tax,
         disabled: disabledInputs
       }),
@@ -1893,14 +1896,19 @@ const IvaColumnBody = ({
     fetchTaxes();
   }, []);
   return /*#__PURE__*/React.createElement(Dropdown, {
-    value: value,
+    value: value // Usamos el porcentaje directamente como valor
+    ,
     options: taxes,
     optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
-    optionValue: "percentage",
+    optionValue: "percentage" // Usamos el porcentaje como valor
+    ,
     placeholder: "Seleccione IVA",
     className: "w-100",
     onChange: e => {
-      onChange(e.value);
+      const selectedTax = taxes.find(tax => tax.percentage === e.value);
+      if (selectedTax) {
+        onChange(selectedTax); // Pasamos el objeto completo
+      }
     },
     appendTo: document.body,
     disabled: disabled

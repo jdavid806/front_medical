@@ -395,7 +395,8 @@ export const SalesBilling = ({
           unit_price: product.price,
           discount: product.discount,
           tax_product: product.taxAmount || product.iva || 0,
-          tax_accounting_account_id: product.taxAccountingAccountId || null
+          tax_accounting_account_id: product.taxAccountingAccountId || null,
+          tax_charge_id: product.taxChargeId || null
         };
       }),
       payments: paymentMethodsArray.map(payment => {
@@ -476,6 +477,7 @@ export const SalesBilling = ({
           // value ahora es el objeto completo del impuesto
           handleProductChange(rowData.id, "iva", value?.percentage || 0);
           handleProductChange(rowData.id, "taxAccountingAccountId", value?.accounting_account_id || null);
+          handleProductChange(rowData.id, "taxChargeId", value?.id || null);
         },
         value: rowData.iva // Esto seguirá mostrando el porcentaje
         ,

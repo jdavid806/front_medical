@@ -59,6 +59,7 @@ export type InvoiceProduct = {
   fixedAssetInfo?: FixedAssetsFormInputs;
   showLotForm?: boolean;
   isExpanded?: boolean;
+  taxChargeId?: number | null;
 };
 
 export interface ProductColumnBodyProps {

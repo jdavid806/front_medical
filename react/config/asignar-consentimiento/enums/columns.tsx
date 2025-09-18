@@ -87,7 +87,7 @@ export const getDocumentColumns = ({ onView, onEdit, onDelete, onSign }: ColumnA
             onSign(rowData.id ?? '');
           }}
         >
-          <i className="fas fa-pencil-alt"></i>
+          <i className="fas fa-signature"></i>
         </Button>
       </div>
     ),

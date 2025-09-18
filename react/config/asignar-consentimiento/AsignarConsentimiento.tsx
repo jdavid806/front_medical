@@ -38,7 +38,6 @@ const AsignarConsentimiento: React.FC = () => {
     useState<DocumentoConsentimiento | null>(null);
   const { data: templates } = useGetData();
 
-  // ✅ obtener el patient_id desde la URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("patient_id");
@@ -68,7 +67,6 @@ const AsignarConsentimiento: React.FC = () => {
       return;
     }
 
-    // 📄 Abrir ventana de impresión con tamaño controlado
     const printWindow = window.open(
       "",
       "_blank",
@@ -144,10 +142,11 @@ const AsignarConsentimiento: React.FC = () => {
   };
 
   // Función para el nuevo proceso de descarga y subida
-  const handleDownloadAndUpload = async (documento: File): Promise<UploadResponse> => {
+  const handleDownloadAndUpload = async (
+    documento: File
+  ): Promise<UploadResponse> => {
     return new Promise(async (resolve, reject) => {
       try {
-        
         const formData = new FormData();
         formData.append("file", documento);
         formData.append("model_type", "App\\Models\\ExamRecipes");
@@ -368,109 +367,74 @@ const AsignarConsentimiento: React.FC = () => {
           patient={patient!}
         />
 
-        {/* <SignatureModal
+        <SignatureModal
           visible={showSignatureModal}
           onClose={() => setShowSignatureModal(false)}
-          onSave={(file) => {
-            console.log("preview file", file);
-            if (currentDocumentId) {
-              console.log("file", file);
+          onSave={async (file) => {
+            if (!currentDocumentId) return;
+
+            try {
+              const response = await handleDownloadAndUpload(file);
+              console.log("URL del archivo subido:", response.file_url);
+
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                const base64 = e.target?.result as string;
+                const slot = document.getElementById("signature-slot");
+                if (slot) {
+                  slot.innerHTML = `<img src="${base64}" style="max-width:250px; height:auto;" />`;
+                }
+                setDocumentToView((prev) =>
+                  prev ? { ...prev, image_signature: base64 } : prev
+                );
+              };
+              reader.readAsDataURL(file);
+
+              const doc = documents.find((d) => d.id === currentDocumentId);
+              if (!doc) return;
+
+              await updateTemplate(currentDocumentId, {
+                documentId: doc.id,
+                title: doc.titulo,
+                description: doc.motivo,
+                data: doc.contenido,
+                tenantId: window.location.hostname.split(".")[0],
+                patientId: doc.patient_id || patientId,
+                doctorId: JSON.parse(localStorage.getItem("userData")!).id,
+                statusSignature: 1,
+                imageSignature: response.file_url,
+              });
+
+              setDocumentToView((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      status_signature: 1,
+                      image_signature: response.file_url,
+                    }
+                  : prev
+              );
               setShowSignatureModal(false);
+              setShowViewModal(false);
               setCurrentDocumentId(null);
+
+              toast.current?.show({
+                severity: "success",
+                summary: "Firma guardada",
+                detail: "El consentimiento ha sido firmado correctamente",
+                life: 3000,
+              });
+            } catch (error) {
+              console.error("Error al subir la firma:", error);
+              toast.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "No se pudo guardar la firma",
+                life: 3000,
+              });
             }
           }}
-        /> */}
-
-        {/* <SignatureModal
-          visible={showSignatureModal}
-          onClose={() => setShowSignatureModal(false)}
-          onSave={(file) => {
-            handleDownloadAndUpload(file);
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              const base64 = e.target?.result as string;
-              const slot = document.getElementById("signature-slot");
-              if (slot) {
-                slot.innerHTML = `<img src="${base64}" style="max-width:250px; height:auto;" />`;
-              }
-            };
-            reader.readAsDataURL(file);
-            setShowSignatureModal(false);
-            setShowViewModal(true);
-            setCurrentDocumentId(null);
-          }}
-        /> */}
-
-        <SignatureModal
-  visible={showSignatureModal}
-  onClose={() => setShowSignatureModal(false)}
-  onSave={async (file) => {
-    if (!currentDocumentId) return;
-
-    try {
-      // 1️⃣ Subir la imagen
-      const response = await handleDownloadAndUpload(file);
-      console.log("URL del archivo subido:", response.file_url);
-
-      // 2️⃣ Mostrar la firma en el modal
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const base64 = e.target?.result as string;
-        const slot = document.getElementById("signature-slot");
-        if (slot) {
-          slot.innerHTML = `<img src="${base64}" style="max-width:250px; height:auto;" />`;
-        }
-      };
-      reader.readAsDataURL(file);
-
-      // 3️⃣ Actualizar el template en la base de datos
-      const doc = documents.find(d => d.id === currentDocumentId);
-        if (!doc) return;
-
-        await updateTemplate(currentDocumentId, {
-          documentId: doc.id,
-          title: doc.titulo,
-          description: doc.motivo,
-          data: doc.contenido,
-          tenantId: window.location.hostname.split(".")[0],
-          patientId: doc.patient_id || patientId,
-          doctorId: JSON.parse(localStorage.getItem("userData")!).id,
-          statusSignature: 1,
-          imageSignature: response.file_url
-        });
-
-      // 4️⃣ Actualizar estado local
-      // setDocuments((prev) =>
-      //   prev.map((doc) =>
-      //     doc.id === currentDocumentId
-      //       ? { ...doc, status_signature: 1, image_signature: response.file_url }
-      //       : doc
-      //   )
-      // );
-
-      // 5️⃣ Cerrar modales y deshabilitar botón de firmar
-      setShowSignatureModal(false);
-      setShowViewModal(true);
-      setCurrentDocumentId(null);
-
-      toast.current?.show({
-        severity: "success",
-        summary: "Firma guardada",
-        detail: "El consentimiento ha sido firmado correctamente",
-        life: 3000,
-      });
-
-    } catch (error) {
-      console.error("Error al subir la firma:", error);
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo guardar la firma",
-        life: 3000,
-      });
-    }
-  }}
-/>
+        />
 
         {showViewModal && documentToView && (
           <div
@@ -493,10 +457,16 @@ const AsignarConsentimiento: React.FC = () => {
                   <div
                     id="doc-content"
                     dangerouslySetInnerHTML={{
-                      __html: documentToView.contenido + `<br/><p><b>Firma del paciente:</b></p>
-                        <div id="signature-slot" style="border:1px dashed #aaa; height:80px; width:300px;">
-                          ${documentToView.firma ? `<img src="${documentToView.firma}" style="max-width:250px; height:auto;" />` : ""}
-                        </div>`
+                      __html:
+                        documentToView.contenido +
+                        `<br/><p><b>Firma del paciente:</b></p>
+                          <div id="signature-slot" style="border:1px dashed #aaa; height:80px; width:300px;">
+                            ${
+                              documentToView.firma
+                                ? `<img src="${documentToView.firma}" style="max-width:250px; height:auto;" />`
+                                : ""
+                            }
+                          </div>`,
                     }}
                   />
                 </div>
@@ -527,7 +497,7 @@ const AsignarConsentimiento: React.FC = () => {
                         docIframe.write(`
                         <html>
                           <head>
-                            <title>Documento</title>
+                            <title>${documentToView.titulo || "Documento"}</title>
                             <style>
                               body { font-family: Arial; padding: 40px; font-size: 14px; }
                               @page { size: A4; margin: 15mm; }
@@ -540,21 +510,10 @@ const AsignarConsentimiento: React.FC = () => {
                         iframe.contentWindow?.focus();
                         iframe.contentWindow?.print();
                       }
-                      // console.log("documentToView", documentToView);
-                      //  const formato = await generarFormato(documentToView, "Consentimiento");
-                      //  console.log("Formato generado:", formato);
-                       
                     }}
                   >
                     Descargar PDF
                   </button>
-                  {/* <button
-                    className="btn btn-info"
-                    onClick={() => handleDownloadAndUpload(documentToView, "Impresion")}
-                    disabled={!documentToView}
-                  >
-                    Descargar y Subir
-                  </button> */}
                 </div>
               </div>
             </div>

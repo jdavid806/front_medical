@@ -151,6 +151,7 @@ RewriteRule ^Dashboard$  Portada/portada.php
 #Pacientes
 RewriteRule ^pacientes$  Pacientes/pacientesV2.php
 RewriteRule ^verPaciente$  Pacientes/verPaciente.php
+RewriteRule ^firmaPacientes$  Firmas/firmasPaciente.php
 
 #Citas
 RewriteRule ^citasControl$  Citas/citasHoy.php
@@ -331,7 +332,7 @@ RewriteRule ^cardEspecialidades$ Configuracion/homeConfig/cardEspecialidades.php
 RewriteRule ^cardMotivoConsulta$ Configuracion/homeConfig/cardMotivoConsulta.php
 RewriteRule ^cardHorarios$ Configuracion/homeConfig/cardHorarios.php
 RewriteRule ^cardUsers$ Configuracion/homeConfig/cardUsers.php
-RewriteRule ^cardRoles$ ConfiguralogsAuditoriacion/homeConfig/cardRoles.php
+RewriteRule ^cardRoles$ Configuracion/homeConfig/cardRoles.php
 RewriteRule ^cardAusencias$ Configuracion/homeConfig/cardAusencias.php
 RewriteRule ^configUsuarios$ Configuracion/homeConfig/configUsuarios.php
 RewriteRule ^configImportaciones$ Configuracion/homeConfig/configImportaciones.php

@@ -46,7 +46,8 @@ $tabs = [
     ['icono' => 'calendar-days', 'titulo' => 'Citas', 'texto' => 'Gestión y control de citas', 'url' => 'gestioncitas'],
     ['icono' => 'hospital', 'titulo' => 'Sala de Espera', 'texto' => 'Visualiza los pacientes por el estado de su cita', 'url' => 'salaEspera'],
     ['icono' => 'file-prescription', 'titulo' => 'Post - Consulta', 'texto' => 'Visualiza los pacientes que finalizarón consulta', 'url' => 'postconsultaControl'],
-    ['icono' => 'house-chimney-medical', 'titulo' => 'Admisiones', 'texto' => 'Visualiza el historial de adminisiones', 'url' => 'controlAdmisiones']
+    ['icono' => 'house-chimney-medical', 'titulo' => 'Admisiones', 'texto' => 'Visualiza el historial de adminisiones', 'url' => 'controlAdmisiones'],
+    ['icono' => 'house-chimney-medical', 'titulo' => 'Consentimientos', 'texto' => 'Visualiza consentimientos pendientes de firma', 'url' => 'controlAdmisiones'],
 ];
 ?>
 

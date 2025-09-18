@@ -31,8 +31,6 @@ const AsignarConsentimiento = () => {
   const {
     data: templates
   } = useGetData();
-
-  // ✅ obtener el patient_id desde la URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get("patient_id");
@@ -60,8 +58,6 @@ const AsignarConsentimiento = () => {
       });
       return;
     }
-
-    // 📄 Abrir ventana de impresión con tamaño controlado
     const printWindow = window.open("", "_blank", "width=800,height=1000,top=100,left=200,resizable=yes,scrollbars=yes");
     if (printWindow) {
       printWindow.document.write(`
@@ -322,11 +318,8 @@ const AsignarConsentimiento = () => {
     onSave: async file => {
       if (!currentDocumentId) return;
       try {
-        // 1️⃣ Subir la imagen
         const response = await handleDownloadAndUpload(file);
         console.log("URL del archivo subido:", response.file_url);
-
-        // 2️⃣ Mostrar la firma en el modal
         const reader = new FileReader();
         reader.onload = function (e) {
           const base64 = e.target?.result;
@@ -334,10 +327,12 @@ const AsignarConsentimiento = () => {
           if (slot) {
             slot.innerHTML = `<img src="${base64}" style="max-width:250px; height:auto;" />`;
           }
+          setDocumentToView(prev => prev ? {
+            ...prev,
+            image_signature: base64
+          } : prev);
         };
         reader.readAsDataURL(file);
-
-        // 3️⃣ Actualizar el template en la base de datos
         const doc = documents.find(d => d.id === currentDocumentId);
         if (!doc) return;
         await updateTemplate(currentDocumentId, {
@@ -351,19 +346,13 @@ const AsignarConsentimiento = () => {
           statusSignature: 1,
           imageSignature: response.file_url
         });
-
-        // 4️⃣ Actualizar estado local
-        // setDocuments((prev) =>
-        //   prev.map((doc) =>
-        //     doc.id === currentDocumentId
-        //       ? { ...doc, status_signature: 1, image_signature: response.file_url }
-        //       : doc
-        //   )
-        // );
-
-        // 5️⃣ Cerrar modales y deshabilitar botón de firmar
+        setDocumentToView(prev => prev ? {
+          ...prev,
+          status_signature: 1,
+          image_signature: response.file_url
+        } : prev);
         setShowSignatureModal(false);
-        setShowViewModal(true);
+        setShowViewModal(false);
         setCurrentDocumentId(null);
         toast.current?.show({
           severity: "success",
@@ -403,9 +392,9 @@ const AsignarConsentimiento = () => {
     id: "doc-content",
     dangerouslySetInnerHTML: {
       __html: documentToView.contenido + `<br/><p><b>Firma del paciente:</b></p>
-                        <div id="signature-slot" style="border:1px dashed #aaa; height:80px; width:300px;">
-                          ${documentToView.firma ? `<img src="${documentToView.firma}" style="max-width:250px; height:auto;" />` : ""}
-                        </div>`
+                          <div id="signature-slot" style="border:1px dashed #aaa; height:80px; width:300px;">
+                            ${documentToView.firma ? `<img src="${documentToView.firma}" style="max-width:250px; height:auto;" />` : ""}
+                          </div>`
     }
   })), /*#__PURE__*/React.createElement("div", {
     className: "modal-footer"
@@ -431,7 +420,7 @@ const AsignarConsentimiento = () => {
         docIframe.write(`
                         <html>
                           <head>
-                            <title>Documento</title>
+                            <title>${documentToView.titulo || "Documento"}</title>
                             <style>
                               body { font-family: Arial; padding: 40px; font-size: 14px; }
                               @page { size: A4; margin: 15mm; }
@@ -444,9 +433,6 @@ const AsignarConsentimiento = () => {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
       }
-      // console.log("documentToView", documentToView);
-      //  const formato = await generarFormato(documentToView, "Consentimiento");
-      //  console.log("Formato generado:", formato);
     }
   }, "Descargar PDF")))))));
 };

@@ -1,60 +1,58 @@
 import React, { useState, useCallback, useImperativeHandle } from 'react';
 import { generateUUID } from "../../services/utilidades.js";
-import { Splitter, SplitterPanel } from 'primereact/splitter';
 export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   onPanelClick,
   onComponentClick
 }, ref) => {
-  const [panels, setPanels] = useState([{
+  const [rootPanel, setRootPanel] = useState({
     uuid: generateUUID(),
     component: null,
     children: [],
-    size: 100,
-    minSize: 20
-  }]);
+    layout: 'vertical',
+    cols: 12
+  });
   const [selectedPanel, setSelectedPanel] = useState(null);
   const [selectedComponent, setSelectedComponent] = useState(null);
+  const [hoveredPanel, setHoveredPanel] = useState(null);
 
   // Función recursiva para encontrar un panel y su padre
-  const findPanelAndParent = useCallback((panelsList, uuid, parent = null) => {
-    for (const panel of panelsList) {
-      if (panel.uuid === uuid) {
-        return {
-          panel,
-          parent
-        };
-      }
-      if (panel.children && panel.children.length > 0) {
-        const result = findPanelAndParent(panel.children, uuid, panel);
+  const findPanelAndParent = useCallback((currentPanel, uuid, parent = null) => {
+    if (currentPanel.uuid === uuid) {
+      return {
+        panel: currentPanel,
+        parent
+      };
+    }
+    if (currentPanel.children && currentPanel.children.length > 0) {
+      for (const child of currentPanel.children) {
+        const result = findPanelAndParent(child, uuid, currentPanel);
         if (result) return result;
       }
     }
     return null;
   }, []);
   const addComponentToPanel = useCallback((panel, component) => {
-    setPanels(prev => {
-      const updatePanelComponent = panelsList => {
-        return panelsList.map(p => {
-          if (p.uuid === panel.uuid) {
-            return {
-              ...p,
-              component
-            };
-          }
-          if (p.children && p.children.length > 0) {
-            return {
-              ...p,
-              children: updatePanelComponent(p.children)
-            };
-          }
-          return p;
-        });
+    setRootPanel(prev => {
+      const updatePanelComponent = currentPanel => {
+        if (currentPanel.uuid === panel.uuid) {
+          return {
+            ...currentPanel,
+            component
+          };
+        }
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updatePanelComponent)
+          };
+        }
+        return currentPanel;
       };
       return updatePanelComponent(prev);
     });
   }, []);
   const addSiblingPanel = useCallback((panel, direction) => {
-    setPanels(prev => {
+    setRootPanel(prev => {
       const result = findPanelAndParent(prev, panel.uuid);
       if (!result) return prev;
       const {
@@ -64,178 +62,266 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
         uuid: generateUUID(),
         component: null,
         children: [],
-        size: 50,
-        minSize: 10
+        cols: 6,
+        // Por defecto 6 columnas (mitad)
+        minCols: 1
       };
 
       // Si no tiene padre, estamos en el nivel raíz
       if (!parent) {
-        const index = prev.findIndex(p => p.uuid === panel.uuid);
-        if (index === -1) return prev;
-        const newPanels = [...prev];
-        // Ajustar el tamaño de los paneles existentes
-        const adjustedPanels = newPanels.map(p => ({
-          ...p,
-          size: 100 / (newPanels.length + 1)
-        }));
-        if (direction === 'before') {
-          return [newPanel, ...adjustedPanels];
+        const newRoot = {
+          uuid: generateUUID(),
+          component: null,
+          children: [],
+          layout: direction === 'above' || direction === 'below' ? 'vertical' : 'horizontal',
+          cols: 12
+        };
+        if (direction === 'above' || direction === 'left') {
+          newRoot.children = [{
+            ...newPanel,
+            cols: 6
+          }, {
+            ...prev,
+            cols: 6
+          }];
         } else {
-          adjustedPanels.splice(index + 1, 0, newPanel);
-          return adjustedPanels;
+          newRoot.children = [{
+            ...prev,
+            cols: 6
+          }, {
+            ...newPanel,
+            cols: 6
+          }];
         }
+        return newRoot;
       }
-
-      // Si tiene padre, actualizamos los children del padre
-      const updateParentChildren = panelsList => {
-        return panelsList.map(p => {
-          if (p.uuid === parent.uuid) {
-            const index = p.children.findIndex(child => child.uuid === panel.uuid);
-            if (index === -1) return p;
-            const newChildren = [...p.children];
-            // Ajustar el tamaño de los children existentes
-            const adjustedChildren = newChildren.map(child => ({
-              ...child,
-              size: 100 / (newChildren.length + 1)
-            }));
-            if (direction === 'before') {
-              adjustedChildren.splice(index, 0, newPanel);
+      const updateParentWithSibling = currentPanel => {
+        if (currentPanel.uuid === parent.uuid) {
+          const childIndex = currentPanel.children.findIndex(child => child.uuid === panel.uuid);
+          if (childIndex === -1) return currentPanel;
+          const newChildren = [...currentPanel.children];
+          const isVerticalParent = currentPanel.layout === 'vertical';
+          const isHorizontalDirection = direction === 'left' || direction === 'right';
+          if (isVerticalParent && isHorizontalDirection || !isVerticalParent && !isHorizontalDirection) {
+            const newContainer = {
+              uuid: generateUUID(),
+              component: null,
+              children: [],
+              layout: isHorizontalDirection ? 'horizontal' : 'vertical',
+              cols: currentPanel.children[childIndex].cols || 12
+            };
+            if (direction === 'above' || direction === 'left') {
+              newContainer.children = [{
+                ...newPanel,
+                cols: 6
+              }, {
+                ...currentPanel.children[childIndex],
+                cols: 6
+              }];
             } else {
-              adjustedChildren.splice(index + 1, 0, newPanel);
+              newContainer.children = [{
+                ...currentPanel.children[childIndex],
+                cols: 6
+              }, {
+                ...newPanel,
+                cols: 6
+              }];
             }
-            return {
-              ...p,
-              children: adjustedChildren
-            };
+            newChildren[childIndex] = newContainer;
+          } else {
+            // Calcular columnas disponibles
+            const totalUsedCols = currentPanel.children.reduce((sum, child) => sum + (child.cols || 0), 0);
+            const availableCols = 12 - totalUsedCols;
+            if (availableCols <= 0) {
+              // Redistribuir columnas equitativamente
+              const newCols = Math.floor(12 / (currentPanel.children.length + 1));
+              newChildren.forEach(child => {
+                child.cols = newCols;
+              });
+              newPanel.cols = newCols;
+            } else {
+              // Usar columnas disponibles
+              newPanel.cols = Math.min(6, availableCols);
+              // Ajustar el panel actual para mantener total de 12
+              currentPanel.children[childIndex].cols = (currentPanel.children[childIndex].cols || 0) - newPanel.cols;
+            }
+            if (direction === 'above' || direction === 'left') {
+              newChildren.splice(childIndex, 0, newPanel);
+            } else {
+              newChildren.splice(childIndex + 1, 0, newPanel);
+            }
           }
-          if (p.children && p.children.length > 0) {
-            return {
-              ...p,
-              children: updateParentChildren(p.children)
-            };
-          }
-          return p;
-        });
+          return {
+            ...currentPanel,
+            children: newChildren
+          };
+        }
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updateParentWithSibling)
+          };
+        }
+        return currentPanel;
       };
-      return updateParentChildren(prev);
+      return updateParentWithSibling(prev);
     });
   }, [findPanelAndParent]);
   const addChildPanel = useCallback((panel, layout) => {
-    setPanels(prev => {
-      const updatePanelWithChildren = panelsList => {
-        return panelsList.map(p => {
-          if (p.uuid === panel.uuid) {
-            const newChild = {
-              uuid: generateUUID(),
-              component: null,
-              children: [],
-              size: 50,
-              minSize: 10
-            };
-
-            // Si ya tiene children, añadimos uno nuevo
-            if (p.children && p.children.length > 0) {
-              const adjustedChildren = p.children.map(child => ({
-                ...child,
-                size: 100 / (p.children.length + 1)
-              }));
-              return {
-                ...p,
-                layout,
-                children: [...adjustedChildren, newChild]
-              };
-            }
-
-            // Si no tiene children, creamos dos paneles hijos
-            const secondChild = {
-              uuid: generateUUID(),
-              component: null,
-              children: [],
-              size: 50,
-              minSize: 10
-            };
+    setRootPanel(prev => {
+      const updatePanelWithChildren = currentPanel => {
+        if (currentPanel.uuid === panel.uuid) {
+          // Guardar el componente actual antes de convertir en contenedor
+          const existingComponent = currentPanel.component;
+          const newChild = {
+            uuid: generateUUID(),
+            component: null,
+            children: [],
+            cols: 6,
+            minCols: 1
+          };
+          if (currentPanel.children && currentPanel.children.length > 0) {
+            // Redistribuir columnas equitativamente
+            const newCols = Math.floor(12 / (currentPanel.children.length + 1));
+            const adjustedChildren = currentPanel.children.map(child => ({
+              ...child,
+              cols: newCols
+            }));
             return {
-              ...p,
+              ...currentPanel,
               layout,
-              children: [newChild, secondChild],
-              component: null // Limpiamos el componente si convertimos en contenedor
+              children: [...adjustedChildren, {
+                ...newChild,
+                cols: newCols
+              }]
             };
           }
-          if (p.children && p.children.length > 0) {
-            return {
-              ...p,
-              children: updatePanelWithChildren(p.children)
-            };
+          const secondChild = {
+            uuid: generateUUID(),
+            component: null,
+            children: [],
+            cols: 6,
+            minCols: 1
+          };
+
+          // Si el panel tenía un componente, lo movemos al primer hijo
+          if (existingComponent) {
+            newChild.component = existingComponent;
           }
-          return p;
-        });
+          return {
+            ...currentPanel,
+            layout,
+            children: [{
+              ...newChild,
+              cols: 6
+            }, {
+              ...secondChild,
+              cols: 6
+            }],
+            component: null
+          };
+        }
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updatePanelWithChildren)
+          };
+        }
+        return currentPanel;
       };
       return updatePanelWithChildren(prev);
     });
   }, []);
   const removePanel = useCallback(panel => {
-    setPanels(prev => {
+    setRootPanel(prev => {
       const result = findPanelAndParent(prev, panel.uuid);
       if (!result) return prev;
       const {
         parent
       } = result;
+      if (!parent) return prev;
+      const updateParentChildren = currentPanel => {
+        if (currentPanel.uuid === parent.uuid) {
+          const newChildren = currentPanel.children.filter(child => child.uuid !== panel.uuid);
+          if (newChildren.length === 0) {
+            return {
+              ...currentPanel,
+              children: [],
+              layout: undefined
+            };
+          }
 
-      // Si no tiene padre, estamos en el nivel raíz
-      if (!parent) {
-        const newPanels = prev.filter(p => p.uuid !== panel.uuid);
-        if (newPanels.length === 0) {
-          // Si eliminamos todos los paneles, creamos uno nuevo
-          return [{
-            uuid: generateUUID(),
-            component: null,
-            children: [],
-            size: 100,
-            minSize: 20
-          }];
+          // Redistribuir columnas equitativamente
+          const newCols = Math.floor(12 / newChildren.length);
+          const adjustedChildren = newChildren.map(child => ({
+            ...child,
+            cols: newCols
+          }));
+          return {
+            ...currentPanel,
+            children: adjustedChildren
+          };
         }
-
-        // Ajustar los tamaños de los paneles restantes
-        return newPanels.map(p => ({
-          ...p,
-          size: 100 / newPanels.length
-        }));
-      }
-
-      // Si tiene padre, eliminamos de los children del padre
-      const updateParentChildren = panelsList => {
-        return panelsList.map(p => {
-          if (p.uuid === parent.uuid) {
-            const newChildren = p.children.filter(child => child.uuid !== panel.uuid);
-            if (newChildren.length === 0) {
-              // Si no quedan children, convertimos el panel en un panel simple
-              return {
-                ...p,
-                children: [],
-                layout: undefined
-              };
-            }
-
-            // Ajustar los tamaños de los children restantes
-            const adjustedChildren = newChildren.map(child => ({
-              ...child,
-              size: 100 / newChildren.length
-            }));
-            return {
-              ...p,
-              children: adjustedChildren
-            };
-          }
-          if (p.children && p.children.length > 0) {
-            return {
-              ...p,
-              children: updateParentChildren(p.children)
-            };
-          }
-          return p;
-        });
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updateParentChildren)
+          };
+        }
+        return currentPanel;
       };
       return updateParentChildren(prev);
+    });
+  }, [findPanelAndParent]);
+  const updatePanelCols = useCallback((panel, newCols) => {
+    if (newCols < 1 || newCols > 12) return;
+    setRootPanel(prev => {
+      const result = findPanelAndParent(prev, panel.uuid);
+      if (!result) return prev;
+      const {
+        parent
+      } = result;
+      if (!parent) return prev;
+      const updateCols = currentPanel => {
+        if (currentPanel.uuid === parent.uuid) {
+          const panelIndex = currentPanel.children.findIndex(child => child.uuid === panel.uuid);
+          if (panelIndex === -1) return currentPanel;
+
+          // Calcular columnas totales usadas por los hermanos
+          const siblings = currentPanel.children.filter((_, index) => index !== panelIndex);
+          const totalSiblingCols = siblings.reduce((sum, sibling) => sum + (sibling.cols || 0), 0);
+
+          // Verificar si hay suficientes columnas disponibles
+          const availableCols = 12 - totalSiblingCols;
+          if (newCols <= availableCols) {
+            // Hay espacio suficiente, actualizar el panel
+            const updatedChildren = currentPanel.children.map((child, index) => {
+              if (index === panelIndex) {
+                return {
+                  ...child,
+                  cols: newCols
+                };
+              }
+              return child;
+            });
+            return {
+              ...currentPanel,
+              children: updatedChildren
+            };
+          } else {
+            // No hay suficiente espacio, no hacer cambios
+            return currentPanel;
+          }
+        }
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updateCols)
+          };
+        }
+        return currentPanel;
+      };
+      return updateCols(prev);
     });
   }, [findPanelAndParent]);
 
@@ -244,7 +330,8 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
     addComponentToPanel,
     addSiblingPanel,
     addChildPanel,
-    removePanel
+    removePanel,
+    updatePanelCols
   }));
   const handlePanelClick = (panel, event) => {
     event.stopPropagation();
@@ -262,45 +349,159 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   // Función recursiva para renderizar los paneles
   const renderPanel = panel => {
     const isSelected = selectedPanel?.uuid === panel.uuid;
+    const isHovered = hoveredPanel === panel.uuid;
     const hasComponent = panel.component !== null;
     const hasChildren = panel.children && panel.children.length > 0;
-    const panelContent = hasComponent ? /*#__PURE__*/React.createElement("div", {
-      className: "p-2"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: `p-3 h-100 w-100 d-flex align-items-center justify-content-center cursor-pointer ${selectedComponent?.uuid === panel.component?.uuid ? 'border border-3 border-primary' : 'border border-1 surface-border'}`,
-      onClick: e => handleComponentClick(panel.component, e)
-    }, panel.component?.name)) : hasChildren ? /*#__PURE__*/React.createElement(Splitter, {
-      layout: panel.layout,
-      style: {
-        height: '100%',
-        width: '100%'
-      }
-    }, panel.children.map(child => /*#__PURE__*/React.createElement(SplitterPanel, {
-      key: child.uuid,
-      size: child.size,
-      minSize: child.minSize
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "p-2"
-    }, renderPanel(child))))) : /*#__PURE__*/React.createElement("div", {
-      className: "p-3 h-100 w-100 d-flex align-items-center justify-content-center text-400"
-    }, "Panel vac\xEDo");
-    return /*#__PURE__*/React.createElement("div", {
-      className: `h-100 w-100 ${isSelected ? 'border border-3 border-primary' : 'border border-1 surface-border'}`,
-      onClick: e => handlePanelClick(panel, e)
-    }, panelContent);
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "h-100 w-100"
-  }, /*#__PURE__*/React.createElement(Splitter, {
-    style: {
+
+    // Calcular ancho basado en columnas
+    const widthPercentage = (panel.cols || 12) / 12 * 100;
+    const panelStyle = {
+      flex: `0 0 ${widthPercentage}%`,
+      minWidth: '20px',
+      minHeight: '20px',
+      border: isSelected ? '3px solid #3B82F6' : isHovered ? '2px solid #93C5FD' : '1px solid #e5e7eb',
+      borderRadius: '6px',
+      margin: '8px',
+      padding: '16px',
+      backgroundColor: 'white',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      boxSizing: 'border-box',
+      transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+      boxShadow: isHovered ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+    };
+    const containerStyle = {
+      display: 'flex',
+      width: '100%',
       height: '100%',
-      width: '100%'
+      flexDirection: panel.layout === 'vertical' ? 'column' : 'row',
+      gap: '4px'
+    };
+    if (hasChildren) {
+      return /*#__PURE__*/React.createElement("div", {
+        style: panelStyle,
+        onClick: e => handlePanelClick(panel, e),
+        onMouseEnter: () => setHoveredPanel(panel.uuid),
+        onMouseLeave: () => setHoveredPanel(null)
+      }, /*#__PURE__*/React.createElement("div", {
+        style: containerStyle
+      }, panel.children.map(child => /*#__PURE__*/React.createElement("div", {
+        key: child.uuid,
+        style: {
+          flex: `0 0 ${(child.cols || 12) / 12 * 100}%`,
+          position: 'relative'
+        }
+      }, renderPanel(child), /*#__PURE__*/React.createElement("div", {
+        style: {
+          position: 'absolute',
+          top: '4px',
+          right: '4px',
+          display: 'flex',
+          gap: '4px',
+          zIndex: 10
+        }
+      }, /*#__PURE__*/React.createElement("button", {
+        onClick: e => {
+          e.stopPropagation();
+          if (child.cols && child.cols > 1) {
+            updatePanelCols(child, child.cols - 1);
+          }
+        },
+        style: {
+          background: '#3B82F6',
+          color: 'white',
+          border: 'none',
+          borderRadius: '3px',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+          fontSize: '12px'
+        },
+        title: "Reducir columnas"
+      }, "-"), /*#__PURE__*/React.createElement("span", {
+        style: {
+          background: 'rgba(255,255,255,0.9)',
+          padding: '2px 6px',
+          borderRadius: '3px',
+          fontSize: '12px',
+          fontWeight: 'bold'
+        }
+      }, child.cols), /*#__PURE__*/React.createElement("button", {
+        onClick: e => {
+          e.stopPropagation();
+          // Calcular columnas disponibles
+          const totalUsedCols = panel.children.reduce((sum, sibling) => {
+            if (sibling.uuid !== child.uuid) {
+              return sum + (sibling.cols || 0);
+            }
+            return sum;
+          }, 0);
+          const availableCols = 12 - totalUsedCols;
+          if (child.cols && child.cols < availableCols) {
+            updatePanelCols(child, child.cols + 1);
+          }
+        },
+        style: {
+          background: '#10B981',
+          color: 'white',
+          border: 'none',
+          borderRadius: '3px',
+          width: '20px',
+          height: '20px',
+          cursor: 'pointer',
+          fontSize: '12px'
+        },
+        title: "Aumentar columnas"
+      }, "+"))))));
+    } else if (hasComponent) {
+      const isComponentSelected = selectedComponent?.uuid === panel.component?.uuid;
+      return /*#__PURE__*/React.createElement("div", {
+        style: panelStyle,
+        onClick: e => handlePanelClick(panel, e),
+        onMouseEnter: () => setHoveredPanel(panel.uuid),
+        onMouseLeave: () => setHoveredPanel(null)
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: isComponentSelected ? '2px solid #10B981' : 'none',
+          borderRadius: '4px',
+          padding: '16px',
+          backgroundColor: '#F9FAFB',
+          cursor: 'pointer'
+        },
+        onClick: e => {
+          e.stopPropagation();
+          handleComponentClick(panel.component, e);
+        },
+        onMouseEnter: e => {
+          e.stopPropagation();
+          setHoveredPanel(panel.uuid);
+        },
+        onMouseLeave: e => {
+          e.stopPropagation();
+          setHoveredPanel(null);
+        }
+      }, /*#__PURE__*/React.createElement("strong", null, panel.component?.name)));
+    } else {
+      return /*#__PURE__*/React.createElement("div", {
+        style: panelStyle,
+        onClick: e => handlePanelClick(panel, e),
+        onMouseEnter: () => setHoveredPanel(panel.uuid),
+        onMouseLeave: () => setHoveredPanel(null)
+      }, /*#__PURE__*/React.createElement("span", {
+        style: {
+          color: '#6B7280',
+          fontSize: '14px'
+        }
+      }, "Panel vac\xEDo"));
     }
-  }, panels.map(panel => /*#__PURE__*/React.createElement(SplitterPanel, {
-    key: panel.uuid,
-    size: panel.size,
-    minSize: panel.minSize
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "p-2"
-  }, renderPanel(panel))))));
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, renderPanel(rootPanel));
 });

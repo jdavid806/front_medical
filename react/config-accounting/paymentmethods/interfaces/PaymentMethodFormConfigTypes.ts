@@ -1,10 +1,11 @@
 import { SubmitHandler } from "react-hook-form";
 
 export interface PaymentMethodFormInputs {
+  method: string;
   name: string;
   payment_type: string;
   category: string;
-  account: { id: number; name: string } | null;
+  accounting_account_id: number | null;
   additionalDetails: string;
 }
 
@@ -18,6 +19,7 @@ export interface PaymentMethodFormProps {
     id: number;
     name: string;
   }[];
+  isLoadingAccounts: boolean;
 }
 
 export interface PaymentMethodDTO {

@@ -36,4 +36,5 @@ export type InvoiceProduct = {
   depositId?: any;
   fixedAssetInfo?: any;
   taxAccountingAccountId?: number | null;
+  taxChargeId?: number | null;
 };
