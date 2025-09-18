@@ -19,7 +19,7 @@ import { classNames } from "primereact/utils";
 import { appointmentService, clinicalRecordService, clinicalRecordTypeService, userService } from "../../services/api/index.js";
 import { Toast } from "primereact/toast";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
-import { addDaysToDate, getIndicativeByCountry } from "../../services/utilidades.js";
+import { addDaysToDate, formatTimeByMilliseconds, generateURLStorageKey, getIndicativeByCountry } from "../../services/utilidades.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { ProgressBar } from "primereact/progressbar";
@@ -65,20 +65,16 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     defaultValues: {
       diagnosis: null,
       diagnoses: [],
-      diagnosis_type: null,
       treatment_plan: null
     }
   });
   const {
     append: appendDiagnosis,
-    remove: removeDiagnosis
+    remove: removeDiagnosis,
+    update: updateDiagnosis
   } = useFieldArray({
     control,
     name: "diagnoses"
-  });
-  const diagnosisType = useWatch({
-    control,
-    name: "diagnosis_type"
   });
   const diagnoses = useWatch({
     control,
@@ -443,6 +439,9 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
         detail: "Se ha creado el registro exitosamente y se han enviado todos los mensajes correctamente",
         life: 3000
       });
+      localStorage.removeItem(generateURLStorageKey('elapsedTime'));
+      localStorage.removeItem(generateURLStorageKey('startTime'));
+      localStorage.removeItem(generateURLStorageKey('isRunning'));
       hideModal();
       window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${specialtyName}`;
     } catch (error) {
@@ -494,6 +493,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       phone: currentAppointment.patient.whatsapp,
       email: currentAppointment.patient.email
     };
+    const formattedTime = formatTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('elapsedTime')));
     let result = {
       appointment_id: appointmentId,
       branch_id: "1",
@@ -502,12 +502,9 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       description: treatmentPlan || "--",
       data: {
         ...externalDynamicData,
-        rips: {
-          diagnosis_type: diagnosisType,
-          diagnoses
-        }
+        rips: diagnoses
       },
-      consultation_duration: ""
+      consultation_duration: `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
     };
     if (examsActive && exams.length > 0) {
       result.exam_order = exams.map(exam => ({
@@ -813,6 +810,24 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
       field: "label",
       header: "Diagnóstico"
     }, {
+      field: "",
+      header: "Tipo de Diagnóstico",
+      width: "200px",
+      body: rowData => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+        id: "diagnosis_type",
+        value: rowData.diagnosis_type,
+        onChange: e => updateDiagnosis(diagnoses.indexOf(rowData), {
+          ...rowData,
+          diagnosis_type: e.value
+        }),
+        options: diagnosisTypeOptions,
+        optionLabel: "label",
+        optionValue: "value",
+        placeholder: "Seleccione un tipo de diagn\xF3stico",
+        className: "w-100",
+        showClear: true
+      }))
+    }, {
       field: "actions",
       header: "Acciones",
       width: "100px",
@@ -842,27 +857,6 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     }],
     disableSearch: true,
     disableReload: true
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "diagnosis_type",
-    control: control,
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
-      htmlFor: "diagnosis_type",
-      className: "form-label"
-    }, "Tipo de Diagn\xF3stico"), /*#__PURE__*/React.createElement(Dropdown, {
-      id: "diagnosis_type",
-      value: field.value,
-      onChange: e => field.onChange(e.value),
-      options: diagnosisTypeOptions,
-      optionLabel: "label",
-      optionValue: "value",
-      placeholder: "Seleccione un tipo de diagn\xF3stico",
-      className: "w-100",
-      showClear: true
-    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {

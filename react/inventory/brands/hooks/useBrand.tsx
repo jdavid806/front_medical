@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { brandService } from "../../../../services/api";
 import { ErrorHandler } from "../../../../services/errorHandler";
+import { brandService } from "../../../../services/api";
 
 export const useBrand = () => {
   const [brand, setBrand] = useState<any>(null);

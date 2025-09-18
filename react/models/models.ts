@@ -404,6 +404,7 @@ export interface TicketTableItemDto {
   created_at: string;
   branch_id: string;
   module_id: string;
+  module?: any;
 }
 
 export interface CreateTicketDTO {

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
+import { Galleria } from 'primereact/galleria';
 import { useAuth } from "../hooks/useAuth.js";
 export const LoginForm = ({
   onLogin,
@@ -11,9 +12,39 @@ export const LoginForm = ({
     username: '',
     password: ''
   });
+  const [images, setImages] = useState(["assets/img/gallery/MedicalSoft_Login_Default.jpg"]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const {
     loading
   } = useAuth();
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch('https://hooks.medicalsoft.ai/webhook/imagenes');
+        const data = await response.json();
+        const processedImages = data.filter(img => img.Activo).map(img => {
+          const match = img.url_imagen.match(/\/d\/([^\/]+)/);
+          const fileId = match ? match[1] : '';
+          const directUrl = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000` : img.url_imagen; // Fallback a la URL original
+
+          return directUrl;
+        });
+        setImages(prevImages => [...prevImages, ...processedImages]);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+        setImages(["assets/img/gallery/MedicalSoft_Login_Default.jpg"]);
+      }
+    };
+    fetchImages();
+  }, []);
+  useEffect(() => {
+    if (images.length > 1) {
+      const interval = setInterval(() => {
+        setActiveIndex(prevIndex => (prevIndex + 1) % images.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [images]);
   const handleSubmit = e => {
     e.preventDefault();
     onLogin(credentials);
@@ -29,8 +60,27 @@ export const LoginForm = ({
       handleSubmit(e);
     }
   };
+  const itemTemplate = imageURL => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "w-100 d-flex align-items-center justify-content-center",
+      style: {
+        height: '80vh'
+      }
+    }, /*#__PURE__*/React.createElement("img", {
+      src: imageURL,
+      alt: "Medical background",
+      className: "img-fluid h-100 w-100 object-fit-cover",
+      style: {
+        objectPosition: 'center'
+      },
+      onError: e => {
+        // Fallback en caso de error de carga de imagen
+        e.currentTarget.src = "assets/img/gallery/MedicalSoft_Login_Default.jpg";
+      }
+    }));
+  };
   return /*#__PURE__*/React.createElement("div", {
-    className: "min-vh-100 d-flex align-items-center justify-content-center p-0 bg-white"
+    className: "d-flex align-items-center justify-content-center p-0 bg-white"
   }, /*#__PURE__*/React.createElement("div", {
     className: "container-fluid h-100 p-0"
   }, /*#__PURE__*/React.createElement("div", {
@@ -45,15 +95,13 @@ export const LoginForm = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "text-center mb-4"
   }, /*#__PURE__*/React.createElement("img", {
-    src: "/logo_monaros_sinbg_light.png",
+    src: "assets/img/logos/FullColor.svg",
     alt: "Logo Medicalsoft",
     className: "img-fluid mb-4",
     style: {
-      maxWidth: '65%'
+      maxWidth: '45%'
     }
-  }), /*#__PURE__*/React.createElement("h2", {
-    className: "h3 fw-bold text-gray-800 mb-3"
-  }, "Inicia sesi\xF3n")), /*#__PURE__*/React.createElement("form", {
+  })), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit,
     className: "w-100"
   }, /*#__PURE__*/React.createElement("div", {
@@ -105,27 +153,25 @@ export const LoginForm = ({
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",
     onClick: onForgotPassword,
-    className: "btn btn-link text-decoration-none p-0 text-primary fw-medium"
+    className: "btn btn-link p-0 text-primary fw-medium"
   }, "\xBFHas olvidado tu contrase\xF1a?")))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 d-none d-md-flex align-items-center justify-content-center p-0"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "h-100 w-100 d-flex align-items-center justify-content-center"
-  }, /*#__PURE__*/React.createElement("img", {
-    src: "/medical_index.jpg",
-    alt: "login form",
-    className: "img-fluid h-100 w-100 object-fit-cover",
+  }, /*#__PURE__*/React.createElement(Galleria, {
+    value: images,
+    activeIndex: activeIndex,
+    onItemChange: e => setActiveIndex(e.index),
+    showThumbnails: false,
+    showIndicators: true,
+    showItemNavigators: false,
+    item: itemTemplate,
+    circular: true,
+    autoPlay: false,
+    transitionInterval: 5000,
     style: {
-      objectPosition: 'center'
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "position-absolute text-center text-white p-4",
-    style: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      borderRadius: '10px'
-    }
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "h2 fw-bold mb-3"
-  }, "Sistema M\xE9dico Integral"), /*#__PURE__*/React.createElement("p", {
-    className: "lead"
-  }, "Plataforma de gesti\xF3n m\xE9dica especializada")))))));
+      width: '100%',
+      height: '100%',
+      maxHeight: '100vh'
+    },
+    className: "h-100"
+  })))));
 };

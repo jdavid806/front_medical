@@ -12,6 +12,7 @@ import {
 import { useTemplate } from "../hooks/useTemplate";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
+import { useLoggedUser } from "../users/hooks/useLoggedUser";
 
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ export const GenerateTicket = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [reasons, setReasons] = useState([]);
   const [priorities, setPriorities] = useState([]);
+    const { loggedUser } = useLoggedUser();
 
   const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
@@ -156,6 +158,7 @@ export const GenerateTicket = () => {
         ...formData,
         branch_id: 3,
         patient_id: patient?.id,
+        module_id: loggedUser?.today_module_id
       };
 
       const response = await ticketService.create(ticketData);

@@ -7,9 +7,10 @@ interface ColumnActionsProps {
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  onSign: (id: string) => void;
 }
 
-export const getDocumentColumns = ({ onView, onEdit, onDelete }: ColumnActionsProps): DocumentTableColumn[] => [
+export const getDocumentColumns = ({ onView, onEdit, onDelete, onSign }: ColumnActionsProps): DocumentTableColumn[] => [
   { 
     field: "fecha", 
     header: "Fecha",
@@ -31,6 +32,16 @@ export const getDocumentColumns = ({ onView, onEdit, onDelete }: ColumnActionsPr
         )}
       </div>
     )
+  },
+   {
+    field: 'firmado',
+    header: 'Estado Firma',
+    body: (rowData: any) => (
+      rowData.firmado === true
+        ? <span className="badge bg-success">Firmado</span>
+        : <span className="badge bg-warning text-dark">Pendiente</span>
+    ),
+    sortable: false,
   },
   {
     field: "",
@@ -67,6 +78,16 @@ export const getDocumentColumns = ({ onView, onEdit, onDelete }: ColumnActionsPr
           }}
         >
           <i className="fa-solid fa-trash"></i>
+        </Button>
+         <Button
+          className="p-button-rounded p-button-text p-button-sm p-button-warning"
+          tooltip="Firmar documento"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSign(rowData.id ?? '');
+          }}
+        >
+          <i className="fas fa-pencil-alt"></i>
         </Button>
       </div>
     ),

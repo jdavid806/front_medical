@@ -122,7 +122,7 @@ export const ExamRecipesApp: React.FC = () => {
     });
   };
   async function generatePdfFile(prescription) {
-    if (prescription.result.result_minio_url) {
+    if (prescription?.result?.result_minio_url) {
       //@ts-ignore
       const url = await getUrlImage(prescription.result.result_minio_url, true);
       return {
@@ -351,22 +351,22 @@ const TableActionsMenu: React.FC<{
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const items = [
+    {
+      label: "Visualizar resultados",
+      icon: "pi pi-eye",
+      command: () => {
+        onViewResults();
+      },
+    },
+    {
+      label: "Imprimir",
+      icon: "pi pi-print",
+      command: () => {
+        onPrint();
+      },
+    },
     ...(rowData.status === "uploaded"
       ? [
-          {
-            label: "Visualizar resultados",
-            icon: "pi pi-eye",
-            command: () => {
-              onViewResults();
-            },
-          },
-          {
-            label: "Imprimir",
-            icon: "pi pi-print",
-            command: () => {
-              onPrint();
-            },
-          },
           {
             label: "Descargar",
             icon: "pi pi-download",

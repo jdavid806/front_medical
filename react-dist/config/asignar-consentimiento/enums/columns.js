@@ -3,7 +3,8 @@ import { Button } from 'primereact/button';
 export const getDocumentColumns = ({
   onView,
   onEdit,
-  onDelete
+  onDelete,
+  onSign
 }) => [{
   field: "fecha",
   header: "Fecha",
@@ -21,6 +22,15 @@ export const getDocumentColumns = ({
   }, rowData.titulo || 'Sin título'), rowData.motivo && /*#__PURE__*/React.createElement("small", {
     className: "text-muted"
   }, rowData.motivo))
+}, {
+  field: 'firmado',
+  header: 'Estado Firma',
+  body: rowData => rowData.firmado === true ? /*#__PURE__*/React.createElement("span", {
+    className: "badge bg-success"
+  }, "Firmado") : /*#__PURE__*/React.createElement("span", {
+    className: "badge bg-warning text-dark"
+  }, "Pendiente"),
+  sortable: false
 }, {
   field: "",
   header: "Acciones",
@@ -57,5 +67,14 @@ export const getDocumentColumns = ({
     }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
+  })), /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-rounded p-button-text p-button-sm p-button-warning",
+    tooltip: "Firmar documento",
+    onClick: e => {
+      e.stopPropagation();
+      onSign(rowData.id ?? '');
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-pencil-alt"
   })))
 }];

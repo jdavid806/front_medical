@@ -3,7 +3,6 @@ import { ConfigColumns } from 'datatables.net-bs5';
 import CustomDataTable from '../../components/CustomDataTable';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { TableBasicActions } from '../../components/TableBasicActions';
 import { UserRoleDto } from '../../models/models';
 import TableActionsWrapper from '../../components/table-actions/TableActionsWrapper';
 import { EditTableAction } from '../../components/table-actions/EditTableAction';

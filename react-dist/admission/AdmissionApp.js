@@ -22,9 +22,16 @@ export const AdmissionApp = () => {
   const [first, setFirst] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState(null);
-  const [filters, setFilters] = useState({
-    createdAt: [new Date(), new Date()]?.filter(date => !!date).map(date => date.toISOString().split('T')[0]).join(",")
-  });
+  const [filters, setFilters] = useState({});
+  useEffect(() => {
+    fetchAdmissions({
+      per_page: perPage,
+      page: currentPage,
+      search: search || "",
+      ...filters,
+      sort: '-createdAt'
+    });
+  }, []);
   const handlePageChange = page => {
     const calculatedPage = Math.floor(page.first / page.rows) + 1;
     setFirst(page.first);
@@ -33,7 +40,7 @@ export const AdmissionApp = () => {
     fetchAdmissions({
       per_page: page.rows,
       page: calculatedPage,
-      search: search ?? "",
+      search: search || "",
       ...filters,
       sort: '-createdAt'
     });
@@ -52,7 +59,7 @@ export const AdmissionApp = () => {
     fetchAdmissions({
       per_page: perPage,
       page: currentPage,
-      search: search,
+      search: search || "",
       ...filters,
       sort: '-createdAt'
     });
@@ -83,22 +90,23 @@ export const AdmissionApp = () => {
     }
   };
   const handleFilter = filters => {
-    setFilters({
+    const newFilters = {
       admittedBy: filters.selectedAdmittedBy,
       patientId: filters.selectedPatient,
       entityId: filters.selectedEntity,
       createdAt: filters.selectedDate?.filter(date => !!date).map(date => date.toISOString().split('T')[0]).join(",")
-    });
-  };
-  useEffect(() => {
+    };
+    setFilters(newFilters);
     fetchAdmissions({
       per_page: perPage,
-      page: currentPage,
-      search: search,
-      ...filters,
+      page: 1,
+      search: search || "",
+      ...newFilters,
       sort: '-createdAt'
     });
-  }, [filters]);
+    setCurrentPage(1);
+    setFirst(0);
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: 'self',

@@ -62,11 +62,11 @@ export const LoginApp = () => {
     }
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "app-container relative w-full h-screen overflow-hidden"
+    className: "app-container w-full h-full flex items-center justify-center overflow-hidden"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toastRef
   }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {
-    className: "relative z-10 w-full h-full flex items-center justify-center p-4"
+    className: "relative z-10 w-full h-full flex items-center justify-center"
   }, renderCurrentView()), showForgotPassword && /*#__PURE__*/React.createElement(ForgotPasswordModal, {
     visible: showForgotPassword,
     onHide: () => setShowForgotPassword(false),

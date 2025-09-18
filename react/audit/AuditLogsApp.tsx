@@ -105,8 +105,12 @@ export const AuditLogsApp: React.FC = () => {
 
     return (
         <>
-            <div className="card mb-3">
-                <div className="card-body">
+            <div
+                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                style={{ minHeight: "400px" }}
+            >
+                <div className="card-body h-100 w-100 d-flex flex-column">
+
                     <Accordion>
                         <AccordionTab header="Filtros">
                             <div className="row mb-3">
@@ -164,6 +168,7 @@ export const AuditLogsApp: React.FC = () => {
                             </div>
                         </AccordionTab>
                     </Accordion>
+
                     <CustomPRTable
                         columns={columns}
                         data={tableItems}
@@ -175,8 +180,7 @@ export const AuditLogsApp: React.FC = () => {
                         onPage={handlePageChange}
                         onSearch={handleSearchChange}
                         onReload={refresh}
-                    >
-                    </CustomPRTable>
+                    />
                 </div>
             </div>
         </>

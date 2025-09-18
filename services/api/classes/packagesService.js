@@ -8,6 +8,13 @@ export class PackagesService extends BaseApiService {
     );
   }
 
+  async updatePackages(id, data) {
+    return await this.httpClient.put(
+      `${this.microservice}/packages/${id}`,
+      data
+    );
+  }
+
   async getPackageByCie11(cie11) {
     return await this.httpClient.get(
       `${this.microservice}/packages/cie11/${cie11}`

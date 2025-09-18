@@ -2,6 +2,7 @@ import { DisabilityData } from "./DisabilityData";
 import { DisabilityTableColumn } from "./table-types";
 import React from "react";
 import { PrintTableAction } from "../../components/table-actions/PrintTableAction";
+import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction";
 import { ShareTableAction } from "../../components/table-actions/ShareTableAction";
 import { EditTableAction } from "../../components/table-actions/EditTableAction";
 import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper";
@@ -9,10 +10,11 @@ import TableActionsWrapper from "../../components/table-actions/TableActionsWrap
 interface ColumnActionsProps {
   editDisability: (id: string) => void;
   handlePrint: (id: string) => void;
+  handleDownload: (id: string) => void;
   shareDisabilityWhatsApp: (id: string) => void;
 }
 
-export const getColumns = ({ editDisability, handlePrint, shareDisabilityWhatsApp }: ColumnActionsProps): DisabilityTableColumn[] => [
+export const getColumns = ({ editDisability, handlePrint, handleDownload, shareDisabilityWhatsApp }: ColumnActionsProps): DisabilityTableColumn[] => [
   { field: "id", header: "ID" },
   { 
     field: "start_date", 
@@ -70,6 +72,9 @@ export const getColumns = ({ editDisability, handlePrint, shareDisabilityWhatsAp
         <TableActionsWrapper>
           <PrintTableAction
             onTrigger={() => handlePrint(rowData.id.toString())}
+          />
+          <DownloadTableAction
+            onTrigger={() => handleDownload(rowData.id.toString())}
           />
           <EditTableAction
             onTrigger={() => editDisability(rowData.id.toString())}

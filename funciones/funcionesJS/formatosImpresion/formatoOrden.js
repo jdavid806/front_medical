@@ -1,5 +1,5 @@
 import { infoCompanyService } from "../../../services/api/index.js";
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "./tablaDatosPaciente.js";
 import { datosUsuario } from "./datosUsuario.js";
 
@@ -9,7 +9,7 @@ async function consultarData() {
   const response = await consultarDatosEmpresa();
 
   // console.log("-------------------------------------");
-  
+
   console.log(response);
 
   let company = {
@@ -18,6 +18,8 @@ async function consultarData() {
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua,
   };
 
   console.log(company);
@@ -30,26 +32,25 @@ document.addEventListener("DOMContentLoaded", () => {
 export async function generarFormatoOrden(orden, tipo, inputId = "") {
   const patient = await consultarDatosPaciente(orden.patient_id);
   const company = await consultarData();
-const user = await consultarDatosDoctor(
-  orden.exam_result?.[0]?.created_by_user_id
-) ?? {};
-
+  const user =
+    (await consultarDatosDoctor(orden.exam_result?.[0]?.created_by_user_id)) ??
+    {};
 
   let baseUrl = window.location.origin;
-   
+
   let userData = {
-  nombre: user.nombre,
-  especialidad: user.especialidad || "",
-  registro_medico: user.registro_medico || "",
-  sello: `${baseUrl}/${getUrlImage(user?.sello || "")}`,
-  firma: `${baseUrl}/${getUrlImage(user?.firma || "")}`,
-};
+    nombre: user.nombre,
+    especialidad: user.especialidad || "",
+    registro_medico: user.registro_medico || "",
+    sello: `${baseUrl}/${getUrlImage(user?.sello || "")}`,
+    firma: `${baseUrl}/${getUrlImage(user?.firma || "")}`,
+  };
   let state = getOrdenState(orden.exam_order_state.name);
 
   const tablePatient = generarTablaPaciente(patient, {
     date: formatearFechaQuitarHora(orden.exam_result[0].created_at || "--"),
   });
- 
+
   let contenido = `
   <div class="container border rounded shadow-sm text-start">
     <h3 class="text-primary text-center" style="margin-top: 0; margin-bottom: 0;">Orden de Examen Médico</h3>
@@ -62,7 +63,7 @@ const user = await consultarDatosDoctor(
   //   <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Tipo de examen:</strong> ${orden.exam_type.name}</p></div>
   //   <div style="display: table-cell; width: 50%;"><p style="margin: 0;"><strong>Estado:</strong> ${state}</p></div>
   // </div>
-contenido += `</div>
+  contenido += `</div>
     <hr style="margin: 0.25rem 0;">
   `;
 
@@ -111,7 +112,6 @@ contenido += `</div>
   `;
 
   // console.log(company);
-  
 
-  generatePDFFromHTML(contenido, company, patient, inputId);
+  await generatePDFFromHTMLV2(contenido, company, patient, inputId);
 }

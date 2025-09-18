@@ -61,7 +61,6 @@ export const TicketTable = () => {
         acc[reason.key] = reason.label;
         return acc;
       }, {});
-      console.log("first", reasonsMap);
       setTicketReasonsBackend(reasonsMap);
     } catch (error) {
       console.error("Error al cargar ticket reasons:", error);
@@ -248,7 +247,7 @@ export const TicketTable = () => {
           data?.patient?.second_last_name ?? ""
         }`,
         TICKET: `${data?.ticket_number}`,
-        MODULO: `${data?.module?.name ?? ""}`,
+        MODULO: `${data?.module?.name ?? "Modulo no asignado"}`,
         ESPECIALISTA: `${""}`,
         CONSULTORIO: `${data?.branch?.address ?? ""}`,
       };
@@ -280,7 +279,7 @@ export const TicketTable = () => {
   );
 
   const slots = {
-    3: (cell, data: TicketTableItemDto) => (
+    4: (cell, data: TicketTableItemDto) => (
       <span
         className={`badge badge-phoenix badge-phoenix-${
           ticketStatusColors[data.status]
@@ -289,7 +288,7 @@ export const TicketTable = () => {
         {data.statusView}
       </span>
     ),
-    4: (cell, data: TicketTableItemDto) => (
+    5: (cell, data: TicketTableItemDto) => (
       <>
         <button
           className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}

@@ -151,8 +151,8 @@ export const examTypes = {
 }
 
 export const examOrderStates = {
-    'generated': 'Pendiente por cargar resultados',
-    'uploaded': 'Resultados subidos'
+    'generated': 'Pendientes',
+    'uploaded': 'Cargados'
 }
 
 export const examOrderStateColors = {
@@ -194,9 +194,9 @@ export const bloodType = {
 }
 
 export const examRecipeStatus = {
-    'pending': 'Pendiente por cargar resultados',
+    'pending': 'Pendientes',
     'canceled': 'Cancelado',
-    'uploaded': 'Resultados subidos',
+    'uploaded': 'Cargados',
 }
 
 export const examRecipeStatusColors = {

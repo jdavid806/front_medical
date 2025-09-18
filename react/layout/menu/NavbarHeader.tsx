@@ -618,7 +618,7 @@ const NavbarHeader = () => {
                 /* Estilos para desktop */
                 @media screen and (min-width: 961px) {
                     .navbar-megamenu-container {
-                        margin: 0 8rem auto;
+                        margin: 0 200pxrem auto;
                     }
                     
                     .custom-responsive-megamenu .p-menubar-root-list {

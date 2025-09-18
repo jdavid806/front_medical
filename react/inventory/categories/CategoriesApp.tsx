@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { CategoriesTable } from "./table/CategoriesTable";
 import { CategoriesFormModal } from "./modal/CategoriesFormModal";
-import { categoryProductsService } from "../../../services/api";
 import { SwalManager } from "../../../services/alertManagerImported";
 import { useCategory } from "./hooks/useCategory";
+import { categoryProductsService } from "../../../services/api";
 
 export const CategoriesApp = () => {
   const { category, setCategory, fetchCategoriesHook } = useCategory();

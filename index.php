@@ -1,16 +1,3 @@
-<?php
-
-try {
-  include __DIR__ . "/funciones/funciones.php";
-  include __DIR__ . "/funciones/globals.php";
-} catch (\Throwable $th) {
-  echo $th->getMessage();
-  die();
-}
-
-$_SESSION["ID"] = 1;
-?>
-
 <!DOCTYPE html>
 <html lang="es" dir="ltr" data-navigation-type="default" data-navbar-horizontal-shape="default"
   class="chrome windows fontawesome-i2svg-active fontawesome-i2svg-complete navbar-vertical-collapsed">
@@ -167,6 +154,38 @@ $_SESSION["ID"] = 1;
       position: relative;
       z-index: 2;
     }
+
+    /* ESTILOS NUEVOS PARA CENTRAR EL LOGIN */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #top {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container-small {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    #LoginApp {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 
   <!-- SWEET ALERT -->
@@ -240,7 +259,7 @@ $_SESSION["ID"] = 1;
   </style>
 </head>
 
-<body>
+<body style="height: 100vh; overflow: hidden;">
   <!-- Contenedor para las partículas -->
   <div id="particles-js-container">
     <div id="particles-js"></div>
@@ -330,6 +349,7 @@ $_SESSION["ID"] = 1;
       "primereact/menubar" : "https://esm.sh/primereact/menubar?dev",
       "primereact/avatar" : "https://esm.sh/primereact/avatar?dev",
       "primereact/inputotp" : "https://esm.sh/primereact/inputotp?dev",
+      "primereact/galleria" : "https://esm.sh/primereact/galleria?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
       "react-dom/server": "https://esm.sh/react-dom/server?dev"
@@ -337,10 +357,10 @@ $_SESSION["ID"] = 1;
   }
 </script>
 
-  <main class="main" id="top">
-    <div class="content">
+  <main class="main" id="top" style="height: 100%;">
+    <div class="content" style="height: 100%;">
       <div class="container-small">
-        <div id="LoginApp"></div>
+        <div id="LoginApp" style="height: 100%;"></div>
       </div>
     </div>
 
@@ -447,8 +467,6 @@ $_SESSION["ID"] = 1;
       import {
         LoginApp
       } from './react-dist/login/LoginApp.js';
-
-      const appointmentFormModalRef = React.createRef();
 
       document.addEventListener('DOMContentLoaded', function() {
         const rootElement = document.getElementById('LoginApp');

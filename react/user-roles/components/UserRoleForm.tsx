@@ -8,6 +8,7 @@ import { PrimeReactProvider } from 'primereact/api';
 interface Menu {
     key_: string;
     name: string;
+    id: number;
 }
 
 interface PermissionCategory {
@@ -31,13 +32,13 @@ export interface UserRoleFormInputs {
     group: string;
     permissions: string[];
     menus: string[];
+    menuIds: number[];
 }
 
 const roleGroupOptions = [
     { label: 'Médico', value: 'DOCTOR' },
     { label: 'Administrativo', value: 'ADMIN' },
     { label: 'Asistente médico', value: 'DOCTOR_ASSISTANT' },
-    // { label: 'Indeterminado', value: 'INDETERMINATE' }
 ];
 
 export const UserRoleForm: React.FC<UserRoleFormProps> = ({
@@ -56,7 +57,8 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
     const onSubmit: SubmitHandler<UserRoleFormInputs> = (data) => {
         const submissionData: UserRoleFormInputs = {
             ...data,
-            menus: selectedMenus,
+            menus: selectedMenusKeys,
+            menuIds: selectedMenuIds,
             permissions: selectedPermissions
         };
         onHandleSubmit(submissionData)
@@ -64,15 +66,17 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
 
     const [menus, setMenus] = useState<Menu[]>([]);
     const [permissionCategories, setPermissionCategories] = useState<PermissionCategory[]>([]);
-    const [selectedMenus, setSelectedMenus] = useState<string[]>([]);
+    const [selectedMenusKeys, setSelectedMenusKeys] = useState<string[]>([]);
+    const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const menusData: Menu[] = await menuService.getAll();
-                const permissionsData: PermissionCategory[] = await permissionService.getAll();
                 setMenus(menusData);
+
+                const permissionsData: PermissionCategory[] = await permissionService.getAll();
                 setPermissionCategories(permissionsData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -84,23 +88,30 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
     useEffect(() => {
         if (initialData) {
             reset(initialData);
-            setSelectedMenus(initialData.menus);
-            setSelectedPermissions(initialData.permissions);
+            setSelectedMenusKeys(initialData.menus || []);
+            setSelectedMenuIds(initialData.menuIds || []);
+            setSelectedPermissions(initialData.permissions || []);
         } else {
             reset({
                 name: '',
                 group: '',
                 permissions: [],
-                menus: []
+                menus: [],
+                menuIds: []
             });
-            setSelectedMenus([]);
+            setSelectedMenusKeys([]);
+            setSelectedMenuIds([]);
             setSelectedPermissions([]);
         }
     }, [initialData, reset]);
 
-    const handleMenuChange = (menuKey: string, checked: boolean) => {
-        setSelectedMenus(prev =>
+    const handleMenuChange = (menuKey: string, menuId: number, checked: boolean) => {
+        setSelectedMenusKeys(prev =>
             checked ? [...prev, menuKey] : prev.filter(key => key !== menuKey)
+        );
+
+        setSelectedMenuIds(prev =>
+            checked ? [...prev, menuId] : prev.filter(id => id !== menuId)
         );
     };
 
@@ -157,8 +168,8 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
                                             className="form-check-input"
                                             type="checkbox"
                                             id={menu.key_}
-                                            checked={selectedMenus.includes(menu.key_)}
-                                            onChange={(e) => handleMenuChange(menu.key_, e.target.checked)}
+                                            checked={selectedMenusKeys.includes(menu.key_)}
+                                            onChange={(e) => handleMenuChange(menu.key_, menu.id, e.target.checked)}
                                         />
                                         <label className="form-check-label" htmlFor={menu.key_}>
                                             {menu.name}

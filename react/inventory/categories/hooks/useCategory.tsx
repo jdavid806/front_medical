@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { categoryProductsService } from "../../../../services/api";
 import { ErrorHandler } from "../../../../services/errorHandler";
+import { categoryProductsService } from "../../../../services/api";
 
 export const useCategory = () => {
   const [category, setCategory] = useState<any>(null);

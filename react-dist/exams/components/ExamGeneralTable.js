@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { examOrderStateColors, examOrderStates } from "../../../services/commons.js";
-import { formatDate, formatWhatsAppMessage, getIndicativeByCountry, ordenarPorFecha } from "../../../services/utilidades.js";
-import { examOrderService } from "../../../services/api/index.js";
+import { formatDate } from "../../../services/utilidades.js";
+import { examOrderService, userService } from "../../../services/api/index.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js"; // PrimeReact imports
 import { Badge } from "primereact/badge";
@@ -10,8 +10,6 @@ import { Button } from "primereact/button";
 import { TabView, TabPanel } from "primereact/tabview";
 import { CustomPRTable } from "../../components/CustomPRTable.js";
 import { CustomModal } from "../../components/CustomModal.js";
-import { useMassMessaging } from "../../hooks/useMassMessaging.js";
-import { useTemplate } from "../../hooks/useTemplate.js";
 export const ExamGeneralTable = ({
   exams,
   onLoadExamResults,
@@ -25,53 +23,29 @@ export const ExamGeneralTable = ({
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-  const tenant = window.location.hostname.split(".")[0];
-  const data = {
-    tenantId: tenant,
-    belongsTo: "examenes-compartir",
-    type: "whatsapp"
-  };
-  const {
-    template,
-    setTemplate,
-    fetchTemplate
-  } = useTemplate(data);
-  const {
-    sendMessage: sendMessageWpp,
-    responseMsg,
-    loading: loadingMessage,
-    error
-  } = useMassMessaging();
-  const sendMessageWppRef = useRef(sendMessageWpp);
-  const fetchTemplateRef = useRef(fetchTemplate);
-  useEffect(() => {
-    sendMessageWppRef.current = sendMessageWpp;
-  }, [sendMessageWpp]);
-  useEffect(() => {
-    fetchTemplateRef.current = fetchTemplate;
-  }, [fetchTemplate]);
   useEffect(() => {
     const mappedExams = exams.map(exam => {
       return {
         id: exam.id,
-        examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(", ") : exam.exam_type?.name) || "--",
-        status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? "--",
-        statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? "--",
+        examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(', ') : exam.exam_type?.name) || '--',
+        status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+        statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
         minioId: exam.minio_id,
         patientId: exam.patient_id,
-        patientName: `${exam.patient.first_name || ""} ${exam.patient.middle_name || ""} ${exam.patient?.last_name || ""} ${exam.patient?.second_last_name || ""}`.trim(),
+        patientName: `${exam.patient.first_name || ''} ${exam.patient.middle_name || ''} ${exam.patient?.last_name || ''} ${exam.patient?.second_last_name || ''}`.trim(),
         appointmentId: exam.appointment_id,
-        state: exam.exam_order_state?.name || "pending",
+        state: exam.exam_order_state?.name || 'pending',
         created_at: exam.created_at,
         dateTime: formatDate(exam.created_at),
         original: exam
       };
     });
-    ordenarPorFecha(mappedExams, "created_at");
-    setTableExams(mappedExams);
-    // Separar exámenes por estado
-    setUploadedExams(mappedExams.filter(exam => exam.state === "uploaded"));
-    setPendingExams(mappedExams.filter(exam => exam.state === "generated" || exam.state === "pending"));
+    const sortedExams = [...mappedExams].sort((a, b) => {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+    setTableExams(sortedExams);
+    setUploadedExams(sortedExams.filter(exam => exam.state === "uploaded"));
+    setPendingExams(sortedExams.filter(exam => exam.state === "generated" || exam.state === "pending"));
   }, [exams]);
   const onUploadExamsFile = examOrderId => {
     setSelectedOrderId(examOrderId);
@@ -81,14 +55,8 @@ export const ExamGeneralTable = ({
     try {
       //@ts-ignore
       const enviarPDf = await guardarArchivoExamen("inputPdf", selectedOrderId);
-      const dataUpload = {
-        minio_url: enviarPDf
-      };
       if (enviarPDf !== undefined) {
-        const responseUpdate = await examOrderService.updateMinioFile(selectedOrderId, dataUpload);
-        if (responseUpdate.success) {
-          sendMessageWhatsapp(responseUpdate.data);
-        }
+        await examOrderService.updateMinioFile(selectedOrderId, enviarPDf);
         SwalManager.success({
           text: "Resultados guardados exitosamente"
         });
@@ -104,72 +72,6 @@ export const ExamGeneralTable = ({
       onReload();
     }
   };
-  async function generatePdfFile(exam) {
-    if (exam.minio_url) {
-      //@ts-ignore
-      const url = await getUrlImage(exam.minio_url, true);
-      return {
-        file_url: url,
-        model_type: "xxxxxxx",
-        model_id: 0,
-        id: 0
-      };
-    } else {
-      //@ts-ignore
-      await generarFormato("Examen", exam, "Impresion", "examInput");
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          let fileInput = document.getElementById("pdf-input-hidden-to-examInput");
-          let file = fileInput?.files[0];
-          if (!file) {
-            resolve(null);
-            return;
-          }
-          let formData = new FormData();
-          formData.append("file", file);
-          formData.append("model_type", "App\\Models\\exam");
-          formData.append("model_id", exam.id);
-          //@ts-ignore
-          guardarArchivo(formData, true).then(async response => {
-            resolve({
-              file_url: await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true),
-              model_type: response.file.model_type,
-              model_id: response.file.model_id,
-              id: response.file.id
-            });
-          }).catch(reject);
-        }, 1000);
-      });
-    }
-  }
-  const sendMessageWhatsapp = useCallback(async exam => {
-    const templateExam = await fetchTemplateRef.current();
-    const dataToFile = await generatePdfFile(exam);
-    const replacements = {
-      NOMBRE_PACIENTE: `${exam.patient.first_name ?? ""} ${exam.patient.middle_name ?? ""} ${exam.patient.last_name ?? ""} ${exam.patient.second_last_name ?? ""}`,
-      NOMBRE_EXAMEN: `${exam.examName}`,
-      FECHA_EXAMEN: `${exam.dateTime}`,
-      "ENLACE DOCUMENTO": ""
-    };
-    const templateFormatted = formatWhatsAppMessage(templateExam.template, replacements);
-    const dataMessage = {
-      channel: "whatsapp",
-      recipients: [getIndicativeByCountry(exam.patient.country_id) + exam.patient.whatsapp],
-      message_type: "media",
-      message: templateFormatted,
-      attachment_url: dataToFile.file_url,
-      attachment_type: "document",
-      minio_model_type: dataToFile?.model_type,
-      minio_model_id: dataToFile?.model_id,
-      minio_id: dataToFile?.id,
-      webhook_url: "https://example.com/webhook"
-    };
-    await sendMessageWppRef.current(dataMessage);
-    SwalManager.success({
-      text: "Mensaje enviado correctamente",
-      title: "Éxito"
-    });
-  }, [sendMessageWpp, fetchTemplate]);
 
   // Columnas para la tabla
   const columns = [{
@@ -187,14 +89,14 @@ export const ExamGeneralTable = ({
       const color = examOrderStateColors[data.state] || "secondary";
       const text = examOrderStates[data.state] || "SIN ESTADO";
       const severityMap = {
-        success: "success",
-        warning: "warning",
-        danger: "danger",
-        info: "info",
-        primary: "secondary",
-        secondary: "secondary"
+        'success': 'success',
+        'warning': 'warning',
+        'danger': 'danger',
+        'info': 'info',
+        'primary': 'secondary',
+        'secondary': 'secondary'
       };
-      const severity = severityMap[color] || "secondary";
+      const severity = severityMap[color] || 'secondary';
       return /*#__PURE__*/React.createElement(Badge, {
         value: text,
         severity: severity,
@@ -214,9 +116,9 @@ export const ExamGeneralTable = ({
       onViewExamResults: onViewExamResults,
       onUploadExamsFile: onUploadExamsFile,
       onPrint: async () => {
-        if (data.original.minio_url) {
+        if (data.minioId) {
           //@ts-ignore
-          const url = await getUrlImage(data.original.minio_url);
+          const url = await getFileUrl(data.minioId);
           window.open(url, "_blank");
         } else {
           //@ts-ignore
@@ -243,7 +145,9 @@ export const ExamGeneralTable = ({
         }
       },
       onShare: async () => {
-        sendMessageWhatsapp(data.original);
+        const user = await userService.getLoggedUser();
+        //@ts-ignore
+        enviarDocumento(data.id, "Descarga", "Examen", "Completa", data.patientId, user.id, "Orden de examen");
       }
     })
   }];
@@ -252,7 +156,7 @@ export const ExamGeneralTable = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement(TabView, null, /*#__PURE__*/React.createElement(TabPanel, {
-    header: "Resultados subidos"
+    header: "Resultados Cargados"
   }, /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: uploadedExams,
@@ -302,8 +206,6 @@ export const ExamGeneralTable = ({
     type: "application/pdf"
   }) : /*#__PURE__*/React.createElement("p", null, "Por favor, seleccione un archivo PDF.")));
 };
-
-// Componente de menú de acciones
 const TableActionsMenu = ({
   data,
   onLoadExamResults,
@@ -316,52 +218,66 @@ const TableActionsMenu = ({
   const menu = useRef(null);
   const items = [...(data.state === "generated" ? [{
     label: "Realizar examen",
-    icon: "pi pi-stethoscope",
-    command: e => {
-      e.originalEvent?.stopPropagation();
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-check ml-4"
+    }),
+    command: () => {
       onLoadExamResults(data);
-    }
-  }, {
-    label: "Subir examen",
-    icon: "pi pi-file-pdf",
-    command: e => {
-      e.originalEvent?.stopPropagation();
-      onUploadExamsFile(data.id);
-    }
-  }] : []), ...(data.state === "uploaded" ? [{
-    label: "Visualizar resultados",
-    icon: "pi pi-eye",
-    command: e => {
-      e.originalEvent?.stopPropagation();
-      onViewExamResults(data, data.original.minio_url);
-    }
-  }, {
-    label: "Imprimir",
-    icon: "pi pi-print",
-    command: e => {
-      e.originalEvent?.stopPropagation();
-      onPrint();
-    }
-  }, {
-    label: "Descargar",
-    icon: "pi pi-download",
-    command: e => {
-      e.originalEvent?.stopPropagation();
-      onDownload();
+      menu.current?.hide();
     }
   }, {
     separator: true
   }, {
-    label: "Compartir",
-    icon: "pi pi-share-alt",
-    items: [{
-      label: "WhatsApp",
-      icon: "pi pi-whatsapp",
-      command: e => {
-        e.originalEvent?.stopPropagation();
-        onShare();
-      }
-    }]
+    label: "Subir examen",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-arrow-up ml-4"
+    }),
+    command: () => {
+      onUploadExamsFile(data.id);
+      menu.current?.hide();
+    }
+  }] : []), ...(data.state === "uploaded" ? [{
+    label: "Visualizar resultados",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-eye"
+    }),
+    command: () => {
+      onViewExamResults(data, data.minioId);
+      menu.current?.hide();
+    }
+  }, {
+    separator: true
+  }, {
+    label: "Imprimir",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-print"
+    }),
+    command: () => {
+      onPrint();
+      menu.current?.hide();
+    }
+  }, {
+    separator: true
+  }, {
+    label: "Descargar",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-download "
+    }),
+    command: () => {
+      onDownload();
+      menu.current?.hide();
+    }
+  }, {
+    separator: true
+  }, {
+    label: "WhatsApp",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-share"
+    }),
+    command: () => {
+      onShare();
+      menu.current?.hide();
+    }
   }] : [])];
   const handleMenuHide = () => {};
   return /*#__PURE__*/React.createElement("div", {
@@ -380,6 +296,6 @@ const TableActionsMenu = ({
     ref: menu,
     id: `popup_menu_${data.id}`,
     onHide: handleMenuHide,
-    appendTo: typeof document !== "undefined" ? document.body : undefined
+    appendTo: typeof document !== 'undefined' ? document.body : undefined
   }));
 };

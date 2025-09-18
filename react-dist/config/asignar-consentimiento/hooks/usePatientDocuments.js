@@ -1,23 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { patientService } from '../../../../services/api/index.js';
-// Mock de documentos para desarrollo - reemplazar con servicio real
-const mockDocuments = [{
-  id: '1',
-  fecha: '2024-01-15',
-  titulo: 'Consentimiento Informado - Cirugía',
-  motivo: 'Procedimiento quirúrgico programado',
-  patient_id: '1',
-  created_at: '2024-01-15T10:00:00Z',
-  updated_at: '2024-01-15T10:00:00Z'
-}, {
-  id: '2',
-  fecha: '2024-01-10',
-  titulo: 'Consentimiento para Tratamiento',
-  motivo: 'Tratamiento médico especializado',
-  patient_id: '1',
-  created_at: '2024-01-10T14:30:00Z',
-  updated_at: '2024-01-10T14:30:00Z'
-}];
+import { useState, useEffect, useCallback } from "react";
+import { patientService, templateService } from "../../../../services/api/index.js";
 export const usePatientDocuments = initialPatientId => {
   const [state, setState] = useState({
     documents: [],
@@ -26,27 +8,30 @@ export const usePatientDocuments = initialPatientId => {
     error: null
   });
   const [patientId, setPatientId] = useState(initialPatientId);
+  const mapTemplate = doc => ({
+    id: String(doc.id),
+    titulo: doc.title,
+    motivo: doc.description,
+    fecha: doc.created_at,
+    firmado: doc.status_signature === 1,
+    firma: doc.image_signature,
+    contenido: typeof doc.data === "string" ? doc.data : doc.data?.contenido || "",
+    patient_id: doc.patient_id,
+    created_at: doc.created_at,
+    updated_at: doc.updated_at ?? doc.created_at
+  });
   const fetchPatientData = async id => {
     try {
       const patient = await patientService.get(id);
       setState(prev => ({
         ...prev,
-        patient: {
-          id: patient.id,
-          first_name: patient.first_name,
-          last_name: patient.last_name,
-          document_number: patient.document_number,
-          date_of_birth: patient.date_of_birth,
-          city_id: patient.city_id,
-          phone: patient.phone,
-          email: patient.email
-        }
+        patient
       }));
     } catch (error) {
-      console.error('Error fetching patient data:', error);
+      console.error("Error fetching patient data:", error);
       setState(prev => ({
         ...prev,
-        error: 'Error al cargar los datos del paciente'
+        error: "Error al cargar los datos del paciente"
       }));
     }
   };
@@ -57,33 +42,79 @@ export const usePatientDocuments = initialPatientId => {
       error: null
     }));
     try {
-      // TODO: Reemplazar con llamada real a la API
-      // const response = await documentService.getByPatientId(id);
-
-      // Simulación de datos por ahora
-      const filteredDocuments = mockDocuments.filter(doc => doc.patient_id === id);
+      const response = await templateService.getByPatientId(id);
+      console.log("response documents", response);
+      const mappedDocs = response.data.map(mapTemplate);
       setState(prev => ({
         ...prev,
-        documents: filteredDocuments,
+        documents: mappedDocs,
         loading: false
       }));
     } catch (error) {
+      console.error("Error fetching documents:", error);
       setState(prev => ({
         ...prev,
         documents: [],
         loading: false,
-        error: error instanceof Error ? error.message : 'Error al cargar los documentos'
+        error: "Error al cargar los documentos"
       }));
     }
+  };
+  const createTemplate = async formData => {
+    const payload = {
+      template_document_id: formData.documentId,
+      title: formData.title,
+      description: formData.description,
+      data: formData.data,
+      tenant_id: formData.tenantId,
+      patient_id: patientId,
+      doctor_id: formData.doctorId,
+      status_signature: formData.statusSignature ?? 0
+    };
+    const res = await templateService.storeTemplateDocument(payload);
+    const newDoc = mapTemplate(res.data);
+    setState(prev => ({
+      ...prev,
+      documents: [...prev.documents, newDoc]
+    }));
+    await fetchDocuments(patientId);
+    return newDoc;
+  };
+  const updateTemplate = async (id, formData) => {
+    const payload = {
+      template_document_id: formData.documentId,
+      title: formData.title,
+      description: formData.description,
+      data: formData.data,
+      tenant_id: formData.tenantId,
+      patient_id: patientId,
+      doctor_id: formData.doctorId,
+      status_signature: formData.statusSignature ?? 0,
+      image_signature: formData.imageSignature ?? null
+    };
+    const res = await templateService.updateTemplate(id, payload);
+    const updatedDoc = mapTemplate(res.data);
+    setState(prev => ({
+      ...prev,
+      documents: prev.documents.map(doc => doc.id === id ? updatedDoc : doc)
+    }));
+    await fetchDocuments(patientId);
+    return updatedDoc;
+  };
+  const deleteTemplate = async id => {
+    await templateService.deleteTemplate(id);
+    setState(prev => ({
+      ...prev,
+      documents: prev.documents.filter(doc => doc.id !== id)
+    }));
+    await fetchDocuments(patientId);
   };
   const fetchData = useCallback(async () => {
     if (!patientId) return;
     await Promise.all([fetchPatientData(patientId), fetchDocuments(patientId)]);
   }, [patientId]);
   useEffect(() => {
-    if (patientId) {
-      fetchData();
-    }
+    if (patientId) fetchData();
   }, [fetchData]);
   return {
     ...state,
@@ -96,7 +127,10 @@ export const usePatientDocuments = initialPatientId => {
         patient: null,
         error: null
       }));
-    }
+    },
+    createTemplate,
+    updateTemplate,
+    deleteTemplate
   };
 };
 export default usePatientDocuments;

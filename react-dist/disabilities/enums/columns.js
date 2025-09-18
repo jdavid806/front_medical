@@ -1,11 +1,13 @@
 import React from "react";
 import { PrintTableAction } from "../../components/table-actions/PrintTableAction.js";
+import { DownloadTableAction } from "../../components/table-actions/DownloadTableAction.js";
 import { ShareTableAction } from "../../components/table-actions/ShareTableAction.js";
 import { EditTableAction } from "../../components/table-actions/EditTableAction.js";
 import TableActionsWrapper from "../../components/table-actions/TableActionsWrapper.js";
 export const getColumns = ({
   editDisability,
   handlePrint,
+  handleDownload,
   shareDisabilityWhatsApp
 }) => [{
   field: "id",
@@ -53,6 +55,8 @@ export const getColumns = ({
   header: "Acciones",
   body: rowData => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement(PrintTableAction, {
     onTrigger: () => handlePrint(rowData.id.toString())
+  }), /*#__PURE__*/React.createElement(DownloadTableAction, {
+    onTrigger: () => handleDownload(rowData.id.toString())
   }), /*#__PURE__*/React.createElement(EditTableAction, {
     onTrigger: () => editDisability(rowData.id.toString())
   }), /*#__PURE__*/React.createElement(ShareTableAction, {

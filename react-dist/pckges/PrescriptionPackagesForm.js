@@ -1,5 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
@@ -16,9 +16,9 @@ import { Tab } from "../components/tabs/Tab.js";
 import { ExamForm } from "../exams/components/ExamForm.js";
 import { remissionsForm as RemissionsForm } from "../remissions/RemissionsForm.js";
 import { addDaysToDate } from "../../services/utilidades.js";
-export const PrescriptionPackagesForm = props => {
+import { PrescriptionPackagesMapper } from "./mappers.js";
+export const PrescriptionPackagesForm = /*#__PURE__*/forwardRef((props, ref) => {
   const {
-    formId,
     packageId
   } = props;
   const {
@@ -34,14 +34,16 @@ export const PrescriptionPackagesForm = props => {
   } = useSpecialty();
   const {
     control,
-    handleSubmit,
     setValue,
+    getValues,
     reset
   } = useForm({
     defaultValues: {
       name: '',
       description: '',
-      relatedTo: 'cie11'
+      relatedTo: 'cie11',
+      cie11: null,
+      cups: null
     }
   });
   const [activeTab, setActiveTab] = useState(null);
@@ -77,6 +79,24 @@ export const PrescriptionPackagesForm = props => {
     key: "referral",
     label: "Remisión"
   }];
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return PrescriptionPackagesMapper.toFormDataFromFormInputs({
+        formInputs: getValues(),
+        exams: examsActive ? examFormRef.current?.getFormData() || [] : [],
+        prescriptions: prescriptionsActive ? prescriptionFormRef.current?.getFormData() || [] : [],
+        referrals: remissionsActive ? remissionFormRef.current?.getFormData() || null : null,
+        disabilities: disabilitiesActive ? disabilityFormRef.current?.getFormData() || null : null
+      });
+    },
+    resetForm: () => {
+      reset();
+      examFormRef.current?.resetForm();
+      disabilityFormRef.current?.resetForm();
+      prescriptionFormRef.current?.resetForm();
+      remissionFormRef.current?.resetForm();
+    }
+  }));
   useEffect(() => {
     if (packageId) {
       fetchClinicalPackage(packageId);
@@ -87,11 +107,13 @@ export const PrescriptionPackagesForm = props => {
       setValue('name', clinicalPackage.name);
       setValue('description', clinicalPackage.description);
       setValue('relatedTo', clinicalPackage.cie11 ? 'cie11' : 'cups');
+      setValue('cie11', clinicalPackage.cie11);
+      setValue('cups', clinicalPackage.cups);
+      setCie11Code(clinicalPackage.cie11);
       onPackageChange();
     }
   }, [clinicalPackage]);
   const onPackageChange = () => {
-    console.log(clinicalPackage);
     setExamsActive(false);
     setDisabilitiesActive(false);
     setRemissionsActive(false);
@@ -102,7 +124,6 @@ export const PrescriptionPackagesForm = props => {
     setInitialPrescriptionData(undefined);
     const packageExamTypes = clinicalPackage.package_items.filter(item => item.item_type == "App\\Models\\Examen");
     const packageExamTypeIds = packageExamTypes.map(item => `${item.item_id}`);
-    console.log(packageExamTypeIds);
     if (packageExamTypeIds.length > 0) {
       setExamsActive(true);
       setInitialSelectedExamTypes(packageExamTypeIds);
@@ -177,13 +198,7 @@ export const PrescriptionPackagesForm = props => {
         return false;
     }
   };
-  const onSubmit = data => {
-    console.log(data);
-  };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
-    id: formId,
-    onSubmit: handleSubmit(onSubmit)
-  }, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "name",
@@ -247,7 +262,10 @@ export const PrescriptionPackagesForm = props => {
     inputClassName: "w-100",
     className: "w-100",
     value: cie11Code,
-    onChange: e => setCie11Code(e.value),
+    onChange: e => {
+      setCie11Code(e.value);
+      setValue('cie11', e.value?.codigo || null);
+    },
     forceSelection: false,
     showEmptyMessage: true,
     emptyMessage: "No se encontraron c\xF3digos CIE-11",
@@ -267,13 +285,13 @@ export const PrescriptionPackagesForm = props => {
       width: "300px",
       minWidth: "300px"
     }
-  }, tabs.map(tab => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Tab, {
+  }, tabs.map(tab => /*#__PURE__*/React.createElement(Tab, {
     key: tab.key,
     tab: tab,
     activeTab: activeTab,
     onActiveTabChange: activeTab => setActiveTab(activeTab),
     showCheckIcon: shouldShowCheckIcon(tab.key)
-  })))), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "p-3 flex-grow-1"
   }, /*#__PURE__*/React.createElement("div", {
     className: activeTab === "examinations" ? "d-block" : "d-none"
@@ -350,5 +368,5 @@ export const PrescriptionPackagesForm = props => {
   }, /*#__PURE__*/React.createElement(RemissionsForm, {
     ref: remissionFormRef,
     initialData: initialRemissionData
-  }))))))));
-};
+  })))))));
+});

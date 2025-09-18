@@ -11,6 +11,8 @@ export interface DocumentoConsentimiento {
   patient_id?: string;
   created_at?: string;
   updated_at?: string;
+  contenido?: string;
+  firma?: string | null;
 }
 
 // Interface para la respuesta de la API
@@ -48,4 +50,11 @@ export interface DocumentActionsProps {
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+}
+
+export interface UploadResponse {
+  file_url: string;
+  model_type: string;
+  model_id: string;
+  id: string;
 }

@@ -1,14 +1,13 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { usePageTimer } from "./hooks/usePageTimer.js";
 export const TimerApp = /*#__PURE__*/forwardRef(({
-  autoStart = true,
   onTimeUpdate
 }, ref) => {
   const {
     elapsedTime,
     reset,
     start
-  } = usePageTimer(autoStart);
+  } = usePageTimer();
   useEffect(() => {
     if (onTimeUpdate) {
       onTimeUpdate(elapsedTime);

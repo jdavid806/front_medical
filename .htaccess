@@ -258,7 +258,7 @@ RewriteRule ^ajustesInventario$  Inventario/ajustesInventarios.php
 RewriteRule ^brandsProducts$  Inventario/brandsProducts.php
 RewriteRule ^categoriesProducts$  Inventario/categoriesProducts.php
 
-RewriteRule ^paquetes$  Paquetes/verPaquetes.php
+RewriteRule ^paquetes$  Paquetes/prescriptionPackagesApp.php
 
 RewriteRule ^solicitarInsumos$  Inventario/solicitudInsumos.php
 
@@ -331,7 +331,7 @@ RewriteRule ^cardEspecialidades$ Configuracion/homeConfig/cardEspecialidades.php
 RewriteRule ^cardMotivoConsulta$ Configuracion/homeConfig/cardMotivoConsulta.php
 RewriteRule ^cardHorarios$ Configuracion/homeConfig/cardHorarios.php
 RewriteRule ^cardUsers$ Configuracion/homeConfig/cardUsers.php
-RewriteRule ^cardRoles$ Configuracion/homeConfig/cardRoles.php
+RewriteRule ^cardRoles$ ConfiguralogsAuditoriacion/homeConfig/cardRoles.php
 RewriteRule ^cardAusencias$ Configuracion/homeConfig/cardAusencias.php
 RewriteRule ^configUsuarios$ Configuracion/homeConfig/configUsuarios.php
 RewriteRule ^configImportaciones$ Configuracion/homeConfig/configImportaciones.php
@@ -377,4 +377,6 @@ RewriteRule ^arbolContableTest$ Contabilidad/arbolContableTest.php
 RewriteRule ^solicitarInsumosTest$ Farmacia/reactTest/solicitarInsumosTest.php
 RewriteRule ^seePatientInfoButtonTest$ Pacientes/seePatientInfoButtonTest.php
 RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
+RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
+
 

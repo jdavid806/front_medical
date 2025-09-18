@@ -54,7 +54,7 @@
     </div>
     <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
         <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center" id=""><img src="/logo_monaros_sinbg_light.png" alt="phoenix"
+            <div class="d-flex align-items-center" id=""><img src="assets/img/logos/FullColor.svg" alt="phoenix"
                     width="125" />
 
             </div>

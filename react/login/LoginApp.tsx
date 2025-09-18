@@ -6,7 +6,6 @@ import { ForgotPasswordModal } from './modal/ForgotPasswordModal'
 import { LoginForm } from './form/LoginForm'
 
 export const LoginApp: React.FC = () => {
-
     console.log("Holaaa Renderizo");
     const [currentView, setCurrentView] = useState<string>('login')
     const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false)
@@ -29,7 +28,6 @@ export const LoginApp: React.FC = () => {
             setCurrentView('changePassword')
         }
     }, [])
-
 
     const handleLogin = async (credentials: { username: string; password: string }) => {
         const result = await login(credentials)
@@ -74,11 +72,11 @@ export const LoginApp: React.FC = () => {
     }
 
     return (
-        <div className="app-container relative w-full h-screen overflow-hidden">
+        <div className="app-container w-full h-full flex items-center justify-center overflow-hidden">
             <Toast ref={toastRef} />
             <ConfirmDialog />
 
-            <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+            <div className="relative z-10 w-full h-full flex items-center justify-center">
                 {renderCurrentView()}
             </div>
 

@@ -88,7 +88,7 @@ export const ExamRecipesApp = () => {
     });
   };
   async function generatePdfFile(prescription) {
-    if (prescription.result.result_minio_url) {
+    if (prescription?.result?.result_minio_url) {
       //@ts-ignore
       const url = await getUrlImage(prescription.result.result_minio_url, true);
       return {
@@ -263,7 +263,7 @@ const TableActionsMenu = ({
 }) => {
   const menu = useRef(null);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const items = [...(rowData.status === "uploaded" ? [{
+  const items = [{
     label: "Visualizar resultados",
     icon: "pi pi-eye",
     command: () => {
@@ -275,7 +275,7 @@ const TableActionsMenu = ({
     command: () => {
       onPrint();
     }
-  }, {
+  }, ...(rowData.status === "uploaded" ? [{
     label: "Descargar",
     icon: "pi pi-download",
     command: () => {

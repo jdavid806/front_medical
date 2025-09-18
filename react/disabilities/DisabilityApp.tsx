@@ -46,11 +46,8 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
   }, [sendMessageWpp]);
 
   useEffect(() => {
-    console.log('ioiopipoiopipoiopipoipoipoopppo', data);
     if (data.length > 0) {
       const element = document.getElementById('nombre-paciente');
-      console.log('element', element);
-      console.log('data', data[0].user.first_name + ' ' + data[0].user.last_name);
       if (element) {
         element.textContent = data[0].user.first_name + ' ' + data[0].user.last_name;
       }
@@ -71,7 +68,6 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
 
   const editDisability = async (id: string) => {
     try {
-      console.log('Editando discapacidad:', id);
 
       // Buscar la incapacidad en los datos actuales
       const disabilityToEdit = data.find(disability => disability.id.toString() === id);
@@ -181,7 +177,19 @@ const DisabilityApp: React.FC<DisabilityAppProps> = ({ patientId }) => {
     generarFormato("Incapacidad", disability, "Impresion")
   };
 
-  const columns = getColumns({ editDisability, handlePrint, shareDisabilityWhatsApp })
+  const handleDownload = (id: string) => {
+    if (!data || data.length === 0) {
+      SwalManager.error({
+        title: "Sin datos",
+        text: "No hay incapacidades para imprimir",
+      });
+      return;
+    }
+    const disability = data.find((disability: DisabilityData) => disability.id.toString() === id);
+    generarFormato("Incapacidad", disability, "Descarga")
+  };
+
+  const columns = getColumns({ editDisability, handlePrint, handleDownload, shareDisabilityWhatsApp })
 
   if (!patientId) {
     return (

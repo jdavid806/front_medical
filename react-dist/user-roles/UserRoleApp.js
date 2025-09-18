@@ -8,6 +8,7 @@ import { useUserRoleCreate } from "./hooks/useUserRoleCreate.js";
 import { useRoles } from "./hooks/useUserRoles.js";
 import { UserRoleTable } from "./components/UserRoleTable.js";
 import { UserRoleFormModal } from "./components/UserRoleFormModal.js";
+import { useUserRoleMenus } from "./hooks/useUserRoleMenus.js";
 export const UserRoleApp = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -29,19 +30,36 @@ export const UserRoleApp = () => {
     fetchUserRole,
     setUserRole
   } = useUserRole();
+  const {
+    saveRoleMenus
+  } = useUserRoleMenus();
   const onCreate = () => {
     setInitialData(undefined);
     setShowFormModal(true);
   };
   const handleSubmit = async data => {
-    if (userRole) {
-      await updateUserRole(userRole.id, data);
+    try {
+      let roleId;
+      if (userRole) {
+        // Actualizar rol existente
+        await updateUserRole(userRole.id, data);
+        roleId = userRole.id;
+      } else {
+        // Crear nuevo rol
+        const newRole = await createUserRole(data);
+        roleId = newRole.id;
+      }
+
+      // Guardar menús usando el mismo endpoint para crear/actualizar
+      if (data.menuIds && data.menuIds.length > 0) {
+        await saveRoleMenus(roleId, data.menuIds);
+      }
+      fetchUserRoles();
+      setShowFormModal(false);
       setUserRole(null);
-    } else {
-      await createUserRole(data);
+    } catch (error) {
+      console.error('Error al guardar rol:', error);
     }
-    fetchUserRoles();
-    setShowFormModal(false);
   };
   const handleTableEdit = id => {
     fetchUserRole(id);
@@ -56,7 +74,8 @@ export const UserRoleApp = () => {
       name: userRole?.name || '',
       group: userRole?.group || '',
       permissions: userRole?.permissions.map(permission => permission.key) || [],
-      menus: userRole?.menus.map(menu => menu.key) || []
+      menus: userRole?.menus.map(menu => menu.key) || [],
+      menuIds: userRole?.menus.map(menu => menu.id) || []
     });
   }, [userRole]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {

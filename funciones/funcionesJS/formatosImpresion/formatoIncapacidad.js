@@ -36,6 +36,7 @@ export async function generarFormatoIncapacidad(
   tipo,
   inputId = ""
 ) {
+
   const tablePatient = generarTablaPaciente(patientData, {
     date: formatearFechaQuitarHora(incapacidad.created_at || "--"),
   });
@@ -52,12 +53,8 @@ export async function generarFormatoIncapacidad(
     nombre: userName,
     especialidad: incapacidad.user?.user_specialty_name || "",
     registro_medico: incapacidad.user?.clinical_record || "",
-    sello:
-      `https://dev.monaros.co/` +
-      getUrlImage(incapacidad.user?.image_minio_url || ""),
-    firma:
-      `https://dev.monaros.co/` +
-      getUrlImage(incapacidad.user?.firma_minio_url || ""),
+    sello: await getUrlImage(incapacidad.user?.image_minio_url, true),
+    firma: await getUrlImage(incapacidad.user?.firma_minio_url, true),
   };
 
   let contenido = `

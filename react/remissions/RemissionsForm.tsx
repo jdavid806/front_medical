@@ -83,6 +83,12 @@ export const remissionsForm: React.FC<RemissionsFormProps> = forwardRef(
           note: note,
         };
       },
+      resetForm: () => {
+        setSelectedUser(null)
+        setSelectedUserSpecialty(null)
+        setChecked(false)
+        setNote("")
+      }
     }));
 
     const fetchClinicalRecords = async () => {

@@ -72,6 +72,14 @@ const PrescriptionForm = /*#__PURE__*/forwardRef(({
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return addedMedications;
+    },
+    resetForm: () => {
+      reset();
+      setFormData([{
+        ...initialMedicine
+      }]);
+      setSelectedMedicine(null);
+      setManualEntry(false);
     }
   }));
   const medicationType = watch("medication_type");

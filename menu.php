@@ -204,7 +204,7 @@ $_SESSION["ID"] = 1;
     }
 
     * {
-    font-family: 'Grift', sans-serif !important;
+      font-family: 'Grift', sans-serif !important;
     }
 
     h1,
@@ -376,7 +376,8 @@ $_SESSION["ID"] = 1;
       "primereact/inputotp" : "https://esm.sh/primereact/avatar?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
-      "react-dom/server": "https://esm.sh/react-dom/server?dev"
+      "react-dom/server": "https://esm.sh/react-dom/server?dev",
+      "primereact/splitter" : "https://esm.sh/primereact/splitter?dev"
     }
   }
 </script>

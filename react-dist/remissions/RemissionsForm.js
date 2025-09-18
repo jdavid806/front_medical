@@ -55,6 +55,12 @@ export const remissionsForm = /*#__PURE__*/forwardRef(({
         receiver_user_specialty_id: checked ? selectedUserSpecialty : null,
         note: note
       };
+    },
+    resetForm: () => {
+      setSelectedUser(null);
+      setSelectedUserSpecialty(null);
+      setChecked(false);
+      setNote("");
     }
   }));
   const fetchClinicalRecords = async () => {

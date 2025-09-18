@@ -524,3 +524,43 @@ export function addDaysToDate(date, days) {
     newDate.setDate(newDate.getDate() + days);
     return newDate;
 }
+
+export function formatTimeByMilliseconds(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+        hours: String(hours).padStart(2, '0'),
+        minutes: String(minutes).padStart(2, '0'),
+        seconds: String(seconds).padStart(2, '0'),
+        totalMs: milliseconds,
+        totalSeconds
+    };
+};
+
+// Generar una clave única para localStorage basada en la URL
+export const generateURLStorageKey = (baseKey) => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    return `pageTimer_${baseKey}_${btoa(url)}`;
+};
+
+export const generateUUID = () => {
+    let uuid = '';
+    const hexDigits = '0123456789abcdef';
+
+    for (let i = 0; i < 36; i++) {
+        if (i === 8 || i === 13 || i === 18 || i === 23) {
+            uuid += '-';
+        } else if (i === 14) {
+            uuid += '4';
+        } else if (i === 19) {
+            uuid += hexDigits[(Math.random() * 4 | 0 + 8)];
+        } else {
+            uuid += hexDigits[Math.random() * 16 | 0];
+        }
+    }
+
+    return uuid;
+};

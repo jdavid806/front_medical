@@ -122,7 +122,14 @@ export const ClinicalRecordsPendingCancellation = () => {
       title: "Resolver solicitud"
     })))
   }];
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CustomPRTable, {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: mappedClinicalRecords,
     lazy: true,
@@ -133,7 +140,7 @@ export const ClinicalRecordsPendingCancellation = () => {
     onPage: handlePageChange,
     onSearch: handleSearchChange,
     onReload: refresh
-  }), /*#__PURE__*/React.createElement(CustomModal, {
+  }))), /*#__PURE__*/React.createElement(CustomModal, {
     show: showResolveRequestModal,
     onHide: () => setShowResolveRequestModal(false),
     title: "Resolver solicitud"

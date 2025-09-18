@@ -34,8 +34,8 @@ export const PatientConsultationList = () => {
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [showPdfModal, setShowPdfModal] = useState(false);
 
-    const [pdfFile, setPdfFile] = useState<File | null>(null); // Para almacenar el archivo PDF
-    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null); // Para la previsualización del PDF
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const userLogged = getUserLogged();
 
     const itemsPerPage = 8;
@@ -53,12 +53,10 @@ export const PatientConsultationList = () => {
 
     const appointmentStatesRef = useRef(appointmentStates);
 
-    // Actualizar la referencia cuando appointmentStates cambie
     useEffect(() => {
         appointmentStatesRef.current = appointmentStates;
     }, [appointmentStates]);
 
-    // Obtener pacientes desde la API
     const fetchPatients = useCallback(async (page = 1) => {
         setLoading(true);
         try {
@@ -81,53 +79,46 @@ export const PatientConsultationList = () => {
         }
     }, []);
 
-    // Procesar pacientes (similar a la función PHP)
     const procesarPacientes = (pacientes) => {
         const hoy = new Date().toISOString().split('T')[0];
 
-        return pacientes
-            .map(paciente => {
-                const primeraCita = getPatientNextAppointment(paciente);
-                const estado = primeraCita ? primeraCita.appointment_state.name : null;
+        const citasDeHoy = pacientes.flatMap(paciente => {
+            return paciente.appointments
+                .filter(cita => cita.appointment_date === hoy)
+                .map(cita => {
+                    const estado = cita.appointment_state.name;
+                    const esFinalizadaOCancelada = estado === 'consultation_completed' || estado === 'cancelled';
 
-                const citaHoy = paciente.appointments.find(c => c.appointment_date === hoy);
-                const esFinalizadaOCancelada = citaHoy &&
-                    (citaHoy.appointment_state.name === 'consultation_completed' ||
-                        citaHoy.appointment_state.name === 'cancelled');
+                    return {
+                        paciente: paciente,
+                        cita: cita,
+                        estado: estado,
+                        _esFinalizadaOCancelada: esFinalizadaOCancelada,
+                        _fechaHoraCita: new Date(`${cita.appointment_date}T${cita.appointment_time}`),
+                        fullName: `${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`
+                    };
+                });
+        });
 
-                return {
-                    ...paciente,
-                    estado,
-                    primeraCita,
-                    _esFinalizadaOCancelada: esFinalizadaOCancelada,
-                    _fechaHoraPrimeraCita: primeraCita ?
-                        new Date(`${primeraCita.appointment_date}T${primeraCita.appointment_time}`) : new Date(0),
-                    fullName: `${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`
-                };
-            })
-            .sort((a, b) => {
-                if (a._esFinalizadaOCancelada && !b._esFinalizadaOCancelada) return 1;
-                if (!a._esFinalizadaOCancelada && b._esFinalizadaOCancelada) return -1;
-                return a._fechaHoraPrimeraCita - b._fechaHoraPrimeraCita;
-            })
-            .map(({ _esFinalizadaOCancelada, _fechaHoraPrimeraCita, ...paciente }) => paciente);
+        return citasDeHoy.sort((a, b) => {
+            if (a._esFinalizadaOCancelada && !b._esFinalizadaOCancelada) return 1;
+            if (!a._esFinalizadaOCancelada && b._esFinalizadaOCancelada) return -1;
+            return a._fechaHoraCita - b._fechaHoraCita;
+        });
     };
 
-    // Filtrar pacientes
     const filterPatients = useCallback(() => {
-        console.log('Filtrando pacientes...', patients, searchText, statusFilter);
-        const filtered = patients.filter(paciente => {
+        const filtered = patients.filter(citaData => {
             let isMatch = true;
+            const paciente = citaData.paciente;
 
-            // Filtro de búsqueda por nombre o documento
             if (searchText &&
                 !paciente.fullName?.toLowerCase().includes(searchText.toLowerCase()) &&
                 !paciente.document_number.includes(searchText)) {
                 isMatch = false;
             }
 
-            // Filtro por status
-            if (statusFilter && paciente.estado !== statusFilter && statusFilter !== 'all') {
+            if (statusFilter && citaData.estado !== statusFilter && statusFilter !== 'all') {
                 isMatch = false;
             }
 
@@ -137,17 +128,14 @@ export const PatientConsultationList = () => {
         setFilteredPatients(filtered);
     }, [patients, searchText, statusFilter]);
 
-    // Efecto para aplicar filtros
     useEffect(() => {
         filterPatients();
     }, [filterPatients]);
 
-    // Efecto inicial para cargar pacientes
     useEffect(() => {
         fetchPatients(1);
     }, [fetchPatients]);
 
-    // Inicializar Pusher y configuración
     useEffect(() => {
         // @ts-ignore
         const pusher = new Pusher('5e57937071269859a439', {
@@ -157,19 +145,15 @@ export const PatientConsultationList = () => {
         const hostname = window.location.hostname.split('.')[0];
         const channel = pusher.subscribe('waiting-room.' + hostname);
 
-        // Configurar event listeners
         channel.bind('appointment.created', (data: any) => {
-            console.log('Appointment created:', data);
             handleAppointmentCreated(data);
         });
 
         channel.bind('appointment.state.updated', (data: any) => {
-            console.log('Appointment state updated:', data);
             handleAppointmentStateUpdated(data);
         });
 
         channel.bind('appointment.inactivated', (data: any) => {
-            console.log('Appointment inactivated:', data);
             handleAppointmentInactivated(data);
         });
 
@@ -201,80 +185,80 @@ export const PatientConsultationList = () => {
         asyncScope();
 
         return () => {
-            channel.unbind_all(); // Eliminar todos los listeners
-            channel.unsubscribe(); // Desuscribirse del canal
-            pusher.disconnect(); // Desconectar Pusher
+            channel.unbind_all();
+            channel.unsubscribe();
+            pusher.disconnect();
         };
     }, []);
 
-    // Manejadores de eventos de Pusher
     const handleAppointmentCreated = (data: any) => {
         setPatients(prevPatients => {
-            const updatedPatients = prevPatients.map(paciente => {
-                if (paciente.id === data.appointment.patient_id) {
-                    return {
-                        ...paciente,
-                        appointments: [...paciente.appointments, data.appointment]
-                    };
-                }
-                return paciente;
-            });
+            const pacienteExistenteIndex = prevPatients.findIndex(p => p.paciente.id === data.appointment.patient_id);
 
-            const processedPatients = procesarPacientes(updatedPatients);
-            return processedPatients;
+            if (pacienteExistenteIndex !== -1) {
+                const pacienteExistente = prevPatients[pacienteExistenteIndex];
+                const hoy = new Date().toISOString().split('T')[0];
+
+                if (data.appointment.appointment_date === hoy) {
+                    const nuevaCita = {
+                        paciente: pacienteExistente.paciente,
+                        cita: data.appointment,
+                        estado: data.appointment.appointment_state.name,
+                        _esFinalizadaOCancelada: false,
+                        _fechaHoraCita: new Date(`${data.appointment.appointment_date}T${data.appointment.appointment_time}`),
+                        fullName: pacienteExistente.fullName
+                    };
+
+                    const updatedPatients = [...prevPatients];
+                    updatedPatients.push(nuevaCita);
+                    return updatedPatients;
+                }
+            }
+
+            return prevPatients;
         });
     };
 
     const handleAppointmentStateUpdated = (data: any) => {
-        console.log('Appointment states: ', appointmentStatesRef.current);
         setPatients(prevPatients => {
-            const updatedPatients = prevPatients.map(paciente => {
-                const updatedAppointments = paciente.appointments.map(cita => {
-                    if (cita.id === data.appointmentId) {
-                        return {
-                            ...cita,
-                            appointment_state: appointmentStatesRef.current.find(state => state.id === data.newState)
-                        };
-                    }
-                    return cita;
-                });
-
-                return {
-                    ...paciente,
-                    appointments: updatedAppointments
-                };
+            return prevPatients.map(citaData => {
+                if (citaData.cita.id === data.appointmentId) {
+                    const nuevoEstado = appointmentStatesRef.current.find(state => state.id === data.newState);
+                    return {
+                        ...citaData,
+                        cita: {
+                            ...citaData.cita,
+                            appointment_state: nuevoEstado
+                        },
+                        estado: nuevoEstado.name,
+                        _esFinalizadaOCancelada: nuevoEstado.name === 'consultation_completed' || nuevoEstado.name === 'cancelled'
+                    };
+                }
+                return citaData;
             });
-
-            const processedPatients = procesarPacientes(updatedPatients);
-            return processedPatients;
         });
     };
 
     const handleAppointmentInactivated = (data: any) => {
         setPatients(prevPatients => {
-            const updatedPatients = prevPatients.map(paciente => {
-                const updatedAppointments = paciente.appointments.map(cita => {
-                    if (cita.id === data.appointmentId) {
-                        return {
-                            ...cita,
-                            appointment_state: appointmentStatesRef.current.find(state => state.name === 'cancelled')
-                        };
-                    }
-                    return cita;
-                });
-
-                return {
-                    ...paciente,
-                    appointments: updatedAppointments
-                };
+            return prevPatients.map(citaData => {
+                if (citaData.cita.id === data.appointmentId) {
+                    const estadoCancelado = appointmentStatesRef.current.find(state => state.name === 'cancelled');
+                    return {
+                        ...citaData,
+                        cita: {
+                            ...citaData.cita,
+                            appointment_state: estadoCancelado
+                        },
+                        estado: 'cancelled',
+                        _esFinalizadaOCancelada: true
+                    };
+                }
+                return citaData;
             });
-
-            const processedPatients = procesarPacientes(updatedPatients);
-            return processedPatients;
         });
     };
 
-    // Calcular edad
     const calculateAge = (dateOfBirth) => {
         const birthDate = new Date(dateOfBirth);
         const currentDate = new Date();
@@ -288,7 +272,6 @@ export const PatientConsultationList = () => {
         return age;
     };
 
-    // Cambiar página
     const onPageChange = (event) => {
         const newPage = event.page + 1;
         fetchPatients(newPage);
@@ -323,7 +306,6 @@ export const PatientConsultationList = () => {
         messaging?.sendMessage(dataMessage).then(() => { });
     }
 
-    // Llamar paciente
     const llamarPaciente = async (patientId, appointmentId) => {
         //@ts-ignore
         Swal.fire({
@@ -380,7 +362,6 @@ export const PatientConsultationList = () => {
             //@ts-ignore
             const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
 
-            // Acceder a la PromiseResult
             if (enviarPDf !== undefined) {
                 const dataUpdate = {
                     minio_url: enviarPDf,
@@ -407,7 +388,6 @@ export const PatientConsultationList = () => {
         } catch (error) {
             console.error("Error al guardar el archivo:", error);
         } finally {
-            // Limpiar el estado después de la operación
             setShowPdfModal(false);
             setPdfFile(null);
             setPdfPreviewUrl(null);
@@ -430,6 +410,33 @@ export const PatientConsultationList = () => {
         fetchPatients();
     };
 
+    // Función para traducir estados al español
+    const traducirEstado = (estado) => {
+        const traducciones = {
+            'pending': 'Pendiente',
+            'pending_consultation': 'En espera',
+            'called': 'Llamado',
+            'in_consultation': 'En proceso',
+            'consultation_completed': 'Finalizada',
+            'cancelled': 'Cancelada',
+            'Sin estado': 'Sin estado'
+        };
+        return traducciones[estado] || estado;
+    };
+
+    // Función auxiliar para obtener el color según el estado
+    const obtenerColorEstado = (estado) => {
+        const colores = {
+            'pending': 'warning',
+            'pending_consultation': 'info',
+            'called': 'primary',
+            'in_consultation': 'success',
+            'consultation_completed': 'secondary',
+            'cancelled': 'danger'
+        };
+        return colores[estado] || 'secondary';
+    };
+
     // Renderizar tarjetas de pacientes
     const renderPatientCards = () => {
         if (loading) {
@@ -440,23 +447,21 @@ export const PatientConsultationList = () => {
             return <div className="text-center py-5">No se encontraron pacientes</div>;
         }
 
-        const pacientesReestructurados = reestructurarPacientes(filteredPatients);
-
-        console.log("pacientesReestructurados", pacientesReestructurados);
-
         return (
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                {pacientesReestructurados.map(paciente => {
-
-                    const estadoActual = paciente.appointment_state?.estadoActual || 'Sin estado';
-                    const estadoColor = paciente.appointment_state?.colorEstado || 'secondary';
+                {filteredPatients.map((citaData, index) => {
+                    const paciente = citaData.paciente;
+                    const cita = citaData.cita;
+                    const estadoActual = cita.appointment_state?.name || citaData.estado || 'Sin estado';
+                    const estadoTraducido = traducirEstado(estadoActual);
+                    const estadoColor = obtenerColorEstado(estadoActual);
 
                     return (
-                        <div key={paciente.id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
+                        <div key={`${paciente.id}-${cita.id}-${index}`} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
                             <div className="card card-paciente">
                                 <div className="card-body">
                                     <Badge
-                                        value={estadoActual}
+                                        value={estadoTraducido}
                                         className={`badge-phoenix badge-phoenix-${estadoColor} fs-10 mb-3`}
                                     />
 
@@ -483,7 +488,7 @@ export const PatientConsultationList = () => {
                                                 <p className="fw-bold mb-0">Fecha</p>
                                             </div>
                                             <p className="text-body-emphasis mb-3">
-                                                {paciente.cita?.appointment_date || "Fecha no disponible"}
+                                                {cita.appointment_date || "Fecha no disponible"}
                                             </p>
                                         </div>
 
@@ -493,7 +498,7 @@ export const PatientConsultationList = () => {
                                                 <p className="fw-bold mb-0">Hora</p>
                                             </div>
                                             <p className="text-body-emphasis">
-                                                {paciente.cita?.appointment_time || "Hora no disponible"}
+                                                {cita.appointment_time || "Hora no disponible"}
                                             </p>
                                         </div>
 
@@ -518,27 +523,29 @@ export const PatientConsultationList = () => {
                                             onClick={() => window.location.href = `verPaciente?id=${paciente.id}`}
                                         />
 
-                                        <Button
-                                            label="Llamar paciente"
-                                            className="btn-sm btn btn-primary"
-                                            onClick={() => llamarPaciente(paciente.id, paciente.cita?.id)}
-                                        />
+                                        {(estadoActual === "pending_consultation" && (
+                                            <Button
+                                                label="Llamar paciente"
+                                                className="btn-sm btn btn-primary"
+                                                onClick={() => llamarPaciente(paciente.id, cita.id)}
+                                            />
+                                        ))}
 
-                                        {(paciente.appointment_state?.stateKey === "pending_consultation" ||
-                                            paciente.appointment_state?.stateKey === "called" ||
-                                            paciente.appointment_state?.stateKey === "in_consultation") &&
-                                            paciente.appointment_state?.attention_type === "CONSULTATION" &&
+                                        {(estadoActual === "pending_consultation" ||
+                                            estadoActual === "called" ||
+                                            estadoActual === "in_consultation") &&
+                                            cita.attention_type === "CONSULTATION" &&
                                             (
                                                 <Button
                                                     label="Realizar Consulta"
                                                     className="btn-sm btn btn-primary mb-2"
-                                                    onClick={() => handleMakeClinicalRecord(paciente.id, paciente.cita?.id)}
+                                                    onClick={() => handleMakeClinicalRecord(paciente.id, cita.id)}
                                                 />
                                             )}
-                                        {(paciente.appointment_state?.stateKey === "pending_consultation" ||
-                                            paciente.appointment_state?.stateKey === "called" ||
-                                            paciente.appointment_state?.stateKey === "in_consultation") &&
-                                            paciente.appointment_state?.attention_type === "PROCEDURE" &&
+                                        {(estadoActual === "pending_consultation" ||
+                                            estadoActual === "called" ||
+                                            estadoActual === "in_consultation") &&
+                                            cita.attention_type === "PROCEDURE" &&
                                             (
                                                 <>
                                                     <Button
@@ -546,9 +553,9 @@ export const PatientConsultationList = () => {
                                                         className="btn-sm btn btn-primary"
                                                         onClick={() => {
                                                             handleLoadExamResults(
-                                                                paciente.cita.id,
+                                                                cita.id,
                                                                 paciente.id,
-                                                                paciente.cita.product_id
+                                                                cita.product_id
                                                             );
                                                         }}
                                                     />
@@ -556,11 +563,9 @@ export const PatientConsultationList = () => {
                                                         label="Subir Examen"
                                                         className="btn-sm btn btn-primary"
                                                         onClick={() => {
-                                                            console.log("paciente.cita?.exam_orders", paciente.cita?.exam_orders);
-
-                                                            setSelectedAppointment(paciente.cita);
-                                                            setSelectedAppointmentId(paciente.cita?.id);
-                                                            setSelectedExamOrder(paciente.cita?.exam_orders[0]);
+                                                            setSelectedAppointment(cita);
+                                                            setSelectedAppointmentId(cita.id);
+                                                            setSelectedExamOrder(cita.exam_orders[0]);
                                                             setShowPdfModal(true);
                                                         }}
                                                     />

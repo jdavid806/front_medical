@@ -59,7 +59,6 @@ export const TicketTable = () => {
           acc[reason.key] = reason.label;
           return acc;
         }, {});
-        console.log("first", reasonsMap);
         setTicketReasonsBackend(reasonsMap);
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
@@ -189,7 +188,7 @@ export const TicketTable = () => {
     const replacements = {
       NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""} ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""}`,
       TICKET: `${data?.ticket_number}`,
-      MODULO: `${data?.module?.name ?? ""}`,
+      MODULO: `${data?.module?.name ?? "Modulo no asignado"}`,
       ESPECIALISTA: `${""}`,
       CONSULTORIO: `${data?.branch?.address ?? ""}`
     };
@@ -209,10 +208,10 @@ export const TicketTable = () => {
     }
   }, [sendMessageTickets]);
   const slots = {
-    3: (cell, data) => /*#__PURE__*/React.createElement("span", {
+    4: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
     }, data.statusView),
-    4: (cell, data) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    5: (cell, data) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
       className: `btn btn-primary ${data.step === 1 ? "" : "d-none"}`,
       onClick: () => callTicket(data)
     }, /*#__PURE__*/React.createElement("i", {

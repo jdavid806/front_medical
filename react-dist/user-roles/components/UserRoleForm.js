@@ -14,9 +14,7 @@ const roleGroupOptions = [{
 }, {
   label: 'Asistente médico',
   value: 'DOCTOR_ASSISTANT'
-}
-// { label: 'Indeterminado', value: 'INDETERMINATE' }
-];
+}];
 export const UserRoleForm = ({
   formId,
   onHandleSubmit,
@@ -34,21 +32,23 @@ export const UserRoleForm = ({
   const onSubmit = data => {
     const submissionData = {
       ...data,
-      menus: selectedMenus,
+      menus: selectedMenusKeys,
+      menuIds: selectedMenuIds,
       permissions: selectedPermissions
     };
     onHandleSubmit(submissionData);
   };
   const [menus, setMenus] = useState([]);
   const [permissionCategories, setPermissionCategories] = useState([]);
-  const [selectedMenus, setSelectedMenus] = useState([]);
+  const [selectedMenusKeys, setSelectedMenusKeys] = useState([]);
+  const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const menusData = await menuService.getAll();
-        const permissionsData = await permissionService.getAll();
         setMenus(menusData);
+        const permissionsData = await permissionService.getAll();
         setPermissionCategories(permissionsData);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -59,21 +59,25 @@ export const UserRoleForm = ({
   useEffect(() => {
     if (initialData) {
       reset(initialData);
-      setSelectedMenus(initialData.menus);
-      setSelectedPermissions(initialData.permissions);
+      setSelectedMenusKeys(initialData.menus || []);
+      setSelectedMenuIds(initialData.menuIds || []);
+      setSelectedPermissions(initialData.permissions || []);
     } else {
       reset({
         name: '',
         group: '',
         permissions: [],
-        menus: []
+        menus: [],
+        menuIds: []
       });
-      setSelectedMenus([]);
+      setSelectedMenusKeys([]);
+      setSelectedMenuIds([]);
       setSelectedPermissions([]);
     }
   }, [initialData, reset]);
-  const handleMenuChange = (menuKey, checked) => {
-    setSelectedMenus(prev => checked ? [...prev, menuKey] : prev.filter(key => key !== menuKey));
+  const handleMenuChange = (menuKey, menuId, checked) => {
+    setSelectedMenusKeys(prev => checked ? [...prev, menuKey] : prev.filter(key => key !== menuKey));
+    setSelectedMenuIds(prev => checked ? [...prev, menuId] : prev.filter(id => id !== menuId));
   };
   const handlePermissionChange = (permissionKey, checked) => {
     setSelectedPermissions(prev => checked ? [...prev, permissionKey] : prev.filter(key => key !== permissionKey));
@@ -139,8 +143,8 @@ export const UserRoleForm = ({
     className: "form-check-input",
     type: "checkbox",
     id: menu.key_,
-    checked: selectedMenus.includes(menu.key_),
-    onChange: e => handleMenuChange(menu.key_, e.target.checked)
+    checked: selectedMenusKeys.includes(menu.key_),
+    onChange: e => handleMenuChange(menu.key_, menu.id, e.target.checked)
   }), /*#__PURE__*/React.createElement("label", {
     className: "form-check-label",
     htmlFor: menu.key_

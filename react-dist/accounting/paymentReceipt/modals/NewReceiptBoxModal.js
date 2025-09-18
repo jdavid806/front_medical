@@ -11,8 +11,6 @@ import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
 import { Calendar } from "primereact/calendar";
 import { useCentresCosts } from "../../../centres-cost/hooks/useCentresCosts.js";
-import { Card } from "primereact/card";
-import { formatDate } from "../../../../services/utilidades.js";
 const mapFormDataToPayload = formData => {
   const getUserIdFromLocalStorage = () => {
     try {
@@ -33,6 +31,15 @@ const mapFormDataToPayload = formData => {
     }
   };
   const userId = getUserIdFromLocalStorage();
+  let purchase_order_id = null;
+  const invoices = formData.type !== "purchase-order" && formData.type !== "sale-order" ? [{
+    invoice_id: Number(formData.id),
+    // Asumiendo que númeroFactura es el ID real
+    applied_amount: formData.valorPagado
+  }] : [];
+  if (formData.type === "purchase-order" || formData.type === "sale-order") {
+    purchase_order_id = Number(formData.id);
+  }
   return {
     type: formData.tipo.toLowerCase(),
     // "ingreso" o "egreso"
@@ -69,11 +76,8 @@ const mapFormDataToPayload = formData => {
       account_number: "",
       notes: ""
     }],
-    invoices: [{
-      invoice_id: Number(formData.id),
-      // Asumiendo que númeroFactura es el ID real
-      applied_amount: formData.valorPagado
-    }]
+    invoices: invoices,
+    purchase_order_id: purchase_order_id
   };
 };
 export const NewReceiptBoxModal = ({
@@ -512,58 +516,7 @@ export const NewReceiptBoxModal = ({
     rows: 3,
     className: "w-100",
     placeholder: "Detalles adicionales..."
-  }))), isShowInputs && /*#__PURE__*/React.createElement(Card, {
-    className: "w-100 h-100 summary-card mb-3",
-    title: "Informaci\xF3n adicional"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "summary-grid"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "summary-row"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "summary-label"
-  }, "Monto total:"), /*#__PURE__*/React.createElement("span", {
-    className: "summary-value"
-  }, formData.total_amount?.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "summary-row"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "summary-label"
-  }, "Descuento:"), /*#__PURE__*/React.createElement("span", {
-    className: "summary-value"
-  }, formData.discount?.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "summary-row"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "summary-label"
-  }, "Impuestos:"), /*#__PURE__*/React.createElement("span", {
-    className: "summary-value"
-  }, formData.iva?.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "summary-row"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "summary-label"
-  }, "Cantidad total:"), /*#__PURE__*/React.createElement("span", {
-    className: "summary-value"
-  }, formData.quantity_total?.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "summary-row"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "summary-label"
-  }, "Fecha de vencimiento:"), /*#__PURE__*/React.createElement("span", {
-    className: "summary-value"
-  }, formatDate(formData.due_date?.toLocaleDateString("es-ES"), true))))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center gap-3"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",

@@ -7,8 +7,6 @@ import { CustomFormModal } from '../components/CustomFormModal';
 import { MakeRequestForm, MakeRequestFormInputs } from '../general-request/components/MakeRequestForm';
 import { SwalManager } from '../../services/alertManagerImported';
 
-
-
 export const AdmissionApp: React.FC = () => {
 
     const { admissions, fetchAdmissions, loading, totalRecords } = useAdmissions();
@@ -21,12 +19,17 @@ export const AdmissionApp: React.FC = () => {
     const [first, setFirst] = useState(0);
     const [perPage, setPerPage] = useState(10);
     const [search, setSearch] = useState<string | null>(null);
-    const [filters, setFilters] = useState<any>({
-        createdAt: [new Date(), new Date()]
-            ?.filter(date => !!date)
-            .map(date => date.toISOString().split('T')[0])
-            .join(",")
-    });
+    const [filters, setFilters] = useState<any>({}); 
+
+    useEffect(() => {
+        fetchAdmissions({
+            per_page: perPage,
+            page: currentPage,
+            search: search || "",
+            ...filters,
+            sort: '-createdAt'
+        });
+    }, []);
 
     const handlePageChange = (page) => {
         const calculatedPage = Math.floor(page.first / page.rows) + 1
@@ -36,14 +39,13 @@ export const AdmissionApp: React.FC = () => {
         fetchAdmissions({
             per_page: page.rows,
             page: calculatedPage,
-            search: search ?? "",
+            search: search || "",
             ...filters,
             sort: '-createdAt'
         });
     };
 
     const handleSearchChange = (_search: string) => {
-
         setSearch(_search);
         fetchAdmissions({
             per_page: perPage,
@@ -58,7 +60,7 @@ export const AdmissionApp: React.FC = () => {
         fetchAdmissions({
             per_page: perPage,
             page: currentPage,
-            search: search,
+            search: search || "",
             ...filters,
             sort: '-createdAt'
         });
@@ -92,7 +94,7 @@ export const AdmissionApp: React.FC = () => {
     };
 
     const handleFilter = (filters: AdmissionTableFilters) => {
-        setFilters({
+        const newFilters = {
             admittedBy: filters.selectedAdmittedBy,
             patientId: filters.selectedPatient,
             entityId: filters.selectedEntity,
@@ -100,18 +102,23 @@ export const AdmissionApp: React.FC = () => {
                 ?.filter(date => !!date)
                 .map(date => date.toISOString().split('T')[0])
                 .join(",")
-        });
-    };
+        };
 
-    useEffect(() => {
+        setFilters(newFilters);
+
         fetchAdmissions({
             per_page: perPage,
-            page: currentPage,
-            search: search,
-            ...filters,
+            page: 1,
+            search: search || "",
+            ...newFilters,
             sort: '-createdAt'
         });
-    }, [filters]);
+
+        setCurrentPage(1);
+        setFirst(0);
+    };
+
+
 
     return (
         <>

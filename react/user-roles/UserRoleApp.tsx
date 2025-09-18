@@ -9,9 +9,9 @@ import { useUserRoleCreate } from './hooks/useUserRoleCreate';
 import { useRoles } from './hooks/useUserRoles';
 import { UserRoleTable } from './components/UserRoleTable';
 import { UserRoleFormModal } from './components/UserRoleFormModal';
+import { useUserRoleMenus } from './hooks/useUserRoleMenus';
 
 export const UserRoleApp = () => {
-
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserRoleFormInputs | undefined>(undefined)
 
@@ -20,6 +20,7 @@ export const UserRoleApp = () => {
     const { updateUserRole } = useUserRoleUpdate();
     const { deleteUserRole } = useUserRoleDelete();
     const { userRole, fetchUserRole, setUserRole } = useUserRole();
+    const { saveRoleMenus } = useUserRoleMenus();
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -27,14 +28,30 @@ export const UserRoleApp = () => {
     }
 
     const handleSubmit = async (data: UserRoleFormInputs) => {
-        if (userRole) {
-            await updateUserRole(userRole.id, data)
-            setUserRole(null)
-        } else {
-            await createUserRole(data)
+        try {
+            let roleId;
+
+            if (userRole) {
+                // Actualizar rol existente
+                await updateUserRole(userRole.id, data);
+                roleId = userRole.id;
+            } else {
+                // Crear nuevo rol
+                const newRole = await createUserRole(data);
+                roleId = newRole.id;
+            }
+
+            // Guardar menús usando el mismo endpoint para crear/actualizar
+            if (data.menuIds && data.menuIds.length > 0) {
+                await saveRoleMenus(roleId, data.menuIds);
+            }
+
+            fetchUserRoles();
+            setShowFormModal(false);
+            setUserRole(null);
+        } catch (error) {
+            console.error('Error al guardar rol:', error);
         }
-        fetchUserRoles()
-        setShowFormModal(false)
     };
 
     const handleTableEdit = (id: string) => {
@@ -52,7 +69,8 @@ export const UserRoleApp = () => {
             name: userRole?.name || '',
             group: userRole?.group || '',
             permissions: userRole?.permissions.map(permission => permission.key) || [],
-            menus: userRole?.menus.map(menu => menu.key) || []
+            menus: userRole?.menus.map(menu => menu.key) || [],
+            menuIds: userRole?.menus.map(menu => menu.id) || []
         })
     }, [userRole])
 

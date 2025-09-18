@@ -22,6 +22,11 @@ export const ExamForm = /*#__PURE__*/forwardRef(({
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return selectedExamTypes;
+    },
+    resetForm: () => {
+      setSelectedExamTypes([]);
+      setSelectedExamType('');
+      setShowExamForm(false);
     }
   }));
   useEffect(() => {

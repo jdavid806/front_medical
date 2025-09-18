@@ -25,6 +25,11 @@ export const ExamForm = forwardRef(({ initialSelectedExamTypes }: ExamFormProps,
     useImperativeHandle(ref, () => ({
         getFormData: () => {
             return selectedExamTypes
+        },
+        resetForm: () => {
+            setSelectedExamTypes([])
+            setSelectedExamType('')
+            setShowExamForm(false)
         }
     }));
 

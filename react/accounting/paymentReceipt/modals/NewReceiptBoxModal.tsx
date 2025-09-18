@@ -45,6 +45,21 @@ const mapFormDataToPayload = (formData: FormData) => {
   };
 
   const userId = getUserIdFromLocalStorage();
+  let purchase_order_id = null;
+  const invoices =
+    formData.type !== "purchase-order" && formData.type !== "sale-order"
+      ? [
+          {
+            invoice_id: Number(formData.id), // Asumiendo que númeroFactura es el ID real
+            applied_amount: formData.valorPagado,
+          },
+        ]
+      : [];
+
+      if(formData.type === "purchase-order" || formData.type === "sale-order"){
+        purchase_order_id = Number(formData.id)
+      }
+
   return {
     type: formData.tipo.toLowerCase(), // "ingreso" o "egreso"
     action: formData.realizarUn,
@@ -81,12 +96,8 @@ const mapFormDataToPayload = (formData: FormData) => {
         notes: "",
       },
     ],
-    invoices: [
-      {
-        invoice_id: Number(formData.id), // Asumiendo que númeroFactura es el ID real
-        applied_amount: formData.valorPagado,
-      },
-    ],
+    invoices: invoices,
+    purchase_order_id: purchase_order_id
   };
 };
 
@@ -559,7 +570,7 @@ export const NewReceiptBoxModal: React.FC<NewReceiptBoxModalProps> = ({
           </div>
         </div>
 
-        {isShowInputs && (
+        {/* {isShowInputs && (
           <Card
             className="w-100 h-100 summary-card mb-3"
             title="Información adicional"
@@ -620,7 +631,7 @@ export const NewReceiptBoxModal: React.FC<NewReceiptBoxModalProps> = ({
               </div>
             </div>
           </Card>
-        )}
+        )} */}
 
         {/* Botones de acción */}
         <div className="d-flex justify-content-center gap-3">

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { BrandTable } from "./table/BrandTable";
 import { BrandFormModal } from "./modal/BrandFormModal";
-import { brandService } from "../../../services/api";
 import { SwalManager } from "../../../services/alertManagerImported";
 import { useBrand } from "./hooks/useBrand";
+import { brandService } from "../../../services/api";
 
 export const BrandsApp = () => {
   const { brand, setBrand, fetchBrandsHook } = useBrand();
@@ -64,7 +64,7 @@ export const BrandsApp = () => {
   async function fetchBrands() {
     try {
       const response = await brandService.getAll();
-        setBrands(response.data);
+      setBrands(response.data);
     } catch (error) {
       console.error("Error fetching brands: ", error);
     }

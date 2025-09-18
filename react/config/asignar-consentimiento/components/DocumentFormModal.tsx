@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Message } from 'primereact/message';
+import { Editor } from 'primereact/editor';
+
 import { DocumentoConsentimiento, PatientData } from '../types/DocumentData';
 import { ConsentimientoData } from '../../consentimiento/enums/ConsentimientoData';
-import { Editor } from 'primereact/editor';
 
 interface DocumentFormModalProps {
   show: boolean;
@@ -29,35 +30,35 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
   patient,
 }) => {
   const [SelectTemplate, setSelectTemplate] = useState<ConsentimientoData>();
-  const [formData, setFormData] = React.useState<DocumentoConsentimiento>({
+  const [formData, setFormData] = useState<DocumentoConsentimiento>({
     titulo: '',
-    motivo: '',
+    contenido: initialData?.contenido || initialData?.motivo || "",
     fecha: new Date().toISOString().split('T')[0],
   });
 
-  console.log(SelectTemplate);
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        contenido: initialData.contenido || initialData.motivo || "",
+      });
+
+      const selected = templates.find(t => t.title === initialData.titulo);
+      if (selected) setSelectTemplate(selected);
     } else {
       setFormData({
         titulo: '',
-        motivo: '',
+        contenido: "",
         fecha: new Date().toISOString().split('T')[0],
       });
+      setSelectTemplate(undefined);
     }
-  }, [initialData, show]);
+  }, [initialData, show, templates]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData, SelectTemplate!);
-  };
-
-  const handleChange = (field: keyof DocumentoConsentimiento, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (!SelectTemplate) return;
+    onSubmit(formData, SelectTemplate);
   };
 
   const handleTemplateChange = (templateId: number) => {
@@ -95,12 +96,8 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
     if (selectedTemplate) {
       setFormData(prev => ({
         ...prev,
-        motivo: formatedTemplate || ''
-      }));
-
-      setFormData(prev => ({
-        ...prev,
-        titulo: selectedTemplate.title
+        titulo: selectedTemplate.title,
+        contenido: formatedTemplate || ''
       }));
     }
   };
@@ -150,7 +147,7 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
             </label>
             <Dropdown
               id="titulo"
-              value={templates.find(t => t.title === formData.titulo)?.id || null}
+              value={SelectTemplate?.id ?? null}
               options={templates}
               onChange={(e) => handleTemplateChange(e.value)}
               optionLabel="title"
@@ -161,15 +158,13 @@ const DocumentFormModal: React.FC<DocumentFormModalProps> = ({
           </div>
           
           <div className="field">
-            <label htmlFor="motivo" className="font-bold">
-              Motivo/Descripción
+            <label htmlFor="contenido" className="font-bold">
+              Contenido del Consentimiento
             </label>
             <Editor
-              style={{ height: '320px' }}
-              id="motivo"
-              value={formData.motivo || ''}
-              placeholder="Ingrese el motivo o descripción del consentimiento"
-              onTextChange={(e) => handleChange('motivo', e.htmlValue || '')}
+              value={formData.contenido}
+              onTextChange={(e) => setFormData({ ...formData, contenido: e.htmlValue })}
+              style={{ height: "320px" }}
             />
           </div>
           

@@ -7,6 +7,7 @@ import { formatWhatsAppMessage, getIndicativeByCountry } from "../../services/ut
 import { useTemplate } from "../hooks/useTemplate.js";
 import { generatePDFReceipts } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
+import { useLoggedUser } from "../users/hooks/useLoggedUser.js";
 export const GenerateTicket = () => {
   const [formData, setFormData] = useState({
     patient_name: "",
@@ -18,6 +19,9 @@ export const GenerateTicket = () => {
   const [patient, setPatient] = useState(null);
   const [reasons, setReasons] = useState([]);
   const [priorities, setPriorities] = useState([]);
+  const {
+    loggedUser
+  } = useLoggedUser();
   const [patientDni, setPatientDni] = useState("");
   const [loading, setLoading] = useState({
     ticket: false,
@@ -151,7 +155,8 @@ export const GenerateTicket = () => {
       const ticketData = {
         ...formData,
         branch_id: 3,
-        patient_id: patient?.id
+        patient_id: patient?.id,
+        module_id: loggedUser?.today_module_id
       };
       const response = await ticketService.create(ticketData);
       setTicket(response);

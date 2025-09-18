@@ -474,15 +474,14 @@ $resumenPaciente = [
       const messaging = createMassMessaging(infoInstance);
 
       function sendMessageWhatsapp(data, currentAppointment) {
-        console.log("data:", data, currentAppointment);
         const replacements = {
           NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
           } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
           }`,
           TICKET: `${data?.ticket_number ?? ""}`,
-          MODULO: `${data?.module?.name ?? ""}`,
+          MODULO: `${currentAppointment?.user_availability?.module?.name ?? ""}`,
           ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
-          CONSULTORIO: `${data?.branch?.address ?? ""}`,
+          CONSULTORIO: `${currentAppointment?.user_availability?.office ?? ""}`,
         };
 
         const templateFormatted = formatWhatsAppMessage(

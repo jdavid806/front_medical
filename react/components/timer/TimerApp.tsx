@@ -2,7 +2,6 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { usePageTimer } from './hooks/usePageTimer';
 
 interface TimerAppProps {
-    autoStart?: boolean;
     onTimeUpdate?: (time: {
         hours: string;
         minutes: string;
@@ -26,10 +25,9 @@ interface TimerAppRef {
 }
 
 export const TimerApp: React.FC<TimerAppProps> = forwardRef(({
-    autoStart = true,
     onTimeUpdate
 }, ref) => {
-    const { elapsedTime, reset, start } = usePageTimer(autoStart);
+    const { elapsedTime, reset, start } = usePageTimer();
 
     useEffect(() => {
         if (onTimeUpdate) {
