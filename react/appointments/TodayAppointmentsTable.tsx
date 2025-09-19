@@ -14,6 +14,9 @@ import { GenerateTicket } from "../tickets/GenerateTicket";
 import { AppointmentFormModal } from "./AppointmentFormModal";
 import { Menu } from "primereact/menu";
 import { getLocalTodayISODate } from "../../services/utilidades";
+import { appointmentService } from "../../services/api";
+import { SwalManager } from "../../services/alertManagerImported";
+import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -28,8 +31,10 @@ export const TodayAppointmentsTable: React.FC<
   const [showTicketControl, setShowTicketControl] = useState(false);
   const [showTicketRequest, setShowTicketRequest] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentTableItem | null>(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
 
   const customFilters = () => {
     return {
@@ -65,12 +70,38 @@ export const TodayAppointmentsTable: React.FC<
   const handleBillingSuccess = () => {
     setShowBillingDialog(false);
     setSelectedAppointment(null);
-    refresh(); // Esto actualizará la tabla
+    refresh();
   };
 
   const handleBillingHide = () => {
     setShowBillingDialog(false);
     setSelectedAppointment(null);
+  };
+
+  // Función para cancelar cita
+  const handleCancelAppointment = async (appointment: AppointmentTableItem) => {
+    SwalManager.confirmCancel(async () => {
+      try {
+        await appointmentService.changeStatus(Number(appointment.id), "cancelled");
+        SwalManager.success({ text: "Cita cancelada exitosamente" });
+        refresh();
+      } catch (error) {
+        console.error("Error al cancelar la cita:", error);
+        SwalManager.error({ text: "Error al cancelar la cita" });
+      }
+    });
+  };
+
+  // Función para abrir modal de reagendar
+  const openRescheduleAppointmentModal = (appointmentId: string) => {
+    setSelectedAppointmentId(appointmentId);
+    setShowRescheduleModal(true);
+  };
+
+  const handleRescheduleSuccess = () => {
+    setShowRescheduleModal(false);
+    setSelectedAppointmentId(null);
+    refresh();
   };
 
   const columns: CustomPRTableColumnProps[] = [
@@ -95,11 +126,12 @@ export const TodayAppointmentsTable: React.FC<
       field: "actions",
       header: "Acciones",
       body: (rowData: AppointmentTableItem) => {
-        console.log("rowData", rowData);
         return (
           <div>
             <TableMenu
               onFacturarAdmision={() => handleFacturarAdmision(rowData)}
+              onCancelAppointment={() => handleCancelAppointment(rowData)}
+              onRescheduleAppointment={() => openRescheduleAppointmentModal(rowData.id)}
               rowData={rowData}
             />
           </div>
@@ -158,6 +190,13 @@ export const TodayAppointmentsTable: React.FC<
         appointmentData={selectedAppointment}
       />
 
+      <RescheduleAppointmentModalV2
+        isOpen={showRescheduleModal}
+        onClose={() => setShowRescheduleModal(false)}
+        appointmentId={selectedAppointmentId}
+        onSuccess={handleRescheduleSuccess}
+      />
+
       <Dialog
         header="Control de Turnos"
         visible={showTicketControl}
@@ -199,8 +238,10 @@ export const TodayAppointmentsTable: React.FC<
 
 const TableMenu: React.FC<{
   rowData: AppointmentTableItem,
-  onFacturarAdmision: () => void
-}> = ({ rowData, onFacturarAdmision }) => {
+  onFacturarAdmision: () => void,
+  onCancelAppointment: () => void,
+  onRescheduleAppointment: () => void
+}> = ({ rowData, onFacturarAdmision, onCancelAppointment, onRescheduleAppointment }) => {
 
   const menu = useRef<Menu>(null);
 
@@ -217,13 +258,19 @@ const TableMenu: React.FC<{
     <Menu
       model={[
         {
-          label: "Generar admisión",
-          command: () =>
-            (window.location.href = `generar_admision_rd?id_cita=${rowData.id}`),
+          label: "Facturar admisión",
+          icon: <i className="fa-solid fa-receipt me-2"></i>,
+          command: () => onFacturarAdmision(),
         },
         {
-          label: "Facturar admisión",
-          command: () => onFacturarAdmision(),
+          label: "Cancelar",
+          icon: <i className="fa fa-times me-2"></i>,
+          command: () => onCancelAppointment(),
+        },
+        {
+          label: "Reagendar",
+          icon: <i className="fa fa-calendar me-2"></i>,
+          command: () => onRescheduleAppointment(),
         }
       ]}
       popup

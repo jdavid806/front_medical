@@ -73,7 +73,7 @@ export const validateProductsStep = (products, toast) => {
   return true;
 };
 export const validatePaymentStep = (payments, total, toast) => {
-  if (payments.length === 0) {
+  if (payments.length === 0 && total > 0) {
     toast.current?.show({
       severity: 'error',
       summary: 'Pagos requeridos',

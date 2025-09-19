@@ -45,7 +45,7 @@ const ProductsPaymentStep = ({
   }, []);
   useEffect(() => {
     if (paymentMethods) {
-      const filtered = paymentMethods.filter(method => method.category === "transactional" && method.payment_type === "Ventas");
+      const filtered = paymentMethods.filter(method => method.category === "transactional" && method.payment_type === "sale");
       setFilteredPaymentMethods(filtered);
     }
   }, [paymentMethods]);
@@ -472,7 +472,7 @@ const ProductsPaymentStep = ({
     className: "mt-2 p-3 border-round-lg bg-green-100 text-green-800"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-check-circle mr-2"
-  }), "El pago ha sido completado en su totalidad")), formData.currentPayment.method.method == "Efectivo" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }), "El pago ha sido completado en su totalidad")), formData.currentPayment.method.is_cash && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "field mt-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "remainingAmount",
@@ -504,7 +504,6 @@ const ProductsPaymentStep = ({
     locale: "es-DO",
     className: "w-full",
     inputClassName: "font-bold",
-    max: remaining,
     min: 0
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mt-4"
@@ -569,7 +568,7 @@ const ProductsPaymentStep = ({
     }),
     className: "p-button-primary",
     onClick: handleNext,
-    disabled: formData.payments.length === 0 || formData.products.length === 0
+    disabled: formData.payments.length === 0 && total > 0 || formData.products.length === 0
   }))));
 };
 export default ProductsPaymentStep;

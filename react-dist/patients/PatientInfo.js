@@ -7,13 +7,14 @@ import PatientCompanions from "./patientContact/PatientCompanions.js";
 import PatientInsuranceInfo from "./patientContact/PatientInsuranceInfo.js";
 export const PatientInfo = ({
   patient,
-  requestRefresh
+  requestRefresh,
+  hideEditButton = false
 }) => {
   const isDetailClinicalRecord = new URLSearchParams(window.location.search).get("clinicalRecordId");
   const [showEditModal, setShowEditModal] = useState(false);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "text-center mb-3 mt-3"
-  }, !isDetailClinicalRecord && /*#__PURE__*/React.createElement(Button, {
+  }, !isDetailClinicalRecord && !hideEditButton && /*#__PURE__*/React.createElement(Button, {
     style: {
       maxWidth: "200px"
     },

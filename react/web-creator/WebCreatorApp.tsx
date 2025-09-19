@@ -34,6 +34,11 @@ export const WebCreatorApp = () => {
         setSelectedComponent(null);
     };
 
+    const handleComponentChange = (component: WebCreatorComponent) => {
+        setSelectedComponent(component);
+        splitterEditorRef.current?.updateComponentInPanel(component);
+    };
+
     const addSiblingAbove = () => {
         if (selectedPanel) {
             splitterEditorRef.current?.addSiblingPanel(selectedPanel, 'above');
@@ -155,7 +160,7 @@ export const WebCreatorApp = () => {
                             minWidth: componentSettingsContainerWidth,
                             width: componentSettingsContainerWidth
                         }}>
-                        <div className="d-flex flex-column h-100 overflow-auto">
+                        <div className="d-flex flex-column h-100 w-100 overflow-auto">
                             {!selectedComponent && !selectedPanel && (
                                 <div className="p-3">
                                     <h4>Selecciona un elemento para configurarlo</h4>
@@ -178,6 +183,7 @@ export const WebCreatorApp = () => {
                                 <Card>
                                     <WebCreatorComponentSettings
                                         selectedComponent={selectedComponent}
+                                        onChange={handleComponentChange}
                                     />
                                 </Card>
                             )}

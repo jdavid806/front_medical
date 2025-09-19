@@ -6,6 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
+import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 // Categories for dropdown
 const categories = [{
   label: "Transaccional",
@@ -28,20 +29,25 @@ const categories = [{
 }];
 const TypeMethod = [{
   label: "Compras",
-  value: "Compras"
+  value: "purchase"
 }, {
   label: "Ventas",
-  value: "Ventas"
+  value: "sale"
+}, {
+  label: "Ambos",
+  value: "both"
 }];
 const PaymentMethodFormConfig = ({
   formId,
   onSubmit,
   initialData,
   onCancel,
-  loading = false,
-  accounts = [],
-  isLoadingAccounts = false
+  loading = false
 }) => {
+  const {
+    accounts,
+    isLoading: isLoadingAccounts
+  } = useAccountingAccounts();
   const {
     control,
     handleSubmit,
@@ -66,9 +72,13 @@ const PaymentMethodFormConfig = ({
     }, errors[name]?.message);
   };
   useEffect(() => {
-    if (initialData) {
-      reset(initialData);
-    }
+    reset(initialData || {
+      name: "",
+      category: "",
+      payment_type: "",
+      accounting_account_id: null,
+      additionalDetails: ""
+    });
   }, [initialData, reset]);
   return /*#__PURE__*/React.createElement("form", {
     id: formId,
@@ -109,7 +119,7 @@ const PaymentMethodFormConfig = ({
     name: "payment_type",
     control: control,
     rules: {
-      required: "El tipo de método de pago es requerido"
+      required: "El tipo de método es requerido"
     },
     render: ({
       field,
@@ -157,12 +167,9 @@ const PaymentMethodFormConfig = ({
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_id",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Controller, {
+  }, "Cuenta Contable"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable es requerida"
-    },
     render: ({
       field,
       fieldState
@@ -188,7 +195,7 @@ const PaymentMethodFormConfig = ({
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "additionalDetails",
     className: "font-medium block mb-2"
-  }, "Descripci\xF3n"), /*#__PURE__*/React.createElement(Controller, {
+  }, "Detalles Adicionales"), /*#__PURE__*/React.createElement(Controller, {
     name: "additionalDetails",
     control: control,
     render: ({
@@ -198,7 +205,7 @@ const PaymentMethodFormConfig = ({
     }, field, {
       rows: 3,
       className: "w-full",
-      placeholder: "Ingrese una descripci\xF3n opcional"
+      placeholder: "Ingrese detalles adicionales"
     }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
@@ -206,27 +213,27 @@ const PaymentMethodFormConfig = ({
     label: "Cancelar",
     className: "btn btn-phoenix-secondary",
     onClick: onCancel,
+    disabled: loading,
+    type: "button",
     style: {
       padding: "0 20px",
       width: "200px",
       height: "50px",
       borderRadius: "0px"
-    },
-    type: "button",
-    disabled: loading
+    }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-times"
   })), /*#__PURE__*/React.createElement(Button, {
-    type: "submit",
     label: "Guardar",
     className: "p-button-sm",
-    disabled: loading || !isDirty,
+    loading: loading,
     style: {
       padding: "0 40px",
       width: "200px",
-      height: "50px",
-      borderRadius: "0px"
-    }
+      height: "50px"
+    },
+    disabled: loading || !isDirty,
+    type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"
   }))));

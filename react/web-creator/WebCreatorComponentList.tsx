@@ -1,11 +1,15 @@
 import { Divider } from "primereact/divider";
 import React from "react";
+import { WebCreatorPanel } from "./WebCreatorSplitterEditor";
+import { MenuItem } from "primereact/menuitem";
 
 export interface WebCreatorComponent {
     uuid: string;
     name: string;
     type: string;
-    imgSrc: string;
+    imgSrc?: string;
+    menuItems?: MenuItem[];
+    panel?: WebCreatorPanel;
 }
 
 interface WebCreatorComponentListProps {
@@ -21,43 +25,48 @@ export const WebCreatorComponentList = ({ onComponentClick }: WebCreatorComponen
             uuid: "1",
             name: "Logo",
             type: "logo",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         },
         {
             uuid: "2",
             name: "Menubar",
             type: "menubar",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg",
+            menuItems: [
+                { label: 'Home', icon: <i className="fa fa-home"></i> },
+                { label: 'About', icon: <i className="fa fa-info"></i> },
+                { label: 'Contact', icon: <i className="fa fa-phone"></i> }
+            ]
         },
         {
             uuid: "3",
             name: "Botón agendar",
             type: "button",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         },
         {
             uuid: "4",
             name: "Sidebar",
             type: "sidebar",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         },
         {
             uuid: "5",
             name: "Banner",
             type: "banner",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         },
         {
             uuid: "6",
             name: "Content",
             type: "content",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         },
         {
             uuid: "7",
             name: "Footer",
             type: "footer",
-            imgSrc: "https://via.placeholder.com/150"
+            imgSrc: "assets/img/logos/FullColor.svg"
         }
     ];
 

@@ -3,17 +3,7 @@ import { CustomModal } from "../../../components/CustomModal";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import PaymentMethodFormConfig from "../form/PaymentMethodFormConfig";
-
-interface PaymentMethodModalProps {
-  isVisible: boolean;
-  onSave: (data: any) => void;
-  initialData?: any;
-  onClose: () => void;
-  closable?: boolean;
-  accounts: any[];
-  isLoadingAccounts?: boolean;
-  loading: boolean;
-}
+import { PaymentMethodFormInputs } from "../interfaces/PaymentMethodFormConfigTypes";
 
 const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
   isVisible,
@@ -21,9 +11,7 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
   initialData,
   onClose,
   closable = true,
-  accounts,
-  isLoadingAccounts = false,
-  loading,
+  loading = false,
 }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [formHasChanges, setFormHasChanges] = useState(false);
@@ -43,14 +31,17 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
     onClose();
   };
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: PaymentMethodFormInputs) => {
     try {
       await onSave(data);
       onClose();
     } catch (error) {
+      // Manejar error si es necesario
+      console.error("Error saving payment method:", error);
     }
   };
 
+  // Determinar el título basado en si hay initialData (edición) o no (nuevo)
   const modalTitle =
     initialData && initialData.name
       ? `Editar Método de Pago - ${initialData.name}`
@@ -69,8 +60,7 @@ const PaymentMethodModalConfig: React.FC<PaymentMethodModalProps> = ({
           initialData={initialData}
           onCancel={handleCloseAttempt}
           loading={loading}
-          accounts={accounts}
-          isLoadingAccounts={isLoadingAccounts}
+          onFormChange={setFormHasChanges}
         />
       </CustomModal>
 

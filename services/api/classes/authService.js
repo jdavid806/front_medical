@@ -1,19 +1,16 @@
+import { url } from '../../globalMedical.js';
 import BaseApiService from './baseApiService.js';
 
 export class AuthService extends BaseApiService {
     async login(credentials) {
         return await this.httpClient.post(`${this.microservice}/login`, credentials, {
-            headers: {
-                'X-Domain': window.location.hostname
-            }
+            'X-DOMAIN': url.split('/')[0]
         });
     }
 
     async register(data) {
         return await this.httpClient.post(`${this.microservice}/register`, data, {
-            headers: {
-                "X-DOMAIN": window.location.hostname
-            }
+            "X-DOMAIN": url.split('/')[0]
         });
     }
 
@@ -26,13 +23,9 @@ export class AuthService extends BaseApiService {
     }
 
     async changePassword(data) {
-        console.log(window.location.hostname);
-        return await this.httpClient.post(`${this.microservice}/change-password`, data,
-            {
-                headers: {
-                    'X-DOMAIN': window.location.hostname
-                }
-            })
+        return await this.httpClient.post(`${this.microservice}/change-password`, data, {
+            'X-DOMAIN': url.split('/')[0]
+        })
     }
 }
 

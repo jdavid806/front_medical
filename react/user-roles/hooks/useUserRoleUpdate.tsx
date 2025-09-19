@@ -10,12 +10,13 @@ export const useUserRoleUpdate = () => {
     const updateUserRole = async (id: string, data: UserRoleFormInputs) => {
         setLoading(true);
         try {
+            console.log('Data a enviar:', data);
             const finalData = {
                 role: {
                     group: data.group,
                     name: data.name
                 },
-                menus: data.menus,
+                menus: data.menus, 
                 permissions: data.permissions
             }
             await userRolesService.updateMenusPermissions(id, finalData);

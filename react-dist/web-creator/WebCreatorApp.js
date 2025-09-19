@@ -28,6 +28,10 @@ export const WebCreatorApp = () => {
     setSelectedPanel(panel);
     setSelectedComponent(null);
   };
+  const handleComponentChange = component => {
+    setSelectedComponent(component);
+    splitterEditorRef.current?.updateComponentInPanel(component);
+  };
   const addSiblingAbove = () => {
     if (selectedPanel) {
       splitterEditorRef.current?.addSiblingPanel(selectedPanel, 'above');
@@ -130,7 +134,7 @@ export const WebCreatorApp = () => {
       width: componentSettingsContainerWidth
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column h-100 overflow-auto"
+    className: "d-flex flex-column h-100 w-100 overflow-auto"
   }, !selectedComponent && !selectedPanel && /*#__PURE__*/React.createElement("div", {
     className: "p-3"
   }, /*#__PURE__*/React.createElement("h4", null, "Selecciona un elemento para configurarlo")), selectedPanel && /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(WebCreatorPanelSetting, {
@@ -142,6 +146,7 @@ export const WebCreatorApp = () => {
     addVerticalChild: addVerticalChild,
     removeSelectedPanel: removeSelectedPanel
   })), selectedComponent && /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(WebCreatorComponentSettings, {
-    selectedComponent: selectedComponent
+    selectedComponent: selectedComponent,
+    onChange: handleComponentChange
   }))))));
 };

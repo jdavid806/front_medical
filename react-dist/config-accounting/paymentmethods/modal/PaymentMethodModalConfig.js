@@ -10,7 +10,6 @@ const PaymentMethodModalConfig = ({
   onClose,
   closable = true,
   accounts,
-  isLoadingAccounts = false,
   loading
 }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -34,6 +33,8 @@ const PaymentMethodModalConfig = ({
       onClose();
     } catch (error) {}
   };
+
+  // Determinar el título basado en si hay initialData (edición) o no (nuevo)
   const modalTitle = initialData && initialData.name ? `Editar Método de Pago - ${initialData.name}` : "Nuevo Método de Pago";
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(CustomModal, {
     show: isVisible,
@@ -45,8 +46,7 @@ const PaymentMethodModalConfig = ({
     initialData: initialData,
     onCancel: handleCloseAttempt,
     loading: loading,
-    accounts: accounts,
-    isLoadingAccounts: isLoadingAccounts
+    accounts: accounts
   })), /*#__PURE__*/React.createElement(Dialog, {
     visible: showConfirm,
     onHide: () => setShowConfirm(false),

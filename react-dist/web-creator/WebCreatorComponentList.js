@@ -8,37 +8,53 @@ export const WebCreatorComponentList = ({
     uuid: "1",
     name: "Logo",
     type: "logo",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }, {
     uuid: "2",
     name: "Menubar",
     type: "menubar",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg",
+    menuItems: [{
+      label: 'Home',
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-home"
+      })
+    }, {
+      label: 'About',
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-info"
+      })
+    }, {
+      label: 'Contact',
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-phone"
+      })
+    }]
   }, {
     uuid: "3",
     name: "Botón agendar",
     type: "button",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }, {
     uuid: "4",
     name: "Sidebar",
     type: "sidebar",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }, {
     uuid: "5",
     name: "Banner",
     type: "banner",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }, {
     uuid: "6",
     name: "Content",
     type: "content",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }, {
     uuid: "7",
     name: "Footer",
     type: "footer",
-    imgSrc: "https://via.placeholder.com/150"
+    imgSrc: "assets/img/logos/FullColor.svg"
   }];
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, "Componentes"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-2"

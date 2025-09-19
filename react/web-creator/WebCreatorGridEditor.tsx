@@ -1,6 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useCallback, useState } from "react";
 import { WebCreatorComponent } from "./WebCreatorComponentList";
 import { generateUUID } from "../../services/utilidades";
+import { WebCreatorLogo } from "./components/WebCreatorLogo";
 
 export interface WebCreatorGrid {
     rows: WebCreatorGridRow[];
@@ -196,6 +197,21 @@ export const WebCreatorGridEditor = forwardRef<WebCreatorGridEditorRef, WebCreat
         });
     };
 
+    const getComponentView = (component: WebCreatorComponent) => {
+        switch (component.type) {
+            case "logo":
+                return <WebCreatorLogo component={component} />;
+            case "menubar":
+                return <div>Menubar settings</div>;
+            case "button":
+                return <div>Button settings</div>;
+            case "sidebar":
+                return <div>Sidebar settings</div>;
+            default:
+                return <div>Unknown component type</div>;
+        }
+    };
+
     return (
         <>
             {grid.rows.map((row, index) => (<>
@@ -222,7 +238,7 @@ export const WebCreatorGridEditor = forwardRef<WebCreatorGridEditorRef, WebCreat
                                         handleSelectComponent(column.component!)
                                     }}
                                 >
-                                    {column.component.name}
+                                    {getComponentView(column.component!)}
                                 </div>
                             )}
                         </div>

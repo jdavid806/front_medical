@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useImperativeHandle } from 'react';
 import { generateUUID } from "../../services/utilidades.js";
+import { WebCreatorLogo } from "./components/WebCreatorLogo.js";
+import { WebCreatorMenuBar } from "./components/WebCreatorMenuBar.js";
 export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   onPanelClick,
   onComponentClick
@@ -32,6 +34,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
     return null;
   }, []);
   const addComponentToPanel = useCallback((panel, component) => {
+    component.panel = panel;
     setRootPanel(prev => {
       const updatePanelComponent = currentPanel => {
         if (currentPanel.uuid === panel.uuid) {
@@ -51,6 +54,31 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
       return updatePanelComponent(prev);
     });
   }, []);
+  const updateComponentInPanel = useCallback(component => {
+    setRootPanel(prev => {
+      const updatePanelComponent = currentPanel => {
+        if (currentPanel.uuid === component.panel.uuid) {
+          return {
+            ...currentPanel,
+            component
+          };
+        }
+        if (currentPanel.children && currentPanel.children.length > 0) {
+          return {
+            ...currentPanel,
+            children: currentPanel.children.map(updatePanelComponent)
+          };
+        }
+        return currentPanel;
+      };
+      return updatePanelComponent(prev);
+    });
+
+    // También actualiza el estado del componente seleccionado si es el mismo panel
+    if (selectedPanel?.uuid === component.panel.uuid) {
+      setSelectedComponent(component);
+    }
+  }, [selectedPanel]);
   const addSiblingPanel = useCallback((panel, direction) => {
     setRootPanel(prev => {
       const result = findPanelAndParent(prev, panel.uuid);
@@ -328,6 +356,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   // Exponer métodos al componente padre
   useImperativeHandle(ref, () => ({
     addComponentToPanel,
+    updateComponentInPanel,
     addSiblingPanel,
     addChildPanel,
     removePanel,
@@ -344,6 +373,24 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
     setSelectedComponent(component);
     setSelectedPanel(null);
     onComponentClick(component);
+  };
+  const renderComponent = component => {
+    switch (component.type) {
+      case "logo":
+        return /*#__PURE__*/React.createElement(WebCreatorLogo, {
+          component: component
+        });
+      case "menubar":
+        return /*#__PURE__*/React.createElement(WebCreatorMenuBar, {
+          component: component
+        });
+      case "button":
+        return /*#__PURE__*/React.createElement("div", null, "Button settings");
+      case "sidebar":
+        return /*#__PURE__*/React.createElement("div", null, "Sidebar settings");
+      default:
+        return /*#__PURE__*/React.createElement("div", null, "Unknown component type");
+    }
   };
 
   // Función recursiva para renderizar los paneles
@@ -472,7 +519,6 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
           justifyContent: 'center',
           border: isComponentSelected ? '2px solid #10B981' : 'none',
           borderRadius: '4px',
-          padding: '16px',
           backgroundColor: '#F9FAFB',
           cursor: 'pointer'
         },
@@ -488,7 +534,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
           e.stopPropagation();
           setHoveredPanel(null);
         }
-      }, /*#__PURE__*/React.createElement("strong", null, panel.component?.name)));
+      }, renderComponent(panel.component)));
     } else {
       return /*#__PURE__*/React.createElement("div", {
         style: panelStyle,

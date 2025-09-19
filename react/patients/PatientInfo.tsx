@@ -10,11 +10,13 @@ import PatientInsuranceInfo from "./patientContact/PatientInsuranceInfo";
 interface PatientInfoProps {
   patient: Patient;
   requestRefresh: () => void;
+  hideEditButton?: boolean;
 }
 
 export const PatientInfo: React.FC<PatientInfoProps> = ({
   patient,
   requestRefresh,
+  hideEditButton = false,
 }) => {
   const isDetailClinicalRecord = new URLSearchParams(
     window.location.search
@@ -24,7 +26,7 @@ export const PatientInfo: React.FC<PatientInfoProps> = ({
   return (
     <>
       <div className="text-center mb-3 mt-3">
-        {!isDetailClinicalRecord && (
+        {!isDetailClinicalRecord && !hideEditButton && (
           <Button
             style={{ maxWidth: "200px" }}
             label="Editar Paciente"

@@ -5,8 +5,13 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
-import { PaymentMethodFormInputs, PaymentMethodFormProps } from "../interfaces/PaymentMethodFormConfigTypes";
+import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
+import {
+  PaymentMethodFormInputs,
+  PaymentMethodFormProps,
+} from "../interfaces/PaymentMethodFormConfigTypes";
 
+// Categories for dropdown
 const categories = [
   { label: "Transaccional", value: "transactional" },
   { label: "Vencimiento Proveedores", value: "supplier_expiration" },
@@ -17,8 +22,9 @@ const categories = [
 ];
 
 const TypeMethod = [
-  { label: "Compras", value: "Compras" },
-  { label: "Ventas", value: "Ventas" },
+  { label: "Compras", value: "purchase" },
+  { label: "Ventas", value: "sale" },
+  { label: "Ambos", value: "both" },
 ];
 
 const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
@@ -27,9 +33,9 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
   initialData,
   onCancel,
   loading = false,
-  accounts = [],
-  isLoadingAccounts = false,
 }) => {
+  const { accounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
+
   const {
     control,
     handleSubmit,
@@ -55,9 +61,15 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
   };
 
   useEffect(() => {
-    if (initialData) {
-      reset(initialData);
-    }
+    reset(
+      initialData || {
+        name: "",
+        category: "",
+        payment_type: "",
+        accounting_account_id: null,
+        additionalDetails: "",
+      }
+    );
   }, [initialData, reset]);
 
   return (
@@ -97,7 +109,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         <Controller
           name="payment_type"
           control={control}
-          rules={{ required: "El tipo de método de pago es requerido" }}
+          rules={{ required: "El tipo de método es requerido" }}
           render={({ field, fieldState }) => (
             <>
               <Dropdown
@@ -148,12 +160,11 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
 
       <div className="field mb-4">
         <label htmlFor="accounting_account_id" className="font-medium block mb-2">
-          Cuenta Contable *
+          Cuenta Contable
         </label>
         <Controller
           name="accounting_account_id"
           control={control}
-          rules={{ required: "La cuenta contable es requerida" }}
           render={({ field, fieldState }) => (
             <>
               <Dropdown
@@ -179,9 +190,13 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         />
       </div>
 
+
+
+
+
       <div className="field mb-4">
         <label htmlFor="additionalDetails" className="font-medium block mb-2">
-          Descripción
+          Detalles Adicionales
         </label>
         <Controller
           name="additionalDetails"
@@ -192,7 +207,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
               {...field}
               rows={3}
               className="w-full"
-              placeholder="Ingrese una descripción opcional"
+              placeholder="Ingrese detalles adicionales"
             />
           )}
         />
@@ -204,24 +219,25 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
             label="Cancelar"
             className="btn btn-phoenix-secondary"
             onClick={onCancel}
-            style={{ padding: "0 20px", width: "200px", height: "50px", borderRadius: "0px" }}
-            type="button"
             disabled={loading}
+            type="button"
+            style={{
+              padding: "0 20px",
+              width: "200px",
+              height: "50px",
+              borderRadius: "0px",
+            }}
           >
             <i className="fas fa-times"></i>
           </Button>
         )}
         <Button
-          type="submit"
           label="Guardar"
           className="p-button-sm"
+          loading={loading}
+          style={{ padding: "0 40px", width: "200px", height: "50px" }}
           disabled={loading || !isDirty}
-          style={{
-            padding: "0 40px",
-            width: "200px",
-            height: "50px",
-            borderRadius: "0px",
-          }}
+          type="submit"
         >
           <i className="fas fa-save"></i>
         </Button>

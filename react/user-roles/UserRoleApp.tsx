@@ -41,10 +41,7 @@ export const UserRoleApp = () => {
                 roleId = newRole.id;
             }
 
-            // Guardar menús usando el mismo endpoint para crear/actualizar
-            if (data.menuIds && data.menuIds.length > 0) {
-                await saveRoleMenus(roleId, data.menuIds);
-            }
+            await saveRoleMenus(roleId, data.menus);
 
             fetchUserRoles();
             setShowFormModal(false);
@@ -65,14 +62,26 @@ export const UserRoleApp = () => {
     };
 
     useEffect(() => {
-        setInitialData({
-            name: userRole?.name || '',
-            group: userRole?.group || '',
-            permissions: userRole?.permissions.map(permission => permission.key) || [],
-            menus: userRole?.menus.map(menu => menu.key) || [],
-            menuIds: userRole?.menus.map(menu => menu.id) || []
-        })
-    }, [userRole])
+        if (userRole) {
+            setInitialData({
+                name: userRole.name || '',
+                group: userRole.group || '',
+                permissions: userRole.permissions?.map(permission => permission.key) || [],
+                menus: userRole.menus?.map(item => ({
+                    id: item.id,
+                    key_: item.key,
+                    name: item.label,
+                    is_active: item.pivot?.is_active || false, // Usa el estado real del backend
+                    pivot: item.pivot
+                })) || [],
+                menuIds: userRole.menus
+                    .filter(menu => menu.pivot?.is_active)
+                    .map(menu => menu.id) || []
+            });
+        } else {
+            setInitialData(undefined);
+        }
+    }, [userRole]);
 
     return (
         <>

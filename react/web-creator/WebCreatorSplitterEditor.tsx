@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useImperativeHandle } from 'react';
 import { generateUUID } from "../../services/utilidades";
 import { WebCreatorComponent } from './WebCreatorComponentList';
+import { WebCreatorLogo } from './components/WebCreatorLogo';
+import { WebCreatorMenuBar } from './components/WebCreatorMenuBar';
 
 export interface WebCreatorPanel {
     uuid: string;
@@ -18,6 +20,7 @@ interface WebCreatorSplitterEditorProps {
 
 export interface WebCreatorSplitterEditorRef {
     addComponentToPanel: (panel: WebCreatorPanel, component: WebCreatorComponent) => void;
+    updateComponentInPanel: (component: WebCreatorComponent) => void;
     addSiblingPanel: (panel: WebCreatorPanel, direction: 'above' | 'below' | 'left' | 'right') => void;
     addChildPanel: (panel: WebCreatorPanel, layout: 'horizontal' | 'vertical') => void;
     removePanel: (panel: WebCreatorPanel) => void;
@@ -57,6 +60,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
     }, []);
 
     const addComponentToPanel = useCallback((panel: WebCreatorPanel, component: WebCreatorComponent) => {
+        component.panel = panel;
         setRootPanel(prev => {
             const updatePanelComponent = (currentPanel: WebCreatorPanel): WebCreatorPanel => {
                 if (currentPanel.uuid === panel.uuid) {
@@ -76,6 +80,32 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
             return updatePanelComponent(prev);
         });
     }, []);
+
+    const updateComponentInPanel = useCallback((component: WebCreatorComponent) => {
+        setRootPanel(prev => {
+            const updatePanelComponent = (currentPanel: WebCreatorPanel): WebCreatorPanel => {
+                if (currentPanel.uuid === component.panel!.uuid) {
+                    return { ...currentPanel, component };
+                }
+
+                if (currentPanel.children && currentPanel.children.length > 0) {
+                    return {
+                        ...currentPanel,
+                        children: currentPanel.children.map(updatePanelComponent)
+                    };
+                }
+
+                return currentPanel;
+            };
+
+            return updatePanelComponent(prev);
+        });
+
+        // También actualiza el estado del componente seleccionado si es el mismo panel
+        if (selectedPanel?.uuid === component.panel!.uuid) {
+            setSelectedComponent(component);
+        }
+    }, [selectedPanel]);
 
     const addSiblingPanel = useCallback((panel: WebCreatorPanel, direction: 'above' | 'below' | 'left' | 'right') => {
         setRootPanel(prev => {
@@ -355,6 +385,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
     // Exponer métodos al componente padre
     useImperativeHandle(ref, () => ({
         addComponentToPanel,
+        updateComponentInPanel,
         addSiblingPanel,
         addChildPanel,
         removePanel,
@@ -373,6 +404,21 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
         setSelectedComponent(component);
         setSelectedPanel(null);
         onComponentClick(component);
+    };
+
+    const renderComponent = (component: WebCreatorComponent) => {
+        switch (component.type) {
+            case "logo":
+                return <WebCreatorLogo component={component} />;
+            case "menubar":
+                return <WebCreatorMenuBar component={component} />;
+            case "button":
+                return <div>Button settings</div>;
+            case "sidebar":
+                return <div>Sidebar settings</div>;
+            default:
+                return <div>Unknown component type</div>;
+        }
     };
 
     // Función recursiva para renderizar los paneles
@@ -519,7 +565,6 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                             justifyContent: 'center',
                             border: isComponentSelected ? '2px solid #10B981' : 'none',
                             borderRadius: '4px',
-                            padding: '16px',
                             backgroundColor: '#F9FAFB',
                             cursor: 'pointer'
                         }}
@@ -536,7 +581,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                             setHoveredPanel(null);
                         }}
                     >
-                        <strong>{panel.component?.name}</strong>
+                        {renderComponent(panel.component!)}
                     </div>
                 </div>
             );

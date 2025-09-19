@@ -7,6 +7,8 @@ import { getAge } from "../../services/utilidades.js";
 import PatientFormModal from "./modals/form/PatientFormModal.js";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
+import { Dialog } from "primereact/dialog";
+import { PatientInfoContainer } from "./PatientInfoContainer.js";
 export const PatientAsyncTable = () => {
   const [tableItems, setTableItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +18,7 @@ export const PatientAsyncTable = () => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [viewingPatientId, setViewingPatientId] = useState(null);
   const {
     patients,
     fetchPatientsByFilters,
@@ -39,12 +42,12 @@ export const PatientAsyncTable = () => {
   };
   const handlePatientCreated = () => {
     setShowPatientModal(false);
-    refresh(); // Refrescar la tabla después de crear un paciente
+    refresh();
   };
   const handlePatientUpdated = () => {
     setShowEditModal(false);
     setEditingPatient(null);
-    refresh(); // Refrescar la tabla después de editar un paciente
+    refresh();
   };
   const handleSearchChange = _search => {
     console.log(_search);
@@ -60,19 +63,18 @@ export const PatientAsyncTable = () => {
     page: currentPage,
     search: search ?? ""
   });
-
-  // Función para editar paciente
   const handleEditarPaciente = patientId => {
-    // Encuentra el paciente completo en la lista de pacientes
     const patientToEdit = patients.find(p => p.id.toString() === patientId);
     if (patientToEdit) {
       setEditingPatient(patientToEdit);
       setShowEditModal(true);
     }
   };
+  const handleVerMas = patientId => {
+    setViewingPatientId(patientId);
+  };
   const handleActualizarPermisos = patientId => {
     console.log("Actualizar permisos de notificaciones para paciente ID:", patientId);
-    // Aquí puedes implementar la lógica para actualizar permisos
   };
   useEffect(() => {
     const mappedPatients = patients.map(item => {
@@ -121,7 +123,8 @@ export const PatientAsyncTable = () => {
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(TableMenu, {
         patientId: rowData.id,
         onEditarPaciente: handleEditarPaciente,
-        onActualizarPermisos: handleActualizarPermisos
+        onActualizarPermisos: handleActualizarPermisos,
+        onVerMas: handleVerMas
       }));
     }
   }];
@@ -162,14 +165,26 @@ export const PatientAsyncTable = () => {
     onHide: () => setShowEditModal(false),
     onSuccess: handlePatientUpdated,
     patientData: editingPatient
-  }));
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Informaci\xF3n del Paciente",
+    visible: !!viewingPatientId,
+    style: {
+      width: '80vw',
+      maxWidth: '1000px'
+    },
+    onHide: () => setViewingPatientId(null),
+    draggable: false,
+    resizable: false
+  }, viewingPatientId && /*#__PURE__*/React.createElement(PatientInfoContainer, {
+    patientId: viewingPatientId,
+    hideEditButton: true
+  })));
 };
-
-// Componente del menú de acciones para cada fila
 const TableMenu = ({
   patientId,
   onEditarPaciente,
-  onActualizarPermisos
+  onActualizarPermisos,
+  onVerMas
 }) => {
   const menu = useRef(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
@@ -181,6 +196,12 @@ const TableMenu = ({
     className: "fa fa-cog ml-2"
   })), /*#__PURE__*/React.createElement(Menu, {
     model: [{
+      label: "Ver más",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-eye me-2"
+      }),
+      command: () => onVerMas(patientId)
+    }, {
       label: "Editar paciente",
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fas fa-pencil-alt me-2"

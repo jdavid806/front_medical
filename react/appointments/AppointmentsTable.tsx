@@ -170,7 +170,7 @@ export const AppointmentsTable: React.FC = () => {
                     ></i>
                     <span>Generar preadmision</span>
                   </div>
-                </a>
+                </a>F
               </li>
               {(data.stateKey === "pending_consultation" ||
                 data.stateKey === "called" ||

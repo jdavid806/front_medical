@@ -10,12 +10,17 @@ import { GenerateTicket } from "../tickets/GenerateTicket.js";
 import { AppointmentFormModal } from "./AppointmentFormModal.js";
 import { Menu } from "primereact/menu";
 import { getLocalTodayISODate } from "../../services/utilidades.js";
+import { appointmentService } from "../../services/api/index.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
+import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2.js";
 export const TodayAppointmentsTable = () => {
   const [showBillingDialog, setShowBillingDialog] = useState(false);
   const [showTicketControl, setShowTicketControl] = useState(false);
   const [showTicketRequest, setShowTicketRequest] = useState(false);
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const customFilters = () => {
     return {
       appointmentState: "pending",
@@ -46,11 +51,40 @@ export const TodayAppointmentsTable = () => {
   const handleBillingSuccess = () => {
     setShowBillingDialog(false);
     setSelectedAppointment(null);
-    refresh(); // Esto actualizará la tabla
+    refresh();
   };
   const handleBillingHide = () => {
     setShowBillingDialog(false);
     setSelectedAppointment(null);
+  };
+
+  // Función para cancelar cita
+  const handleCancelAppointment = async appointment => {
+    SwalManager.confirmCancel(async () => {
+      try {
+        await appointmentService.changeStatus(Number(appointment.id), "cancelled");
+        SwalManager.success({
+          text: "Cita cancelada exitosamente"
+        });
+        refresh();
+      } catch (error) {
+        console.error("Error al cancelar la cita:", error);
+        SwalManager.error({
+          text: "Error al cancelar la cita"
+        });
+      }
+    });
+  };
+
+  // Función para abrir modal de reagendar
+  const openRescheduleAppointmentModal = appointmentId => {
+    setSelectedAppointmentId(appointmentId);
+    setShowRescheduleModal(true);
+  };
+  const handleRescheduleSuccess = () => {
+    setShowRescheduleModal(false);
+    setSelectedAppointmentId(null);
+    refresh();
   };
   const columns = [{
     field: "patientName",
@@ -77,9 +111,10 @@ export const TodayAppointmentsTable = () => {
     field: "actions",
     header: "Acciones",
     body: rowData => {
-      console.log("rowData", rowData);
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(TableMenu, {
         onFacturarAdmision: () => handleFacturarAdmision(rowData),
+        onCancelAppointment: () => handleCancelAppointment(rowData),
+        onRescheduleAppointment: () => openRescheduleAppointmentModal(rowData.id),
         rowData: rowData
       }));
     }
@@ -130,6 +165,11 @@ export const TodayAppointmentsTable = () => {
     onHide: handleBillingHide,
     onSuccess: handleBillingSuccess,
     appointmentData: selectedAppointment
+  }), /*#__PURE__*/React.createElement(RescheduleAppointmentModalV2, {
+    isOpen: showRescheduleModal,
+    onClose: () => setShowRescheduleModal(false),
+    appointmentId: selectedAppointmentId,
+    onSuccess: handleRescheduleSuccess
   }), /*#__PURE__*/React.createElement(Dialog, {
     header: "Control de Turnos",
     visible: showTicketControl,
@@ -163,7 +203,9 @@ export const TodayAppointmentsTable = () => {
 };
 const TableMenu = ({
   rowData,
-  onFacturarAdmision
+  onFacturarAdmision,
+  onCancelAppointment,
+  onRescheduleAppointment
 }) => {
   const menu = useRef(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
@@ -175,11 +217,23 @@ const TableMenu = ({
     className: "fa fa-cog ml-2"
   })), /*#__PURE__*/React.createElement(Menu, {
     model: [{
-      label: "Generar admisión",
-      command: () => window.location.href = `generar_admision_rd?id_cita=${rowData.id}`
-    }, {
       label: "Facturar admisión",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-receipt me-2"
+      }),
       command: () => onFacturarAdmision()
+    }, {
+      label: "Cancelar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-times me-2"
+      }),
+      command: () => onCancelAppointment()
+    }, {
+      label: "Reagendar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-calendar me-2"
+      }),
+      command: () => onRescheduleAppointment()
     }],
     popup: true,
     ref: menu,

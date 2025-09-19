@@ -92,7 +92,7 @@ export const validateProductsStep = (products: any, toast: any): boolean => {
 };
 
 export const validatePaymentStep = (payments: any[], total: number, toast: any): boolean => {
-  if (payments.length === 0) {
+  if (payments.length === 0 && total > 0) {
     toast.current?.show({
       severity: 'error',
       summary: 'Pagos requeridos',

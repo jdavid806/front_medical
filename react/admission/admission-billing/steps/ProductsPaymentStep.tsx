@@ -76,7 +76,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       const filtered = paymentMethods.filter(
         (method: any) =>
           method.category === "transactional" &&
-          method.payment_type === "Ventas"
+          method.payment_type === "sale"
       );
       setFilteredPaymentMethods(filtered);
     }
@@ -579,7 +579,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                         </div>
                       )}
                     </div>
-                    {formData.currentPayment.method.method == "Efectivo" && (
+                    {formData.currentPayment.method.is_cash && (
                       <>
                         <div className="field mt-4">
                           <label
@@ -620,7 +620,6 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                             locale="es-DO"
                             className="w-full"
                             inputClassName="font-bold"
-                            max={remaining}
                             min={0}
                           />
                         </div>
@@ -650,31 +649,32 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                         </div>
                       </>
                     )}
-                    {formData.currentPayment.method.method != "Efectivo" && remaining > 0 && (
-                      <>
-                        <div className="field mt-4">
-                          <label
-                            htmlFor="cashAmount"
-                            className="block font-medium mb-2"
-                          >
-                            <i className="fas fa-hand-holding-usd mr-2"></i>
-                            Monto Recibido
-                          </label>
-                          <InputNumber
-                            id="cashAmount"
-                            value={modalAmount}
-                            onValueChange={(e) =>
-                              calculateModalChange(e.value || 0)
-                            }
-                            mode="currency"
-                            currency="DOP"
-                            locale="es-DO"
-                            className="w-full"
-                            inputClassName="font-bold"
-                          />
-                        </div>
-                      </>
-                    )}
+                    {formData.currentPayment.method.method != "Efectivo" &&
+                      remaining > 0 && (
+                        <>
+                          <div className="field mt-4">
+                            <label
+                              htmlFor="cashAmount"
+                              className="block font-medium mb-2"
+                            >
+                              <i className="fas fa-hand-holding-usd mr-2"></i>
+                              Monto Recibido
+                            </label>
+                            <InputNumber
+                              id="cashAmount"
+                              value={modalAmount}
+                              onValueChange={(e) =>
+                                calculateModalChange(e.value || 0)
+                              }
+                              mode="currency"
+                              currency="DOP"
+                              locale="es-DO"
+                              className="w-full"
+                              inputClassName="font-bold"
+                            />
+                          </div>
+                        </>
+                      )}
                   </div>
                 </div>
               </Card>
@@ -708,7 +708,8 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
             className="p-button-primary"
             onClick={handleNext}
             disabled={
-              formData.payments.length === 0 || formData.products.length === 0
+              (formData.payments.length === 0 && total > 0) ||
+              formData.products.length === 0
             }
           />
         </div>

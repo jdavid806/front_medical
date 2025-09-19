@@ -4,11 +4,19 @@ import { usePatient } from './hooks/usePatient';
 
 interface PatientInfoContainerProps {
     patientId: string
+    hideEditButton?: boolean; 
 }
 
-export const PatientInfoContainer = ({ patientId }: PatientInfoContainerProps) => {
+export const PatientInfoContainer = ({ patientId, hideEditButton = false }: PatientInfoContainerProps) => {
     const { patient, fetchPatient } = usePatient(patientId);
 
-    return patient ? <PatientInfo requestRefresh={() => {fetchPatient();}} patient={patient} /> : <p>Cargando...</p>
+    return patient ? (
+        <PatientInfo
+            requestRefresh={() => { fetchPatient(); }}
+            patient={patient}
+            hideEditButton={hideEditButton} 
+        />
+    ) : (
+        <p>Cargando...</p>
+    )
 }
-

@@ -338,8 +338,8 @@ RewriteRule ^configUsuarios$ Configuracion/homeConfig/configUsuarios.php
 RewriteRule ^configImportaciones$ Configuracion/homeConfig/configImportaciones.php
 RewriteRule ^configConsentimientos$ Configuracion/homeConfig/configConsentimientos.php
 RewriteRule ^configEntidades$ Configuracion/homeConfig/configEntidades.php
-RewriteRule ^configPreciosPrueba$ Configuracion/homeConfig/configPrecios.php
-RewriteRule ^configPrecios$ Configuracion/homeConfig/ConfigPreciosPrueba.php
+RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
+
 
 RewriteRule ^configExamenes$ Configuracion/homeConfig/configExamenes.php
 RewriteRule ^configuracionEmpresa$ Configuracion/homeConfig/configuracionEmpresa.php

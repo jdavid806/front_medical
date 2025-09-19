@@ -9,6 +9,10 @@ interface Menu {
     key_: string;
     name: string;
     id: number;
+    is_active?: boolean;
+    pivot?: {
+        is_active: boolean;
+    };
 }
 
 interface PermissionCategory {
@@ -31,7 +35,7 @@ export interface UserRoleFormInputs {
     name: string;
     group: string;
     permissions: string[];
-    menus: string[];
+    menus: Menu[]; // Cambiado a array de objetos Menu
     menuIds: number[];
 }
 
@@ -57,24 +61,26 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
     const onSubmit: SubmitHandler<UserRoleFormInputs> = (data) => {
         const submissionData: UserRoleFormInputs = {
             ...data,
-            menus: selectedMenusKeys,
+            menus: allMenus.map(menu => ({
+                ...menu,
+                is_active: selectedMenuIds.includes(menu.id)
+            })),
             menuIds: selectedMenuIds,
             permissions: selectedPermissions
         };
         onHandleSubmit(submissionData)
     }
 
-    const [menus, setMenus] = useState<Menu[]>([]);
+    const [allMenus, setAllMenus] = useState<Menu[]>([]);
     const [permissionCategories, setPermissionCategories] = useState<PermissionCategory[]>([]);
-    const [selectedMenusKeys, setSelectedMenusKeys] = useState<string[]>([]);
-    const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
     const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+    const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const menusData: Menu[] = await menuService.getAll();
-                setMenus(menusData);
+                setAllMenus(menusData);
 
                 const permissionsData: PermissionCategory[] = await permissionService.getAll();
                 setPermissionCategories(permissionsData);
@@ -87,29 +93,34 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
 
     useEffect(() => {
         if (initialData) {
-            reset(initialData);
-            setSelectedMenusKeys(initialData.menus || []);
-            setSelectedMenuIds(initialData.menuIds || []);
+            console.log('Initial data received:', initialData);
+
+            reset({
+                name: initialData.name,
+                group: initialData.group,
+            });
+
+            // Establecer permisos seleccionados
             setSelectedPermissions(initialData.permissions || []);
+
+            // Establecer menús seleccionados basado en is_active o pivot.is_active
+            const activeMenuIds = initialData.menus
+                .filter(menu => menu.is_active || menu.pivot?.is_active)
+                .map(menu => menu.id);
+            setSelectedMenuIds(activeMenuIds);
+
+            console.log('Active menu IDs:', activeMenuIds);
         } else {
             reset({
                 name: '',
                 group: '',
-                permissions: [],
-                menus: [],
-                menuIds: []
             });
-            setSelectedMenusKeys([]);
-            setSelectedMenuIds([]);
             setSelectedPermissions([]);
+            setSelectedMenuIds([]);
         }
     }, [initialData, reset]);
 
-    const handleMenuChange = (menuKey: string, menuId: number, checked: boolean) => {
-        setSelectedMenusKeys(prev =>
-            checked ? [...prev, menuKey] : prev.filter(key => key !== menuKey)
-        );
-
+    const handleMenuChange = (menuId: number, checked: boolean) => {
         setSelectedMenuIds(prev =>
             checked ? [...prev, menuId] : prev.filter(id => id !== menuId)
         );
@@ -162,16 +173,16 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
                                 <h5>Menús</h5>
                             </div>
                             <div className="card-body">
-                                {menus.map(menu => (
-                                    <div key={menu.key_} className="form-check form-switch mb-3">
+                                {allMenus.map(menu => (
+                                    <div key={menu.id} className="form-check form-switch mb-3">
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
-                                            id={menu.key_}
-                                            checked={selectedMenusKeys.includes(menu.key_)}
-                                            onChange={(e) => handleMenuChange(menu.key_, menu.id, e.target.checked)}
+                                            id={`menu-${menu.id}`}
+                                            checked={selectedMenuIds.includes(menu.id)}
+                                            onChange={(e) => handleMenuChange(menu.id, e.target.checked)}
                                         />
-                                        <label className="form-check-label" htmlFor={menu.key_}>
+                                        <label className="form-check-label" htmlFor={`menu-${menu.id}`}>
                                             {menu.name}
                                         </label>
                                     </div>

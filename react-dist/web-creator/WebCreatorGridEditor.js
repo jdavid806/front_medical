@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useCallback, useState } from "react";
 import { generateUUID } from "../../services/utilidades.js";
+import { WebCreatorLogo } from "./components/WebCreatorLogo.js";
 export const WebCreatorGridEditor = /*#__PURE__*/forwardRef(({
   onCellClick,
   onRowClick,
@@ -185,6 +186,22 @@ export const WebCreatorGridEditor = /*#__PURE__*/forwardRef(({
       rows: newGrid
     });
   };
+  const getComponentView = component => {
+    switch (component.type) {
+      case "logo":
+        return /*#__PURE__*/React.createElement(WebCreatorLogo, {
+          component: component
+        });
+      case "menubar":
+        return /*#__PURE__*/React.createElement("div", null, "Menubar settings");
+      case "button":
+        return /*#__PURE__*/React.createElement("div", null, "Button settings");
+      case "sidebar":
+        return /*#__PURE__*/React.createElement("div", null, "Sidebar settings");
+      default:
+        return /*#__PURE__*/React.createElement("div", null, "Unknown component type");
+    }
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, grid.rows.map((row, index) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: `row p-2 grid-row ${selectedRow?.uuid === row.uuid ? "border border-3 border-primary " : ""}`,
     key: index,
@@ -208,7 +225,7 @@ export const WebCreatorGridEditor = /*#__PURE__*/forwardRef(({
       e.stopPropagation();
       handleSelectComponent(column.component);
     }
-  }, column.component.name)))))), /*#__PURE__*/React.createElement("style", null, `
+  }, getComponentView(column.component))))))), /*#__PURE__*/React.createElement("style", null, `
                 .grid-row {
                     height: 100px;
                     border: 1px solid #ccc;

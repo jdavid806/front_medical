@@ -11,9 +11,9 @@ import { classNames } from "primereact/utils";
 import { FiltrosRecibos, ReciboCaja } from "../interface/interfaceCashRecipe";
 import { SplitButton } from "primereact/splitbutton";
 import { MenuItem } from "primereact/menuitem";
-import { NewReceiptBoxModalTable } from "./modalNewReceiptBox/NewReceiptBoxModalTable"; 
+import { NewReceiptBoxModalTable } from "./modalNewReceiptBox/NewReceiptBoxModalTable";
 import { useDataPagination } from "../../hooks/useDataPagination";
-import { cashRecipes } from "../../../services/api/index";
+import { cashRecipes, resourcesAdminService } from "../../../services/api/index";
 import {
   CustomPRTable,
   CustomPRTableColumnProps,
@@ -21,30 +21,24 @@ import {
 import { formatDate } from "../../../services/utilidades";
 
 export const NewReceiptBoxTable = () => {
-  const [loading, setLoading] = useState(false);
+  const [thirdParties, setThirdParties] = useState<any>(null);
   const [showReciboModal, setShowReciboModal] = useState(false);
   const [currentReceiptType, setCurrentReceiptType] = useState<
     "advance" | "purchase" | "quotation"
   >("advance");
 
   const [filtros, setFiltros] = useState<FiltrosRecibos>({
-    numeroRecibo: "",
-    tipoRecibo: null,
-    cliente: "",
-    identificacion: "",
-    origenDinero: null,
-    centroCosto: null,
-    fechaRango: null,
-    valorMinimo: null,
-    valorMaximo: null,
-    estado: null,
+    type: "",
+    action: "",
+    thirdParty: null,
+    createdAt: null,
+    status: "",
   });
 
   // Opciones para los dropdowns
   const tiposRecibo = [
-    { label: "Ingreso", value: "Ingreso" },
-    { label: "Egreso", value: "Egreso" },
-    { label: "Reembolso", value: "Reembolso" },
+    { label: "Ingreso", value: "ingreso" },
+    { label: "Egreso", value: "egreso" },
   ];
 
   const handleFilterChange = (field: string, value: any) => {
@@ -54,31 +48,42 @@ export const NewReceiptBoxTable = () => {
     }));
   };
 
+  useEffect(() => {
+    fectThirdParties();
+  }, [])
+
+  async function fectThirdParties(){
+    const data:any = await resourcesAdminService.getThirdParties();
+    setThirdParties(data.data);
+  }
   // Función para obtener recibos de caja
   const fetchCashRecipe = async (params: any) => {
     try {
       // Aplicar filtros adicionales a los parámetros de paginación
       const filters = {
         ...params,
-        tipo_recibo: filtros.tipoRecibo,
-        estado: filtros.estado,
-        fecha_inicio: filtros.fechaRango?.[0] ? filtros.fechaRango[0].toISOString() : undefined,
-        fecha_fin: filtros.fechaRango?.[1] ? filtros.fechaRango[1].toISOString() : undefined,
-        cliente: filtros.cliente,
-        numero_recibo: filtros.numeroRecibo,
+        type: filtros.type,
+        action: filtros.action,
+        status: filtros.status,
+        createdAt:
+          filtros.createdAt
+            ?.filter((date) => !!date)
+            .map((date) => date.toISOString().split("T")[0])
+            .join(","),
+        thirdParty: filtros.thirdParty?.id ?? null,
       };
 
       const response = await cashRecipes.getAllCashRecipes(filters);
-      
+
       return {
         data: response.data.data || response.data, // Ajusta según la estructura de tu API
-        total: response.data.total || response.data.count || 0
+        total: response.data.total || response.data.count || 0,
       };
     } catch (error) {
       console.error("Error fetching cash recipes:", error);
       return {
         data: [],
-        total: 0
+        total: 0,
       };
     }
   };
@@ -91,26 +96,21 @@ export const NewReceiptBoxTable = () => {
     totalRecords,
     handlePageChange,
     handleSearchChange,
-    refresh
+    refresh,
   } = useDataPagination({
     fetchFunction: fetchCashRecipe,
-    defaultPerPage: 10
+    defaultPerPage: 10,
   });
 
   const limpiarFiltros = () => {
     setFiltros({
-      numeroRecibo: "",
-      tipoRecibo: null,
-      cliente: "",
-      identificacion: "",
-      origenDinero: null,
-      centroCosto: null,
-      fechaRango: null,
-      valorMinimo: null,
-      valorMaximo: null,
-      estado: null,
+      type: "",
+      action: "",
+      thirdParty: null,
+      createdAt: null,
+      status: "",
     });
-    // Los datos se actualizarán automáticamente por el useEffect
+ 
   };
 
   const formatCurrency = (value: number) => {
@@ -202,6 +202,21 @@ export const NewReceiptBoxTable = () => {
     }
   };
 
+  const getStatusLabel = (type: string) => {
+    switch (type) {
+      case "approved":
+        return "Aprobado";
+      case "pending":
+        return "Pendiente";
+      case "cancelled":
+        return "Anulado";
+      case "completed":
+        return "Completado";
+      default:
+        return null;
+    }
+  };
+
   const getTipoSeverity = (tipo: string) => {
     switch (tipo) {
       case "ingreso":
@@ -215,21 +230,27 @@ export const NewReceiptBoxTable = () => {
     }
   };
 
+  const getAction = (action: string) => {
+    switch (action) {
+      case "partial_payment":
+        return "Pago Parcial";
+      default:
+        return action;
+    }
+  };
+
   // Definición de columnas para la tabla
   const columns: CustomPRTableColumnProps[] = [
     {
       field: "id",
-      header: "Número Recibo"
+      header: "Número Recibo",
     },
     {
       field: "type",
       header: "Tipo",
       body: (rowData: any) => (
-        <Tag
-          value={rowData.type}
-          severity={getTipoSeverity(rowData.type)}
-        />
-      )
+        <Tag value={rowData.type} severity={getTipoSeverity(rowData.type)} />
+      ),
     },
     {
       field: "third_party.name",
@@ -238,6 +259,7 @@ export const NewReceiptBoxTable = () => {
     {
       field: "action",
       header: "Origen Dinero",
+      body: (rowData: any) => <span>{getAction(rowData.action)}</span>,
     },
     {
       field: "created_at",
@@ -252,8 +274,8 @@ export const NewReceiptBoxTable = () => {
       field: "total_amount",
       header: "Valor",
       body: (data: any) => (
-        <span>{formatCurrency(data.total_amount)}</span>
-      )
+        <span>{`$${formatCurrency(data.total_amount)}`}</span>
+      ),
     },
     {
       field: "status",
@@ -261,16 +283,16 @@ export const NewReceiptBoxTable = () => {
       sortable: true,
       body: (rowData: any) => (
         <Tag
-          value={rowData.status}
+          value={getStatusLabel(rowData.status)}
           severity={getEstadoSeverity(rowData.status)}
         />
-      )
+      ),
     },
     {
       field: "actions",
       header: "Acciones",
-      body: actionBodyTemplate
-    }
+      body: actionBodyTemplate,
+    },
   ];
 
   const styles = {
@@ -321,9 +343,9 @@ export const NewReceiptBoxTable = () => {
           <div className="col-md-8 col-lg-3">
             <label style={styles.formLabel}>Tipo de Recibo</label>
             <Dropdown
-              value={filtros.tipoRecibo}
+              value={filtros.type}
               options={tiposRecibo}
-              onChange={(e) => handleFilterChange("tipoRecibo", e.value)}
+              onChange={(e) => handleFilterChange("type", e.value)}
               optionLabel="label"
               placeholder="Tipo"
               className={classNames("w-100")}
@@ -334,8 +356,8 @@ export const NewReceiptBoxTable = () => {
           <div className="col-md-8 col-lg-3">
             <label style={styles.formLabel}>Rango de fechas</label>
             <Calendar
-              value={filtros.fechaRango}
-              onChange={(e) => handleFilterChange("fechaRango", e.value)}
+              value={filtros.createdAt}
+              onChange={(e) => handleFilterChange("createdAt", e.value)}
               selectionMode="range"
               dateFormat="dd/mm/yy"
               placeholder="Rango fechas"
@@ -349,39 +371,44 @@ export const NewReceiptBoxTable = () => {
           <div className="col-md-8 col-lg-3">
             <label style={styles.formLabel}>Estado</label>
             <Dropdown
-              value={filtros.estado}
+              value={filtros.status}
               options={[
-                { label: "Aprobado", value: "Aprobado" },
-                { label: "Pendiente", value: "Pendiente" },
-                { label: "Anulado", value: "Anulado" },
+                { label: "Aprobado", value: "approved" },
+                { label: "Pendiente", value: "pending" },
+                { label: "Completado", value: "completed" },
+                { label: "Anulado", value: "cancelled" },
               ]}
-              onChange={(e) => handleFilterChange("estado", e.value)}
+              onChange={(e) => handleFilterChange("status", e.value)}
               placeholder="Estado"
               className={classNames("w-100")}
             />
           </div>
 
-          {/* Número de recibo */}
           <div className="col-md-8 col-lg-3">
-            <label style={styles.formLabel}>Número de Recibo</label>
-            <input
-              type="text"
-              className="form-control"
-              value={filtros.numeroRecibo}
-              onChange={(e) => handleFilterChange("numeroRecibo", e.target.value)}
-              placeholder="Número de recibo"
+            <label style={styles.formLabel}>Origen</label>
+            <Dropdown
+              value={filtros.action}
+              options={[
+                { label: "Anticipo", value: "advance_payment" },
+                { label: "Pago Parcial ", value: "partial_payment" },
+                { label: "Pago completo", value: "full_payment" },
+              ]}
+              onChange={(e) => handleFilterChange("action", e.value)}
+              placeholder="Origen"
+              className={classNames("w-100")}
             />
           </div>
 
           {/* Cliente */}
           <div className="col-md-8 col-lg-3">
             <label style={styles.formLabel}>Cliente</label>
-            <input
-              type="text"
-              className="form-control"
-              value={filtros.cliente}
-              onChange={(e) => handleFilterChange("cliente", e.target.value)}
-              placeholder="Nombre del cliente"
+            <Dropdown
+              value={filtros.thirdParty}
+              options={thirdParties}
+              onChange={(e) => handleFilterChange("thirdParty", e.value)}
+              optionLabel="name"
+              placeholder="Cliente"
+              className={classNames("w-100")}
             />
           </div>
 

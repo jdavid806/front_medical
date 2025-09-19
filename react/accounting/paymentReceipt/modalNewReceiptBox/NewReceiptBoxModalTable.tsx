@@ -39,6 +39,7 @@ const mapFormDataToPayload = (formData: FormData) => {
   const userId = getUserIdFromLocalStorage();
   return {
     type: formData.tipo.toLowerCase(),
+    action: formData.realizarUn,
     status: "pagado",
     subtotal: formData.valorPagado,
     discount: 0,
@@ -51,6 +52,7 @@ const mapFormDataToPayload = (formData: FormData) => {
     quantity_total: 1,
     third_party_id: parseInt(formData.clientes),
     user_id: userId,
+    advance_role: formData.tipo== "Ingreso" ? "customer" : "provider",
     details: [
       {
         product_id: 1,

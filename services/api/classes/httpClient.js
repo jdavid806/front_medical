@@ -12,7 +12,7 @@ export class HttpClient {
             Accept: "application/json",
             "X-DOMAIN": url.split('.')[0],
             "X-External-ID": getJWTPayload()?.sub,
-            "X-TENANT-ID": tenantId,
+            "X-TENANT-ID": getJWTPayload()?.sub || tenantId,
             ...(token && { "Authorization": `Bearer ${token}` }),
         };
     }
@@ -32,6 +32,10 @@ export class HttpClient {
             if (customHeaders["X-External-ID"]) {
                 headers["X-External-ID"] = customHeaders["X-External-ID"];
             }
+
+            console.log("Headers: ", headers);
+            console.log("Custom Headers: ", customHeaders);
+
 
             // Construir URL de forma segura
             const url = new URL(`https://${this.baseUrl}${endpoint}`);

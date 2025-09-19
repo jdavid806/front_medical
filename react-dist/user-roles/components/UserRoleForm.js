@@ -32,22 +32,24 @@ export const UserRoleForm = ({
   const onSubmit = data => {
     const submissionData = {
       ...data,
-      menus: selectedMenusKeys,
+      menus: allMenus.map(menu => ({
+        ...menu,
+        is_active: selectedMenuIds.includes(menu.id)
+      })),
       menuIds: selectedMenuIds,
       permissions: selectedPermissions
     };
     onHandleSubmit(submissionData);
   };
-  const [menus, setMenus] = useState([]);
+  const [allMenus, setAllMenus] = useState([]);
   const [permissionCategories, setPermissionCategories] = useState([]);
-  const [selectedMenusKeys, setSelectedMenusKeys] = useState([]);
-  const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const menusData = await menuService.getAll();
-        setMenus(menusData);
+        setAllMenus(menusData);
         const permissionsData = await permissionService.getAll();
         setPermissionCategories(permissionsData);
       } catch (error) {
@@ -58,25 +60,29 @@ export const UserRoleForm = ({
   }, []);
   useEffect(() => {
     if (initialData) {
-      reset(initialData);
-      setSelectedMenusKeys(initialData.menus || []);
-      setSelectedMenuIds(initialData.menuIds || []);
+      console.log('Initial data received:', initialData);
+      reset({
+        name: initialData.name,
+        group: initialData.group
+      });
+
+      // Establecer permisos seleccionados
       setSelectedPermissions(initialData.permissions || []);
+
+      // Establecer menús seleccionados basado en is_active o pivot.is_active
+      const activeMenuIds = initialData.menus.filter(menu => menu.is_active || menu.pivot?.is_active).map(menu => menu.id);
+      setSelectedMenuIds(activeMenuIds);
+      console.log('Active menu IDs:', activeMenuIds);
     } else {
       reset({
         name: '',
-        group: '',
-        permissions: [],
-        menus: [],
-        menuIds: []
+        group: ''
       });
-      setSelectedMenusKeys([]);
-      setSelectedMenuIds([]);
       setSelectedPermissions([]);
+      setSelectedMenuIds([]);
     }
   }, [initialData, reset]);
-  const handleMenuChange = (menuKey, menuId, checked) => {
-    setSelectedMenusKeys(prev => checked ? [...prev, menuKey] : prev.filter(key => key !== menuKey));
+  const handleMenuChange = (menuId, checked) => {
     setSelectedMenuIds(prev => checked ? [...prev, menuId] : prev.filter(id => id !== menuId));
   };
   const handlePermissionChange = (permissionKey, checked) => {
@@ -136,18 +142,18 @@ export const UserRoleForm = ({
     className: "card-header"
   }, /*#__PURE__*/React.createElement("h5", null, "Men\xFAs")), /*#__PURE__*/React.createElement("div", {
     className: "card-body"
-  }, menus.map(menu => /*#__PURE__*/React.createElement("div", {
-    key: menu.key_,
+  }, allMenus.map(menu => /*#__PURE__*/React.createElement("div", {
+    key: menu.id,
     className: "form-check form-switch mb-3"
   }, /*#__PURE__*/React.createElement("input", {
     className: "form-check-input",
     type: "checkbox",
-    id: menu.key_,
-    checked: selectedMenusKeys.includes(menu.key_),
-    onChange: e => handleMenuChange(menu.key_, menu.id, e.target.checked)
+    id: `menu-${menu.id}`,
+    checked: selectedMenuIds.includes(menu.id),
+    onChange: e => handleMenuChange(menu.id, e.target.checked)
   }), /*#__PURE__*/React.createElement("label", {
     className: "form-check-label",
-    htmlFor: menu.key_
+    htmlFor: `menu-${menu.id}`
   }, menu.name)))))), /*#__PURE__*/React.createElement("div", {
     className: "col-6"
   }, /*#__PURE__*/React.createElement("div", {

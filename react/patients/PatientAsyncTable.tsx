@@ -10,6 +10,8 @@ import { getAge } from "../../services/utilidades";
 import PatientFormModal from "./modals/form/PatientFormModal";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
+import { Dialog } from "primereact/dialog";
+import { PatientInfoContainer } from "./PatientInfoContainer";
 
 type PatientAsyncTableItem = {
   id: string;
@@ -29,6 +31,7 @@ export const PatientAsyncTable: React.FC = () => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [viewingPatientId, setViewingPatientId] = useState<string | null>(null);
   const { patients, fetchPatientsByFilters, loading, totalRecords } =
     usePatientsByFilters();
 
@@ -51,13 +54,13 @@ export const PatientAsyncTable: React.FC = () => {
 
   const handlePatientCreated = () => {
     setShowPatientModal(false);
-    refresh(); // Refrescar la tabla después de crear un paciente
+    refresh();
   };
 
   const handlePatientUpdated = () => {
     setShowEditModal(false);
     setEditingPatient(null);
-    refresh(); // Refrescar la tabla después de editar un paciente
+    refresh();
   };
 
   const handleSearchChange = (_search: string) => {
@@ -78,9 +81,7 @@ export const PatientAsyncTable: React.FC = () => {
       search: search ?? "",
     });
 
-  // Función para editar paciente
   const handleEditarPaciente = (patientId: string) => {
-    // Encuentra el paciente completo en la lista de pacientes
     const patientToEdit = patients.find(p => p.id.toString() === patientId);
     if (patientToEdit) {
       setEditingPatient(patientToEdit);
@@ -88,9 +89,12 @@ export const PatientAsyncTable: React.FC = () => {
     }
   };
 
+  const handleVerMas = (patientId: string) => {
+    setViewingPatientId(patientId);
+  };
+
   const handleActualizarPermisos = (patientId: string) => {
     console.log("Actualizar permisos de notificaciones para paciente ID:", patientId);
-    // Aquí puedes implementar la lógica para actualizar permisos
   };
 
   useEffect(() => {
@@ -149,6 +153,7 @@ export const PatientAsyncTable: React.FC = () => {
               patientId={rowData.id}
               onEditarPaciente={handleEditarPaciente}
               onActualizarPermisos={handleActualizarPermisos}
+              onVerMas={handleVerMas}
             />
           </div>
         );
@@ -189,14 +194,12 @@ export const PatientAsyncTable: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal para crear nuevo paciente */}
       <PatientFormModal
         visible={showPatientModal}
         onHide={() => setShowPatientModal(false)}
         onSuccess={handlePatientCreated}
       />
 
-      {/* Modal para editar paciente existente */}
       {editingPatient && (
         <PatientFormModal
           visible={showEditModal}
@@ -205,16 +208,29 @@ export const PatientAsyncTable: React.FC = () => {
           patientData={editingPatient}
         />
       )}
+
+      <Dialog
+        header="Información del Paciente"
+        visible={!!viewingPatientId}
+        style={{ width: '80vw', maxWidth: '1000px' }}
+        onHide={() => setViewingPatientId(null)}
+        draggable={false}
+        resizable={false}
+      >
+        {viewingPatientId && (
+          <PatientInfoContainer patientId={viewingPatientId} hideEditButton={true} />
+        )}
+      </Dialog>
     </>
   );
 };
 
-// Componente del menú de acciones para cada fila
 const TableMenu: React.FC<{
   patientId: string;
   onEditarPaciente: (id: string) => void;
   onActualizarPermisos: (id: string) => void;
-}> = ({ patientId, onEditarPaciente, onActualizarPermisos }) => {
+  onVerMas: (id: string) => void;
+}> = ({ patientId, onEditarPaciente, onActualizarPermisos, onVerMas }) => {
   const menu = useRef<Menu>(null);
 
   return (
@@ -230,6 +246,11 @@ const TableMenu: React.FC<{
       </Button>
       <Menu
         model={[
+          {
+            label: "Ver más",
+            icon: <i className="fas fa-eye me-2"></i>,
+            command: () => onVerMas(patientId),
+          },
           {
             label: "Editar paciente",
             icon: <i className="fas fa-pencil-alt me-2"></i>,

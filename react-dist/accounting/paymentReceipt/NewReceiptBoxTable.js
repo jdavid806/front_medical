@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
@@ -8,36 +8,28 @@ import { classNames } from "primereact/utils";
 import { SplitButton } from "primereact/splitbutton";
 import { NewReceiptBoxModalTable } from "./modalNewReceiptBox/NewReceiptBoxModalTable.js";
 import { useDataPagination } from "../../hooks/useDataPagination.js";
-import { cashRecipes } from "../../../services/api/index.js";
+import { cashRecipes, resourcesAdminService } from "../../../services/api/index.js";
 import { CustomPRTable } from "../../components/CustomPRTable.js";
 import { formatDate } from "../../../services/utilidades.js";
 export const NewReceiptBoxTable = () => {
-  const [loading, setLoading] = useState(false);
+  const [thirdParties, setThirdParties] = useState(null);
   const [showReciboModal, setShowReciboModal] = useState(false);
   const [currentReceiptType, setCurrentReceiptType] = useState("advance");
   const [filtros, setFiltros] = useState({
-    numeroRecibo: "",
-    tipoRecibo: null,
-    cliente: "",
-    identificacion: "",
-    origenDinero: null,
-    centroCosto: null,
-    fechaRango: null,
-    valorMinimo: null,
-    valorMaximo: null,
-    estado: null
+    type: "",
+    action: "",
+    thirdParty: null,
+    createdAt: null,
+    status: ""
   });
 
   // Opciones para los dropdowns
   const tiposRecibo = [{
     label: "Ingreso",
-    value: "Ingreso"
+    value: "ingreso"
   }, {
     label: "Egreso",
-    value: "Egreso"
-  }, {
-    label: "Reembolso",
-    value: "Reembolso"
+    value: "egreso"
   }];
   const handleFilterChange = (field, value) => {
     setFiltros(prev => ({
@@ -45,19 +37,24 @@ export const NewReceiptBoxTable = () => {
       [field]: value
     }));
   };
-
+  useEffect(() => {
+    fectThirdParties();
+  }, []);
+  async function fectThirdParties() {
+    const data = await resourcesAdminService.getThirdParties();
+    setThirdParties(data.data);
+  }
   // Función para obtener recibos de caja
   const fetchCashRecipe = async params => {
     try {
       // Aplicar filtros adicionales a los parámetros de paginación
       const filters = {
         ...params,
-        tipo_recibo: filtros.tipoRecibo,
-        estado: filtros.estado,
-        fecha_inicio: filtros.fechaRango?.[0] ? filtros.fechaRango[0].toISOString() : undefined,
-        fecha_fin: filtros.fechaRango?.[1] ? filtros.fechaRango[1].toISOString() : undefined,
-        cliente: filtros.cliente,
-        numero_recibo: filtros.numeroRecibo
+        type: filtros.type,
+        action: filtros.action,
+        status: filtros.status,
+        createdAt: filtros.createdAt?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(","),
+        thirdParty: filtros.thirdParty?.id ?? null
       };
       const response = await cashRecipes.getAllCashRecipes(filters);
       return {
@@ -88,18 +85,12 @@ export const NewReceiptBoxTable = () => {
   });
   const limpiarFiltros = () => {
     setFiltros({
-      numeroRecibo: "",
-      tipoRecibo: null,
-      cliente: "",
-      identificacion: "",
-      origenDinero: null,
-      centroCosto: null,
-      fechaRango: null,
-      valorMinimo: null,
-      valorMaximo: null,
-      estado: null
+      type: "",
+      action: "",
+      thirdParty: null,
+      createdAt: null,
+      status: ""
     });
-    // Los datos se actualizarán automáticamente por el useEffect
   };
   const formatCurrency = value => {
     return value.toLocaleString("es-DO", {
@@ -167,6 +158,20 @@ export const NewReceiptBoxTable = () => {
         return null;
     }
   };
+  const getStatusLabel = type => {
+    switch (type) {
+      case "approved":
+        return "Aprobado";
+      case "pending":
+        return "Pendiente";
+      case "cancelled":
+        return "Anulado";
+      case "completed":
+        return "Completado";
+      default:
+        return null;
+    }
+  };
   const getTipoSeverity = tipo => {
     switch (tipo) {
       case "ingreso":
@@ -177,6 +182,14 @@ export const NewReceiptBoxTable = () => {
         return "info";
       default:
         return null;
+    }
+  };
+  const getAction = action => {
+    switch (action) {
+      case "partial_payment":
+        return "Pago Parcial";
+      default:
+        return action;
     }
   };
 
@@ -196,7 +209,8 @@ export const NewReceiptBoxTable = () => {
     header: "Cliente"
   }, {
     field: "action",
-    header: "Origen Dinero"
+    header: "Origen Dinero",
+    body: rowData => /*#__PURE__*/React.createElement("span", null, getAction(rowData.action))
   }, {
     field: "created_at",
     header: "Fecha",
@@ -204,13 +218,13 @@ export const NewReceiptBoxTable = () => {
   }, {
     field: "total_amount",
     header: "Valor",
-    body: data => /*#__PURE__*/React.createElement("span", null, formatCurrency(data.total_amount))
+    body: data => /*#__PURE__*/React.createElement("span", null, `$${formatCurrency(data.total_amount)}`)
   }, {
     field: "status",
     header: "Estado",
     sortable: true,
     body: rowData => /*#__PURE__*/React.createElement(Tag, {
-      value: rowData.status,
+      value: getStatusLabel(rowData.status),
       severity: getEstadoSeverity(rowData.status)
     })
   }, {
@@ -268,9 +282,9 @@ export const NewReceiptBoxTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Tipo de Recibo"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.tipoRecibo,
+    value: filtros.type,
     options: tiposRecibo,
-    onChange: e => handleFilterChange("tipoRecibo", e.value),
+    onChange: e => handleFilterChange("type", e.value),
     optionLabel: "label",
     placeholder: "Tipo",
     className: classNames("w-100")
@@ -279,8 +293,8 @@ export const NewReceiptBoxTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
-    value: filtros.fechaRango,
-    onChange: e => handleFilterChange("fechaRango", e.value),
+    value: filtros.createdAt,
+    onChange: e => handleFilterChange("createdAt", e.value),
     selectionMode: "range",
     dateFormat: "dd/mm/yy",
     placeholder: "Rango fechas",
@@ -292,40 +306,53 @@ export const NewReceiptBoxTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Estado"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.estado,
+    value: filtros.status,
     options: [{
       label: "Aprobado",
-      value: "Aprobado"
+      value: "approved"
     }, {
       label: "Pendiente",
-      value: "Pendiente"
+      value: "pending"
+    }, {
+      label: "Completado",
+      value: "completed"
     }, {
       label: "Anulado",
-      value: "Anulado"
+      value: "cancelled"
     }],
-    onChange: e => handleFilterChange("estado", e.value),
+    onChange: e => handleFilterChange("status", e.value),
     placeholder: "Estado",
     className: classNames("w-100")
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-8 col-lg-3"
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
-  }, "N\xFAmero de Recibo"), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    className: "form-control",
-    value: filtros.numeroRecibo,
-    onChange: e => handleFilterChange("numeroRecibo", e.target.value),
-    placeholder: "N\xFAmero de recibo"
+  }, "Origen"), /*#__PURE__*/React.createElement(Dropdown, {
+    value: filtros.action,
+    options: [{
+      label: "Anticipo",
+      value: "advance_payment"
+    }, {
+      label: "Pago Parcial ",
+      value: "partial_payment"
+    }, {
+      label: "Pago completo",
+      value: "full_payment"
+    }],
+    onChange: e => handleFilterChange("action", e.value),
+    placeholder: "Origen",
+    className: classNames("w-100")
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-md-8 col-lg-3"
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
-  }, "Cliente"), /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    className: "form-control",
-    value: filtros.cliente,
-    onChange: e => handleFilterChange("cliente", e.target.value),
-    placeholder: "Nombre del cliente"
+  }, "Cliente"), /*#__PURE__*/React.createElement(Dropdown, {
+    value: filtros.thirdParty,
+    options: thirdParties,
+    onChange: e => handleFilterChange("thirdParty", e.value),
+    optionLabel: "name",
+    placeholder: "Cliente",
+    className: classNames("w-100")
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-12 d-flex justify-content-end gap-2"
   }, /*#__PURE__*/React.createElement(Button, {

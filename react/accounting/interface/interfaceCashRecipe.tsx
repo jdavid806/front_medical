@@ -88,16 +88,11 @@ export interface ReciboCaja {
 }
 
 export interface FiltrosRecibos {
-  numeroRecibo: string;
-  tipoRecibo: string | null;
-  cliente: string;
-  identificacion: string;
-  origenDinero: string | null;
-  centroCosto: string | null;
-  fechaRango: (Date | null)[] | null;
-  valorMinimo: number | null;
-  valorMaximo: number | null;
-  estado: string | null;
+  type: string | null;
+  action: string | null;
+  thirdParty: any;
+  createdAt: (Date | null)[] | null;
+  status: string | null;
 }
 
 export interface CashReceipt {

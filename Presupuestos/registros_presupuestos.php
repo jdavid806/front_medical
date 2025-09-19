@@ -124,12 +124,12 @@ include "../footer.php";
                 disabled: true
             }
         },
-        componentConfigs: {
-            newPurchaseOrderBtn: {
-                label: "Nueva cotización",
-                redirect: `OrdenesCompra?patient_id=${new URLSearchParams(window.location.search).get('patient_id')}`
-            }
+     componentConfigs: {
+        newPurchaseOrderBtn: {
+            label: "Nueva cotización",
+            redirect: `OrdenesCompra?patient_id=${new URLSearchParams(window.location.search).get('patient_id')}&type=quote_of`
         }
+    }
     }));
 </script>
 

@@ -10,12 +10,13 @@ export const useUserRoleCreate = () => {
     const createUserRole = async (userRoleData: Omit<UserRoleFormInputs, 'id'>) => {
         setLoading(true)
         try {
+            console.log('Data a enviar:', userRoleData);
             const finalData = {
                 role: {
                     group: userRoleData.group,
                     name: userRoleData.name
                 },
-                menus: userRoleData.menus,
+                menus: userRoleData.menus, 
                 permissions: userRoleData.permissions
             }
             await userRolesService.storeMenusPermissions(finalData)

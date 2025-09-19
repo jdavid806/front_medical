@@ -7,6 +7,7 @@ export const useUserRoleUpdate = () => {
   const updateUserRole = async (id, data) => {
     setLoading(true);
     try {
+      console.log('Data a enviar:', data);
       const finalData = {
         role: {
           group: data.group,

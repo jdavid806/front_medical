@@ -5,9 +5,6 @@ export interface PaymentMethodDTO {
     description: string;
     created_at: string;
     updated_at: string;
-    accounting_account_id: number;
-    accounting_account_id_name: string;
-    account_name: string;
     category: string;
 }
 

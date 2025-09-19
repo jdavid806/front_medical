@@ -1,8 +1,9 @@
 import BaseApiService from "./baseApiService.js";
+import { cleanJsonObject } from "../../utilidades.js";
 
 export class CashRecipes extends BaseApiService {
-    async getAllCashRecipes() {
-        return await this.httpClient.get(`${this.microservice}/cash-receipts`);
+    async getAllCashRecipes(data) {
+        return await this.httpClient.get(`${this.microservice}/cash-receipts`, cleanJsonObject(data));
     }
 
     async getCashRecipeById(cashId) {

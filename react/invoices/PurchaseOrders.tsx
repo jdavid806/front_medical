@@ -117,17 +117,26 @@ export const PurchaseOrders: React.FC<PurchaseOrdersProps> = ({ initialFilters, 
   ];
 
   const getCustomFilters = (): Record<keyof FiltrosOrdenes, any> => {
-    return {
-      thirdId: filtros.thirdId,
-      orderNumber: filtros.orderNumber,
-      status: filtros.status,
-      type: filtros.type,
-      createdAt: filtros.createdAt
-        ?.filter((date) => !!date)
-        .map((date) => date.toISOString().split("T")[0])
-        .join(","),
-    };
+    const filters: any = {};
+
+    if (filtros.thirdId) filters.thirdId = filtros.thirdId;
+    if (filtros.orderNumber) filters.order_number = filtros.orderNumber;
+    if (filtros.status) filters.status = filtros.status;
+    if (filtros.type) filters.type = filtros.type;
+
+    if (filtros.createdAt && filtros.createdAt.length > 0) {
+      const validDates = filtros.createdAt.filter(date => !!date);
+      if (validDates.length > 0) {
+        filters.start_date = validDates[0].toISOString().split('T')[0];
+        if (validDates.length > 1) {
+          filters.end_date = validDates[1].toISOString().split('T')[0];
+        }
+      }
+    }
+
+    return filters;
   };
+
 
   const {
     purchaseOrders,
@@ -181,7 +190,7 @@ export const PurchaseOrders: React.FC<PurchaseOrdersProps> = ({ initialFilters, 
 
     if (orderDetails) {
       setSelectedPurchaseOrder({
-        ...orderDetails, // Usa orderDetails en lugar de rowData para obtener toda la información
+        ...orderDetails, 
         orderNumber: orderDetails.id,
         createdAt: formatDate(orderDetails.created_at),
         dueDate: formatDate(orderDetails.due_date),

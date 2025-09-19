@@ -7,6 +7,7 @@ export const useUserRoleCreate = () => {
   const createUserRole = async userRoleData => {
     setLoading(true);
     try {
+      console.log('Data a enviar:', userRoleData);
       const finalData = {
         role: {
           group: userRoleData.group,

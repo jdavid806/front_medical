@@ -14,7 +14,6 @@ export const useDataPagination = ({
   const [totalRecords, setTotalRecords] = useState(0);
   const [data, setData] = useState([]);
   const fetchData = async (page = currentPage, _perPage = perPage, _search = search) => {
-    console.log("fetchData", page, _perPage, _search);
     try {
       setLoading(true);
       const filters = typeof getCustomFilters === 'function' ? getCustomFilters() : {};
@@ -24,7 +23,6 @@ export const useDataPagination = ({
         search: _search || "",
         ...filters
       });
-      console.log("response", response);
       const items = response.data || [];
       const transformedData = mapper ? items.map(mapper) : items;
       setData(transformedData);

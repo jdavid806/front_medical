@@ -323,17 +323,19 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     return Math.random().toString(36).substr(2, 9);
   }
 
-  // Funciones de cálculo en DOP
   const calculateLineTotal = (product: InvoiceProduct): number => {
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
-    const taxRate = (product.tax && Number(product.tax.id)) || 0;
+
+    const taxRate = typeof product.tax === 'object' && product.tax !== null
+      ? Number(product.tax.percentage)
+      : Number(product.tax) || 0;
 
     const subtotal = quantity * price;
     const discountAmount = subtotal * (discount / 100);
     const subtotalAfterDiscount = subtotal - discountAmount;
-    const taxAmount = subtotalAfterDiscount * (taxRate / 100);
+    const taxAmount = (subtotal - discountAmount) * (taxRate / 100) || 0;
 
     const total = subtotalAfterDiscount + taxAmount;
     const roundedTotal = parseFloat(total.toFixed(2));
@@ -372,11 +374,17 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   };
   const calculateTotalTax = (): number => {
     return productsArray.reduce((total, product) => {
-      const subtotal =
-        (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
       const subtotalAfterDiscount = subtotal - discountAmount;
-      const taxRate = product.tax ? Number(product.tax.id) : 0;
+
+      let taxRate = 0;
+      if (typeof product.tax === 'object' && product.tax !== null) {
+        taxRate = Number(product.tax.percentage) || 0;
+      } else {
+        taxRate = Number(product.tax) || 0;
+      }
+
       return total + subtotalAfterDiscount * (taxRate / 100);
     }, 0);
   };
@@ -1827,7 +1835,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                   </div>
                   <div className="col-md-3">
                     <div className="form-group">
-                      <label className="form-label">IVA</label>
+                      <label className="form-label">Impuestos</label>
                       <InputNumber
                         value={calculateTotalTax() || 0}
                         className="w-100"
@@ -1914,7 +1922,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       <Toast ref={toast} />
 
       <style>{` 
-                  /* Asegurar que el overlay del dropdown tenga mayor z-index que el modal */
+
                   .p-dropdown-panel {
                     z-index: 1100 !important;
                   }
@@ -1923,35 +1931,34 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     z-index: 1030 !important;
                     height: fit-content !important;
                   }
-				  
                   .p-datatable-wrapper {
                     overflow-x: auto;
                     max-width: 100%;
                   }
-                  /* Evita que las celdas se rompan */
                   .p-datatable .p-datatable-thead > tr > th,
                   .p-datatable .p-datatable-tbody > tr > td {
                     white-space: nowrap;
                     min-width: 100px;
                   }
-
-                  /* Corrección específica para PrimeReact */
                   .p-dropdown-panel .p-dropdown-items-wrapper {
                     overflow: auto;
                     max-height: 200px;
                   }
+
+
                   .product-accordion {
                    max-width:100%;
                    overflow-anchor: none; 
+                  }
 
-                }
                 .p-datatable .p-inputnumber {
                     width: 100% !important;
-                }
+                  }
+
                 .p-datatable .p-inputnumber-input {
                     width: 100% !important;
-                }
-                /* Estilos para la sección de métodos de pago */
+                  }
+
                 .payment-methods-section {
                     display: flex;
                     flex-direction: column;
@@ -2004,7 +2011,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     cursor: not-allowed;
                 }
                 
-                /* Estilos para el resumen de pagos */
                 .payment-summary {
                     margin-top: 1.5rem;
                 }
@@ -2068,7 +2074,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     border-width: 0.25em;
                 }
                 
-                /* Animación suave para la aparición de la tabla */
+
                 .table-responsive {
                     transition: opacity 0.3s ease;
                 }
@@ -2092,7 +2098,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     align-items: center;
                 }
                 
-                /* Responsive */
                 @media (max-width: 992px) {
                     .payment-method-row {
                         flex-wrap: wrap;
@@ -2123,7 +2128,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         text-align: left;
                         justify-content: flex-start;
                     }
-                          /* Estilos para el formulario de lotes */
                       .lot-form-container {
                          overflow-anchor: none;
                       }
@@ -2131,17 +2135,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         position: relative;
                         margin-bottom: 1rem;
                       }
-                      /* Prevenir saltos en los inputs */
                       .p-inputtext {
                         transition: none !important;
                          overscroll-behavior: contain !important;
-                           contain: content !important;
-                             overflow-anchor: none !;
-
-
+                         contain: content !important;
+                         overflow-anchor: none !;
                       }
                       
-                      /* Posicionamiento del dropdown */
                       .p-dropdown-panel {
                         position: absolute !important;
                         top: auto !important;
@@ -2149,12 +2149,10 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         z-index: 1100 !important;
                       }
                       
-                      /* Comportamiento de scroll */
                       .p-datatable-wrapper {
                         overscroll-behavior: contain;
                       }
                       
-                      /* Foco en inputs */
                       .p-inputtext:focus {
                         box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
                         border-color: #268fff;
@@ -2412,14 +2410,18 @@ const IvaColumnBody = ({
     fetchTaxes();
   }, []);
 
+  const currentValue = typeof value === 'object' && value !== null
+    ? value.percentage
+    : value;
+
   return (
     <Dropdown
-      value={value} // Usamos el porcentaje directamente como valor
+      value={currentValue}
       options={taxes}
       optionLabel={(option: any) =>
         `${option.name} - ${Math.floor(option.percentage)}%`
       }
-      optionValue="percentage" // Usamos el porcentaje como valor
+      optionValue="percentage"
       placeholder="Seleccione IVA"
       className="w-100"
       onChange={(e: DropdownChangeEvent) => {
@@ -2427,7 +2429,7 @@ const IvaColumnBody = ({
           (tax: any) => tax.percentage === e.value
         );
         if (selectedTax) {
-          onChange(selectedTax); // Pasamos el objeto completo
+          onChange(selectedTax);
         }
       }}
       appendTo={document.body}
@@ -2435,7 +2437,6 @@ const IvaColumnBody = ({
     />
   );
 };
-
 const DepositColumnBody = ({
   deposits,
   onChange,
