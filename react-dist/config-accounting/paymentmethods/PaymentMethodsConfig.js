@@ -62,8 +62,9 @@ export const PaymentMethodsConfig = () => {
         method: data.name,
         payment_type: data.payment_type || '',
         description: data.additionalDetails || '',
-        accounting_account_id: data.account?.id || 0,
-        category: data.category
+        accounting_account_id: data.accounting_account_id || 0,
+        category: data.category,
+        is_cash: data.isCash || false
       };
       if (paymentMethod) {
         await updatePaymentMethod(paymentMethod.id.toString(), paymentMethodData);
@@ -81,7 +82,6 @@ export const PaymentMethodsConfig = () => {
   const handleTableEdit = async id => {
     try {
       const paymentMethod = await fetchPaymentMethodById(id);
-      console.log("paymentMethod", paymentMethod);
       setShowFormModal(true);
     } catch (error) {}
   };
@@ -101,11 +101,9 @@ export const PaymentMethodsConfig = () => {
         name: paymentMethod.method,
         payment_type: paymentMethod.payment_type,
         category: paymentMethod.category || 'other',
-        account: paymentMethod.accounting_account_id ? {
-          id: paymentMethod.accounting_account_id,
-          name: 'Cuenta contable'
-        } : null,
-        additionalDetails: paymentMethod.description
+        accounting_account_id: paymentMethod.accounting_account_id,
+        additionalDetails: paymentMethod.description,
+        isCash: paymentMethod.is_cash || false
       };
       setInitialData(data);
     }

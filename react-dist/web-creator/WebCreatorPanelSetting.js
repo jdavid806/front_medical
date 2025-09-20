@@ -1,18 +1,24 @@
 import React from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
+import { WebCreatorPanelStyleSettings } from "./WebCreatorPanelStyleSettings.js";
 export const WebCreatorPanelSetting = ({
+  panel,
   addSiblingAbove,
   addSiblingBelow,
   addSiblingLeft,
   addSiblingRight,
   addHorizontalChild,
   addVerticalChild,
-  removeSelectedPanel
+  removeSelectedPanel,
+  onPanelStyleChange
 }) => {
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
-  }, /*#__PURE__*/React.createElement("h4", null, "Configuraci\xF3n del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", null, "A\xF1adir panel"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("h4", null, "Configuraci\xF3n del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement(WebCreatorPanelStyleSettings, {
+    panel: panel,
+    onStyleChange: onPanelStyleChange
+  }), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", null, "A\xF1adir panel"), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-wrap gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     icon: /*#__PURE__*/React.createElement("i", {
@@ -79,5 +85,5 @@ export const WebCreatorPanelSetting = ({
     text: true,
     severity: "danger",
     onClick: removeSelectedPanel
-  })));
+  }));
 };

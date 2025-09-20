@@ -1,8 +1,11 @@
 import React from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
+import { WebCreatorPanel } from "./WebCreatorSplitterEditor";
+import { WebCreatorPanelStyleSettings } from "./WebCreatorPanelStyleSettings";
 
 interface WebCreatorPanelSettingProps {
+    panel: WebCreatorPanel;
     addSiblingAbove: () => void;
     addSiblingBelow: () => void;
     addSiblingLeft: () => void;
@@ -10,21 +13,33 @@ interface WebCreatorPanelSettingProps {
     addHorizontalChild: () => void;
     addVerticalChild: () => void;
     removeSelectedPanel: () => void;
+    onPanelStyleChange: (panel: WebCreatorPanel) => void;
 }
 
 export const WebCreatorPanelSetting = ({
+    panel,
     addSiblingAbove,
     addSiblingBelow,
     addSiblingLeft,
     addSiblingRight,
     addHorizontalChild,
     addVerticalChild,
-    removeSelectedPanel
+    removeSelectedPanel,
+    onPanelStyleChange
 }: WebCreatorPanelSettingProps) => {
-    return (<>
+    return (
         <div className="d-flex flex-column gap-3">
             <h4>Configuración del Panel</h4>
             <Divider />
+
+            {/* Configuración de estilos */}
+            <WebCreatorPanelStyleSettings
+                panel={panel}
+                onStyleChange={onPanelStyleChange}
+            />
+
+            <Divider />
+
             <p>Añadir panel</p>
             <div className="d-flex flex-wrap gap-2">
                 <Button
@@ -90,5 +105,5 @@ export const WebCreatorPanelSetting = ({
                 onClick={removeSelectedPanel}
             />
         </div>
-    </>);
+    );
 };

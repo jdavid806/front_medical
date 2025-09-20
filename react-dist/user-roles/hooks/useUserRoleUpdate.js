@@ -1,22 +1,22 @@
 import { useState } from 'react';
-import { userRolesService } from "../../../services/api/index.js";
 import { ErrorHandler } from "../../../services/errorHandler.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
-export const useUserRoleUpdate = () => {
-  const [loading, setLoading] = useState(true);
-  const updateUserRole = async (id, data) => {
+import { userRolesService } from "../../../services/api/index.js";
+export const useUserRoleCreate = () => {
+  const [loading, setLoading] = useState(false);
+  const createUserRole = async userRoleData => {
     setLoading(true);
     try {
-      console.log('Data a enviar:', data);
+      console.log('Data a enviar:', userRoleData);
       const finalData = {
         role: {
-          group: data.group,
-          name: data.name
+          group: userRoleData.group,
+          name: userRoleData.name
         },
-        menus: data.menus,
-        permissions: data.permissions
+        menus: userRoleData.menus.filter(menu => menu.is_active).map(menu => menu.key_),
+        permissions: userRoleData.permissions
       };
-      await userRolesService.updateMenusPermissions(id, finalData);
+      await userRolesService.storeMenusPermissions(finalData);
       SwalManager.success();
     } catch (error) {
       ErrorHandler.generic(error);
@@ -25,7 +25,7 @@ export const useUserRoleUpdate = () => {
     }
   };
   return {
-    updateUserRole,
-    loading
+    loading,
+    createUserRole
   };
 };

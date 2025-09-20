@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Toast } from "primereact/toast";
 import { useAllTableTickets } from "../hooks/useAllTableTickets.js";
 import CustomDataTable from "../../components/CustomDataTable.js";
 import { ticketPriorities, ticketStatus, ticketStatusColors, ticketStatusSteps } from "../../../services/commons.js";
@@ -20,6 +21,7 @@ export const TicketTable = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState({});
+  const toast = useRef(null);
   const columns = [{
     data: "ticket_number"
   }, {
@@ -59,6 +61,7 @@ export const TicketTable = () => {
           acc[reason.key] = reason.label;
           return acc;
         }, {});
+        console.log("first", reasonsMap);
         setTicketReasonsBackend(reasonsMap);
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
@@ -169,26 +172,63 @@ export const TicketTable = () => {
       statusView: ticketStatus[status]
     } : item));
   };
-  const callTicket = async data => {
-    const status = "CALLED";
+
+  // const callTicket = async (data: any) => {
+  //   console.log("callticket",data);
+  //   const status = "CALLED";
+  //   const user = await userService.getByExternalId(getJWTPayload().sub);
+  //   await ticketService.update(data.id, {
+  //     status,
+  //     module_id: user?.today_module_id,
+  //   });
+
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.id === data.id
+  //         ? {
+  //             ...item,
+  //             step: ticketStatusSteps[status],
+  //             status,
+  //             statusView: ticketStatus[status],
+  //           }
+  //         : item
+  //     )
+  //   );
+  //   await sendMessageWhatsapp(data);
+  // };
+
+  const callTicket = async ticket => {
     const user = await userService.getByExternalId(getJWTPayload().sub);
-    await ticketService.update(data.id, {
+
+    // Bloqueo: ya hay un turno en curso en este módulo
+    const hasActiveTicket = data.some(t => t.status === "CALLED" && t.module_id === user?.today_module_id);
+    if (hasActiveTicket) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Turno en curso",
+        detail: "Ya hay un turno en curso en este módulo.",
+        life: 4000
+      });
+      return;
+    }
+    const status = "CALLED";
+    await ticketService.update(ticket.id, {
       status,
       module_id: user?.today_module_id
     });
-    setData(prevData => prevData.map(item => item.id === data.id ? {
+    setData(prevData => prevData.map(item => item.id === ticket.id ? {
       ...item,
       step: ticketStatusSteps[status],
       status,
       statusView: ticketStatus[status]
     } : item));
-    await sendMessageWhatsapp(data);
+    await sendMessageWhatsapp(ticket);
   };
   const sendMessageWhatsapp = useCallback(async data => {
     const replacements = {
       NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""} ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""}`,
       TICKET: `${data?.ticket_number}`,
-      MODULO: `${data?.module?.name ?? "Modulo no asignado"}`,
+      MODULO: `${data?.module?.name ?? ""}`,
       ESPECIALISTA: `${""}`,
       CONSULTORIO: `${data?.branch?.address ?? ""}`
     };
@@ -198,7 +238,7 @@ export const TicketTable = () => {
       const dataMessage = {
         channel: "whatsapp",
         message_type: "text",
-        recipients: [getIndicativeByCountry(data?.patient.country_id) + data?.phone],
+        recipients: [getIndicativeByCountry(data?.patient ? data?.patient.country_id : data?.branch?.country) + data?.phone],
         message: templateFormatted,
         webhook_url: "https://example.com/webhook"
       };
@@ -207,32 +247,82 @@ export const TicketTable = () => {
       console.error("Error:", error);
     }
   }, [sendMessageTickets]);
+
+  // const slots = {
+  //   3: (cell, data: TicketTableItemDto) => (
+  //     <span
+  //       className={`badge badge-phoenix badge-phoenix-${
+  //         ticketStatusColors[data.status]
+  //       }`}
+  //     >
+  //       {data.statusView}
+  //     </span>
+  //   ),
+  //   4: (cell, data: TicketTableItemDto) => (
+  //     <>
+  //       <button
+  //         className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}
+  //         onClick={() => callTicket(data)}
+  //       >
+  //         <i className="fas fa-phone"></i>
+  //       </button>
+  //       <div
+  //         className={`d-flex flex-wrap gap-1 ${
+  //           data.step === 2 ? "" : "d-none"
+  //         }`}
+  //       >
+  //         <button
+  //           className={`btn btn-success`}
+  //           onClick={() => updateStatus(data.id, "COMPLETED")}
+  //         >
+  //           <i className="fas fa-check"></i>
+  //         </button>
+  //         <button
+  //           className={`btn btn-danger`}
+  //           onClick={() => updateStatus(data.id, "MISSED")}
+  //         >
+  //           <i className="fas fa-times"></i>
+  //         </button>
+  //       </div>
+  //     </>
+  //   ),
+  // };
+
   const slots = {
-    4: (cell, data) => /*#__PURE__*/React.createElement("span", {
+    3: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
     }, data.statusView),
-    5: (cell, data) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
-      className: `btn btn-primary ${data.step === 1 ? "" : "d-none"}`,
-      onClick: () => callTicket(data)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-phone"
-    })), /*#__PURE__*/React.createElement("div", {
-      className: `d-flex flex-wrap gap-1 ${data.step === 2 ? "" : "d-none"}`
-    }, /*#__PURE__*/React.createElement("button", {
-      className: `btn btn-success`,
-      onClick: () => updateStatus(data.id, "COMPLETED")
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-check"
-    })), /*#__PURE__*/React.createElement("button", {
-      className: `btn btn-danger`,
-      onClick: () => updateStatus(data.id, "MISSED")
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-times"
-    }))))
+    4: (cell, data) => {
+      // Validar si ya hay un turno en curso en este módulo
+      const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
+
+      // Validar si este turno es el siguiente en la cola
+      const nextTicket = filteredData.find(t => t.status === "PENDING");
+      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+        className: `btn btn-primary ${data.step === 1 && nextTicket?.id === data.id && !hasActiveTicket ? "" : "d-none"}`,
+        onClick: () => callTicket(data)
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-phone"
+      })), /*#__PURE__*/React.createElement("div", {
+        className: `d-flex flex-wrap gap-1 ${data.step === 2 ? "" : "d-none"}`
+      }, /*#__PURE__*/React.createElement("button", {
+        className: `btn btn-success`,
+        onClick: () => updateStatus(data.id, "COMPLETED")
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-check"
+      })), /*#__PURE__*/React.createElement("button", {
+        className: `btn btn-danger`,
+        onClick: () => updateStatus(data.id, "MISSED")
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-times"
+      }))));
+    }
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -267,9 +357,17 @@ export const TicketTable = () => {
     className: "btn btn-primary",
     onClick: () => {
       const nextTicket = filteredData.find(ticket => ticket.status === "PENDING");
-      if (nextTicket) {
-        callTicket(nextTicket.id);
+      console.log("nextticket", nextTicket);
+      if (!nextTicket) {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Sin turnos pendientes",
+          detail: "No hay turnos pendientes para llamar.",
+          life: 4000
+        });
+        return;
       }
+      callTicket(nextTicket);
     }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-arrow-right me-2"

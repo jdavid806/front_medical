@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Toast } from "primereact/toast";
 import { ConfigColumns } from "datatables.net-bs5";
 import { TicketDto, TicketTableItemDto } from "../../models/models";
 import { useAllTableTickets } from "../hooks/useAllTableTickets";
@@ -28,6 +29,7 @@ export const TicketTable = () => {
   const [data, setData] = useState<TicketTableItemDto[]>([]);
   const [filteredData, setFilteredData] = useState<TicketTableItemDto[]>([]);
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState<any>({});
+  const toast = useRef<Toast>(null);
 
   const columns: ConfigColumns[] = [
     { data: "ticket_number" },
@@ -61,6 +63,7 @@ export const TicketTable = () => {
         acc[reason.key] = reason.label;
         return acc;
       }, {});
+      console.log("first", reasonsMap);
       setTicketReasonsBackend(reasonsMap);
     } catch (error) {
       console.error("Error al cargar ticket reasons:", error);
@@ -215,28 +218,69 @@ export const TicketTable = () => {
     );
   };
 
-  const callTicket = async (data: any) => {
-    const status = "CALLED";
-    const user = await userService.getByExternalId(getJWTPayload().sub);
-    await ticketService.update(data.id, {
-      status,
-      module_id: user?.today_module_id,
-    });
+  // const callTicket = async (data: any) => {
+  //   console.log("callticket",data);
+  //   const status = "CALLED";
+  //   const user = await userService.getByExternalId(getJWTPayload().sub);
+  //   await ticketService.update(data.id, {
+  //     status,
+  //     module_id: user?.today_module_id,
+  //   });
 
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.id === data.id
-          ? {
-              ...item,
-              step: ticketStatusSteps[status],
-              status,
-              statusView: ticketStatus[status],
-            }
-          : item
-      )
-    );
-    await sendMessageWhatsapp(data);
-  };
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.id === data.id
+  //         ? {
+  //             ...item,
+  //             step: ticketStatusSteps[status],
+  //             status,
+  //             statusView: ticketStatus[status],
+  //           }
+  //         : item
+  //     )
+  //   );
+  //   await sendMessageWhatsapp(data);
+  // };
+
+  const callTicket = async (ticket: any) => {
+  const user = await userService.getByExternalId(getJWTPayload().sub);
+
+  // Bloqueo: ya hay un turno en curso en este módulo
+  const hasActiveTicket = data.some(
+    (t) => t.status === "CALLED" && t.module_id === user?.today_module_id
+  );
+  if (hasActiveTicket) {
+    toast.current?.show({
+      severity: "warn",
+      summary: "Turno en curso",
+      detail: "Ya hay un turno en curso en este módulo.",
+      life: 4000,
+    });
+    return;
+  }
+
+  const status = "CALLED";
+  await ticketService.update(ticket.id, {
+    status,
+    module_id: user?.today_module_id,
+  });
+
+  setData((prevData) =>
+    prevData.map((item) =>
+      item.id === ticket.id
+        ? {
+            ...item,
+            step: ticketStatusSteps[status],
+            status,
+            statusView: ticketStatus[status],
+          }
+        : item
+    )
+  );
+  await sendMessageWhatsapp(ticket);
+};
+
+
 
   const sendMessageWhatsapp = useCallback(
     async (data) => {
@@ -247,7 +291,7 @@ export const TicketTable = () => {
           data?.patient?.second_last_name ?? ""
         }`,
         TICKET: `${data?.ticket_number}`,
-        MODULO: `${data?.module?.name ?? "Modulo no asignado"}`,
+        MODULO: `${data?.module?.name ?? ""}`,
         ESPECIALISTA: `${""}`,
         CONSULTORIO: `${data?.branch?.address ?? ""}`,
       };
@@ -264,7 +308,7 @@ export const TicketTable = () => {
           channel: "whatsapp",
           message_type: "text",
           recipients: [
-            getIndicativeByCountry(data?.patient.country_id) + data?.phone,
+            getIndicativeByCountry(data?.patient ? data?.patient.country_id : data?.branch?.country) + data?.phone,
           ],
           message: templateFormatted,
           webhook_url: "https://example.com/webhook",
@@ -278,24 +322,87 @@ export const TicketTable = () => {
     [sendMessageTickets]
   );
 
+  // const slots = {
+  //   3: (cell, data: TicketTableItemDto) => (
+  //     <span
+  //       className={`badge badge-phoenix badge-phoenix-${
+  //         ticketStatusColors[data.status]
+  //       }`}
+  //     >
+  //       {data.statusView}
+  //     </span>
+  //   ),
+  //   4: (cell, data: TicketTableItemDto) => (
+  //     <>
+  //       <button
+  //         className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}
+  //         onClick={() => callTicket(data)}
+  //       >
+  //         <i className="fas fa-phone"></i>
+  //       </button>
+  //       <div
+  //         className={`d-flex flex-wrap gap-1 ${
+  //           data.step === 2 ? "" : "d-none"
+  //         }`}
+  //       >
+  //         <button
+  //           className={`btn btn-success`}
+  //           onClick={() => updateStatus(data.id, "COMPLETED")}
+  //         >
+  //           <i className="fas fa-check"></i>
+  //         </button>
+  //         <button
+  //           className={`btn btn-danger`}
+  //           onClick={() => updateStatus(data.id, "MISSED")}
+  //         >
+  //           <i className="fas fa-times"></i>
+  //         </button>
+  //       </div>
+  //     </>
+  //   ),
+  // };
+
+
   const slots = {
-    4: (cell, data: TicketTableItemDto) => (
-      <span
-        className={`badge badge-phoenix badge-phoenix-${
-          ticketStatusColors[data.status]
-        }`}
-      >
-        {data.statusView}
-      </span>
-    ),
-    5: (cell, data: TicketTableItemDto) => (
+  3: (cell, data: TicketTableItemDto) => (
+    <span
+      className={`badge badge-phoenix badge-phoenix-${
+        ticketStatusColors[data.status]
+      }`}
+    >
+      {data.statusView}
+    </span>
+  ),
+  4: (cell, data: TicketTableItemDto) => {
+    // Validar si ya hay un turno en curso en este módulo
+    const hasActiveTicket = filteredData.some(
+      (t) => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id
+    );
+
+    // Validar si este turno es el siguiente en la cola
+    const nextTicket = filteredData.find((t) => t.status === "PENDING");
+
+    return (
       <>
+        {/* Solo se muestra el botón si:
+            - El turno está pendiente
+            - Es el siguiente en la cola
+            - No hay otro turno en curso en este módulo
+        */}
         <button
-          className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}
+          className={`btn btn-primary ${
+            data.step === 1 &&
+            nextTicket?.id === data.id &&
+            !hasActiveTicket
+              ? ""
+              : "d-none"
+          }`}
           onClick={() => callTicket(data)}
         >
           <i className="fas fa-phone"></i>
         </button>
+
+        {/* Acciones cuando el ticket ya está llamado */}
         <div
           className={`d-flex flex-wrap gap-1 ${
             data.step === 2 ? "" : "d-none"
@@ -315,11 +422,13 @@ export const TicketTable = () => {
           </button>
         </div>
       </>
-    ),
-  };
+    );
+  },
+};
 
   return (
     <div className="card mb-3">
+      <Toast ref={toast} />
       <div className="card-body">
         <div className="row">
           <div className="col-md-9">
@@ -370,9 +479,17 @@ export const TicketTable = () => {
                 const nextTicket = filteredData.find(
                   (ticket) => ticket.status === "PENDING"
                 );
-                if (nextTicket) {
-                  callTicket(nextTicket.id);
+                console.log("nextticket",nextTicket);
+                if (!nextTicket) {
+                    toast.current?.show({
+                    severity: "warn",
+                    summary: "Sin turnos pendientes",
+                    detail: "No hay turnos pendientes para llamar.",
+                    life: 4000,
+                  });
+                  return;
                 }
+                callTicket(nextTicket);
               }}
             >
               <i className="fas fa-arrow-right me-2"></i>

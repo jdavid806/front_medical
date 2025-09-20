@@ -9,6 +9,7 @@ export class UserRoleService extends BaseApiService {
     }
     async saveRoleMenus(roleId, menus) {
         try {
+            // Filtrar solo los menús que están activos (is_active: true)
             const activeMenus = menus.filter(menu => menu.is_active);
 
             const payload = {

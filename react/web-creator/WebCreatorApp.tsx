@@ -7,12 +7,15 @@ import { WebCreatorSplitterEditorRef } from "./WebCreatorSplitterEditor";
 import { WebCreatorPanelSetting } from "./WebCreatorPanelSetting";
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
+import { Dialog } from "primereact/dialog";
+import { WebCreatorPreview } from "./WebCreatorPreview"; // Nuevo componente para previsualización
 
 // Componente principal de la aplicación
 export const WebCreatorApp = () => {
     const [selectedPanel, setSelectedPanel] = useState<WebCreatorPanel | null>(null);
     const [selectedComponent, setSelectedComponent] = useState<WebCreatorComponent | null>(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [previewVisible, setPreviewVisible] = useState(false); // Estado para controlar la previsualización
     const splitterEditorRef = useRef<WebCreatorSplitterEditorRef>(null);
 
     const componentsContainerWidth = "300px";
@@ -37,6 +40,13 @@ export const WebCreatorApp = () => {
     const handleComponentChange = (component: WebCreatorComponent) => {
         setSelectedComponent(component);
         splitterEditorRef.current?.updateComponentInPanel(component);
+    };
+
+    const handlePanelChange = (panel: WebCreatorPanel) => {
+        if (selectedPanel) {
+            setSelectedPanel(panel);
+            splitterEditorRef.current?.updatePanel(panel);
+        }
     };
 
     const addSiblingAbove = () => {
@@ -85,6 +95,20 @@ export const WebCreatorApp = () => {
         setIsFullScreen(!isFullScreen);
     };
 
+    const togglePreview = () => {
+        setPreviewVisible(!previewVisible);
+    };
+
+    // Obtener la configuración actual de la grilla
+    const getGridConfiguration = () => {
+        // Esta función debería devolver la estructura completa de la grilla
+        // Por ahora devolvemos un objeto con la información básica
+        return {
+            rootPanel: splitterEditorRef.current?.getRootPanel() || { uuid: 'root', cols: 12, layout: 'horizontal', children: [], component: null },
+            // Otras configuraciones necesarias
+        };
+    };
+
     // Barra de herramientas superior
     const toolbarLeft = (
         <div className="d-flex align-items-center">
@@ -95,14 +119,21 @@ export const WebCreatorApp = () => {
     const toolbarRight = (
         <div className="d-flex gap-2">
             <Button
-                icon={isFullScreen ? <i className="fa fa-compress" /> : <i className="fa fa-expand" />}
+                icon={<i className="fa fa-eye"></i>}
+                text
+                rounded
+                onClick={togglePreview}
+                tooltip="Previsualizar página"
+                tooltipOptions={{ position: 'bottom' }}
+            />
+            <Button
+                icon={<i className={isFullScreen ? "fa fa-compress" : "fa fa-expand"}></i>}
                 text
                 rounded
                 onClick={toggleFullScreen}
                 tooltip={isFullScreen ? "Salir de pantalla completa" : "Pantalla completa"}
                 tooltipOptions={{ position: 'bottom' }}
             />
-            {/* Espacio para futuros botones */}
         </div>
     );
 
@@ -169,6 +200,7 @@ export const WebCreatorApp = () => {
                             {selectedPanel && (
                                 <Card>
                                     <WebCreatorPanelSetting
+                                        panel={selectedPanel}
                                         addSiblingAbove={addSiblingAbove}
                                         addSiblingBelow={addSiblingBelow}
                                         addSiblingLeft={addSiblingLeft}
@@ -176,6 +208,7 @@ export const WebCreatorApp = () => {
                                         addHorizontalChild={addHorizontalChild}
                                         addVerticalChild={addVerticalChild}
                                         removeSelectedPanel={removeSelectedPanel}
+                                        onPanelStyleChange={handlePanelChange}
                                     />
                                 </Card>
                             )}
@@ -191,6 +224,19 @@ export const WebCreatorApp = () => {
                     </div>
                 )}
             </div>
+
+            {/* Diálogo de previsualización */}
+            <Dialog
+                visible={previewVisible}
+                onHide={() => setPreviewVisible(false)}
+                header="Previsualización de la Página"
+                position="center"
+                style={{ width: '100vw', height: '100vh' }}
+                maximizable
+                className="preview-dialog"
+            >
+                <WebCreatorPreview gridConfiguration={getGridConfiguration()} />
+            </Dialog>
         </div>
     );
 };

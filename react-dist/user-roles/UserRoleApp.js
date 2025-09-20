@@ -3,12 +3,11 @@ import { PrimeReactProvider } from 'primereact/api';
 import { useEffect } from 'react';
 import { useUserRole } from "./hooks/useUserRole.js";
 import { useUserRoleDelete } from "./hooks/useUserRoleDelete.js";
-import { useUserRoleUpdate } from "./hooks/useUserRoleUpdate.js";
-import { useUserRoleCreate } from "./hooks/useUserRoleCreate.js";
 import { useRoles } from "./hooks/useUserRoles.js";
 import { UserRoleTable } from "./components/UserRoleTable.js";
 import { UserRoleFormModal } from "./components/UserRoleFormModal.js";
-import { useUserRoleMenus } from "./hooks/useUserRoleMenus.js";
+import { useUserRoleCreate } from "./hooks/useUserRoleUpdate.js";
+import { useUserRoleUpdate } from "./hooks/useUserRoleCreate.js";
 export const UserRoleApp = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -30,26 +29,19 @@ export const UserRoleApp = () => {
     fetchUserRole,
     setUserRole
   } = useUserRole();
-  const {
-    saveRoleMenus
-  } = useUserRoleMenus();
   const onCreate = () => {
     setInitialData(undefined);
     setShowFormModal(true);
   };
   const handleSubmit = async data => {
     try {
-      let roleId;
       if (userRole) {
-        // Actualizar rol existente
+        // Actualizar rol existente (incluye menús y permisos)
         await updateUserRole(userRole.id, data);
-        roleId = userRole.id;
       } else {
-        // Crear nuevo rol
-        const newRole = await createUserRole(data);
-        roleId = newRole.id;
+        // Crear nuevo rol (incluye menús y permisos)
+        await createUserRole(data);
       }
-      await saveRoleMenus(roleId, data.menus);
       fetchUserRoles();
       setShowFormModal(false);
       setUserRole(null);
@@ -75,11 +67,10 @@ export const UserRoleApp = () => {
           id: item.id,
           key_: item.key,
           name: item.label,
-          is_active: item.pivot?.is_active || false,
-          // Usa el estado real del backend
+          is_active: item.is_active,
           pivot: item.pivot
         })) || [],
-        menuIds: userRole.menus.filter(menu => menu.pivot?.is_active).map(menu => menu.id) || []
+        menuIds: userRole.menus?.map(menu => menu.id) || []
       });
     } else {
       setInitialData(undefined);

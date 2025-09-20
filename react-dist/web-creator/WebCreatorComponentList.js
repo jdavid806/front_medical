@@ -34,7 +34,10 @@ export const WebCreatorComponentList = ({
     uuid: "3",
     name: "Botón agendar",
     type: "button",
-    imgSrc: "assets/img/logos/FullColor.svg"
+    action: "OPEN_DIALOG",
+    dialogComponent: "SCHEDULE_APPOINTMENT",
+    label: "Agendar una cita",
+    icon: "fa fa-calendar"
   }, {
     uuid: "4",
     name: "Sidebar",

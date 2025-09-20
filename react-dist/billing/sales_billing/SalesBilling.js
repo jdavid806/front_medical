@@ -4,8 +4,6 @@ import { useForm, Controller } from "react-hook-form";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { classNames } from "primereact/utils";
@@ -25,7 +23,7 @@ import { depositService } from "../../../services/api/index.js";
 import { Dialog } from "primereact/dialog";
 import { useAdvancePayments } from "../hooks/useAdvancePayments.js";
 import { useBillingByType } from "../hooks/useBillingByType.js";
-import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal.js"; // Definición de tipos
+import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal.js";
 export const SalesBilling = ({
   selectedInvoice,
   successSale
@@ -62,8 +60,6 @@ export const SalesBilling = ({
     fetchBillingByType
   } = useBillingByType();
   const [billing, setBilling] = useState(null);
-  // Estados para manejar lotes y activos fijos
-
   const invoiceType = watch("type");
   useEffect(() => {
     if (paymentMethods) {
@@ -105,13 +101,9 @@ export const SalesBilling = ({
     }
     fetchAdvancePayments(selectedInvoice.third_id || customerId, "client");
   }, [selectedInvoice, customerId]);
-
-  // Helper function to generate unique IDs
   function generateId() {
     return Math.random().toString(36).substr(2, 9);
   }
-
-  // Opciones del formulario
   const typeOptions = [{
     id: "tax_invoice",
     name: "Fiscal"
@@ -138,7 +130,6 @@ export const SalesBilling = ({
       const productsMapped = selectedInvoice.details.map(item => {
         let typeProduct = "";
         if (item.product?.product_type) {
-          // Mapear el tipo de producto según lo que espera tu formulario
           switch (item.product.product_type.name.toLowerCase()) {
             case "servicios":
               typeProduct = "services";
@@ -177,8 +168,6 @@ export const SalesBilling = ({
       setDisabledInputs(true);
     }
   }
-
-  // Funciones de cálculo en DOP
   const calculateLineTotal = product => {
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
@@ -210,7 +199,7 @@ export const SalesBilling = ({
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
       const subtotalAfterDiscount = subtotal - discountAmount;
-      const ivaRate = product.iva || 0; // <-- Cambio aquí
+      const ivaRate = product.iva || 0;
       return total + subtotalAfterDiscount * (ivaRate / 100);
     }, 0);
   };
@@ -235,10 +224,8 @@ export const SalesBilling = ({
   const paymentCoverage = () => {
     const total = calculateTotal();
     const payments = calculateTotalPayments();
-    // Permitimos un pequeño margen por redondeos
     return Math.abs(payments - total) < 0.01;
   };
-  // Funciones para manejar productos
   const addProduct = () => {
     setProductsArray([...productsArray, {
       id: generateId(),
@@ -251,7 +238,6 @@ export const SalesBilling = ({
       iva: 0
     }]);
   };
-  // Función para manejar la selección de anticipos
   const handleSelectAdvances = selectedAdvances => {
     if (!selectedAdvanceMethodId) return;
     setPaymentMethodsArray(prev => prev.map(payment => payment.id === selectedAdvanceMethodId ? {
@@ -272,8 +258,6 @@ export const SalesBilling = ({
       [field]: value
     } : product));
   };
-
-  // Funciones para manejar métodos de pago
   const addPayment = () => {
     setPaymentMethodsArray([...paymentMethodsArray, {
       id: generateId(),
@@ -315,10 +299,33 @@ export const SalesBilling = ({
       [field]: value
     } : payment));
   };
-
-  // Funciones para guardar
+  const copyTotalToPayment = paymentId => {
+    const total = calculateTotal();
+    const currentPaymentsTotal = calculateTotalPayments();
+    const remainingAmount = total - currentPaymentsTotal;
+    const currentPaymentValue = Number(paymentMethodsArray.find(p => p.id === paymentId)?.value || 0);
+    const amountToSet = remainingAmount + currentPaymentValue;
+    if (amountToSet > 0) {
+      setPaymentMethodsArray(prevPayments => prevPayments.map(payment => payment.id === paymentId ? {
+        ...payment,
+        value: parseFloat(amountToSet.toFixed(2))
+      } : payment));
+      window["toast"].show({
+        severity: "success",
+        summary: "Éxito",
+        detail: `Valor ${amountToSet.toFixed(2)} DOP copiado al método de pago`,
+        life: 3000
+      });
+    } else {
+      window["toast"].show({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "El total ya está cubierto por los pagos actuales",
+        life: 3000
+      });
+    }
+  };
   const save = async formData => {
-    // Validación básica
     if (productsArray.length === 0) {
       window["toast"].show({
         severity: "error",
@@ -410,127 +417,6 @@ export const SalesBilling = ({
       ...retentionsValue
     };
   }
-  const getProductColumns = () => {
-    return [{
-      field: "type",
-      header: "Tipo",
-      body: rowData => /*#__PURE__*/React.createElement(TypeColumnBody, {
-        rowData: rowData,
-        onChange: newType => {
-          handleProductChange(rowData.id, "typeProduct", newType);
-          handleProductChange(rowData.id, "product", null);
-        },
-        disabled: disabledInpputs
-      })
-    }, {
-      field: "product",
-      header: "Producto",
-      body: rowData => {
-        return /*#__PURE__*/React.createElement(ProductColumnBody, {
-          rowData: rowData,
-          type: rowData.typeProduct,
-          onChange: value => {
-            handleProductChange(rowData.id, "product", value);
-          },
-          handleProductChange: handleProductChange,
-          disabled: disabledInpputs
-        });
-      }
-    }, {
-      field: "quantity",
-      header: "Cantidad",
-      body: rowData => /*#__PURE__*/React.createElement(QuantityColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "quantity", value || 0),
-        value: rowData.quantity,
-        disabled: disabledInpputs
-      }),
-      style: {
-        minWidth: "90px"
-      }
-    }, {
-      field: "price",
-      header: "Valor unitario",
-      body: rowData => /*#__PURE__*/React.createElement(PriceColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "price", value || 0),
-        value: rowData.price,
-        disabled: disabledInpputs
-      }),
-      style: {
-        minWidth: "150px"
-      }
-    }, {
-      field: "discount",
-      header: "Descuento %",
-      body: rowData => /*#__PURE__*/React.createElement(DiscountColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "discount", value || 0),
-        value: rowData.discount,
-        disabled: disabledInpputs
-      }),
-      style: {
-        minWidth: "150px"
-      }
-    }, {
-      field: "iva",
-      header: "Impuestos",
-      body: rowData => /*#__PURE__*/React.createElement(IvaColumnBody, {
-        onChange: value => {
-          // value ahora es el objeto completo del impuesto
-          handleProductChange(rowData.id, "iva", value?.percentage || 0);
-          handleProductChange(rowData.id, "taxAccountingAccountId", value?.accounting_account_id || null);
-          handleProductChange(rowData.id, "taxChargeId", value?.id || null);
-        },
-        value: rowData.iva // Esto seguirá mostrando el porcentaje
-        ,
-        disabled: disabledInpputs
-      }),
-      style: {
-        minWidth: "150px"
-      }
-    }, {
-      field: "deposit",
-      header: "Depósito",
-      body: rowData => /*#__PURE__*/React.createElement(DepositColumnBody, {
-        onChange: value => handleProductChange(rowData.id, "depositId", value),
-        value: rowData.depositId,
-        disabled: disabledInpputs
-      }),
-      style: {
-        minWidth: "150px"
-      }
-    }, {
-      field: "totalvalue",
-      header: "Valor total",
-      body: rowData => /*#__PURE__*/React.createElement(InputNumber, {
-        value: calculateLineTotal(rowData),
-        mode: "currency",
-        style: {
-          maxWidth: "200px"
-        },
-        className: "button-width",
-        currency: "DOP",
-        locale: "es-DO",
-        readOnly: true
-      }),
-      style: {
-        minWidth: "300px"
-      }
-    }, {
-      field: "actions",
-      header: "Acciones",
-      body: rowData => /*#__PURE__*/React.createElement(Button, {
-        className: "p-button-rounded p-button-danger p-button-text",
-        onClick: () => removeProduct(rowData.id),
-        disabled: productsArray.length <= 1,
-        tooltip: "Eliminar Producto"
-      }, " ", /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-trash"
-      })),
-      style: {
-        width: "120px",
-        textAlign: "center"
-      }
-    }];
-  };
   const {
     openModal: openThirdPartyModal,
     ThirdPartyModal
@@ -540,7 +426,7 @@ export const SalesBilling = ({
     }
   });
   return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid p-4"
+    className: "container-fluid p-3 p-md-4"
   }, /*#__PURE__*/React.createElement(ThirdPartyModal, null), /*#__PURE__*/React.createElement("div", {
     className: "row mb-4"
   }, /*#__PURE__*/React.createElement("div", {
@@ -548,9 +434,9 @@ export const SalesBilling = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "card shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body p-3"
   }, /*#__PURE__*/React.createElement("h1", {
-    className: "h3 mb-0 text-primary"
+    className: "h4 mb-0 text-primary"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-file-invoice me-2"
   }), "Crear nueva factura de venta"))))), /*#__PURE__*/React.createElement("div", {
@@ -562,17 +448,17 @@ export const SalesBilling = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light"
+    className: "card-header bg-light p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-user-edit me-2 text-primary"
   }), "Informaci\xF3n b\xE1sica")), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body p-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -600,7 +486,7 @@ export const SalesBilling = ({
       appendTo: "self"
     })))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -615,10 +501,11 @@ export const SalesBilling = ({
       className: classNames("w-100"),
       showIcon: true,
       dateFormat: "dd/mm/yy",
-      disabled: disabledInpputs
+      disabled: disabledInpputs,
+      inputClassName: "form-control"
     })))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -636,10 +523,11 @@ export const SalesBilling = ({
       className: classNames("w-100"),
       showIcon: true,
       dateFormat: "dd/mm/yy",
-      disabled: disabledInpputs
+      disabled: disabledInpputs,
+      inputClassName: "form-control"
     })))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -653,14 +541,14 @@ export const SalesBilling = ({
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex"
+      className: "d-flex gap-2"
     }, /*#__PURE__*/React.createElement(Dropdown, _extends({}, field, {
       filter: true,
       options: thirdParties,
       optionLabel: "name",
       optionValue: "id",
       placeholder: "Seleccione un proveedor",
-      className: classNames("w-100"),
+      className: classNames("flex-grow-1"),
       appendTo: "self",
       disabled: disabledInpputs
     })), /*#__PURE__*/React.createElement(Button, {
@@ -672,7 +560,7 @@ export const SalesBilling = ({
       className: "p-button-primary"
     })))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -696,7 +584,7 @@ export const SalesBilling = ({
       disabled: disabledInpputs
     })))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -718,7 +606,7 @@ export const SalesBilling = ({
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light d-flex justify-content-between align-items-center"
+    className: "card-header bg-light d-flex justify-content-between align-items-center p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
@@ -733,9 +621,7 @@ export const SalesBilling = ({
     },
     disabled: disabledInpputs
   })), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "table-responsive"
+    className: "card-body p-0"
   }, loadingProductTypes ? /*#__PURE__*/React.createElement("div", {
     className: "text-center py-5"
   }, /*#__PURE__*/React.createElement("div", {
@@ -745,22 +631,133 @@ export const SalesBilling = ({
     className: "visually-hidden"
   }, "Cargando...")), /*#__PURE__*/React.createElement("p", {
     className: "mt-2 text-muted"
-  }, "Cargando productos...")) : /*#__PURE__*/React.createElement(DataTable, {
-    key: `products-table-${productTypes.length}`,
-    value: productsArray,
-    emptyMessage: "No hay productos agregados",
-    className: "p-datatable-sm p-datatable-gridlines",
-    showGridlines: true,
-    scrollable: true,
-    stripedRows: true,
-    loading: false,
-    size: "small"
-  }, getProductColumns().map((col, i) => /*#__PURE__*/React.createElement(Column, {
-    key: i,
-    field: col.field,
-    header: col.header,
-    body: col.body
-  })))))), /*#__PURE__*/React.createElement("div", {
+  }, "Cargando productos...")) : /*#__PURE__*/React.createElement("div", {
+    className: "table-responsive-md"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "table table-hover mb-0"
+  }, /*#__PURE__*/React.createElement("thead", {
+    className: "table-light"
+  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "120px"
+    }
+  }, "Tipo"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "180px"
+    }
+  }, "Producto"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "100px"
+    }
+  }, "Cantidad"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "200px"
+    }
+  }, "Valor unitario"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "220px"
+    }
+  }, "Descuento %"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "120px"
+    }
+  }, "Impuestos"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "130px"
+    }
+  }, "Dep\xF3sito"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      minWidth: "200px !important"
+    }
+  }, "Valor total"), /*#__PURE__*/React.createElement("th", {
+    scope: "col",
+    style: {
+      width: "80px"
+    }
+  }, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, productsArray.map(product => /*#__PURE__*/React.createElement("tr", {
+    key: product.id
+  }, /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(TypeColumnBody, {
+    rowData: product,
+    onChange: newType => {
+      handleProductChange(product.id, "typeProduct", newType);
+      handleProductChange(product.id, "product", null);
+    },
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(ProductColumnBody, {
+    rowData: product,
+    type: product.typeProduct,
+    onChange: value => {
+      handleProductChange(product.id, "product", value);
+    },
+    handleProductChange: handleProductChange,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(QuantityColumnBody, {
+    onChange: value => handleProductChange(product.id, "quantity", value || 0),
+    value: product.quantity,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(PriceColumnBody, {
+    onChange: value => handleProductChange(product.id, "price", value || 0),
+    value: product.price,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(DiscountColumnBody, {
+    onChange: value => handleProductChange(product.id, "discount", value || 0),
+    value: product.discount,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(IvaColumnBody, {
+    onChange: value => {
+      handleProductChange(product.id, "iva", value?.percentage || 0);
+      handleProductChange(product.id, "taxAccountingAccountId", value?.accounting_account_id || null);
+      handleProductChange(product.id, "taxChargeId", value?.id || null);
+    },
+    value: product.iva,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(DepositColumnBody, {
+    onChange: value => handleProductChange(product.id, "depositId", value),
+    value: product.depositId,
+    disabled: disabledInpputs
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "p-2"
+  }, /*#__PURE__*/React.createElement(InputNumber, {
+    value: calculateLineTotal(product),
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    readOnly: true,
+    inputClassName: "form-control bg-light",
+    style: {
+      minWidth: "200px"
+    }
+  })), /*#__PURE__*/React.createElement("td", {
+    className: "text-center p-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-rounded p-button-danger p-button-text",
+    onClick: () => removeProduct(product.id),
+    disabled: productsArray.length <= 1
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-trash"
+  })))))))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement(RetentionsSection, {
     subtotal: calculateSubtotal(),
@@ -770,7 +767,7 @@ export const SalesBilling = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light d-flex justify-content-between align-items-center"
+    className: "card-header bg-light d-flex justify-content-between align-items-center p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
@@ -784,12 +781,12 @@ export const SalesBilling = ({
       addPayment();
     }
   })), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body p-3"
   }, paymentMethodsArray.map(payment => /*#__PURE__*/React.createElement("div", {
     key: payment.id,
     className: "row g-3 mb-3 align-items-end"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
+    className: "col-12 col-sm-5 col-md-5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -805,63 +802,98 @@ export const SalesBilling = ({
     onChange: e => {
       handlePaymentChange(payment.id, "method", e.value);
     },
-    appendTo: "self"
+    appendTo: "self",
+    filter: true
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-5"
+    className: "col-12 col-sm-5 col-md-5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "Valor *"), /*#__PURE__*/React.createElement(InputNumber, {
+  }, "Valor *"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2 align-items-center"
+  }, /*#__PURE__*/React.createElement(InputNumber, {
     value: payment.value === "" ? null : payment.value,
-    placeholder: "$0.00",
-    className: "w-100",
+    placeholder: "RD$ 0.00",
+    className: "flex-grow-1",
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
     min: 0,
-    onValueChange: e => handlePaymentChange(payment.id, "value", e.value === null ? "" : e.value)
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-1"
+    onValueChange: e => handlePaymentChange(payment.id, "value", e.value === null ? "" : e.value),
+    inputClassName: "form-control",
+    style: {
+      minWidth: "140px"
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-copy"
+    }),
+    className: "p-button-outlined p-button-info",
+    onClick: () => copyTotalToPayment(payment.id),
+    tooltip: "Copiar valor total restante",
+    tooltipOptions: {
+      position: 'top'
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-sm-2 col-md-2 text-end"
   }, /*#__PURE__*/React.createElement(Button, {
     className: "p-button-rounded p-button-danger p-button-text",
     onClick: () => removePayment(payment.id),
     disabled: paymentMethodsArray.length <= 1,
     tooltip: "Eliminar m\xE9todo"
-  }, " ", /*#__PURE__*/React.createElement("i", {
+  }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
   }))))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info",
+    className: "alert alert-info p-3",
     style: {
       background: "rgb(194 194 194 / 85%)",
       border: "none",
       color: "black"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Total factura:"), /*#__PURE__*/React.createElement(InputNumber, {
+    className: "d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center flex-wrap"
+  }, /*#__PURE__*/React.createElement("strong", {
+    className: "me-2"
+  }, "Total factura:"), /*#__PURE__*/React.createElement(InputNumber, {
     value: calculateTotal(),
-    className: "ms-2",
+    className: "me-3",
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
     minFractionDigits: 2,
     maxFractionDigits: 3,
-    readOnly: true
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("strong", null, "Total pagos:"), /*#__PURE__*/React.createElement(InputNumber, {
+    readOnly: true,
+    inputClassName: "form-control bg-white",
+    style: {
+      minWidth: "130px"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center flex-wrap"
+  }, /*#__PURE__*/React.createElement("strong", {
+    className: "me-2"
+  }, "Total pagos:"), /*#__PURE__*/React.createElement(InputNumber, {
     value: calculateTotalPayments(),
-    className: "ms-2",
+    className: "me-3",
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
     minFractionDigits: 2,
     maxFractionDigits: 3,
-    readOnly: true
-  })), /*#__PURE__*/React.createElement("div", null, !paymentCoverage() ? /*#__PURE__*/React.createElement("span", {
+    readOnly: true,
+    inputClassName: "form-control bg-white",
+    style: {
+      minWidth: "130px"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center"
+  }, !paymentCoverage() ? /*#__PURE__*/React.createElement("span", {
     className: "text-danger"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-exclamation-triangle me-1"
@@ -871,8 +903,8 @@ export const SalesBilling = ({
     className: "pi pi-check-circle me-1"
   }), "Pagos completos")))))))), /*#__PURE__*/React.createElement(Dialog, {
     style: {
-      width: "50vw",
-      height: "44vh"
+      width: "90vw",
+      maxWidth: "800px"
     },
     header: "Anticipos",
     visible: showAdvancesForm,
@@ -886,17 +918,17 @@ export const SalesBilling = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light"
+    className: "card-header bg-light p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-calculator me-2 text-primary"
   }), "Totales (DOP)")), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body p-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-2"
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -907,9 +939,10 @@ export const SalesBilling = ({
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    readOnly: true
+    readOnly: true,
+    inputClassName: "form-control bg-light"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-2"
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -920,9 +953,10 @@ export const SalesBilling = ({
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    readOnly: true
+    readOnly: true,
+    inputClassName: "form-control bg-light"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-2"
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -933,9 +967,10 @@ export const SalesBilling = ({
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    readOnly: true
+    readOnly: true,
+    inputClassName: "form-control bg-light"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-2"
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -946,9 +981,24 @@ export const SalesBilling = ({
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    readOnly: true
+    readOnly: true,
+    inputClassName: "form-control bg-light"
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-2"
+    className: "col-6 col-md-3 col-lg-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Retenciones"), /*#__PURE__*/React.createElement(InputNumber, {
+    value: calculateTotalWithholdingTax(),
+    className: "w-100",
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    readOnly: true,
+    inputClassName: "form-control bg-light"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
@@ -959,7 +1009,8 @@ export const SalesBilling = ({
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
-    readOnly: true
+    readOnly: true,
+    inputClassName: "form-control bg-light fw-bold"
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
@@ -971,179 +1022,123 @@ export const SalesBilling = ({
     ref: el => {
       window["toast"] = el;
     }
-  }), " ", /*#__PURE__*/React.createElement("style", null, `
-                .p-dropdown-panel {
-                  z-index: 1100 !important;
-                }
-                .overlay-invoices {
-                  position: absolute !important;
-                  z-index: 1030 !important;
-                  height: fit-content !important;
-                }
-               .payment-methods-section {
-                display: flex;
-                flex-direction: column;
-                gap: 1.5rem;
-                }
-
-                .payment-method-row {
-                display: flex;
-                gap: 1rem;
-                align-items: flex-end;
-                }
-
-                .payment-method-field {
-                flex: 1;
-                min-width: 0;
-                }
-
-                .payment-method-label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #495057;
-                }
-
-                .payment-dropdown, .payment-input {
-                width: 100%;
-                }
-
-                .payment-method-actions {
-                display: flex;
-                align-items: center;
-                height: 40px;
-                margin-bottom: 0.5rem;
-                }
-
-                .payment-delete-button {
-                color: #dc3545;
-                background: transparent;
-                border: none;
-                transition: all 0.2s;
-                }
-
-                .payment-delete-button:hover {
-                color: #fff;
-                background: #dc3545;
-                }
-
-                .payment-delete-button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                }
-
-                /* Estilos para el resumen de pagos */
-                .payment-summary {
-                margin-top: 1.5rem;
-                }
-
-                .payment-summary-card {
-                background: rgba(194, 194, 194, 0.15);
-                border-radius: 8px;
-                padding: 1.5rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-                }
-
-                .payment-summary-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                }
-
-                .payment-summary-input {
-                background: transparent;
-                border: none;
-                font-weight: bold;
-                }
-
-                .payment-summary-status {
-                flex: 1;
-                text-align: right;
-                min-width: 200px;
-                }
-
-                .payment-status-warning {
-                color: #dc3545;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                }
-
-                .payment-status-success {
-                color: #28a745;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                }
-
-                .payment-warning {
-                border-left: 4px solid #dc3545;
-                }
-
-                .payment-success {
-                border-left: 4px solid #28a745;
-                }
-
-                .spinner-border {
-                width: 3rem;
-                height: 3rem;
-                border-width: 0.25em;
-                }
-
-                /* Animación suave para la aparición de la tabla */
-                .table-responsive {
-                transition: opacity 0.3s ease;
-                }
-
-                /* Responsive */
-                @media (max-width: 992px) {
-                .payment-method-row {
-                    flex-wrap: wrap;
-                }
-                
-                .payment-method-field {
-                    flex: 0 0 calc(50% - 0.5rem);
-                }
-                
-                .payment-method-actions {
-                    flex: 0 0 100%;
-                    justify-content: flex-end;
-                }
-                }
-
-                @media (max-width: 768px) {
-                .payment-method-field {
-                    flex: 0 0 100%;
-                }
-                
-                .payment-summary-card {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 1rem;
-                }
-                
-                .payment-summary-status {
-                    text-align: left;
-                    justify-content: flex-start;
-                }
-                }
-
-                /* Estilos generales para inputs en tablas */
-                .p-datatable .p-inputnumber {
-                width: 100% !important;
-                }
-
-                .p-datatable .p-inputnumber-input {
-                width: 100% !important;
-    }
-                }
-            `));
+  }), /*#__PURE__*/React.createElement("style", null, `
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+        }
+        
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
+        }
+        
+        .p-calendar {
+          height: 38px;
+        }
+        
+        .table-responsive-md {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .table th, .table td {
+          vertical-align: middle;
+          padding: 0.75rem;
+        }
+        
+        .table thead th {
+          border-bottom: 2px solid #dee2e6;
+          background-color: #f8f9fa;
+          font-weight: 600;
+        }
+        
+        /* Inputs de precio que se expanden según el contenido */
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+           width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Mejoras específicas para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive-md {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .table {
+            margin-bottom: 0;
+            min-width: 800px;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+           width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        /* Estilos para mejorar la apariencia de los inputs en tablas */
+        .table .p-inputnumber, 
+        .table .p-dropdown, 
+        .table .p-calendar {
+          width: 100% !important;
+          min-width: 100px;
+        }
+        
+        .p-dropdown-panel {
+          z-index: 1100 !important;
+        }
+        
+        /* Estilos para el resumen de pagos en móviles */
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+      `));
 };
 const TypeColumnBody = ({
   rowData,
@@ -1181,7 +1176,8 @@ const TypeColumnBody = ({
       onChange(e.value);
     },
     onClick: e => e.stopPropagation(),
-    disabled: disabled
+    disabled: disabled,
+    filter: true
   }));
 };
 const ProductColumnBody = ({
@@ -1220,7 +1216,6 @@ const ProductColumnBody = ({
       setOptions(formatted);
     }
   }, [type, propertyAccounts, products]);
-  // Si es activo fijo, mostramos un campo de selección diferente
   if (type === "assetsFixed") {
     return /*#__PURE__*/React.createElement(Dropdown, {
       value: rowData.product,
@@ -1234,7 +1229,7 @@ const ProductColumnBody = ({
         e.originalEvent?.preventDefault();
         e.originalEvent?.stopPropagation();
         const selectedProduct = options.find(opt => opt.id === e.value);
-        onChange(e.value); // Actualiza el ID del producto
+        onChange(e.value);
         handleProductChange(rowData.id, "description", selectedProduct?.label || "");
       },
       onClick: e => e.stopPropagation(),
@@ -1274,14 +1269,16 @@ const QuantityColumnBody = ({
     value: value,
     placeholder: "Cantidad",
     className: "w-100",
-    style: {
-      maxWidth: "100px"
-    },
     min: 0,
     onValueChange: e => {
       onChange(e.value);
     },
-    disabled: disabled
+    disabled: disabled,
+    inputClassName: "form-control",
+    mode: "decimal",
+    minFractionDigits: 0,
+    maxFractionDigits: 2,
+    useGrouping: false
   }));
 };
 const PriceColumnBody = ({
@@ -1289,22 +1286,24 @@ const PriceColumnBody = ({
   value,
   disabled
 }) => {
-  return /*#__PURE__*/React.createElement(InputNumber, {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "price-input"
+  }, /*#__PURE__*/React.createElement(InputNumber, {
     value: value,
-    placeholder: "Precio",
+    placeholder: "RD$ 0.00",
     className: "w-100",
     mode: "currency",
     currency: "DOP",
-    style: {
-      maxWidth: "130px"
-    },
     locale: "es-DO",
     min: 0,
     onValueChange: e => {
       onChange(e.value);
     },
-    disabled: disabled
-  });
+    disabled: disabled,
+    inputClassName: "form-control",
+    minFractionDigits: 2,
+    maxFractionDigits: 6
+  }));
 };
 const DiscountColumnBody = ({
   onChange,
@@ -1316,7 +1315,7 @@ const DiscountColumnBody = ({
     placeholder: "Descuento",
     className: "w-100",
     style: {
-      maxWidth: "120px"
+      maxWidth: "200px"
     },
     suffix: "%",
     min: 0,
@@ -1324,7 +1323,12 @@ const DiscountColumnBody = ({
     onValueChange: e => {
       onChange(e.value);
     },
-    disabled: disabled
+    disabled: disabled,
+    inputClassName: "form-control",
+    mode: "decimal",
+    minFractionDigits: 0,
+    maxFractionDigits: 2,
+    useGrouping: false
   }));
 };
 const IvaColumnBody = ({
@@ -1341,22 +1345,21 @@ const IvaColumnBody = ({
     fetchTaxes();
   }, []);
   return /*#__PURE__*/React.createElement(Dropdown, {
-    value: value // Usamos el porcentaje directamente como valor
-    ,
+    value: value,
     options: taxes,
     optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
-    optionValue: "percentage" // Usamos el porcentaje como valor
-    ,
+    optionValue: "percentage",
     placeholder: "Seleccione IVA",
     className: "w-100",
     onChange: e => {
       const selectedTax = taxes.find(tax => tax.percentage === e.value);
       if (selectedTax) {
-        onChange(selectedTax); // Pasamos el objeto completo
+        onChange(selectedTax);
       }
     },
     appendTo: document.body,
-    disabled: disabled
+    disabled: disabled,
+    filter: true
   });
 };
 const DepositColumnBody = ({
@@ -1372,13 +1375,6 @@ const DepositColumnBody = ({
     const deposits = await depositService.getAllDeposits();
     setDeposits(deposits.data);
   }
-
-  // useEffect(() => {
-  //   const depositFind: any = deposits.find(
-  //     (item: any) => item.id === value
-  //   );
-  //   setTaxSelected(depositFind?.percentage);
-  // }, [value && deposits]);
   return /*#__PURE__*/React.createElement(Dropdown, {
     value: value,
     options: deposits,
@@ -1390,6 +1386,7 @@ const DepositColumnBody = ({
       onChange(e.value);
     },
     disabled: disabled,
-    appendTo: document.body
+    appendTo: document.body,
+    filter: true
   });
 };

@@ -5,7 +5,7 @@ export const LogoSettings = ({
   onChange
 }) => {
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column p-3"
+    className: "d-flex flex-column"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "url",
     className: "form-label"

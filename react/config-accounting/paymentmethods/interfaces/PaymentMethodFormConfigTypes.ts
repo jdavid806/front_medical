@@ -4,6 +4,7 @@ export interface PaymentMethodFormInputs {
   category: string;
   accounting_account_id: number | null;
   additionalDetails: string;
+  isCash: boolean;
 }
 
 export interface PaymentMethodFormProps {

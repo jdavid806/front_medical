@@ -6,12 +6,14 @@ import { WebCreatorSplitterEditor } from "./WebCreatorSplitterEditor.js";
 import { WebCreatorPanelSetting } from "./WebCreatorPanelSetting.js";
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
-
+import { Dialog } from "primereact/dialog";
+import { WebCreatorPreview } from "./WebCreatorPreview.js"; // Nuevo componente para previsualización
 // Componente principal de la aplicación
 export const WebCreatorApp = () => {
   const [selectedPanel, setSelectedPanel] = useState(null);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false); // Estado para controlar la previsualización
   const splitterEditorRef = useRef(null);
   const componentsContainerWidth = "300px";
   const componentSettingsContainerWidth = "300px";
@@ -31,6 +33,12 @@ export const WebCreatorApp = () => {
   const handleComponentChange = component => {
     setSelectedComponent(component);
     splitterEditorRef.current?.updateComponentInPanel(component);
+  };
+  const handlePanelChange = panel => {
+    if (selectedPanel) {
+      setSelectedPanel(panel);
+      splitterEditorRef.current?.updatePanel(panel);
+    }
   };
   const addSiblingAbove = () => {
     if (selectedPanel) {
@@ -70,6 +78,25 @@ export const WebCreatorApp = () => {
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
+  const togglePreview = () => {
+    setPreviewVisible(!previewVisible);
+  };
+
+  // Obtener la configuración actual de la grilla
+  const getGridConfiguration = () => {
+    // Esta función debería devolver la estructura completa de la grilla
+    // Por ahora devolvemos un objeto con la información básica
+    return {
+      rootPanel: splitterEditorRef.current?.getRootPanel() || {
+        uuid: 'root',
+        cols: 12,
+        layout: 'horizontal',
+        children: [],
+        component: null
+      }
+      // Otras configuraciones necesarias
+    };
+  };
 
   // Barra de herramientas superior
   const toolbarLeft = /*#__PURE__*/React.createElement("div", {
@@ -80,10 +107,19 @@ export const WebCreatorApp = () => {
   const toolbarRight = /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
-    icon: isFullScreen ? /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-compress"
-    }) : /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-expand"
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-eye"
+    }),
+    text: true,
+    rounded: true,
+    onClick: togglePreview,
+    tooltip: "Previsualizar p\xE1gina",
+    tooltipOptions: {
+      position: 'bottom'
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: isFullScreen ? "fa fa-compress" : "fa fa-expand"
     }),
     text: true,
     rounded: true,
@@ -138,15 +174,30 @@ export const WebCreatorApp = () => {
   }, !selectedComponent && !selectedPanel && /*#__PURE__*/React.createElement("div", {
     className: "p-3"
   }, /*#__PURE__*/React.createElement("h4", null, "Selecciona un elemento para configurarlo")), selectedPanel && /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(WebCreatorPanelSetting, {
+    panel: selectedPanel,
     addSiblingAbove: addSiblingAbove,
     addSiblingBelow: addSiblingBelow,
     addSiblingLeft: addSiblingLeft,
     addSiblingRight: addSiblingRight,
     addHorizontalChild: addHorizontalChild,
     addVerticalChild: addVerticalChild,
-    removeSelectedPanel: removeSelectedPanel
+    removeSelectedPanel: removeSelectedPanel,
+    onPanelStyleChange: handlePanelChange
   })), selectedComponent && /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement(WebCreatorComponentSettings, {
     selectedComponent: selectedComponent,
     onChange: handleComponentChange
-  }))))));
+  }))))), /*#__PURE__*/React.createElement(Dialog, {
+    visible: previewVisible,
+    onHide: () => setPreviewVisible(false),
+    header: "Previsualizaci\xF3n de la P\xE1gina",
+    position: "center",
+    style: {
+      width: '100vw',
+      height: '100vh'
+    },
+    maximizable: true,
+    className: "preview-dialog"
+  }, /*#__PURE__*/React.createElement(WebCreatorPreview, {
+    gridConfiguration: getGridConfiguration()
+  })));
 };

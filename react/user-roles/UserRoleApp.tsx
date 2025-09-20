@@ -4,12 +4,11 @@ import { useEffect } from 'react';
 import { UserRoleFormInputs } from './components/UserRoleForm';
 import { useUserRole } from './hooks/useUserRole';
 import { useUserRoleDelete } from './hooks/useUserRoleDelete';
-import { useUserRoleUpdate } from './hooks/useUserRoleUpdate';
-import { useUserRoleCreate } from './hooks/useUserRoleCreate';
 import { useRoles } from './hooks/useUserRoles';
 import { UserRoleTable } from './components/UserRoleTable';
 import { UserRoleFormModal } from './components/UserRoleFormModal';
-import { useUserRoleMenus } from './hooks/useUserRoleMenus';
+import { useUserRoleCreate } from './hooks/useUserRoleUpdate';
+import { useUserRoleUpdate } from './hooks/useUserRoleCreate';
 
 export const UserRoleApp = () => {
     const [showFormModal, setShowFormModal] = useState(false)
@@ -20,7 +19,6 @@ export const UserRoleApp = () => {
     const { updateUserRole } = useUserRoleUpdate();
     const { deleteUserRole } = useUserRoleDelete();
     const { userRole, fetchUserRole, setUserRole } = useUserRole();
-    const { saveRoleMenus } = useUserRoleMenus();
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -29,19 +27,13 @@ export const UserRoleApp = () => {
 
     const handleSubmit = async (data: UserRoleFormInputs) => {
         try {
-            let roleId;
-
             if (userRole) {
-                // Actualizar rol existente
+                // Actualizar rol existente (incluye menús y permisos)
                 await updateUserRole(userRole.id, data);
-                roleId = userRole.id;
             } else {
-                // Crear nuevo rol
-                const newRole = await createUserRole(data);
-                roleId = newRole.id;
+                // Crear nuevo rol (incluye menús y permisos)
+                await createUserRole(data);
             }
-
-            await saveRoleMenus(roleId, data.menus);
 
             fetchUserRoles();
             setShowFormModal(false);
@@ -71,12 +63,10 @@ export const UserRoleApp = () => {
                     id: item.id,
                     key_: item.key,
                     name: item.label,
-                    is_active: item.pivot?.is_active || false, // Usa el estado real del backend
+                    is_active: item.is_active,
                     pivot: item.pivot
                 })) || [],
-                menuIds: userRole.menus
-                    .filter(menu => menu.pivot?.is_active)
-                    .map(menu => menu.id) || []
+                menuIds: userRole.menus?.map(menu => menu.id) || []
             });
         } else {
             setInitialData(undefined);

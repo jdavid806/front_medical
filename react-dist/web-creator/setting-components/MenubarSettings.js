@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { MenubarTreeSettings } from "./MenubarTreeSettings.js";
@@ -20,19 +19,6 @@ export const MenubarSettings = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "name",
-    className: "form-label"
-  }, "Nombre del Componente"), /*#__PURE__*/React.createElement(InputText, {
-    id: "name",
-    name: "name",
-    value: component.name,
-    onChange: e => onChange({
-      ...component,
-      name: e.target.value
-    })
-  })), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Configurar Items del Men\xFA",

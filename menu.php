@@ -379,7 +379,8 @@ $_SESSION["ID"] = 1;
       "react-dom/server": "https://esm.sh/react-dom/server?dev",
       "primereact/splitter" : "https://esm.sh/primereact/splitter?dev",
       "primereact/tree": "https://esm.sh/primereact/tree?dev",
-      "primereact/treenode": "https://esm.sh/primereact/treenode?dev"
+      "primereact/treenode": "https://esm.sh/primereact/treenode?dev",
+      "primereact/colorpicker": "https://esm.sh/primereact/colorpicker?dev"
     }
   }
 </script>

@@ -10,6 +10,7 @@ import {
   PaymentMethodFormInputs,
   PaymentMethodFormProps,
 } from "../interfaces/PaymentMethodFormConfigTypes";
+import { Checkbox } from 'primereact/checkbox';
 
 // Categories for dropdown
 const categories = [
@@ -48,6 +49,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
       payment_type: "",
       accounting_account_id: null,
       additionalDetails: "",
+      isCash: false
     },
   });
 
@@ -68,6 +70,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         payment_type: "",
         accounting_account_id: null,
         additionalDetails: "",
+        isCash: false
       }
     );
   }, [initialData, reset]);
@@ -158,41 +161,68 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         />
       </div>
 
-      <div className="field mb-4">
-        <label htmlFor="accounting_account_id" className="font-medium block mb-2">
-          Cuenta Contable
-        </label>
-        <Controller
-          name="accounting_account_id"
-          control={control}
-          render={({ field, fieldState }) => (
-            <>
-              <Dropdown
-                id={field.name}
-                value={field.value}
-                onChange={(e) => field.onChange(e.value)}
-                options={accounts}
-                optionValue="id"
-                optionLabel="account_label"
-                placeholder="Seleccione una cuenta"
-                filter
-                filterBy="account_label,account_name,account_code"
-                showClear
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
-                loading={isLoadingAccounts}
-                appendTo="self"
-              />
-              {getFormErrorMessage("accounting_account_id")}
-            </>
-          )}
-        />
+      <div className="row">
+        <div className="col-6 mb-4">
+          <label
+            htmlFor="accounting_account_id"
+            className="font-medium block mb-2"
+          >
+            Cuenta Contable
+          </label>
+          <Controller
+            name="accounting_account_id"
+            control={control}
+            render={({ field, fieldState }) => (
+              <>
+                <Dropdown
+                  id={field.name}
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={accounts}
+                  optionValue="id"
+                  optionLabel="account_label"
+                  placeholder="Seleccione una cuenta"
+                  filter
+                  filterBy="account_label,account_name,account_code"
+                  showClear
+                  className={classNames("w-full", {
+                    "p-invalid": fieldState.error,
+                  })}
+                  loading={isLoadingAccounts}
+                  appendTo="self"
+                />
+                {getFormErrorMessage("accounting_account_id")}
+              </>
+            )}
+          />
+        </div>
+        <div className="col-6 d-flex align-items-center gap-2">
+          <label
+            htmlFor="isCash"
+            className="font-medium block"
+          >
+            Es efectivo
+          </label>
+          <Controller
+            name="isCash"
+            control={control}
+            render={({ field, fieldState }) => (
+              <>
+                <Checkbox
+                  id={field.name}
+                  checked={field.value}
+                  onChange={e => field.onChange(e.checked)}
+                  className={classNames("w-full", {
+                    
+                  })}
+                  inputId={field.name}
+                />
+                {getFormErrorMessage("isCash")}
+              </>
+            )}
+          />
+        </div>
       </div>
-
-
-
-
 
       <div className="field mb-4">
         <label htmlFor="additionalDetails" className="font-medium block mb-2">

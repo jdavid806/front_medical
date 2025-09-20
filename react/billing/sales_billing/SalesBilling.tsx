@@ -38,7 +38,6 @@ import { Dialog } from "primereact/dialog";
 import { useAdvancePayments } from "../hooks/useAdvancePayments";
 import { useBillingByType } from "../hooks/useBillingByType";
 import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
-// Definición de tipos
 
 export const SalesBilling: React.FC<any> = ({
   selectedInvoice,
@@ -65,8 +64,6 @@ export const SalesBilling: React.FC<any> = ({
   const [purchaseOrderId, setPurchaseOrderId] = useState<any>(0);
   const { fetchBillingByType } = useBillingByType();
   const [billing, setBilling] = useState<any>(null);
-  // Estados para manejar lotes y activos fijos
-
   const invoiceType = watch("type");
 
   useEffect(() => {
@@ -121,12 +118,10 @@ export const SalesBilling: React.FC<any> = ({
     fetchAdvancePayments(selectedInvoice.third_id || customerId, "client");
   }, [selectedInvoice, customerId]);
 
-  // Helper function to generate unique IDs
   function generateId() {
     return Math.random().toString(36).substr(2, 9);
   }
 
-  // Opciones del formulario
   const typeOptions = [
     { id: "tax_invoice", name: "Fiscal" },
     { id: "consumer", name: "Consumidor" },
@@ -152,7 +147,6 @@ export const SalesBilling: React.FC<any> = ({
       const productsMapped = selectedInvoice.details.map((item: any) => {
         let typeProduct = "";
         if (item.product?.product_type) {
-          // Mapear el tipo de producto según lo que espera tu formulario
           switch (item.product.product_type.name.toLowerCase()) {
             case "servicios":
               typeProduct = "services";
@@ -172,8 +166,8 @@ export const SalesBilling: React.FC<any> = ({
         }
         const discount = item.discount
           ? (Number(item.discount) /
-              (Number(item.price) * Number(item.quantity))) *
-            100
+            (Number(item.price) * Number(item.quantity))) *
+          100
           : 0;
 
         const subtotal = Number(item.subtotal) - Number(item.discount);
@@ -200,7 +194,6 @@ export const SalesBilling: React.FC<any> = ({
     }
   }
 
-  // Funciones de cálculo en DOP
   const calculateLineTotal = (product: InvoiceProduct): number => {
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
@@ -239,10 +232,10 @@ export const SalesBilling: React.FC<any> = ({
         (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
       const subtotalAfterDiscount = subtotal - discountAmount;
-      const ivaRate = product.iva || 0; // <-- Cambio aquí
+      const ivaRate = product.iva || 0;
       return total + subtotalAfterDiscount * (ivaRate / 100);
     }, 0);
-  };
+  }
 
   const calculateSubtotalAfterDiscount = (): number => {
     return calculateSubtotal() - calculateTotalDiscount();
@@ -271,10 +264,9 @@ export const SalesBilling: React.FC<any> = ({
   const paymentCoverage = (): boolean => {
     const total = calculateTotal();
     const payments = calculateTotalPayments();
-    // Permitimos un pequeño margen por redondeos
     return Math.abs(payments - total) < 0.01;
   };
-  // Funciones para manejar productos
+
   const addProduct = () => {
     setProductsArray([
       ...productsArray,
@@ -290,7 +282,7 @@ export const SalesBilling: React.FC<any> = ({
       },
     ]);
   };
-  // Función para manejar la selección de anticipos
+
   const handleSelectAdvances = (selectedAdvances: any) => {
     if (!selectedAdvanceMethodId) return;
 
@@ -298,9 +290,9 @@ export const SalesBilling: React.FC<any> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-              ...payment,
-              value: selectedAdvances.amount,
-            }
+            ...payment,
+            value: selectedAdvances.amount,
+          }
           : payment
       )
     );
@@ -329,7 +321,6 @@ export const SalesBilling: React.FC<any> = ({
     );
   };
 
-  // Funciones para manejar métodos de pago
   const addPayment = () => {
     setPaymentMethodsArray([
       ...paymentMethodsArray,
@@ -389,9 +380,40 @@ export const SalesBilling: React.FC<any> = ({
     );
   };
 
-  // Funciones para guardar
+  const copyTotalToPayment = (paymentId: string) => {
+    const total = calculateTotal();
+    const currentPaymentsTotal = calculateTotalPayments();
+    const remainingAmount = total - currentPaymentsTotal;
+
+    const currentPaymentValue = Number(paymentMethodsArray.find(p => p.id === paymentId)?.value || 0);
+    const amountToSet = remainingAmount + currentPaymentValue;
+
+    if (amountToSet > 0) {
+      setPaymentMethodsArray((prevPayments) =>
+        prevPayments.map((payment) =>
+          payment.id === paymentId
+            ? { ...payment, value: parseFloat(amountToSet.toFixed(2)) }
+            : payment
+        )
+      );
+
+      window["toast"].show({
+        severity: "success",
+        summary: "Éxito",
+        detail: `Valor ${amountToSet.toFixed(2)} DOP copiado al método de pago`,
+        life: 3000,
+      });
+    } else {
+      window["toast"].show({
+        severity: "warn",
+        summary: "Advertencia",
+        detail: "El total ya está cubierto por los pagos actuales",
+        life: 3000,
+      });
+    }
+  };
+
   const save = async (formData: any) => {
-    // Validación básica
     if (productsArray.length === 0) {
       window["toast"].show({
         severity: "error",
@@ -458,16 +480,16 @@ export const SalesBilling: React.FC<any> = ({
   function formatInvoiceForBackend(frontendData: any) {
     const purchaseIdValue = purchaseOrderId
       ? {
-          purchase_order_id: purchaseOrderId,
-        }
+        purchase_order_id: purchaseOrderId,
+      }
       : {};
     const retentionsValue =
       retentions[0].value > 0
         ? {
-            retentions: retentions.map(
-              (retention: any) => retention.percentage.id
-            ),
-          }
+          retentions: retentions.map(
+            (retention: any) => retention.percentage.id
+          ),
+        }
         : {};
     return {
       invoice: {
@@ -503,155 +525,6 @@ export const SalesBilling: React.FC<any> = ({
     };
   }
 
-  const getProductColumns = () => {
-    return [
-      {
-        field: "type",
-        header: "Tipo",
-        body: (rowData: InvoiceProduct) => (
-          <TypeColumnBody
-            rowData={rowData}
-            onChange={(newType: string) => {
-              handleProductChange(rowData.id, "typeProduct", newType);
-              handleProductChange(rowData.id, "product", null);
-            }}
-            disabled={disabledInpputs}
-          />
-        ),
-      },
-      {
-        field: "product",
-        header: "Producto",
-        body: (rowData: InvoiceProduct) => {
-          return (
-            <ProductColumnBody
-              rowData={rowData}
-              type={rowData.typeProduct}
-              onChange={(value: string) => {
-                handleProductChange(rowData.id, "product", value);
-              }}
-              handleProductChange={handleProductChange}
-              disabled={disabledInpputs}
-            />
-          );
-        },
-      },
-      {
-        field: "quantity",
-        header: "Cantidad",
-        body: (rowData: InvoiceProduct) => (
-          <QuantityColumnBody
-            onChange={(value: number | null) =>
-              handleProductChange(rowData.id, "quantity", value || 0)
-            }
-            value={rowData.quantity}
-            disabled={disabledInpputs}
-          />
-        ),
-        style: { minWidth: "90px" },
-      },
-      {
-        field: "price",
-        header: "Valor unitario",
-        body: (rowData: InvoiceProduct) => (
-          <PriceColumnBody
-            onChange={(value: number | null) =>
-              handleProductChange(rowData.id, "price", value || 0)
-            }
-            value={rowData.price}
-            disabled={disabledInpputs}
-          />
-        ),
-        style: { minWidth: "150px" },
-      },
-      {
-        field: "discount",
-        header: "Descuento %",
-        body: (rowData: InvoiceProduct) => (
-          <DiscountColumnBody
-            onChange={(value: number | null) =>
-              handleProductChange(rowData.id, "discount", value || 0)
-            }
-            value={rowData.discount}
-            disabled={disabledInpputs}
-          />
-        ),
-        style: { minWidth: "150px" },
-      },
-      {
-        field: "iva",
-        header: "Impuestos",
-        body: (rowData: InvoiceProduct) => (
-          <IvaColumnBody
-            onChange={(value: any | null) => {
-              // value ahora es el objeto completo del impuesto
-              handleProductChange(rowData.id, "iva", value?.percentage || 0);
-              handleProductChange(
-                rowData.id,
-                "taxAccountingAccountId",
-                value?.accounting_account_id || null
-              );
-              handleProductChange(
-                rowData.id,
-                "taxChargeId",
-                value?.id || null
-              );
-            }}
-            value={rowData.iva} // Esto seguirá mostrando el porcentaje
-            disabled={disabledInpputs}
-          />
-        ),
-        style: { minWidth: "150px" },
-      },
-      {
-        field: "deposit",
-        header: "Depósito",
-        body: (rowData: InvoiceProduct) => (
-          <DepositColumnBody
-            onChange={(value: string | null) =>
-              handleProductChange(rowData.id, "depositId", value)
-            }
-            value={rowData.depositId}
-            disabled={disabledInpputs}
-          />
-        ),
-        style: { minWidth: "150px" },
-      },
-      {
-        field: "totalvalue",
-        header: "Valor total",
-        body: (rowData: InvoiceProduct) => (
-          <InputNumber
-            value={calculateLineTotal(rowData)}
-            mode="currency"
-            style={{ maxWidth: "200px" }}
-            className="button-width"
-            currency="DOP"
-            locale="es-DO"
-            readOnly
-          />
-        ),
-        style: { minWidth: "300px" },
-      },
-      {
-        field: "actions",
-        header: "Acciones",
-        body: (rowData: InvoiceProduct) => (
-          <Button
-            className="p-button-rounded p-button-danger p-button-text"
-            onClick={() => removeProduct(rowData.id)}
-            disabled={productsArray.length <= 1}
-            tooltip="Eliminar Producto"
-          >
-            {" "}
-            <i className="fa-solid fa-trash"></i>
-          </Button>
-        ),
-        style: { width: "120px", textAlign: "center" },
-      },
-    ];
-  };
-
   const { openModal: openThirdPartyModal, ThirdPartyModal } =
     useThirdPartyModal({
       onSuccess: (data) => {
@@ -660,14 +533,14 @@ export const SalesBilling: React.FC<any> = ({
     });
 
   return (
-    <div className="container-fluid p-4">
+    <div className="container-fluid p-3 p-md-4">
       <ThirdPartyModal />
       {/* Encabezado */}
       <div className="row mb-4">
         <div className="col-12">
           <div className="card shadow-sm">
-            <div className="card-body">
-              <h1 className="h3 mb-0 text-primary">
+            <div className="card-body p-3">
+              <h1 className="h4 mb-0 text-primary">
                 <i className="pi pi-file-invoice me-2"></i>
                 Crear nueva factura de venta
               </h1>
@@ -675,20 +548,21 @@ export const SalesBilling: React.FC<any> = ({
           </div>
         </div>
       </div>
+
       <div className="row">
         <div className="col-12">
           <form onSubmit={handleSubmit(save)}>
             {/* Sección de Información Básica */}
             <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light">
+              <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-user-edit me-2 text-primary"></i>
                   Información básica
                 </h2>
               </div>
-              <div className="card-body">
+              <div className="card-body p-3">
                 <div className="row g-3">
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">Tipo *</label>
                       <Controller
@@ -717,7 +591,7 @@ export const SalesBilling: React.FC<any> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">
                         Fecha de elaboración *
@@ -734,6 +608,7 @@ export const SalesBilling: React.FC<any> = ({
                               showIcon
                               dateFormat="dd/mm/yy"
                               disabled={disabledInpputs}
+                              inputClassName="form-control"
                             />
                           </>
                         )}
@@ -741,7 +616,7 @@ export const SalesBilling: React.FC<any> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">Fecha vencimiento *</label>
                       <Controller
@@ -757,13 +632,15 @@ export const SalesBilling: React.FC<any> = ({
                               showIcon
                               dateFormat="dd/mm/yy"
                               disabled={disabledInpputs}
+                              inputClassName="form-control"
                             />
                           </>
                         )}
                       />
                     </div>
                   </div>
-                  <div className="col-md-4">
+
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">Proveedor *</label>
                       <Controller
@@ -772,7 +649,7 @@ export const SalesBilling: React.FC<any> = ({
                         rules={{ required: "Campo obligatorio" }}
                         render={({ field }) => (
                           <>
-                            <div className="d-flex">
+                            <div className="d-flex gap-2">
                               <Dropdown
                                 {...field}
                                 filter
@@ -780,7 +657,7 @@ export const SalesBilling: React.FC<any> = ({
                                 optionLabel="name"
                                 optionValue="id"
                                 placeholder="Seleccione un proveedor"
-                                className={classNames("w-100")}
+                                className={classNames("flex-grow-1")}
                                 appendTo={"self"}
                                 disabled={disabledInpputs}
                               />
@@ -797,7 +674,7 @@ export const SalesBilling: React.FC<any> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">Vendedor *</label>
                       <Controller
@@ -823,7 +700,7 @@ export const SalesBilling: React.FC<any> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
                       <label className="form-label">Centro de costo *</label>
                       <Controller
@@ -848,9 +725,9 @@ export const SalesBilling: React.FC<any> = ({
               </div>
             </div>
 
-            {/* Sección de Productos */}
+            {/* Sección de Productos - Versión mejorada */}
             <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light d-flex justify-content-between align-items-center">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-shopping-cart me-2 text-primary"></i>
                   Productos
@@ -866,43 +743,139 @@ export const SalesBilling: React.FC<any> = ({
                   disabled={disabledInpputs}
                 />
               </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  {loadingProductTypes ? (
-                    <div className="text-center py-5">
-                      <div
-                        className="spinner-border text-primary"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Cargando...</span>
-                      </div>
-                      <p className="mt-2 text-muted">Cargando productos...</p>
+              <div className="card-body p-0">
+                {loadingProductTypes ? (
+                  <div className="text-center py-5">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Cargando...</span>
                     </div>
-                  ) : (
-                    <DataTable
-                      key={`products-table-${productTypes.length}`}
-                      value={productsArray}
-                      emptyMessage="No hay productos agregados"
-                      className="p-datatable-sm p-datatable-gridlines"
-                      showGridlines
-                      scrollable
-                      stripedRows
-                      loading={false}
-                      size="small"
-                    >
-                      {getProductColumns().map((col, i) => (
-                        <Column
-                          key={i}
-                          field={col.field}
-                          header={col.header}
-                          body={col.body}
-                        />
-                      ))}
-                    </DataTable>
-                  )}
-                </div>
+                    <p className="mt-2 text-muted">Cargando productos...</p>
+                  </div>
+                ) : (
+                  <div className="table-responsive-md">
+                    <table className="table table-hover mb-0">
+                      <thead className="table-light">
+                        <tr>
+                          <th scope="col" style={{ minWidth: "120px" }}>Tipo</th>
+                          <th scope="col" style={{ minWidth: "180px" }}>Producto</th>
+                          <th scope="col" style={{ minWidth: "100px" }}>Cantidad</th>
+                          <th scope="col" style={{ minWidth: "200px" }}>Valor unitario</th>
+                          <th scope="col" style={{ minWidth: "220px" }}>Descuento %</th>
+                          <th scope="col" style={{ minWidth: "120px" }}>Impuestos</th>
+                          <th scope="col" style={{ minWidth: "130px" }}>Depósito</th>
+                          <th scope="col" style={{ minWidth: "200px !important" }}>Valor total</th>
+                          <th scope="col" style={{ width: "80px" }}>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {productsArray.map((product) => (
+                          <tr key={product.id}>
+                            <td className="p-2">
+                              <TypeColumnBody
+                                rowData={product}
+                                onChange={(newType: string) => {
+                                  handleProductChange(product.id, "typeProduct", newType);
+                                  handleProductChange(product.id, "product", null);
+                                }}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <ProductColumnBody
+                                rowData={product}
+                                type={product.typeProduct}
+                                onChange={(value: string) => {
+                                  handleProductChange(product.id, "product", value);
+                                }}
+                                handleProductChange={handleProductChange}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <QuantityColumnBody
+                                onChange={(value: number | null) =>
+                                  handleProductChange(product.id, "quantity", value || 0)
+                                }
+                                value={product.quantity}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <PriceColumnBody
+                                onChange={(value: number | null) =>
+                                  handleProductChange(product.id, "price", value || 0)
+                                }
+                                value={product.price}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <DiscountColumnBody
+                                onChange={(value: number | null) =>
+                                  handleProductChange(product.id, "discount", value || 0)
+                                }
+                                value={product.discount}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <IvaColumnBody
+                                onChange={(value: any | null) => {
+                                  handleProductChange(product.id, "iva", value?.percentage || 0);
+                                  handleProductChange(
+                                    product.id,
+                                    "taxAccountingAccountId",
+                                    value?.accounting_account_id || null
+                                  );
+                                  handleProductChange(
+                                    product.id,
+                                    "taxChargeId",
+                                    value?.id || null
+                                  );
+                                }}
+                                value={product.iva}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <DepositColumnBody
+                                onChange={(value: string | null) =>
+                                  handleProductChange(product.id, "depositId", value)
+                                }
+                                value={product.depositId}
+                                disabled={disabledInpputs}
+                              />
+                            </td>
+                            <td className="p-2">
+                              <InputNumber
+                                value={calculateLineTotal(product)}
+                                mode="currency"
+
+                                currency="DOP"
+                                locale="es-DO"
+                                readOnly
+                                inputClassName="form-control bg-light"
+                                style={{ minWidth: "200px" }}
+                              />
+                            </td>
+                            <td className="text-center p-2">
+                              <Button
+                                className="p-button-rounded p-button-danger p-button-text"
+                                onClick={() => removeProduct(product.id)}
+                                disabled={productsArray.length <= 1}
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
+
             <div className="card mb-4 shadow-sm">
               <RetentionsSection
                 subtotal={calculateSubtotal()}
@@ -914,7 +887,7 @@ export const SalesBilling: React.FC<any> = ({
 
             {/* Sección de Métodos de Pago */}
             <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light d-flex justify-content-between align-items-center">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-credit-card me-2 text-primary"></i>
                   Métodos de Pago (DOP)
@@ -929,13 +902,13 @@ export const SalesBilling: React.FC<any> = ({
                   }}
                 />
               </div>
-              <div className="card-body">
+              <div className="card-body p-3">
                 {paymentMethodsArray.map((payment) => (
                   <div
                     key={payment.id}
                     className="row g-3 mb-3 align-items-end"
                   >
-                    <div className="col-md-6">
+                    <div className="col-12 col-sm-5 col-md-5">
                       <div className="form-group">
                         <label className="form-label">Método *</label>
                         <Dropdown
@@ -950,81 +923,96 @@ export const SalesBilling: React.FC<any> = ({
                             handlePaymentChange(payment.id, "method", e.value);
                           }}
                           appendTo={"self"}
+                          filter
                         />
                       </div>
                     </div>
-                    <div className="col-md-5">
+                    <div className="col-12 col-sm-5 col-md-5">
                       <div className="form-group">
                         <label className="form-label">Valor *</label>
-                        <InputNumber
-                          value={payment.value === "" ? null : payment.value}
-                          placeholder="$0.00"
-                          className="w-100"
-                          mode="currency"
-                          currency="DOP"
-                          locale="es-DO"
-                          min={0}
-                          onValueChange={(e) =>
-                            handlePaymentChange(
-                              payment.id,
-                              "value",
-                              e.value === null ? "" : e.value
-                            )
-                          }
-                        />
+                        <div className="d-flex gap-2 align-items-center">
+                          <InputNumber
+                            value={payment.value === "" ? null : payment.value}
+                            placeholder="RD$ 0.00"
+                            className="flex-grow-1"
+                            mode="currency"
+                            currency="DOP"
+                            locale="es-DO"
+                            min={0}
+                            onValueChange={(e) =>
+                              handlePaymentChange(
+                                payment.id,
+                                "value",
+                                e.value === null ? "" : e.value
+                              )
+                            }
+                            inputClassName="form-control"
+                            style={{ minWidth: "140px" }}
+                          />
+                          <Button
+                            icon={<i className="fa-solid fa-copy"></i>}
+                            className="p-button-outlined p-button-info"
+                            onClick={() => copyTotalToPayment(payment.id)}
+                            tooltip="Copiar valor total restante"
+                            tooltipOptions={{ position: 'top' }}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-12 col-sm-2 col-md-2 text-end">
                       <Button
                         className="p-button-rounded p-button-danger p-button-text"
                         onClick={() => removePayment(payment.id)}
                         disabled={paymentMethodsArray.length <= 1}
                         tooltip="Eliminar método"
                       >
-                        {" "}
                         <i className="fa-solid fa-trash"></i>
                       </Button>
                     </div>
                   </div>
                 ))}
                 <div className="row mt-3">
-                  <div className="col-md-12">
+                  <div className="col-12">
                     <div
-                      className="alert alert-info"
+                      className="alert alert-info p-3"
                       style={{
                         background: "rgb(194 194 194 / 85%)",
                         border: "none",
                         color: "black",
                       }}
                     >
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <strong>Total factura:</strong>
+                      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                        <div className="d-flex align-items-center flex-wrap">
+                          <strong className="me-2">Total factura:</strong>
                           <InputNumber
                             value={calculateTotal()}
-                            className="ms-2"
+                            className="me-3"
                             mode="currency"
                             currency="DOP"
                             locale="es-DO"
                             minFractionDigits={2}
                             maxFractionDigits={3}
                             readOnly
+                            inputClassName="form-control bg-white"
+                            style={{ minWidth: "130px" }}
                           />
                         </div>
-                        <div>
-                          <strong>Total pagos:</strong>
+                        <div className="d-flex align-items-center flex-wrap">
+                          <strong className="me-2">Total pagos:</strong>
                           <InputNumber
                             value={calculateTotalPayments()}
-                            className="ms-2"
+                            className="me-3"
                             mode="currency"
                             currency="DOP"
                             locale="es-DO"
                             minFractionDigits={2}
                             maxFractionDigits={3}
                             readOnly
+                            inputClassName="form-control bg-white"
+                            style={{ minWidth: "130px" }}
                           />
                         </div>
-                        <div>
+                        <div className="d-flex align-items-center">
                           {!paymentCoverage() ? (
                             <span className="text-danger">
                               <i className="pi pi-exclamation-triangle me-1"></i>
@@ -1048,47 +1036,8 @@ export const SalesBilling: React.FC<any> = ({
               </div>
             </div>
 
-            {/* {showAdvancesForm && customerId && (
-              <div className="card mb-4 shadow-sm">
-                <div className="card-header bg-light">
-                  <h2 className="h5 mb-0">
-                    <i className="pi pi-history me-2 text-primary"></i>
-                    Seleccionar Anticipos del Cliente
-                  </h2>
-                </div>
-                <div className="card-body">
-                  <AdvanceHistoryForm
-                    customerId={customerId}
-                    invoiceTotal={calculateTotal()}
-                    onSelectAdvances={handleSelectAdvances}
-                  />
-                  <div className="d-flex justify-content-end mt-3">
-                    <Button
-                      label="Cancelar"
-                      icon="pi pi-times"
-                      className="p-button-secondary"
-                      onClick={() => {
-                        setShowAdvancesForm(false);
-                        setSelectedAdvanceMethodId(null);
-                        // Limpiar el método de pago si no se seleccionaron anticipos
-                        if (selectedAdvanceMethodId) {
-                          setPaymentMethodsArray((prev) =>
-                            prev.map((payment) =>
-                              payment.id === selectedAdvanceMethodId
-                                ? { ...payment, method: "", value: "" }
-                                : payment
-                            )
-                          );
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )} */}
-
             <Dialog
-              style={{ width: "50vw", height: "44vh" }}
+              style={{ width: "90vw", maxWidth: "800px" }}
               header="Anticipos"
               visible={showAdvancesForm}
               onHide={() => setShowAdvancesForm(false)}
@@ -1106,15 +1055,15 @@ export const SalesBilling: React.FC<any> = ({
 
             {/* Sección de Totales */}
             <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light">
+              <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-calculator me-2 text-primary"></i>
                   Totales (DOP)
                 </h2>
               </div>
-              <div className="card-body">
+              <div className="card-body p-3">
                 <div className="row g-3">
-                  <div className="col-md-2">
+                  <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Subtotal</label>
                       <InputNumber
@@ -1124,10 +1073,11 @@ export const SalesBilling: React.FC<any> = ({
                         currency="DOP"
                         locale="es-DO"
                         readOnly
+                        inputClassName="form-control bg-light"
                       />
                     </div>
                   </div>
-                  <div className="col-md-2">
+                  <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Descuento</label>
                       <InputNumber
@@ -1137,10 +1087,11 @@ export const SalesBilling: React.FC<any> = ({
                         currency="DOP"
                         locale="es-DO"
                         readOnly
+                        inputClassName="form-control bg-light"
                       />
                     </div>
                   </div>
-                  <div className="col-md-2">
+                  <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">
                         Subtotal con descuento
@@ -1152,10 +1103,11 @@ export const SalesBilling: React.FC<any> = ({
                         currency="DOP"
                         locale="es-DO"
                         readOnly
+                        inputClassName="form-control bg-light"
                       />
                     </div>
                   </div>
-                  <div className="col-md-2">
+                  <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Impuesto</label>
                       <InputNumber
@@ -1165,10 +1117,25 @@ export const SalesBilling: React.FC<any> = ({
                         currency="DOP"
                         locale="es-DO"
                         readOnly
+                        inputClassName="form-control bg-light"
                       />
                     </div>
                   </div>
-                  <div className="col-md-2">
+                  <div className="col-6 col-md-3 col-lg-2">
+                    <div className="form-group">
+                      <label className="form-label">Retenciones</label>
+                      <InputNumber
+                        value={calculateTotalWithholdingTax()}
+                        className="w-100"
+                        mode="currency"
+                        currency="DOP"
+                        locale="es-DO"
+                        readOnly
+                        inputClassName="form-control bg-light"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Total</label>
                       <InputNumber
@@ -1178,6 +1145,7 @@ export const SalesBilling: React.FC<any> = ({
                         currency="DOP"
                         locale="es-DO"
                         readOnly
+                        inputClassName="form-control bg-light fw-bold"
                       />
                     </div>
                   </div>
@@ -1197,184 +1165,130 @@ export const SalesBilling: React.FC<any> = ({
           </form>
         </div>
       </div>
+
       <Toast
         ref={(el) => {
           window["toast"] = el;
         }}
-      />{" "}
+      />
+
       <style>{`
-                .p-dropdown-panel {
-                  z-index: 1100 !important;
-                }
-                .overlay-invoices {
-                  position: absolute !important;
-                  z-index: 1030 !important;
-                  height: fit-content !important;
-                }
-               .payment-methods-section {
-                display: flex;
-                flex-direction: column;
-                gap: 1.5rem;
-                }
-
-                .payment-method-row {
-                display: flex;
-                gap: 1rem;
-                align-items: flex-end;
-                }
-
-                .payment-method-field {
-                flex: 1;
-                min-width: 0;
-                }
-
-                .payment-method-label {
-                display: block;
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #495057;
-                }
-
-                .payment-dropdown, .payment-input {
-                width: 100%;
-                }
-
-                .payment-method-actions {
-                display: flex;
-                align-items: center;
-                height: 40px;
-                margin-bottom: 0.5rem;
-                }
-
-                .payment-delete-button {
-                color: #dc3545;
-                background: transparent;
-                border: none;
-                transition: all 0.2s;
-                }
-
-                .payment-delete-button:hover {
-                color: #fff;
-                background: #dc3545;
-                }
-
-                .payment-delete-button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-                }
-
-                /* Estilos para el resumen de pagos */
-                .payment-summary {
-                margin-top: 1.5rem;
-                }
-
-                .payment-summary-card {
-                background: rgba(194, 194, 194, 0.15);
-                border-radius: 8px;
-                padding: 1.5rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 1rem;
-                }
-
-                .payment-summary-item {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                }
-
-                .payment-summary-input {
-                background: transparent;
-                border: none;
-                font-weight: bold;
-                }
-
-                .payment-summary-status {
-                flex: 1;
-                text-align: right;
-                min-width: 200px;
-                }
-
-                .payment-status-warning {
-                color: #dc3545;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                }
-
-                .payment-status-success {
-                color: #28a745;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                }
-
-                .payment-warning {
-                border-left: 4px solid #dc3545;
-                }
-
-                .payment-success {
-                border-left: 4px solid #28a745;
-                }
-
-                .spinner-border {
-                width: 3rem;
-                height: 3rem;
-                border-width: 0.25em;
-                }
-
-                /* Animación suave para la aparición de la tabla */
-                .table-responsive {
-                transition: opacity 0.3s ease;
-                }
-
-                /* Responsive */
-                @media (max-width: 992px) {
-                .payment-method-row {
-                    flex-wrap: wrap;
-                }
-                
-                .payment-method-field {
-                    flex: 0 0 calc(50% - 0.5rem);
-                }
-                
-                .payment-method-actions {
-                    flex: 0 0 100%;
-                    justify-content: flex-end;
-                }
-                }
-
-                @media (max-width: 768px) {
-                .payment-method-field {
-                    flex: 0 0 100%;
-                }
-                
-                .payment-summary-card {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 1rem;
-                }
-                
-                .payment-summary-status {
-                    text-align: left;
-                    justify-content: flex-start;
-                }
-                }
-
-                /* Estilos generales para inputs en tablas */
-                .p-datatable .p-inputnumber {
-                width: 100% !important;
-                }
-
-                .p-datatable .p-inputnumber-input {
-                width: 100% !important;
-    }
-                }
-            `}</style>
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+        }
+        
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
+        }
+        
+        .p-calendar {
+          height: 38px;
+        }
+        
+        .table-responsive-md {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .table th, .table td {
+          vertical-align: middle;
+          padding: 0.75rem;
+        }
+        
+        .table thead th {
+          border-bottom: 2px solid #dee2e6;
+          background-color: #f8f9fa;
+          font-weight: 600;
+        }
+        
+        /* Inputs de precio que se expanden según el contenido */
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+           width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Mejoras específicas para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive-md {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .table {
+            margin-bottom: 0;
+            min-width: 800px;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+           width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        /* Estilos para mejorar la apariencia de los inputs en tablas */
+        .table .p-inputnumber, 
+        .table .p-dropdown, 
+        .table .p-calendar {
+          width: 100% !important;
+          min-width: 100px;
+        }
+        
+        .p-dropdown-panel {
+          z-index: 1100 !important;
+        }
+        
+        /* Estilos para el resumen de pagos en móviles */
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+      `}</style>
     </div>
   );
 };
@@ -1410,6 +1324,7 @@ const TypeColumnBody = ({
         }}
         onClick={(e) => e.stopPropagation()}
         disabled={disabled}
+        filter
       />
     </div>
   );
@@ -1465,7 +1380,7 @@ const ProductColumnBody = ({
       setOptions(formatted);
     }
   }, [type, propertyAccounts, products]);
-  // Si es activo fijo, mostramos un campo de selección diferente
+
   if (type === "assetsFixed") {
     return (
       <Dropdown
@@ -1480,7 +1395,7 @@ const ProductColumnBody = ({
           e.originalEvent?.preventDefault();
           e.originalEvent?.stopPropagation();
           const selectedProduct = options.find((opt) => opt.id === e.value);
-          onChange(e.value); // Actualiza el ID del producto
+          onChange(e.value);
           handleProductChange(
             rowData.id,
             "description",
@@ -1533,12 +1448,16 @@ const QuantityColumnBody = ({
         value={value}
         placeholder="Cantidad"
         className="w-100"
-        style={{ maxWidth: "100px" }}
         min={0}
         onValueChange={(e: any) => {
           onChange(e.value);
         }}
         disabled={disabled}
+        inputClassName="form-control"
+        mode="decimal"
+        minFractionDigits={0}
+        maxFractionDigits={2}
+        useGrouping={false}
       />
     </>
   );
@@ -1554,20 +1473,24 @@ const PriceColumnBody = ({
   disabled?: boolean;
 }) => {
   return (
-    <InputNumber
-      value={value}
-      placeholder="Precio"
-      className="w-100"
-      mode="currency"
-      currency="DOP"
-      style={{ maxWidth: "130px" }}
-      locale="es-DO"
-      min={0}
-      onValueChange={(e: any) => {
-        onChange(e.value);
-      }}
-      disabled={disabled}
-    />
+    <div className="price-input">
+      <InputNumber
+        value={value}
+        placeholder="RD$ 0.00"
+        className="w-100"
+        mode="currency"
+        currency="DOP"
+        locale="es-DO"
+        min={0}
+        onValueChange={(e: any) => {
+          onChange(e.value);
+        }}
+        disabled={disabled}
+        inputClassName="form-control"
+        minFractionDigits={2}
+        maxFractionDigits={6}
+      />
+    </div>
   );
 };
 
@@ -1586,7 +1509,7 @@ const DiscountColumnBody = ({
         value={value}
         placeholder="Descuento"
         className="w-100"
-        style={{ maxWidth: "120px" }}
+        style={{ maxWidth: "200px" }}
         suffix="%"
         min={0}
         max={100}
@@ -1594,6 +1517,11 @@ const DiscountColumnBody = ({
           onChange(e.value);
         }}
         disabled={disabled}
+        inputClassName="form-control"
+        mode="decimal"
+        minFractionDigits={0}
+        maxFractionDigits={2}
+        useGrouping={false}
       />
     </>
   );
@@ -1616,12 +1544,12 @@ const IvaColumnBody = ({
 
   return (
     <Dropdown
-      value={value} // Usamos el porcentaje directamente como valor
+      value={value}
       options={taxes}
       optionLabel={(option: any) =>
         `${option.name} - ${Math.floor(option.percentage)}%`
       }
-      optionValue="percentage" // Usamos el porcentaje como valor
+      optionValue="percentage"
       placeholder="Seleccione IVA"
       className="w-100"
       onChange={(e: DropdownChangeEvent) => {
@@ -1629,11 +1557,12 @@ const IvaColumnBody = ({
           (tax: any) => tax.percentage === e.value
         );
         if (selectedTax) {
-          onChange(selectedTax); // Pasamos el objeto completo
+          onChange(selectedTax);
         }
       }}
       appendTo={document.body}
       disabled={disabled}
+      filter
     />
   );
 };
@@ -1658,12 +1587,6 @@ const DepositColumnBody = ({
     setDeposits(deposits.data);
   }
 
-  // useEffect(() => {
-  //   const depositFind: any = deposits.find(
-  //     (item: any) => item.id === value
-  //   );
-  //   setTaxSelected(depositFind?.percentage);
-  // }, [value && deposits]);
   return (
     <Dropdown
       value={value}
@@ -1677,6 +1600,7 @@ const DepositColumnBody = ({
       }}
       disabled={disabled}
       appendTo={document.body}
+      filter
     />
   );
 };

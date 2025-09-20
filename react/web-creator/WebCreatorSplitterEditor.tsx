@@ -3,6 +3,7 @@ import { generateUUID } from "../../services/utilidades";
 import { WebCreatorComponent } from './WebCreatorComponentList';
 import { WebCreatorLogo } from './components/WebCreatorLogo';
 import { WebCreatorMenuBar } from './components/WebCreatorMenuBar';
+import { WebCreatorButton } from './components/WebCreatorButton';
 
 export interface WebCreatorPanel {
     uuid: string;
@@ -11,6 +12,17 @@ export interface WebCreatorPanel {
     cols?: number; // Columnas (1-12) en lugar de porcentaje
     minCols?: number;
     layout?: 'horizontal' | 'vertical';
+    // Nuevas propiedades de estilo
+    styles?: {
+        backgroundColor?: string;
+        borderColor?: string;
+        borderWidth?: number | null;
+        borderRadius?: number | null;
+        boxShadow?: string;
+        padding?: number | null;
+        margin?: number | null;
+        // Otras propiedades CSS que puedan ser necesarias
+    };
 }
 
 interface WebCreatorSplitterEditorProps {
@@ -25,18 +37,32 @@ export interface WebCreatorSplitterEditorRef {
     addChildPanel: (panel: WebCreatorPanel, layout: 'horizontal' | 'vertical') => void;
     removePanel: (panel: WebCreatorPanel) => void;
     updatePanelCols: (panel: WebCreatorPanel, newCols: number) => void;
+    getRootPanel: () => WebCreatorPanel;
+    updatePanel: (panel: WebCreatorPanel) => void;
 }
 
 export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEditorRef, WebCreatorSplitterEditorProps>((
     { onPanelClick, onComponentClick },
     ref
 ) => {
+
+    const defaultPanelStyles = {
+        padding: 6,
+        margin: 6,
+        borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        backgroundColor: 'white',
+        boxShadow: ''
+    };
+
     const [rootPanel, setRootPanel] = useState<WebCreatorPanel>({
         uuid: generateUUID(),
         component: null,
         children: [],
         layout: 'vertical',
-        cols: 12
+        cols: 12,
+        styles: defaultPanelStyles
     });
 
     const [selectedPanel, setSelectedPanel] = useState<WebCreatorPanel | null>(null);
@@ -118,7 +144,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                 component: null,
                 children: [],
                 cols: 6, // Por defecto 6 columnas (mitad)
-                minCols: 1
+                minCols: 1,
+                styles: defaultPanelStyles
             };
 
             // Si no tiene padre, estamos en el nivel raíz
@@ -128,7 +155,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                     component: null,
                     children: [],
                     layout: direction === 'above' || direction === 'below' ? 'vertical' : 'horizontal',
-                    cols: 12
+                    cols: 12,
+                    styles: defaultPanelStyles
                 };
 
                 if (direction === 'above' || direction === 'left') {
@@ -162,7 +190,16 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                             component: null,
                             children: [],
                             layout: isHorizontalDirection ? 'horizontal' : 'vertical',
-                            cols: currentPanel.children[childIndex].cols || 12
+                            cols: currentPanel.children[childIndex].cols || 12,
+                            styles: {
+                                padding: 6,
+                                margin: 6,
+                                borderRadius: 6,
+                                borderWidth: 1,
+                                borderColor: '#e5e7eb',
+                                backgroundColor: 'white',
+                                boxShadow: 'none'
+                            }
                         };
 
                         if (direction === 'above' || direction === 'left') {
@@ -233,7 +270,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                         component: null,
                         children: [],
                         cols: 6,
-                        minCols: 1
+                        minCols: 1,
+                        styles: defaultPanelStyles
                     };
 
                     if (currentPanel.children && currentPanel.children.length > 0) {
@@ -257,7 +295,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                         component: null,
                         children: [],
                         cols: 6,
-                        minCols: 1
+                        minCols: 1,
+                        styles: defaultPanelStyles
                     };
 
                     // Si el panel tenía un componente, lo movemos al primer hijo
@@ -382,6 +421,30 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
         });
     }, [findPanelAndParent]);
 
+    const updatePanel = useCallback((panel: WebCreatorPanel) => {
+        setRootPanel(prev => {
+            const updatePanelStylesRecursive = (currentPanel: WebCreatorPanel): WebCreatorPanel => {
+                if (currentPanel.uuid === panel.uuid) {
+                    return {
+                        ...currentPanel,
+                        styles: { ...currentPanel.styles, ...panel.styles }
+                    };
+                }
+
+                if (currentPanel.children && currentPanel.children.length > 0) {
+                    return {
+                        ...currentPanel,
+                        children: currentPanel.children.map(updatePanelStylesRecursive)
+                    };
+                }
+
+                return currentPanel;
+            };
+
+            return updatePanelStylesRecursive(prev);
+        });
+    }, []);
+
     // Exponer métodos al componente padre
     useImperativeHandle(ref, () => ({
         addComponentToPanel,
@@ -389,7 +452,9 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
         addSiblingPanel,
         addChildPanel,
         removePanel,
-        updatePanelCols
+        updatePanelCols,
+        getRootPanel: () => rootPanel,
+        updatePanel
     }));
 
     const handlePanelClick = (panel: WebCreatorPanel, event: React.MouseEvent) => {
@@ -413,7 +478,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
             case "menubar":
                 return <WebCreatorMenuBar component={component} />;
             case "button":
-                return <div>Button settings</div>;
+                return <WebCreatorButton component={component} />;
             case "sidebar":
                 return <div>Sidebar settings</div>;
             default:
@@ -431,16 +496,18 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
         // Calcular ancho basado en columnas
         const widthPercentage = ((panel.cols || 12) / 12) * 100;
 
+        // Aplicar estilos configurados o usar valores por defecto
         const panelStyle: React.CSSProperties = {
             flex: `0 0 ${widthPercentage}%`,
             minWidth: '20px',
             minHeight: '20px',
             border: isSelected ? '3px solid #3B82F6' :
-                isHovered ? '2px solid #93C5FD' : '1px solid #e5e7eb',
-            borderRadius: '6px',
-            margin: '8px',
-            padding: '16px',
-            backgroundColor: 'white',
+                isHovered ? '2px solid #93C5FD' :
+                    `${panel.styles?.borderWidth || 0}px solid ${panel.styles?.borderColor || '#e5e7eb'}`,
+            borderRadius: (panel.styles?.borderRadius || 6) + 'px',
+            margin: ((panel.styles?.margin || 0) + 2) + 'px',
+            padding: ((panel.styles?.padding || 0) + 2) + 'px',
+            backgroundColor: panel.styles?.backgroundColor || 'white',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -448,7 +515,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
             position: 'relative',
             boxSizing: 'border-box',
             transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-            boxShadow: isHovered ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+            boxShadow: isHovered ? '0 2px 4px rgba(0,0,0,0.1)' : panel.styles?.boxShadow || 'none'
         };
 
         const containerStyle: React.CSSProperties = {

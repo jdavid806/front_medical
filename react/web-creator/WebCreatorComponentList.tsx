@@ -7,8 +7,12 @@ export interface WebCreatorComponent {
     uuid: string;
     name: string;
     type: string;
+    label?: string;
+    icon?: string;
     imgSrc?: string;
     menuItems?: MenuItem[];
+    action?: string;
+    dialogComponent?: string;
     panel?: WebCreatorPanel;
 }
 
@@ -42,7 +46,10 @@ export const WebCreatorComponentList = ({ onComponentClick }: WebCreatorComponen
             uuid: "3",
             name: "Botón agendar",
             type: "button",
-            imgSrc: "assets/img/logos/FullColor.svg"
+            action: "OPEN_DIALOG",
+            dialogComponent: "SCHEDULE_APPOINTMENT",
+            label: "Agendar una cita",
+            icon: "fa fa-calendar"
         },
         {
             uuid: "4",

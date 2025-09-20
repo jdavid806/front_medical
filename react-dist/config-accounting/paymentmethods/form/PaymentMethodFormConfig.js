@@ -7,6 +7,8 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
+import { Checkbox } from 'primereact/checkbox';
+
 // Categories for dropdown
 const categories = [{
   label: "Transaccional",
@@ -62,7 +64,8 @@ const PaymentMethodFormConfig = ({
       category: "",
       payment_type: "",
       accounting_account_id: null,
-      additionalDetails: ""
+      additionalDetails: "",
+      isCash: false
     }
   });
   const onFormSubmit = data => onSubmit(data);
@@ -77,7 +80,8 @@ const PaymentMethodFormConfig = ({
       category: "",
       payment_type: "",
       accounting_account_id: null,
-      additionalDetails: ""
+      additionalDetails: "",
+      isCash: false
     });
   }, [initialData, reset]);
   return /*#__PURE__*/React.createElement("form", {
@@ -163,7 +167,9 @@ const PaymentMethodFormConfig = ({
       })
     }), getFormErrorMessage("category"))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "field mb-4"
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-6 mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_id",
     className: "font-medium block mb-2"
@@ -191,6 +197,24 @@ const PaymentMethodFormConfig = ({
       appendTo: "self"
     }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
+    className: "col-6 d-flex align-items-center gap-2"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "isCash",
+    className: "font-medium block"
+  }, "Es efectivo"), /*#__PURE__*/React.createElement(Controller, {
+    name: "isCash",
+    control: control,
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Checkbox, {
+      id: field.name,
+      checked: field.value,
+      onChange: e => field.onChange(e.checked),
+      className: classNames("w-full", {}),
+      inputId: field.name
+    }), getFormErrorMessage("isCash"))
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "additionalDetails",
