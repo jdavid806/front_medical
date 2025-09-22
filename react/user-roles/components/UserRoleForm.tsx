@@ -43,6 +43,8 @@ const roleGroupOptions = [
     { label: 'Médico', value: 'DOCTOR' },
     { label: 'Administrativo', value: 'ADMIN' },
     { label: 'Asistente médico', value: 'DOCTOR_ASSISTANT' },
+    { label: 'Auxiliar', value: 'ASSISTANT' },
+
 ];
 
 export const UserRoleForm: React.FC<UserRoleFormProps> = ({

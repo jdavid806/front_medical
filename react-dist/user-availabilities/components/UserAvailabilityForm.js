@@ -283,6 +283,30 @@ const UserAvailabilityForm = ({
   }), getFormErrorMessage('appointment_duration'))), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
+    name: "branch_id",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Sucursal *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      inputId: field.name,
+      options: branches,
+      optionLabel: "label",
+      optionValue: "value",
+      filter: true,
+      placeholder: "Seleccione una sucursal",
+      className: classNames('w-100', {
+        'p-invalid': errors.branch_id
+      })
+    }, field)))
+  }), getFormErrorMessage('branch_id')), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
     name: "days_of_week",
     control: control,
     rules: {

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { appointmentTypes } from "../../../services/commons.js";
+import AppointmentTypeService from "../../../services/api/classes/appointmentTypeService.js";
 export const useAppointmentTypesForSelect = () => {
   const [mappedAppointmentTypes, setMappedAppointmentTypes] = useState([]);
   const fetchAppointmentTypes = async () => {
     try {
-      const data = appointmentTypes;
+      const service = new AppointmentTypeService();
+      const data = await service.getAll();
       const mappedData = data.map(item => {
         return {
           value: item.id.toString(),

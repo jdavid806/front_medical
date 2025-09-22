@@ -3,6 +3,7 @@ import { generateUUID } from "../../services/utilidades.js";
 import { WebCreatorLogo } from "./components/WebCreatorLogo.js";
 import { WebCreatorMenuBar } from "./components/WebCreatorMenuBar.js";
 import { WebCreatorButton } from "./components/WebCreatorButton.js";
+import { WebCreatorInput } from "./components/WebCreatorInput.js";
 export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   onPanelClick,
   onComponentClick
@@ -13,7 +14,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#e5e7eb',
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     boxShadow: ''
   };
   const [rootPanel, setRootPanel] = useState({
@@ -150,15 +151,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
               children: [],
               layout: isHorizontalDirection ? 'horizontal' : 'vertical',
               cols: currentPanel.children[childIndex].cols || 12,
-              styles: {
-                padding: 6,
-                margin: 6,
-                borderRadius: 6,
-                borderWidth: 1,
-                borderColor: '#e5e7eb',
-                backgroundColor: 'white',
-                boxShadow: 'none'
-              }
+              styles: defaultPanelStyles
             };
             if (direction === 'above' || direction === 'left') {
               newContainer.children = [{
@@ -439,6 +432,10 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
         });
       case "sidebar":
         return /*#__PURE__*/React.createElement("div", null, "Sidebar settings");
+      case "input":
+        return /*#__PURE__*/React.createElement(WebCreatorInput, {
+          component: component
+        });
       default:
         return /*#__PURE__*/React.createElement("div", null, "Unknown component type");
     }
@@ -463,7 +460,7 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
       borderRadius: (panel.styles?.borderRadius || 6) + 'px',
       margin: (panel.styles?.margin || 0) + 2 + 'px',
       padding: (panel.styles?.padding || 0) + 2 + 'px',
-      backgroundColor: panel.styles?.backgroundColor || 'white',
+      backgroundColor: panel.styles?.backgroundColor || '#ffffff',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
@@ -478,6 +475,8 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
       width: '100%',
       height: '100%',
       flexDirection: panel.layout === 'vertical' ? 'column' : 'row',
+      alignItems: panel.styles?.alignItems || 'center',
+      justifyContent: panel.styles?.justifyContent || 'center',
       gap: '4px'
     };
     if (hasChildren) {

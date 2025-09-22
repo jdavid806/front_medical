@@ -11,7 +11,6 @@ export const useLoggedUser = () => {
     const fetchUser = async () => {
         try {
             const data = await userService.getByExternalId(getJWTPayload().sub);
-            console.log('Mapped logged user', data);
 
             setLoggedUser(data);
         } catch (err) {

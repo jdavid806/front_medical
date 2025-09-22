@@ -49,13 +49,14 @@ export const EntitiesConfig = () => {
             if (entitiesById) {
                 await updateEntities(entitiesById.id.toString(), entitiesData);
                 SwalManager.success('Entidad actualizada correctamente');
+                await refreshEntities();
+                setShowFormModal(false);
             } else {
                 await createEntities(entitiesData);
                 SwalManager.success('Entidad creada correctamente');
+                await refreshEntities();
+                setShowFormModal(false);
             }
-
-            await refreshEntities();
-            setShowFormModal(false);
         } catch (error) {
             console.error("Error saving entity:", error);
         }

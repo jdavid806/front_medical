@@ -216,11 +216,10 @@
             })
             const menu = await userService.getMenuByRole(user.id);
             const permissionsAuthRoute = await userService.getMenuByRolePermission(user.role.id);
-            console.log("user", user);
+            
             localStorage.setItem("roles", JSON.stringify(user.role));
             localStorage.setItem("permissionsAuthRoute", JSON.stringify(permissionsAuthRoute.menus));
             localStorage.setItem("menus", JSON.stringify(menu.menus));
-            console.log("menu",menu);
 
             if (window.updateNavbarMenus) {
                 window.updateNavbarMenus();

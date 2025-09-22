@@ -1,3 +1,4 @@
+import { suppliesService } from "../../../../services/api/index.js";
 import { usePRToast } from "../../../hooks/usePRToast.js";
 export const useSendSuppliesRequest = () => {
   const {
@@ -5,16 +6,19 @@ export const useSendSuppliesRequest = () => {
     showSuccessToast,
     showFormErrorsToast
   } = usePRToast();
-  const sendSuppliesRequest = data => {
+  const sendSuppliesRequest = async data => {
     try {
+      await suppliesService.storeSupply(data);
       showSuccessToast({
         title: "Solicitud enviada",
         message: "Solicitud enviada exitosamente"
       });
     } catch (error) {
+      console.error(error);
       showFormErrorsToast({
         errors: error
       });
+      throw error;
     }
   };
   return {

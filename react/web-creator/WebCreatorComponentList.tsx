@@ -2,6 +2,7 @@ import { Divider } from "primereact/divider";
 import React from "react";
 import { WebCreatorPanel } from "./WebCreatorSplitterEditor";
 import { MenuItem } from "primereact/menuitem";
+import { generateUUID } from "../../services/utilidades";
 
 export interface WebCreatorComponent {
     uuid: string;
@@ -13,6 +14,7 @@ export interface WebCreatorComponent {
     menuItems?: MenuItem[];
     action?: string;
     dialogComponent?: string;
+    controlType?: "text" | "number" | "dropdown"
     panel?: WebCreatorPanel;
 }
 
@@ -74,6 +76,14 @@ export const WebCreatorComponentList = ({ onComponentClick }: WebCreatorComponen
             name: "Footer",
             type: "footer",
             imgSrc: "assets/img/logos/FullColor.svg"
+        },
+        {
+            uuid: generateUUID(),
+            name: "Campo de texto",
+            type: "input",
+            label: "Campo de texto",
+            icon: "",
+            controlType: "text"
         }
     ];
 

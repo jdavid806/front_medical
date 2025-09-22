@@ -156,6 +156,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   );
 
   const { categories, loading: loadingCategories } = useAssetCategories();
+  const { refreshProducts } = useInventory();
 
   const { paymentMethods, loading: loadingPaymentMethods } =
     usePaymentMethods();
@@ -192,7 +193,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         const formatted = depositsData.map((deposit) => ({
           id: deposit.id,
           name: deposit.attributes.name,
-          originalData: deposit, // Mantenemos los datos originales por si son necesarios
+          originalData: deposit,
         }));
         setFormattedDeposits(formatted);
       } catch (error) {
@@ -318,11 +319,20 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     }
   }
 
-  // Helper function to generate unique IDs
   function generateId() {
     return Math.random().toString(36).substr(2, 9);
   }
+  const handleProductCreated = (productType: string) => {
+    // Refrescar los productos del tipo específico
+    refreshProducts(productType);
 
+    toast.current?.show({
+      severity: "success",
+      summary: "Éxito",
+      detail: "Producto creado y lista actualizada",
+      life: 3000,
+    });
+  };
   const calculateLineTotal = (product: InvoiceProduct): number => {
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
@@ -372,6 +382,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       return total + subtotal * (discount / 100);
     }, 0);
   };
+
   const calculateTotalTax = (): number => {
     return productsArray.reduce((total, product) => {
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
@@ -398,11 +409,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const paymentCoverage = (): boolean => {
     const total = calculateTotal();
     const payments = calculateTotalPayments();
-    // Permitimos un pequeño margen por redondeos
     return Math.abs(payments - total) < 0.01;
   };
 
-  // Funciones para manejar productos
   const addProduct = () => {
     setProductsArray((prev) => [
       ...prev,
@@ -476,7 +485,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     }
   };
 
-  // Función para manejar el cambio en los métodos de pago
   const handlePaymentChange = (
     id: string,
     field: keyof PaymentMethod,
@@ -556,7 +564,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         })
       );
     },
-    [] // Sin dependencias ya que solo usa setProductsArray
+    []
   );
 
   const handleProductSelection = (
@@ -608,7 +616,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     );
   };
 
-  // Función para manejar el guardado de datos de activos fijos
   const handleSaveFixedAsset = useCallback(
     (productId: string, data: FixedAssetsFormInputs) => {
       setProductsArray((prev) =>
@@ -626,7 +633,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     []
   );
 
-  //Componente de lote de Productos
   const ProductAccordion = React.memo(
     ({ product }: { product: InvoiceProduct }) => {
       const containerRef = useRef<HTMLDivElement>(null);
@@ -646,12 +652,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           }
         );
 
-      // Función para guardar los datos del activo fijo
       const handleSaveFixedAssetLocal = useCallback(
         (data: FixedAssetsFormInputs) => {
-          // Actualizar estado local
           setLocalFixedAssetData(data);
-          // Actualizar estado global
           handleSaveFixedAsset(product.id, data);
         },
         [product.id, handleSaveFixedAsset]
@@ -902,7 +905,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
   const handleSaveExpiration = (data: ExpirationLotFormInputs) => {
     if (productForExpiration) {
-      // Actualizar el producto en el estado si es necesario
       setProductsArray((prev) =>
         prev.map((p) =>
           p.id === productForExpiration.id
@@ -918,7 +920,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     setProductForExpiration(null);
   };
 
-  // Función para construir el objeto de datos a enviar al backend
   const buildInvoiceData = async (formData: any) => {
     const purchaseIdValue = purchaseOrderId
       ? {
@@ -1262,8 +1263,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             <InputNumber
               value={total}
               mode="currency"
-              style={{ maxWidth: "200px" }}
-              className="button-width"
+              style={{ maxWidth: "300px" }}
+              className="w-100"
               currency="DOP"
               locale="es-DO"
               readOnly
@@ -1299,20 +1300,36 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     });
 
   return (
-    <div className="container-fluid p-4">
+    <div className="container-fluid p-3 p-md-4">
       <ThirdPartyModal />
 
       {/* Main Header Section */}
-      <div className="row mb-4">
+      <div className="row mb-3 mb-md-4">
         <div className="col-12">
           <div className="card shadow-sm">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
+            <div className="card-body p-3 p-md-4">
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
                 <div>
-                  <h1 className="h3 mb-0 text-primary">
+                  <h1 className="h4 h3-md mb-0 text-primary">
                     <i className="pi pi-file-invoice me-2"></i>
                     Crear nueva factura de compra
                   </h1>
+                </div>
+                <div className="d-flex gap-2">
+                  {/* Botones de acción en header para mobile */}
+                  <Button
+                    label="Guardar"
+                    icon="pi pi-check"
+                    className="btn-info d-none d-md-inline-flex"
+                    type="submit"
+                  />
+                  <Button
+                    label="Enviar"
+                    icon="pi pi-send"
+                    className="btn-info d-none d-md-inline-flex"
+                    onClick={handleSubmit(save)}
+                    disabled={!paymentCoverage()}
+                  />
                 </div>
               </div>
             </div>
@@ -1323,19 +1340,19 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       <div className="row">
         <div className="col-12">
           <form onSubmit={handleSubmit(save)}>
-            {/* Basic Information Section */}
-            <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light">
+            {/* Basic Information Section - Mejorado para mobile */}
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-user-edit me-2 text-primary"></i>
                   Información básica
                 </h2>
               </div>
-              <div className="card-body">
-                <div className="row g-3">
-                  <div className="col-md-4">
+              <div className="card-body p-3 p-md-4">
+                <div className="row g-2 g-md-3">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Número de factura *</label>
+                      <label className="form-label small fw-bold">Número de factura *</label>
                       <Controller
                         name="invoiceNumber"
                         control={control}
@@ -1344,16 +1361,16 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             {...field}
                             placeholder="Número de factura"
                             className="w-100"
+                            size="small"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  {/* Nuevo: Tipo de documento */}
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Tipo de documento *</label>
+                      <label className="form-label small fw-bold">Tipo de documento *</label>
                       <Controller
                         name="documentType"
                         control={control}
@@ -1361,31 +1378,23 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <Dropdown
                             {...field}
                             options={[
-                              {
-                                label: "Factura de compra",
-                                value: "factura_compra",
-                              },
-                              {
-                                label: "Documento Soporte",
-                                value: "documento_soporte",
-                              },
+                              { label: "Factura de compra", value: "factura_compra" },
+                              { label: "Documento Soporte", value: "documento_soporte" },
                             ]}
                             placeholder="Seleccione tipo"
                             className="w-100"
                             appendTo={"self"}
                             disabled={disabledInputs}
+                            showClear
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  {/* Nuevo: Comprobante fiscal */}
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">
-                        # Comprobante fiscal *
-                      </label>
+                      <label className="form-label small fw-bold"># Comprobante fiscal *</label>
                       <Controller
                         name="fiscalVoucher"
                         control={control}
@@ -1395,17 +1404,16 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             placeholder="Número de comprobante fiscal"
                             className="w-100"
                             disabled={disabledInputs}
+                            size="small"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">
-                        Fecha de elaboración *
-                      </label>
+                      <label className="form-label small fw-bold">Fecha de elaboración *</label>
                       <Controller
                         name="elaborationDate"
                         control={control}
@@ -1413,7 +1421,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <Calendar
                             {...field}
                             placeholder="Seleccione fecha"
-                            className={classNames("w-100")}
+                            className="w-100"
                             showIcon
                             dateFormat="dd/mm/yy"
                             appendTo={"self"}
@@ -1424,9 +1432,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Fecha vencimiento *</label>
+                      <label className="form-label small fw-bold">Fecha vencimiento *</label>
                       <Controller
                         name="expirationDate"
                         control={control}
@@ -1434,7 +1442,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <Calendar
                             {...field}
                             placeholder="Seleccione fecha"
-                            className={classNames("w-100")}
+                            className="w-100"
                             showIcon
                             dateFormat="dd/mm/yy"
                             appendTo={"self"}
@@ -1445,14 +1453,14 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Proveedor *</label>
+                      <label className="form-label small fw-bold">Proveedor *</label>
                       <Controller
                         name="supplier"
                         control={control}
                         render={({ field }) => (
-                          <div className="d-flex">
+                          <div className="d-flex gap-1">
                             <Dropdown
                               {...field}
                               filter
@@ -1460,7 +1468,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               optionLabel="name"
                               optionValue="id"
                               placeholder="Seleccione proveedor"
-                              className={classNames("w-100")}
+                              className="flex-grow-1"
                               appendTo={"self"}
                               disabled={disabledInputs}
                             />
@@ -1469,6 +1477,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               onClick={openThirdPartyModal}
                               icon={<i className="fa-solid fa-plus"></i>}
                               className="p-button-primary"
+                              size="small"
                             />
                           </div>
                         )}
@@ -1476,9 +1485,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Centro de costo *</label>
+                      <label className="form-label small fw-bold">Centro de costo *</label>
                       <Controller
                         name="costCenter"
                         control={control}
@@ -1490,7 +1499,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             optionLabel="name"
                             optionValue="id"
                             placeholder="Seleccione centro"
-                            className={classNames("w-100")}
+                            className="w-100"
                             appendTo={"self"}
                             disabled={disabledInputs}
                           />
@@ -1499,9 +1508,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label">Comprador *</label>
+                      <label className="form-label small fw-bold">Comprador *</label>
                       <Controller
                         name="buyer"
                         control={control}
@@ -1513,7 +1522,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             optionLabel="full_name"
                             optionValue="id"
                             placeholder="Seleccione comprador"
-                            className={classNames("w-100")}
+                            className="w-100"
                             appendTo={"self"}
                             disabled={disabledInputs}
                           />
@@ -1524,56 +1533,42 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 </div>
               </div>
             </div>
-            {/* Products Section */}
-            <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light d-flex justify-content-between align-items-center">
-                <h2 className="h5 mb-0">
-                  <i className="pi pi-shopping-cart me-2 text-primary"></i>
-                  Productos/Servicios
-                </h2>
-                <SplitButton
-                  label="Añadir producto"
-                  icon="pi pi-plus"
-                  model={[
-                    {
-                      label: "Insumo",
-                      command: () => setShowInsumoModal(true),
-                    },
-                    {
-                      label: "Vacuna",
-                      command: () => setShowVaccineModal(true),
-                    },
-                    {
-                      label: "Medicamento",
-                      command: () => setShowMedicamentoModal(true),
-                    },
-                    {
-                      label: "Inventariable",
-                      command: () => setShowInventariableModal(true),
-                    },
-                    {
-                      label: "Marca",
-                      command: () => setShowBrandFormModal(true),
-                    },
-                  ]}
-                  severity="contrast"
-                  onClick={addProduct}
-                  disabled={loadingProductTypes || disabledInputs}
-                />
+
+            {/* Products Section - Mejorado para mobile */}
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <div className="card-header bg-light p-3">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                  <h2 className="h5 mb-0">
+                    <i className="pi pi-shopping-cart me-2 text-primary"></i>
+                    Productos/Servicios
+                  </h2>
+                  <SplitButton
+                    label="Añadir producto"
+                    icon="pi pi-plus"
+                    model={[
+                      { label: "Insumo", command: () => setShowInsumoModal(true) },
+                      { label: "Vacuna", command: () => setShowVaccineModal(true) },
+                      { label: "Medicamento", command: () => setShowMedicamentoModal(true) },
+                      { label: "Inventariable", command: () => setShowInventariableModal(true) },
+                      { label: "Marca", command: () => setShowBrandFormModal(true) },
+                    ]}
+                    severity="contrast"
+                    onClick={addProduct}
+                    disabled={loadingProductTypes || disabledInputs}
+                    size="small"
+                  />
+                </div>
               </div>
-              <div className="card-body">
+              <div className="card-body p-2 p-md-3">
                 {loadingProductTypes ? (
-                  <div className="text-center py-5">
+                  <div className="text-center py-4">
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Cargando...</span>
                     </div>
                     <p className="mt-2 text-muted">Cargando productos...</p>
                   </div>
                 ) : (
-                  <div
-                    className="product-accordion"
-                    style={{ overflowAnchor: "none" }}
-                  >
+                  <div className="product-accordion">
                     {productsArray.map((product) => (
                       <ProductAccordion
                         key={`product-${product.id}`}
@@ -1585,7 +1580,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               </div>
             </div>
 
-            <div className="card mb-4 shadow-sm">
+            {/* Retentions Section */}
+            <div className="card mb-3 mb-md-4 shadow-sm">
               <RetentionsSection
                 subtotal={calculateSubtotal()}
                 totalDiscount={calculateTotalDiscount()}
@@ -1594,146 +1590,152 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               />
             </div>
 
-            {/* Payment Methods Section */}
-            <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light d-flex justify-content-between align-items-center">
-                <h2 className="h5 mb-0">
-                  <i className="pi pi-credit-card me-2 text-primary"></i>
-                  Método de pago (DOP)
-                </h2>
-                <Button
-                  icon="pi pi-plus"
-                  label="Agregar método"
-                  className="btn btn-primary"
-                  onClick={addPayment}
-                >
-                  <i className="fa-solid fa-plus me-2"></i>
-                </Button>
+            {/* Payment Methods Section - Mejorado para mobile */}
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <div className="card-header bg-light p-3">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+                  <h2 className="h5 mb-0">
+                    <i className="pi pi-credit-card me-2 text-primary"></i>
+                    Método de pago (DOP)
+                  </h2>
+                  <Button
+                    icon="pi pi-plus"
+                    label="Agregar método"
+                    className="btn-primary"
+                    onClick={addPayment}
+                    size="small"
+                  />
+                </div>
               </div>
-              <div className="card-body">
+              <div className="card-body p-2 p-md-3">
                 <div className="payment-methods-section">
                   {paymentMethodsArray.map((payment) => (
-                    <div key={payment.id} className="payment-method-row">
-                      <div className="payment-method-field">
-                        <label className="payment-method-label">Método *</label>
-                        <Dropdown
-                          value={payment.method}
-                          options={filteredPaymentMethods}
-                          optionLabel="method"
-                          optionValue="id"
-                          placeholder="Seleccione método"
-                          className="w-100"
-                          onChange={(e) =>
-                            handlePaymentChange(payment.id, "method", e.value)
-                          }
-                          appendTo={"self"}
-                        />
-                      </div>
+                    <div key={payment.id} className="payment-method-row mb-3 p-2 border rounded">
+                      <div className="row g-2 align-items-end">
+                        <div className="col-12 col-md-4">
+                          <label className="form-label small fw-bold">Método *</label>
+                          <Dropdown
+                            value={payment.method}
+                            options={filteredPaymentMethods}
+                            optionLabel="method"
+                            optionValue="id"
+                            placeholder="Seleccione método"
+                            className="w-100"
+                            onChange={(e) =>
+                              handlePaymentChange(payment.id, "method", e.value)
+                            }
+                            appendTo={"self"}
+                            size="small"
+                          />
+                        </div>
 
-                      <div className="payment-method-field">
-                        <label className="payment-method-label">
-                          Descripción *
-                        </label>
-                        <InputText
-                          value={payment.authorizationNumber}
-                          placeholder="Descripción"
-                          className="w-100"
-                          onChange={(e) =>
-                            handlePaymentChange(
-                              payment.id,
-                              "authorizationNumber",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
+                        <div className="col-12 col-md-4">
+                          <label className="form-label small fw-bold">Descripción *</label>
+                          <InputText
+                            value={payment.authorizationNumber}
+                            placeholder="Descripción"
+                            className="w-100"
+                            onChange={(e) =>
+                              handlePaymentChange(
+                                payment.id,
+                                "authorizationNumber",
+                                e.target.value
+                              )
+                            }
+                            size="small"
+                          />
+                        </div>
 
-                      <div className="payment-method-field">
-                        <label className="payment-method-label">Valor</label>
-                        <InputNumber
-                          value={payment.value}
-                          placeholder="Ingrese valor"
-                          className="w-100"
-                          mode="currency"
-                          currency="DOP"
-                          locale="es-DO"
-                          min={0}
-                          onValueChange={(e) =>
-                            handlePaymentChange(
-                              payment.id,
-                              "value",
-                              e.value || null
-                            )
-                          }
-                        />
-                      </div>
+                        <div className="col-12 col-md-3">
+                          <label className="form-label small fw-bold">Valor</label>
+                          <InputNumber
+                            value={payment.value}
+                            placeholder="Ingrese valor"
+                            className="w-100"
+                            mode="currency"
+                            currency="DOP"
+                            locale="es-DO"
+                            min={0}
+                            onValueChange={(e) =>
+                              handlePaymentChange(
+                                payment.id,
+                                "value",
+                                e.value || null
+                              )
+                            }
+                            size="small"
+                          />
+                        </div>
 
-                      <div className="payment-method-actions">
-                        <Button
-                          className="payment-delete-button"
-                          onClick={() => removePayment(payment.id)}
-                          disabled={paymentMethodsArray.length <= 1}
-                          tooltip="Eliminar método"
-                          tooltipOptions={{ position: "top" }}
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </Button>
+                        <div className="col-12 col-md-1">
+                          <div className="d-flex justify-content-end">
+                            <Button
+                              className="btn-danger btn-sm"
+                              onClick={() => removePayment(payment.id)}
+                              disabled={paymentMethodsArray.length <= 1}
+                              tooltip="Eliminar método"
+                              tooltipOptions={{ position: "top" }}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
 
-                  <div className="payment-summary">
-                    <div
-                      className={`payment-summary-card ${!paymentCoverage()
-                        ? "payment-warning"
-                        : "payment-success"
-                        }`}
-                    >
-                      <div className="payment-summary-item">
-                        <strong>Total factura:</strong>
-                        <InputNumber
-                          value={calculateTotal() || 0}
-                          className="payment-summary-input"
-                          mode="currency"
-                          currency="DOP"
-                          locale="es-DO"
-                          minFractionDigits={2}
-                          maxFractionDigits={3}
-                          readOnly
-                        />
-                      </div>
+                  <div className="payment-summary mt-3">
+                    <div className={`payment-summary-card p-3 border rounded ${!paymentCoverage() ? "border-warning" : "border-success"}`}>
+                      <div className="row g-3 align-items-center">
+                        <div className="col-12 col-md-6">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <strong className="small">Total factura:</strong>
+                            <InputNumber
+                              value={calculateTotal() || 0}
+                              className="payment-summary-input border-0 bg-transparent text-end"
+                              mode="currency"
+                              currency="DOP"
+                              locale="es-DO"
+                              minFractionDigits={2}
+                              maxFractionDigits={3}
+                              readOnly
+                              size="small"
+                            />
+                          </div>
+                        </div>
 
-                      <div className="payment-summary-item">
-                        <strong>Total pagos:</strong>
-                        <InputNumber
-                          value={calculateTotalPayments()}
-                          className="payment-summary-input"
-                          mode="currency"
-                          currency="DOP"
-                          locale="es-DO"
-                          minFractionDigits={2}
-                          maxFractionDigits={3}
-                          readOnly
-                        />
-                      </div>
+                        <div className="col-12 col-md-6">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <strong className="small">Total pagos:</strong>
+                            <InputNumber
+                              value={calculateTotalPayments()}
+                              className="payment-summary-input border-0 bg-transparent text-end"
+                              mode="currency"
+                              currency="DOP"
+                              locale="es-DO"
+                              minFractionDigits={2}
+                              maxFractionDigits={3}
+                              readOnly
+                              size="small"
+                            />
+                          </div>
+                        </div>
 
-                      <div className="payment-summary-status">
-                        {!paymentCoverage() ? (
-                          <span className="payment-status-warning">
-                            <i className="pi pi-exclamation-triangle me-2"></i>
-                            Faltan{" "}
-                            {(
-                              (calculateTotal() || 0) -
-                              (calculateTotalPayments() || 0)
-                            ).toFixed(2)}{" "}
-                            DOP
-                          </span>
-                        ) : (
-                          <span className="payment-status-success">
-                            <i className="pi pi-check-circle me-2"></i>
-                            Pagos completos
-                          </span>
-                        )}
+                        <div className="col-12">
+                          <div className={`text-center p-2 rounded ${!paymentCoverage() ? "bg-warning-light" : "bg-success-light"}`}>
+                            {!paymentCoverage() ? (
+                              <span className="text-warning-dark small fw-bold">
+                                <i className="pi pi-exclamation-triangle me-2"></i>
+                                Faltan {((calculateTotal() || 0) - (calculateTotalPayments() || 0)).toFixed(2)} DOP
+                              </span>
+                            ) : (
+                              <span className="text-success-dark small fw-bold">
+                                <i className="pi pi-check-circle me-2"></i>
+                                Pagos completos
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1741,160 +1743,99 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               </div>
             </div>
 
-            {/* {showAdvancesForm && supplierId && (
-              <div className="card mb-4 shadow-sm">
-                <div className="card-header bg-light">
-                  <h2 className="h5 mb-0">
-                    <i className="pi pi-history me-2 text-primary"></i>
-                    Seleccionar Anticipos del Proveedor
-                  </h2>
-                </div>
-                <div className="card-body">
-                  <AdvanceHistoryForm
-                    customerId={supplierId}
-                    invoiceTotal={calculateTotal()}
-                    onSelectAdvances={handleSelectAdvances}
-                  />
-                  <div className="d-flex justify-content-end mt-3">
-                    <Button
-                      label="Cancelar"
-                      icon="pi pi-times"
-                      className="p-button-secondary"
-                      onClick={() => {
-                        setShowAdvancesForm(false);
-                        setSelectedAdvanceMethodId(null);
-                        // Limpiar el método de pago si no se seleccionaron anticipos
-                        if (selectedAdvanceMethodId) {
-                          setPaymentMethodsArray((prev) =>
-                            prev.map((payment) =>
-                              payment.id === selectedAdvanceMethodId
-                                ? { ...payment, method: "", value: 0 }
-                                : payment
-                            )
-                          );
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )} */}
-
-            <Dialog
-              style={{ width: "50vw", height: "44vh" }}
-              header="Anticipos"
-              visible={showAdvancesForm}
-              onHide={() => setShowAdvancesForm(false)}
-            >
-              <FormAdvanceCopy
-                advances={advances}
-                invoiceTotal={(
-                  calculateTotal() - calculateTotalPayments()
-                ).toFixed(2)}
-                onSubmit={(data) => {
-                  handleSelectAdvances(data);
-                }}
-              ></FormAdvanceCopy>
-            </Dialog>
-
-            {/* Summary Section */}
-            <div className="card mb-4 shadow-sm">
-              <div className="card-header bg-light">
+            {/* Summary Section - Mejorado para mobile */}
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-calculator me-2 text-primary"></i>
                   Resumen de compra (DOP)
                 </h2>
               </div>
-              <div className="card-body">
-                <div className="row g-3">
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label className="form-label">SUBTOTAL</label>
-                      <InputNumber
-                        value={calculateSubtotal() || 0}
-                        className="w-100"
-                        mode="currency"
-                        currency="DOP"
-                        locale="es-DO"
-                        readOnly
-                      />
+              <div className="card-body p-3">
+                <div className="row g-2 g-md-3">
+                  {[
+                    { label: "SUBTOTAL", value: calculateSubtotal() || 0, highlight: true },
+                    { label: "Descuento", value: calculateTotalDiscount() || 0, highlight: true },
+                    { label: "Impuestos", value: calculateTotalTax() || 0, highlight: true },
+                    { label: "Retenciones", value: retentions.reduce((sum, r) => sum + r.value, 0), highlight: true },
+                    { label: "TOTAL", value: calculateTotal() || 0, highlight: true }
+                  ].map((item, index) => (
+                    <div key={index} className="col-12 col-sm-6 col-lg-3">
+                      <div className={`form-group p-2 rounded ${item.highlight ? 'bg-light' : ''}`}>
+                        <label className="form-label small fw-bold">{item.label}</label>
+                        <InputNumber
+                          value={item.value}
+                          className="w-100"
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          readOnly
+                          size="small"
+                          inputClassName={item.highlight ? 'fw-bold text-primary' : ''}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label className="form-label">Descuento</label>
-                      <InputNumber
-                        value={calculateTotalDiscount() || 0}
-                        className="w-100"
-                        mode="currency"
-                        currency="DOP"
-                        locale="es-DO"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label className="form-label">Impuestos</label>
-                      <InputNumber
-                        value={calculateTotalTax() || 0}
-                        className="w-100"
-                        mode="currency"
-                        currency="DOP"
-                        locale="es-DO"
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="form-group">
-                      <label className="form-label">TOTAL</label>
-                      <InputNumber
-                        value={calculateTotal() || 0}
-                        className="w-100 font-weight-bold"
-                        mode="currency"
-                        currency="DOP"
-                        locale="es-DO"
-                        readOnly
-                      />
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-            {/* Action Buttons */}
-            <div className="d-flex justify-content-end gap-3 mb-4">
-              <Button
-                label="Guardar"
-                icon="pi pi-check"
-                className="btn-info"
-                type="submit"
-              />
-              <Button
-                label="Guardar y enviar"
-                icon="pi pi-send"
-                className="btn-info"
-                onClick={handleSubmit(save)}
-                disabled={!paymentCoverage()}
-              />
+
+            {/* Action Buttons - Mejorado para mobile */}
+            <div className="d-flex flex-column flex-md-row justify-content-end gap-2 mb-4">
+              <div className="d-flex gap-2 d-md-none">
+                <Button
+                  label="Guardar"
+                  icon="pi pi-check"
+                  className="btn-info flex-fill"
+                  type="submit"
+                  size="small"
+                />
+                <Button
+                  label="Enviar"
+                  icon="pi pi-send"
+                  className="btn-info flex-fill"
+                  onClick={handleSubmit(save)}
+                  disabled={!paymentCoverage()}
+                  size="small"
+                />
+              </div>
+              <div className="d-none d-md-flex gap-3">
+                <Button
+                  label="Guardar"
+                  icon="pi pi-check"
+                  className="btn-info"
+                  type="submit"
+                />
+                <Button
+                  label="Guardar y enviar"
+                  icon="pi pi-send"
+                  className="btn-info"
+                  onClick={handleSubmit(save)}
+                  disabled={!paymentCoverage()}
+                />
+              </div>
             </div>
           </form>
 
-          {/* Modals */}
+          {/* Modals - Se mantienen igual */}
           <MedicationFormModal
             show={showMedicamentoModal}
             onHide={() => setShowMedicamentoModal(false)}
+            onSuccess={() => handleProductCreated("medications")}
           />
 
           <SupplyFormModal
             show={showInsumoModal}
             onHide={() => setShowInsumoModal(false)}
+            onSuccess={() => handleProductCreated("supplies")}
           />
 
           <VaccineFormModal
             show={showVaccineModal}
             onHide={() => setShowVaccineModal(false)}
+            onSuccess={() => handleProductCreated("vaccines")}
           />
+
           <ExpirationLotModal
             isVisible={isModalVisible}
             onSave={handleSaveExpiration}
@@ -1908,6 +1849,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           <InventariableFormModal
             show={showInventariableModal}
             onHide={() => setShowInventariableModal(false)}
+            onSuccess={() => handleProductCreated("inventariables")}
           />
 
           <BrandFormModal
@@ -1916,249 +1858,177 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             handleSubmit={handleSubmitBrand}
             onHide={handleHideBrandFormModal}
             initialData={{}}
-          ></BrandFormModal>
+          />
         </div>
       </div>
       <Toast ref={toast} />
 
-      <style>{` 
-
-                  .p-dropdown-panel {
-                    z-index: 1100 !important;
-                  }
-                  .overlay-invoices {
-                    position: absolute !important;
-                    z-index: 1030 !important;
-                    height: fit-content !important;
-                  }
-                  .p-datatable-wrapper {
-                    overflow-x: auto;
-                    max-width: 100%;
-                  }
-                  .p-datatable .p-datatable-thead > tr > th,
-                  .p-datatable .p-datatable-tbody > tr > td {
-                    white-space: nowrap;
-                    min-width: 100px;
-                  }
-                  .p-dropdown-panel .p-dropdown-items-wrapper {
-                    overflow: auto;
-                    max-height: 200px;
-                  }
-
-
-                  .product-accordion {
-                   max-width:100%;
-                   overflow-anchor: none; 
-                  }
-
-                .p-datatable .p-inputnumber {
-                    width: 100% !important;
-                  }
-
-                .p-datatable .p-inputnumber-input {
-                    width: 100% !important;
-                  }
-
-                .payment-methods-section {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1.5rem;
-                }
-                
-                .payment-method-row {
-                    display: flex;
-                    gap: 1rem;
-                    align-items: flex-end;
-                }
-                
-                .payment-method-field {
-                    flex: 1;
-                    min-width: 0;
-                }
-                
-                .payment-method-label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: 500;
-                    color: #495057;
-                }
-                
-                .payment-dropdown, .payment-input {
-                    width: 100%;
-                }
-                
-                .payment-method-actions {
-                    display: flex;
-                    align-items: center;
-                    height: 40px;
-                    margin-bottom: 0.5rem;
-                }
-                
-                .payment-delete-button {
-                    color: #dc3545;
-                    background: transparent;
-                    border: none;
-                    transition: all 0.2s;
-                }
-                
-                .payment-delete-button:hover {
-                    color: #fff;
-                    background: #dc3545;
-                }
-                
-                .payment-delete-button:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-                
-                .payment-summary {
-                    margin-top: 1.5rem;
-                }
-                
-                .payment-summary-card {
-                    background: rgba(194, 194, 194, 0.15);
-                    border-radius: 8px;
-                    padding: 1.5rem;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-                
-                .payment-summary-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                
-                .payment-summary-input {
-                    background: transparent;
-                    border: none;
-                    font-weight: bold;
-                }
-                
-                .payment-summary-status {
-                    flex: 1;
-                    text-align: right;
-                    min-width: 200px;
-                }
-                
-                .payment-status-warning {
-                    color: #dc3545;
-                    font-weight: 500;
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-                }
-                
-                .payment-status-success {
-                    color: #28a745;
-                    font-weight: 500;
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-end;
-                }
-                
-                .payment-warning {
-                    border-left: 4px solid #dc3545;
-                }
-                
-                .payment-success {
-                    border-left: 4px solid #28a745;
-                }
-
-                .spinner-border {
-                    width: 3rem;
-                    height: 3rem;
-                    border-width: 0.25em;
-                }
-                
-
-                .table-responsive {
-                    transition: opacity 0.3s ease;
-                }
-                
-                /* Efecto de desvanecido mientras carga */
-                .loading-overlay {
-                    position: relative;
-                }
-                
-                .loading-overlay::after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: rgba(255, 255, 255, 0.7);
-                    z-index: 10;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-                
-                @media (max-width: 992px) {
-                    .payment-method-row {
-                        flex-wrap: wrap;
-                    }
-                    
-                    .payment-method-field {
-                        flex: 0 0 calc(50% - 0.5rem);
-                    }
-                    
-                    .payment-method-actions {
-                        flex: 0 0 100%;
-                        justify-content: flex-end;
-                    }
-                }
-                
-                @media (max-width: 768px) {
-                    .payment-method-field {
-                        flex: 0 0 100%;
-                    }
-                    
-                    .payment-summary-card {
-                        flex-direction: column;
-                        align-items: flex-start;
-                        gap: 1rem;
-                    }
-                    
-                    .payment-summary-status {
-                        text-align: left;
-                        justify-content: flex-start;
-                    }
-                      .lot-form-container {
-                         overflow-anchor: none;
-                      }
-                      .input-wrapper {
-                        position: relative;
-                        margin-bottom: 1rem;
-                      }
-                      .p-inputtext {
-                        transition: none !important;
-                         overscroll-behavior: contain !important;
-                         contain: content !important;
-                         overflow-anchor: none !;
-                      }
-                      
-                      .p-dropdown-panel {
-                        position: absolute !important;
-                        top: auto !important;
-                        left: auto !important;
-                        z-index: 1100 !important;
-                      }
-                      
-                      .p-datatable-wrapper {
-                        overscroll-behavior: contain;
-                      }
-                      
-                      .p-inputtext:focus {
-                        box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-                        border-color: #268fff;
-                      }
-                                    }
-            `}</style>
+      <style>{`
+        /* Estilos mejorados para responsive */
+        .container-fluid {
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+        
+        .card {
+          border: 1px solid #e0e0e0;
+        }
+        
+        .card-header {
+          border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .form-label {
+          font-size: 0.875rem;
+          margin-bottom: 0.25rem;
+        }
+        
+        .p-inputtext, .p-dropdown, .p-calendar, .p-inputnumber {
+          font-size: 0.875rem;
+        }
+        
+        .p-inputtext-sm, .p-dropdown-sm, .p-calendar-sm {
+          font-size: 0.875rem;
+          padding: 0.375rem 0.75rem;
+        }
+        
+        /* Mejoras para la tabla de productos en mobile */
+        .p-datatable-wrapper {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .p-datatable .p-datatable-thead > tr > th,
+        .p-datatable .p-datatable-tbody > tr > td {
+          white-space: nowrap;
+          min-width: 80px;
+          font-size: 0.875rem;
+          padding: 0.5rem;
+        }
+        
+        .p-datatable .p-column-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+        
+        /* Accordion mejorado para mobile */
+        .product-accordion .card {
+          margin-bottom: 0.5rem;
+        }
+        
+        .product-accordion .card-header {
+          padding: 0.75rem;
+          font-size: 0.875rem;
+        }
+        
+        .product-accordion .card-body {
+          padding: 0.75rem;
+        }
+        
+        /* Payment methods responsive */
+        .payment-method-row {
+          background: #f8f9fa;
+          transition: all 0.3s ease;
+        }
+        
+        .payment-method-row:hover {
+          background: #e9ecef;
+        }
+        
+        .payment-summary-card {
+          background: rgba(248, 249, 250, 0.8);
+          backdrop-filter: blur(10px);
+        }
+        
+        .bg-warning-light {
+          background: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-success-light {
+          background: rgba(40, 167, 69, 0.1) !important;
+        }
+        
+        .text-warning-dark {
+          color: #856404 !important;
+        }
+        
+        .text-success-dark {
+          color: #155724 !important;
+        }
+        
+        /* Botones responsive */
+        .btn-sm {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+        }
+        
+        /* Scroll suave */
+        .product-accordion {
+          scroll-behavior: smooth;
+        }
+        
+        /* Mejoras visuales para mobile */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .h4, .h5 {
+            font-size: 1.1rem;
+          }
+          
+          .p-datatable {
+            font-size: 0.8rem;
+          }
+          
+          .p-datatable .p-datatable-thead > tr > th,
+          .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.375rem;
+            min-width: 70px;
+          }
+          
+          .payment-method-row .col-md-1 {
+            margin-top: 0.5rem;
+          }
+        }
+        
+        @media (max-width: 576px) {
+          .p-datatable-wrapper {
+            font-size: 0.75rem;
+          }
+          
+          .p-button {
+            width: 100%;
+            margin-bottom: 0.5rem;
+          }
+          
+          .d-flex.gap-2 {
+            flex-direction: column;
+          }
+          
+          .payment-summary-card .row {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+        }
+        
+        /* Loading states */
+        .spinner-border-sm {
+          width: 1rem;
+          height: 1rem;
+        }
+        
+        /* Focus states para accesibilidad */
+        .p-focus {
+          box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.2) !important;
+          border-color: #268fff !important;
+        }
+      `}</style>
     </div>
   );
 };
@@ -2220,7 +2090,7 @@ const ProductColumnBody = ({
   ) => void;
   disabled?: boolean;
 }) => {
-  const { getByType, products, currentType } = useInventory();
+  const { getByType, products, currentType, refreshProducts } = useInventory();
   const { accounts: spentAccounts } = useAccountingAccountsByCategory(
     "account",
     "5"
@@ -2232,6 +2102,13 @@ const ProductColumnBody = ({
 
   const [options, setOptions] = useState<any[]>([]);
   const dropdownRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (type && type !== currentType &&
+      ["supplies", "medications", "vaccines", "services", "inventariables"].includes(type)) {
+      getByType(type);
+    }
+  }, [type, currentType]);
 
   useEffect(() => {
     if (type && rowData.typeProduct !== type) {
@@ -2251,7 +2128,6 @@ const ProductColumnBody = ({
   useEffect(() => {
     if (!type) return;
 
-    // Solo hacer la llamada si el tipo ha cambiado
     if (
       type !== currentType &&
       [
@@ -2290,8 +2166,8 @@ const ProductColumnBody = ({
           name: String(p.name || p.label || p.account_name),
         })) || [];
     }
-
     setOptions(formattedOptions);
+
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
 
   const handleProductChange = (e: DropdownChangeEvent) => {
@@ -2338,7 +2214,6 @@ const QuantityColumnBody = ({
       value={rowData.quantity}
       placeholder="Cantidad"
       className="w-100"
-      style={{ maxWidth: "120px" }}
       min={0}
       onValueChange={(e: any) => onChange(e.value)}
       disabled={disabled}
@@ -2362,7 +2237,7 @@ const PriceColumnBody = ({
       className="w-100"
       mode="currency"
       currency="DOP"
-      style={{ maxWidth: "200px" }}
+      style={{ maxWidth: "300px" }}
       locale="es-DO"
       min={0}
       onValueChange={(e: any) => onChange(e.value)}
@@ -2385,7 +2260,6 @@ const DiscountColumnBody = ({
       value={rowData.discount}
       placeholder="Descuento"
       className="w-100"
-      style={{ maxWidth: "120px" }}
       suffix="%"
       min={0}
       max={100}
@@ -2434,6 +2308,7 @@ const IvaColumnBody = ({
       }}
       appendTo={document.body}
       disabled={disabled}
+      showClear
     />
   );
 };
@@ -2461,6 +2336,7 @@ const DepositColumnBody = ({
       }}
       appendTo={document.body}
       disabled={disabled}
+      showClear
     />
   );
 };

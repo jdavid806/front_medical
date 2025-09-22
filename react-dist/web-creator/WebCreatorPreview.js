@@ -50,7 +50,9 @@ const renderPreviewPanel = panel => {
     display: 'flex',
     width: '100%',
     height: '100%',
-    flexDirection: panel.layout === 'vertical' ? 'column' : 'row'
+    flexDirection: panel.layout === 'vertical' ? 'column' : 'row',
+    alignItems: panel.styles?.alignItems || 'center',
+    justifyContent: panel.styles?.justifyContent || 'center'
   };
   if (hasChildren) {
     return /*#__PURE__*/React.createElement("div", {

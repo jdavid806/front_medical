@@ -46,24 +46,36 @@ export const SalesBilling: React.FC<any> = ({
   const { control, getValues, setValue, handleSubmit, watch } = useForm();
 
   const { thirdParties, fetchThirdParties } = useThirdParties();
+
   const { users } = useUsers();
+
   const { productTypes, loading: loadingProductTypes } = useProductTypes();
+
   const { paymentMethods, loading: loadingPaymentMethods } =
     usePaymentMethods();
+
+
 
   const [filteredPaymentMethods, setFilteredPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
+
   const [showAdvancesForm, setShowAdvancesForm] = useState(false);
+
   const [selectedAdvanceMethodId, setSelectedAdvanceMethodId] = useState<
     string | null
   >(null);
 
   const [customerId, setCustomerId] = useState<number | null>(null);
+
   const [disabledInpputs, setDisabledInputs] = useState(false);
+
   const [purchaseOrderId, setPurchaseOrderId] = useState<any>(0);
+
   const { fetchBillingByType } = useBillingByType();
+
   const [billing, setBilling] = useState<any>(null);
+
   const invoiceType = watch("type");
 
   useEffect(() => {
@@ -552,7 +564,6 @@ export const SalesBilling: React.FC<any> = ({
       <div className="row">
         <div className="col-12">
           <form onSubmit={handleSubmit(save)}>
-            {/* Sección de Información Básica */}
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
@@ -584,6 +595,7 @@ export const SalesBilling: React.FC<any> = ({
                               placeholder="Seleccione un tipo"
                               className={classNames("w-100")}
                               appendTo={"self"}
+                              showClear
                             />
                           </>
                         )}
@@ -660,6 +672,7 @@ export const SalesBilling: React.FC<any> = ({
                                 className={classNames("flex-grow-1")}
                                 appendTo={"self"}
                                 disabled={disabledInpputs}
+                                showClear
                               />
                               <Button
                                 type="button"
@@ -693,6 +706,7 @@ export const SalesBilling: React.FC<any> = ({
                               className={classNames("w-100")}
                               appendTo={"self"}
                               disabled={disabledInpputs}
+                              showClear
                             />
                           </>
                         )}
@@ -716,6 +730,7 @@ export const SalesBilling: React.FC<any> = ({
                             className={classNames("w-100")}
                             appendTo={"self"}
                             disabled={disabledInpputs}
+                            showClear
                           />
                         )}
                       />
@@ -725,7 +740,6 @@ export const SalesBilling: React.FC<any> = ({
               </div>
             </div>
 
-            {/* Sección de Productos - Versión mejorada */}
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
                 <h2 className="h5 mb-0">
@@ -885,7 +899,6 @@ export const SalesBilling: React.FC<any> = ({
               />
             </div>
 
-            {/* Sección de Métodos de Pago */}
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
                 <h2 className="h5 mb-0">
@@ -908,8 +921,8 @@ export const SalesBilling: React.FC<any> = ({
                     key={payment.id}
                     className="row g-3 mb-3 align-items-end"
                   >
-                    <div className="col-12 col-sm-5 col-md-5">
-                      <div className="form-group">
+                    <div className="col-12 col-md-5 mb-1">
+                      <div className="form-group mb-2 mb-md-0">
                         <label className="form-label">Método *</label>
                         <Dropdown
                           required
@@ -927,10 +940,11 @@ export const SalesBilling: React.FC<any> = ({
                         />
                       </div>
                     </div>
-                    <div className="col-12 col-sm-5 col-md-5">
-                      <div className="form-group">
+
+                    <div className="col-12 col-md-5">
+                      <div className="form-group mb-2 mb-md-0">
                         <label className="form-label">Valor *</label>
-                        <div className="d-flex gap-2 align-items-center">
+                        <div className="d-flex gap-2 align-items-center flex-nowrap">
                           <InputNumber
                             value={payment.value === "" ? null : payment.value}
                             placeholder="RD$ 0.00"
@@ -947,11 +961,10 @@ export const SalesBilling: React.FC<any> = ({
                               )
                             }
                             inputClassName="form-control"
-                            style={{ minWidth: "140px" }}
                           />
                           <Button
                             icon={<i className="fa-solid fa-copy"></i>}
-                            className="p-button-outlined p-button-info"
+                            className="p-button-outlined p-button-info p-button-sm"
                             onClick={() => copyTotalToPayment(payment.id)}
                             tooltip="Copiar valor total restante"
                             tooltipOptions={{ position: 'top' }}
@@ -959,12 +972,14 @@ export const SalesBilling: React.FC<any> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="col-12 col-sm-2 col-md-2 text-end">
+
+                    <div className="col-12 col-md-2 text-md-end text-center">
                       <Button
-                        className="p-button-rounded p-button-danger p-button-text"
+                        className="p-button-rounded p-button-danger p-button-text p-button-sm"
                         onClick={() => removePayment(payment.id)}
                         disabled={paymentMethodsArray.length <= 1}
                         tooltip="Eliminar método"
+                        tooltipOptions={{ position: 'top' }}
                       >
                         <i className="fa-solid fa-trash"></i>
                       </Button>
@@ -1053,7 +1068,6 @@ export const SalesBilling: React.FC<any> = ({
               ></FormAdvanceCopy>
             </Dialog>
 
-            {/* Sección de Totales */}
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
@@ -1091,6 +1105,7 @@ export const SalesBilling: React.FC<any> = ({
                       />
                     </div>
                   </div>
+
                   <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">
@@ -1107,6 +1122,7 @@ export const SalesBilling: React.FC<any> = ({
                       />
                     </div>
                   </div>
+
                   <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Impuesto</label>
@@ -1121,6 +1137,7 @@ export const SalesBilling: React.FC<any> = ({
                       />
                     </div>
                   </div>
+
                   <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Retenciones</label>
@@ -1135,6 +1152,7 @@ export const SalesBilling: React.FC<any> = ({
                       />
                     </div>
                   </div>
+
                   <div className="col-6 col-md-3 col-lg-2">
                     <div className="form-group">
                       <label className="form-label">Total</label>
@@ -1153,7 +1171,6 @@ export const SalesBilling: React.FC<any> = ({
               </div>
             </div>
 
-            {/* Botones de Acción */}
             <div className="d-flex justify-content-end gap-3 mb-4">
               <Button
                 label="Guardar"
@@ -1173,122 +1190,118 @@ export const SalesBilling: React.FC<any> = ({
       />
 
       <style>{`
-        .form-control {
-          height: 38px;
-          padding: 0.375rem 0.75rem;
-          font-size: 0.9rem;
-          border: 1px solid #ced4da;
-          border-radius: 0.375rem;
-          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        
-        .form-control:focus {
-          border-color: #86b7fe;
-          outline: 0;
-          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        
-        .p-inputnumber-input {
-          height: 38px;
-          padding: 0.375rem 0.75rem;
-          font-size: 0.9rem;
-        }
-        
-        .p-dropdown {
-          height: 38px;
-          display: flex;
-          align-items: center;
-        }
-        
-        .p-calendar {
-          height: 38px;
-        }
-        
-        .table-responsive-md {
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-        
-        .table th, .table td {
-          vertical-align: middle;
-          padding: 0.75rem;
-        }
-        
-        .table thead th {
-          border-bottom: 2px solid #dee2e6;
-          background-color: #f8f9fa;
-          font-weight: 600;
-        }
-        
-        /* Inputs de precio que se expanden según el contenido */
-        .price-input {
-          width: 200px; !important;
-          min-width: 120px;
-          width: auto !important;
-        }
-        
-        .price-input .p-inputnumber-input {
-           width: auto; !important;
-          min-width: 120px;
-        }
-        
-        /* Mejoras específicas para móviles */
-        @media (max-width: 768px) {
-          .container-fluid {
-            padding-left: 10px;
-            padding-right: 10px;
-          }
-          
-          .card-body {
-            padding: 1rem;
-          }
-          
-          .table-responsive-md {
-            border: 1px solid #dee2e6;
-            border-radius: 0.375rem;
-          }
-          
-          .table {
-            margin-bottom: 0;
-            min-width: 800px;
-          }
-          
-          .btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-          }
-          
-          .price-input {
-           width: 300px; !important;
-            min-width: 100px;
-          }
-        }
-        
-        /* Estilos para mejorar la apariencia de los inputs en tablas */
-        .table .p-inputnumber, 
-        .table .p-dropdown, 
-        .table .p-calendar {
-          width: 100% !important;
-          min-width: 100px;
-        }
-        
-        .p-dropdown-panel {
-          z-index: 1100 !important;
-        }
-        
-        /* Estilos para el resumen de pagos en móviles */
-        @media (max-width: 576px) {
-          .alert-info .d-flex {
-            flex-direction: column;
-            gap: 1rem;
-          }
-          
-          .alert-info .d-flex > div {
-            width: 100%;
-            justify-content: space-between;
-          }
-        }
-      `}</style>
+            .form-control {
+              height: 38px;
+              padding: 0.375rem 0.75rem;
+              font-size: 0.9rem;
+              border: 1px solid #ced4da;
+              border-radius: 0.375rem;
+              transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+            
+            .form-control:focus {
+              border-color: #86b7fe;
+              outline: 0;
+              box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+            
+            .p-inputnumber-input {
+              height: 38px;
+              padding: 0.375rem 0.75rem;
+              font-size: 0.9rem;
+            }
+            
+            .p-dropdown {
+              height: 38px;
+              display: flex;
+              align-items: center;
+            }
+            
+            .p-calendar {
+              height: 38px;
+            }
+            
+            .table-responsive-md {
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+            }
+            
+            .table th, .table td {
+              vertical-align: middle;
+              padding: 0.75rem;
+            }
+            
+            .table thead th {
+              border-bottom: 2px solid #dee2e6;
+              background-color: #f8f9fa;
+              font-weight: 600;
+            }
+            
+            .price-input {
+              width: 200px; !important;
+              min-width: 120px;
+              width: auto !important;
+            }
+            
+            .price-input .p-inputnumber-input {
+              width: auto; !important;
+              min-width: 120px;
+            }
+            
+            @media (max-width: 768px) {
+              .container-fluid {
+                padding-left: 10px;
+                padding-right: 10px;
+              }
+              
+              .card-body {
+                padding: 1rem;
+              }
+              
+              .table-responsive-md {
+                border: 1px solid #dee2e6;
+                border-radius: 0.375rem;
+              }
+              
+              .table {
+                margin-bottom: 0;
+                min-width: 800px;
+              }
+              
+              .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+              }
+              
+              .price-input {
+              width: 300px; !important;
+                min-width: 100px;
+              }
+            }
+            
+            .table .p-inputnumber, 
+            .table .p-dropdown, 
+            .table .p-calendar {
+              width: 100% !important;
+              min-width: 100px;
+            }
+            
+            .p-dropdown-panel {
+              z-index: 1100 !important;
+            }
+            
+            @media (max-width: 576px) {
+              .alert-info .d-flex {
+                flex-direction: column;
+                gap: 1rem;
+              }
+              
+              .alert-info .d-flex > div {
+                width: 100%;
+                justify-content: space-between;
+              }
+            }
+          `}</style>
     </div>
   );
 };
@@ -1325,6 +1338,7 @@ const TypeColumnBody = ({
         onClick={(e) => e.stopPropagation()}
         disabled={disabled}
         filter
+        showClear
       />
     </div>
   );
@@ -1369,7 +1383,6 @@ const ProductColumnBody = ({
         })) || [];
       setOptions(formatted);
     } else {
-      // Cargar productos normales
       getByType(type);
       const formatted =
         products?.map((p) => ({
@@ -1406,6 +1419,7 @@ const ProductColumnBody = ({
         loading={!options.length}
         emptyMessage="No hay activos disponibles"
         disabled={disabled}
+        showClear
       />
     );
   }
@@ -1429,6 +1443,7 @@ const ProductColumnBody = ({
       virtualScrollerOptions={{ itemSize: 38 }}
       emptyMessage={"No hay productos disponibles"}
       disabled={disabled}
+      showClear
     />
   );
 };
@@ -1553,20 +1568,24 @@ const IvaColumnBody = ({
       placeholder="Seleccione IVA"
       className="w-100"
       onChange={(e: DropdownChangeEvent) => {
-        const selectedTax = taxes.find(
-          (tax: any) => tax.percentage === e.value
-        );
-        if (selectedTax) {
-          onChange(selectedTax);
+        if (e.value === null) {
+          onChange(null);
+        } else {
+          const selectedTax = taxes.find(
+            (tax: any) => tax.percentage === e.value
+          );
+          if (selectedTax) {
+            onChange(selectedTax);
+          }
         }
       }}
       appendTo={document.body}
       disabled={disabled}
       filter
+      showClear
     />
   );
 };
-
 const DepositColumnBody = ({
   onChange,
   value,
@@ -1601,6 +1620,7 @@ const DepositColumnBody = ({
       disabled={disabled}
       appendTo={document.body}
       filter
+      showClear
     />
   );
 };

@@ -14,6 +14,9 @@ const roleGroupOptions = [{
 }, {
   label: 'Asistente médico',
   value: 'DOCTOR_ASSISTANT'
+}, {
+  label: 'Auxiliar',
+  value: 'ASSISTANT'
 }];
 export const UserRoleForm = ({
   formId,

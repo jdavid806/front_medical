@@ -27950,19 +27950,19 @@ fieldset:disabled .table-list .page,
 .google-map-control-btn .zoomOut,
 .tox .tox-dialog__footer .tox-button--secondary,
 .tox .tox-button-secondary {
-    --phoenix-btn-color: #31374a;
+    --phoenix-btn-color: black;
     --phoenix-btn-bg: #f5f7fa;
     --phoenix-btn-border-color: #e3e6ed;
     --phoenix-btn-hover-color: var(--phoenix-secondary-dark);
     --phoenix-btn-hover-bg: #e3e6ed;
     --phoenix-btn-hover-border-color: #e6e9ef;
     --phoenix-btn-focus-shadow-rgb: 200, 204, 213;
-    --phoenix-btn-active-color: #31374a;
+    --phoenix-btn-active-color: #C4CDD5;
     --phoenix-btn-active-bg: #e3e6ed;
     --phoenix-btn-active-border-color: #e6e9ef;
     --phoenix-btn-active-shadow: initial;
     --phoenix-btn-disabled-color: #000000;
-    --phoenix-btn-disabled-bg: #f5f7fa;
+    --phoenix-btn-disabled-bg: #F5F7FA;
     --phoenix-btn-disabled-border-color: #e3e6ed
 }
 

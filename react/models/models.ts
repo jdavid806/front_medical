@@ -111,8 +111,6 @@ export interface AppointmentDto {
   user_availability: UserAvailability;
   appointment_state: AppointmentStateDto;
   product_id: string;
-  exam_orders?: any;
-  exam_recipe_id?: number;
 }
 
 interface AppointmentStateDto {
@@ -140,10 +138,6 @@ export interface AppointmentTableItem {
   branchId: string | null;
   isChecked: boolean;
   specialtyId: string;
-  patient?: Patient;
-  orders?: any;
-  exam_recipe_id?: number;
-  user_availability?: any;
 }
 
 export interface Companion {
@@ -404,7 +398,6 @@ export interface TicketTableItemDto {
   created_at: string;
   branch_id: string;
   module_id: string;
-  module?: any;
 }
 
 export interface CreateTicketDTO {
@@ -671,10 +664,90 @@ export interface DetailsDto {
   description: string;
 }
 
-export interface TicketReasonDto {
+interface CategoryProductDto {
   id: number;
-  key: string;
-  label: string;
-  tag: string;
-  is_active: boolean;
+  name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductTypeDto {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface InvoiceDetailDto {
+  id: number;
+  invoice_id: number;
+  product_id: number;
+  quantity: number;
+  unit_price: string;
+  amount: string;
+  discount: string;
+  subtotal: string;
+  created_at: string;
+  updated_at: string;
+  tax_charge_id: number | null;
+  tax_product: number;
+}
+
+interface BrandDto {
+  id: number;
+  name: string;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface ProductDto {
+  id: string;
+  name: string;
+  description: string;
+  reference: string | null;
+  controlled_product: boolean | null;
+  weight: number;
+  capacity: number | null;
+  concentration: number | null;
+  prescription: boolean | null;
+  incentives: any | null;
+  barcode: string | null;
+  components: any | null;
+  medical_form_id: number | null;
+  laboratory_id: number | null;
+  brand_id: number;
+  concentration_type_id: number | null;
+  product_type_id: number;
+  created_at: string;
+  updated_at: string;
+  minimum_stock: number;
+  maximum_stock: number;
+  sanitary_registration: string | null;
+  sale_price: number;
+  "sale/purchase_status": boolean | null;
+  quantity: number | null;
+  price_entity: string;
+  attention_type: string | null;
+  copayment: number | null;
+  deleted_at: string | null;
+  tax_charge_id: number | null;
+  presentation: string | null;
+  exam_type_id: number | null;
+  file_url: string | null;
+  account_number: string | null;
+  type_unit_measure_id: number | null;
+  category_product_id: number;
+  set_number: string | null;
+  purchase_price: number;
+  category_product: CategoryProductDto;
+  product_type: ProductTypeDto;
+  inventories: any[];
+  invoice_details: InvoiceDetailDto[];
+  entities: any[];
+  taxes: any[];
+  tax_charge: any | null;
+  package_products: any[];
+  packages: any[];
+  brand: BrandDto;
 }

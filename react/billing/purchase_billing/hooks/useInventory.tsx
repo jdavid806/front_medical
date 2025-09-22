@@ -2,7 +2,6 @@ import { ErrorHandler } from "../../../../services/errorHandler.js";
 import { inventoryService } from "../../../../services/api/index.js";
 import { useState, useEffect } from "react";
 
-// Cache para almacenar productos por tipo
 const productCache: Record<string, any[]> = {};
 
 export const useInventory = () => {
@@ -28,11 +27,7 @@ export const useInventory = () => {
     type: string,
     fetchFunction: () => Promise<any>
   ) => {
-    if (productCache[type]) {
-      setProducts(productCache[type]);
-      setCurrentType(type);
-      return;
-    }
+    if (loading && currentType === type) return;
 
     setLoading(true);
     setError(null);
@@ -40,7 +35,6 @@ export const useInventory = () => {
     try {
       const response = await fetchFunction();
 
-      // Asegurarse de que response.data existe y es un array
       const data = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response)
@@ -56,7 +50,6 @@ export const useInventory = () => {
     } catch (err) {
       setError(err as Error);
       ErrorHandler.generic(err);
-      // Limpiar productos si hay error
       setProducts([]);
       setCurrentType(null);
       throw err;
@@ -65,8 +58,20 @@ export const useInventory = () => {
     }
   };
 
-  const getSupplies = async () => {
+  const refreshProducts = async (type?: string) => {
+    const targetType = type || currentType;
+    if (!targetType) return;
+
+    delete productCache[targetType];
+
+    await getByType(targetType, true); // true = forzar recarga
+  };
+
+  const getSupplies = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["supplies"];
+      }
       await fetchProducts("supplies", async () => {
         const response = await inventoryService.getSupplies();
         return response?.data || response;
@@ -76,8 +81,11 @@ export const useInventory = () => {
     }
   };
 
-  const getMedications = async () => {
+  const getMedications = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["medications"];
+      }
       await fetchProducts("medications", async () => {
         const response = await inventoryService.getMedications();
         return response?.data || response;
@@ -87,8 +95,11 @@ export const useInventory = () => {
     }
   };
 
-  const getVaccines = async () => {
+  const getVaccines = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["vaccines"];
+      }
       await fetchProducts("vaccines", async () => {
         const response = await inventoryService.getVaccines();
         return response?.data || response;
@@ -98,8 +109,11 @@ export const useInventory = () => {
     }
   };
 
-  const getServices = async () => {
+  const getServices = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["services"];
+      }
       await fetchProducts("services", async () => {
         const response = await inventoryService.getServices();
         return response?.data || response;
@@ -109,8 +123,11 @@ export const useInventory = () => {
     }
   };
 
-  const getActivosFijos = async () => {
+  const getActivosFijos = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["activos-fijos"];
+      }
       await fetchProducts("activos-fijos", async () => {
         const response = await inventoryService.getActivosFijos();
         return response?.data || response;
@@ -120,8 +137,11 @@ export const useInventory = () => {
     }
   };
 
-  const getInventariables = async () => {
+  const getInventariables = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) {
+        delete productCache["inventariables"];
+      }
       await fetchProducts("inventariables", async () => {
         const response = await inventoryService.getInventariables();
         return response?.data || response;
@@ -131,28 +151,28 @@ export const useInventory = () => {
     }
   };
 
-  const getByType = async (type: string) => {
-    // No hacer nada si ya estamos mostrando este tipo
-    if (currentType === type) return;
+  const getByType = async (type: string, forceRefresh = false) => {
+    // No hacer nada si ya estamos mostrando este tipo y no es forzado
+    if (currentType === type && !forceRefresh) return;
 
     switch (type) {
       case "supplies":
-        await getSupplies();
+        await getSupplies(forceRefresh);
         break;
       case "medications":
-        await getMedications();
+        await getMedications(forceRefresh);
         break;
       case "vaccines":
-        await getVaccines();
+        await getVaccines(forceRefresh);
         break;
       case "services":
-        await getServices();
+        await getServices(forceRefresh);
         break;
       case "activos-fijos":
-        await getActivosFijos();
+        await getActivosFijos(forceRefresh);
         break;
       case "inventariables":
-        await getInventariables();
+        await getInventariables(forceRefresh);
         break;
       default:
         setProducts([]);
@@ -176,6 +196,7 @@ export const useInventory = () => {
     getVaccines,
     getServices,
     getByType,
+    refreshProducts, // 🔄 Exportar la nueva función
     products,
     loading,
     error,

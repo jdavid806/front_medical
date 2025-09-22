@@ -512,6 +512,23 @@ export function getLocalTodayISODate() {
     return new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000).toISOString().split('T')[0];
 }
 
+export function getLocalTodayISODateTime(dateInput = "") {
+    let date = new Date()
+    // Convertir a Date si es string
+    if (dateInput) {
+        date = new Date(dateInput);
+    }
+
+    // Validar que sea una fecha válida
+    if (isNaN(date.getTime())) {
+        throw new Error('Fecha inválida');
+    }
+
+    const offsetMs = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() - offsetMs);
+    return localDate.toISOString();
+}
+
 export function daysBetweenDates(fecha1, fecha2) {
     const utc1 = Date.UTC(fecha1.getFullYear(), fecha1.getMonth(), fecha1.getDate());
     const utc2 = Date.UTC(fecha2.getFullYear(), fecha2.getMonth(), fecha2.getDate());
@@ -539,6 +556,15 @@ export function formatTimeByMilliseconds(milliseconds) {
         totalSeconds
     };
 };
+
+export function getDateTimeByMilliseconds(milliseconds) {
+    console.log(milliseconds);
+
+    const date = new Date(+milliseconds);
+    console.log(date);
+
+    return date.toISOString();
+}
 
 // Generar una clave única para localStorage basada en la URL
 export const generateURLStorageKey = (baseKey) => {

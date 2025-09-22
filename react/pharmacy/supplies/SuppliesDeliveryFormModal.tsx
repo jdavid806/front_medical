@@ -9,25 +9,30 @@ import { useSendSuppliesRequest } from "./hooks/useSendSuppliesRequest";
 
 export const SuppliesDeliveryFormModal = (props: SuppliesDeliveryFormModalProps) => {
 
-    const { visible, onHide } = props;
+    const { visible, onHide, onSave } = props;
 
     const { sendSuppliesRequest, toast } = useSendSuppliesRequest();
 
     const formId = "suppliesDeliveryForm";
 
-    const handleSubmit = (data: SuppliesDeliveryFormData) => {
-        console.log(data);
-        sendSuppliesRequest(data);
+    const handleSubmit = async (data: SuppliesDeliveryFormData) => {
+        try {
+            await sendSuppliesRequest(data);
+            onSave();
+            onHide();
+        } catch (error) {
+            console.error(error)
+        }
     };
 
     return (<>
+        <Toast ref={toast} />
         <Dialog
             visible={visible}
             onHide={onHide}
             header="Solicitud de Insumos"
             style={{ width: '60vw' }}
         >
-            <Toast ref={toast} />
             <SuppliesDeliveryForm formId={formId} onSubmit={handleSubmit} />
             <Divider />
             <div className="d-flex justify-content-end gap-2">

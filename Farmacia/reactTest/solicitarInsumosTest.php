@@ -9,7 +9,8 @@ include "../../header.php";
             <nav class="mb-3" aria-label="breadcrumb">
                 <ol class="breadcrumb mt-5">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                    <li class="breadcrumb-item active" onclick="location.reload()">Inventario</li>
+                    <li class="breadcrumb-item"><a href="homeFarmacia">Inventario</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Solicitud de insumos</li>
                 </ol>
             </nav>
 

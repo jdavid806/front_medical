@@ -21,6 +21,8 @@ export const TicketTable = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [dataReady, setDataReady] = useState(false); // ⬅️ NUEVO ESTADO
   const toast = useRef(null);
   const columns = [{
     data: "ticket_number"
@@ -55,16 +57,20 @@ export const TicketTable = () => {
   useEffect(() => {
     const fetchReasons = async () => {
       try {
+        setLoading(true);
         const response = await ticketService.getAllTicketReasons();
         // Transformar array a objeto { key: label }
         const reasonsMap = response.reasons.reduce((acc, reason) => {
           acc[reason.key] = reason.label;
           return acc;
         }, {});
-        console.log("first", reasonsMap);
         setTicketReasonsBackend(reasonsMap);
+        setLoading(false);
+        setDataReady(true); // ⬅️ MARCAR DATOS COMO LISTOS
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
+        setLoading(false);
+        setDataReady(true); // ⬅️ MARCAR COMO LISTO INCLUSO CON ERROR
       }
     };
     fetchReasons();
@@ -85,12 +91,14 @@ export const TicketTable = () => {
         ticket_number: data.ticket.ticket_number,
         phone: data.ticket.phone,
         reason: data.ticket.reason_label,
+        reason_key: data.ticket.reason,
         priority: ticketPriorities[data.ticket.priority],
         status: data.ticket.status,
         statusView: ticketStatus[data.ticket.status],
         statusColor: ticketStatusColors[data.ticket.status],
         step: ticketStatusSteps[data.ticket.status],
         created_at: data.ticket.created_at,
+        // Este viene en formato ISO
         branch_id: data.ticket.branch_id,
         branch: data.branch || "Sin consultorio",
         module: data.module || "Sin modulo",
@@ -106,7 +114,7 @@ export const TicketTable = () => {
           return priorityA - priorityB;
         };
         newData.splice(0, 0, newTicketData);
-        newData.sort((a, b) => priorityOrder(a, b) || a.created_at.localeCompare(b.created_at));
+        newData.sort((a, b) => priorityOrder(a, b) || new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         return newData;
       });
     });
@@ -131,16 +139,19 @@ export const TicketTable = () => {
     };
   }, []);
   useEffect(() => {
-    // console.log("ticketReasonsBackend", ticketReasonsBackend);
-    // console.log("ticket", tickets);
-    // if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
-
-    setData(tickets.map(ticket => {
+    // No procesar datos hasta que ticketReasonsBackend esté cargado
+    if (Object.keys(ticketReasonsBackend).length === 0) {
+      return;
+    }
+    const processedData = tickets.map(ticket => {
+      const reasonText = ticket.reason_label || ticketReasonsBackend[ticket.reason] || "Motivo no disponible";
+      console.log("reason text", reasonText);
       return {
         id: ticket.id,
         ticket_number: ticket.ticket_number,
         phone: ticket.phone,
-        reason: ticket.reason_label,
+        reason: reasonText,
+        reason_key: ticket.reason,
         priority: ticketPriorities[ticket.priority],
         module_name: ticket.module?.name || "",
         status: ticket.status,
@@ -154,12 +165,46 @@ export const TicketTable = () => {
         module_id: ticket.module_id,
         patient: ticket.patient
       };
-    }));
-  }, [tickets, ticketReasonsBackend]);
+    });
+    setData(processedData);
+  }, [tickets, ticketReasonsBackend]); // ⬅️ REMOVER LOADING DE LAS DEPENDENCIAS
+
   useEffect(() => {
-    setFilteredData(data.filter(item => {
-      return item.status == "PENDING" || item.status == "CALLED" && item.module_id == loggedUser?.today_module_id;
-    }));
+    console.log("data tickets", data);
+    if (!loggedUser || !Array.isArray(loggedUser.availabilities)) {
+      setFilteredData([]);
+      return;
+    }
+
+    // Filtrar y ordenar los datos
+    const filteredAndSorted = data.filter(item => {
+      const statusMatch = item.status === "PENDING" || item.status === "CALLED";
+      const reasonMatch = loggedUser.availabilities.some(availability => {
+        const allowed = availability?.module?.allowed_reasons || [];
+        return allowed.includes(item.reason_key);
+      });
+      return statusMatch && reasonMatch;
+    }).sort((a, b) => {
+      // Primero por prioridad (usando el mismo orden que en Pusher)
+      const priorities = ["PREGNANT", "SENIOR", "DISABILITY", "CHILDREN_BABY"];
+      const priorityA = priorities.indexOf(a.priority);
+      const priorityB = priorities.indexOf(b.priority);
+
+      // Si tienen diferente prioridad, ordenar por prioridad (mayor prioridad primero)
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB; // Números más bajos (mayor prioridad) primero
+      }
+
+      // Si tienen misma prioridad, ordenar por fecha de creación (más antiguo primero)
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+    console.log("Tickets ordenados:", filteredAndSorted.map(t => ({
+      ticket: t.ticket_number,
+      priority: t.priority,
+      created_at: t.created_at,
+      date: new Date(t.created_at)
+    })));
+    setFilteredData(filteredAndSorted);
   }, [data, loggedUser]);
   const updateStatus = async (id, status) => {
     await ticketService.update(id, {
@@ -172,31 +217,6 @@ export const TicketTable = () => {
       statusView: ticketStatus[status]
     } : item));
   };
-
-  // const callTicket = async (data: any) => {
-  //   console.log("callticket",data);
-  //   const status = "CALLED";
-  //   const user = await userService.getByExternalId(getJWTPayload().sub);
-  //   await ticketService.update(data.id, {
-  //     status,
-  //     module_id: user?.today_module_id,
-  //   });
-
-  //   setData((prevData) =>
-  //     prevData.map((item) =>
-  //       item.id === data.id
-  //         ? {
-  //             ...item,
-  //             step: ticketStatusSteps[status],
-  //             status,
-  //             statusView: ticketStatus[status],
-  //           }
-  //         : item
-  //     )
-  //   );
-  //   await sendMessageWhatsapp(data);
-  // };
-
   const callTicket = async ticket => {
     const user = await userService.getByExternalId(getJWTPayload().sub);
 
@@ -247,64 +267,26 @@ export const TicketTable = () => {
       console.error("Error:", error);
     }
   }, [sendMessageTickets]);
-
-  // const slots = {
-  //   3: (cell, data: TicketTableItemDto) => (
-  //     <span
-  //       className={`badge badge-phoenix badge-phoenix-${
-  //         ticketStatusColors[data.status]
-  //       }`}
-  //     >
-  //       {data.statusView}
-  //     </span>
-  //   ),
-  //   4: (cell, data: TicketTableItemDto) => (
-  //     <>
-  //       <button
-  //         className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}
-  //         onClick={() => callTicket(data)}
-  //       >
-  //         <i className="fas fa-phone"></i>
-  //       </button>
-  //       <div
-  //         className={`d-flex flex-wrap gap-1 ${
-  //           data.step === 2 ? "" : "d-none"
-  //         }`}
-  //       >
-  //         <button
-  //           className={`btn btn-success`}
-  //           onClick={() => updateStatus(data.id, "COMPLETED")}
-  //         >
-  //           <i className="fas fa-check"></i>
-  //         </button>
-  //         <button
-  //           className={`btn btn-danger`}
-  //           onClick={() => updateStatus(data.id, "MISSED")}
-  //         >
-  //           <i className="fas fa-times"></i>
-  //         </button>
-  //       </div>
-  //     </>
-  //   ),
-  // };
-
   const slots = {
     3: (cell, data) => /*#__PURE__*/React.createElement("span", {
       className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
     }, data.statusView),
     4: (cell, data) => {
+      // Encontrar el índice de este ticket en la lista ordenada
+      const ticketIndex = filteredData.findIndex(t => t.id === data.id);
+
+      // Encontrar el primer ticket pendiente
+      const firstPendingIndex = filteredData.findIndex(t => t.status === "PENDING");
+
       // Validar si ya hay un turno en curso en este módulo
       const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
-
-      // Validar si este turno es el siguiente en la cola
-      const nextTicket = filteredData.find(t => t.status === "PENDING");
       return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
-        className: `btn btn-primary ${data.step === 1 && nextTicket?.id === data.id && !hasActiveTicket ? "" : "d-none"}`,
+        className: `btn btn-primary ${data.status === "PENDING" && ticketIndex === firstPendingIndex && !hasActiveTicket ? "" : "d-none"}`,
         onClick: () => callTicket(data)
       }, /*#__PURE__*/React.createElement("i", {
         className: "fas fa-phone"
       })), /*#__PURE__*/React.createElement("div", {
-        className: `d-flex flex-wrap gap-1 ${data.step === 2 ? "" : "d-none"}`
+        className: `d-flex flex-wrap gap-1 ${data.status === "CALLED" ? "" : "d-none"}`
       }, /*#__PURE__*/React.createElement("button", {
         className: `btn btn-success`,
         onClick: () => updateStatus(data.id, "COMPLETED")
@@ -336,10 +318,22 @@ export const TicketTable = () => {
     className: "badge badge-phoenix badge-phoenix-success"
   }, "Completados:", " ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-danger"
-  }, "Perdidos:", " ", data.filter(item => item.status === "MISSED").length)), /*#__PURE__*/React.createElement(CustomDataTable, {
+  }, "Perdidos:", " ", data.filter(item => item.status === "MISSED").length)), !dataReady || loading ? /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "spinner-border",
+    role: "status"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "visually-hidden"
+  }, "Cargando...")), /*#__PURE__*/React.createElement("p", null, "Cargando turnos...")) : /*#__PURE__*/React.createElement(CustomDataTable, {
     data: filteredData,
     slots: slots,
-    columns: columns
+    columns: columns,
+    customOptions: {
+      ordering: false,
+      searching: false,
+      info: false
+    }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "Turno"), /*#__PURE__*/React.createElement("th", {
@@ -356,8 +350,8 @@ export const TicketTable = () => {
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
     onClick: () => {
+      // Encontrar el primer ticket PENDING (ya están ordenados por prioridad y fecha)
       const nextTicket = filteredData.find(ticket => ticket.status === "PENDING");
-      console.log("nextticket", nextTicket);
       if (!nextTicket) {
         toast.current?.show({
           severity: "warn",
@@ -367,11 +361,24 @@ export const TicketTable = () => {
         });
         return;
       }
+
+      // Verificar si ya hay un turno activo en este módulo
+      const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
+      if (hasActiveTicket) {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Turno en curso",
+          detail: "Ya hay un turno en curso en este módulo.",
+          life: 4000
+        });
+        return;
+      }
       callTicket(nextTicket);
-    }
+    },
+    disabled: !dataReady || loading // ⬅️ DESHABILITAR BOTÓN MIENTRAS CARGA
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-arrow-right me-2"
-  }), "Llamar siguiente turno"), /*#__PURE__*/React.createElement("div", {
+  }), !dataReady || loading ? "Cargando..." : "Llamar siguiente turno"), /*#__PURE__*/React.createElement("div", {
     className: "card d-flex flex-grow-1"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -386,7 +393,8 @@ export const TicketTable = () => {
     className: "card-text"
   }, "Prioridad: ", ticket.priority), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: () => callTicket(ticket)
+    onClick: () => callTicket(ticket),
+    disabled: !dataReady || loading // ⬅️ DESHABILITAR MIENTRAS CARGA
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-phone me-2"
   }), "Llamar nuevamente"))) : /*#__PURE__*/React.createElement("p", {

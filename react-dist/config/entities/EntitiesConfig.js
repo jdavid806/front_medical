@@ -58,14 +58,20 @@ export const EntitiesConfig = () => {
       };
       if (entitiesById) {
         await updateEntities(entitiesById.id.toString(), entitiesData);
+        // Solo si no hay error, mostrar éxito y cerrar modal
         SwalManager.success('Entidad actualizada correctamente');
+        await refreshEntities();
+        setShowFormModal(false);
       } else {
         await createEntities(entitiesData);
+        // Solo si no hay error, mostrar éxito y cerrar modal
         SwalManager.success('Entidad creada correctamente');
+        await refreshEntities();
+        setShowFormModal(false);
       }
-      await refreshEntities();
-      setShowFormModal(false);
     } catch (error) {
+      // El error ya fue manejado y mostrado en el SweetAlert del hook
+      // NO cerrar el modal - mantenerlo abierto para que el usuario corrija el error
       console.error("Error saving entity:", error);
     }
   };

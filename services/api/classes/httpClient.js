@@ -33,9 +33,6 @@ export class HttpClient {
                 headers["X-External-ID"] = customHeaders["X-External-ID"];
             }
 
-            console.log("Headers: ", headers);
-            console.log("Custom Headers: ", customHeaders);
-
 
             // Construir URL de forma segura
             const url = new URL(`https://${this.baseUrl}${endpoint}`);

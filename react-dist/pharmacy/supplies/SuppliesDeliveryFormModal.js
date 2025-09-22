@@ -8,27 +8,33 @@ import { useSendSuppliesRequest } from "./hooks/useSendSuppliesRequest.js";
 export const SuppliesDeliveryFormModal = props => {
   const {
     visible,
-    onHide
+    onHide,
+    onSave
   } = props;
   const {
     sendSuppliesRequest,
     toast
   } = useSendSuppliesRequest();
   const formId = "suppliesDeliveryForm";
-  const handleSubmit = data => {
-    console.log(data);
-    sendSuppliesRequest(data);
+  const handleSubmit = async data => {
+    try {
+      await sendSuppliesRequest(data);
+      onSave();
+      onHide();
+    } catch (error) {
+      console.error(error);
+    }
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dialog, {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement(Dialog, {
     visible: visible,
     onHide: onHide,
     header: "Solicitud de Insumos",
     style: {
       width: '60vw'
     }
-  }, /*#__PURE__*/React.createElement(Toast, {
-    ref: toast
-  }), /*#__PURE__*/React.createElement(SuppliesDeliveryForm, {
+  }, /*#__PURE__*/React.createElement(SuppliesDeliveryForm, {
     formId: formId,
     onSubmit: handleSubmit
   }), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {

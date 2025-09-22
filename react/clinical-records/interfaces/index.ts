@@ -8,6 +8,9 @@ export interface StoreClinicalRecordInputs {
     branch_id: string;
     data: ClinicalRecordData;
     consultation_duration: string;
+    start_time: string;
+    diagnosis_main: string | null;
+    created_at: string;
     exam_recipes?: Exam[];
     recipe?: Recipe;
     exam_vaccines?: Vaccine[];

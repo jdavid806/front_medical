@@ -9,7 +9,6 @@ export class MenuService extends BaseApiService {
         try {
             const response = await this.httpClient.get(`medical/menus/permissions/${roleId}`);
 
-            console.log('Response menus:', response);
 
             return response.menus.map(item => ({
                 id: item.id,

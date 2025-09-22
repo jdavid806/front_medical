@@ -151,7 +151,6 @@ RewriteRule ^Dashboard$  Portada/portada.php
 #Pacientes
 RewriteRule ^pacientes$  Pacientes/pacientesV2.php
 RewriteRule ^verPaciente$  Pacientes/verPaciente.php
-RewriteRule ^firmaPacientes$  Firmas/firmasPaciente.php
 
 #Citas
 RewriteRule ^citasControl$  Citas/citasHoy.php
@@ -261,7 +260,7 @@ RewriteRule ^categoriesProducts$  Inventario/categoriesProducts.php
 
 RewriteRule ^paquetes$  Paquetes/prescriptionPackagesApp.php
 
-RewriteRule ^solicitarInsumos$  Inventario/solicitudInsumos.php
+RewriteRule ^solicitarInsumos$  Farmacia/reactTest/solicitarInsumosTest.php
 
 #Farmacioa
 RewriteRule ^homeFarmacia$  Farmacia/homeFarmacia.php
@@ -340,7 +339,6 @@ RewriteRule ^configConsentimientos$ Configuracion/homeConfig/configConsentimient
 RewriteRule ^configEntidades$ Configuracion/homeConfig/configEntidades.php
 RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
 
-
 RewriteRule ^configExamenes$ Configuracion/homeConfig/configExamenes.php
 RewriteRule ^configuracionEmpresa$ Configuracion/homeConfig/configuracionEmpresa.php
 RewriteRule ^homeConfiguracion$ Configuracion/homeConfig/homeConfiguracion.php
@@ -379,5 +377,6 @@ RewriteRule ^solicitarInsumosTest$ Farmacia/reactTest/solicitarInsumosTest.php
 RewriteRule ^seePatientInfoButtonTest$ Pacientes/seePatientInfoButtonTest.php
 RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
 RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
+RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 
 

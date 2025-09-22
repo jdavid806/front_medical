@@ -152,7 +152,8 @@ const BillingConfigTab = () => {
         ...billing,
         resolution_date: resolutionDate,
         expiration_date: expirationDate,
-        accounting_account: +billing.accounting_account
+        accounting_account: +billing.accounting_account,
+        accounting_account_discount: billing.accounting_account_discount ? +billing.accounting_account_discount : null
       };
       switch (billing.type) {
         case "tax_invoice":
@@ -199,16 +200,12 @@ const BillingConfigTab = () => {
       if (!tipoApi) {
         throw new Error("Tipo de factura no válido");
       }
-
-      // Format dates for API
       const formatDate = date => {
         if (!date) return null;
         if (typeof date === "string") return date;
         const d = new Date(date);
         return d.toISOString().split("T")[0];
       };
-
-      // Prepare payload based on invoice type
       const payload = {
         dian_prefix: data.dian_prefix,
         accounting_account: data.accounting_account?.toString(),
@@ -219,8 +216,6 @@ const BillingConfigTab = () => {
         expiration_date: formatDate(data.expiration_date),
         type: tipoApi
       };
-
-      // Add reverse account and discount account for specific invoice types
       if (["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo)) {
         payload.accounting_account_reverse_id = data.accounting_account_reverse_id;
         payload.accounting_account_discount = data.accounting_account_discount?.toString();

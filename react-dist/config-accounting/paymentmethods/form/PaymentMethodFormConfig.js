@@ -89,6 +89,10 @@ const PaymentMethodFormConfig = ({
     onSubmit: handleSubmit(onFormSubmit),
     className: "p-fluid"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "name",
@@ -138,9 +142,13 @@ const PaymentMethodFormConfig = ({
       placeholder: "Seleccione un tipo",
       className: classNames("w-full", {
         "p-invalid": fieldState.error
-      })
+      }),
+      showClear: true,
+      filter: true
     }), getFormErrorMessage("payment_type"))
-  })), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "category",
@@ -164,12 +172,14 @@ const PaymentMethodFormConfig = ({
       placeholder: "Seleccione una categor\xEDa",
       className: classNames("w-full", {
         "p-invalid": fieldState.error
-      })
+      }),
+      showClear: true,
+      filter: true
     }), getFormErrorMessage("category"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-6 mb-4"
+    className: "col-8"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_id",
     className: "font-medium block mb-2"
@@ -197,11 +207,8 @@ const PaymentMethodFormConfig = ({
       appendTo: "self"
     }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-6 d-flex align-items-center gap-2"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "isCash",
-    className: "font-medium block"
-  }, "Es efectivo"), /*#__PURE__*/React.createElement(Controller, {
+    className: "col-4 d-flex align-items-center gap-2 mt-4"
+  }, /*#__PURE__*/React.createElement(Controller, {
     name: "isCash",
     control: control,
     render: ({
@@ -214,7 +221,14 @@ const PaymentMethodFormConfig = ({
       className: classNames("w-full", {}),
       inputId: field.name
     }), getFormErrorMessage("isCash"))
-  }))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("label", {
+    htmlFor: "isCash",
+    className: "font-medium block mb-0"
+  }, "Es efectivo"))))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "additionalDetails",
@@ -231,7 +245,11 @@ const PaymentMethodFormConfig = ({
       className: "w-full",
       placeholder: "Ingrese detalles adicionales"
     }))
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
   }, onCancel && /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
@@ -260,6 +278,6 @@ const PaymentMethodFormConfig = ({
     type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"
-  }))));
+  }))))));
 };
 export default PaymentMethodFormConfig;

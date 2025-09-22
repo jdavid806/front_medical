@@ -77,9 +77,23 @@ export const PurchaseInvoices = () => {
     loadFacturas();
   }, []);
   const loadFacturas = async () => {
-    const data = await fetchAllInvoice();
-    setFacturas(data);
-    setFilteredFacturas(data);
+    try {
+      const data = await fetchAllInvoice();
+      console.log('Datos recibidos:', data);
+      if (data && Array.isArray(data)) {
+        setFacturas(data);
+        setFilteredFacturas(data);
+      } else {
+        console.error('Datos no válidos:', data);
+        setFacturas([]);
+        setFilteredFacturas([]);
+      }
+    } catch (error) {
+      console.error('Error cargando facturas:', error);
+      showToast('error', 'Error', 'No se pudieron cargar las facturas');
+      setFacturas([]);
+      setFilteredFacturas([]);
+    }
   };
   // Manejadores de filtros
   const handleFilterChange = (field, value) => {

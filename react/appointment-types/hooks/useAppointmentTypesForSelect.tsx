@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { AppointmentTypeDto } from '../../models/models';
-import { appointmentTypes } from '../../../services/commons';
+import AppointmentTypeService from '../../../services/api/classes/appointmentTypeService';
 
 export const useAppointmentTypesForSelect = () => {
     const [mappedAppointmentTypes, setMappedAppointmentTypes] = useState<{ value: string, label: string }[]>([]);
 
     const fetchAppointmentTypes = async () => {
         try {
-            const data: AppointmentTypeDto[] = appointmentTypes;
+            const service = new AppointmentTypeService();
+            const data: AppointmentTypeDto[] = await service.getAll();
             const mappedData = data.map(item => {
                 return {
                     value: item.id.toString(),

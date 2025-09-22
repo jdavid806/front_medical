@@ -324,6 +324,31 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({
 
                         <div className="mb-3">
                             <Controller
+                                name='branch_id'
+                                control={control}
+                                rules={{ required: 'Este campo es requerido' }}
+                                render={({ field }) =>
+                                    <>
+                                        <label htmlFor={field.name} className="form-label">Sucursal *</label>
+                                        <Dropdown
+                                            inputId={field.name}
+                                            options={branches}
+                                            optionLabel='label'
+                                            optionValue='value'
+                                            filter
+                                            placeholder="Seleccione una sucursal"
+                                            className={classNames('w-100', { 'p-invalid': errors.branch_id })}
+                                            {...field}
+                                        >
+                                        </Dropdown>
+                                    </>
+                                }
+                            />
+                            {getFormErrorMessage('branch_id')}
+                        </div>
+
+                        <div className="mb-3">
+                            <Controller
                                 name='days_of_week'
                                 control={control}
                                 rules={{ required: 'Este campo es requerido' }}

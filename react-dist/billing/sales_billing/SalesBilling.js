@@ -483,7 +483,8 @@ export const SalesBilling = ({
       },
       placeholder: "Seleccione un tipo",
       className: classNames("w-100"),
-      appendTo: "self"
+      appendTo: "self",
+      showClear: true
     })))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-4"
@@ -550,7 +551,8 @@ export const SalesBilling = ({
       placeholder: "Seleccione un proveedor",
       className: classNames("flex-grow-1"),
       appendTo: "self",
-      disabled: disabledInpputs
+      disabled: disabledInpputs,
+      showClear: true
     })), /*#__PURE__*/React.createElement(Button, {
       type: "button",
       onClick: openThirdPartyModal,
@@ -581,7 +583,8 @@ export const SalesBilling = ({
       placeholder: "Seleccione un vendedor",
       className: classNames("w-100"),
       appendTo: "self",
-      disabled: disabledInpputs
+      disabled: disabledInpputs,
+      showClear: true
     })))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-4"
@@ -601,7 +604,8 @@ export const SalesBilling = ({
       placeholder: "Seleccione centro",
       className: classNames("w-100"),
       appendTo: "self",
-      disabled: disabledInpputs
+      disabled: disabledInpputs,
+      showClear: true
     }))
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
@@ -786,9 +790,9 @@ export const SalesBilling = ({
     key: payment.id,
     className: "row g-3 mb-3 align-items-end"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-sm-5 col-md-5"
+    className: "col-12 col-md-5 mb-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "form-group"
+    className: "form-group mb-2 mb-md-0"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "M\xE9todo *"), /*#__PURE__*/React.createElement(Dropdown, {
@@ -805,13 +809,13 @@ export const SalesBilling = ({
     appendTo: "self",
     filter: true
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-sm-5 col-md-5"
+    className: "col-12 col-md-5"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "form-group"
+    className: "form-group mb-2 mb-md-0"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Valor *"), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2 align-items-center"
+    className: "d-flex gap-2 align-items-center flex-nowrap"
   }, /*#__PURE__*/React.createElement(InputNumber, {
     value: payment.value === "" ? null : payment.value,
     placeholder: "RD$ 0.00",
@@ -821,27 +825,27 @@ export const SalesBilling = ({
     locale: "es-DO",
     min: 0,
     onValueChange: e => handlePaymentChange(payment.id, "value", e.value === null ? "" : e.value),
-    inputClassName: "form-control",
-    style: {
-      minWidth: "140px"
-    }
+    inputClassName: "form-control"
   }), /*#__PURE__*/React.createElement(Button, {
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-copy"
     }),
-    className: "p-button-outlined p-button-info",
+    className: "p-button-outlined p-button-info p-button-sm",
     onClick: () => copyTotalToPayment(payment.id),
     tooltip: "Copiar valor total restante",
     tooltipOptions: {
       position: 'top'
     }
   })))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-sm-2 col-md-2 text-end"
+    className: "col-12 col-md-2 text-md-end text-center"
   }, /*#__PURE__*/React.createElement(Button, {
-    className: "p-button-rounded p-button-danger p-button-text",
+    className: "p-button-rounded p-button-danger p-button-text p-button-sm",
     onClick: () => removePayment(payment.id),
     disabled: paymentMethodsArray.length <= 1,
-    tooltip: "Eliminar m\xE9todo"
+    tooltip: "Eliminar m\xE9todo",
+    tooltipOptions: {
+      position: 'top'
+    }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
   }))))), /*#__PURE__*/React.createElement("div", {
@@ -1023,122 +1027,118 @@ export const SalesBilling = ({
       window["toast"] = el;
     }
   }), /*#__PURE__*/React.createElement("style", null, `
-        .form-control {
-          height: 38px;
-          padding: 0.375rem 0.75rem;
-          font-size: 0.9rem;
-          border: 1px solid #ced4da;
-          border-radius: 0.375rem;
-          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        
-        .form-control:focus {
-          border-color: #86b7fe;
-          outline: 0;
-          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        
-        .p-inputnumber-input {
-          height: 38px;
-          padding: 0.375rem 0.75rem;
-          font-size: 0.9rem;
-        }
-        
-        .p-dropdown {
-          height: 38px;
-          display: flex;
-          align-items: center;
-        }
-        
-        .p-calendar {
-          height: 38px;
-        }
-        
-        .table-responsive-md {
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-        
-        .table th, .table td {
-          vertical-align: middle;
-          padding: 0.75rem;
-        }
-        
-        .table thead th {
-          border-bottom: 2px solid #dee2e6;
-          background-color: #f8f9fa;
-          font-weight: 600;
-        }
-        
-        /* Inputs de precio que se expanden según el contenido */
-        .price-input {
-          width: 200px; !important;
-          min-width: 120px;
-          width: auto !important;
-        }
-        
-        .price-input .p-inputnumber-input {
-           width: auto; !important;
-          min-width: 120px;
-        }
-        
-        /* Mejoras específicas para móviles */
-        @media (max-width: 768px) {
-          .container-fluid {
-            padding-left: 10px;
-            padding-right: 10px;
-          }
-          
-          .card-body {
-            padding: 1rem;
-          }
-          
-          .table-responsive-md {
-            border: 1px solid #dee2e6;
-            border-radius: 0.375rem;
-          }
-          
-          .table {
-            margin-bottom: 0;
-            min-width: 800px;
-          }
-          
-          .btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-          }
-          
-          .price-input {
-           width: 300px; !important;
-            min-width: 100px;
-          }
-        }
-        
-        /* Estilos para mejorar la apariencia de los inputs en tablas */
-        .table .p-inputnumber, 
-        .table .p-dropdown, 
-        .table .p-calendar {
-          width: 100% !important;
-          min-width: 100px;
-        }
-        
-        .p-dropdown-panel {
-          z-index: 1100 !important;
-        }
-        
-        /* Estilos para el resumen de pagos en móviles */
-        @media (max-width: 576px) {
-          .alert-info .d-flex {
-            flex-direction: column;
-            gap: 1rem;
-          }
-          
-          .alert-info .d-flex > div {
-            width: 100%;
-            justify-content: space-between;
-          }
-        }
-      `));
+            .form-control {
+              height: 38px;
+              padding: 0.375rem 0.75rem;
+              font-size: 0.9rem;
+              border: 1px solid #ced4da;
+              border-radius: 0.375rem;
+              transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+            
+            .form-control:focus {
+              border-color: #86b7fe;
+              outline: 0;
+              box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+            
+            .p-inputnumber-input {
+              height: 38px;
+              padding: 0.375rem 0.75rem;
+              font-size: 0.9rem;
+            }
+            
+            .p-dropdown {
+              height: 38px;
+              display: flex;
+              align-items: center;
+            }
+            
+            .p-calendar {
+              height: 38px;
+            }
+            
+            .table-responsive-md {
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+            }
+            
+            .table th, .table td {
+              vertical-align: middle;
+              padding: 0.75rem;
+            }
+            
+            .table thead th {
+              border-bottom: 2px solid #dee2e6;
+              background-color: #f8f9fa;
+              font-weight: 600;
+            }
+            
+            .price-input {
+              width: 200px; !important;
+              min-width: 120px;
+              width: auto !important;
+            }
+            
+            .price-input .p-inputnumber-input {
+              width: auto; !important;
+              min-width: 120px;
+            }
+            
+            @media (max-width: 768px) {
+              .container-fluid {
+                padding-left: 10px;
+                padding-right: 10px;
+              }
+              
+              .card-body {
+                padding: 1rem;
+              }
+              
+              .table-responsive-md {
+                border: 1px solid #dee2e6;
+                border-radius: 0.375rem;
+              }
+              
+              .table {
+                margin-bottom: 0;
+                min-width: 800px;
+              }
+              
+              .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+              }
+              
+              .price-input {
+              width: 300px; !important;
+                min-width: 100px;
+              }
+            }
+            
+            .table .p-inputnumber, 
+            .table .p-dropdown, 
+            .table .p-calendar {
+              width: 100% !important;
+              min-width: 100px;
+            }
+            
+            .p-dropdown-panel {
+              z-index: 1100 !important;
+            }
+            
+            @media (max-width: 576px) {
+              .alert-info .d-flex {
+                flex-direction: column;
+                gap: 1rem;
+              }
+              
+              .alert-info .d-flex > div {
+                width: 100%;
+                justify-content: space-between;
+              }
+            }
+          `));
 };
 const TypeColumnBody = ({
   rowData,
@@ -1177,7 +1177,8 @@ const TypeColumnBody = ({
     },
     onClick: e => e.stopPropagation(),
     disabled: disabled,
-    filter: true
+    filter: true,
+    showClear: true
   }));
 };
 const ProductColumnBody = ({
@@ -1206,7 +1207,6 @@ const ProductColumnBody = ({
       })) || [];
       setOptions(formatted);
     } else {
-      // Cargar productos normales
       getByType(type);
       const formatted = products?.map(p => ({
         id: String(p.id),
@@ -1235,7 +1235,8 @@ const ProductColumnBody = ({
       onClick: e => e.stopPropagation(),
       loading: !options.length,
       emptyMessage: "No hay activos disponibles",
-      disabled: disabled
+      disabled: disabled,
+      showClear: true
     });
   }
   return /*#__PURE__*/React.createElement(Dropdown, {
@@ -1257,7 +1258,8 @@ const ProductColumnBody = ({
       itemSize: 38
     },
     emptyMessage: "No hay productos disponibles",
-    disabled: disabled
+    disabled: disabled,
+    showClear: true
   });
 };
 const QuantityColumnBody = ({
@@ -1352,14 +1354,20 @@ const IvaColumnBody = ({
     placeholder: "Seleccione IVA",
     className: "w-100",
     onChange: e => {
-      const selectedTax = taxes.find(tax => tax.percentage === e.value);
-      if (selectedTax) {
-        onChange(selectedTax);
+      // Manejar el caso cuando se limpia con showClear
+      if (e.value === null) {
+        onChange(null);
+      } else {
+        const selectedTax = taxes.find(tax => tax.percentage === e.value);
+        if (selectedTax) {
+          onChange(selectedTax);
+        }
       }
     },
     appendTo: document.body,
     disabled: disabled,
-    filter: true
+    filter: true,
+    showClear: true
   });
 };
 const DepositColumnBody = ({
@@ -1387,6 +1395,7 @@ const DepositColumnBody = ({
     },
     disabled: disabled,
     appendTo: document.body,
-    filter: true
+    filter: true,
+    showClear: true
   });
 };

@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { Card } from "primereact/card";
 import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
 
 interface WebCreatorPanelStyleSettingsProps {
     panel: WebCreatorPanel;
@@ -24,9 +25,55 @@ export const WebCreatorPanelStyleSettings = ({ panel, onStyleChange }: WebCreato
         onStyleChange({ ...panel, styles: resetStyles });
     };
 
+    const justifyContentOptions = [
+        { label: 'Inicio (flex-start)', value: 'flex-start' },
+        { label: 'Centro (center)', value: 'center' },
+        { label: 'Fin (flex-end)', value: 'flex-end' },
+        { label: 'Espacio entre (space-between)', value: 'space-between' },
+        { label: 'Espacio alrededor (space-around)', value: 'space-around' },
+        { label: 'Espacio uniforme (space-evenly)', value: 'space-evenly' }
+    ];
+
+    const alignItemsOptions = [
+        { label: 'Estirar (stretch)', value: 'stretch' },
+        { label: 'Inicio (flex-start)', value: 'flex-start' },
+        { label: 'Centro (center)', value: 'center' },
+        { label: 'Fin (flex-end)', value: 'flex-end' },
+        { label: 'Línea base (baseline)', value: 'baseline' }
+    ];
+
     return (
         <div className="d-flex flex-column gap-3">
             <h4>Estilos del Panel</h4>
+            <Divider />
+
+            {/* Propiedades Flex */}
+            <h5>Propiedades Flex</h5>
+
+            <div className="d-flex flex-column gap-2">
+                <label htmlFor="justifyContent" className="form-label">Justificar Contenido</label>
+                <Dropdown
+                    id="justifyContent"
+                    value={panel.styles?.justifyContent || 'flex-start'}
+                    options={justifyContentOptions}
+                    onChange={(e) => handleStyleChange('justifyContent', e.value)}
+                    placeholder="Selecciona justificación"
+                    className="w-100"
+                />
+            </div>
+
+            <div className="d-flex flex-column gap-2">
+                <label htmlFor="alignItems" className="form-label">Alinear Items</label>
+                <Dropdown
+                    id="alignItems"
+                    value={panel.styles?.alignItems || 'stretch'}
+                    options={alignItemsOptions}
+                    onChange={(e) => handleStyleChange('alignItems', e.value)}
+                    placeholder="Selecciona alineación"
+                    className="w-100"
+                />
+            </div>
+
             <Divider />
 
             <div className="d-flex flex-column gap-2">

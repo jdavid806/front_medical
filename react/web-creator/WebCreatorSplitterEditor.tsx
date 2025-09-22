@@ -4,6 +4,7 @@ import { WebCreatorComponent } from './WebCreatorComponentList';
 import { WebCreatorLogo } from './components/WebCreatorLogo';
 import { WebCreatorMenuBar } from './components/WebCreatorMenuBar';
 import { WebCreatorButton } from './components/WebCreatorButton';
+import { WebCreatorInput } from './components/WebCreatorInput';
 
 export interface WebCreatorPanel {
     uuid: string;
@@ -21,6 +22,9 @@ export interface WebCreatorPanel {
         boxShadow?: string;
         padding?: number | null;
         margin?: number | null;
+        alignItems?: string;
+        justifyContent?: string;
+        flexDirection?: string;
         // Otras propiedades CSS que puedan ser necesarias
     };
 }
@@ -52,7 +56,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
         borderRadius: 6,
         borderWidth: 1,
         borderColor: '#e5e7eb',
-        backgroundColor: 'white',
+        backgroundColor: '#ffffff',
         boxShadow: ''
     };
 
@@ -191,15 +195,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                             children: [],
                             layout: isHorizontalDirection ? 'horizontal' : 'vertical',
                             cols: currentPanel.children[childIndex].cols || 12,
-                            styles: {
-                                padding: 6,
-                                margin: 6,
-                                borderRadius: 6,
-                                borderWidth: 1,
-                                borderColor: '#e5e7eb',
-                                backgroundColor: 'white',
-                                boxShadow: 'none'
-                            }
+                            styles: defaultPanelStyles
                         };
 
                         if (direction === 'above' || direction === 'left') {
@@ -481,6 +477,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
                 return <WebCreatorButton component={component} />;
             case "sidebar":
                 return <div>Sidebar settings</div>;
+            case "input":
+                return <WebCreatorInput component={component} />;
             default:
                 return <div>Unknown component type</div>;
         }
@@ -507,7 +505,7 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
             borderRadius: (panel.styles?.borderRadius || 6) + 'px',
             margin: ((panel.styles?.margin || 0) + 2) + 'px',
             padding: ((panel.styles?.padding || 0) + 2) + 'px',
-            backgroundColor: panel.styles?.backgroundColor || 'white',
+            backgroundColor: panel.styles?.backgroundColor || '#ffffff',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -523,6 +521,8 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
             width: '100%',
             height: '100%',
             flexDirection: panel.layout === 'vertical' ? 'column' : 'row',
+            alignItems: panel.styles?.alignItems || 'center',
+            justifyContent: panel.styles?.justifyContent || 'center',
             gap: '4px'
         };
 

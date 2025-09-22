@@ -4,6 +4,7 @@ import { ColorPicker } from "primereact/colorpicker";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
 export const WebCreatorPanelStyleSettings = ({
   panel,
   onStyleChange
@@ -27,9 +28,68 @@ export const WebCreatorPanelStyleSettings = ({
       styles: resetStyles
     });
   };
+  const justifyContentOptions = [{
+    label: 'Inicio (flex-start)',
+    value: 'flex-start'
+  }, {
+    label: 'Centro (center)',
+    value: 'center'
+  }, {
+    label: 'Fin (flex-end)',
+    value: 'flex-end'
+  }, {
+    label: 'Espacio entre (space-between)',
+    value: 'space-between'
+  }, {
+    label: 'Espacio alrededor (space-around)',
+    value: 'space-around'
+  }, {
+    label: 'Espacio uniforme (space-evenly)',
+    value: 'space-evenly'
+  }];
+  const alignItemsOptions = [{
+    label: 'Estirar (stretch)',
+    value: 'stretch'
+  }, {
+    label: 'Inicio (flex-start)',
+    value: 'flex-start'
+  }, {
+    label: 'Centro (center)',
+    value: 'center'
+  }, {
+    label: 'Fin (flex-end)',
+    value: 'flex-end'
+  }, {
+    label: 'Línea base (baseline)',
+    value: 'baseline'
+  }];
   return /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
-  }, /*#__PURE__*/React.createElement("h4", null, "Estilos del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("h4", null, "Estilos del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("h5", null, "Propiedades Flex"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "justifyContent",
+    className: "form-label"
+  }, "Justificar Contenido"), /*#__PURE__*/React.createElement(Dropdown, {
+    id: "justifyContent",
+    value: panel.styles?.justifyContent || 'flex-start',
+    options: justifyContentOptions,
+    onChange: e => handleStyleChange('justifyContent', e.value),
+    placeholder: "Selecciona justificaci\xF3n",
+    className: "w-100"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "alignItems",
+    className: "form-label"
+  }, "Alinear Items"), /*#__PURE__*/React.createElement(Dropdown, {
+    id: "alignItems",
+    value: panel.styles?.alignItems || 'stretch',
+    options: alignItemsOptions,
+    onChange: e => handleStyleChange('alignItems', e.value),
+    placeholder: "Selecciona alineaci\xF3n",
+    className: "w-100"
+  })), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-2"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "backgroundColor",

@@ -192,9 +192,9 @@
             appointmentStateService.getAll(),
             admissionService.getAdmisionsAll(),
             moduleService.active(),
-            ticketService.getAll()
+            ticketService.getTicketsToday()
         ]);
-
+        console.log("tickets",tickets)
         appointments = appointments.filter(appointment => {
             return appointment.user_availability.appointment_type_id === 1 && appointment.appointment_date == new Date().toISOString().split('T')[0];
         });

@@ -22,7 +22,8 @@ const TaxFormConfig = ({
       errors,
       isDirty
     },
-    reset
+    reset,
+    watch
   } = useForm({
     defaultValues: initialData || {
       name: "",
@@ -34,6 +35,8 @@ const TaxFormConfig = ({
       description: ""
     }
   });
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -57,6 +60,10 @@ const TaxFormConfig = ({
     id: formId,
     onSubmit: handleSubmit(onFormSubmit),
     className: "p-fluid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -83,7 +90,9 @@ const TaxFormConfig = ({
       }),
       placeholder: "Ingrese el nombre del impuesto"
     })), getFormErrorMessage("name"))
-  })), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "percentage",
@@ -118,8 +127,12 @@ const TaxFormConfig = ({
       }),
       placeholder: "Ej: 19"
     }), getFormErrorMessage("percentage"))
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "field mb-4"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "font-medium block mb-2"
   }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
@@ -142,16 +155,15 @@ const TaxFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_label",
+      optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_label,account_code",
+      filterBy: "account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false,
-      appendTo: "self"
+      loading: false
     }), getFormErrorMessage("accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
@@ -171,21 +183,22 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
-      optionLabel: "account_label",
+      options: accounts.filter(acc => acc.id !== selectedPurchaseAccount),
+      optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
-      filterBy: "account_label,account_code",
+      filterBy: "account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false,
-      appendTo: "self"
+      loading: false
     }), getFormErrorMessage("accounting_account_reverse_id"))
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "field mb-4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "font-medium block mb-2"
   }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
@@ -208,16 +221,15 @@ const TaxFormConfig = ({
       onChange: e => field.onChange(e.value),
       options: accounts,
       optionValue: "id",
-      optionLabel: "account_label",
+      optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_label,account_code",
+      filterBy: "account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false,
-      appendTo: "self"
+      loading: false
     }), getFormErrorMessage("sell_accounting_account_id"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
@@ -237,20 +249,23 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
-      optionLabel: "account_label",
+      options: accounts.filter(acc => acc.id !== selectedSellAccount),
+      optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
-      filterBy: "account_label,account_code",
+      filterBy: "account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: false,
-      appendTo: "self"
+      loading: false
     }), getFormErrorMessage("sell_reverse_accounting_account_id"))
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "description",
@@ -267,7 +282,11 @@ const TaxFormConfig = ({
       className: "w-full",
       placeholder: "Ingrese una descripci\xF3n opcional"
     }))
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
   }, onCancel && /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
@@ -292,6 +311,6 @@ const TaxFormConfig = ({
     },
     disabled: loading || !isDirty,
     type: "submit"
-  })));
+  })))));
 };
 export default TaxFormConfig;

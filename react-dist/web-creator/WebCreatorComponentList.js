@@ -1,5 +1,6 @@
 import { Divider } from "primereact/divider";
 import React from "react";
+import { generateUUID } from "../../services/utilidades.js";
 export const WebCreatorComponentList = ({
   onComponentClick
 }) => {
@@ -58,6 +59,13 @@ export const WebCreatorComponentList = ({
     name: "Footer",
     type: "footer",
     imgSrc: "assets/img/logos/FullColor.svg"
+  }, {
+    uuid: generateUUID(),
+    name: "Campo de texto",
+    type: "input",
+    label: "Campo de texto",
+    icon: "",
+    controlType: "text"
   }];
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, "Componentes"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-2"

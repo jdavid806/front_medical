@@ -3,6 +3,7 @@ import { Divider } from "primereact/divider";
 import { WebCreatorComponent } from "./WebCreatorComponentList";
 import { LogoSettings } from "./setting-components/LogoSettings";
 import { MenubarSettings } from "./setting-components/MenubarSettings";
+import { InputSettings } from "./setting-components/InputSettings";
 
 interface WebCreatorComponentSettingsProps {
     selectedComponent: WebCreatorComponent;
@@ -21,6 +22,8 @@ export const WebCreatorComponentSettings = ({ selectedComponent, onChange }: Web
                 return <div>Button settings</div>;
             case "sidebar":
                 return <div>Sidebar settings</div>;
+            case "input":
+                return <InputSettings component={selectedComponent} onChange={(component) => onChange(component)} />;
             default:
                 return <div>Unknown component type</div>;
         }

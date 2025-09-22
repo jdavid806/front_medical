@@ -39,7 +39,7 @@ import {
 import { SwalManager } from "../../services/alertManagerImported";
 import { Toast } from "primereact/toast";
 import { useMassMessaging } from "../hooks/useMassMessaging";
-import { addDaysToDate, formatTimeByMilliseconds, generateURLStorageKey, getIndicativeByCountry } from "../../services/utilidades";
+import { addDaysToDate, formatTimeByMilliseconds, generateURLStorageKey, getDateTimeByMilliseconds, getIndicativeByCountry, getLocalTodayISODateTime } from "../../services/utilidades";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { generarFormato } from "../../funciones/funcionesJS/generarPDF.js";
 import { ProgressBar } from "primereact/progressbar";
@@ -543,28 +543,28 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                         );
                     }
                     //message to appointments
-                    if (
-                        clinicalRecordSaved.appointment &&
-                        clinicalRecordSaved.patient.whatsapp_notifications
-                    ) {
-                        updateProgress("Procesando cita...");
-                        const data = {
-                            tenantId: tenant,
-                            belongsTo: "citas-creacion",
-                            type: "whatsapp",
-                        };
-                        const templateAppointment = await fetchTemplate(data);
-                        const finishTemplate = await switchTemplate(
-                            templateAppointment.template,
-                            "appointments",
-                            clinicalRecordSaved.appointment
-                        );
-                        await sendMessageWhatsapp(
-                            clinicalRecordSaved.patient,
-                            finishTemplate,
-                            null
-                        );
-                    }
+                    // if (
+                    //     clinicalRecordSaved.appointment &&
+                    //     clinicalRecordSaved.patient.whatsapp_notifications
+                    // ) {
+                    //     updateProgress("Procesando cita...");
+                    //     const data = {
+                    //         tenantId: tenant,
+                    //         belongsTo: "citas-creacion",
+                    //         type: "whatsapp",
+                    //     };
+                    //     const templateAppointment = await fetchTemplate(data);
+                    //     const finishTemplate = await switchTemplate(
+                    //         templateAppointment.template,
+                    //         "appointments",
+                    //         clinicalRecordSaved.appointment
+                    //     );
+                    //     await sendMessageWhatsapp(
+                    //         clinicalRecordSaved.patient,
+                    //         finishTemplate,
+                    //         null
+                    //     );
+                    // }
                     setProgress(100);
                     setProgressMessage("Proceso completado");
                 } catch (error) {
@@ -740,6 +740,10 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
             };
 
             const formattedTime = formatTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('elapsedTime')));
+            const formattedStartTime = getDateTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('startTime')));
+            console.log(diagnoses);
+
+            const definitiveDiagnosis = diagnoses.find((diagnosis: any) => diagnosis.diagnosis_type === 'definitivo')?.codigo;
 
             let result: StoreClinicalRecordInputs = {
                 appointment_id: appointmentId,
@@ -752,6 +756,9 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
                     rips: diagnoses,
                 },
                 consultation_duration: `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+                start_time: `${getLocalTodayISODateTime(formattedStartTime)}`,
+                diagnosis_main: definitiveDiagnosis || null,
+                created_at: getLocalTodayISODateTime(),
             };
 
             if (examsActive && exams.length > 0) {

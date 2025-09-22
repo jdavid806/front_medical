@@ -77,200 +77,218 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
 
   return (
     <form id={formId} onSubmit={handleSubmit(onFormSubmit)} className="p-fluid">
-      <div className="field mb-4">
-        <label htmlFor="name" className="font-medium block mb-2">
-          Nombre del Método *
-        </label>
-        <Controller
-          name="name"
-          control={control}
-          rules={{
-            required: "El nombre del método es requerido",
-            maxLength: {
-              value: 100,
-              message: "El nombre no puede exceder 100 caracteres",
-            },
-          }}
-          render={({ field, fieldState }) => (
-            <>
-              <InputText
-                id={field.name}
-                {...field}
-                className={classNames({ "p-invalid": fieldState.error })}
-                placeholder="Ingrese el nombre del método de pago"
-              />
-              {getFormErrorMessage("name")}
-            </>
-          )}
-        />
-      </div>
+      <div className="row">
+        {/* Columna izquierda */}
+        <div className="col-md-6">
+          <div className="field mb-4">
+            <label htmlFor="name" className="font-medium block mb-2">
+              Nombre del Método *
+            </label>
+            <Controller
+              name="name"
+              control={control}
+              rules={{
+                required: "El nombre del método es requerido",
+                maxLength: {
+                  value: 100,
+                  message: "El nombre no puede exceder 100 caracteres",
+                },
+              }}
+              render={({ field, fieldState }) => (
+                <>
+                  <InputText
+                    id={field.name}
+                    {...field}
+                    className={classNames({ "p-invalid": fieldState.error })}
+                    placeholder="Ingrese el nombre del método de pago"
+                  />
+                  {getFormErrorMessage("name")}
+                </>
+              )}
+            />
+          </div>
 
-      <div className="field mb-4">
-        <label htmlFor="payment_type" className="font-medium block mb-2">
-          Tipo *
-        </label>
-        <Controller
-          name="payment_type"
-          control={control}
-          rules={{ required: "El tipo de método es requerido" }}
-          render={({ field, fieldState }) => (
-            <>
-              <Dropdown
-                id={field.name}
-                value={field.value}
-                onChange={(e) => field.onChange(e.value)}
-                options={TypeMethod}
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Seleccione un tipo"
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
-              />
-              {getFormErrorMessage("payment_type")}
-            </>
-          )}
-        />
-      </div>
+          <div className="field mb-4">
+            <label htmlFor="payment_type" className="font-medium block mb-2">
+              Tipo *
+            </label>
+            <Controller
+              name="payment_type"
+              control={control}
+              rules={{ required: "El tipo de método es requerido" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Dropdown
+                    id={field.name}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    options={TypeMethod}
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccione un tipo"
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                    showClear
+                    filter
+                  />
+                  {getFormErrorMessage("payment_type")}
+                </>
+              )}
+            />
+          </div>
+        </div>
 
-      <div className="field mb-4">
-        <label htmlFor="category" className="font-medium block mb-2">
-          Categoría *
-        </label>
-        <Controller
-          name="category"
-          control={control}
-          rules={{ required: "La categoría es requerida" }}
-          render={({ field, fieldState }) => (
-            <>
-              <Dropdown
-                id={field.name}
-                value={field.value}
-                onChange={(e) => field.onChange(e.value)}
-                options={categories}
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Seleccione una categoría"
-                className={classNames("w-full", {
-                  "p-invalid": fieldState.error,
-                })}
+        {/* Columna derecha */}
+        <div className="col-md-6">
+          <div className="field mb-4">
+            <label htmlFor="category" className="font-medium block mb-2">
+              Categoría *
+            </label>
+            <Controller
+              name="category"
+              control={control}
+              rules={{ required: "La categoría es requerida" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Dropdown
+                    id={field.name}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    options={categories}
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccione una categoría"
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                    showClear
+                    filter
+                  />
+                  {getFormErrorMessage("category")}
+                </>
+              )}
+            />
+          </div>
+
+          <div className="row">
+            <div className="col-8">
+              <label
+                htmlFor="accounting_account_id"
+                className="font-medium block mb-2"
+              >
+                Cuenta Contable
+              </label>
+              <Controller
+                name="accounting_account_id"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Dropdown
+                      id={field.name}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.value)}
+                      options={accounts}
+                      optionValue="id"
+                      optionLabel="account_label"
+                      placeholder="Seleccione una cuenta"
+                      filter
+                      filterBy="account_label,account_name,account_code"
+                      showClear
+                      className={classNames("w-full", {
+                        "p-invalid": fieldState.error,
+                      })}
+                      loading={isLoadingAccounts}
+                      appendTo="self"
+                    />
+                    {getFormErrorMessage("accounting_account_id")}
+                  </>
+                )}
               />
-              {getFormErrorMessage("category")}
-            </>
-          )}
-        />
+            </div>
+            <div className="col-4 d-flex align-items-center gap-2 mt-4">
+              <Controller
+                name="isCash"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Checkbox
+                      id={field.name}
+                      checked={field.value}
+                      onChange={e => field.onChange(e.checked)}
+                      className={classNames("w-full", {})}
+                      inputId={field.name}
+                    />
+                    {getFormErrorMessage("isCash")}
+                  </>
+                )}
+              />
+              <label
+                htmlFor="isCash"
+                className="font-medium block mb-0"
+              >
+                Es efectivo
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="row">
-        <div className="col-6 mb-4">
-          <label
-            htmlFor="accounting_account_id"
-            className="font-medium block mb-2"
-          >
-            Cuenta Contable
-          </label>
-          <Controller
-            name="accounting_account_id"
-            control={control}
-            render={({ field, fieldState }) => (
-              <>
-                <Dropdown
+        <div className="col-12">
+          <div className="field mb-4">
+            <label htmlFor="additionalDetails" className="font-medium block mb-2">
+              Detalles Adicionales
+            </label>
+            <Controller
+              name="additionalDetails"
+              control={control}
+              render={({ field }) => (
+                <InputTextarea
                   id={field.name}
-                  value={field.value}
-                  onChange={(e) => field.onChange(e.value)}
-                  options={accounts}
-                  optionValue="id"
-                  optionLabel="account_label"
-                  placeholder="Seleccione una cuenta"
-                  filter
-                  filterBy="account_label,account_name,account_code"
-                  showClear
-                  className={classNames("w-full", {
-                    "p-invalid": fieldState.error,
-                  })}
-                  loading={isLoadingAccounts}
-                  appendTo="self"
+                  {...field}
+                  rows={3}
+                  className="w-full"
+                  placeholder="Ingrese detalles adicionales"
                 />
-                {getFormErrorMessage("accounting_account_id")}
-              </>
-            )}
-          />
-        </div>
-        <div className="col-6 d-flex align-items-center gap-2">
-          <label
-            htmlFor="isCash"
-            className="font-medium block"
-          >
-            Es efectivo
-          </label>
-          <Controller
-            name="isCash"
-            control={control}
-            render={({ field, fieldState }) => (
-              <>
-                <Checkbox
-                  id={field.name}
-                  checked={field.value}
-                  onChange={e => field.onChange(e.checked)}
-                  className={classNames("w-full", {
-                    
-                  })}
-                  inputId={field.name}
-                />
-                {getFormErrorMessage("isCash")}
-              </>
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="field mb-4">
-        <label htmlFor="additionalDetails" className="font-medium block mb-2">
-          Detalles Adicionales
-        </label>
-        <Controller
-          name="additionalDetails"
-          control={control}
-          render={({ field }) => (
-            <InputTextarea
-              id={field.name}
-              {...field}
-              rows={3}
-              className="w-full"
-              placeholder="Ingrese detalles adicionales"
+              )}
             />
-          )}
-        />
+          </div>
+        </div>
       </div>
 
-      <div className="d-flex justify-content-center mt-4 gap-6">
-        {onCancel && (
-          <Button
-            label="Cancelar"
-            className="btn btn-phoenix-secondary"
-            onClick={onCancel}
-            disabled={loading}
-            type="button"
-            style={{
-              padding: "0 20px",
-              width: "200px",
-              height: "50px",
-              borderRadius: "0px",
-            }}
-          >
-            <i className="fas fa-times"></i>
-          </Button>
-        )}
-        <Button
-          label="Guardar"
-          className="p-button-sm"
-          loading={loading}
-          style={{ padding: "0 40px", width: "200px", height: "50px" }}
-          disabled={loading || !isDirty}
-          type="submit"
-        >
-          <i className="fas fa-save"></i>
-        </Button>
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-center mt-4 gap-6">
+            {onCancel && (
+              <Button
+                label="Cancelar"
+                className="btn btn-phoenix-secondary"
+                onClick={onCancel}
+                disabled={loading}
+                type="button"
+                style={{
+                  padding: "0 20px",
+                  width: "200px",
+                  height: "50px",
+                  borderRadius: "0px",
+                }}
+              >
+                <i className="fas fa-times"></i>
+              </Button>
+            )}
+            <Button
+              label="Guardar"
+              className="p-button-sm"
+              loading={loading}
+              style={{ padding: "0 40px", width: "200px", height: "50px" }}
+              disabled={loading || !isDirty}
+              type="submit"
+            >
+              <i className="fas fa-save"></i>
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   );
