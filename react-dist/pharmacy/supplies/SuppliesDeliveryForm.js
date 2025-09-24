@@ -6,6 +6,7 @@ import { useProductsByType } from "../../products/hooks/useProductsByType.js";
 import { CustomPRTable } from "../../components/CustomPRTable.js";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { getJWTPayload } from "../../../services/utilidades.js";
 export const SuppliesDeliveryForm = props => {
   const {
     formId,
@@ -51,7 +52,8 @@ export const SuppliesDeliveryForm = props => {
       })),
       status: "pendiente",
       delivery_date: null,
-      observations: formValues.observations
+      observations: formValues.observations,
+      requested_by: getJWTPayload().sub
     };
   };
   const onSubmitForm = data => {

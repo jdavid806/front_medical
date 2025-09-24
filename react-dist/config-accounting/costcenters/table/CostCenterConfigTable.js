@@ -5,7 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
-import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 export const CostCenterConfigTable = ({
   costCenters = [],
@@ -14,8 +14,6 @@ export const CostCenterConfigTable = ({
   loading = false
 }) => {
   const toast = useRef(null);
-  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [costCenterToDelete, setCostCenterToDelete] = useState(null);
   const [filteredCostCenters, setFilteredCostCenters] = useState([]);
   const [filtros, setFiltros] = useState({
     code: "",
@@ -55,6 +53,54 @@ export const CostCenterConfigTable = ({
       life: 3000
     });
   };
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando centro de costo con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar centro de costo con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "btn-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: [{
+        label: "Editar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-pen me-2"
+        }),
+        command: handleEdit
+      }, {
+        label: "Eliminar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-trash me-2"
+        }),
+        command: handleDelete
+      }],
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
   const actionBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("div", {
       className: "flex align-items-center justify-content-center",
@@ -62,49 +108,16 @@ export const CostCenterConfigTable = ({
         gap: "0.5rem",
         minWidth: "120px"
       }
-    }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm",
-      onClick: () => editCostCenter(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-pencil-alt"
-    })), /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm p-button-danger",
-      onClick: () => confirmDelete(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    })));
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: onEditItem ? onEditItem : () => {},
+      onDelete: costCenter => {
+        if (onDeleteItem) {
+          onDeleteItem(costCenter.id.toString());
+        }
+      }
+    }));
   };
-  const editCostCenter = costCenter => {
-    if (onEditItem) {
-      onEditItem(costCenter.id.toString());
-    }
-    showToast("info", "Editar", `Editando centro de costo: ${costCenter.name}`);
-  };
-  const confirmDelete = costCenter => {
-    setCostCenterToDelete(costCenter);
-    setDeleteDialogVisible(true);
-  };
-  const deleteCostCenter = () => {
-    if (costCenterToDelete && onDeleteItem) {
-      onDeleteItem(costCenterToDelete.id.toString());
-      showToast("success", "Éxito", `Centro de costo ${costCenterToDelete.name} eliminado`);
-    }
-    setDeleteDialogVisible(false);
-    setCostCenterToDelete(null);
-  };
-  const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Cancelar",
-    icon: "pi pi-times",
-    className: "p-button-text",
-    onClick: () => setDeleteDialogVisible(false)
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Eliminar",
-    icon: "pi pi-check",
-    className: "p-button-danger",
-    onClick: deleteCostCenter
-  }));
   const styles = {
     card: {
       marginBottom: "20px",
@@ -138,24 +151,7 @@ export const CostCenterConfigTable = ({
     }
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement(Dialog, {
-    visible: deleteDialogVisible,
-    style: {
-      width: "450px"
-    },
-    header: "Confirmar",
-    modal: true,
-    footer: deleteDialogFooter,
-    onHide: () => setDeleteDialogVisible(false)
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex align-items-center justify-content-center"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-exclamation-triangle mr-3",
-    style: {
-      fontSize: "2rem",
-      color: "#f8bb86"
-    }
-  }), costCenterToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar el centro de costo", " ", /*#__PURE__*/React.createElement("b", null, costCenterToDelete.name), "?"))), /*#__PURE__*/React.createElement(Card, {
+  }), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     style: styles.card
   }, /*#__PURE__*/React.createElement("div", {

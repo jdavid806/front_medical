@@ -39,6 +39,12 @@ const RetentionFormConfig = ({
       description: ""
     }
   });
+
+  // Solo watch para las cuentas que necesitamos para validaciones individuales
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedPurchaseReverseAccount = watch("accounting_account_reverse_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
+  const selectedSellReverseAccount = watch("sell_reverse_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -48,20 +54,62 @@ const RetentionFormConfig = ({
     }, errors[name]?.message);
   };
   useEffect(() => {
-    reset(initialData || {
-      name: "",
-      percentage: 0,
-      accounting_account_id: null,
-      accounting_account_reverse_id: null,
-      sell_accounting_account_id: null,
-      sell_reverse_accounting_account_id: null,
-      description: ""
-    });
+    if (initialData) {
+      reset({
+        name: initialData.name || "",
+        percentage: initialData.percentage || 0,
+        accounting_account_id: initialData.accounting_account_id || null,
+        accounting_account_reverse_id: initialData.accounting_account_reverse_id || null,
+        sell_accounting_account_id: initialData.sell_accounting_account_id || null,
+        sell_reverse_accounting_account_id: initialData.sell_reverse_accounting_account_id || null,
+        description: initialData.description || ""
+      });
+    } else {
+      reset({
+        name: "",
+        percentage: 0,
+        accounting_account_id: null,
+        accounting_account_reverse_id: null,
+        sell_accounting_account_id: null,
+        sell_reverse_accounting_account_id: null,
+        description: ""
+      });
+    }
   }, [initialData, reset]);
+
+  // Función auxiliar para encontrar una cuenta por ID
+  const findAccountById = accountId => {
+    if (!accountId || !accounts) return null;
+    return accounts.find(account => account.id === accountId) || null;
+  };
+
+  // FILTRADO COMPLETAMENTE INDEPENDIENTE PARA CADA DROPDOWN
+  // Cada dropdown muestra TODAS las cuentas disponibles sin restricciones cruzadas
+
+  const getPurchaseAccounts = () => {
+    if (!accounts || accounts.length === 0) return [];
+    return accounts;
+  };
+  const getPurchaseReverseAccounts = () => {
+    if (!accounts || accounts.length === 0) return [];
+    return accounts;
+  };
+  const getSellAccounts = () => {
+    if (!accounts || accounts.length === 0) return [];
+    return accounts;
+  };
+  const getSellReverseAccounts = () => {
+    if (!accounts || accounts.length === 0) return [];
+    return accounts;
+  };
   return /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onFormSubmit),
     className: "p-fluid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -88,7 +136,9 @@ const RetentionFormConfig = ({
       }),
       placeholder: "Ingrese el nombre de la retenci\xF3n"
     })), getFormErrorMessage("name"))
-  })), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "percentage",
@@ -123,15 +173,19 @@ const RetentionFormConfig = ({
       }),
       placeholder: "Ej: 10"
     }), getFormErrorMessage("percentage"))
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "field mb-4"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_id",
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Cuenta Contable Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_id",
     control: control,
@@ -145,10 +199,9 @@ const RetentionFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
+      options: getPurchaseAccounts(),
       optionValue: "id",
-      optionLabel: "account_label" // Usamos la propiedad combinada
-      ,
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       filterBy: "account_label,account_name,account_code",
@@ -163,7 +216,7 @@ const RetentionFormConfig = ({
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_reverse_id",
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Cuenta Contable Reversa Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_reverse_id",
     control: control,
@@ -177,10 +230,9 @@ const RetentionFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
+      options: getPurchaseReverseAccounts(),
       optionValue: "id",
-      optionLabel: "account_label" // Usamos la propiedad combinada
-      ,
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       filterBy: "account_label,account_name,account_code",
@@ -191,15 +243,17 @@ const RetentionFormConfig = ({
       loading: isLoadingAccounts,
       appendTo: "self"
     }), getFormErrorMessage("accounting_account_reverse_id"))
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "field mb-4"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "sell_accounting_account_id",
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Cuenta Contable Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_accounting_account_id",
     control: control,
@@ -213,10 +267,9 @@ const RetentionFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
+      options: getSellAccounts(),
       optionValue: "id",
-      optionLabel: "account_label" // Usamos la propiedad combinada
-      ,
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       filterBy: "account_label,account_name,account_code",
@@ -231,7 +284,7 @@ const RetentionFormConfig = ({
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "sell_reverse_accounting_account_id",
-    className: "font-medium block mb-2"
+    className: "font-medium block mb-2 fw-bold"
   }, "Cuenta Contable Reversa Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_reverse_accounting_account_id",
     control: control,
@@ -245,10 +298,9 @@ const RetentionFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
+      options: getSellReverseAccounts(),
       optionValue: "id",
-      optionLabel: "account_label" // Usamos la propiedad combinada
-      ,
+      optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
       filterBy: "account_label,account_name,account_code",
@@ -259,7 +311,11 @@ const RetentionFormConfig = ({
       loading: isLoadingAccounts,
       appendTo: "self"
     }), getFormErrorMessage("sell_reverse_accounting_account_id"))
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "description",
@@ -276,7 +332,11 @@ const RetentionFormConfig = ({
       className: "w-full",
       placeholder: "Ingrese una descripci\xF3n opcional"
     }))
-  })), /*#__PURE__*/React.createElement("div", {
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4 gap-6"
   }, onCancel && /*#__PURE__*/React.createElement(Button, {
     label: "Cancelar",
@@ -305,6 +365,6 @@ const RetentionFormConfig = ({
     type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"
-  }))));
+  }))))));
 };
 export default RetentionFormConfig;

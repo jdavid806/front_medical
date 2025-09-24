@@ -13,6 +13,8 @@ import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
 import { useByStateFormat } from "../documents-generation/hooks/reports-medical/appointments/useByStateFormat";
 import { useSummaryFormat } from "../documents-generation/hooks/reports-medical/appointments/useSummaryFormat";
+import { useBySchedulerFormat } from "../documents-generation/hooks/reports-medical/appointments/useBySchedulerFormat";
+import { formatDate as formatDateUtils } from "../../services/utilidades.js";
 
 // Import your services
 import {
@@ -57,6 +59,15 @@ interface Appointment {
   appointment_time?: string;
 }
 
+// Nueva interfaz para los datos del tab de agendamiento
+interface SchedulingData {
+  // Define la estructura de los datos que esperas del endpoint de agendamiento
+  // Ajusta según la respuesta real del endpoint
+  id: string;
+  state: string;
+  // ... otras propiedades según tu endpoint
+}
+
 type GroupedByState = Record<string, Appointment[]>;
 type GroupedBySpecialtyDoctor = Record<
   string,
@@ -82,6 +93,10 @@ export const Appointments = () => {
   const [groupedByState, setGroupedByState] = useState<GroupedByState>({});
   const [groupedBySpecialtyDoctor, setGroupedBySpecialtyDoctor] =
     useState<GroupedBySpecialtyDoctor>({});
+
+  // Nuevo estado para los datos del tab de agendamiento
+  const [schedulingData, setSchedulingData] = useState<SchedulingData[]>([]);
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
@@ -95,14 +110,18 @@ export const Appointments = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<any[]>([]);
   const [selectedDoctors, setSelectedDoctors] = useState<any[]>([]);
   const [selectedStates, setSelectedStates] = useState<any[]>([]);
+
   const { generateFormatByState } = useByStateFormat();
   const { generateFormatSummary } = useSummaryFormat();
+  const { generateFormatByScheduler } = useBySchedulerFormat();
 
   useEffect(() => {
     if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
       loadDataForTab(0);
     } else if (activeTabIndex === 1 && !loadedTabs.includes(1)) {
       loadDataForTab(1);
+    } else if (activeTabIndex === 2 && !loadedTabs.includes(2)) {
+      loadDataForTab(2);
     }
   }, [activeTabIndex]);
 
@@ -153,6 +172,17 @@ export const Appointments = () => {
     }
   }
 
+  // Función para ejecutar el endpoint específico del tab de agendamiento
+  async function fetchSchedulingData(filterParams: any = {}) {
+    try {
+      const response = await appointmentService.reportByScheduler(filterParams);
+      return response.data || response;
+    } catch (error) {
+      console.error("Error fetching scheduling data:", error);
+      throw error;
+    }
+  }
+
   const loadDataForTab = async (
     tabIndex: number,
     filterParams: any = {
@@ -162,73 +192,85 @@ export const Appointments = () => {
   ) => {
     setTableLoading(true);
     try {
-      const response = await appointmentService.appointmentsWithFilters(
-        filterParams
-      );
-      const data = response.data || response;
+      if (tabIndex === 2) {
+        // Tab de agendamiento - endpoint específico
+        const data = await fetchSchedulingData(filterParams);
 
-      if (!Array.isArray(data)) {
-        throw new Error("La respuesta no es un array de citas");
-      }
-
-      const processedData = handlerDataAppointments(data);
-      setReportData(processedData);
-
-      if (tabIndex === 0) {
-        // Agrupamiento original (solo por estado)
-        const grouped: GroupedByState = {};
-        processedData.forEach((appointment) => {
-          if (!grouped[appointment.state]) {
-            grouped[appointment.state] = [];
-          }
-          grouped[appointment.state].push(appointment);
-        });
-        setGroupedByState(grouped);
-      } else {
-        // Nuevo agrupamiento (estado -> array de {especialidad, médico, count})
-        const grouped: GroupedBySpecialtyDoctor = {};
-
-        processedData.forEach((appointment) => {
-          const state = appointment.state;
-          const specialty =
-            appointment.assigned_user_availability?.user?.specialty?.name ||
-            "Sin especialidad";
-          const doctorId =
-            appointment.assigned_user_availability?.user?.id || "unknown";
-          const doctorName =
-            [
-              appointment.assigned_user_availability?.user?.first_name,
-              appointment.assigned_user_availability?.user?.middle_name,
-              appointment.assigned_user_availability?.user?.last_name,
-              appointment.assigned_user_availability?.user?.second_last_name,
-            ]
-              .filter(Boolean)
-              .join(" ") || "Sin nombre";
-
-          if (!grouped[state]) {
-            grouped[state] = [];
-          }
-
-          // Buscar si ya existe esta combinación especialidad-médico
-          const existingEntry = grouped[state].find(
-            (entry) =>
-              entry.specialty === specialty && entry.doctorName === doctorName
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "La respuesta no es un array de datos de agendamiento"
           );
+        }
 
-          if (existingEntry) {
-            existingEntry.count++;
-            existingEntry.appointments.push(appointment);
-          } else {
-            grouped[state].push({
-              specialty,
-              doctorName,
-              count: 1,
-              appointments: [appointment],
-            });
-          }
-        });
+        // Solo guardamos la data sin agrupar nada
+        setSchedulingData(data);
+      } else {
+        // Tabs existentes (0 y 1)
+        const response = await appointmentService.appointmentsWithFilters(
+          filterParams
+        );
+        const data = response.data || response;
 
-        setGroupedBySpecialtyDoctor(grouped);
+        if (!Array.isArray(data)) {
+          throw new Error("La respuesta no es un array de citas");
+        }
+
+        const processedData = handlerDataAppointments(data);
+        setReportData(processedData);
+
+        if (tabIndex === 0) {
+          const grouped: GroupedByState = {};
+          processedData.forEach((appointment) => {
+            if (!grouped[appointment.state]) {
+              grouped[appointment.state] = [];
+            }
+            grouped[appointment.state].push(appointment);
+          });
+          setGroupedByState(grouped);
+        } else {
+          const grouped: GroupedBySpecialtyDoctor = {};
+
+          processedData.forEach((appointment) => {
+            const state = appointment.state;
+            const specialty =
+              appointment.assigned_user_availability?.user?.specialty?.name ||
+              "Sin especialidad";
+            const doctorId =
+              appointment.assigned_user_availability?.user?.id || "unknown";
+            const doctorName =
+              [
+                appointment.assigned_user_availability?.user?.first_name,
+                appointment.assigned_user_availability?.user?.middle_name,
+                appointment.assigned_user_availability?.user?.last_name,
+                appointment.assigned_user_availability?.user?.second_last_name,
+              ]
+                .filter(Boolean)
+                .join(" ") || "Sin nombre";
+
+            if (!grouped[state]) {
+              grouped[state] = [];
+            }
+
+            const existingEntry = grouped[state].find(
+              (entry) =>
+                entry.specialty === specialty && entry.doctorName === doctorName
+            );
+
+            if (existingEntry) {
+              existingEntry.count++;
+              existingEntry.appointments.push(appointment);
+            } else {
+              grouped[state].push({
+                specialty,
+                doctorName,
+                count: 1,
+                appointments: [appointment],
+              });
+            }
+          });
+
+          setGroupedBySpecialtyDoctor(grouped);
+        }
       }
 
       // Marcar el tab como cargado
@@ -248,6 +290,7 @@ export const Appointments = () => {
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
         end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
       };
+
       if (selectedStates.length > 0) {
         filterParams.appointment_state_ids = selectedStates.map(
           (state: any) => state.id
@@ -262,7 +305,7 @@ export const Appointments = () => {
         );
       }
 
-      // Cargar datos solo para el tab activo
+      // Cargar datos para el tab activo (incluyendo el nuevo tab 2)
       await loadDataForTab(activeTabIndex, filterParams);
     } catch (error) {
       console.error("Error filtering data:", error);
@@ -286,12 +329,132 @@ export const Appointments = () => {
     });
   };
 
+  // Función para construir la tabla del tab de agendamiento
+  const renderSchedulingTable = () => {
+    if (tableLoading) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <ProgressSpinner />
+        </div>
+      );
+    }
+
+    if (schedulingData.length === 0) {
+      return <p>No hay datos de agendamiento para mostrar</p>;
+    }
+
+    return (
+      <Accordion
+        activeIndex={activeIndex}
+        onTabChange={(e) => setActiveIndex(e.index)}
+      >
+        {schedulingData.map((scheduler: any, index) => {
+          const fullName = `${scheduler.first_name ?? ""} ${
+            scheduler.middle_name ?? ""
+          } ${scheduler.last_name ?? ""} ${scheduler.second_last_name ?? ""}`;
+
+          return (
+            <AccordionTab
+              key={scheduler.id || index}
+              header={headerTemplateRefactor(
+                fullName,
+                scheduler.created_appointments || [],
+                "appointmentsByScheduler"
+              )}
+            >
+              <DataTable
+                value={scheduler.created_appointments}
+                emptyMessage={`No hay citas`}
+                className="p-datatable-sm p-datatable-striped"
+                paginator
+                rows={10}
+                rowsPerPageOptions={[5, 10, 25]}
+                sortMode="multiple"
+              >
+                <Column
+                  field="patient"
+                  header="Paciente"
+                  body={(rowData) => {
+                    const patientFullName = `${
+                      rowData?.patient?.first_name ?? ""
+                    } ${rowData?.patient?.middle_name ?? ""} ${
+                      rowData?.patient?.last_name ?? ""
+                    } ${rowData?.patient?.second_last_name ?? ""}`;
+                    return patientFullName.toLowerCase() || "Sin nombre";
+                  }}
+                />
+                <Column
+                  field="patient.id"
+                  header="N° Documento"
+                  body={(rowData) => {
+                    return rowData.patient.document_number || "Sin documento";
+                  }}
+                />
+                <Column
+                  field="date"
+                  header="Fecha y hora"
+                  body={(rowData) =>
+                    rowData.appointment_date + ", " + rowData.appointment_time
+                  }
+                />
+                <Column
+                  field="doctorName"
+                  header="Médico"
+                  body={(rowData) => {
+                    const doctorFullName = `${
+                      rowData?.user_availability?.user?.first_name ?? ""
+                    } ${rowData?.user_availability?.user?.middle_name ?? ""} ${
+                      rowData?.user_availability?.user?.last_name ?? ""
+                    } ${
+                      rowData?.user_availability?.user?.second_last_name ?? ""
+                    }`;
+                    return doctorFullName;
+                  }}
+                />
+                <Column
+                  field="specialty"
+                  header="Especialidad"
+                  body={(rowData) => (
+                    <span className="font-bold">
+                      {rowData.user_availability?.user?.specialty?.name}
+                    </span>
+                  )}
+                />
+                <Column
+                  field="createdAt"
+                  header="Fecha creación"
+                  body={(rowData) => (
+                    <span className="font-bold">
+                      {formatDateUtils(rowData.created_at, true)}
+                    </span>
+                  )}
+                />
+                <Column
+                  field="status"
+                  header="Estado"
+                  body={(rowData: any) => (
+                    <span className="font-bold">
+                      {appointmentStateFilters[rowData.appointment_state?.name]}
+                    </span>
+                  )}
+                />
+              </DataTable>
+            </AccordionTab>
+          );
+        })}
+      </Accordion>
+    );
+  };
+
   const handleExportExcel = (state: string, data: any[]) => {
     const dataToExport = data.map((item) => ({
       Estado: item.state,
-      Paciente: `${item.patient.first_name} ${item.patient.last_name}`,
-      Documento: item.patient.document_number,
-      Ciudad: item.patient.city_id,
+      Paciente: `${item.patient?.first_name} ${item.patient?.last_name}`,
+      Documento: item.patient?.document_number,
+      Ciudad: item.patient?.city_id,
       Producto: item.product_id,
       Fecha: new Date(item.created_at).toLocaleDateString("es-DO"),
     }));
@@ -304,12 +467,42 @@ export const Appointments = () => {
     });
   };
 
+  const handleExportScheduling = (scheduler: string, data: any[]) => {
+    const dataToExport = data.map((item) => ({
+      Paciente: `${item.patient?.first_name ?? ""} ${
+        item.patient?.middle_name ?? ""
+      } ${item.patient?.last_name ?? ""} ${
+        item.patient?.second_last_name ?? ""
+      }`,
+      Documento: item.patient?.document_number,
+      "Fecha y hora cita":
+        item?.appointment_date + ", " + item?.appointment_time,
+      Médico: `${item.user_availability?.user?.first_name ?? ""} ${
+        item.user_availability?.user?.middle_name ?? ""
+      } ${item.user_availability?.user?.last_name ?? ""} ${
+        item.user_availability?.user?.second_last_name ?? ""
+      }`,
+      Especialidad: item.user_availability?.user?.specialty?.name,
+      "Fecha creación cita": formatDateUtils(item.created_at, true),
+      Estado: appointmentStateFilters[item.appointment_state?.name],
+    }));
+
+    exportToExcel({
+      data: dataToExport,
+      fileName: `Citas_agendamiento_${scheduler.replace(/ /g, "_")}_${new Date()
+        .toISOString()
+        .slice(0, 10)}`,
+    });
+  };
+
   const handleExportPDF = (state: string, data: any[], tab: string) => {
     switch (tab) {
       case "byState":
         return generateFormatByState(data, state, dateRange, "Impresion");
       case "summaryAppointments":
         return generateFormatSummary(data, state, dateRange, "Impresion");
+      case "appointmentsByScheduler":
+        return generateFormatByScheduler(data, state, dateRange, "Impresion");
     }
   };
 
@@ -355,6 +548,44 @@ export const Appointments = () => {
               handleExportPDF(state, data, tab);
             }}
             tooltip={`Exportar ${state} a PDF`}
+            tooltipOptions={{ position: "right" }}
+          >
+            <i className="fa-solid fa-file-pdf"></i>
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const headerTemplateRefactor = (scheduler: string, data: any, tab: any) => {
+    return (
+      <div className="d-flex justify-content-between align-items-center w-full p-4">
+        <div>
+          <span>
+            <strong>{scheduler}</strong> - Total citas: {data.length}
+          </span>
+        </div>
+        <div className="d-flex gap-2">
+          <Button
+            className="p-button-rounded p-button-success p-button-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              handleExportScheduling(scheduler, data);
+            }}
+            tooltip={`Exportar a Excel`}
+            tooltipOptions={{ position: "right" }}
+          >
+            <i className="fa-solid fa-file-excel"></i>
+          </Button>
+          <Button
+            className="p-button-rounded p-button-secondary p-button-sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              handleExportPDF(scheduler, data, tab);
+            }}
+            tooltip={`Exportar a PDF`}
             tooltipOptions={{ position: "right" }}
           >
             <i className="fa-solid fa-file-pdf"></i>
@@ -627,6 +858,11 @@ export const Appointments = () => {
                 ) : (
                   <p>No hay datos para mostrar</p>
                 )}
+              </TabPanel>
+
+              {/* Nuevo Tab 3 - Agendamiento */}
+              <TabPanel header="Agendamiento">
+                {renderSchedulingTable()}
               </TabPanel>
             </TabView>
           </div>

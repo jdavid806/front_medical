@@ -15,7 +15,6 @@ export const CostCenterConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState<CostCenterFormInputs | undefined>(undefined);
 
-  // Hooks para las operaciones CRUD
   const { costCenters, loading, error, refreshCostCenters } = useCostCentersConfigTable();
   const { createCostCenter, loading: createLoading } = useCostCentersCreateTable();
   const { updateCostCenter, loading: updateLoading } = useCostCentersUpdate();
@@ -30,23 +29,20 @@ export const CostCenterConfig = () => {
 
   const handleSubmit = async (data: CostCenterFormInputs) => {
     try {
-      // Validación básica
       if (!data.code || !data.name) {
         throw new Error('Código y nombre son requeridos');
       }
 
       if (costCenter) {
-        // Para actualización
         const updateData = CostCentersMapperUpdate(data);
         await updateCostCenter(costCenter.id, updateData);
         SwalManager.success('Centro de costo actualizado correctamente');
       } else {
-        // Para creación
         const createData = CostCentersMapperCreate(data);
         await createCostCenter(createData);
         SwalManager.success('Centro de costo creado correctamente');
       }
-      
+
       await refreshCostCenters();
       setShowFormModal(false);
     } catch (error) {
@@ -61,17 +57,27 @@ export const CostCenterConfig = () => {
       setShowFormModal(true);
     } catch (error) {
       console.error("Error al cargar centro de costo:", error);
+      SwalManager.error('Error al cargar el centro de costo');
     }
   };
 
+
   const handleDeleteCostCenter = async (id: string) => {
     try {
-      await deleteCostCenter(id);
-      await refreshCostCenters();
+      const success = await deleteCostCenter(id);
+      if (success) {
+        await refreshCostCenters();
+        SwalManager.success('Retention eliminado correctamente');
+      } else {
+        SwalManager.error('No se pudo eliminar Retention');
+      }
     } catch (error) {
-      console.error("Error al eliminar centro de costo:", error);
+      console.error("Error en eliminación:", error);
+      SwalManager.error('Error al eliminar el Retention');
     }
   };
+
+
 
   useEffect(() => {
     if (costCenter) {
@@ -96,7 +102,7 @@ export const CostCenterConfig = () => {
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="mb-1">Configuración de Centros de Costo</h4>
-        <div style={{ margin: "-2px 20px -20px" }} className="text-end">
+        <div className="text-end">
           <button
             className="btn btn-primary d-flex align-items-center"
             onClick={onCreate}
@@ -114,13 +120,19 @@ export const CostCenterConfig = () => {
         </div>
       )}
 
-      <CostCenterConfigTable
-        costCenters={costCenters}
-        onEditItem={handleTableEdit}
-        onDeleteItem={handleDeleteCostCenter}
-        loading={loading}
-      />
-
+      <div
+        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "400px" }}
+      >
+        <div className="card-body h-100 w-100 d-flex flex-column">
+          <CostCenterConfigTable
+            costCenters={costCenters}
+            onEditItem={handleTableEdit}
+            onDeleteItem={handleDeleteCostCenter}
+            loading={loading}
+          />
+        </div>
+      </div>
       <CostCenterModalConfig
         isVisible={showFormModal}
         onSave={handleSubmit}

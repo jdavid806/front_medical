@@ -65,7 +65,7 @@ const PaymentMethodFormConfig = ({
       payment_type: "",
       accounting_account_id: null,
       additionalDetails: "",
-      isCash: false
+      is_cash: false
     }
   });
   const onFormSubmit = data => onSubmit(data);
@@ -81,7 +81,7 @@ const PaymentMethodFormConfig = ({
       payment_type: "",
       accounting_account_id: null,
       additionalDetails: "",
-      isCash: false
+      is_cash: false
     });
   }, [initialData, reset]);
   return /*#__PURE__*/React.createElement("form", {
@@ -121,14 +121,11 @@ const PaymentMethodFormConfig = ({
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "payment_type",
+    htmlFor: "accounting_account_id",
     className: "font-medium block mb-2"
-  }, "Tipo *"), /*#__PURE__*/React.createElement(Controller, {
-    name: "payment_type",
+  }, "Cuenta Contable"), /*#__PURE__*/React.createElement(Controller, {
+    name: "accounting_account_id",
     control: control,
-    rules: {
-      required: "El tipo de método es requerido"
-    },
     render: ({
       field,
       fieldState
@@ -136,16 +133,19 @@ const PaymentMethodFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: TypeMethod,
-      optionLabel: "label",
-      optionValue: "value",
-      placeholder: "Seleccione un tipo",
+      options: accounts,
+      optionValue: "id",
+      optionLabel: "account_label",
+      placeholder: "Seleccione una cuenta",
+      filter: true,
+      filterBy: "account_label,account_name,account_code",
+      showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      showClear: true,
-      filter: true
-    }), getFormErrorMessage("payment_type"))
+      loading: isLoadingAccounts,
+      appendTo: "self"
+    }), getFormErrorMessage("accounting_account_id"))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
@@ -181,11 +181,14 @@ const PaymentMethodFormConfig = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-8"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "accounting_account_id",
+    htmlFor: "payment_type",
     className: "font-medium block mb-2"
-  }, "Cuenta Contable"), /*#__PURE__*/React.createElement(Controller, {
-    name: "accounting_account_id",
+  }, "Tipo *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "payment_type",
     control: control,
+    rules: {
+      required: "El tipo de método es requerido"
+    },
     render: ({
       field,
       fieldState
@@ -193,23 +196,20 @@ const PaymentMethodFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts,
-      optionValue: "id",
-      optionLabel: "account_label",
-      placeholder: "Seleccione una cuenta",
-      filter: true,
-      filterBy: "account_label,account_name,account_code",
-      showClear: true,
+      options: TypeMethod,
+      optionLabel: "label",
+      optionValue: "value",
+      placeholder: "Seleccione un tipo",
       className: classNames("w-full", {
         "p-invalid": fieldState.error
       }),
-      loading: isLoadingAccounts,
-      appendTo: "self"
-    }), getFormErrorMessage("accounting_account_id"))
+      showClear: true,
+      filter: true
+    }), getFormErrorMessage("payment_type"))
   })), /*#__PURE__*/React.createElement("div", {
     className: "col-4 d-flex align-items-center gap-2 mt-4"
   }, /*#__PURE__*/React.createElement(Controller, {
-    name: "isCash",
+    name: "is_cash",
     control: control,
     render: ({
       field,
@@ -220,7 +220,7 @@ const PaymentMethodFormConfig = ({
       onChange: e => field.onChange(e.checked),
       className: classNames("w-full", {}),
       inputId: field.name
-    }), getFormErrorMessage("isCash"))
+    }), getFormErrorMessage("is_cash"))
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "isCash",
     className: "font-medium block mb-0"

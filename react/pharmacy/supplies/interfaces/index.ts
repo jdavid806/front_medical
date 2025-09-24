@@ -29,6 +29,7 @@ export interface SuppliesDeliveryFormData {
         product_id: number;
         quantity: number;
     }[];
+    requested_by: string;
 }
 
 export interface SuppliesDeliveriesTableRef {
@@ -51,12 +52,7 @@ export interface SuppliesDeliveriesTableItem {
     original: MedicalSupply;
 }
 
-interface Product {
-    id: number;
-    name: string;
-}
-
-interface RequestedProduct {
+export interface RequestedProduct {
     id: number;
     medical_supply_id: number;
     product_id: number;
@@ -74,6 +70,7 @@ export interface MedicalSupply {
     created_at: string;
     updated_at: string;
     products: RequestedProduct[];
+    requested_by: string;
 }
 
 export interface MedicalSupplyResponse {

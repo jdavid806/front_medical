@@ -12,8 +12,6 @@ import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTab
 export const CostCenterConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
-
-  // Hooks para las operaciones CRUD
   const {
     costCenters,
     loading,
@@ -44,17 +42,14 @@ export const CostCenterConfig = () => {
   };
   const handleSubmit = async data => {
     try {
-      // Validación básica
       if (!data.code || !data.name) {
         throw new Error('Código y nombre son requeridos');
       }
       if (costCenter) {
-        // Para actualización
         const updateData = CostCentersMapperUpdate(data);
         await updateCostCenter(costCenter.id, updateData);
         SwalManager.success('Centro de costo actualizado correctamente');
       } else {
-        // Para creación
         const createData = CostCentersMapperCreate(data);
         await createCostCenter(createData);
         SwalManager.success('Centro de costo creado correctamente');
@@ -72,14 +67,21 @@ export const CostCenterConfig = () => {
       setShowFormModal(true);
     } catch (error) {
       console.error("Error al cargar centro de costo:", error);
+      SwalManager.error('Error al cargar el centro de costo');
     }
   };
   const handleDeleteCostCenter = async id => {
     try {
-      await deleteCostCenter(id);
-      await refreshCostCenters();
+      const success = await deleteCostCenter(id);
+      if (success) {
+        await refreshCostCenters();
+        SwalManager.success('Retention eliminado correctamente');
+      } else {
+        SwalManager.error('No se pudo eliminar Retention');
+      }
     } catch (error) {
-      console.error("Error al eliminar centro de costo:", error);
+      console.error("Error en eliminación:", error);
+      SwalManager.error('Error al eliminar el Retention');
     }
   };
   useEffect(() => {
@@ -105,9 +107,6 @@ export const CostCenterConfig = () => {
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Configuraci\xF3n de Centros de Costo"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      margin: "-2px 20px -20px"
-    },
     className: "text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary d-flex align-items-center",
@@ -118,12 +117,19 @@ export const CostCenterConfig = () => {
   }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo'))), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement(CostCenterConfigTable, {
+  }, error), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(CostCenterConfigTable, {
     costCenters: costCenters,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteCostCenter,
     loading: loading
-  }), /*#__PURE__*/React.createElement(CostCenterModalConfig, {
+  }))), /*#__PURE__*/React.createElement(CostCenterModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {

@@ -40,6 +40,8 @@ export type ProductFormInputs = {
   toggleEntities?: boolean;
   toggleImpuesto?: boolean;
   entities?: EntityRow[];
+  toggleIA?: boolean;
+  toggleInsumos?: boolean;
 };
 
 interface ProductFormProps {
@@ -97,12 +99,16 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       taxProduct_type: "",
       toggleEntities: false,
       toggleImpuesto: false,
+      toggleIA: false,
+      toggleInsumos: false,
     },
   });
 
   const attentionType = watch("attention_type");
   const toggleEntities = watch("toggleEntities");
   const toggleImpuesto = watch("toggleImpuesto");
+  const toggleIA = watch("toggleIA");
+  const toggleInsumos = watch("toggleInsumos");
 
   useEffect(() => {
     if (attentionType === "PROCEDURE") {
@@ -499,7 +505,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
             />
           </div>
 
-          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+          <div className="col-md-3" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="toggleEntities"
               control={control}
@@ -518,7 +524,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
             />
           </div>
 
-          <div className="col-md-6" style={{ display: showLabFields ? 'block' : 'none' }}>
+          <div className="col-md-3" style={{ display: showLabFields ? 'block' : 'none' }}>
             <Controller
               name="toggleImpuesto"
               control={control}
@@ -529,6 +535,54 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                   </label>
                   <InputSwitch
                     inputId="toggleImpuesto"
+                    checked={field.value || false}
+                    onChange={(e) => {
+                      field.onChange(e.value)
+                      if (!e.value) {
+                        setValue('taxProduct_type', '0');
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="col-md-3" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="toggleInsumos"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label d-block" htmlFor="toggleInsumos">
+                    Agregar Insumos
+                  </label>
+                  <InputSwitch
+                    inputId="toggleInsumos"
+                    checked={field.value || false}
+                    onChange={(e) => {
+                      field.onChange(e.value)
+                      if (!e.value) {
+                        setValue('taxProduct_type', '0');
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="col-md-3" style={{ display: showLabFields ? 'block' : 'none' }}>
+            <Controller
+              name="toggleIA"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-3">
+                  <label className="form-label d-block" htmlFor="toggleIA">
+                    Puede agendar con IA
+                  </label>
+                  <InputSwitch
+                    inputId="toggleIA"
                     checked={field.value || false}
                     onChange={(e) => {
                       field.onChange(e.value)

@@ -10,9 +10,13 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { useCompany } from "../hooks/useCompany.js";
 import { useByStateFormat } from "../documents-generation/hooks/reports-medical/appointments/useByStateFormat.js";
-import { useSummaryFormat } from "../documents-generation/hooks/reports-medical/appointments/useSummaryFormat.js"; // Import your services
+import { useSummaryFormat } from "../documents-generation/hooks/reports-medical/appointments/useSummaryFormat.js";
+import { useBySchedulerFormat } from "../documents-generation/hooks/reports-medical/appointments/useBySchedulerFormat.js";
+import { formatDate as formatDateUtils } from "../../services/utilidades.js";
+
+// Import your services
 import { appointmentService, userSpecialtyService, userService, appointmentStateService } from "../../services/api/index.js";
-import { appointmentStatesByKeyTwo, appointmentStateFilters } from "../../services/commons.js";
+import { appointmentStatesByKeyTwo, appointmentStateFilters } from "../../services/commons.js"; // Nueva interfaz para los datos del tab de agendamiento
 export const Appointments = () => {
   const today = new Date();
   const fiveDaysAgo = new Date();
@@ -23,6 +27,9 @@ export const Appointments = () => {
   const [reportData, setReportData] = useState([]);
   const [groupedByState, setGroupedByState] = useState({});
   const [groupedBySpecialtyDoctor, setGroupedBySpecialtyDoctor] = useState({});
+
+  // Nuevo estado para los datos del tab de agendamiento
+  const [schedulingData, setSchedulingData] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
@@ -46,11 +53,16 @@ export const Appointments = () => {
   const {
     generateFormatSummary
   } = useSummaryFormat();
+  const {
+    generateFormatByScheduler
+  } = useBySchedulerFormat();
   useEffect(() => {
     if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
       loadDataForTab(0);
     } else if (activeTabIndex === 1 && !loadedTabs.includes(1)) {
       loadDataForTab(1);
+    } else if (activeTabIndex === 2 && !loadedTabs.includes(2)) {
+      loadDataForTab(2);
     }
   }, [activeTabIndex]);
   useEffect(() => {
@@ -92,56 +104,75 @@ export const Appointments = () => {
       console.error("Error fetching appointment states:", error);
     }
   }
+
+  // Función para ejecutar el endpoint específico del tab de agendamiento
+  async function fetchSchedulingData(filterParams = {}) {
+    try {
+      const response = await appointmentService.reportByScheduler(filterParams);
+      return response.data || response;
+    } catch (error) {
+      console.error("Error fetching scheduling data:", error);
+      throw error;
+    }
+  }
   const loadDataForTab = async (tabIndex, filterParams = {
     start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
     end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
   }) => {
     setTableLoading(true);
     try {
-      const response = await appointmentService.appointmentsWithFilters(filterParams);
-      const data = response.data || response;
-      if (!Array.isArray(data)) {
-        throw new Error("La respuesta no es un array de citas");
-      }
-      const processedData = handlerDataAppointments(data);
-      setReportData(processedData);
-      if (tabIndex === 0) {
-        // Agrupamiento original (solo por estado)
-        const grouped = {};
-        processedData.forEach(appointment => {
-          if (!grouped[appointment.state]) {
-            grouped[appointment.state] = [];
-          }
-          grouped[appointment.state].push(appointment);
-        });
-        setGroupedByState(grouped);
-      } else {
-        // Nuevo agrupamiento (estado -> array de {especialidad, médico, count})
-        const grouped = {};
-        processedData.forEach(appointment => {
-          const state = appointment.state;
-          const specialty = appointment.assigned_user_availability?.user?.specialty?.name || "Sin especialidad";
-          const doctorId = appointment.assigned_user_availability?.user?.id || "unknown";
-          const doctorName = [appointment.assigned_user_availability?.user?.first_name, appointment.assigned_user_availability?.user?.middle_name, appointment.assigned_user_availability?.user?.last_name, appointment.assigned_user_availability?.user?.second_last_name].filter(Boolean).join(" ") || "Sin nombre";
-          if (!grouped[state]) {
-            grouped[state] = [];
-          }
+      if (tabIndex === 2) {
+        // Tab de agendamiento - endpoint específico
+        const data = await fetchSchedulingData(filterParams);
+        if (!Array.isArray(data)) {
+          throw new Error("La respuesta no es un array de datos de agendamiento");
+        }
 
-          // Buscar si ya existe esta combinación especialidad-médico
-          const existingEntry = grouped[state].find(entry => entry.specialty === specialty && entry.doctorName === doctorName);
-          if (existingEntry) {
-            existingEntry.count++;
-            existingEntry.appointments.push(appointment);
-          } else {
-            grouped[state].push({
-              specialty,
-              doctorName,
-              count: 1,
-              appointments: [appointment]
-            });
-          }
-        });
-        setGroupedBySpecialtyDoctor(grouped);
+        // Solo guardamos la data sin agrupar nada
+        setSchedulingData(data);
+      } else {
+        // Tabs existentes (0 y 1)
+        const response = await appointmentService.appointmentsWithFilters(filterParams);
+        const data = response.data || response;
+        if (!Array.isArray(data)) {
+          throw new Error("La respuesta no es un array de citas");
+        }
+        const processedData = handlerDataAppointments(data);
+        setReportData(processedData);
+        if (tabIndex === 0) {
+          const grouped = {};
+          processedData.forEach(appointment => {
+            if (!grouped[appointment.state]) {
+              grouped[appointment.state] = [];
+            }
+            grouped[appointment.state].push(appointment);
+          });
+          setGroupedByState(grouped);
+        } else {
+          const grouped = {};
+          processedData.forEach(appointment => {
+            const state = appointment.state;
+            const specialty = appointment.assigned_user_availability?.user?.specialty?.name || "Sin especialidad";
+            const doctorId = appointment.assigned_user_availability?.user?.id || "unknown";
+            const doctorName = [appointment.assigned_user_availability?.user?.first_name, appointment.assigned_user_availability?.user?.middle_name, appointment.assigned_user_availability?.user?.last_name, appointment.assigned_user_availability?.user?.second_last_name].filter(Boolean).join(" ") || "Sin nombre";
+            if (!grouped[state]) {
+              grouped[state] = [];
+            }
+            const existingEntry = grouped[state].find(entry => entry.specialty === specialty && entry.doctorName === doctorName);
+            if (existingEntry) {
+              existingEntry.count++;
+              existingEntry.appointments.push(appointment);
+            } else {
+              grouped[state].push({
+                specialty,
+                doctorName,
+                count: 1,
+                appointments: [appointment]
+              });
+            }
+          });
+          setGroupedBySpecialtyDoctor(grouped);
+        }
       }
 
       // Marcar el tab como cargado
@@ -170,7 +201,7 @@ export const Appointments = () => {
         filterParams.specialty_ids = selectedSpecialties.map(specialty => specialty.id);
       }
 
-      // Cargar datos solo para el tab activo
+      // Cargar datos para el tab activo (incluyendo el nuevo tab 2)
       await loadDataForTab(activeTabIndex, filterParams);
     } catch (error) {
       console.error("Error filtering data:", error);
@@ -189,12 +220,87 @@ export const Appointments = () => {
       };
     });
   };
+
+  // Función para construir la tabla del tab de agendamiento
+  const renderSchedulingTable = () => {
+    if (tableLoading) {
+      return /*#__PURE__*/React.createElement("div", {
+        className: "flex justify-content-center align-items-center",
+        style: {
+          height: "200px"
+        }
+      }, /*#__PURE__*/React.createElement(ProgressSpinner, null));
+    }
+    if (schedulingData.length === 0) {
+      return /*#__PURE__*/React.createElement("p", null, "No hay datos de agendamiento para mostrar");
+    }
+    return /*#__PURE__*/React.createElement(Accordion, {
+      activeIndex: activeIndex,
+      onTabChange: e => setActiveIndex(e.index)
+    }, schedulingData.map((scheduler, index) => {
+      const fullName = `${scheduler.first_name ?? ""} ${scheduler.middle_name ?? ""} ${scheduler.last_name ?? ""} ${scheduler.second_last_name ?? ""}`;
+      return /*#__PURE__*/React.createElement(AccordionTab, {
+        key: scheduler.id || index,
+        header: headerTemplateRefactor(fullName, scheduler.created_appointments || [], "appointmentsByScheduler")
+      }, /*#__PURE__*/React.createElement(DataTable, {
+        value: scheduler.created_appointments,
+        emptyMessage: `No hay citas`,
+        className: "p-datatable-sm p-datatable-striped",
+        paginator: true,
+        rows: 10,
+        rowsPerPageOptions: [5, 10, 25],
+        sortMode: "multiple"
+      }, /*#__PURE__*/React.createElement(Column, {
+        field: "patient",
+        header: "Paciente",
+        body: rowData => {
+          const patientFullName = `${rowData?.patient?.first_name ?? ""} ${rowData?.patient?.middle_name ?? ""} ${rowData?.patient?.last_name ?? ""} ${rowData?.patient?.second_last_name ?? ""}`;
+          return patientFullName.toLowerCase() || "Sin nombre";
+        }
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "patient.id",
+        header: "N\xB0 Documento",
+        body: rowData => {
+          return rowData.patient.document_number || "Sin documento";
+        }
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "date",
+        header: "Fecha y hora",
+        body: rowData => rowData.appointment_date + ", " + rowData.appointment_time
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "doctorName",
+        header: "M\xE9dico",
+        body: rowData => {
+          const doctorFullName = `${rowData?.user_availability?.user?.first_name ?? ""} ${rowData?.user_availability?.user?.middle_name ?? ""} ${rowData?.user_availability?.user?.last_name ?? ""} ${rowData?.user_availability?.user?.second_last_name ?? ""}`;
+          return doctorFullName;
+        }
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "specialty",
+        header: "Especialidad",
+        body: rowData => /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, rowData.user_availability?.user?.specialty?.name)
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "createdAt",
+        header: "Fecha creaci\xF3n",
+        body: rowData => /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, formatDateUtils(rowData.created_at, true))
+      }), /*#__PURE__*/React.createElement(Column, {
+        field: "status",
+        header: "Estado",
+        body: rowData => /*#__PURE__*/React.createElement("span", {
+          className: "font-bold"
+        }, appointmentStateFilters[rowData.appointment_state?.name])
+      })));
+    }));
+  };
   const handleExportExcel = (state, data) => {
     const dataToExport = data.map(item => ({
       Estado: item.state,
-      Paciente: `${item.patient.first_name} ${item.patient.last_name}`,
-      Documento: item.patient.document_number,
-      Ciudad: item.patient.city_id,
+      Paciente: `${item.patient?.first_name} ${item.patient?.last_name}`,
+      Documento: item.patient?.document_number,
+      Ciudad: item.patient?.city_id,
       Producto: item.product_id,
       Fecha: new Date(item.created_at).toLocaleDateString("es-DO")
     }));
@@ -203,12 +309,29 @@ export const Appointments = () => {
       fileName: `Citas_${state.replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
     });
   };
+  const handleExportScheduling = (scheduler, data) => {
+    const dataToExport = data.map(item => ({
+      Paciente: `${item.patient?.first_name ?? ""} ${item.patient?.middle_name ?? ""} ${item.patient?.last_name ?? ""} ${item.patient?.second_last_name ?? ""}`,
+      Documento: item.patient?.document_number,
+      "Fecha y hora cita": item?.appointment_date + ", " + item?.appointment_time,
+      Médico: `${item.user_availability?.user?.first_name ?? ""} ${item.user_availability?.user?.middle_name ?? ""} ${item.user_availability?.user?.last_name ?? ""} ${item.user_availability?.user?.second_last_name ?? ""}`,
+      Especialidad: item.user_availability?.user?.specialty?.name,
+      "Fecha creación cita": formatDateUtils(item.created_at, true),
+      Estado: appointmentStateFilters[item.appointment_state?.name]
+    }));
+    exportToExcel({
+      data: dataToExport,
+      fileName: `Citas_agendamiento_${scheduler.replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
+    });
+  };
   const handleExportPDF = (state, data, tab) => {
     switch (tab) {
       case "byState":
         return generateFormatByState(data, state, dateRange, "Impresion");
       case "summaryAppointments":
         return generateFormatSummary(data, state, dateRange, "Impresion");
+      case "appointmentsByScheduler":
+        return generateFormatByScheduler(data, state, dateRange, "Impresion");
     }
   };
   const dateTemplate = rowData => {
@@ -240,6 +363,39 @@ export const Appointments = () => {
         handleExportPDF(state, data, tab);
       },
       tooltip: `Exportar ${state} a PDF`,
+      tooltipOptions: {
+        position: "right"
+      }
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-pdf"
+    }))));
+  };
+  const headerTemplateRefactor = (scheduler, data, tab) => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-between align-items-center w-full p-4"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, scheduler), " - Total citas: ", data.length)), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2"
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-rounded p-button-success p-button-sm",
+      onClick: e => {
+        e.stopPropagation();
+        e.preventDefault();
+        handleExportScheduling(scheduler, data);
+      },
+      tooltip: `Exportar a Excel`,
+      tooltipOptions: {
+        position: "right"
+      }
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-excel"
+    })), /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-rounded p-button-secondary p-button-sm",
+      onClick: e => {
+        e.stopPropagation();
+        e.preventDefault();
+        handleExportPDF(scheduler, data, tab);
+      },
+      tooltip: `Exportar a PDF`,
       tooltipOptions: {
         position: "right"
       }
@@ -432,5 +588,7 @@ export const Appointments = () => {
         className: "font-bold"
       }, rowData.count)
     })));
-  })) : /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar")))))));
+  })) : /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar")), /*#__PURE__*/React.createElement(TabPanel, {
+    header: "Agendamiento"
+  }, renderSchedulingTable()))))));
 };

@@ -5,7 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
-import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import {
   CostCenter,
@@ -20,8 +20,6 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
   loading = false,
 }) => {
   const toast = useRef<Toast>(null);
-  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [costCenterToDelete, setCostCenterToDelete] = useState<CostCenter | null>(null);
   const [filteredCostCenters, setFilteredCostCenters] = useState<CostCenter[]>([]);
   const [filtros, setFiltros] = useState({
     code: "",
@@ -73,66 +71,76 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  const TableMenu: React.FC<{
+    rowData: CostCenter,
+    onEdit: (id: string) => void,
+    onDelete: (costCenter: CostCenter) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
+
+    const menu = useRef<Menu>(null);
+
+    const handleEdit = () => {
+      console.log("Editando centro de costo con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar centro de costo con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={[
+            {
+              label: "Editar",
+              icon: <i className="fa-solid fa-pen me-2"></i>,
+              command: handleEdit,
+            },
+            {
+              label: "Eliminar",
+              icon: <i className="fa fa-trash me-2"></i>,
+              command: handleDelete,
+            }
+          ]}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
+    );
+  };
+
   const actionBodyTemplate = (rowData: CostCenter) => {
     return (
       <div
         className="flex align-items-center justify-content-center"
         style={{ gap: "0.5rem", minWidth: "120px" }}
       >
-        <Button
-          className="p-button-rounded p-button-text p-button-sm"
-          onClick={() => editCostCenter(rowData)}
-        >
-          <i className="fas fa-pencil-alt"></i>
-        </Button>
-        <Button
-          className="p-button-rounded p-button-text p-button-sm p-button-danger"
-          onClick={() => confirmDelete(rowData)}
-       
-        >
-          <i className="fa-solid fa-trash"></i>
-        </Button>
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={(costCenter) => {
+            if (onDeleteItem) {
+              onDeleteItem(costCenter.id.toString());
+            }
+          }}
+        />
       </div>
     );
   };
-
-  const editCostCenter = (costCenter: CostCenter) => {
-    if (onEditItem) {
-      onEditItem(costCenter.id.toString());
-    }
-    showToast("info", "Editar", `Editando centro de costo: ${costCenter.name}`);
-  };
-
-  const confirmDelete = (costCenter: CostCenter) => {
-    setCostCenterToDelete(costCenter);
-    setDeleteDialogVisible(true);
-  };
-
-  const deleteCostCenter = () => {
-    if (costCenterToDelete && onDeleteItem) {
-      onDeleteItem(costCenterToDelete.id.toString());
-      showToast("success", "Éxito", `Centro de costo ${costCenterToDelete.name} eliminado`);
-    }
-    setDeleteDialogVisible(false);
-    setCostCenterToDelete(null);
-  };
-
-  const deleteDialogFooter = (
-    <div className="flex justify-content-end gap-2">
-      <Button
-        label="Cancelar"
-        icon="pi pi-times"
-        className="p-button-text"
-        onClick={() => setDeleteDialogVisible(false)}
-      />
-      <Button
-        label="Eliminar"
-        icon="pi pi-check"
-        className="p-button-danger"
-        onClick={deleteCostCenter}
-      />
-    </div>
-  );
 
   const styles = {
     card: {
@@ -166,28 +174,6 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
       style={{ width: "100%", padding: "0 15px" }}
     >
       <Toast ref={toast} />
-
-      <Dialog
-        visible={deleteDialogVisible}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={deleteDialogFooter}
-        onHide={() => setDeleteDialogVisible(false)}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem", color: "#f8bb86" }}
-          />
-          {costCenterToDelete && (
-            <span>
-              ¿Estás seguro que deseas eliminar el centro de costo{" "}
-              <b>{costCenterToDelete.name}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
 
       <Card title="Filtros de Búsqueda" style={styles.card}>
         <div className="row g-3">

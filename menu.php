@@ -179,11 +179,7 @@ $_SESSION["ID"] = 1;
     <style>
         /*ALUSIVOS A LOS COLORES DE MONAROS*/
         .text-primary {
-            color: #132030 !important;
-        }
-
-        .text-primary {
-            color: #132030 !important;
+            color: #1A99FB !important;
         }
 
         .active {

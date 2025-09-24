@@ -13,7 +13,7 @@ const TaxFormConfig = ({
   initialData,
   onCancel,
   loading = false,
-  accounts
+  accounts = []
 }) => {
   const {
     control,
@@ -134,8 +134,8 @@ const TaxFormConfig = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "font-medium block mb-2"
-  }, "Configuraci\xF3n Compras *")), /*#__PURE__*/React.createElement("div", {
+    className: "fw-bold block mb-2"
+  }, "Configuraci\xF3n Compras")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "accounting_account_id",
@@ -200,8 +200,8 @@ const TaxFormConfig = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "field mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "font-medium block mb-2"
-  }, "Configuraci\xF3n Ventas *")), /*#__PURE__*/React.createElement("div", {
+    className: "fw-bold block mb-2"
+  }, "Configuraci\xF3n Ventas")), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "sell_accounting_account_id",
@@ -293,14 +293,15 @@ const TaxFormConfig = ({
     className: "btn btn-phoenix-secondary",
     onClick: onCancel,
     disabled: loading,
-    type: "button",
     style: {
-      padding: "0 20px",
+      padding: "0 40px",
       width: "200px",
       height: "50px",
       borderRadius: "0px"
     }
-  }), /*#__PURE__*/React.createElement(Button, {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-times mr-2"
+  })), /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",
     className: "p-button-sm",
     loading: loading,
@@ -311,6 +312,8 @@ const TaxFormConfig = ({
     },
     disabled: loading || !isDirty,
     type: "submit"
-  })))));
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-save"
+  }))))));
 };
 export default TaxFormConfig;

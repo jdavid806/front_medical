@@ -190,7 +190,7 @@ export const PaymentMethodsConfig = () => {
 
   const addNewMethod = () => {
     showToast("info", "Nuevo", "Agregando nuevo método de pago");
-    // Aquí iría la lógica para abrir el modal de creación
+    z
   };
 
   // Estilos
@@ -310,7 +310,7 @@ export const PaymentMethodsConfig = () => {
             body={(rowData) => getCategoryLabel(rowData.category)}
             style={styles.tableCell}
           />
-     
+
           <Column
             field="additionalDetails"
             header="Detalles Adicionales"

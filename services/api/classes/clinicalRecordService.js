@@ -30,6 +30,18 @@ export class ClinicalRecordService extends OneToManyService {
       forCurrentUserRole
     });
   }
+
+  async reportToAverage(filters) {
+    return await this.httpClient.post(`medical/clinical-records/report-to-average`, filters);
+  }
+
+  async reportOfDiagnosis(filters) {
+    return await this.httpClient.post(`medical/clinical-records/report-of-diagnosis`, filters);
+  }
+
+  async reportOfDiagnosisPatientsGrouped(filters) {
+    return await this.httpClient.post(`medical/clinical-records/report-of-diagnosis-patients-grouped`, filters);
+  }
 }
 
 export default ClinicalRecordService;

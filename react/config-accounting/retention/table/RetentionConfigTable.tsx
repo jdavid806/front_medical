@@ -6,6 +6,8 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
 import { Account, Filtros, RetentionConfigTableProps, ToastSeverity } from "../interfaces/RetentionConfigTableType";
@@ -18,6 +20,8 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
   loading = false
 }) => {
   const toast = useRef<Toast>(null);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [retentionToDelete, setRetentionToDelete] = useState<Retention | null>(null);
   const [filteredRetentions, setFilteredRetentions] = useState<Retention[]>([]);
   const [filtros, setFiltros] = useState<Filtros>({
     name: "",
@@ -86,38 +90,102 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  const confirmDelete = (retention: Retention) => {
+    setRetentionToDelete(retention);
+    setDeleteDialogVisible(true);
+  };
+
+  const deleteRetention = () => {
+    if (retentionToDelete && onDeleteItem) {
+      onDeleteItem(retentionToDelete.id.toString());
+      showToast("success", "Éxito", `Retención ${retentionToDelete.name} eliminada`);
+    }
+    setDeleteDialogVisible(false);
+    setRetentionToDelete(null);
+  };
+
+  const deleteDialogFooter = (
+    <div className="flex justify-content-end gap-2">
+      <Button
+        label="Cancelar"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={() => setDeleteDialogVisible(false)}
+      />
+      <Button
+        label="Eliminar"
+        icon="pi pi-check"
+        className="p-button-danger"
+        onClick={deleteRetention}
+      />
+    </div>
+  );
+
+  const TableMenu: React.FC<{
+    rowData: Retention,
+    onEdit: (id: string) => void,
+    onDelete: (retention: Retention) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
+
+    const menu = useRef<Menu>(null);
+
+    const handleEdit = () => {
+      console.log("Editando retención con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar retención con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={[
+            {
+              label: "Editar",
+              icon: <i className="fa-solid fa-pen me-2"></i>,
+              command: handleEdit,
+            },
+            {
+              label: "Eliminar",
+              icon: <i className="fa fa-trash me-2"></i>,
+              command: handleDelete,
+            }
+          ]}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
+    );
+  };
+
   const actionBodyTemplate = (rowData: Retention) => {
     return (
       <div
         className="flex align-items-center justify-content-center"
         style={{ gap: "0.5rem", minWidth: "120px" }}
       >
-        <Button
-          className="p-button-rounded p-button-text p-button-sm"
-          onClick={() => editRetention(rowData)}
-        >
-          <i className="fas fa-pencil-alt"></i>
-        </Button>
-        <Button
-          className="p-button-rounded p-button-text p-button-sm p-button-danger"
-          onClick={() => confirmDelete(rowData)}
-        >
-          <i className="fa-solid fa-trash"></i>
-        </Button>
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={confirmDelete}
+        />
       </div>
     );
-  };
-
-  const editRetention = (retention: Retention) => {
-    showToast("info", "Editar", `Editando retención: ${retention.name}`);
-    onEditItem(retention.id.toString());
-  };
-
-  const confirmDelete = (retention: Retention) => {
-    showToast("warn", "Eliminar", `¿Seguro que desea eliminar ${retention.name}?`);
-    if (onDeleteItem) {
-      onDeleteItem(retention.id.toString());
-    }
   };
 
   const getAccountOptions = () => {
@@ -157,6 +225,28 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
   return (
     <div className="container-fluid mt-4" style={{ width: "100%", padding: "0 15px" }}>
       <Toast ref={toast} />
+
+      <Dialog
+        visible={deleteDialogVisible}
+        style={{ width: "450px" }}
+        header="Confirmar"
+        modal
+        footer={deleteDialogFooter}
+        onHide={() => setDeleteDialogVisible(false)}
+      >
+        <div className="flex align-items-center justify-content-center">
+          <i
+            className="pi pi-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem", color: "#f8bb86" }}
+          />
+          {retentionToDelete && (
+            <span>
+              ¿Estás seguro que deseas eliminar la retención{" "}
+              <b>{retentionToDelete.name}</b>? Esta acción no se puede deshacer.
+            </span>
+          )}
+        </div>
+      </Dialog>
 
       <Card title="Filtros de Búsqueda" style={styles.card}>
         <div className="row g-3">

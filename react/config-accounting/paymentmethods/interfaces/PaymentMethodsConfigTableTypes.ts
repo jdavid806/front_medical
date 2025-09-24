@@ -22,12 +22,12 @@ export type ToastSeverity =
   | "secondary"
   | "contrast";
 
-  export interface PaymentMethodsConfigTableProps {
- paymentMethods?: PaymentMethod[];
+export interface PaymentMethodsConfigTableProps {
+  paymentMethods?: PaymentMethod[];
   loading?: boolean;
   onEditItem: (id: string) => void;
   onDeleteItem: (id: string) => void;
-  
+
 }
 
 

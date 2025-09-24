@@ -101,6 +101,10 @@ const NavbarHeader = () => {
       label: 'Citas',
       icon: 'fa-solid fa-calendar-week',
       url: 'AppointmentsReport'
+    }, {
+      label: 'Consultas',
+      icon: 'fas fa-hospital',
+      url: 'ClinicalRecordReports'
     }]
   }, {
     label: 'Administración',

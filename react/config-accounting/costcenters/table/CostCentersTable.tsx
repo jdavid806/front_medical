@@ -5,86 +5,36 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
-
-interface CostCenter {
-  id: number;
-  code: string;
-  name: string;
-  description: string;
-}
-
-interface Filtros {
-  code: string;
-  name: string;
-}
-
-type ToastSeverity = "success" | "info" | "warn" | "error";
-
-interface CostCenterConfigTableProps {
-  costCenters: CostCenter[];
-  onEditItem: (id: string) => void;
-  onDeleteItem?: (id: string) => void;
-}
+import {
+  CostCenter,
+  CostCenterConfigTableProps,
+  ToastSeverity,
+} from "../interfaces/CostCenterConfigTableType";
 
 export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
-  costCenters,
+  costCenters = [],
   onEditItem,
   onDeleteItem,
+  loading = false,
 }) => {
   const toast = useRef<Toast>(null);
-  const [filteredCostCenters, setFilteredCostCenters] = useState<CostCenter[]>(
-    []
-  );
-  const [loading, setLoading] = useState<boolean>(true);
-  const [filtros, setFiltros] = useState<Filtros>({
+  const [filteredCostCenters, setFilteredCostCenters] = useState<CostCenter[]>([]);
+  const [filtros, setFiltros] = useState({
     code: "",
     name: "",
   });
 
   useEffect(() => {
-    const loadCostCenters = async () => {
-      try {
-        setLoading(true);
-        // Mock data - replace with API call
-        const mockData: CostCenter[] = [
-          {
-            id: 1,
-            code: "CC-001",
-            name: "Administración",
-            description: "Centro de costo para el departamento administrativo",
-          },
-          {
-            id: 2,
-            code: "CC-002",
-            name: "Ventas",
-            description: "Centro de costo para el departamento de ventas",
-          },
-          {
-            id: 3,
-            code: "CC-003",
-            name: "Producción",
-            description: "Centro de costo para el área de producción",
-          },
-        ];
-
-        setFilteredCostCenters(mockData);
-      } catch (error) {
-        showToast(
-          "error",
-          "Error",
-          "No se pudieron cargar los centros de costo"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCostCenters();
-  }, []);
+    setFilteredCostCenters(costCenters);
+  }, [costCenters]);
 
   const handleFilterChange = (field: string, value: any) => {
-    setFiltros((prev) => ({ ...prev, [field]: value }));
+    setFiltros((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const aplicarFiltros = () => {
@@ -106,7 +56,10 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
   };
 
   const limpiarFiltros = () => {
-    setFiltros({ code: "", name: "" });
+    setFiltros({
+      code: "",
+      name: "",
+    });
     setFilteredCostCenters(costCenters);
   };
 
@@ -118,44 +71,75 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
-  const actionBodyTemplate = (rowData: CostCenter) => (
-    <div className="flex gap-2">
-      <Button
-        icon="pi pi-pencil"
-        className="p-button-rounded p-button-sm p-button-text"
-        tooltip="Editar"
-        tooltipOptions={{ position: "top" }}
-        onClick={() => editCostCenter(rowData)}
-      />
-      <Button
-        icon="pi pi-trash"
-        className="p-button-rounded p-button-sm p-button-text p-button-danger"
-        tooltip="Eliminar"
-        tooltipOptions={{ position: "top" }}
-        onClick={() => confirmDelete(rowData)}
-      />
-    </div>
-  );
+  const TableMenu: React.FC<{
+    rowData: CostCenter,
+    onEdit: (id: string) => void,
+    onDelete: (costCenter: CostCenter) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
 
-  const editCostCenter = (costCenter: CostCenter) => {
-    showToast("info", "Editar", `Editando centro de costo: ${costCenter.name}`);
-    onEditItem(costCenter.id.toString());
-  };
+    const menu = useRef<Menu>(null);
 
-  const confirmDelete = (costCenter: CostCenter) => {
-    showToast(
-      "warn",
-      "Eliminar",
-      `¿Seguro que desea eliminar ${costCenter.name}?`
+    const handleEdit = () => {
+      console.log("Editando centro de costo con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar centro de costo con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={[
+            {
+              label: "Editar",
+              icon: <i className="fa-solid fa-pen me-2"></i>,
+              command: handleEdit,
+            },
+            {
+              label: "Eliminar",
+              icon: <i className="fa fa-trash me-2"></i>,
+              command: handleDelete,
+            }
+          ]}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
     );
-    if (onDeleteItem) {
-      onDeleteItem(costCenter.id.toString());
-    }
   };
 
-  const addNewCostCenter = () => {
-    showToast("info", "Nuevo", "Agregando nuevo centro de costo");
-    // Implementar lógica para abrir modal de creación
+  const actionBodyTemplate = (rowData: CostCenter) => {
+    return (
+      <div
+        className="flex align-items-center justify-content-center"
+        style={{ gap: "0.5rem", minWidth: "120px" }}
+      >
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={(costCenter) => {
+            if (onDeleteItem) {
+              onDeleteItem(costCenter.id.toString());
+            }
+          }}
+        />
+      </div>
+    );
   };
 
   const styles = {
@@ -190,17 +174,6 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
       style={{ width: "100%", padding: "0 15px" }}
     >
       <Toast ref={toast} />
-
-      <div
-        style={{ display: "flex", justifyContent: "flex-end", margin: "10px" }}
-      >
-        <Button
-          label="Nuevo Centro de Costo"
-          icon="pi pi-plus"
-          className="btn btn-primary"
-          onClick={addNewCostCenter}
-        />
-      </div>
 
       <Card title="Filtros de Búsqueda" style={styles.card}>
         <div className="row g-3">
@@ -270,10 +243,10 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
             header="Descripción"
             style={styles.tableCell}
             body={(rowData) => (
-              <span title={rowData.description}>
-                {rowData.description.length > 30
+              <span title={rowData.description || ""}>
+                {rowData.description && rowData.description.length > 30
                   ? `${rowData.description.substring(0, 30)}...`
-                  : rowData.description}
+                  : rowData.description || "N/A"}
               </span>
             )}
           />

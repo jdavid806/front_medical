@@ -6,6 +6,8 @@ export interface PaymentMethodDTO {
     created_at: string;
     updated_at: string;
     category: string;
+    is_cash: boolean;
+
 }
 
 export interface CreatePaymentMethodDTO {
@@ -14,6 +16,7 @@ export interface CreatePaymentMethodDTO {
     description: string;
     accounting_account_id: number;
     category: string;
+    is_cash: boolean;
 }
 
 export interface UpdatePaymentMethodDTO {
@@ -22,4 +25,6 @@ export interface UpdatePaymentMethodDTO {
     payment_type: string;
     accounting_account_id?: number;
     category?: string;
+    is_cash: boolean;
+
 }

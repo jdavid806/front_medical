@@ -62,7 +62,7 @@ export const PricesConfig = () => {
         const entities = await entitiesService.getEntities();
         setEntitiesData(entities.data);
     }
-    
+
     useEffect(() => {
         loadEntities();
     }, []);
@@ -123,7 +123,7 @@ export const PricesConfig = () => {
                 />
                 <PricesConfigFormModal
                     show={showFormModal}
-                    entitiesData ={entitiesData}
+                    entitiesData={entitiesData}
                     handleSubmit={handleSubmit}
                     onHide={() => { setShowFormModal(false); }}
                     initialData={initialData}

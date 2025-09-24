@@ -24,6 +24,7 @@ export const PaymentMethodsConfig = () => {
     const { accounts } = useAccountingAccounts();
 
 
+
     const enrichedPaymentMethods = paymentMethods.map(method => {
         const account = accounts.find(acc => acc.id === method.accounting_account_id);
         return {
@@ -37,7 +38,9 @@ export const PaymentMethodsConfig = () => {
             additionalDetails: method.description
         };
     });
+
     const onCreate = () => {
+        console.log("Creando nuevo método de pago");
         setInitialData(undefined);
         setPaymentMethod(null);
         setShowFormModal(true);
@@ -45,19 +48,23 @@ export const PaymentMethodsConfig = () => {
 
     const handleSubmit = async (data: PaymentMethodFormInputs) => {
         try {
+            console.log("Enviando datos del formulario:", data);
+
             const paymentMethodData: CreatePaymentMethodDTO = {
                 method: data.name,
                 payment_type: data.payment_type || '',
                 description: data.additionalDetails || '',
                 accounting_account_id: data.accounting_account_id || 0,
                 category: data.category,
-                is_cash: data.isCash || false
+                is_cash: data.is_cash
             };
 
             if (paymentMethod) {
+                console.log("Actualizando método existente:", paymentMethod.id);
                 await updatePaymentMethod(paymentMethod.id.toString(), paymentMethodData);
                 SwalManager.success('Método actualizado correctamente');
             } else {
+                console.log("Creando nuevo método");
                 await createPaymentMethod(paymentMethodData);
                 SwalManager.success('Método creado correctamente');
             }
@@ -65,44 +72,59 @@ export const PaymentMethodsConfig = () => {
             await refreshPaymentMethods();
             setShowFormModal(false);
         } catch (error) {
+            console.error("Error al enviar formulario:", error);
             // El error ya se maneja en el hook
         }
     };
 
     const handleTableEdit = async (id: string) => {
         try {
-            const paymentMethod = await fetchPaymentMethodById(id);
-            setShowFormModal(true);
+            console.log("Editando método con ID:", id);
 
+            const paymentMethodData = await fetchPaymentMethodById(id);
+            console.log("paymentMethod encontrado:", paymentMethodData);
+
+            if (paymentMethodData) {
+                setShowFormModal(true);
+            } else {
+                console.error("No se encontró el método de pago con ID:", id);
+                SwalManager.error('No se pudo cargar el método de pago para editar');
+            }
         } catch (error) {
-
+            console.error("Error al cargar método para editar:", error);
+            SwalManager.error('Error al cargar el método de pago');
         }
     };
+
     const handleDeleteMethod = async (id: string) => {
         try {
             const success = await deletePaymentMethod(id);
             if (success) {
                 await refreshPaymentMethods();
+                SwalManager.success('Método eliminado correctamente');
+            } else {
+                SwalManager.error('No se pudo eliminar el método de pago');
             }
         } catch (error) {
             console.error("Error en eliminación:", error);
+            SwalManager.error('Error al eliminar el método de pago');
         }
     };
 
     useEffect(() => {
         if (paymentMethod) {
+            console.log("Setting initialData from paymentMethod:", paymentMethod);
             const data: PaymentMethodFormInputs = {
                 name: paymentMethod.method,
                 payment_type: paymentMethod.payment_type,
                 category: paymentMethod.category || 'other',
+                is_cash: paymentMethod.is_cash,
                 accounting_account_id: paymentMethod.accounting_account_id,
                 additionalDetails: paymentMethod.description,
-                isCash: paymentMethod.is_cash || false
             };
             setInitialData(data);
         }
     }, [paymentMethod]);
-
 
     return (
         <PrimeReactProvider
@@ -115,7 +137,7 @@ export const PaymentMethodsConfig = () => {
         >
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h4 className="mb-1">Configuración de Métodos de Pago</h4>
-                <div style={{ margin: "-2px 20px -20px" }} className="text-end">
+                <div className="text-end">
                     <button
                         className="btn btn-primary d-flex align-items-center"
                         onClick={onCreate}
@@ -127,31 +149,42 @@ export const PaymentMethodsConfig = () => {
                 </div>
             </div>
 
-            {error && (
-                <div className="alert alert-danger" role="alert">
-                    {error}
+            {
+                error && (
+                    <div className="alert alert-danger" role="alert">
+                        {error}
+                    </div>
+                )
+            }
+
+            <div
+                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                style={{ minHeight: "400px" }}
+            >
+                <div className="card-body h-100 w-100 d-flex flex-column">
+
+                    <PaymentMethodsConfigTable
+                        onEditItem={handleTableEdit}
+                        paymentMethods={enrichedPaymentMethods}
+                        onDeleteItem={handleDeleteMethod}
+                        loading={loading}
+                    />
                 </div>
-            )}
 
-            <PaymentMethodsConfigTable
-                onEditItem={handleTableEdit}
-                paymentMethods={enrichedPaymentMethods}
-                onDeleteItem={handleDeleteMethod}
-                loading={loading}
-            />
-
+            </div>
             <PaymentMethodModalConfig
                 isVisible={showFormModal}
                 onSave={handleSubmit}
                 onClose={() => {
+                    console.log("Cerrando modal");
                     setShowFormModal(false);
                     setPaymentMethod(null);
                     setInitialData(undefined);
                 }}
                 initialData={initialData}
-                accounts={[]}
+                accounts={accounts}
                 loading={createLoading || updateLoading || deleteLoading}
             />
-        </PrimeReactProvider>
+        </PrimeReactProvider >
     );
 };

@@ -22,20 +22,25 @@ export const TicketTable = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState({});
   const [loading, setLoading] = useState(true);
-  const [dataReady, setDataReady] = useState(false); // ⬅️ NUEVO ESTADO
+  const [dataReady, setDataReady] = useState(false);
+  const [tableKey, setTableKey] = useState(0);
   const toast = useRef(null);
   const columns = [{
-    data: "ticket_number"
+    data: "ticket_number",
+    render: data => data || "-"
   }, {
-    data: "reason"
+    data: "reason",
+    defaultContent: "Motivo no disponible",
+    render: data => data || "Motivo no disponible"
   }, {
-    data: "priority"
+    data: "priority",
+    render: data => data || "-"
   }, {
-    data: "statusView"
-  }, {
-    orderable: false,
-    searchable: false
-  }];
+    data: "statusView",
+    render: data => data || "-"
+  }
+  // { orderable: false, searchable: false },
+  ];
   const {
     sendMessage: sendMessageTickets,
     responseMsg,
@@ -59,18 +64,19 @@ export const TicketTable = () => {
       try {
         setLoading(true);
         const response = await ticketService.getAllTicketReasons();
-        // Transformar array a objeto { key: label }
         const reasonsMap = response.reasons.reduce((acc, reason) => {
           acc[reason.key] = reason.label;
           return acc;
         }, {});
         setTicketReasonsBackend(reasonsMap);
-        setLoading(false);
-        setDataReady(true); // ⬅️ MARCAR DATOS COMO LISTOS
+        setDataReady(true);
+        setTableKey(prev => prev + 1);
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
+        setDataReady(true);
+        setTableKey(prev => prev + 1);
+      } finally {
         setLoading(false);
-        setDataReady(true); // ⬅️ MARCAR COMO LISTO INCLUSO CON ERROR
       }
     };
     fetchReasons();
@@ -86,19 +92,22 @@ export const TicketTable = () => {
     var hostname = window.location.hostname.split(".")[0];
     const channel = pusher.subscribe(`tickets.${hostname}`);
     channel.bind("ticket.generated", function (data) {
+      console.log("data0", data);
+      console.log("data0", data);
+      console.log("data1", data);
+      const reasonText = data.ticket.reason && ticketReasonsBackend[data.ticket.reason] || "Motivo no disponible";
       const newTicketData = {
         id: data.ticket.id,
         ticket_number: data.ticket.ticket_number,
         phone: data.ticket.phone,
-        reason: data.ticket.reason_label,
+        reason: reasonText,
         reason_key: data.ticket.reason,
-        priority: ticketPriorities[data.ticket.priority],
+        priority: ticketPriorities[data.ticket.priority] || "NORMAL",
         status: data.ticket.status,
-        statusView: ticketStatus[data.ticket.status],
+        statusView: ticketStatus[data.ticket.status] || "PENDIENTE",
         statusColor: ticketStatusColors[data.ticket.status],
         step: ticketStatusSteps[data.ticket.status],
         created_at: data.ticket.created_at,
-        // Este viene en formato ISO
         branch_id: data.ticket.branch_id,
         branch: data.branch || "Sin consultorio",
         module: data.module || "Sin modulo",
@@ -133,29 +142,30 @@ export const TicketTable = () => {
       });
     });
     return () => {
-      channel.unbind_all(); // Eliminar todos los listeners
-      channel.unsubscribe(); // Desuscribirse del canal
-      pusher.disconnect(); // Desconectar Pusher
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
     };
-  }, []);
+  }, [tickets, ticketReasonsBackend]);
+
+  // ⬇️ MEJORADO: Solo procesar cuando ticketReasonsBackend esté listo
   useEffect(() => {
-    // No procesar datos hasta que ticketReasonsBackend esté cargado
-    if (Object.keys(ticketReasonsBackend).length === 0) {
+    if (Object.keys(ticketReasonsBackend).length === 0 || !tickets.length) {
       return;
     }
     const processedData = tickets.map(ticket => {
-      const reasonText = ticket.reason_label || ticketReasonsBackend[ticket.reason] || "Motivo no disponible";
-      console.log("reason text", reasonText);
+      // ⬇️ VALIDACIÓN MÁS ROBUSTA
+      const reasonText = ticket.reason_label || ticket.reason && ticketReasonsBackend[ticket.reason] || "Motivo no disponible";
       return {
         id: ticket.id,
-        ticket_number: ticket.ticket_number,
-        phone: ticket.phone,
+        ticket_number: ticket.ticket_number || "-",
+        phone: ticket.phone || "-",
         reason: reasonText,
         reason_key: ticket.reason,
-        priority: ticketPriorities[ticket.priority],
+        priority: ticketPriorities[ticket.priority] || "NORMAL",
         module_name: ticket.module?.name || "",
-        status: ticket.status,
-        statusView: ticketStatus[ticket.status],
+        status: ticket.status || "PENDING",
+        statusView: ticketStatus[ticket.status] || "PENDIENTE",
         statusColor: ticketStatusColors[ticket.status],
         step: ticketStatusSteps[ticket.status],
         created_at: ticket.created_at,
@@ -167,43 +177,35 @@ export const TicketTable = () => {
       };
     });
     setData(processedData);
-  }, [tickets, ticketReasonsBackend]); // ⬅️ REMOVER LOADING DE LAS DEPENDENCIAS
+  }, [tickets, ticketReasonsBackend]);
 
+  // ⬇️ MEJORADO: Filtrar y ordenar datos
   useEffect(() => {
-    console.log("data tickets", data);
-    if (!loggedUser || !Array.isArray(loggedUser.availabilities)) {
+    if (!data.length || !loggedUser || !Array.isArray(loggedUser.availabilities)) {
       setFilteredData([]);
       return;
     }
-
-    // Filtrar y ordenar los datos
     const filteredAndSorted = data.filter(item => {
+      if (!item.status || !item.reason_key && !item.reason) {
+        console.warn("Item inválido omitido:", item);
+        return false;
+      }
       const statusMatch = item.status === "PENDING" || item.status === "CALLED";
       const reasonMatch = loggedUser.availabilities.some(availability => {
         const allowed = availability?.module?.allowed_reasons || [];
-        return allowed.includes(item.reason_key);
+        return item.reason_key && allowed.includes(item.reason_key);
       });
       return statusMatch && reasonMatch;
     }).sort((a, b) => {
-      // Primero por prioridad (usando el mismo orden que en Pusher)
       const priorities = ["PREGNANT", "SENIOR", "DISABILITY", "CHILDREN_BABY"];
       const priorityA = priorities.indexOf(a.priority);
       const priorityB = priorities.indexOf(b.priority);
-
-      // Si tienen diferente prioridad, ordenar por prioridad (mayor prioridad primero)
       if (priorityA !== priorityB) {
-        return priorityA - priorityB; // Números más bajos (mayor prioridad) primero
+        return priorityA - priorityB;
       }
-
-      // Si tienen misma prioridad, ordenar por fecha de creación (más antiguo primero)
       return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     });
-    console.log("Tickets ordenados:", filteredAndSorted.map(t => ({
-      ticket: t.ticket_number,
-      priority: t.priority,
-      created_at: t.created_at,
-      date: new Date(t.created_at)
-    })));
+    console.log("Datos filtrados y ordenados:", filteredAndSorted.length);
     setFilteredData(filteredAndSorted);
   }, [data, loggedUser]);
   const updateStatus = async (id, status) => {
@@ -218,9 +220,8 @@ export const TicketTable = () => {
     } : item));
   };
   const callTicket = async ticket => {
+    console.log("ticket", ticket);
     const user = await userService.getByExternalId(getJWTPayload().sub);
-
-    // Bloqueo: ya hay un turno en curso en este módulo
     const hasActiveTicket = data.some(t => t.status === "CALLED" && t.module_id === user?.today_module_id);
     if (hasActiveTicket) {
       toast.current?.show({
@@ -269,31 +270,21 @@ export const TicketTable = () => {
   }, [sendMessageTickets]);
   const slots = {
     3: (cell, data) => /*#__PURE__*/React.createElement("span", {
-      className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
-    }, data.statusView),
+      className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status] || "secondary"}`
+    }, data.statusView || "PENDIENTE"),
     4: (cell, data) => {
-      // Encontrar el índice de este ticket en la lista ordenada
       const ticketIndex = filteredData.findIndex(t => t.id === data.id);
-
-      // Encontrar el primer ticket pendiente
       const firstPendingIndex = filteredData.findIndex(t => t.status === "PENDING");
-
-      // Validar si ya hay un turno en curso en este módulo
       const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
-      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
-        className: `btn btn-primary ${data.status === "PENDING" && ticketIndex === firstPendingIndex && !hasActiveTicket ? "" : "d-none"}`,
-        onClick: () => callTicket(data)
-      }, /*#__PURE__*/React.createElement("i", {
-        className: "fas fa-phone"
-      })), /*#__PURE__*/React.createElement("div", {
+      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: `d-flex flex-wrap gap-1 ${data.status === "CALLED" ? "" : "d-none"}`
       }, /*#__PURE__*/React.createElement("button", {
-        className: `btn btn-success`,
+        className: "btn btn-success",
         onClick: () => updateStatus(data.id, "COMPLETED")
       }, /*#__PURE__*/React.createElement("i", {
         className: "fas fa-check"
       })), /*#__PURE__*/React.createElement("button", {
-        className: `btn btn-danger`,
+        className: "btn btn-danger",
         onClick: () => updateStatus(data.id, "MISSED")
       }, /*#__PURE__*/React.createElement("i", {
         className: "fas fa-times"
@@ -314,11 +305,11 @@ export const TicketTable = () => {
     className: "d-flex flex-wrap gap-2 mb-4"
   }, /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-warning"
-  }, "Pendientes:", " ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
+  }, "Pendientes: ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-success"
-  }, "Completados:", " ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
+  }, "Completados: ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-danger"
-  }, "Perdidos:", " ", data.filter(item => item.status === "MISSED").length)), !dataReady || loading ? /*#__PURE__*/React.createElement("div", {
+  }, "Perdidos: ", data.filter(item => item.status === "MISSED").length)), !dataReady ? /*#__PURE__*/React.createElement("div", {
     className: "text-center"
   }, /*#__PURE__*/React.createElement("div", {
     className: "spinner-border",
@@ -326,13 +317,17 @@ export const TicketTable = () => {
   }, /*#__PURE__*/React.createElement("span", {
     className: "visually-hidden"
   }, "Cargando...")), /*#__PURE__*/React.createElement("p", null, "Cargando turnos...")) : /*#__PURE__*/React.createElement(CustomDataTable, {
+    key: tableKey,
     data: filteredData,
     slots: slots,
     columns: columns,
     customOptions: {
       ordering: false,
       searching: false,
-      info: false
+      info: false,
+      deferRender: true,
+      responsive: true,
+      autoWidth: false
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
@@ -350,7 +345,6 @@ export const TicketTable = () => {
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
     onClick: () => {
-      // Encontrar el primer ticket PENDING (ya están ordenados por prioridad y fecha)
       const nextTicket = filteredData.find(ticket => ticket.status === "PENDING");
       if (!nextTicket) {
         toast.current?.show({
@@ -361,8 +355,6 @@ export const TicketTable = () => {
         });
         return;
       }
-
-      // Verificar si ya hay un turno activo en este módulo
       const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
       if (hasActiveTicket) {
         toast.current?.show({
@@ -375,7 +367,7 @@ export const TicketTable = () => {
       }
       callTicket(nextTicket);
     },
-    disabled: !dataReady || loading // ⬅️ DESHABILITAR BOTÓN MIENTRAS CARGA
+    disabled: !dataReady || loading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-arrow-right me-2"
   }), !dataReady || loading ? "Cargando..." : "Llamar siguiente turno"), /*#__PURE__*/React.createElement("div", {
@@ -394,7 +386,7 @@ export const TicketTable = () => {
   }, "Prioridad: ", ticket.priority), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
     onClick: () => callTicket(ticket),
-    disabled: !dataReady || loading // ⬅️ DESHABILITAR MIENTRAS CARGA
+    disabled: !dataReady || loading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-phone me-2"
   }), "Llamar nuevamente"))) : /*#__PURE__*/React.createElement("p", {

@@ -7,6 +7,7 @@ import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import {
   Filtros,
@@ -30,15 +31,15 @@ export const PaymentMethodsConfigTable: React.FC<
   });
 
   const categories = [
-  { label: "Transaccional", value: "transactional" },
-  { label: "Vencimiento Proveedores", value: "card" },
-  { label: "Transferencia", value: "supplier_expiration" },
-  { label: "Vencimiento Clientes", value: "customer_expiration" },
-  { label: "Anticipo Clientes", value: "customer_advance" },
-  { label: "Anticipo Proveedores", value: "supplier_advance" },
+    { label: "Transaccional", value: "transactional" },
+    { label: "Vencimiento Proveedores", value: "card" },
+    { label: "Transferencia", value: "supplier_expiration" },
+    { label: "Vencimiento Clientes", value: "customer_expiration" },
+    { label: "Anticipo Clientes", value: "customer_advance" },
+    { label: "Anticipo Proveedores", value: "supplier_advance" },
   ];
 
-    const getCategoryLabel = (categoryValue: string) => {
+  const getCategoryLabel = (categoryValue: string) => {
     const category = categories.find(cat => cat.value === categoryValue);
     return category ? category.label : categoryValue;
   };
@@ -86,36 +87,6 @@ export const PaymentMethodsConfigTable: React.FC<
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
-
-  const actionBodyTemplate = (rowData: PaymentMethod) => {
-    return (
-      <div
-        className="flex align-items-center justify-content-center"
-        style={{ gap: "0.5rem", minWidth: "120px" }}
-      >
-        <Button
-          className="p-button-rounded p-button-text p-button-sm"
-          onClick={() => editMethod(rowData)}
-        >
-          <i className="fas fa-pencil-alt"></i>
-        </Button>
-        <Button
-          className="p-button-rounded p-button-text p-button-sm p-button-danger"
-          onClick={() => confirmDelete(rowData)}
-        >
-          <i className="fa-solid fa-trash"></i>
-        </Button>
-      </div>
-    );
-  };
-
-const editMethod = (method: PaymentMethod) => {
-  if (onEditItem) {
-    onEditItem(method.id.toString()); 
-  }
-  showToast("info", "Editar", `Editando método: ${method.name}`);
-};
-
   const confirmDelete = (method: PaymentMethod) => {
     setMethodToDelete(method);
     setDeleteDialogVisible(true);
@@ -146,6 +117,78 @@ const editMethod = (method: PaymentMethod) => {
       />
     </div>
   );
+
+  const TableMenu: React.FC<{
+    rowData: PaymentMethod,
+    onEdit: (id: string) => void,
+    onDelete: (method: PaymentMethod) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
+
+    const menu = useRef<Menu>(null);
+
+    const handleEdit = () => {
+      console.log("Editando método con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar método con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={[
+            {
+              label: "Editar",
+              icon: <i className="fa-solid fa-pen me-2"></i>,
+              command: handleEdit,
+            },
+            {
+              label: "Eliminar",
+              icon: <i className="fa fa-trash me-2"></i>,
+              command: handleDelete,
+            }
+          ]}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
+    );
+  };
+
+  const actionBodyTemplate = (rowData: PaymentMethod) => {
+    return (
+      <div
+        className="flex align-items-center justify-content-center"
+        style={{ gap: "0.5rem", minWidth: "120px" }}
+      >
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={confirmDelete}
+        />
+      </div>
+    );
+  };
+
+  // Template para mostrar la cuenta contable
+  const accountBodyTemplate = (rowData: PaymentMethod) => {
+    return rowData.account?.name || "No asignada";
+  };
 
   const styles = {
     card: {
@@ -195,7 +238,7 @@ const editMethod = (method: PaymentMethod) => {
           />
           {methodToDelete && (
             <span>
-              ¿Estás seguro que desea  eliminar el método de pago, tenga en cuenta que afectará a todos los pagos asociados <b>{methodToDelete.name}</b>?
+              ¿Estás seguro que desea eliminar el método de pago, tenga en cuenta que afectará a todos los pagos asociados <b>{methodToDelete.name}</b>?
             </span>
           )}
         </div>
@@ -273,7 +316,7 @@ const editMethod = (method: PaymentMethod) => {
             field="account"
             header="Cuenta Contable"
             sortable
-            body={(rowData) => rowData.account?.name || "No asignada"}
+            body={accountBodyTemplate}
             style={styles.tableCell}
           />
           <Column

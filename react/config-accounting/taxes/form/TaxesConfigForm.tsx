@@ -15,7 +15,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
   initialData,
   onCancel,
   loading = false,
-  accounts,
+  accounts = [],
 }) => {
   const {
     control,
@@ -140,8 +140,8 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
       <div className="row">
         <div className="col-md-6">
           <div className="field mb-3">
-            <label className="font-bold block mb-2">
-              Configuración Compras *
+            <label className="fw-bold block mb-2">
+              Configuración Compras
             </label>
           </div>
 
@@ -221,8 +221,8 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
 
         <div className="col-md-6">
           <div className="field mb-3">
-            <label className="font-bold block mb-2">
-              Configuración Ventas *
+            <label className="fw-bold block mb-2">
+              Configuración Ventas
             </label>
           </div>
 
@@ -333,14 +333,15 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                 className="btn btn-phoenix-secondary"
                 onClick={onCancel}
                 disabled={loading}
-                type="button"
                 style={{
-                  padding: "0 20px",
+                  padding: "0 40px",
                   width: "200px",
                   height: "50px",
                   borderRadius: "0px",
                 }}
-              />
+              >
+                <i className="fas fa-times mr-2"></i>
+              </Button>
             )}
             <Button
               label="Guardar"
@@ -349,7 +350,9 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
               style={{ padding: "0 40px", width: "200px", height: "50px" }}
               disabled={loading || !isDirty}
               type="submit"
-            />
+            >
+              <i className="fas fa-save"></i>
+            </Button>
           </div>
         </div>
       </div>

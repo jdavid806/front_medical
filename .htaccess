@@ -47,6 +47,7 @@ RewriteRule ^Commissions$ Reportes/Report_details/Commissions_report.php
 RewriteRule ^CommissionsCopy$ Reportes/Report_details/Commissions_report_copy.php
 RewriteRule ^InvoicesByEntity$ Reportes/Report_details/Invoices_by_entity_report.php
 RewriteRule ^AppointmentsReport$ Reportes/Report_details/Appointments_report.php
+RewriteRule ^ClinicalRecordReports$ Reportes/Report_details/Clinical_record_report.php
 RewriteRule ^InvoicesDoctors$ Reportes/Report_details/Invoices_doctors_report.php
 RewriteRule ^Estimates$ Reportes/Report_details/Estimates_report.php
 RewriteRule ^Accounts_receivable$ Reportes/Report_details/Accounts_receivable_report.php
@@ -120,6 +121,12 @@ RewriteRule ^FE_Empresa$ Empresa/FE_Empresa.php
 RewriteRule ^FE_Entidades$ Entidades/Entidades.php
 # RewriteRule ^FE_FacturaCliente$ Cliente/FE_Factura.php
 # Entidades [FIN]
+
+
+# Configuracion del Sistema[INICIO]
+RewriteRule ^configuracionesGenerales$ Config/generalConfiguracion.php
+
+# Configuracion de Sistema [FIN]
 
 # Configuracion de FE [INICIO]
 RewriteRule ^FE_Config$ Configuracion/FE_Config.php

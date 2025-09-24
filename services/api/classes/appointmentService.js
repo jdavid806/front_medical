@@ -74,6 +74,13 @@ export class AppointmentService extends OneToManyService {
       `medical/appointments/products/to-be-invoiced/${appointmentId}`
     );
   }
+
+  async reportByScheduler(data) {
+    return await this.httpClient.post(
+      `medical/appointments/report-by-scheduler`,
+      data
+    );
+  }
 }
 
 export default AppointmentService;

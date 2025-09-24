@@ -7,6 +7,7 @@ import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 export const PaymentMethodsConfigTable = ({
   onEditItem,
@@ -79,31 +80,6 @@ export const PaymentMethodsConfigTable = ({
       life: 3000
     });
   };
-  const actionBodyTemplate = rowData => {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center justify-content-center",
-      style: {
-        gap: "0.5rem",
-        minWidth: "120px"
-      }
-    }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm",
-      onClick: () => editMethod(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-pencil-alt"
-    })), /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm p-button-danger",
-      onClick: () => confirmDelete(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    })));
-  };
-  const editMethod = method => {
-    if (onEditItem) {
-      onEditItem(method.id.toString());
-    }
-    showToast("info", "Editar", `Editando método: ${method.name}`);
-  };
   const confirmDelete = method => {
     setMethodToDelete(method);
     setDeleteDialogVisible(true);
@@ -129,6 +105,72 @@ export const PaymentMethodsConfigTable = ({
     className: "p-button-danger",
     onClick: deleteMethod
   }));
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando método con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar método con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "btn-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: [{
+        label: "Editar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-pen me-2"
+        }),
+        command: handleEdit
+      }, {
+        label: "Eliminar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-trash me-2"
+        }),
+        command: handleDelete
+      }],
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: onEditItem ? onEditItem : () => {},
+      onDelete: confirmDelete
+    }));
+  };
+
+  // Template para mostrar la cuenta contable
+  const accountBodyTemplate = rowData => {
+    return rowData.account?.name || "No asignada";
+  };
   const styles = {
     card: {
       marginBottom: "20px",
@@ -179,7 +221,7 @@ export const PaymentMethodsConfigTable = ({
       fontSize: "2rem",
       color: "#f8bb86"
     }
-  }), methodToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que desea  eliminar el m\xE9todo de pago, tenga en cuenta que afectar\xE1 a todos los pagos asociados ", /*#__PURE__*/React.createElement("b", null, methodToDelete.name), "?"))), /*#__PURE__*/React.createElement(Card, {
+  }), methodToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que desea eliminar el m\xE9todo de pago, tenga en cuenta que afectar\xE1 a todos los pagos asociados ", /*#__PURE__*/React.createElement("b", null, methodToDelete.name), "?"))), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     style: styles.card
   }, /*#__PURE__*/React.createElement("div", {
@@ -248,7 +290,7 @@ export const PaymentMethodsConfigTable = ({
     field: "account",
     header: "Cuenta Contable",
     sortable: true,
-    body: rowData => rowData.account?.name || "No asignada",
+    body: accountBodyTemplate,
     style: styles.tableCell
   }), /*#__PURE__*/React.createElement(Column, {
     field: "additionalDetails",

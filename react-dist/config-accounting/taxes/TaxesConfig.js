@@ -36,22 +36,26 @@ export const TaxesConfig = () => {
     deleteTax,
     loading: deleteLoading
   } = useTaxesDeleteTable();
-  const onCreate = () => {
-    setInitialData(undefined);
-    setTax(null);
-    setShowFormModal(true);
-  };
   const {
     accounts,
     isLoading: isLoadingAccounts
   } = useAccountingAccounts();
+  const onCreate = () => {
+    console.log("Creando nuevo impuesto");
+    setInitialData(undefined);
+    setTax(null);
+    setShowFormModal(true);
+  };
   const handleSubmit = async data => {
     try {
+      console.log("Enviando datos del formulario:", data);
       if (tax) {
+        console.log("Actualizando impuesto existente:", tax.id);
         const updateData = TaxesMapperUpdate(data);
         await updateTax(tax.id, updateData);
         SwalManager.success('Impuesto actualizado correctamente');
       } else {
+        console.log("Creando nuevo impuesto");
         const createData = TaxesMapperCreate(data);
         await createTax(createData);
         SwalManager.success('Impuesto creado correctamente');
@@ -65,22 +69,37 @@ export const TaxesConfig = () => {
   };
   const handleTableEdit = async id => {
     try {
-      await fetchTaxById(id);
-      setShowFormModal(true);
+      console.log("Editando impuesto con ID:", id);
+      const taxData = await fetchTaxById(id);
+      console.log("Impuesto encontrado:", taxData);
+      if (taxData) {
+        setShowFormModal(true);
+      } else {
+        console.error("No se encontró el impuesto con ID:", id);
+        SwalManager.error('No se pudo cargar el impuesto para editar');
+      }
     } catch (error) {
-      console.error("Error al cargar impuesto:", error);
+      console.error("Error al cargar impuesto para editar:", error);
+      SwalManager.error('Error al cargar el impuesto');
     }
   };
   const handleDeleteTax = async id => {
     try {
-      await deleteTax(id);
-      await refreshTaxes();
+      const success = await deleteTax(id);
+      if (success) {
+        await refreshTaxes();
+        SwalManager.success('Impuesto eliminado correctamente');
+      } else {
+        SwalManager.error('No se pudo eliminar Impuesto');
+      }
     } catch (error) {
-      console.error("Error al eliminar impuesto:", error);
+      console.error("Error en eliminación:", error);
+      SwalManager.error('Error al eliminar el Impuesto');
     }
   };
   useEffect(() => {
     if (tax && accounts) {
+      console.log("Setting initialData from tax:", tax);
       const data = {
         name: tax.name,
         percentage: tax.percentage,
@@ -93,6 +112,27 @@ export const TaxesConfig = () => {
       setInitialData(data);
     }
   }, [tax, accounts]);
+  const enrichedTaxes = taxes.map(taxItem => {
+    console.log("Datos originales del impuesto:", taxItem);
+    const account = accounts.find(acc => acc.id === taxItem.accounting_account_id);
+    const returnAccount = accounts.find(acc => acc.id === taxItem.accounting_account_reverse_id);
+    const accountData = taxItem.account || (account ? {
+      id: account.id.toString(),
+      name: account.account_name || account.account || `Cuenta ${account.account_code}`
+    } : null);
+    const returnAccountData = taxItem.returnAccount || (returnAccount ? {
+      id: returnAccount.id.toString(),
+      name: returnAccount.account_name || returnAccount.account || `Cuenta ${returnAccount.account_code}`
+    } : null);
+    return {
+      id: taxItem.id,
+      name: taxItem.name,
+      percentage: taxItem.percentage,
+      account: accountData,
+      returnAccount: returnAccountData,
+      description: taxItem.description
+    };
+  });
   return /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: "self",
@@ -105,9 +145,6 @@ export const TaxesConfig = () => {
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Configuraci\xF3n de Impuestos"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      margin: "-2px 20px -20px"
-    },
     className: "text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary d-flex align-items-center",
@@ -118,15 +155,23 @@ export const TaxesConfig = () => {
   }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto'))), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement(TaxesConfigTable, {
-    taxes: taxes,
+  }, error), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(TaxesConfigTable, {
+    taxes: enrichedTaxes,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteTax,
-    loading: loading
-  }), /*#__PURE__*/React.createElement(TaxConfigModal, {
+    loading: loading || isLoadingAccounts
+  }))), /*#__PURE__*/React.createElement(TaxConfigModal, {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {
+      console.log("Cerrando modal");
       setShowFormModal(false);
       setTax(null);
       setInitialData(undefined);

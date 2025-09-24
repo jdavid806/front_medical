@@ -79,10 +79,9 @@ export const CustomPRTable = ({
     totalRecords: totalRecords,
     rowsPerPageOptions: [1, 2, 5, 10, 25, 50],
     removableSort: true,
-    globalFilterFields: globalFilterFields,
-    tableStyle: {
-      minWidth: '50rem'
-    },
+    globalFilterFields: globalFilterFields
+    // tableStyle={{ minWidth: '50rem' }}
+    ,
     showGridlines: true,
     header: (!disableSearch || !disableReload) && header,
     filters: filters,

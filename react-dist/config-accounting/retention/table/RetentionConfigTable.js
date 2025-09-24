@@ -6,6 +6,8 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 export const RetentionConfigTable = ({
@@ -15,6 +17,8 @@ export const RetentionConfigTable = ({
   loading = false
 }) => {
   const toast = useRef(null);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [retentionToDelete, setRetentionToDelete] = useState(null);
   const [filteredRetentions, setFilteredRetentions] = useState([]);
   const [filtros, setFiltros] = useState({
     name: "",
@@ -48,7 +52,7 @@ export const RetentionConfigTable = ({
       result = result.filter(ret => ret.name.toLowerCase().includes(filtros.name.toLowerCase()));
     }
     if (filtros.account) {
-      result = result.filter(ret => ret.account?.id === filtros.account);
+      result = result.filter(ret => ret.account?.id === filtros.account || ret.returnAccount?.id === filtros.account);
     }
     setFilteredRetentions(result);
   };
@@ -68,6 +72,79 @@ export const RetentionConfigTable = ({
       life: 3000
     });
   };
+  const confirmDelete = retention => {
+    setRetentionToDelete(retention);
+    setDeleteDialogVisible(true);
+  };
+  const deleteRetention = () => {
+    if (retentionToDelete && onDeleteItem) {
+      onDeleteItem(retentionToDelete.id.toString());
+      showToast("success", "Éxito", `Retención ${retentionToDelete.name} eliminada`);
+    }
+    setDeleteDialogVisible(false);
+    setRetentionToDelete(null);
+  };
+  const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-end gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    icon: "pi pi-times",
+    className: "p-button-text",
+    onClick: () => setDeleteDialogVisible(false)
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Eliminar",
+    icon: "pi pi-check",
+    className: "p-button-danger",
+    onClick: deleteRetention
+  }));
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando retención con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar retención con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "btn-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: [{
+        label: "Editar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-pen me-2"
+        }),
+        command: handleEdit
+      }, {
+        label: "Eliminar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-trash me-2"
+        }),
+        command: handleDelete
+      }],
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
   const actionBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("div", {
       className: "flex align-items-center justify-content-center",
@@ -75,27 +152,11 @@ export const RetentionConfigTable = ({
         gap: "0.5rem",
         minWidth: "120px"
       }
-    }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm",
-      onClick: () => editRetention(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-pencil-alt"
-    })), /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm p-button-danger",
-      onClick: () => confirmDelete(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    })));
-  };
-  const editRetention = retention => {
-    showToast("info", "Editar", `Editando retención: ${retention.name}`);
-    onEditItem(retention.id.toString());
-  };
-  const confirmDelete = retention => {
-    showToast("warn", "Eliminar", `¿Seguro que desea eliminar ${retention.name}?`);
-    if (onDeleteItem) {
-      onDeleteItem(retention.id.toString());
-    }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: onEditItem ? onEditItem : () => {},
+      onDelete: confirmDelete
+    }));
   };
   const getAccountOptions = () => {
     if (!accountingAccounts) return [];
@@ -137,7 +198,24 @@ export const RetentionConfigTable = ({
     }
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement(Card, {
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    visible: deleteDialogVisible,
+    style: {
+      width: "450px"
+    },
+    header: "Confirmar",
+    modal: true,
+    footer: deleteDialogFooter,
+    onHide: () => setDeleteDialogVisible(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center justify-content-center"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-exclamation-triangle mr-3",
+    style: {
+      fontSize: "2rem",
+      color: "#f8bb86"
+    }
+  }), retentionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar la retenci\xF3n", " ", /*#__PURE__*/React.createElement("b", null, retentionToDelete.name), "? Esta acci\xF3n no se puede deshacer."))), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     style: styles.card
   }, /*#__PURE__*/React.createElement("div", {

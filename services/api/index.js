@@ -70,6 +70,7 @@ import { DisabilityService } from "./classes/disabilityService.js";
 import { ManualUsuarioVideoService } from "./classes/manualUsuarioVideoServices.js";
 import { ConvenioTenantService } from "./classes/convenioTenantService.js";
 import { consentimientoService as ConsentimientoServiceClass } from "./classes/consentimientoService.js";
+import { SpecialtiesService } from "./classes/specialtiesService.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -354,3 +355,4 @@ export const thirdPartyService = new ThirdPartyService();
 export const disabilityService = new DisabilityService();
 export const convenioTenantService = new ConvenioTenantService();
 export const consentimientoService = new ConsentimientoServiceClass();
+export const specialtiesService = new SpecialtiesService("medical", "specialties");

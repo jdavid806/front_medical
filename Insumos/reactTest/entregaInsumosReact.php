@@ -4,9 +4,7 @@ include "../../header.php";
 ?>
 
 <div class="content">
-    <div class="container-small">
-        <div id="entregaInsumosRoot"></div>
-    </div>
+    <div id="entregaInsumosRoot"></div>
 </div>
 
 <script type="module">

@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 export const TaxesConfigTable = ({
@@ -16,8 +16,6 @@ export const TaxesConfigTable = ({
   loading = false
 }) => {
   const toast = useRef(null);
-  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [taxToDelete, setTaxToDelete] = useState(null);
   const [filteredTaxes, setFilteredTaxes] = useState([]);
   const [filtros, setFiltros] = useState({
     name: "",
@@ -35,13 +33,13 @@ export const TaxesConfigTable = ({
       value: account.id.toString()
     }));
   };
-  // Función mejorada para mostrar nombres de cuentas
   const renderAccount = account => {
     if (!account) return "No asignada";
     if (account.name && !account.name.startsWith("Cuenta ")) {
       return account.name;
     }
     const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id);
+    console.log('fullAccount', fullAccount);
     return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
   };
   useEffect(() => {
@@ -79,6 +77,54 @@ export const TaxesConfigTable = ({
       life: 3000
     });
   };
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando impuesto con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar impuesto con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "btn-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: [{
+        label: "Editar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-pen me-2"
+        }),
+        command: handleEdit
+      }, {
+        label: "Eliminar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa fa-trash me-2"
+        }),
+        command: handleDelete
+      }],
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
   const actionBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("div", {
       className: "flex align-items-center justify-content-center",
@@ -86,49 +132,16 @@ export const TaxesConfigTable = ({
         gap: "0.5rem",
         minWidth: "120px"
       }
-    }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm",
-      onClick: () => editTax(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-pencil-alt"
-    })), /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-rounded p-button-text p-button-sm p-button-danger",
-      onClick: () => confirmDelete(rowData)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    })));
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: onEditItem ? onEditItem : () => {},
+      onDelete: tax => {
+        if (onDeleteItem) {
+          onDeleteItem(tax.id.toString());
+        }
+      }
+    }));
   };
-  const editTax = tax => {
-    if (onEditItem) {
-      onEditItem(tax.id.toString());
-    }
-    showToast("info", "Editar", `Editando impuesto: ${tax.name}`);
-  };
-  const confirmDelete = tax => {
-    setTaxToDelete(tax);
-    setDeleteDialogVisible(true);
-  };
-  const deleteTax = () => {
-    if (taxToDelete && onDeleteItem) {
-      onDeleteItem(taxToDelete.id.toString());
-      showToast("success", "Éxito", `Impuesto ${taxToDelete.name} eliminado`);
-    }
-    setDeleteDialogVisible(false);
-    setTaxToDelete(null);
-  };
-  const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Cancelar",
-    icon: "pi pi-times",
-    className: "p-button-text",
-    onClick: () => setDeleteDialogVisible(false)
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Eliminar",
-    icon: "pi pi-check",
-    className: "p-button-danger",
-    onClick: deleteTax
-  }));
   const styles = {
     card: {
       marginBottom: "20px",
@@ -162,24 +175,7 @@ export const TaxesConfigTable = ({
     }
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement(Dialog, {
-    visible: deleteDialogVisible,
-    style: {
-      width: "450px"
-    },
-    header: "Confirmar",
-    modal: true,
-    footer: deleteDialogFooter,
-    onHide: () => setDeleteDialogVisible(false)
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex align-items-center justify-content-center"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-exclamation-triangle mr-3",
-    style: {
-      fontSize: "2rem",
-      color: "#f8bb86"
-    }
-  }), taxToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar el impuesto", " ", /*#__PURE__*/React.createElement("b", null, taxToDelete.name), "? Esta acci\xF3n afectar\xE1 a todos los productos asociados."))), /*#__PURE__*/React.createElement(Card, {
+  }), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     style: styles.card
   }, /*#__PURE__*/React.createElement("div", {
@@ -205,7 +201,7 @@ export const TaxesConfigTable = ({
     placeholder: isLoadingAccounts ? "Cargando cuentas..." : "Seleccione cuenta",
     className: classNames("w-100"),
     filter: true,
-    filterBy: "account_name,account_code",
+    filterBy: "label",
     showClear: true,
     disabled: isLoadingAccounts,
     loading: isLoadingAccounts

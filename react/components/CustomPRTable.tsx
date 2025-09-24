@@ -116,7 +116,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
                 rowsPerPageOptions={[1, 2, 5, 10, 25, 50]}
                 removableSort
                 globalFilterFields={globalFilterFields}
-                tableStyle={{ minWidth: '50rem' }}
+                // tableStyle={{ minWidth: '50rem' }}
                 showGridlines
                 header={(!disableSearch || !disableReload) && header}
                 filters={filters}

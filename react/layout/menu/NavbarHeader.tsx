@@ -98,7 +98,8 @@ const NavbarHeader = () => {
                     url: 'InvoicesDoctors',
                 },
                 { label: 'Bonificaciones', icon: 'fa-solid fa-money-bill-trend-up', url: 'Commissions' },
-                { label: 'Citas', icon: 'fa-solid fa-calendar-week', url: 'AppointmentsReport' }
+                { label: 'Citas', icon: 'fa-solid fa-calendar-week', url: 'AppointmentsReport' },
+                { label: 'Consultas', icon: 'fas fa-hospital', url: 'ClinicalRecordReports' }
 
 
             ]

@@ -5351,7 +5351,7 @@
     box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
   }
   .p-stepper .p-stepper-header.p-highlight .p-stepper-number {
-    background: #007bff;
+    background: #1A99FB;
     color: #ffffff;
   }
   .p-stepper .p-stepper-header.p-highlight .p-stepper-title {
@@ -8476,7 +8476,7 @@
   .p-progressbar .p-progressbar-value {
     border: 0 none;
     margin: 0;
-    background: #007bff;
+    background: #1A99FB;
   }
   .p-progressbar .p-progressbar-label {
     color: #ffffff;

@@ -12,7 +12,6 @@ import {
 } from "../interfaces/PaymentMethodFormConfigTypes";
 import { Checkbox } from 'primereact/checkbox';
 
-// Categories for dropdown
 const categories = [
   { label: "Transaccional", value: "transactional" },
   { label: "Vencimiento Proveedores", value: "supplier_expiration" },
@@ -49,7 +48,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
       payment_type: "",
       accounting_account_id: null,
       additionalDetails: "",
-      isCash: false
+      is_cash: false
     },
   });
 
@@ -70,7 +69,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         payment_type: "",
         accounting_account_id: null,
         additionalDetails: "",
-        isCash: false
+        is_cash: false
       }
     );
   }, [initialData, reset]);
@@ -109,30 +108,35 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
           </div>
 
           <div className="field mb-4">
-            <label htmlFor="payment_type" className="font-medium block mb-2">
-              Tipo *
+            <label
+              htmlFor="accounting_account_id"
+              className="font-medium block mb-2"
+            >
+              Cuenta Contable
             </label>
             <Controller
-              name="payment_type"
+              name="accounting_account_id"
               control={control}
-              rules={{ required: "El tipo de método es requerido" }}
               render={({ field, fieldState }) => (
                 <>
                   <Dropdown
                     id={field.name}
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    options={TypeMethod}
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Seleccione un tipo"
+                    options={accounts}
+                    optionValue="id"
+                    optionLabel="account_label"
+                    placeholder="Seleccione una cuenta"
+                    filter
+                    filterBy="account_label,account_name,account_code"
+                    showClear
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
                     })}
-                    showClear
-                    filter
+                    loading={isLoadingAccounts}
+                    appendTo="self"
                   />
-                  {getFormErrorMessage("payment_type")}
+                  {getFormErrorMessage("accounting_account_id")}
                 </>
               )}
             />
@@ -173,42 +177,37 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
 
           <div className="row">
             <div className="col-8">
-              <label
-                htmlFor="accounting_account_id"
-                className="font-medium block mb-2"
-              >
-                Cuenta Contable
+              <label htmlFor="payment_type" className="font-medium block mb-2">
+                Tipo *
               </label>
               <Controller
-                name="accounting_account_id"
+                name="payment_type"
                 control={control}
+                rules={{ required: "El tipo de método es requerido" }}
                 render={({ field, fieldState }) => (
                   <>
                     <Dropdown
                       id={field.name}
                       value={field.value}
                       onChange={(e) => field.onChange(e.value)}
-                      options={accounts}
-                      optionValue="id"
-                      optionLabel="account_label"
-                      placeholder="Seleccione una cuenta"
-                      filter
-                      filterBy="account_label,account_name,account_code"
-                      showClear
+                      options={TypeMethod}
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccione un tipo"
                       className={classNames("w-full", {
                         "p-invalid": fieldState.error,
                       })}
-                      loading={isLoadingAccounts}
-                      appendTo="self"
+                      showClear
+                      filter
                     />
-                    {getFormErrorMessage("accounting_account_id")}
+                    {getFormErrorMessage("payment_type")}
                   </>
                 )}
               />
             </div>
             <div className="col-4 d-flex align-items-center gap-2 mt-4">
               <Controller
-                name="isCash"
+                name="is_cash"
                 control={control}
                 render={({ field, fieldState }) => (
                   <>
@@ -219,7 +218,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
                       className={classNames("w-full", {})}
                       inputId={field.name}
                     />
-                    {getFormErrorMessage("isCash")}
+                    {getFormErrorMessage("is_cash")}
                   </>
                 )}
               />
@@ -234,6 +233,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
         </div>
       </div>
 
+      {/* Campos que ocupan todo el ancho */}
       <div className="row">
         <div className="col-12">
           <div className="field mb-4">

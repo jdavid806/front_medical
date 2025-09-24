@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
 import { classNames } from "primereact/utils";
 import {
   Filtros,
@@ -23,8 +23,6 @@ export const TaxesConfigTable: React.FC<TaxesConfigTableProps> = ({
   loading = false,
 }) => {
   const toast = useRef<Toast>(null);
-  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [taxToDelete, setTaxToDelete] = useState<Tax | null>(null);
   const [filteredTaxes, setFilteredTaxes] = useState<Tax[]>([]);
   const [filtros, setFiltros] = useState<Filtros>({
     name: "",
@@ -42,19 +40,22 @@ export const TaxesConfigTable: React.FC<TaxesConfigTableProps> = ({
       value: account.id.toString(),
     }));
   };
-const renderAccount = (account: { id: string; name: string } | null) => {
+
+  const renderAccount = (account: { id: string; name: string } | null) => {
     if (!account) return "No asignada";
-    
+
     if (account.name && !account.name.startsWith("Cuenta ")) {
-        return account.name;
+      return account.name;
     }
-    
+
     const fullAccount = accountingAccounts?.find(
-        (acc) => acc.id.toString() === account.id
+      (acc) => acc.id.toString() === account.id
     );
-    
+
+    console.log('fullAccount', fullAccount)
+
     return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
-};
+  };
 
   useEffect(() => {
     setFilteredTaxes(taxes);
@@ -86,6 +87,7 @@ const renderAccount = (account: { id: string; name: string } | null) => {
 
     setFilteredTaxes(result);
   };
+
   const limpiarFiltros = () => {
     setFiltros({
       name: "",
@@ -103,65 +105,76 @@ const renderAccount = (account: { id: string; name: string } | null) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
 
+  const TableMenu: React.FC<{
+    rowData: Tax,
+    onEdit: (id: string) => void,
+    onDelete: (tax: Tax) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
+
+    const menu = useRef<Menu>(null);
+
+    const handleEdit = () => {
+      console.log("Editando impuesto con ID:", rowData.id.toString());
+      onEdit(rowData.id.toString());
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar impuesto con ID:", rowData.id.toString());
+      onDelete(rowData);
+    };
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fa fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={[
+            {
+              label: "Editar",
+              icon: <i className="fa-solid fa-pen me-2"></i>,
+              command: handleEdit,
+            },
+            {
+              label: "Eliminar",
+              icon: <i className="fa fa-trash me-2"></i>,
+              command: handleDelete,
+            }
+          ]}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
+    );
+  };
+
   const actionBodyTemplate = (rowData: Tax) => {
     return (
       <div
         className="flex align-items-center justify-content-center"
         style={{ gap: "0.5rem", minWidth: "120px" }}
       >
-        <Button
-          className="p-button-rounded p-button-text p-button-sm"
-          onClick={() => editTax(rowData)}
-        >
-          <i className="fas fa-pencil-alt"></i>
-        </Button>
-        <Button
-          className="p-button-rounded p-button-text p-button-sm p-button-danger"
-          onClick={() => confirmDelete(rowData)}
-        >
-          <i className="fa-solid fa-trash"></i>
-        </Button>
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={(tax) => {
+            if (onDeleteItem) {
+              onDeleteItem(tax.id.toString());
+            }
+          }}
+        />
       </div>
     );
   };
-
-  const editTax = (tax: Tax) => {
-    if (onEditItem) {
-      onEditItem(tax.id.toString());
-    }
-    showToast("info", "Editar", `Editando impuesto: ${tax.name}`);
-  };
-
-  const confirmDelete = (tax: Tax) => {
-    setTaxToDelete(tax);
-    setDeleteDialogVisible(true);
-  };
-
-  const deleteTax = () => {
-    if (taxToDelete && onDeleteItem) {
-      onDeleteItem(taxToDelete.id.toString());
-      showToast("success", "Éxito", `Impuesto ${taxToDelete.name} eliminado`);
-    }
-    setDeleteDialogVisible(false);
-    setTaxToDelete(null);
-  };
-
-  const deleteDialogFooter = (
-    <div className="flex justify-content-end gap-2">
-      <Button
-        label="Cancelar"
-        icon="pi pi-times"
-        className="p-button-text"
-        onClick={() => setDeleteDialogVisible(false)}
-      />
-      <Button
-        label="Eliminar"
-        icon="pi pi-check"
-        className="p-button-danger"
-        onClick={deleteTax}
-      />
-    </div>
-  );
 
   const styles = {
     card: {
@@ -196,29 +209,6 @@ const renderAccount = (account: { id: string; name: string } | null) => {
     >
       <Toast ref={toast} />
 
-      <Dialog
-        visible={deleteDialogVisible}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={deleteDialogFooter}
-        onHide={() => setDeleteDialogVisible(false)}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="pi pi-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem", color: "#f8bb86" }}
-          />
-          {taxToDelete && (
-            <span>
-              ¿Estás seguro que deseas eliminar el impuesto{" "}
-              <b>{taxToDelete.name}</b>? Esta acción afectará a todos los
-              productos asociados.
-            </span>
-          )}
-        </div>
-      </Dialog>
-
       <Card title="Filtros de Búsqueda" style={styles.card}>
         <div className="row g-3">
           <div className="col-md-6 col-lg-4">
@@ -242,9 +232,9 @@ const renderAccount = (account: { id: string; name: string } | null) => {
                 isLoadingAccounts ? "Cargando cuentas..." : "Seleccione cuenta"
               }
               className={classNames("w-100")}
-             filter
-                filterBy="account_name,account_code"
-                showClear
+              filter
+              filterBy="label"
+              showClear
               disabled={isLoadingAccounts}
               loading={isLoadingAccounts}
             />

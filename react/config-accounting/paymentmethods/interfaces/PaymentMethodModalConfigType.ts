@@ -16,6 +16,6 @@ interface PaymentMethodModalProps {
     id: number;
     name: string;
   }[];
-    loading?: boolean; 
+  loading?: boolean;
 
 }

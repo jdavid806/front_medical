@@ -9209,6 +9209,10 @@ textarea.form-control.is-invalid {
   ;
 }
 
+.icon-color-system {
+  color: #85a9ff;
+}
+
 .carousel-indicators {
   position: absolute;
   right: 0;

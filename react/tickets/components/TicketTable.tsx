@@ -31,7 +31,7 @@ export const TicketTable = () => {
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [dataReady, setDataReady] = useState(false);
-  const [tableKey, setTableKey] = useState(0); // ⬅️ NUEVO: Key para forzar re-render
+  const [tableKey, setTableKey] = useState(0);
   const toast = useRef<Toast>(null);
 
   const columns: ConfigColumns[] = [
@@ -41,7 +41,7 @@ export const TicketTable = () => {
   },
   { 
     data: "reason",
-    defaultContent: "Motivo no disponible",   // ⬅️ Solución
+    defaultContent: "Motivo no disponible",
     render: (data) => data || "Motivo no disponible"
   },
   { 
@@ -52,7 +52,7 @@ export const TicketTable = () => {
     data: "statusView",
     render: (data) => data || "-"
   },
-  { orderable: false, searchable: false },
+  // { orderable: false, searchable: false },
 ];
 
   const {
@@ -82,11 +82,11 @@ export const TicketTable = () => {
         }, {});
         setTicketReasonsBackend(reasonsMap);
         setDataReady(true);
-        setTableKey(prev => prev + 1); // ⬅️ FORZAR RE-RENDER
+        setTableKey(prev => prev + 1);
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
         setDataReady(true);
-        setTableKey(prev => prev + 1); // ⬅️ FORZAR RE-RENDER INCLUSO CON ERROR
+        setTableKey(prev => prev + 1);
       } finally {
         setLoading(false);
       }
@@ -111,12 +111,17 @@ export const TicketTable = () => {
     channel.bind(
       "ticket.generated",
       function (data: { ticket: TicketDto | any } | any) {
-        console.log("datat0", data)
+        console.log("data0", data)
+        console.log("data0", data);
+        console.log("data1", data)
+        const reasonText =(data.ticket.reason &&
+                  ticketReasonsBackend[data.ticket.reason]) ||
+                  "Motivo no disponible";
         const newTicketData: TicketTableItemDto | any = {
           id: data.ticket.id,
           ticket_number: data.ticket.ticket_number,
           phone: data.ticket.phone,
-          reason: "Motivo no disponible",
+          reason: reasonText,
           reason_key: data.ticket.reason,
           priority: ticketPriorities[data.ticket.priority] || "NORMAL",
           status: data.ticket.status,
@@ -182,7 +187,7 @@ export const TicketTable = () => {
       channel.unsubscribe();
       pusher.disconnect();
     };
-  }, []);
+  }, [tickets, ticketReasonsBackend]);
 
   // ⬇️ MEJORADO: Solo procesar cuando ticketReasonsBackend esté listo
   useEffect(() => {
@@ -190,19 +195,11 @@ export const TicketTable = () => {
       return;
     }
 
-    console.log("Procesando tickets con reasons:", ticketReasonsBackend);
-
     const processedData = tickets.map((ticket: any) => {
       // ⬇️ VALIDACIÓN MÁS ROBUSTA
       const reasonText = ticket.reason_label || 
                         (ticket.reason && ticketReasonsBackend[ticket.reason]) || 
                         "Motivo no disponible";
-
-      console.log(`Ticket ${ticket.ticket_number}:`, {
-        reason: ticket.reason,
-        reason_label: ticket.reason_label,
-        resolvedReason: reasonText
-      });
 
       return {
         id: ticket.id,
@@ -230,18 +227,14 @@ export const TicketTable = () => {
 
   // ⬇️ MEJORADO: Filtrar y ordenar datos
   useEffect(() => {
-        console.log("datat0", data)
 
     if (!data.length || !loggedUser || !Array.isArray(loggedUser.availabilities)) {
       setFilteredData([]);
       return;
     }
 
-    console.log("Filtrando datos:", data.length);
-
     const filteredAndSorted = data
       .filter((item) => {
-        // ⬇️ VALIDACIONES MÁS SEGURAS
         if (!item.status || (!item.reason_key && !item.reason)) {
           console.warn("Item inválido omitido:", item);
           return false;
@@ -289,6 +282,7 @@ export const TicketTable = () => {
   };
 
   const callTicket = async (ticket: any) => {
+    console.log("ticket", ticket)
     const user = await userService.getByExternalId(getJWTPayload().sub);
 
     const hasActiveTicket = data.some(
@@ -361,17 +355,6 @@ export const TicketTable = () => {
 
       return (
         <>
-          <button
-            className={`btn btn-primary ${
-              data.status === "PENDING" && ticketIndex === firstPendingIndex && !hasActiveTicket
-                ? ""
-                : "d-none"
-            }`}
-            onClick={() => callTicket(data)}
-          >
-            <i className="fas fa-phone"></i>
-          </button>
-
           <div className={`d-flex flex-wrap gap-1 ${data.status === "CALLED" ? "" : "d-none"}`}>
             <button className="btn btn-success" onClick={() => updateStatus(data.id, "COMPLETED")}>
               <i className="fas fa-check"></i>
@@ -413,7 +396,7 @@ export const TicketTable = () => {
               </div>
             ) : (
               <CustomDataTable
-                key={tableKey} {/* ⬅️ KEY ÚNICA PARA FORZAR RE-RENDER */}
+                key={tableKey}
                 data={filteredData}
                 slots={slots}
                 columns={columns}
@@ -421,7 +404,6 @@ export const TicketTable = () => {
                   ordering: false,
                   searching: false,
                   info: false,
-                  // ⬇️ OPCIONES ADICIONALES PARA MAYOR ESTABILIDAD
                   deferRender: true,
                   responsive: true,
                   autoWidth: false,
