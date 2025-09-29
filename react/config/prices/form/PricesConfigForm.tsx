@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
@@ -15,6 +15,8 @@ import { CustomFormModal } from "../../../components/CustomFormModal";
 import { Dialog } from "primereact/dialog";
 import { ExamConfigFormModal } from "../../../exams-config/components/ExamConfigFormModal";
 import { ExamTypeInputs } from "../../../exams-config/components/ExamConfigForm";
+import { CustomPRTable } from "../../../components/CustomPRTable";
+import { useProductsByType } from "../../../products/hooks/useProductsByType";
 
 
 type EntityRow = {
@@ -24,6 +26,7 @@ type EntityRow = {
   tax_charge_id?: string | number;
   tax_name?: string;
   withholding_tax_id?: string | number;
+  negotation_type?: string;
   retention_name?: string;
 };
 
@@ -42,6 +45,7 @@ export type ProductFormInputs = {
   entities?: EntityRow[];
   toggleIA?: boolean;
   toggleInsumos?: boolean;
+  supplies: any[];
 };
 
 interface ProductFormProps {
@@ -72,6 +76,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     tax_name: '',
     withholding_tax_id: '',
     retention_name: '',
+    negotation_type: ''
   });
   const [examTypesData, setExamTypesData] = useState<any[]>([]);
   const [taxes, setTaxes] = useState<any[]>([]);
@@ -79,6 +84,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
   // Estado para controlar la visibilidad del modal de exámenes
   const [showExamModal, setShowExamModal] = useState(false);
+  const [supply, setSupply] = useState<any | null>(null);
 
   const {
     control,
@@ -104,11 +110,24 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     },
   });
 
+
+  const { fields, append: addSupply, remove: removeSupply, update: updateSupply } = useFieldArray({
+    control,
+    name: "supplies"
+  });
+
   const attentionType = watch("attention_type");
   const toggleEntities = watch("toggleEntities");
   const toggleImpuesto = watch("toggleImpuesto");
   const toggleIA = watch("toggleIA");
   const toggleInsumos = watch("toggleInsumos");
+  const formSupplies = useWatch({
+    control,
+    name: "supplies"
+  });
+
+
+  const { productsByType: supplies, fetchProductsByType } = useProductsByType();
 
   useEffect(() => {
     if (attentionType === "PROCEDURE") {
@@ -137,6 +156,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
     loadExamTypes();
     loadTaxes();
     loadRetentions();
+    fetchProductsByType("Insumos");
   }, []);
 
   useEffect(() => {
@@ -145,8 +165,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       if (initialData.product_id) {
         setValue('product_id', initialData.product_id);
       }
-
-      console.log('initialData: ', initialData);
 
       setValue('name', initialData.name);
       setValue('curp', initialData.curp);
@@ -186,8 +204,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
   }, [initialData, setValue]);
 
   const onSubmit: SubmitHandler<ProductFormInputs> = (data) => {
-    console.log("data: ", data);
-    console.log("entityRows: ", entityRows);
     const submitData: ProductFormInputs = {
       ...data,
       entities: entityRows,
@@ -201,8 +217,15 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
     onHandleSubmit(submitData);
   };
+
+  const regimeOptions = [
+    { label: "Subsidiado", value: "subsidiado" },
+    { label: "Contributivo", value: "contributivo" },
+    { label: "Pensionado", value: "pensionado" },
+    { label: "Privado", value: "privado" },
+  ];
   const handleExamSubmit = (data: ExamTypeInputs) => {
-    console.log("Datos del examen:", data);
+
     handleCloseExamModal();
     loadExamTypes();
   };
@@ -220,13 +243,11 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
 
   async function loadTaxes() {
     const taxes = await taxesService.getTaxes();
-    console.log('Loaded taxes:', taxes.data);
     setTaxes(taxes.data);
   }
 
   async function loadRetentions() {
     const retentions = await retentionsService.getRetentions();
-    console.log('Loaded retentions:', retentions.data);
     setRetentions(retentions.data);
   }
 
@@ -236,7 +257,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
   ) => {
     if (field === 'entity_id') {
       const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
-      console.log('Selected entity:', selectedEntity, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         entity_id: value,
@@ -244,7 +264,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       }));
     } else if (field === 'tax_charge_id') {
       const selectedTax = value ? taxes.find(t => t.id == value) : null;
-      console.log('Selected tax:', selectedTax, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         tax_charge_id: value,
@@ -252,7 +271,6 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
       }));
     } else if (field === 'withholding_tax_id') {
       const selectedRetention = value ? retentions.find(r => r.id == value) : null;
-      console.log('Selected retention:', selectedRetention, 'from value:', value);
       setCurrentEntity((prev) => ({
         ...prev,
         withholding_tax_id: value,
@@ -275,10 +293,10 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
         tax_charge_id: currentEntity.tax_charge_id || '',
         tax_name: currentEntity.tax_name || 'N/A',
         withholding_tax_id: currentEntity.withholding_tax_id || '',
+        negotation_type: currentEntity.negotation_type || '',
         retention_name: currentEntity.retention_name || 'N/A',
       };
 
-      console.log('Adding entity row:', newRow);
       setEntityRows([...entityRows, newRow]);
 
       // Reset current entity
@@ -290,9 +308,8 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
         tax_name: '',
         withholding_tax_id: '',
         retention_name: '',
+        negotation_type: ''
       });
-    } else {
-      console.log('Cannot add entity row - missing entity_id or price:', currentEntity);
     }
   };
 
@@ -596,6 +613,77 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
             />
           </div>
 
+          {toggleInsumos && (<>
+            <div className="d-flex flex-column gap-3">
+              <div className="d-flex flex-column gap-2">
+                <label className="form-label" htmlFor="supply">Insumo</label>
+                <Dropdown
+                  id="supply"
+                  placeholder="Seleccionar insumo"
+                  className="w-100"
+                  showClear
+                  filter
+                  optionLabel="name"
+                  value={supply}
+                  options={supplies}
+                  onChange={(e) => setSupply(e.value)}
+                />
+              </div>
+              <div className="d-flex justify-content-end">
+                <Button
+                  label="Agregar"
+                  icon={<i className="fas fa-plus"></i>}
+                  onClick={() => {
+                    if (supply) {
+                      addSupply({
+                        id: supply.id,
+                        name: supply.name,
+                        quantity: 1
+                      });
+                      setSupply(null);
+                    }
+                  }}
+                  className="btn btn-primary"
+                  type="button"
+                />
+              </div>
+              <CustomPRTable
+                columns={[
+                  { field: 'name', header: 'Nombre' },
+                  {
+                    field: 'quantity', header: 'Cantidad', body: (data: any) => <>
+                      <InputNumber
+                        value={data.quantity}
+                        onChange={(e) => {
+                          updateSupply(formSupplies.indexOf(data), { ...data, quantity: e.value });
+                        }}
+                        className="w-100"
+                        inputClassName="w-100"
+                        useGrouping={false}
+                        placeholder="Cantidad"
+                      />
+                    </>
+                  },
+                  {
+                    field: 'actions', header: 'Acciones', body: (data: any) => (
+                      <div className="d-flex justify-content-center align-items-center">
+                        <Button
+                          icon={<i className="fas fa-trash"></i>}
+                          onClick={() => removeSupply(formSupplies.indexOf(data))}
+                          className="p-button-danger p-button-text"
+                        />
+                      </div>
+                    )
+                  }
+                ]}
+                data={formSupplies}
+                disablePaginator
+                disableReload
+                disableSearch
+              />
+            </div>
+          </>)}
+
           {showTax && (
             <div className="col-12">
               <Controller
@@ -694,6 +782,20 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                       />
                     </div>
                   </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Tipo de negociación
+                      </label>
+                      <Dropdown
+                        className="w-100"
+                        value={currentEntity.negotation_type}
+                        onChange={(e) => handleEntityChange("negotation_type", e.value)}
+                        options={regimeOptions}
+                        placeholder="Seleccionar..."
+                      />
+                    </div>
+                  </div>
                   <div className="col-12 text-end">
                     <button
                       className="btn btn-primary"
@@ -715,6 +817,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                         <th>Precio</th>
                         <th>Tipo Impuesto</th>
                         <th>Tipo Retención</th>
+                        <th>Tipo negociación</th>
                         <th></th>
                       </tr>
                     </thead>
@@ -725,6 +828,7 @@ const PricesConfigForm: React.FC<ProductFormProps> = ({
                           <td>{row.price}</td>
                           <td>{row.tax_name || 'N/A'}</td>
                           <td>{row.retention_name || 'N/A'}</td>
+                          <td>{row.negotation_type || 'N/A'}</td>
                           <td>
                             <button
                               type="button"

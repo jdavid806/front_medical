@@ -143,10 +143,10 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
   ];
 
   const regimeOptions = [
-    { label: "Subsidiado", value: "Subsidiado" },
-    { label: "Contributivo", value: "Contributivo" },
-    { label: "Pensionado", value: "Pensionado" },
-    { label: "Privado", value: "Privado" },
+    { label: "Subsidiado", value: "subsidiado" },
+    { label: "Contributivo", value: "contributivo" },
+    { label: "Pensionado", value: "pensionado" },
+    { label: "Privado", value: "privado" },
   ];
 
   const stepValidations: StepValidations = {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { InputText } from "primereact/inputtext";
@@ -9,6 +9,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
 import { RetentionFormInputs } from "../interfaces/RetentionDTO";
 import { RetentionFormProps } from "../interfaces/RetentionFormConfigType";
+import { taxesService } from "../../../../services/api";
 
 const RetentionFormConfig: React.FC<RetentionFormProps> = ({
   formId,
@@ -22,7 +23,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
     watch,
   } = useForm<RetentionFormInputs>({
@@ -42,6 +43,8 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
   const selectedPurchaseReverseAccount = watch("accounting_account_reverse_id");
   const selectedSellAccount = watch("sell_accounting_account_id");
   const selectedSellReverseAccount = watch("sell_reverse_accounting_account_id");
+  const [taxes, setTaxes] = React.useState<any[]>([]);
+  const [selectedTax, setSelectedTax] = React.useState<any>(null);
 
   const onFormSubmit: SubmitHandler<RetentionFormInputs> = (data) => {
     onSubmit(data);
@@ -63,6 +66,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
         sell_accounting_account_id: initialData.sell_accounting_account_id || null,
         sell_reverse_accounting_account_id: initialData.sell_reverse_accounting_account_id || null,
         description: initialData.description || "",
+        tax_id: initialData.tax_id || null,
       });
     } else {
       reset({
@@ -77,11 +81,24 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
     }
   }, [initialData, reset]);
 
+  useEffect(() => {
+    fetchTaxes();
+  }, []);
+
   // Función auxiliar para encontrar una cuenta por ID
   const findAccountById = (accountId: number | null) => {
     if (!accountId || !accounts) return null;
     return accounts.find(account => account.id === accountId) || null;
   };
+
+  async function fetchTaxes(){
+    try {
+      const taxes = await taxesService.getAll();
+      setTaxes(taxes.data);
+    }catch (error) {
+      console.error("Error fetching taxes:", error);
+    }
+  }
 
   // FUNCIONES MEJORADAS PARA GARANTIZAR QUE LAS CUENTAS SELECCIONADAS SIEMPRE ESTÉN EN LAS OPCIONES
   const getPurchaseAccounts = () => {
@@ -210,6 +227,41 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             />
           </div>
         </div>
+        <div className="col-md-6">
+          <div className="field mb-4">
+            <label htmlFor="tax_id" className="font-medium block mb-2 fw-bold">
+              Impuesto *
+            </label>
+            <Controller
+              name="tax_id"
+              control={control}
+              rules={{
+                required: "La cuenta contable de compras es requerida",
+              }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Dropdown
+                    id={field.name}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value)}
+                    options={taxes}
+                    optionValue="id"
+                    optionLabel="name"
+                    placeholder="Seleccione un impuesto"
+                    filter
+                    showClear
+                    className={classNames("w-full", {
+                      "p-invalid": fieldState.error,
+                    })}
+                    loading={isLoadingAccounts}
+                    appendTo="self"
+                  />
+                  {getFormErrorMessage("tax_id")}
+                </>
+              )}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="row">
@@ -238,11 +290,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
                     options={getPurchaseAccounts()}
-                    optionValue="accounting_account_id"
+                    optionValue="id"
                     optionLabel="account_label"
                     placeholder="Seleccione una cuenta"
                     filter
-                    filterBy="account_label,account_name,account_code"
                     showClear
                     className={classNames("w-full", {
                       "p-invalid": fieldState.error,
@@ -428,7 +479,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
               className="p-button-sm"
               loading={loading}
               style={{ padding: "0 40px", width: "200px", height: "50px" }}
-              disabled={loading || !isDirty}
+              disabled={loading}
               type="submit"
             >
               <i className="fas fa-save"></i>

@@ -6,9 +6,11 @@ export const useVerifyAndSaveProductDelivery = () => {
     showSuccessToast,
     showServerErrorsToast
   } = usePRToast();
-  const verifyAndSaveProductDelivery = async id => {
+  const verifyAndSaveProductDelivery = async (id, data) => {
     try {
-      const response = await suppliesService.validateSupply(id, {});
+      const response = await suppliesService.validateSupply(id, {
+        products_deposits: data.productsDeposits
+      });
       showSuccessToast({
         title: "Exito",
         message: "Entrega exitosa"

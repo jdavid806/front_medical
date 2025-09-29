@@ -12,12 +12,9 @@ import { ConfigFactura, CuentaContable } from "./interfaces/BillingConfigTabType
 import { useBillings } from "../../billing/hooks/useBillings";
 import { stringToDate } from "../../../services/utilidades";
 
-
 const BillingConfigTab = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [cuentasContables, setCuentasContables] = useState<CuentaContable[]>(
-    []
-  );
+  const [cuentasContables, setCuentasContables] = useState<CuentaContable[]>([]);
   const [loading, setLoading] = useState({
     cuentas: false,
     saving: false,
@@ -195,7 +192,6 @@ const BillingConfigTab = () => {
     console.log("errors", errors);
     console.log("tipo", tipo);
 
-
     try {
       const tipoApi = {
         fiscal: "tax_invoice",
@@ -278,40 +274,15 @@ const BillingConfigTab = () => {
   const onSubmitFiscal = (data: ConfigFactura) =>
     guardarConfiguracion("fiscal", data, errorsFiscal, setValueFiscal);
   const onSubmitConsumidor = (data: ConfigFactura) =>
-    guardarConfiguracion(
-      "consumidor",
-      data,
-      errorsConsumidor,
-      setValueConsumidor
-    );
+    guardarConfiguracion("consumidor", data, errorsConsumidor, setValueConsumidor);
   const onSubmitGubernamental = (data: ConfigFactura) =>
-    guardarConfiguracion(
-      "gubernamental",
-      data,
-      errorsGubernamental,
-      setValueGubernamental
-    );
+    guardarConfiguracion("gubernamental", data, errorsGubernamental, setValueGubernamental);
   const onSubmitNotaCredito = (data: ConfigFactura) =>
-    guardarConfiguracion(
-      "notaCredito",
-      data,
-      errorsNotaCredito,
-      setValueNotaCredito
-    );
+    guardarConfiguracion("notaCredito", data, errorsNotaCredito, setValueNotaCredito);
   const onSubmitNotaDebito = (data: ConfigFactura) =>
-    guardarConfiguracion(
-      "notaDebito",
-      data,
-      errorsNotaDebito,
-      setValueNotaDebito
-    );
+    guardarConfiguracion("notaDebito", data, errorsNotaDebito, setValueNotaDebito);
   const onSubmitCompra = (data: ConfigFactura) =>
-    guardarConfiguracion(
-      "compra",
-      data,
-      errorsCompra,
-      setValueCompra
-    );
+    guardarConfiguracion("compra", data, errorsCompra, setValueCompra);
 
   const renderFormFields = (
     tipo: string,
@@ -324,273 +295,214 @@ const BillingConfigTab = () => {
     const accountingAccount = watch("accounting_account");
     const accountingAccountReverse = watch("accounting_account_reverse_id");
     const accountingAccountDiscount = watch("accounting_account_discount");
-    const showReverseAccount = [
-      "fiscal",
-      "consumidor",
-      "gubernamental",
-      "compra"
-    ].includes(tipo);
+    const showReverseAccount = ["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo);
+
+    const getFormErrorMessage = (name: string) => {
+      return errors?.[name] && (
+        <small className="p-error" style={{ display: 'block', height: '20px', lineHeight: '20px' }}>
+          {errors[name]?.message}
+        </small>
+      );
+    };
 
     return (
-      <div className="grid p-fluid">
-        <div className="col-12 md:col-6">
-          <div className="field mb-4">
-            <label
-              htmlFor={`dian_prefix_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Prefijo DGII
-            </label>
-            <InputText
-              id={`dian_prefix_${tipo}`}
-              {...register("dian_prefix", { required: true })}
-              className={`w-full ${errors?.dian_prefix ? "p-invalid" : ""}`}
-              placeholder="Ej: ABC"
-            />
-            {errors?.dian_prefix && (
-              <small className="p-error">Favor ingrese el prefijo DGII.</small>
+      <form onSubmit={handleFiscal(onSubmitFiscal)} className="p-fluid">
+        <div className="row">
+          {/* Columna izquierda */}
+          <div className="col-md-6">
+            <div className="field mb-4">
+              <label htmlFor={`dian_prefix_${tipo}`} className="font-medium block mb-2">
+                Prefijo DGII *
+              </label>
+              <InputText
+                id={`dian_prefix_${tipo}`}
+                {...register("dian_prefix", { required: "El prefijo DGII es requerido" })}
+                className={classNames({ "p-invalid": errors?.dian_prefix })}
+                placeholder="Ej: ABC"
+              />
+              {getFormErrorMessage("dian_prefix")}
+            </div>
+
+            {![
+              "compra",
+            ].includes(tipo) && (
+                <div className="field mb-4">
+                  <label htmlFor={`accounting_account_${tipo}`} className="font-medium block mb-2">
+                    Cuenta Contable *
+                  </label>
+                  <Dropdown
+                    id={`accounting_account_${tipo}`}
+                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                      value: cuenta.id,
+                    }))}
+                    value={accountingAccount}
+                    onChange={(e) => setValue("accounting_account", e.value)}
+                    filter
+                    filterBy="label"
+                    showClear
+                    filterPlaceholder="Buscar cuenta..."
+                    className={classNames("w-full", { "p-invalid": errors?.accounting_account })}
+                    loading={loading.cuentas}
+                    placeholder="Seleccione una cuenta"
+                  />
+                  {getFormErrorMessage("accounting_account")}
+                </div>
+              )}
+
+            {showReverseAccount && (
+              <>
+                <div className="field mb-4">
+                  <label htmlFor={`accounting_account_reverse_${tipo}`} className="font-medium block mb-2">
+                    Cuenta Contable Reversa *
+                  </label>
+                  <Dropdown
+                    id={`accounting_account_reverse_${tipo}`}
+                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                      value: cuenta.id,
+                    }))}
+                    value={accountingAccountReverse}
+                    onChange={(e) => setValue("accounting_account_reverse_id", e.value)}
+                    filter
+                    filterBy="label"
+                    showClear
+                    filterPlaceholder="Buscar cuenta..."
+                    className={classNames("w-full", { "p-invalid": errors?.accounting_account_reverse_id })}
+                    loading={loading.cuentas}
+                    placeholder="Seleccione una cuenta"
+                  />
+                  {getFormErrorMessage("accounting_account_reverse_id")}
+                </div>
+
+                <div className="field mb-4">
+                  <label htmlFor={`accounting_account_discount_${tipo}`} className="font-medium block mb-2">
+                    Cuenta Contable Descuento
+                  </label>
+                  <Dropdown
+                    id={`accounting_account_discount_${tipo}`}
+                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                      value: cuenta.id,
+                    }))}
+                    value={accountingAccountDiscount}
+                    onChange={(e) => setValue("accounting_account_discount", e.value)}
+                    filter
+                    filterBy="label"
+                    showClear
+                    filterPlaceholder="Buscar cuenta..."
+                    className={classNames("w-full", { "p-invalid": errors?.accounting_account_discount })}
+                    loading={loading.cuentas}
+                    placeholder="Seleccione una cuenta"
+                  />
+                  {getFormErrorMessage("accounting_account_discount")}
+                </div>
+              </>
             )}
+
+            <div className="field mb-4">
+              <label htmlFor={`resolution_number_${tipo}`} className="font-medium block mb-2">
+                Número Resolución *
+              </label>
+              <InputText
+                id={`resolution_number_${tipo}`}
+                {...register("resolution_number", { required: "El número de resolución es requerido" })}
+                className={classNames({ "p-invalid": errors?.resolution_number })}
+                placeholder="Ej: 1234567890"
+              />
+              {getFormErrorMessage("resolution_number")}
+            </div>
           </div>
 
-          {![
-            "compra",
-          ].includes(tipo) && (<div className="field mb-4">
-            <label
-              htmlFor={`accounting_account_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Cuenta Contable
-            </label>
-            <Dropdown
-              id={`accounting_account_${tipo}`}
-              options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                value: cuenta.id,
-              }))}
-              value={accountingAccount}
-              onChange={(e) => setValue("accounting_account", e.value)}
-              filter
-              filterBy="label"
-              showClear
-              filterPlaceholder="Buscar cuenta..."
-              className={`w-full ${errors?.accounting_account ? "p-invalid" : ""
-                }`}
-              loading={loading.cuentas}
-              placeholder="Seleccione una cuenta"
-            />
-            {errors?.accounting_account && (
-              <small className="p-error">
-                Favor seleccione una cuenta contable.
-              </small>
-            )}
-          </div>
-            )}
+          {/* Columna derecha */}
+          <div className="col-md-6">
+            <div className="field mb-4">
+              <label htmlFor={`invoice_from_${tipo}`} className="font-medium block mb-2">
+                Facturas Desde *
+              </label>
+              <InputNumber
+                id={`invoice_from_${tipo}`}
+                value={watch("invoice_from")}
+                onValueChange={(e) => setValue("invoice_from", e.value)}
+                mode="decimal"
+                useGrouping={false}
+                min={1}
+                className={classNames("w-full", { "p-invalid": errors?.invoice_from })}
+                placeholder="Ej: 1001"
+              />
+              {getFormErrorMessage("invoice_from")}
+            </div>
 
-          {showReverseAccount && (
-            <>
-              <div className="field mb-4">
-                <label
-                  htmlFor={`accounting_account_reverse_${tipo}`}
-                  className="block text-900 font-medium mb-2"
-                >
-                  Cuenta Contable Reversa
-                </label>
-                <Dropdown
-                  id={`accounting_account_reverse_${tipo}`}
-                  options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                    label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                    value: cuenta.id,
-                  }))}
-                  value={accountingAccountReverse}
-                  onChange={(e) =>
-                    setValue("accounting_account_reverse_id", e.value)
-                  }
-                  filter
-                  filterBy="label"
-                  showClear
-                  filterPlaceholder="Buscar cuenta..."
-                  className={`w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""
-                    }`}
-                  loading={loading.cuentas}
-                  placeholder="Seleccione una cuenta"
-                />
-                {errors?.accounting_account_reverse_id && (
-                  <small className="p-error">
-                    Favor seleccione una cuenta contable reversa.
-                  </small>
-                )}
-              </div>
+            <div className="field mb-4">
+              <label htmlFor={`invoice_to_${tipo}`} className="font-medium block mb-2">
+                Facturas Hasta *
+              </label>
+              <InputNumber
+                id={`invoice_to_${tipo}`}
+                value={watch("invoice_to")}
+                onValueChange={(e) => setValue("invoice_to", e.value)}
+                mode="decimal"
+                useGrouping={false}
+                min={1}
+                className={classNames("w-full", { "p-invalid": errors?.invoice_to })}
+                placeholder="Ej: 2000"
+              />
+              {getFormErrorMessage("invoice_to")}
+            </div>
 
-              <div className="field mb-4">
-                <label
-                  htmlFor={`accounting_account_discount_${tipo}`}
-                  className="block text-900 font-medium mb-2"
-                >
-                  Cuenta Contable Descuento
-                </label>
-                <Dropdown
-                  id={`accounting_account_discount_${tipo}`}
-                  options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                    label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                    value: cuenta.id,
-                  }))}
-                  value={accountingAccountDiscount}
-                  onChange={(e) =>
-                    setValue("accounting_account_discount", e.value)
-                  }
-                  filter
-                  filterBy="label"
-                  showClear
-                  filterPlaceholder="Buscar cuenta..."
-                  className={`w-full ${errors?.accounting_account_discount ? "p-invalid" : ""
-                    }`}
-                  loading={loading.cuentas}
-                  placeholder="Seleccione una cuenta"
-                />
-                {errors?.accounting_account_discount && (
-                  <small className="p-error">
-                    Favor seleccione una cuenta contable para descuentos.
-                  </small>
-                )}
-              </div>
-            </>
-          )}
+            <div className="field mb-4">
+              <label htmlFor={`resolution_date_${tipo}`} className="font-medium block mb-2">
+                Fecha Resolución *
+              </label>
+              <Calendar
+                id={`resolution_date_${tipo}`}
+                value={watch("resolution_date")}
+                onChange={(e) => setValue("resolution_date", e.value)}
+                dateFormat="dd/mm/yy"
+                showIcon
+                placeholder="Seleccione la fecha de resolución"
+                className={classNames("w-full", { "p-invalid": errors?.resolution_date })}
+                readOnlyInput
+              />
+              {getFormErrorMessage("resolution_date")}
+            </div>
 
-          <div className="field mb-4">
-            <label
-              htmlFor={`resolution_number_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Número Resolución
-            </label>
-            <InputText
-              id={`resolution_number_${tipo}`}
-              {...register("resolution_number", { required: true })}
-              className={`w-full ${errors?.resolution_number ? "p-invalid" : ""
-                }`}
-              placeholder="Ej: 1234567890"
-            />
-            {errors?.resolution_number && (
-              <small className="p-error">
-                Favor ingrese el número de resolución.
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="col-12 md:col-6">
-          <div className="field mb-4">
-            <label
-              htmlFor={`invoice_from_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Facturas Desde
-            </label>
-            <InputNumber
-              id={`invoice_from_${tipo}`}
-              value={watch("invoice_from")}
-              onValueChange={(e) => setValue("invoice_from", e.value)}
-              mode="decimal"
-              useGrouping={false}
-              min={1}
-              className={`w-full ${errors?.invoice_from ? "p-invalid" : ""}`}
-              placeholder="Ej: 1001"
-            />
-            {errors?.invoice_from && (
-              <small className="p-error">
-                Ingrese el número inicial de facturas.
-              </small>
-            )}
-          </div>
-
-          <div className="field mb-4">
-            <label
-              htmlFor={`invoice_to_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Facturas Hasta
-            </label>
-            <InputNumber
-              id={`invoice_to_${tipo}`}
-              value={watch("invoice_to")}
-              onValueChange={(e) => setValue("invoice_to", e.value)}
-              mode="decimal"
-              useGrouping={false}
-              min={1}
-              className={`w-full ${errors?.invoice_to ? "p-invalid" : ""}`}
-              placeholder="Ej: 2000"
-            />
-            {errors?.invoice_to && (
-              <small className="p-error">
-                Ingrese el número final de facturas.
-              </small>
-            )}
-          </div>
-
-          <div className="field mb-4">
-            <label
-              htmlFor={`resolution_date_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Fecha Resolución
-            </label>
-            <Calendar
-              id={`resolution_date_${tipo}`}
-              value={watch("resolution_date")}
-              onChange={(e) => setValue("resolution_date", e.value)}
-              dateFormat="dd/mm/yy"
-              showIcon
-              placeholder="Seleccione la fecha de resolución"
-              className={`w-full ${errors?.resolution_date ? "p-invalid" : ""}`}
-              readOnlyInput
-            />
-            {errors?.resolution_date && (
-              <small className="p-error">
-                Seleccione la fecha de resolución.
-              </small>
-            )}
-          </div>
-
-          <div className="field mb-4">
-            <label
-              htmlFor={`expiration_date_${tipo}`}
-              className="block text-900 font-medium mb-2"
-            >
-              Fecha Vencimiento
-            </label>
-            <Calendar
-              id={`expiration_date_${tipo}`}
-              value={watch("expiration_date")}
-              onChange={(e) => setValue("expiration_date", e.value)}
-              dateFormat="dd/mm/yy"
-              showIcon
-              placeholder="Seleccione la fecha de vencimiento"
-              className={`w-full ${errors?.expiration_date ? "p-invalid" : ""}`}
-              readOnlyInput
-            />
-            {errors?.expiration_date && (
-              <small className="p-error">
-                Seleccione la fecha de vencimiento.
-              </small>
-            )}
+            <div className="field mb-4">
+              <label htmlFor={`expiration_date_${tipo}`} className="font-medium block mb-2">
+                Fecha Vencimiento
+              </label>
+              <Calendar
+                id={`expiration_date_${tipo}`}
+                value={watch("expiration_date")}
+                onChange={(e) => setValue("expiration_date", e.value)}
+                dateFormat="dd/mm/yy"
+                showIcon
+                placeholder="Seleccione la fecha de vencimiento"
+                className={classNames("w-full", { "p-invalid": errors?.expiration_date })}
+                readOnlyInput
+              />
+              {getFormErrorMessage("expiration_date")}
+            </div>
           </div>
         </div>
 
-        {/* Save Button */}
-        <div className="col-12" style={{ display: "flex", justifyContent: "center" }}>
-          <div className="flex justify-content-center mt-4">
-            <Button
-              type="submit"
-              label="Guardar Configuración"
-              className="p-button-sm md:p-button mx-auto"
-              style={{ width: "100%" }}
-              loading={loading.saving}
-            >
-              <i className="fas fa-save ms-2"></i>
-            </Button>
+        {/* Botones centrados */}
+        <div className="row">
+          <div className="col-12">
+            <div className="d-flex justify-content-center mt-4 gap-6">
+              <Button
+                label="Guardar Configuración"
+                className="p-button-sm"
+                loading={loading.saving}
+                style={{ padding: "0 40px", width: "300px", height: "50px" }}
+                type="submit"
+              >
+                <i className="fas fa-save"></i>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     );
   };
 
@@ -601,178 +513,91 @@ const BillingConfigTab = () => {
           activeIndex={activeTab}
           onTabChange={(e) => setActiveTab(e.index)}
           className="w-full"
+          scrollable
         >
           {/* Factura Fiscal */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fas fa-file-invoice-dollar me-2"></i>
                 Factura Fiscal
-                <i
-                  className="fas fa-file-invoice-dollar ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form onSubmit={handleFiscal(onSubmitFiscal)} className="w-full">
-              {renderFormFields(
-                "fiscal",
-                registerFiscal,
-                errorsFiscal,
-                setValueFiscal,
-                watchFiscal
-              )}
-            </form>
+            {renderFormFields("fiscal", registerFiscal, errorsFiscal, setValueFiscal, watchFiscal)}
           </TabPanel>
 
           {/* Factura Consumidor */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fa-solid fa-file-invoice me-2"></i>
                 Factura Consumidor
-                <i
-                  className="fa-solid fa-file-invoice ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form
-              onSubmit={handleConsumidor(onSubmitConsumidor)}
-              className="w-full"
-            >
-              {renderFormFields(
-                "consumidor",
-                registerConsumidor,
-                errorsConsumidor,
-                setValueConsumidor,
-                watchConsumidor
-              )}
-            </form>
+            {renderFormFields("consumidor", registerConsumidor, errorsConsumidor, setValueConsumidor, watchConsumidor)}
           </TabPanel>
 
           {/* Factura Gubernamental */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fa-solid fa-building-columns me-2"></i>
                 Factura Gubernamental
-                <i
-                  className="fa-solid fa-building-columns ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form
-              onSubmit={handleGubernamental(onSubmitGubernamental)}
-              className="w-full"
-            >
-              {renderFormFields(
-                "gubernamental",
-                registerGubernamental,
-                errorsGubernamental,
-                setValueGubernamental,
-                watchGubernamental
-              )}
-            </form>
+            {renderFormFields("gubernamental", registerGubernamental, errorsGubernamental, setValueGubernamental, watchGubernamental)}
           </TabPanel>
 
           {/* Notas de Crédito */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fa-solid fa-money-bill-transfer me-2"></i>
                 Notas de Crédito
-                <i
-                  className="fa-solid fa-money-bill-transfer ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form
-              onSubmit={handleNotaCredito(onSubmitNotaCredito)}
-              className="w-full"
-            >
-              {renderFormFields(
-                "notaCredito",
-                registerNotaCredito,
-                errorsNotaCredito,
-                setValueNotaCredito,
-                watchNotaCredito
-              )}
-            </form>
+            {renderFormFields("notaCredito", registerNotaCredito, errorsNotaCredito, setValueNotaCredito, watchNotaCredito)}
           </TabPanel>
 
           {/* Notas de Débito */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fa-solid fa-money-bill-trend-up me-2"></i>
                 Notas de Débito
-                <i
-                  className="fa-solid fa-money-bill-trend-up ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form
-              onSubmit={handleNotaDebito(onSubmitNotaDebito)}
-              className="w-full"
-            >
-              {renderFormFields(
-                "notaDebito",
-                registerNotaDebito,
-                errorsNotaDebito,
-                setValueNotaDebito,
-                watchNotaDebito
-              )}
-            </form>
+            {renderFormFields("notaDebito", registerNotaDebito, errorsNotaDebito, setValueNotaDebito, watchNotaDebito)}
           </TabPanel>
 
           {/* Factura de Compra */}
           <TabPanel
             header={
-              <span
-                className="d-flex align-items-center"
-                style={{ color: "#132030" }}
-              >
+              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+                <i className="fa-solid fa-file-invoice me-2"></i>
                 Factura de Compra
-                <i
-                  className="fa-solid fa-file-invoice ms-1"
-                  style={{ color: "#132030" }}
-                ></i>
               </span>
             }
           >
-            <form onSubmit={handleCompra(onSubmitCompra)} className="w-full">
-              {renderFormFields(
-                "compra",
-                registerCompra,
-                errorsCompra,
-                setValueCompra,
-                watchCompra
-              )}
-            </form>
+            {renderFormFields("compra", registerCompra, errorsCompra, setValueCompra, watchCompra)}
           </TabPanel>
         </TabView>
       </Card>
     </div>
   );
 };
+
+// Función classNames helper
+function classNames(classes: { [key: string]: boolean }) {
+  return Object.entries(classes)
+    .filter(([key, value]) => value)
+    .map(([key]) => key)
+    .join(' ');
+}
 
 export default BillingConfigTab;

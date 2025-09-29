@@ -178,7 +178,8 @@ const NavbarHeader = () => {
         url: 'configExamenes'
       }, {
         label: 'Precios',
-        icon: 'fa-solid fa-money-bills'
+        icon: 'fa-solid fa-money-bills',
+        url: 'configPrecios'
       }, {
         label: 'Importaciones',
         icon: 'fa-solid fa-cloud-arrow-up',

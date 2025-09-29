@@ -89,6 +89,7 @@ export const PricesConfig = () => {
                         tax_name: entity?.tax_charge?.name || 'N/A',
                         withholding_tax_id: entity?.pivot?.withholding_tax_id || entity?.withholding_tax_id || '',
                         retention_name: entity?.withholding_tax?.name || 'N/A',
+                        negotation_type: entity?.negotation_type || entity?.negotation_type || '',
                     };
                 }) || []
             };

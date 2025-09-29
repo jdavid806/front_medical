@@ -33,6 +33,7 @@ interface ExamRecipesTableItem {
   user: any;
   details: any[];
   original: any;
+  updated_at?: string;
 }
 
 const patientId = new URLSearchParams(window.location.search).get("patient_id");
@@ -99,6 +100,7 @@ export const ExamRecipesApp: React.FC = () => {
         user: prescription.user,
         details: prescription.details,
         original: prescription,
+        updated_at: prescription.result_updated_at_formatted
       }));
     setTableExamRecipes(mappedExamRecipes);
     setTotalRecords(mappedExamRecipes.length);
@@ -257,6 +259,11 @@ export const ExamRecipesApp: React.FC = () => {
     {
       field: "created_at",
       header: "Fecha de creación",
+      sortable: true,
+    },
+    {
+      field: "updated_at",
+      header: "Fecha de subida",
       sortable: true,
     },
     {

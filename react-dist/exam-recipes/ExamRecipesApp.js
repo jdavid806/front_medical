@@ -65,7 +65,8 @@ export const ExamRecipesApp = () => {
       resultMinioUrl: prescription.result?.result_minio_url,
       user: prescription.user,
       details: prescription.details,
-      original: prescription
+      original: prescription,
+      updated_at: prescription.result_updated_at_formatted
     }));
     setTableExamRecipes(mappedExamRecipes);
     setTotalRecords(mappedExamRecipes.length);
@@ -181,6 +182,10 @@ export const ExamRecipesApp = () => {
   }, {
     field: "created_at",
     header: "Fecha de creación",
+    sortable: true
+  }, {
+    field: "updated_at",
+    header: "Fecha de subida",
     sortable: true
   }, {
     field: "status",

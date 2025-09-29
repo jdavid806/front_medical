@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PrimeReactProvider } from 'primereact/api';
+import React, { useEffect, useState } from "react";
+import { PrimeReactProvider } from "primereact/api";
 import { RetentionConfigTable } from "./table/RetentionConfigTable.js";
 import RetentionModalConfig from "./modal/RetentionModalConfig.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
@@ -10,8 +10,8 @@ import { useRetentionDeleteTable } from "./hooks/useRetentionDeleteTable.js";
 import { useRetentionUpdateTable } from "./hooks/useRetentionUpdateTable.js";
 import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccounts.js";
 import { RetentionMapperCreate, RetentionMapperUpdate } from "./mapper/mappedRetention.js";
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
 export const RetentionConfig = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -47,46 +47,40 @@ export const RetentionConfig = () => {
     isLoading: isLoadingAccounts
   } = useAccountingAccounts();
   const onCreate = () => {
-    console.log("Creando nueva retención");
     setInitialData(undefined);
     setRetention(null);
     setShowFormModal(true);
   };
   const handleSubmit = async data => {
     try {
-      console.log("Enviando datos del formulario:", data);
       if (retention) {
-        console.log("Actualizando retención existente:", retention.id);
         const updateData = RetentionMapperUpdate(data);
         await updateRetention(retention.id, updateData);
-        SwalManager.success('Retención actualizada correctamente');
+        SwalManager.success("Retención actualizada correctamente");
       } else {
-        console.log("Creando nueva retención");
         const createData = RetentionMapperCreate(data);
         await createRetention(createData);
-        SwalManager.success('Retención creada correctamente');
+        SwalManager.success("Retención creada correctamente");
       }
       await refreshRetentions();
       setShowFormModal(false);
     } catch (error) {
       console.error("Error al guardar retención:", error);
-      SwalManager.error(error.message || 'Error al guardar la retención');
+      SwalManager.error(error.message || "Error al guardar la retención");
     }
   };
   const handleTableEdit = async id => {
     try {
-      console.log("Editando retención con ID:", id);
       const retentionData = await fetchRetentionById(id);
-      console.log("Retención encontrada:", retentionData);
       if (retentionData) {
         setShowFormModal(true);
       } else {
         console.error("No se encontró la retención con ID:", id);
-        SwalManager.error('No se pudo cargar la retención para editar');
+        SwalManager.error("No se pudo cargar la retención para editar");
       }
     } catch (error) {
       console.error("Error al cargar retención para editar:", error);
-      SwalManager.error('Error al cargar la retención');
+      SwalManager.error("Error al cargar la retención");
     }
   };
   const handleDeleteRetention = async id => {
@@ -94,18 +88,17 @@ export const RetentionConfig = () => {
       const success = await deleteRetention(id);
       if (success) {
         await refreshRetentions();
-        SwalManager.success('Retention eliminado correctamente');
+        SwalManager.success("Retention eliminado correctamente");
       } else {
-        SwalManager.error('No se pudo eliminar Retention');
+        SwalManager.error("No se pudo eliminar Retention");
       }
     } catch (error) {
       console.error("Error en eliminación:", error);
-      SwalManager.error('Error al eliminar el Retention');
+      SwalManager.error("Error al eliminar el Retention");
     }
   };
   useEffect(() => {
     if (retention && accounts) {
-      console.log("Setting initialData from retention:", retention);
       const data = {
         name: retention.name,
         percentage: retention.percentage,
@@ -113,7 +106,7 @@ export const RetentionConfig = () => {
         accounting_account_reverse_id: retention.accounting_account_reverse_id,
         sell_accounting_account_id: retention.sell_accounting_account_id,
         sell_reverse_accounting_account_id: retention.sell_reverse_accounting_account_id,
-        description: retention.description || ''
+        description: retention.description || ""
       };
       setInitialData(data);
     }
@@ -133,7 +126,6 @@ export const RetentionConfig = () => {
     loading: deleteLoading
   }));
   const enrichedRetentions = retentions.map(retentionItem => {
-    console.log("Datos originales de la retención:", retentionItem);
     const account = accounts.find(acc => acc.id === retentionItem.accounting_account_id);
     const returnAccount = accounts.find(acc => acc.id === retentionItem.accounting_account_reverse_id);
     const accountData = retentionItem.account || (account ? {
@@ -172,7 +164,7 @@ export const RetentionConfig = () => {
     disabled: createLoading || updateLoading || deleteLoading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nueva Retención'))), error && /*#__PURE__*/React.createElement("div", {
+  }), createLoading || updateLoading ? "Procesando..." : "Nueva Retención"))), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
   }, error), /*#__PURE__*/React.createElement("div", {
@@ -191,7 +183,6 @@ export const RetentionConfig = () => {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {
-      console.log("Cerrando modal");
       setShowFormModal(false);
       setRetention(null);
       setInitialData(undefined);

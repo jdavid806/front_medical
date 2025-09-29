@@ -8,6 +8,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
+import { taxesService } from "../../../../services/api/index.js";
 const RetentionFormConfig = ({
   formId,
   onSubmit,
@@ -23,8 +24,7 @@ const RetentionFormConfig = ({
     control,
     handleSubmit,
     formState: {
-      errors,
-      isDirty
+      errors
     },
     reset,
     watch
@@ -40,11 +40,13 @@ const RetentionFormConfig = ({
     }
   });
 
-  // Solo watch para las cuentas que necesitamos para validaciones individuales
+  // Watch para las cuentas seleccionadas actualmente
   const selectedPurchaseAccount = watch("accounting_account_id");
   const selectedPurchaseReverseAccount = watch("accounting_account_reverse_id");
   const selectedSellAccount = watch("sell_accounting_account_id");
   const selectedSellReverseAccount = watch("sell_reverse_accounting_account_id");
+  const [taxes, setTaxes] = React.useState([]);
+  const [selectedTax, setSelectedTax] = React.useState(null);
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -62,7 +64,8 @@ const RetentionFormConfig = ({
         accounting_account_reverse_id: initialData.accounting_account_reverse_id || null,
         sell_accounting_account_id: initialData.sell_accounting_account_id || null,
         sell_reverse_accounting_account_id: initialData.sell_reverse_accounting_account_id || null,
-        description: initialData.description || ""
+        description: initialData.description || "",
+        tax_id: initialData.tax_id || null
       });
     } else {
       reset({
@@ -76,31 +79,62 @@ const RetentionFormConfig = ({
       });
     }
   }, [initialData, reset]);
+  useEffect(() => {
+    fetchTaxes();
+  }, []);
 
   // Función auxiliar para encontrar una cuenta por ID
   const findAccountById = accountId => {
     if (!accountId || !accounts) return null;
     return accounts.find(account => account.id === accountId) || null;
   };
+  async function fetchTaxes() {
+    try {
+      const taxes = await taxesService.getAll();
+      setTaxes(taxes.data);
+    } catch (error) {
+      console.error("Error fetching taxes:", error);
+    }
+  }
 
-  // FILTRADO COMPLETAMENTE INDEPENDIENTE PARA CADA DROPDOWN
-  // Cada dropdown muestra TODAS las cuentas disponibles sin restricciones cruzadas
-
+  // FUNCIONES MEJORADAS PARA GARANTIZAR QUE LAS CUENTAS SELECCIONADAS SIEMPRE ESTÉN EN LAS OPCIONES
   const getPurchaseAccounts = () => {
     if (!accounts || accounts.length === 0) return [];
-    return accounts;
+    const selectedAccount = selectedPurchaseAccount ? findAccountById(selectedPurchaseAccount) : null;
+    const accountsList = [...accounts];
+
+    // Si la cuenta seleccionada no está en la lista principal, la agregamos
+    if (selectedAccount && !accountsList.some(acc => acc.id === selectedAccount.id)) {
+      accountsList.push(selectedAccount);
+    }
+    return accountsList;
   };
   const getPurchaseReverseAccounts = () => {
     if (!accounts || accounts.length === 0) return [];
-    return accounts;
+    const selectedAccount = selectedPurchaseReverseAccount ? findAccountById(selectedPurchaseReverseAccount) : null;
+    const accountsList = [...accounts];
+    if (selectedAccount && !accountsList.some(acc => acc.id === selectedAccount.id)) {
+      accountsList.push(selectedAccount);
+    }
+    return accountsList;
   };
   const getSellAccounts = () => {
     if (!accounts || accounts.length === 0) return [];
-    return accounts;
+    const selectedAccount = selectedSellAccount ? findAccountById(selectedSellAccount) : null;
+    const accountsList = [...accounts];
+    if (selectedAccount && !accountsList.some(acc => acc.id === selectedAccount.id)) {
+      accountsList.push(selectedAccount);
+    }
+    return accountsList;
   };
   const getSellReverseAccounts = () => {
     if (!accounts || accounts.length === 0) return [];
-    return accounts;
+    const selectedAccount = selectedSellReverseAccount ? findAccountById(selectedSellReverseAccount) : null;
+    const accountsList = [...accounts];
+    if (selectedAccount && !accountsList.some(acc => acc.id === selectedAccount.id)) {
+      accountsList.push(selectedAccount);
+    }
+    return accountsList;
   };
   return /*#__PURE__*/React.createElement("form", {
     id: formId,
@@ -173,6 +207,38 @@ const RetentionFormConfig = ({
       }),
       placeholder: "Ej: 10"
     }), getFormErrorMessage("percentage"))
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field mb-4"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "tax_id",
+    className: "font-medium block mb-2 fw-bold"
+  }, "Impuesto *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "tax_id",
+    control: control,
+    rules: {
+      required: "La cuenta contable de compras es requerida"
+    },
+    render: ({
+      field,
+      fieldState
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+      id: field.name,
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: taxes,
+      optionValue: "id",
+      optionLabel: "name",
+      placeholder: "Seleccione un impuesto",
+      filter: true,
+      showClear: true,
+      className: classNames("w-full", {
+        "p-invalid": fieldState.error
+      }),
+      loading: isLoadingAccounts,
+      appendTo: "self"
+    }), getFormErrorMessage("tax_id"))
   })))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
@@ -204,7 +270,6 @@ const RetentionFormConfig = ({
       optionLabel: "account_label",
       placeholder: "Seleccione una cuenta",
       filter: true,
-      filterBy: "account_label,account_name,account_code",
       showClear: true,
       className: classNames("w-full", {
         "p-invalid": fieldState.error
@@ -361,7 +426,7 @@ const RetentionFormConfig = ({
       width: "200px",
       height: "50px"
     },
-    disabled: loading || !isDirty,
+    disabled: loading,
     type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"

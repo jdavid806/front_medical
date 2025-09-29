@@ -13,14 +13,11 @@ async function getFileUrl(file_id) {
 }
 
 function getUrlImage(minioUrl, withProtocol = false) {
-  const { protocol, hostname } = window.location;
-  const tenant = hostname.split(".")[0];
-  const subdomains = hostname.split(".").slice(1).join(".") || "";
-  if (!withProtocol) {
-    return `/bucket/${tenant}-${subdomains.split(".")[0]}/${minioUrl}`;
-  } else {
-    return `${protocol}//${tenant}.${subdomains.split(".")[0]}.${subdomains.split(".")[1]}/bucket/${tenant}-${subdomains.split(".")[0]}/${minioUrl}`;
-  }
+
+  const host = window.location.hostname.replace(/\./g, "-");
+  const scheme = window.location.protocol;
+
+  return `${scheme}//${window.location.hostname}/bucket/${host}/${minioUrl}`;
 }
 
 async function guardarArchivo(formData, returnFullData = false) {

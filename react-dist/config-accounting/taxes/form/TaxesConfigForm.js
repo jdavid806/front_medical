@@ -19,8 +19,7 @@ const TaxFormConfig = ({
     control,
     handleSubmit,
     formState: {
-      errors,
-      isDirty
+      errors
     },
     reset,
     watch
@@ -310,7 +309,7 @@ const TaxFormConfig = ({
       width: "200px",
       height: "50px"
     },
-    disabled: loading || !isDirty,
+    disabled: loading,
     type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"

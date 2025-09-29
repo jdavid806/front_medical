@@ -137,34 +137,6 @@ export const ProductDeliveryDetailDialog: React.FC<ProductDeliveryDetailDialogPr
                     </div>
                 </Card>
 
-                {/* Información de entrega */}
-                {delivery.delivery_date && (
-                    <Card title="Información de Entrega" className="mb-4">
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="mb-3">
-                                    <label className="fw-bold text-muted small">Fecha de entrega programada:</label>
-                                    <div className="d-flex align-items-center mt-1">
-                                        <i className="fas fa-truck me-2 text-success"></i>
-                                        <span>{formatDateDMY(delivery.delivery_date)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-md-6">
-                                <div className="mb-3">
-                                    <label className="fw-bold text-muted small">Estado de entrega:</label>
-                                    <div className="mt-1">
-                                        <Tag
-                                            value={delivery.delivery_date ? "Programada" : "Por programar"}
-                                            severity={delivery.delivery_date ? "success" : "warning"}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                )}
-
                 {/* Resumen del estado */}
                 <Card title="Resumen del Estado">
                     <div className="row text-center">

@@ -15,6 +15,10 @@ export interface EntityCreate {
     withholding_tax_id: string;
 }
 
+export interface SupplyCreate {
+    supply_id: number;
+    quantity: number;
+}
 
 interface Product {
     name: string;
@@ -25,6 +29,8 @@ interface Product {
     tax_charge_id: string;
     exam_type_id: string;
     purchase_price: string;
+    scheduleable_by_ai: boolean;
+    supplies: SupplyCreate[];
 }
 
 export const usePriceConfigCreate = () => {

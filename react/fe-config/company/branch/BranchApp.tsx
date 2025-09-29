@@ -85,8 +85,10 @@ export const BranchApp = () => {
           },
         }}
       >
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div className="text-end mb-2">
+        <div style={{ marginLeft: '13px' }} className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="mb-1">Gestión de Sucursales</h4>
+
+          <div className="text-end" style={{ marginRight: '12px' }}>
             <button
               className="btn btn-primary d-flex align-items-center"
               onClick={onCreate}
@@ -96,6 +98,7 @@ export const BranchApp = () => {
             </button>
           </div>
         </div>
+
         <BranchTable
           branches={branches}
           onEditItem={handleTableEdit}

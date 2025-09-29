@@ -165,7 +165,7 @@ export const navbarMenuStyle = `
 
     .custom-responsive-megamenu .p-menubar-root-list {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       gap: 2rem;
     }
 

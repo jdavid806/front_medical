@@ -1,6 +1,6 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 import React, { useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
@@ -9,6 +9,8 @@ import { Button } from 'primereact/button';
 import { examTypeService, taxesService, retentionsService } from "../../../../services/api/index.js";
 import { Dialog } from "primereact/dialog";
 import { ExamConfigFormModal } from "../../../exams-config/components/ExamConfigFormModal.js";
+import { CustomPRTable } from "../../../components/CustomPRTable.js";
+import { useProductsByType } from "../../../products/hooks/useProductsByType.js";
 const PricesConfigForm = ({
   formId,
   onHandleSubmit,
@@ -28,7 +30,8 @@ const PricesConfigForm = ({
     tax_charge_id: '',
     tax_name: '',
     withholding_tax_id: '',
-    retention_name: ''
+    retention_name: '',
+    negotation_type: ''
   });
   const [examTypesData, setExamTypesData] = useState([]);
   const [taxes, setTaxes] = useState([]);
@@ -36,6 +39,7 @@ const PricesConfigForm = ({
 
   // Estado para controlar la visibilidad del modal de exámenes
   const [showExamModal, setShowExamModal] = useState(false);
+  const [supply, setSupply] = useState(null);
   const {
     control,
     handleSubmit,
@@ -61,11 +65,28 @@ const PricesConfigForm = ({
       toggleInsumos: false
     }
   });
+  const {
+    fields,
+    append: addSupply,
+    remove: removeSupply,
+    update: updateSupply
+  } = useFieldArray({
+    control,
+    name: "supplies"
+  });
   const attentionType = watch("attention_type");
   const toggleEntities = watch("toggleEntities");
   const toggleImpuesto = watch("toggleImpuesto");
   const toggleIA = watch("toggleIA");
   const toggleInsumos = watch("toggleInsumos");
+  const formSupplies = useWatch({
+    control,
+    name: "supplies"
+  });
+  const {
+    productsByType: supplies,
+    fetchProductsByType
+  } = useProductsByType();
   useEffect(() => {
     if (attentionType === "PROCEDURE") {
       setShowExamType(true);
@@ -89,6 +110,7 @@ const PricesConfigForm = ({
     loadExamTypes();
     loadTaxes();
     loadRetentions();
+    fetchProductsByType("Insumos");
   }, []);
   useEffect(() => {
     if (initialData) {
@@ -96,7 +118,6 @@ const PricesConfigForm = ({
       if (initialData.product_id) {
         setValue('product_id', initialData.product_id);
       }
-      console.log('initialData: ', initialData);
       setValue('name', initialData.name);
       setValue('curp', initialData.curp);
       setValue('attention_type', initialData.attention_type);
@@ -133,8 +154,6 @@ const PricesConfigForm = ({
     }
   }, [initialData, setValue]);
   const onSubmit = data => {
-    console.log("data: ", data);
-    console.log("entityRows: ", entityRows);
     const submitData = {
       ...data,
       entities: entityRows
@@ -146,8 +165,20 @@ const PricesConfigForm = ({
     }
     onHandleSubmit(submitData);
   };
+  const regimeOptions = [{
+    label: "Subsidiado",
+    value: "subsidiado"
+  }, {
+    label: "Contributivo",
+    value: "contributivo"
+  }, {
+    label: "Pensionado",
+    value: "pensionado"
+  }, {
+    label: "Privado",
+    value: "privado"
+  }];
   const handleExamSubmit = data => {
-    console.log("Datos del examen:", data);
     handleCloseExamModal();
     loadExamTypes();
   };
@@ -162,18 +193,15 @@ const PricesConfigForm = ({
   }
   async function loadTaxes() {
     const taxes = await taxesService.getTaxes();
-    console.log('Loaded taxes:', taxes.data);
     setTaxes(taxes.data);
   }
   async function loadRetentions() {
     const retentions = await retentionsService.getRetentions();
-    console.log('Loaded retentions:', retentions.data);
     setRetentions(retentions.data);
   }
   const handleEntityChange = (field, value) => {
     if (field === 'entity_id') {
       const selectedEntity = value ? entitiesData.find(e => e.id == value) : null;
-      console.log('Selected entity:', selectedEntity, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         entity_id: value,
@@ -181,7 +209,6 @@ const PricesConfigForm = ({
       }));
     } else if (field === 'tax_charge_id') {
       const selectedTax = value ? taxes.find(t => t.id == value) : null;
-      console.log('Selected tax:', selectedTax, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         tax_charge_id: value,
@@ -189,7 +216,6 @@ const PricesConfigForm = ({
       }));
     } else if (field === 'withholding_tax_id') {
       const selectedRetention = value ? retentions.find(r => r.id == value) : null;
-      console.log('Selected retention:', selectedRetention, 'from value:', value);
       setCurrentEntity(prev => ({
         ...prev,
         withholding_tax_id: value,
@@ -211,9 +237,9 @@ const PricesConfigForm = ({
         tax_charge_id: currentEntity.tax_charge_id || '',
         tax_name: currentEntity.tax_name || 'N/A',
         withholding_tax_id: currentEntity.withholding_tax_id || '',
+        negotation_type: currentEntity.negotation_type || '',
         retention_name: currentEntity.retention_name || 'N/A'
       };
-      console.log('Adding entity row:', newRow);
       setEntityRows([...entityRows, newRow]);
 
       // Reset current entity
@@ -224,10 +250,9 @@ const PricesConfigForm = ({
         tax_charge_id: '',
         tax_name: '',
         withholding_tax_id: '',
-        retention_name: ''
+        retention_name: '',
+        negotation_type: ''
       });
-    } else {
-      console.log('Cannot add entity row - missing entity_id or price:', currentEntity);
     }
   };
   const removeEntityRow = rowIndex => {
@@ -547,7 +572,80 @@ const PricesConfigForm = ({
         }
       }
     }))
-  })), showTax && /*#__PURE__*/React.createElement("div", {
+  })), toggleInsumos && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label",
+    htmlFor: "supply"
+  }, "Insumo"), /*#__PURE__*/React.createElement(Dropdown, {
+    id: "supply",
+    placeholder: "Seleccionar insumo",
+    className: "w-100",
+    showClear: true,
+    filter: true,
+    optionLabel: "name",
+    value: supply,
+    options: supplies,
+    onChange: e => setSupply(e.value)
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Agregar",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus"
+    }),
+    onClick: () => {
+      if (supply) {
+        addSupply({
+          id: supply.id,
+          name: supply.name,
+          quantity: 1
+        });
+        setSupply(null);
+      }
+    },
+    className: "btn btn-primary",
+    type: "button"
+  })), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: [{
+      field: 'name',
+      header: 'Nombre'
+    }, {
+      field: 'quantity',
+      header: 'Cantidad',
+      body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(InputNumber, {
+        value: data.quantity,
+        onChange: e => {
+          updateSupply(formSupplies.indexOf(data), {
+            ...data,
+            quantity: e.value
+          });
+        },
+        className: "w-100",
+        inputClassName: "w-100",
+        useGrouping: false,
+        placeholder: "Cantidad"
+      }))
+    }, {
+      field: 'actions',
+      header: 'Acciones',
+      body: data => /*#__PURE__*/React.createElement("div", {
+        className: "d-flex justify-content-center align-items-center"
+      }, /*#__PURE__*/React.createElement(Button, {
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fas fa-trash"
+        }),
+        onClick: () => removeSupply(formSupplies.indexOf(data)),
+        className: "p-button-danger p-button-text"
+      }))
+    }],
+    data: formSupplies,
+    disablePaginator: true,
+    disableReload: true,
+    disableSearch: true
+  }))), showTax && /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "taxProduct_type",
@@ -636,6 +734,18 @@ const PricesConfigForm = ({
     })),
     placeholder: "Seleccionar..."
   }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Tipo de negociaci\xF3n"), /*#__PURE__*/React.createElement(Dropdown, {
+    className: "w-100",
+    value: currentEntity.negotation_type,
+    onChange: e => handleEntityChange("negotation_type", e.value),
+    options: regimeOptions,
+    placeholder: "Seleccionar..."
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 text-end"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
@@ -645,9 +755,9 @@ const PricesConfigForm = ({
     className: "card p-3 mt-3"
   }, /*#__PURE__*/React.createElement("table", {
     className: "table table-striped"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Entidad"), /*#__PURE__*/React.createElement("th", null, "Precio"), /*#__PURE__*/React.createElement("th", null, "Tipo Impuesto"), /*#__PURE__*/React.createElement("th", null, "Tipo Retenci\xF3n"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, entityRows.map((row, index) => /*#__PURE__*/React.createElement("tr", {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Entidad"), /*#__PURE__*/React.createElement("th", null, "Precio"), /*#__PURE__*/React.createElement("th", null, "Tipo Impuesto"), /*#__PURE__*/React.createElement("th", null, "Tipo Retenci\xF3n"), /*#__PURE__*/React.createElement("th", null, "Tipo negociaci\xF3n"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, entityRows.map((row, index) => /*#__PURE__*/React.createElement("tr", {
     key: index
-  }, /*#__PURE__*/React.createElement("td", null, row.entity_name), /*#__PURE__*/React.createElement("td", null, row.price), /*#__PURE__*/React.createElement("td", null, row.tax_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, row.retention_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("td", null, row.entity_name), /*#__PURE__*/React.createElement("td", null, row.price), /*#__PURE__*/React.createElement("td", null, row.tax_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, row.retention_name || 'N/A'), /*#__PURE__*/React.createElement("td", null, row.negotation_type || 'N/A'), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-danger btn-sm",
     onClick: () => removeEntityRow(index)

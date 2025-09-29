@@ -14,6 +14,11 @@ export interface EntityUpdate {
     withholding_tax_id: string | null;
 }
 
+export interface SupplyUpdate {
+    supply_id: number;
+    quantity: number;
+}
+
 interface Product {
     name: string;
     barcode: string;
@@ -23,6 +28,8 @@ interface Product {
     tax_charge_id: number | null;
     exam_type_id: number | null;
     purchase_price: number;
+    scheduleable_by_ai: boolean;
+    supplies: SupplyUpdate[];
 }
 
 export const usePriceConfigUpdate = () => {

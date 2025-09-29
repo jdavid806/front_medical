@@ -22,6 +22,7 @@ import { Cie11Service } from "./classes/cie11Service.js";
 import { ExamenTypeService } from "./classes/examenTypeService.js";
 import InventoryService from "./classes/inventoryServices.js";
 import EstimateService from "./classes/estimateService.js";
+import { CompanyConfigurationService } from "./classes/companyConfigurationService.js";
 import { PrescriptionService } from "./classes/prescriptionService.js";
 import { TicketService } from "./classes/ticketService.js";
 import FarmaciaService from "./classes/farmaciaService.js";
@@ -78,14 +79,14 @@ export const authService = new AuthService("api/auth");
 
 // Para recursos API estándar
 export const examCategoryService = new BaseApiService(
-    "medical",
-    "exam-categories"
+  "medical",
+  "exam-categories"
 );
 export const examTypeService = new BaseApiService("medical", "exam-types");
 export const examOrderService = new ExamOrderService("medical", "exam-orders");
 export const examOrderStateService = new BaseApiService(
-    "medical",
-    "exam-order-states"
+  "medical",
+  "exam-order-states"
 );
 export const examPackageService = new BaseApiService("exam-packages");
 export const examResultService = new BaseApiService("medical", "exam-results");
@@ -96,71 +97,71 @@ export const patientMockService = new PatientMockService("patients");
 export const userService = new UserService("medical", "users");
 export const userServiceMedical = new BaseApiService("medical");
 export const userSpecialtyService = new UserSpecialtyService(
-    "medical",
-    "user-specialties"
+  "medical",
+  "user-specialties"
 );
 
 // Para recursos anidados
 export const admissionService = new AdmissionService("medical", "admissions");
 export const appointmentService = new AppointmentService(
-    "medical",
-    "patients",
-    "appointments"
+  "medical",
+  "patients",
+  "appointments"
 );
 export const appointmentStateService = new BaseApiService(
-    "medical",
-    "appointment-states"
+  "medical",
+  "appointment-states"
 );
 export const appointmentTypeService = new BaseApiService(
-    "medical",
-    "appointment-types"
+  "medical",
+  "appointment-types"
 );
 export const branchService = new BaseApiService("medical", "branches");
 
 export const clinicalRecordService = new ClinicalRecordService(
-    "medical",
-    "patients",
-    "clinical-records"
+  "medical",
+  "patients",
+  "clinical-records"
 );
 export const patientAdmissionService = new OneToManyService(
-    "patients",
-    "admissions"
+  "patients",
+  "admissions"
 );
 export const patientDisabilityService = new OneToManyService(
-    "medical",
-    "patients",
-    "disabilities"
+  "medical",
+  "patients",
+  "disabilities"
 );
 export const patientNursingNoteService = new OneToManyService(
-    "medical",
-    "patients",
-    "nursing-notes"
+  "medical",
+  "patients",
+  "nursing-notes"
 );
 export const patientVaccineApplicationService = new OneToManyService(
-    "patients",
-    "vaccine-applications"
+  "patients",
+  "vaccine-applications"
 );
 export const patientClinicalRecordsService = new OneToManyService(
-    "patients",
-    "clinical-records"
+  "patients",
+  "clinical-records"
 );
 export const userAvailabilityService = new UserAvailabilityService(
-    "medical",
-    "users",
-    "availabilities"
+  "medical",
+  "users",
+  "availabilities"
 );
 
 // Para grupos especiales
 export const groupVaccinesService = new ManyToManyService("group-vaccines");
 export const userRolePermissionService = new ManyToManyService(
-    "user-role-permissions"
+  "user-role-permissions"
 );
 export const userRoleMenusService = new ManyToManyService("user-role-menus");
 export const userSpecialtyMenusService = new ManyToManyService(
-    "user-specialty-menus"
+  "user-specialty-menus"
 );
 export const examPackageItemsService = new ManyToManyPolymorphicService(
-    "exam-package-items"
+  "exam-package-items"
 );
 
 export const menuService = new MenuService("");
@@ -171,8 +172,8 @@ export const moduleService = new BaseApiService("medical", "modules");
 export const entityService = new BaseApiService("medical", "entities");
 export const userRolesService = new UserRoleService("medical", "user-roles");
 export const specializablesService = new BaseApiService(
-    "medical",
-    "specializables"
+  "medical",
+  "specializables"
 );
 
 /* Countries */
@@ -182,9 +183,9 @@ export const countryService = new CountrySeervice("medical", "countries");
 /* Departments */
 
 export const departmentService = new DepartmentService(
-    "medical",
-    "countries",
-    "departments"
+  "medical",
+  "countries",
+  "departments"
 );
 
 /* Cities */
@@ -194,8 +195,8 @@ export const cityService = new CityService("medical", "departments", "cities");
 /* Products */
 
 export const productService = new ProductService(
-    "medical",
-    "products-services"
+  "medical",
+  "products-services"
 );
 
 export const templateService = new TemplateService("api/v1/firma");
@@ -205,6 +206,10 @@ export const templateService = new TemplateService("api/v1/firma");
 export const cupsService = new CupsService("medical", "cups");
 
 /* Cie11 */
+
+
+/* Company-configuration */
+export const companyService = new CompanyConfigurationService("medical", "company");
 
 export const cie11Service = new Cie11Service("medical", "cie11");
 
@@ -229,23 +234,23 @@ export const remissionService = new RemissionService("medical");
 
 /* Prescripciones */
 export const prescriptionService = new PrescriptionService(
-    "medical",
-    "recipes"
+  "medical",
+  "recipes"
 );
 
 export const paymentMethodService = new PaymentMethodService(
-    "api/v1/admin",
-    "payment-methods"
+  "api/v1/admin",
+  "payment-methods"
 );
 export const clinicalRecordTypeService = new ClinicalRecordTypeService(
-    "medical"
+  "medical"
 );
 
 /* Control de caja */
 
 export const cashControlService = new CashControlService(
-    "api/v1/admin",
-    "cash-closures"
+  "api/v1/admin",
+  "cash-closures"
 );
 
 /* Entrega de Medicamentos e Insumos */
@@ -254,13 +259,13 @@ export const farmaciaService = new FarmaciaService("medical");
 
 export const packagesService = new PackagesService("api/v1/admin", "packages");
 export const historyPreadmission = new HistoryPreadmissionService(
-    "medical",
-    "history-preadmissions"
+  "medical",
+  "history-preadmissions"
 );
 
 export const costCenterService = new CostCenterService(
-    "api/v1/admin",
-    "centres-cost"
+  "api/v1/admin",
+  "centres-cost"
 );
 
 export const billingService = new BillingService();
@@ -268,8 +273,8 @@ export const billingService = new BillingService();
 export const msMasivaService = new MSMasivaService("api/mensajeria", "");
 
 export const examRecipeService = new ExamRecipeService(
-    "medical",
-    "exam-recipes"
+  "medical",
+  "exam-recipes"
 );
 
 export const examRecipeResultService = new ExamRecipeResultService();
@@ -277,19 +282,19 @@ export const examRecipeResultService = new ExamRecipeResultService();
 export const auditLogService = new AuditLogService();
 
 export const comissionConfig = new ComissionConfigService(
-    "medical",
-    "comission-config"
+  "medical",
+  "comission-config"
 );
 
 export const userAbsenceService = new OneToManyService(
-    "medical",
-    "users",
-    "absences"
+  "medical",
+  "users",
+  "absences"
 );
 
 export const historyRequestIAService = new HistoryRequestIAService(
-    "medical",
-    "history-request-ia"
+  "medical",
+  "history-request-ia"
 );
 
 export const userAssistantService = new UserAssistantService();
@@ -297,13 +302,13 @@ export const userAssistantService = new UserAssistantService();
 /* Cuentas Contables */
 
 export const accountingAccountsService = new AccountingAccountsService(
-    "api/v1/admin",
-    "accounting-accounts"
+  "api/v1/admin",
+  "accounting-accounts"
 );
 
 export const accountingVouchersService = new AccountingVouchersService(
-    "api/v1/admin",
-    "accounting-entries"
+  "api/v1/admin",
+  "accounting-entries"
 );
 
 export const resourcesAdminService = new ResourcesAdminService("api/v1/admin");
@@ -317,7 +322,7 @@ export const invoiceService = new InvoiceService();
 export const manualUsuarioVideoService = new ManualUsuarioVideoService();
 
 export const massMessagingService = new MassMessagingService(
-    "api/v2/mensajeria"
+  "api/v2/mensajeria"
 );
 export const infoCompanyService = new InfoCompanyService("medical");
 
@@ -326,13 +331,13 @@ export const optometryService = new OptometryService("medical");
 export const entitiesService = new EntitiesService("medical", "entities");
 export const taxesService = new TaxService("api/v1/admin", "tax-charges");
 export const retentionsService = new RetentionsService(
-    "api/v1/admin",
-    "tax-withholdings"
+  "api/v1/admin",
+  "tax-withholdings"
 );
 
 export const purchaseOrdersService = new PurchaseOrdersService(
-    "api/v1/admin",
-    "purchase-orders"
+  "api/v1/admin",
+  "purchase-orders"
 );
 
 //Depositos
@@ -344,8 +349,8 @@ export const commentsService = new CommentsService("medical", "comments");
 
 export const assetsService = new AssetsService("api/v1/admin", "assets");
 export const categoryProductsService = new CategoryProductsService(
-    "api/v1/admin",
-    "category-products"
+  "api/v1/admin",
+  "category-products"
 );
 
 export const brandService = new BrandService("api/v1/admin", "brands");

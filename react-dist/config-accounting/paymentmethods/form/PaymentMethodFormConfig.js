@@ -8,8 +8,6 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Dropdown } from "primereact/dropdown";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 import { Checkbox } from 'primereact/checkbox';
-
-// Categories for dropdown
 const categories = [{
   label: "Transaccional",
   value: "transactional"
@@ -54,8 +52,7 @@ const PaymentMethodFormConfig = ({
     control,
     handleSubmit,
     formState: {
-      errors,
-      isDirty
+      errors
     },
     reset
   } = useForm({
@@ -274,7 +271,7 @@ const PaymentMethodFormConfig = ({
       width: "200px",
       height: "50px"
     },
-    disabled: loading || !isDirty,
+    disabled: loading,
     type: "submit"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save"

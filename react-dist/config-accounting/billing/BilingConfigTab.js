@@ -266,30 +266,43 @@ const BillingConfigTab = () => {
     const accountingAccountReverse = watch("accounting_account_reverse_id");
     const accountingAccountDiscount = watch("accounting_account_discount");
     const showReverseAccount = ["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo);
-    return /*#__PURE__*/React.createElement("div", {
-      className: "grid p-fluid"
+    const getFormErrorMessage = name => {
+      return errors?.[name] && /*#__PURE__*/React.createElement("small", {
+        className: "p-error",
+        style: {
+          display: 'block',
+          height: '20px',
+          lineHeight: '20px'
+        }
+      }, errors[name]?.message);
+    };
+    return /*#__PURE__*/React.createElement("form", {
+      onSubmit: handleFiscal(onSubmitFiscal),
+      className: "p-fluid"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "col-12 md:col-6"
+      className: "row"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "col-md-6"
     }, /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `dian_prefix_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Prefijo DGII"), /*#__PURE__*/React.createElement(InputText, _extends({
+      className: "font-medium block mb-2"
+    }, "Prefijo DGII *"), /*#__PURE__*/React.createElement(InputText, _extends({
       id: `dian_prefix_${tipo}`
     }, register("dian_prefix", {
-      required: true
+      required: "El prefijo DGII es requerido"
     }), {
-      className: `w-full ${errors?.dian_prefix ? "p-invalid" : ""}`,
+      className: classNames({
+        "p-invalid": errors?.dian_prefix
+      }),
       placeholder: "Ej: ABC"
-    })), errors?.dian_prefix && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Favor ingrese el prefijo DGII.")), !["compra"].includes(tipo) && /*#__PURE__*/React.createElement("div", {
+    })), getFormErrorMessage("dian_prefix")), !["compra"].includes(tipo) && /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Cuenta Contable"), /*#__PURE__*/React.createElement(Dropdown, {
+      className: "font-medium block mb-2"
+    }, "Cuenta Contable *"), /*#__PURE__*/React.createElement(Dropdown, {
       id: `accounting_account_${tipo}`,
       options: cuentasFiltradas.map(cuenta => ({
         label: `${cuenta.account_code} - ${cuenta.account_name}`,
@@ -301,17 +314,17 @@ const BillingConfigTab = () => {
       filterBy: "label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
-      className: `w-full ${errors?.accounting_account ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.accounting_account
+      }),
       loading: loading.cuentas,
       placeholder: "Seleccione una cuenta"
-    }), errors?.accounting_account && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Favor seleccione una cuenta contable.")), showReverseAccount && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("accounting_account")), showReverseAccount && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_reverse_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Cuenta Contable Reversa"), /*#__PURE__*/React.createElement(Dropdown, {
+      className: "font-medium block mb-2"
+    }, "Cuenta Contable Reversa *"), /*#__PURE__*/React.createElement(Dropdown, {
       id: `accounting_account_reverse_${tipo}`,
       options: cuentasFiltradas.map(cuenta => ({
         label: `${cuenta.account_code} - ${cuenta.account_name}`,
@@ -323,16 +336,16 @@ const BillingConfigTab = () => {
       filterBy: "label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
-      className: `w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.accounting_account_reverse_id
+      }),
       loading: loading.cuentas,
       placeholder: "Seleccione una cuenta"
-    }), errors?.accounting_account_reverse_id && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Favor seleccione una cuenta contable reversa.")), /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("accounting_account_reverse_id")), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_discount_${tipo}`,
-      className: "block text-900 font-medium mb-2"
+      className: "font-medium block mb-2"
     }, "Cuenta Contable Descuento"), /*#__PURE__*/React.createElement(Dropdown, {
       id: `accounting_account_discount_${tipo}`,
       options: cuentasFiltradas.map(cuenta => ({
@@ -345,80 +358,80 @@ const BillingConfigTab = () => {
       filterBy: "label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
-      className: `w-full ${errors?.accounting_account_discount ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.accounting_account_discount
+      }),
       loading: loading.cuentas,
       placeholder: "Seleccione una cuenta"
-    }), errors?.accounting_account_discount && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Favor seleccione una cuenta contable para descuentos."))), /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("accounting_account_discount"))), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `resolution_number_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "N\xFAmero Resoluci\xF3n"), /*#__PURE__*/React.createElement(InputText, _extends({
+      className: "font-medium block mb-2"
+    }, "N\xFAmero Resoluci\xF3n *"), /*#__PURE__*/React.createElement(InputText, _extends({
       id: `resolution_number_${tipo}`
     }, register("resolution_number", {
-      required: true
+      required: "El número de resolución es requerido"
     }), {
-      className: `w-full ${errors?.resolution_number ? "p-invalid" : ""}`,
+      className: classNames({
+        "p-invalid": errors?.resolution_number
+      }),
       placeholder: "Ej: 1234567890"
-    })), errors?.resolution_number && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Favor ingrese el n\xFAmero de resoluci\xF3n."))), /*#__PURE__*/React.createElement("div", {
-      className: "col-12 md:col-6"
+    })), getFormErrorMessage("resolution_number"))), /*#__PURE__*/React.createElement("div", {
+      className: "col-md-6"
     }, /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `invoice_from_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Facturas Desde"), /*#__PURE__*/React.createElement(InputNumber, {
+      className: "font-medium block mb-2"
+    }, "Facturas Desde *"), /*#__PURE__*/React.createElement(InputNumber, {
       id: `invoice_from_${tipo}`,
       value: watch("invoice_from"),
       onValueChange: e => setValue("invoice_from", e.value),
       mode: "decimal",
       useGrouping: false,
       min: 1,
-      className: `w-full ${errors?.invoice_from ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.invoice_from
+      }),
       placeholder: "Ej: 1001"
-    }), errors?.invoice_from && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Ingrese el n\xFAmero inicial de facturas.")), /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("invoice_from")), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `invoice_to_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Facturas Hasta"), /*#__PURE__*/React.createElement(InputNumber, {
+      className: "font-medium block mb-2"
+    }, "Facturas Hasta *"), /*#__PURE__*/React.createElement(InputNumber, {
       id: `invoice_to_${tipo}`,
       value: watch("invoice_to"),
       onValueChange: e => setValue("invoice_to", e.value),
       mode: "decimal",
       useGrouping: false,
       min: 1,
-      className: `w-full ${errors?.invoice_to ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.invoice_to
+      }),
       placeholder: "Ej: 2000"
-    }), errors?.invoice_to && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Ingrese el n\xFAmero final de facturas.")), /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("invoice_to")), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `resolution_date_${tipo}`,
-      className: "block text-900 font-medium mb-2"
-    }, "Fecha Resoluci\xF3n"), /*#__PURE__*/React.createElement(Calendar, {
+      className: "font-medium block mb-2"
+    }, "Fecha Resoluci\xF3n *"), /*#__PURE__*/React.createElement(Calendar, {
       id: `resolution_date_${tipo}`,
       value: watch("resolution_date"),
       onChange: e => setValue("resolution_date", e.value),
       dateFormat: "dd/mm/yy",
       showIcon: true,
       placeholder: "Seleccione la fecha de resoluci\xF3n",
-      className: `w-full ${errors?.resolution_date ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.resolution_date
+      }),
       readOnlyInput: true
-    }), errors?.resolution_date && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Seleccione la fecha de resoluci\xF3n.")), /*#__PURE__*/React.createElement("div", {
+    }), getFormErrorMessage("resolution_date")), /*#__PURE__*/React.createElement("div", {
       className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `expiration_date_${tipo}`,
-      className: "block text-900 font-medium mb-2"
+      className: "font-medium block mb-2"
     }, "Fecha Vencimiento"), /*#__PURE__*/React.createElement(Calendar, {
       id: `expiration_date_${tipo}`,
       value: watch("expiration_date"),
@@ -426,29 +439,29 @@ const BillingConfigTab = () => {
       dateFormat: "dd/mm/yy",
       showIcon: true,
       placeholder: "Seleccione la fecha de vencimiento",
-      className: `w-full ${errors?.expiration_date ? "p-invalid" : ""}`,
+      className: classNames("w-full", {
+        "p-invalid": errors?.expiration_date
+      }),
       readOnlyInput: true
-    }), errors?.expiration_date && /*#__PURE__*/React.createElement("small", {
-      className: "p-error"
-    }, "Seleccione la fecha de vencimiento."))), /*#__PURE__*/React.createElement("div", {
-      className: "col-12",
-      style: {
-        display: "flex",
-        justifyContent: "center"
-      }
+    }), getFormErrorMessage("expiration_date")))), /*#__PURE__*/React.createElement("div", {
+      className: "row"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "flex justify-content-center mt-4"
+      className: "col-12"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-center mt-4 gap-6"
     }, /*#__PURE__*/React.createElement(Button, {
-      type: "submit",
       label: "Guardar Configuraci\xF3n",
-      className: "p-button-sm md:p-button mx-auto",
+      className: "p-button-sm",
+      loading: loading.saving,
       style: {
-        width: "100%"
+        padding: "0 40px",
+        width: "300px",
+        height: "50px"
       },
-      loading: loading.saving
+      type: "submit"
     }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-save ms-2"
-    })))));
+      className: "fas fa-save"
+    }))))));
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "p-4"
@@ -458,97 +471,67 @@ const BillingConfigTab = () => {
   }, /*#__PURE__*/React.createElement(TabView, {
     activeIndex: activeTab,
     onTabChange: e => setActiveTab(e.index),
-    className: "w-full"
+    className: "w-full",
+    scrollable: true
   }, /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Factura Fiscal", /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-file-invoice-dollar ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleFiscal(onSubmitFiscal),
-    className: "w-full"
-  }, renderFormFields("fiscal", registerFiscal, errorsFiscal, setValueFiscal, watchFiscal))), /*#__PURE__*/React.createElement(TabPanel, {
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-file-invoice-dollar me-2"
+    }), "Factura Fiscal")
+  }, renderFormFields("fiscal", registerFiscal, errorsFiscal, setValueFiscal, watchFiscal)), /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Factura Consumidor", /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-invoice ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleConsumidor(onSubmitConsumidor),
-    className: "w-full"
-  }, renderFormFields("consumidor", registerConsumidor, errorsConsumidor, setValueConsumidor, watchConsumidor))), /*#__PURE__*/React.createElement(TabPanel, {
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-invoice me-2"
+    }), "Factura Consumidor")
+  }, renderFormFields("consumidor", registerConsumidor, errorsConsumidor, setValueConsumidor, watchConsumidor)), /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Factura Gubernamental", /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-building-columns ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleGubernamental(onSubmitGubernamental),
-    className: "w-full"
-  }, renderFormFields("gubernamental", registerGubernamental, errorsGubernamental, setValueGubernamental, watchGubernamental))), /*#__PURE__*/React.createElement(TabPanel, {
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-building-columns me-2"
+    }), "Factura Gubernamental")
+  }, renderFormFields("gubernamental", registerGubernamental, errorsGubernamental, setValueGubernamental, watchGubernamental)), /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Notas de Cr\xE9dito", /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-money-bill-transfer ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleNotaCredito(onSubmitNotaCredito),
-    className: "w-full"
-  }, renderFormFields("notaCredito", registerNotaCredito, errorsNotaCredito, setValueNotaCredito, watchNotaCredito))), /*#__PURE__*/React.createElement(TabPanel, {
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-money-bill-transfer me-2"
+    }), "Notas de Cr\xE9dito")
+  }, renderFormFields("notaCredito", registerNotaCredito, errorsNotaCredito, setValueNotaCredito, watchNotaCredito)), /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Notas de D\xE9bito", /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-money-bill-trend-up ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleNotaDebito(onSubmitNotaDebito),
-    className: "w-full"
-  }, renderFormFields("notaDebito", registerNotaDebito, errorsNotaDebito, setValueNotaDebito, watchNotaDebito))), /*#__PURE__*/React.createElement(TabPanel, {
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-money-bill-trend-up me-2"
+    }), "Notas de D\xE9bito")
+  }, renderFormFields("notaDebito", registerNotaDebito, errorsNotaDebito, setValueNotaDebito, watchNotaDebito)), /*#__PURE__*/React.createElement(TabPanel, {
     header: /*#__PURE__*/React.createElement("span", {
       className: "d-flex align-items-center",
       style: {
         color: "#132030"
       }
-    }, "Factura de Compra", /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-invoice ms-1",
-      style: {
-        color: "#132030"
-      }
-    }))
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: handleCompra(onSubmitCompra),
-    className: "w-full"
-  }, renderFormFields("compra", registerCompra, errorsCompra, setValueCompra, watchCompra))))));
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-file-invoice me-2"
+    }), "Factura de Compra")
+  }, renderFormFields("compra", registerCompra, errorsCompra, setValueCompra, watchCompra)))));
 };
+
+// Función classNames helper
+function classNames(classes) {
+  return Object.entries(classes).filter(([key, value]) => value).map(([key]) => key).join(' ');
+}
 export default BillingConfigTab;

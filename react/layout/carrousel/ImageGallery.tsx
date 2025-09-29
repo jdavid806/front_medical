@@ -29,7 +29,6 @@ const ImageGallery = () => {
     }, []);
 
     useEffect(() => {
-        // Configuramos el cambio automático de imágenes cada 5 segundos
         if (images.length > 1) {
             const interval = setInterval(() => {
                 setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);

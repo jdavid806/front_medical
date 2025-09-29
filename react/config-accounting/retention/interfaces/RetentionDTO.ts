@@ -7,6 +7,7 @@ export interface RetentionFormInputs {
   sell_accounting_account_id: number | null;
   sell_reverse_accounting_account_id: number | null;
   description: string;
+  tax_id: number | null;
 }
 
 export interface RetentionDTO {
@@ -31,6 +32,7 @@ export interface CreateRetentionDTO {
   accounting_account_reverse_id: number;
   sell_accounting_account_id: number;
   sell_reverse_accounting_account_id: number;
+  tax_id?: number | null;
   description: string;
 }
 
@@ -42,4 +44,5 @@ export interface UpdateRetentionDTO {
   sell_accounting_account_id?: number;
   sell_reverse_accounting_account_id?: number;
   description?: string;
+  tax_id?: number | null;
 }

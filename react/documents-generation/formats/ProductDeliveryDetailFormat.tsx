@@ -89,25 +89,6 @@ export const ProductDeliveryDetailFormat: React.FC<{
                 </div>
             )}
 
-            {/* Información de entrega */}
-            {delivery.delivery_date && renderCard("Información de Entrega",
-                <div className="row">
-                    <div className="col">
-                        {renderInfoItem("Fecha de entrega programada:", formatDateDMY(delivery.delivery_date))}
-                    </div>
-                    <div className="col">
-                        <div className="info-item">
-                            <label className="info-label">Estado de entrega:</label>
-                            <div className="delivery-status">
-                                <span className={`status-tag ${delivery.delivery_date ? 'status-scheduled' : 'status-pending'}`}>
-                                    {delivery.delivery_date ? "Programada" : "Por programar"}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Resumen del estado */}
             {renderCard("Resumen del Estado",
                 <div className="summary-grid">

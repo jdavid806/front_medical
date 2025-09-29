@@ -18,7 +18,7 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
     const {
         control,
         handleSubmit,
-        formState: { errors, isDirty },
+        formState: { errors },
         reset,
         setValue,
         watch
@@ -428,7 +428,7 @@ const EntitiesConfigForm: React.FC<EntitiesFormProps> = ({
                     type="submit"
                     label="Guardar"
                     className="p-button-sm"
-                    disabled={loading || !isDirty}
+                    disabled={loading }
                     style={{
                         padding: "0 40px",
                         width: "200px",

@@ -210,7 +210,7 @@ const NavbarHeader = () => {
                         {
                             label: 'Precios',
                             icon: 'fa-solid fa-money-bills',
-
+                            url: 'configPrecios'
                         },
 
                         {

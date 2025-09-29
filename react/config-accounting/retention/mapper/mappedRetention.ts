@@ -24,6 +24,7 @@ export const RetentionMapperCreate = (data: RetentionFormInputs): CreateRetentio
     accounting_account_reverse_id: Number(data.accounting_account_reverse_id),
     sell_accounting_account_id: Number(data.sell_accounting_account_id),
     sell_reverse_accounting_account_id: Number(data.sell_reverse_accounting_account_id),
+    tax_id: data.tax_id ? Number(data.tax_id) : null,
     description: data.description,
   };
 };
@@ -49,6 +50,10 @@ export const RetentionMapperUpdate = (data: RetentionFormInputs): UpdateRetentio
 
   if (data.sell_reverse_accounting_account_id !== null && data.sell_reverse_accounting_account_id !== undefined) {
     updateData.sell_reverse_accounting_account_id = Number(data.sell_reverse_accounting_account_id);
+  }
+
+  if (data.tax_id !== null && data.tax_id !== undefined) {
+    updateData.tax_id = data.tax_id ? Number(data.tax_id) : null;
   }
 
   return updateData;

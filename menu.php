@@ -179,7 +179,11 @@ $_SESSION["ID"] = 1;
     <style>
         /*ALUSIVOS A LOS COLORES DE MONAROS*/
         .text-primary {
-            color: #1A99FB !important;
+            color: #132030 !important;
+        }
+
+        .text-primary {
+            color: #132030 !important;
         }
 
         .active {
@@ -304,7 +308,7 @@ $_SESSION["ID"] = 1;
     </style>
     <script type="importmap">
         {
-    "imports": {
+    "imports": { 
       "react": "https://esm.sh/react@19/?dev",
       "react-dom/client": "https://esm.sh/react-dom@19/client?dev",
       "react-bootstrap": "https://esm.sh/react-bootstrap@2.10.9?dev",

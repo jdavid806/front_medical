@@ -15,16 +15,17 @@ export class MedicalSupplyManager {
 
     constructor(data: MedicalSupply) {
         this.data = data;
-        const asyncScope = async () => {
-            const user: UserDto = await userService.getByExternalId(data.requested_by);
-            this.requestedBy = {
-                name: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`,
-                email: user.email || '--',
-                phone: user.phone || '--',
-                address: user.address || '--'
-            };
-        }
-        asyncScope();
+        // const asyncScope = async () => {
+        //     if (!data.requested_by) return;
+        //     const user: UserDto = await userService.getByExternalId(data.requested_by);
+        //     this.requestedBy = {
+        //         name: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''} ${user.second_last_name || ''}`,
+        //         email: user.email || '--',
+        //         phone: user.phone || '--',
+        //         address: user.address || '--'
+        //     };
+        // }
+        //asyncScope();
     }
 
     get products(): RequestedProduct[] {

@@ -78,9 +78,17 @@ export const BranchApp = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginLeft: '13px'
+    },
     className: "d-flex justify-content-between align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "text-end mb-2"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "mb-1"
+  }, "Gesti\xF3n de Sucursales"), /*#__PURE__*/React.createElement("div", {
+    className: "text-end",
+    style: {
+      marginRight: '12px'
+    }
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary d-flex align-items-center",
     onClick: onCreate

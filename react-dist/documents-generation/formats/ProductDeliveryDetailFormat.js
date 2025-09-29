@@ -56,21 +56,7 @@ export const ProductDeliveryDetailFormat = ({
     className: "text-center"
   }, /*#__PURE__*/React.createElement("span", {
     className: "quantity-badge"
-  }, item.quantity)))))))), delivery.delivery_date && renderCard("Información de Entrega", /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col"
-  }, renderInfoItem("Fecha de entrega programada:", formatDateDMY(delivery.delivery_date))), /*#__PURE__*/React.createElement("div", {
-    className: "col"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "info-item"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "info-label"
-  }, "Estado de entrega:"), /*#__PURE__*/React.createElement("div", {
-    className: "delivery-status"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: `status-tag ${delivery.delivery_date ? 'status-scheduled' : 'status-pending'}`
-  }, delivery.delivery_date ? "Programada" : "Por programar")))))), renderCard("Resumen del Estado", /*#__PURE__*/React.createElement("div", {
+  }, item.quantity)))))))), renderCard("Resumen del Estado", /*#__PURE__*/React.createElement("div", {
     className: "summary-grid"
   }, /*#__PURE__*/React.createElement("div", {
     className: "summary-item"

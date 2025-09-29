@@ -172,16 +172,16 @@ const PatientFormModal = ({
   }];
   const regimeOptions = [{
     label: "Subsidiado",
-    value: "Subsidiado"
+    value: "subsidiado"
   }, {
     label: "Contributivo",
-    value: "Contributivo"
+    value: "contributivo"
   }, {
     label: "Pensionado",
-    value: "Pensionado"
+    value: "pensionado"
   }, {
     label: "Privado",
-    value: "Privado"
+    value: "privado"
   }];
   const stepValidations = {
     0: ["patient.document_type", "patient.document_number", "patient.first_name", "patient.last_name", "patient.gender", "patient.date_of_birth", "patient.whatsapp", "patient.email", "patient.blood_type"],
@@ -265,6 +265,12 @@ const PatientFormModal = ({
         }
       } catch (error) {
         console.error("Error inicializando datos:", error);
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al inicializar los datos del formulario",
+          life: 5000
+        });
       }
     };
     initializeData();
@@ -393,6 +399,12 @@ const PatientFormModal = ({
         }
       }
     } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Error al cargar departamentos",
+        life: 5000
+      });
       setDepartments([]);
     } finally {
       setIsLoading(false);
@@ -617,7 +629,6 @@ const PatientFormModal = ({
       console.error("Error completo:", error);
       let errorMessage = patientData ? "Error al actualizar el paciente" : "Error al crear el paciente";
       if (error.response) {
-        // Error de API
         if (error.response.data?.message) {
           errorMessage = error.response.data.message;
         } else if (error.response.data?.errors) {

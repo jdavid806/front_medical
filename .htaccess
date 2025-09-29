@@ -348,6 +348,7 @@ RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
 
 RewriteRule ^configExamenes$ Configuracion/homeConfig/configExamenes.php
 RewriteRule ^configuracionEmpresa$ Configuracion/homeConfig/configuracionEmpresa.php
+RewriteRule ^configuracionEmpresaPrueba$ Config/configuracionEmpresa.php
 RewriteRule ^homeConfiguracion$ Configuracion/homeConfig/homeConfiguracion.php
 
 RewriteRule ^facturacionAdmisiones$ Citas/facturacionAdmisiones.php

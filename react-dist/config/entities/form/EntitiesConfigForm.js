@@ -18,8 +18,7 @@ const EntitiesConfigForm = ({
     control,
     handleSubmit,
     formState: {
-      errors,
-      isDirty
+      errors
     },
     reset,
     setValue,
@@ -382,7 +381,7 @@ const EntitiesConfigForm = ({
     type: "submit",
     label: "Guardar",
     className: "p-button-sm",
-    disabled: loading || !isDirty,
+    disabled: loading,
     style: {
       padding: "0 40px",
       width: "200px",

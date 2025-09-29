@@ -116,33 +116,7 @@ export const ProductDeliveryDetailDialog = ({
     className: "text-center"
   }, /*#__PURE__*/React.createElement("span", {
     className: "badge bg-primary fs-6"
-  }, item.quantity)))))))), delivery.delivery_date && /*#__PURE__*/React.createElement(Card, {
-    title: "Informaci\xF3n de Entrega",
-    className: "mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "fw-bold text-muted small"
-  }, "Fecha de entrega programada:"), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center mt-1"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-truck me-2 text-success"
-  }), /*#__PURE__*/React.createElement("span", null, formatDateDMY(delivery.delivery_date))))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "fw-bold text-muted small"
-  }, "Estado de entrega:"), /*#__PURE__*/React.createElement("div", {
-    className: "mt-1"
-  }, /*#__PURE__*/React.createElement(Tag, {
-    value: delivery.delivery_date ? "Programada" : "Por programar",
-    severity: delivery.delivery_date ? "success" : "warning"
-  })))))), /*#__PURE__*/React.createElement(Card, {
+  }, item.quantity)))))))), /*#__PURE__*/React.createElement(Card, {
     title: "Resumen del Estado"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row text-center"

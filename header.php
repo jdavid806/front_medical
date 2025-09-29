@@ -49,134 +49,135 @@
 <link rel="stylesheet" href="fuentes/fuentes.css">
 <nav class="navbar navbar-top fixed-top navbar-expand-lg" id="navbarCombo" data-navbar-top="combo"
     data-move-target="#navbarVerticalNav">
-    <div class="navbar-logo">
+    <div class="w-100 d-flex gap-2 align-items-center">
 
-    </div>
-    <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
-        <div class="d-flex align-items-center">
-            <div class="d-flex align-items-center" id=""><img src="assets/img/logos/FullColor.svg" alt="phoenix"
-                    width="125" />
+        <div class="d-flex">
+            <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
+                <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center" id=""><img src="assets/img/logos/FullColor.svg" alt="phoenix"
+                            width="125" />
 
-            </div>
+                    </div>
+                </div>
+            </a>
         </div>
-    </a>
-    </div>
 
-    <ul class="navbar-nav navbar-nav-icons flex-row flex-grow-1">
-        <li class="nav-item w-100">
+        <div className="d-flex flex-grow-1" style="width: 100%;">
             <div id="NavbarHeader"></div>
-        </li>
-    </ul>
+        </div>
 
-    <ul class="navbar-nav navbar-nav-icons flex-row">
-        <li class="nav-item">
-            <div class="theme-control-toggle fa-icon-wait px-2">
+        <div class="d-flex">
+            <ul class="navbar-nav navbar-nav-icons flex-row">
+                <li class="nav-item">
+                    <div class="theme-control-toggle fa-icon-wait px-2">
 
-                <input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox"
-                    data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" />
-                <label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle"
-                    data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Switch theme"
-                    style="height:32px;width:32px;"><span class="icon" data-feather="moon"></span></label>
-                <label class="mb-0 theme-control-toggle-label theme-control-toggle-dark" for="themeControlToggle"
-                    data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Switch theme"
-                    style="height:32px;width:32px;"><span class="icon" data-feather="sun"></span></label>
-            </div>
+                        <input class="form-check-input ms-0 theme-control-toggle-input" type="checkbox"
+                            data-theme-control="phoenixTheme" value="dark" id="themeControlToggle" />
+                        <label class="mb-0 theme-control-toggle-label theme-control-toggle-light" for="themeControlToggle"
+                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Switch theme"
+                            style="height:32px;width:32px;"><span class="icon" data-feather="moon"></span></label>
+                        <label class="mb-0 theme-control-toggle-label theme-control-toggle-dark" for="themeControlToggle"
+                            data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Switch theme"
+                            style="height:32px;width:32px;"><span class="icon" data-feather="sun"></span></label>
+                    </div>
 
-        </li>
-
-
+                </li>
 
 
-        <!-- <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal"><span
+
+
+                <!-- <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#searchBoxModal"><span
                     data-feather="search" style="height:19px;width:19px;margin-bottom: 2px;"></span></a></li> -->
 
-        <li class="nav-item dropdown">
+                <li class="nav-item dropdown">
 
 
-            <!-- Botón de notificaciones con icono de Bootstrap -->
-            <!-- <a id="btnNotificaciones" class="nav-link position-relative" href="#" role="button"
+                    <!-- Botón de notificaciones con icono de Bootstrap -->
+                    <!-- <a id="btnNotificaciones" class="nav-link position-relative" href="#" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="far fa-bell"></span>
             </a> -->
 
-            <!-- Menú desplegable de notificaciones -->
-            <div class="dropdown-menu dropdown-menu-end py-0 shadow border navbar-dropdown-caret"
-                style="width: 450px !important; margin-right: -10px;">
-                <div class="card position-relative border-0">
-                    <!-- Cabecera del menú -->
-                    <div class="card-header p-2 mt-1">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="card-title mb-0">Notificaciones</h5>
-                            <button id="markAllButton" class="btn btn-link p-0 fs-9 fw-normal" type="button">Marcar como
-                                leídas</button>
-                        </div>
-                    </div>
-
-                    <!-- Cuerpo del menú con lista de notificaciones -->
-                    <div id="bodyNotificaciones" class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
-                        <!-- Notificaciones cargadas por medio del script -->
-                    </div>
-
-                    <!-- Pie del menú -->
-                    <div class="card-footer p-0 border-top">
-                        <div class="my-2 text-center fw-bold fs-10 text-body-tertiary">
-                            <a class="fw-bolder" href="#">Historial de notificaciones</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
-
-
-
-        <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-                <div class="avatar avatar-l ">
-                    <img class="rounded-circle user-avatar" src="assets/img/profile/profile_default.jpg" alt="" />
-
-                </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border"
-                aria-labelledby="navbarDropdownUser">
-                <div class="card position-relative border-0">
-                    <div class="card-body p-0">
-                        <div class="text-center pt-4 pb-3">
-                            <div class="avatar avatar-xl ">
-                                <img class="rounded-circle user-avatar" src="assets/img/profile/profile_default.jpg"
-                                    alt="" />
-
+                    <!-- Menú desplegable de notificaciones -->
+                    <div class="dropdown-menu dropdown-menu-end py-0 shadow border navbar-dropdown-caret"
+                        style="width: 450px !important; margin-right: -10px;">
+                        <div class="card position-relative border-0">
+                            <!-- Cabecera del menú -->
+                            <div class="card-header p-2 mt-1">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="card-title mb-0">Notificaciones</h5>
+                                    <button id="markAllButton" class="btn btn-link p-0 fs-9 fw-normal" type="button">Marcar como
+                                        leídas</button>
+                                </div>
                             </div>
-                            <h6 class="mt-2 text-body-emphasis username"></h6>
-                            <b class="mt-2 text-body-emphasis"><span class="user-role"></span><span
-                                    class="user-specialty"></span></b>
-                            <div id="admin-container" style="display: none;"></div>
-                            <div id="doctor-container" style="display: none;"></div>
+
+                            <!-- Cuerpo del menú con lista de notificaciones -->
+                            <div id="bodyNotificaciones" class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                                <!-- Notificaciones cargadas por medio del script -->
+                            </div>
+
+                            <!-- Pie del menú -->
+                            <div class="card-footer p-0 border-top">
+                                <div class="my-2 text-center fw-bold fs-10 text-body-tertiary">
+                                    <a class="fw-bolder" href="#">Historial de notificaciones</a>
+                                </div>
+                            </div>
                         </div>
-                        <!-- <div class="mb-3 mx-3">
+                    </div>
+                </li>
+
+
+
+                <li class="nav-item dropdown"><a class="nav-link lh-1 pe-0" id="navbarDropdownUser" href="#!" role="button"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar avatar-l ">
+                            <img class="rounded-circle user-avatar" src="assets/img/profile/profile_default.jpg" alt="" />
+
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end navbar-dropdown-caret py-0 dropdown-profile shadow border"
+                        aria-labelledby="navbarDropdownUser">
+                        <div class="card position-relative border-0">
+                            <div class="card-body p-0">
+                                <div class="text-center pt-4 pb-3">
+                                    <div class="avatar avatar-xl ">
+                                        <img class="rounded-circle user-avatar" src="assets/img/profile/profile_default.jpg"
+                                            alt="" />
+
+                                    </div>
+                                    <h6 class="mt-2 text-body-emphasis username"></h6>
+                                    <b class="mt-2 text-body-emphasis"><span class="user-role"></span><span
+                                            class="user-specialty"></span></b>
+                                    <div id="admin-container" style="display: none;"></div>
+                                    <div id="doctor-container" style="display: none;"></div>
+                                </div>
+                                <!-- <div class="mb-3 mx-3">
                       <input class="form-control form-control-sm" id="statusUpdateInput" type="text" placeholder="Update your status" />
                     </div> -->
-                    </div>
-                    <div class="overflow-auto scrollbar" style="height: 4rem;">
-                        <ul class="nav d-flex flex-column mb-2 pb-1">
-                            <!-- <li class="nav-item"><a class="nav-link px-3 d-block" href="apps/social/settings.php"> <span
+                            </div>
+                            <div class="overflow-auto scrollbar" style="height: 4rem;">
+                                <ul class="nav d-flex flex-column mb-2 pb-1">
+                                    <!-- <li class="nav-item"><a class="nav-link px-3 d-block" href="apps/social/settings.php"> <span
                     class="me-2 text-body align-bottom" data-feather="user"></span><span>Perfil</span></a></li> -->
-                            <li class="nav-item"><a class="nav-link px-3 d-block" href="#settings-offcanvas"
-                                    data-bs-toggle="offcanvas"> <span class="me-2 text-body align-bottom"
-                                        data-feather="sliders"></span>Personalizar</a></li>
-                        </ul>
+                                    <li class="nav-item"><a class="nav-link px-3 d-block" href="#settings-offcanvas"
+                                            data-bs-toggle="offcanvas"> <span class="me-2 text-body align-bottom"
+                                                data-feather="sliders"></span>Personalizar</a></li>
+                                </ul>
+                            </div>
+                            <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" id="btn-logout"
+                                    href="#">
+                                    <span class="me-2" data-feather="log-out"> </span>Cerrar Sesión</a></div>
+                            <div class="my-2 text-center fw-bold fs-10 text-body-quaternary"><a
+                                    class="text-body-quaternary me-1" href="#!">Privacy policy</a>&bull;<a
+                                    class="text-body-quaternary mx-1" href="#!">Terms</a>&bull;<a
+                                    class="text-body-quaternary ms-1" href="#!">Cookies</a></div>
+                        </div>
                     </div>
-                    <div class="px-3"> <a class="btn btn-phoenix-secondary d-flex flex-center w-100" id="btn-logout"
-                            href="#">
-                            <span class="me-2" data-feather="log-out"> </span>Cerrar Sesión</a></div>
-                    <div class="my-2 text-center fw-bold fs-10 text-body-quaternary"><a
-                            class="text-body-quaternary me-1" href="#!">Privacy policy</a>&bull;<a
-                            class="text-body-quaternary mx-1" href="#!">Terms</a>&bull;<a
-                            class="text-body-quaternary ms-1" href="#!">Cookies</a></div>
-                </div>
-            </div>
-            </div>
+        </div>
         </li>
-    </ul>
+        </ul>
+    </div>
+    </div>
 </nav>
 
 <script type="module">
@@ -193,11 +194,13 @@
         getJWTPayload
     } from "./services/utilidades.js";
     import UserManager from './services/userManager.js';
-    import { authMiddleware } from "./Middleware/authMiddleware.js";
+    import {
+        authMiddleware
+    } from "./Middleware/authMiddleware.js";
 
 
     document.addEventListener('DOMContentLoaded', async function() {
-         // Aplicar middleware de autenticación
+        // Aplicar middleware de autenticación
         // authMiddleware();        
         const user = await userService.getByExternalId(getJWTPayload().sub);
 
@@ -216,7 +219,7 @@
             })
             const menu = await userService.getMenuByRole(user.id);
             const permissionsAuthRoute = await userService.getMenuByRolePermission(user.role.id);
-            
+
             localStorage.setItem("roles", JSON.stringify(user.role));
             localStorage.setItem("permissionsAuthRoute", JSON.stringify(permissionsAuthRoute.menus));
             localStorage.setItem("menus", JSON.stringify(menu.menus));

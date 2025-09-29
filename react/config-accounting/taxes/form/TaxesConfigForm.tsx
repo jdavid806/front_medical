@@ -20,7 +20,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
     watch,
   } = useForm<TaxFormInputs>({
@@ -348,7 +348,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
               className="p-button-sm"
               loading={loading}
               style={{ padding: "0 40px", width: "200px", height: "50px" }}
-              disabled={loading || !isDirty}
+              disabled={loading}
               type="submit"
             >
               <i className="fas fa-save"></i>

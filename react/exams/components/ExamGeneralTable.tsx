@@ -27,6 +27,7 @@ export type ExamTableItem = {
     minioId?: string
     patientName: string
     original: any
+    updated_at?: string
 }
 
 type ExamTableProps = {
@@ -47,7 +48,7 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
 
 
     useEffect(() => {
-        const mappedExams: ExamTableItem[] = exams.map(exam => {
+        const mappedExams: ExamTableItem[] = exams.map((exam: any) => {
             return {
                 id: exam.id,
                 examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(', ') : exam.exam_type?.name) || '--',
@@ -60,7 +61,8 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                 state: exam.exam_order_state?.name || 'pending',
                 created_at: exam.created_at,
                 dateTime: formatDate(exam.created_at),
-                original: exam
+                original: exam,
+                updated_at: exam.updated_at_formatted || undefined
             }
         })
 
@@ -101,7 +103,103 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
     }
 
     // Columnas para la tabla
-    const columns: CustomPRTableColumnProps[] = [
+    const columnsUploadExams: CustomPRTableColumnProps[] = [
+        {
+            field: "patientName",
+            header: "Paciente",
+            sortable: true
+        },
+        {
+            field: "examName",
+            header: "Exámenes ordenados",
+            sortable: true
+        },
+        {
+            field: "status",
+            header: "Estado",
+            body: (data: ExamTableItem) => {
+                const color = examOrderStateColors[data.state] || "secondary";
+                const text = examOrderStates[data.state] || "SIN ESTADO";
+
+                const severityMap: Record<string, string> = {
+                    'success': 'success',
+                    'warning': 'warning',
+                    'danger': 'danger',
+                    'info': 'info',
+                    'primary': 'secondary',
+                    'secondary': 'secondary'
+                };
+
+                const severity = severityMap[color] || 'secondary';
+
+                return (
+                    <Badge
+                        value={text}
+                        severity={severity}
+                        className="p-badge-lg"
+                    />
+                );
+            }
+        },
+        {
+            field: "dateTime",
+            header: "Fecha y hora de creación",
+            sortable: true
+        },
+        {
+            field: "updated_at",
+            header: "Fecha y hora de subida",
+            sortable: true
+        },
+        {
+            field: "actions",
+            header: "Acciones",
+            body: (data: ExamTableItem) => (
+                <TableActionsMenu
+                    data={data}
+                    onLoadExamResults={onLoadExamResults}
+                    onViewExamResults={onViewExamResults}
+                    onUploadExamsFile={onUploadExamsFile}
+                    onPrint={async () => {
+                        if (data.minioId) {
+                            //@ts-ignore
+                            const url = await getFileUrl(data.minioId);
+                            window.open(url, "_blank");
+                        } else {
+                            //@ts-ignore
+                            generarFormato("Examen", data.original, "Impresion");
+                        }
+                    }}
+                    onDownload={async () => {
+                        if (data.minioId) {
+                            try {
+                                //@ts-ignore
+                                const url = await getFileUrl(data.minioId);
+                                var link = document.createElement("a");
+                                link.href = url.replace("http", "https");
+                                link.download = "file.pdf";
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            } catch (error) {
+                                console.error("Error al descargar:", error);
+                            }
+                        } else {
+                            //@ts-ignore
+                            crearDocumento(data.id, "Descarga", "Examen", "Completa", "Orden de examen");
+                        }
+                    }}
+                    onShare={async () => {
+                        const user = await userService.getLoggedUser();
+                        //@ts-ignore
+                        enviarDocumento(data.id, "Descarga", "Examen", "Completa", data.patientId, user.id, "Orden de examen");
+                    }}
+                />
+            )
+        },
+    ];
+
+    const columnsPendingExams: CustomPRTableColumnProps[] = [
         {
             field: "patientName",
             header: "Paciente",
@@ -199,7 +297,7 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                     <TabView>
                         <TabPanel header="Resultados Cargados">
                             <CustomPRTable
-                                columns={columns}
+                                columns={columnsUploadExams}
                                 data={uploadedExams}
                                 lazy={false}
                                 onReload={onReload}
@@ -207,7 +305,7 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
                         </TabPanel>
                         <TabPanel header="Pendientes por cargar">
                             <CustomPRTable
-                                columns={columns}
+                                columns={columnsPendingExams}
                                 data={pendingExams}
                                 lazy={false}
                                 onReload={onReload}
