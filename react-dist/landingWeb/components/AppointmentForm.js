@@ -1,15 +1,13 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React from "react";
+import { Controller } from "react-hook-form";
 import { AutoComplete } from "primereact/autocomplete";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
 import { Card } from "primereact/card";
-import { useAvailableSpecialties } from "../hooks/useAvailableSpecialties.js";
-import { useProductsByType } from "../../products/hooks/useProductsByType.js";
-import { useLandingAvailabilities } from "../hooks/useLandingAvailabilities.js";
+import { useAppointmentForm } from "../hooks/useAppointmentForm.js";
 export const AppointmentForm = ({
   patient,
   onSave,
@@ -17,87 +15,18 @@ export const AppointmentForm = ({
 }) => {
   const {
     control,
-    handleSubmit
-  } = useForm();
-
-  // 🔹 1. Disponibilidades del landing
-  const {
-    data: availabilities
-  } = useLandingAvailabilities();
-
-  // 🔹 2. IDs de especialidades permitidas
-  const allowedSpecialtyIds = useMemo(() => {
-    if (!availabilities?.length) return [];
-    return [...new Set(availabilities.flatMap(a => a.specialties))];
-  }, [availabilities]);
-
-  // 🔹 3. Hook de especialidades
-  const {
-    specialties: allUserSpecialties,
-    loading: loadingSpecialties
-  } = useAvailableSpecialties();
-
-  // 🔹 4. Filtramos solo las especialidades permitidas
-  const userSpecialties = useMemo(() => {
-    if (!Array.isArray(allUserSpecialties)) return [];
-    if (!allowedSpecialtyIds?.length) return allUserSpecialties; // si no hay filtro, mostramos todas
-    return allUserSpecialties.filter(s => allowedSpecialtyIds.includes(s.id));
-  }, [allUserSpecialties, allowedSpecialtyIds]);
-
-  // 🔹 5. Productos tipo "Servicios"
-  const {
-    productsByType,
-    fetchProductsByType,
-    loading: loadingProcedures
-  } = useProductsByType();
-  const [selectedSpecialty, setSelectedSpecialty] = useState(null);
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
-
-  // ✅ Evitar loop infinito al cargar productos
-  const loadedRef = useRef(false);
-  useEffect(() => {
-    if (!loadedRef.current) {
-      loadedRef.current = true;
-      fetchProductsByType("Servicios");
-    }
-  }, [fetchProductsByType]);
-
-  // 🔹 Mapear especialidades
-  const specialtyOptions = useMemo(() => {
-    if (!Array.isArray(userSpecialties)) return [];
-    return userSpecialties.map(s => ({
-      label: s.name,
-      value: s.id,
-      doctors: Array.isArray(s.users) ? s.users : [] // si no trae users, queda []
-    }));
-  }, [userSpecialties]);
-
-  // 🔹 Mapear doctores según la especialidad
-  const doctorOptions = useMemo(() => {
-    const selected = specialtyOptions.find(s => s.value === selectedSpecialty);
-    if (!selected) return [];
-    return selected.doctors.map(d => ({
-      label: `${d.first_name ?? ""} ${d.last_name ?? ""}`.trim(),
-      value: d.id
-    }));
-  }, [selectedSpecialty, specialtyOptions]);
-
-  // 🔹 Mapear procedimientos
-  const procedureOptions = useMemo(() => {
-    if (!Array.isArray(productsByType)) return [];
-    return productsByType.map(p => ({
-      label: p.label || p.name,
-      value: p.id
-    }));
-  }, [productsByType]);
-  const onSubmit = data => {
-    if (onSave) onSave({
-      ...data,
-      patient
-    });
-  };
-
-  // ✅ Render
+    handleSubmit,
+    loadingSpecialties,
+    loadingProcedures,
+    specialtyOptions,
+    doctorOptions,
+    procedureOptions,
+    selectedSpecialty,
+    selectedDoctor,
+    setSelectedSpecialty,
+    setSelectedDoctor,
+    onSubmit
+  } = useAppointmentForm(patient, onSave);
   return /*#__PURE__*/React.createElement("form", {
     className: "needs-validation row",
     noValidate: true,
@@ -118,9 +47,7 @@ export const AppointmentForm = ({
     }) => /*#__PURE__*/React.createElement(AutoComplete, _extends({}, field, {
       placeholder: "Seleccione un paciente",
       field: "label",
-      inputClassName: "w-100",
-      className: "w-100",
-      appendTo: "self"
+      className: "w-100"
     }))
   }), /*#__PURE__*/React.createElement("button", {
     type: "button",
@@ -245,9 +172,13 @@ export const AppointmentForm = ({
     control: control,
     render: ({
       field
-    }) => /*#__PURE__*/React.createElement(Dropdown, _extends({}, field, {
+    }) => /*#__PURE__*/React.createElement(Calendar, _extends({}, field, {
       className: "w-100",
-      placeholder: "Seleccione una hora"
+      placeholder: "Seleccione una hora",
+      timeOnly: true,
+      showIcon: true,
+      hourFormat: "24",
+      stepMinute: 1
     }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"

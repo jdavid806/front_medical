@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
+import { userService } from "../../../services/api/index.js";
 import { useConfigurationProgress } from "../../config/general-configuration/hooks/useConfigurationProgress.js";
+import { getJWTPayloadByToken } from "../../../services/utilidades.js";
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
@@ -23,7 +25,7 @@ export const useAuth = () => {
   }, []);
   const redirectToDashboard = () => {
     console.log('currentConfig', currentConfig);
-    if (currentConfig.config_tenants?.finished_configuration) {
+    if (currentConfig?.config_tenants?.finished_configuration) {
       window.location.href = "/Dashboard";
     } else {
       window.location.href = "/configuracionesGenerales";
@@ -36,23 +38,10 @@ export const useAuth = () => {
       console.error('Error saving user data:', error);
     }
   };
-  const getUserEmail = () => {
-    try {
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        return parsedData.email || '';
-      }
-      return '';
-    } catch (error) {
-      console.error('Error getting user email:', error);
-      return '';
-    }
-  };
   const login = async credentials => {
     setLoading(true);
     try {
-      const apiUrl = `https://dev.monaros.co/api/auth/login`;
+      const apiUrl = `${window.location.origin}/api/auth/login`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -65,13 +54,15 @@ export const useAuth = () => {
         })
       });
       const data = await response.json();
+      console.log(data, "dataaaa");
       if (data.status === 200 && data.message === "Authenticated") {
         const token = data.data.token?.original?.access_token;
+        const jwtPayload = getJWTPayloadByToken(token);
+        const user = await userService.getByExternalId(jwtPayload.sub);
+        sessionStorage.setItem('email', user.email);
         if (token) {
-          // const user = await userService.getLoggedUser();
-
           const userDataToSave = {
-            email: 'user.email',
+            email: user.email,
             username: credentials.username,
             token: token,
             requiresOtp: data.data.otp
@@ -91,7 +82,6 @@ export const useAuth = () => {
               requiresOtp: true
             };
           } else {
-            // No requiere OTP, redirigir directamente al dashboard
             sessionStorage.setItem('auth_token', token);
             Swal.fire({
               title: 'Inicio de sesión exitoso',
@@ -122,23 +112,18 @@ export const useAuth = () => {
       setLoading(false);
     }
   };
-  const verifyOtp = async otpCode => {
+  const verifyOtp = async (otpCode, email) => {
     setLoading(true);
     try {
-      // Obtener el email del localStorage - DE userData
-      const userEmail = getUserEmail();
-      if (!userEmail) {
-        throw new Error('No se encontró el email del usuario en userData');
-      }
-
       // Convertir OTP a número
       const otpNumber = parseInt(otpCode, 10);
       if (isNaN(otpNumber)) {
         throw new Error('El código OTP debe ser un número válido');
       }
-      const apiUrl = `https://dev.monaros.co/api/auth/validate-otp-login`;
+      const emailOtp = sessionStorage.getItem('email');
+      const apiUrl = `${window.location.origin}/api/auth/validate-otp-login`;
       console.log('Enviando OTP validation:', {
-        email: userEmail,
+        email: emailOtp,
         otp: otpNumber
       });
       const response = await fetch(apiUrl, {
@@ -148,7 +133,7 @@ export const useAuth = () => {
           'X-Domain': window.location.hostname
         },
         body: JSON.stringify({
-          email: userEmail,
+          email: emailOtp,
           otp: otpNumber
         })
       });
@@ -202,15 +187,8 @@ export const useAuth = () => {
   const resendOtp = async () => {
     setLoading(true);
     try {
-      // Obtener el email del localStorage - DE userData
-      const userEmail = getUserEmail();
-      if (!userEmail) {
-        throw new Error('No se encontró el email del usuario en userData');
-      }
-      const apiUrl = `https://dev.monaros.co/api/auth/resend-otp`;
-      console.log('Reenviando OTP para:', {
-        email: userEmail
-      });
+      const apiUrl = `${window.location.origin}/api/auth/resend-otp`;
+      const emailOtp = sessionStorage.getItem('email');
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -218,7 +196,7 @@ export const useAuth = () => {
           'X-Domain': window.location.hostname
         },
         body: JSON.stringify({
-          email: userEmail
+          email: emailOtp
         })
       });
       const data = await response.json();

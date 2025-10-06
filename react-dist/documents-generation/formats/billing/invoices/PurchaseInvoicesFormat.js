@@ -3,7 +3,6 @@ import { statusInvoices } from "../../../../../services/commons.js";
 export const PurchaseInvoicesFormat = ({
   invoice
 }) => {
-  console.log("invoice => ", invoice);
   // Función para formatear currency (igual que en el primer componente)
   const formatCurrency = value => {
     const formatted = new Intl.NumberFormat("es-DO", {
@@ -95,10 +94,20 @@ export const PurchaseInvoicesFormat = ({
             border-radius: 4px;
           }
 
+          .invoice-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding: 8px 0;
+            border-bottom: 2px solid #e9ecef;
+          }
+
           .seccion-final {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 30px;
+            align-items: flex-start;
           }
 
           .info-qr {
@@ -116,30 +125,39 @@ export const PurchaseInvoicesFormat = ({
             margin-bottom: 10px;
           }
 
-          .codigo-seguridad {
-            font-weight: bold;
-            margin-bottom: 15px;
-          }
-
-          .totales {
-            text-align: right;
-            width: 65%;
+          .totales-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            width: 55%;
           }
 
           .fila-total {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
           }
 
           .etiqueta-total {
-            font-weight: bold;
-            width: 150px;
+            font-weight: 500;
+            color: #495057;
           }
 
           .valor-total {
-            width: 120px;
+            font-weight: 500;
             text-align: right;
+            min-width: 120px;
+          }
+
+          .total-final {
+            border-top: 2px solid #dee2e6;
+            margin-top: 8px;
+            padding-top: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #2c3e50;
           }
         `), /*#__PURE__*/React.createElement("div", {
     className: "print-container"
@@ -149,7 +167,7 @@ export const PurchaseInvoicesFormat = ({
     style: {
       margin: 0
     }
-  }, "Factura de compra")), /*#__PURE__*/React.createElement("div", {
+  }, "Factura de compra")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, "Factura #: ", invoice.numeroFactura)), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: "20px",
       marginTop: "20px"
@@ -157,14 +175,6 @@ export const PurchaseInvoicesFormat = ({
   }, /*#__PURE__*/React.createElement("table", {
     className: "summary-table mr-3"
   }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-    style: {
-      padding: "8px 0"
-    }
-  }, /*#__PURE__*/React.createElement("strong", null, "# Factura:")), /*#__PURE__*/React.createElement("td", {
-    style: {
-      padding: "8px 0"
-    }
-  }, invoice.numeroFactura)), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
     style: {
       padding: "8px 0"
     }
@@ -298,18 +308,33 @@ export const PurchaseInvoicesFormat = ({
   }, formatCurrency(detail.total || 0)))))), /*#__PURE__*/React.createElement("div", {
     className: "seccion-final"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "info-qr"
+    className: "total-container"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "qr-image"
-  }, "[C\xF3digo QR]"), /*#__PURE__*/React.createElement("div", {
-    className: "codigo-seguridad"
-  }, "C\xF3digo de seguridad: S/DQdu")), /*#__PURE__*/React.createElement("div", {
-    className: "totales"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "fila-total"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "etiqueta-total"
-  }, "Total:"), /*#__PURE__*/React.createElement("div", {
-    className: "valor-total"
-  }, formatCurrency(invoice.monto || 0)))))));
+    style: {
+      marginBottom: "20px",
+      marginTop: "20px"
+    }
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "summary-table mr-3"
+  }, /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "8px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Subtotal:"), " ", formatCurrency(invoice.subtotal)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "8px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Descuentos:"), " ", formatCurrency(invoice.discuount)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "8px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Impuestos:"), " ", formatCurrency(invoice.tax)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "8px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Retenciones:"), " ", formatCurrency(invoice.withholding_tax)), /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "8px 0"
+    }
+  }, /*#__PURE__*/React.createElement("strong", null, "Total:"), " ", formatCurrency(invoice.monto))))))))));
 };

@@ -317,9 +317,16 @@ export const SystemConfiguration = ({
     className: "col-md-3 border-end"
   }, /*#__PURE__*/React.createElement("div", {
     className: "p-3 h-100 bg-light"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("h6", {
-    className: "text-primary mb-3 fw-bold"
-  }, "M\xF3dulos de Configuraci\xF3n"), /*#__PURE__*/React.createElement(Stepper, {
+    className: "text-primary mb-0 fw-bold"
+  }, "M\xF3dulos de Configuraci\xF3n"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-sm btn-outline-primary",
+    onClick: resetToInitial
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-caret-left"
+  }))), /*#__PURE__*/React.createElement(Stepper, {
     activeStep: activeIndex,
     orientation: "vertical",
     linear: false,

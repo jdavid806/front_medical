@@ -14,8 +14,6 @@ export const LandingApp = () => {
   useEffect(() => {
     fetchAvailabilities();
   }, [fetchAvailabilities]);
-
-  // Si hay error mostramos mensaje
   if (error) {
     return /*#__PURE__*/React.createElement("p", null, "Error: ", error);
   }

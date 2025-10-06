@@ -15,6 +15,10 @@ interface Factura {
   tipoFactura: string;
   detalles: DetalleFactura[];
   monto: number;
+  discuount: number;
+  withholding_tax: number;
+  tax: number;
+  subtotal: number;
 }
 
 interface PrintInvoiceProps {
@@ -24,7 +28,6 @@ interface PrintInvoiceProps {
 export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
   invoice,
 }) => {
-  console.log("invoice => ", invoice);
   // Función para formatear currency (igual que en el primer componente)
   const formatCurrency = (value: number) => {
     const formatted = new Intl.NumberFormat("es-DO", {
@@ -126,10 +129,20 @@ export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
             border-radius: 4px;
           }
 
+          .invoice-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding: 8px 0;
+            border-bottom: 2px solid #e9ecef;
+          }
+
           .seccion-final {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 30px;
+            align-items: flex-start;
           }
 
           .info-qr {
@@ -147,30 +160,39 @@ export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
             margin-bottom: 10px;
           }
 
-          .codigo-seguridad {
-            font-weight: bold;
-            margin-bottom: 15px;
-          }
-
-          .totales {
-            text-align: right;
-            width: 65%;
+          .totales-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            width: 55%;
           }
 
           .fila-total {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
           }
 
           .etiqueta-total {
-            font-weight: bold;
-            width: 150px;
+            font-weight: 500;
+            color: #495057;
           }
 
           .valor-total {
-            width: 120px;
+            font-weight: 500;
             text-align: right;
+            min-width: 120px;
+          }
+
+          .total-final {
+            border-top: 2px solid #dee2e6;
+            margin-top: 8px;
+            padding-top: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #2c3e50;
           }
         `}
       </style>
@@ -181,16 +203,15 @@ export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
           <h2 style={{ margin: 0 }}>Factura de compra</h2>
         </div>
 
+        {/* Número de factura como subtítulo */}
+        <div>
+          <h3>Factura #: {invoice.numeroFactura}</h3>
+        </div>
+
         {/* Tabla de resumen */}
         <div style={{ marginBottom: "20px", marginTop: "20px" }}>
           <table className="summary-table mr-3">
             <tbody>
-              <tr>
-                <td style={{ padding: "8px 0" }}>
-                  <strong># Factura:</strong>
-                </td>
-                <td style={{ padding: "8px 0" }}>{invoice.numeroFactura}</td>
-              </tr>
               <tr>
                 <td style={{ padding: "8px 0" }}>
                   <strong>Fecha:</strong>
@@ -380,17 +401,36 @@ export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
 
         {/* Sección final */}
         <div className="seccion-final">
-          <div className="info-qr">
+          {/* <div className="info-qr">
             <div className="qr-image">[Código QR]</div>
-            <div className="codigo-seguridad">Código de seguridad: S/DQdu</div>
-          </div>
+          </div> */}
 
-          <div className="totales">
-            <div className="fila-total">
-              <div className="etiqueta-total">Total:</div>
-              <div className="valor-total">
-                {formatCurrency(invoice.monto || 0)}
-              </div>
+          <div className="total-container">
+            <div style={{ marginBottom: "20px", marginTop: "20px" }}>
+              <table className="summary-table mr-3">
+                <tbody>
+                  <tr>
+                    <td style={{ padding: "8px 0" }}>
+                      <strong>Subtotal:</strong>{" "}
+                      {formatCurrency(invoice.subtotal)}
+                    </td>
+                    <td style={{ padding: "8px 0" }}>
+                      <strong>Descuentos:</strong>{" "}
+                      {formatCurrency(invoice.discuount)}
+                    </td>
+                    <td style={{ padding: "8px 0" }}>
+                      <strong>Impuestos:</strong> {formatCurrency(invoice.tax)}
+                    </td>
+                    <td style={{ padding: "8px 0" }}>
+                      <strong>Retenciones:</strong>{" "}
+                      {formatCurrency(invoice.withholding_tax)}
+                    </td>
+                    <td style={{ padding: "8px 0" }}>
+                      <strong>Total:</strong> {formatCurrency(invoice.monto)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { ErrorHandler } from "../../../services/errorHandler.js";
 import { invoiceService } from "../../../services/api/index.js";
 const mapInvoiceData = response => {
@@ -6,7 +6,7 @@ const mapInvoiceData = response => {
     const attr = item;
     const mappedItem = {
       id: attr.id.toString(),
-      numeroFactura: `F-${attr.id.toString().padStart(4, '0')}`,
+      numeroFactura: `F-${attr.id.toString().padStart(4, "0")}`,
       proveedor: attr.third_party?.full_name || "Sin cliente",
       fecha: new Date(attr.created_at),
       identificacion: attr.third_party?.id || "",
@@ -14,16 +14,26 @@ const mapInvoiceData = response => {
       remainingAmount: parseFloat(attr.remaining_amount),
       paid: parseFloat(attr.total_amount) - parseFloat(attr.remaining_amount),
       tipoFactura: "Contado",
-      estado: attr.status || "pending",
-      detalles: item?.details.map(d => ({
-        id: d.id,
-        cantidad: d.quantity,
-        precioUnitario: parseFloat(d.unit_price),
-        subtotal: parseFloat(d.subtotal),
-        productoId: d.product_id,
-        productoNombre: d?.product?.name,
-        discount: d.discount
-      }))
+      estado: attr.status || "--",
+      subtotal: parseFloat(attr.subtotal),
+      withholding_tax: parseFloat(attr.withholdings),
+      discuount: parseFloat(attr.discount),
+      tax: parseFloat(attr.iva),
+      detalles: item?.details.map(d => {
+        const tax = Number(d.subtotal) * (Number(d.tax_product) / 100);
+        const total = Number(d.subtotal) + tax;
+        return {
+          id: d.id,
+          cantidad: d.quantity,
+          precioUnitario: parseFloat(d.unit_price),
+          subtotal: parseFloat(d.subtotal),
+          productoId: d.product_id,
+          productoNombre: d?.product?.name || d?.accounting_account?.account_name,
+          discount: d.discount,
+          tax: tax,
+          total: parseFloat(total.toFixed(2))
+        };
+      })
     };
     return mappedItem;
   });
