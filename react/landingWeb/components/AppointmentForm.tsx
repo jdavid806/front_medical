@@ -7,7 +7,7 @@ import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
 import { Card } from "primereact/card";
 import { useAppointmentForm } from "../hooks/useAppointmentForm";
-import { useAppointmentBulkCreate } from "../../appointments/hooks/useAppointmentBulkCreate"; 
+
 
 interface AppointmentFormProps {
   patient?: any;

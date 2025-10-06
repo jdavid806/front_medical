@@ -32,8 +32,8 @@ RewriteRule ^validarKeys_Dom$ login/verificarLoginDom.php
 RewriteRule ^ConfigProfile$ Config/profile.php
 # Perfil de Usuario [FIN]
 RewriteRule ^LoginPrueba$ login/loginPrueba.php
-RewriteRule ^ConfiguracionGeneral$ Config/generalConfiguracion.php
-RewriteRule ^Landing$ Portada/portadaTest.php
+RewriteRule ^ConfiguracionGeneral$ generalConfiguration.php
+
 
 # Configuración[INICIO]
 RewriteRule ^RIPS_Report$ Reportes/ReportesRIPS.php
@@ -139,10 +139,6 @@ RewriteRule ^FE_ImprimirNominaG$ Nomina/FE_InprimirNominaGrupal.php
 RewriteRule ^FE_ImprimirNominaI$ Nomina/FE_InprimirNominaIndividual.php
 RewriteRule ^FE_ImprimirLiquidacion$ Nomina/FE_ImprimirLiquidacion.php
 # Configuracion de Nomina [FIN]
-
-
-# Configuracion del Sistema[INICIO]
-RewriteRule ^configuracionesGenerales$ Config/generalConfiguracion.php
 
 # Firma de Contrato por parte del empleado [INICIO]
 RewriteRule ^verContrato/(.+)$ Contrato/index.php?json=$1 
@@ -387,8 +383,6 @@ RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
 RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
-RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
-
 
 
 

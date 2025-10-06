@@ -3,13 +3,15 @@ import { useForm } from "react-hook-form";
 import { useAvailableSpecialties } from "../hooks/useAvailableSpecialties";
 import { useProductsByType } from "../../products/hooks/useProductsByType";
 import { useLandingAvailabilities } from "../hooks/useLandingAvailabilities";
+import { useAppointmentBulkCreate } from "../../appointments/hooks/useAppointmentBulkCreate";
 
-// Lógica relacionada con el formulario de citas
 export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) => {
   const { control, handleSubmit } = useForm();
   const { data: availabilities } = useLandingAvailabilities();
   const { specialties: allUserSpecialties, loading: loadingSpecialties } = useAvailableSpecialties();
   const { productsByType, fetchProductsByType, loading: loadingProcedures } = useProductsByType();
+
+  const { loading: creating, createAppointmentBulk } = useAppointmentBulkCreate();
 
   const allowedSpecialtyIds = useMemo(() => {
     if (!availabilities?.length) return [];
@@ -25,7 +27,6 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
   const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<number | null>(null);
 
-  // Cargar procedimientos solo una vez
   const loadedRef = useRef(false);
   useEffect(() => {
     if (!loadedRef.current) {
@@ -34,7 +35,6 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
     }
   }, [fetchProductsByType]);
 
-  // Opciones derivadas
   const specialtyOptions = useMemo(
     () =>
       (userSpecialties || []).map((s: any) => ({
@@ -63,12 +63,44 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
     [productsByType]
   );
 
-  // 👇 Consolas para depurar el flujo de especialidades/doctores
-  useEffect(() => {
-  }, [specialtyOptions, doctorOptions, selectedSpecialty]);
+  // 🚀 GUARDAR CITA
+  const onSubmit = async (data: any) => {
+    try {
+      const payload = {
+        appointments: [
+          {
+            appointment_date: data.appointment_date
+              ? new Date(data.appointment_date).toISOString().split("T")[0]
+              : null,
+            appointment_time: data.appointment_time
+              ? new Date(data.appointment_time).toTimeString().split(" ")[0]
+              : null,
+            assigned_user_availability_id: selectedDoctor,
+            product_id: data.product_id,
+            created_by_user_id: 1, // o el user logueado
+            appointment_state_id: 1,
+            attention_type: "CONSULTATION",
+            consultation_purpose: "TREATMENT",
+            consultation_type: "FOLLOW_UP",
+            external_cause: "NOT_APPLICABLE",
+            assigned_supervisor_user_availability_id: null,
+            exam_recipe_id: null,
+          },
+        ],
+      };
 
-  const onSubmit = (data: any) => {
-    if (onSave) onSave({ ...data, patient });
+      console.log("Payload a enviar:", payload);
+
+      if (!patient?.id) {
+        alert("Debe seleccionar un paciente");
+        return;
+      }
+
+    await createAppointmentBulk(payload, patient.id);
+      if (onSave) onSave(data);
+    } catch (error) {
+      console.error("Error creando la cita:", error);
+    }
   };
 
   return {
@@ -84,5 +116,6 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
     setSelectedSpecialty,
     setSelectedDoctor,
     onSubmit,
+    creating,
   };
 };

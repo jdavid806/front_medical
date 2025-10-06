@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { menuService } from "../../../../services/api/index.js";
-import { items as staticItems } from "../dataMenu.js";
+import { items } from "../dataMenu.js";
 import { filterMenuItems } from "../../../helpers/menuFilter.js";
 const transformBackendMenu = backendItems => {
   return backendItems.map(item => ({
@@ -43,7 +43,7 @@ export const useMenuItems = () => {
           setMenuItems(cleanedMenus);
         } catch (error) {
           console.error("Error loading backend menus, using static menu:", error);
-          setMenuItems(staticItems);
+          setMenuItems(items);
         }
         return;
       }
@@ -59,7 +59,7 @@ export const useMenuItems = () => {
         const allowedKeys = backendMenus.map(m => m.key);
         const allMenus = await menuService.getAll();
         const allowedRoutes = allMenus.filter(menu => allowedKeys.includes(menu.key_)).map(menu => menu.route).filter(Boolean);
-        const filtered = filterMenuItems(staticItems, allowedRoutes);
+        const filtered = filterMenuItems(items, allowedRoutes);
         const cleaned = removeEmptySections(filtered);
         setMenuItems(cleaned);
       }
