@@ -214,12 +214,14 @@ export const auditLogActions = {
 export const clinicalRecordStates = {
     'active': 'Activa',
     'pending_cancellation': 'Solicitud de cancelación pendiente',
+    'pending_review': 'Pendiente de revision',
     'cancelled': 'Anulada'
 }
 
 export const clinicalRecordStateColors = {
     'active': 'success',
     'pending_cancellation': 'warning',
+    'pending_review': 'warning',
     'cancelled': 'danger'
 }
 
@@ -243,4 +245,11 @@ export const generalRequestStateColors = {
     'pending': 'warning',
     'approved': 'success',
     'rejected': 'danger'
+}
+
+export const statusInvoices = {
+    partially_pending: 'Parcialmente pendiente',
+    paid: 'Paga',
+    cancelled: 'Anulada',
+    pending: 'Pendiente',
 }

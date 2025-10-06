@@ -326,25 +326,19 @@ const SmtpConfigForm = () => {
   })))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex gap-2"
+    className: "col-12 d-flex justify-content-center justify-content-md-end gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     type: "submit",
     label: "Guardar Configuraci\xF3n",
     icon: "pi pi-save",
     loading: isSubmitting,
     className: "btn-primary"
-  }), /*#__PURE__*/React.createElement(Button, {
-    type: "button",
-    label: "Probar Conexi\xF3n",
-    icon: "pi pi-test-tube",
-    className: "btn-outline-secondary",
-    onClick: handleTestConnection
   }))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-light border"
+    className: "alert border"
   }, /*#__PURE__*/React.createElement("h6", {
     className: "fw-bold mb-2"
   }, "Configuraciones comunes:"), /*#__PURE__*/React.createElement("div", {

@@ -7,7 +7,7 @@ export const usePriceConfigUpdate = () => {
   const updateProduct = async (id, data) => {
     setLoading(true);
     try {
-      const response = await productService.updateProduct(id, data);
+      const response = await productService.updateProductEntity(id, data);
       SwalManager.success();
       return response;
     } catch (error) {

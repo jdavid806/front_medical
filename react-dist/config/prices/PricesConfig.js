@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { PricesTableConfig } from "../prices/table/PricesTableConfig.js";
 import PricesConfigFormModal from "../prices/form/PricesConfigFormModal.js";
 import { PrimeReactProvider } from 'primereact/api';
@@ -9,10 +9,14 @@ import { usePriceConfigUpdate } from "./hooks/usePriceConfigUpdate.js";
 import { usePriceConfigById } from "./hooks/usePriceConfigById.js";
 import { usePriceConfigDelete } from "./hooks/usePriceConfigDelete.js";
 import { entitiesService } from "../../../services/api/index.js";
-export const PricesConfig = () => {
+export const PricesConfig = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const [entitiesData, setEntitiesData] = useState([]);
+  const [isMounted, setIsMounted] = useState(true);
+  const modalRef = useRef(null);
   const {
     fetchProducts,
     products
@@ -32,6 +36,23 @@ export const PricesConfig = () => {
   const {
     deleteProduct
   } = usePriceConfigDelete();
+  useEffect(() => {
+    if (!isMounted) return;
+    const hasProducts = products && products.length > 0;
+    console.log('🔍 Validando precios:', {
+      totalPrecios: products?.length,
+      hasProducts
+    });
+    onConfigurationComplete?.(hasProducts);
+    console.log("onConfigurationComplete!!!!", onConfigurationComplete);
+  }, [products, onConfigurationComplete, isMounted]);
+
+  // Cleanup para evitar el error de removeChild
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
   const onCreate = () => {
     setInitialData(undefined);
     setPriceById(null);
@@ -46,7 +67,7 @@ export const PricesConfig = () => {
       } else {
         await createProduct(mapperDataProduct);
       }
-      fetchProducts();
+      await fetchProducts();
       setShowFormModal(false);
     } catch (error) {
       console.error(error);
@@ -63,17 +84,20 @@ export const PricesConfig = () => {
     }
   };
   async function loadEntities() {
-    const entities = await entitiesService.getEntities();
-    setEntitiesData(entities.data);
+    try {
+      const entities = await entitiesService.getEntities();
+      setEntitiesData(entities.data);
+    } catch (error) {
+      console.error('Error loading entities:', error);
+    }
   }
   useEffect(() => {
     loadEntities();
   }, []);
   useEffect(() => {
-    if (priceById) {
+    if (priceById && isMounted) {
       const data = {
         product_id: priceById.id?.toString(),
-        // Agregar product_id para la actualización
         name: priceById.name,
         attention_type: priceById.attention_type,
         curp: priceById.barcode,
@@ -83,7 +107,6 @@ export const PricesConfig = () => {
         exam_type_id: priceById.exam_type_id?.toString() ?? '',
         purchase_price: priceById.purchase_price,
         entities: priceById.entities?.map(entity => {
-          // Priorizar datos del pivot si existen, luego los datos directos
           return {
             entity_id: entity.pivot?.entity_id || entity.entity_id || entity.id,
             entity_name: entitiesData.find(e => e.id === entity?.entity_id)?.name || 'N/A',
@@ -98,15 +121,28 @@ export const PricesConfig = () => {
       };
       setInitialData(data);
     }
-  }, [priceById]);
+  }, [priceById, entitiesData, isMounted]);
+  const handleModalHide = () => {
+    setShowFormModal(false);
+    setPriceById(null);
+    setInitialData(undefined);
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
-      appendTo: 'self',
+      appendTo: modalRef.current || 'self',
       zIndex: {
         overlay: 100000
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
+    ref: modalRef
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-info p-2"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle me-2"
+  }), "Configure al menos un precio para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
@@ -114,20 +150,19 @@ export const PricesConfig = () => {
     className: "text-end mb-2"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate
+    onClick: onCreate,
+    disabled: loading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus me-2"
-  }), "Nuevo Precio"))), /*#__PURE__*/React.createElement(PricesTableConfig, {
+  }), loading ? 'Cargando...' : 'Nuevo Precio'))), /*#__PURE__*/React.createElement(PricesTableConfig, {
     prices: products,
     onEditItem: handleTableEdit,
     onDeleteItem: handleTableDelete
-  }), /*#__PURE__*/React.createElement(PricesConfigFormModal, {
+  }), showFormModal && /*#__PURE__*/React.createElement(PricesConfigFormModal, {
     show: showFormModal,
     entitiesData: entitiesData,
     handleSubmit: handleSubmit,
-    onHide: () => {
-      setShowFormModal(false);
-    },
+    onHide: handleModalHide,
     initialData: initialData
-  })));
+  }))));
 };

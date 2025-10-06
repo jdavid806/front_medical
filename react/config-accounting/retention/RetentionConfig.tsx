@@ -17,7 +17,7 @@ import {
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 
-export const RetentionConfig = () => {
+export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState<
     RetentionFormInputs | undefined
@@ -97,6 +97,11 @@ export const RetentionConfig = () => {
   };
 
   useEffect(() => {
+    const hasRetentions = retentions && retentions.length > 0;
+    onConfigurationComplete?.(hasRetentions);
+  }, [retentions, onConfigurationComplete]);
+
+  useEffect(() => {
     if (retention && accounts) {
       const data: RetentionFormInputs = {
         name: retention.name,
@@ -111,6 +116,8 @@ export const RetentionConfig = () => {
       setInitialData(data);
     }
   }, [retention, accounts]);
+
+
 
   const deleteDialogFooter = (
     <div className="flex justify-content-end gap-2">
@@ -145,24 +152,24 @@ export const RetentionConfig = () => {
       retentionItem.account ||
       (account
         ? {
-            id: account.id.toString(),
-            name:
-              account.account_name ||
-              account.account ||
-              `Cuenta ${account.account_code}`,
-          }
+          id: account.id.toString(),
+          name:
+            account.account_name ||
+            account.account ||
+            `Cuenta ${account.account_code}`,
+        }
         : null);
 
     const returnAccountData =
       retentionItem.returnAccount ||
       (returnAccount
         ? {
-            id: returnAccount.id.toString(),
-            name:
-              returnAccount.account_name ||
-              returnAccount.account ||
-              `Cuenta ${returnAccount.account_code}`,
-          }
+          id: returnAccount.id.toString(),
+          name:
+            returnAccount.account_name ||
+            returnAccount.account ||
+            `Cuenta ${returnAccount.account_code}`,
+        }
         : null);
 
     return {

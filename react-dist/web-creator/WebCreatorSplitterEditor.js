@@ -3,7 +3,7 @@ import { generateUUID } from "../../services/utilidades.js";
 import { WebCreatorLogo } from "./components/WebCreatorLogo.js";
 import { WebCreatorMenuBar } from "./components/WebCreatorMenuBar.js";
 import { WebCreatorButton } from "./components/WebCreatorButton.js";
-import { WebCreatorInput } from "./components/WebCreatorInput.js";
+import { WebCreatorInput } from "./components/WebCreatorInput.js"; // NUEVA interfaz para configuración de tabs
 export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   onPanelClick,
   onComponentClick

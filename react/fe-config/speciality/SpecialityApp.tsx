@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Toast } from 'primereact/toast'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 
@@ -10,7 +10,11 @@ import SpecialityModal from './components/SpecialityModal'
 import { useSpecialty } from './hooks/useSpecialty'
 import CurrentSpecialityTable from './components/CurrentSpecialtyTable'
 
-export default function SpecialityApp() {
+interface SpecialityAppProps {
+  onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export default function SpecialityApp({ onConfigurationComplete }: SpecialityAppProps) {
   const {
     // State
     specialties,
@@ -44,6 +48,11 @@ export default function SpecialityApp() {
     onDeactiveSpecialty
   } = useSpecialty()
 
+  useEffect(() => {
+    const hasCurrentSpecialties = currentSpecialties && currentSpecialties.length > 0;
+    onConfigurationComplete?.(hasCurrentSpecialties);
+  }, [currentSpecialties, specialties, onConfigurationComplete]);
+
   const handleModalClose = () => {
     setShowConfigModal(false)
     resetModalForm()
@@ -53,6 +62,15 @@ export default function SpecialityApp() {
     <div className="container-fluid mt-4">
       <Toast ref={toast} />
       <ConfirmDialog />
+
+      <div className="mb-3">
+        <div className="alert alert-info p-2">
+          <small>
+            <i className="pi pi-info-circle me-2"></i>
+            Configure al menos una especialidad activa para poder continuar al siguiente submódulo.
+          </small>
+        </div>
+      </div>
 
       <div className='row'>
         <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
@@ -68,7 +86,6 @@ export default function SpecialityApp() {
           />
         </div>
         <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
-
           {/* Current Specialty Table */}
           <CurrentSpecialityTable
             specialties={currentSpecialties}

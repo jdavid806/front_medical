@@ -1,8 +1,14 @@
 import React from 'react';
 import { UserAvailabilityApp } from '../../../user-availabilities/UserAvailabilityApp';
 
-export const HorariosConfig: React.FC = () => {
+interface HorariosConfigProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const HorariosConfig: React.FC<HorariosConfigProps> = ({
+    onConfigurationComplete
+}) => {
     return (
-        <UserAvailabilityApp />
+        <UserAvailabilityApp onConfigurationComplete={onConfigurationComplete} />
     );
 };

@@ -52,6 +52,7 @@ export type InvoiceProduct = {
   quantity: number;
   price: number;
   discount: number;
+  discountType?: 'percentage' | 'fixed';
   tax: any;
   depositId?: any;
   lotInfo: LotInfo[];
@@ -60,6 +61,7 @@ export type InvoiceProduct = {
   showLotForm?: boolean;
   isExpanded?: boolean;
   taxChargeId?: number | null;
+  accountingAccount?: any;
 };
 
 export interface ProductColumnBodyProps {

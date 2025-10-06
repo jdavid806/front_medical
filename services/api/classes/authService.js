@@ -27,6 +27,10 @@ export class AuthService extends BaseApiService {
             'X-DOMAIN': url.split('/')[0]
         })
     }
+
+    async verifySupervisor(data = { external_id, password }) {
+        return await this.httpClient.post(`${this.microservice}/check-supervisor`, data);
+    }
 }
 
 export default AuthService;

@@ -182,14 +182,19 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         }
 
         const replacements = {
-          NOMBRE_PACIENTE: `${admissionData.admission_data.patient.first_name ?? ""} ${
-            admissionData.admission_data.patient.middle_name ?? ""
-          } ${admissionData.admission_data.patient.last_name ?? ""} ${
-            admissionData.admission_data.patient.second_last_name ?? ""
-          }`,
-          NUMERO_FACTURA: admissionData.data.invoice_code || admissionData.data.invoice_reminder,
-          FECHA_FACTURA: formatDate(admissionData.data_invoice.invoice.created_at),
-          MONTO_FACTURADO: "$" + admissionData.data_invoice.invoice.total_amount.toFixed(2),
+          NOMBRE_PACIENTE: `${
+            admissionData.admission_data.patient.first_name ?? ""
+          } ${admissionData.admission_data.patient.middle_name ?? ""} ${
+            admissionData.admission_data.patient.last_name ?? ""
+          } ${admissionData.admission_data.patient.second_last_name ?? ""}`,
+          NUMERO_FACTURA:
+            admissionData.data.invoice_code ||
+            admissionData.data.invoice_reminder,
+          FECHA_FACTURA: formatDate(
+            admissionData.data_invoice.invoice.created_at
+          ),
+          MONTO_FACTURADO:
+            "$" + admissionData.data_invoice.invoice.total_amount.toFixed(2),
           "ENLACE DOCUMENTO": "",
         };
 
@@ -241,6 +246,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   }, [visible]);
 
   const handleSubmitInvoice = async () => {
+
     try {
       const response = await createAdmission(formData, appointmentData);
 
@@ -322,6 +328,14 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
                 tax: product.tax || 0,
                 discount: 0,
                 total: (price || 0) * (1 + (product.tax || 0) / 100),
+                entities: product.entities || [],
+                matchProductByEntity:
+                  product.entities?.find(
+                    (item: any) =>
+                      item?.entity_id === patient?.social_security?.entity_id &&
+                      item?.negotation_type.toLowerCase() ===
+                        patient?.social_security?.affiliate_type.toLowerCase()
+                  ) || null,
               };
             })
           : [];

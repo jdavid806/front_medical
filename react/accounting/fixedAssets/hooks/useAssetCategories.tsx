@@ -10,15 +10,17 @@ export const useAssetCategories = () => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
       try {
         const service = new ResourcesAdminService();
         const response = await service.getAssetCategories();
-
-        console.log("response: ", response);
         // Transformar la respuesta del API al formato que necesita el Dropdown
         const formattedCategories = response.data.map((category: any) => ({
-          label: category.name,
+          label: category.attributes.name,
           value: category.id.toString(),
         }));
 
@@ -31,9 +33,6 @@ export const useAssetCategories = () => {
         setLoading(false);
       }
     };
-
-    fetchCategories();
-  }, []);
 
   return { categories, loading, error };
 };

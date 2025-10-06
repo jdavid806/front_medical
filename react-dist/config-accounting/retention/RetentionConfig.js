@@ -12,7 +12,9 @@ import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccou
 import { RetentionMapperCreate, RetentionMapperUpdate } from "./mapper/mappedRetention.js";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-export const RetentionConfig = () => {
+export const RetentionConfig = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const [retentionToDelete, setRetentionToDelete] = useState(null);
@@ -97,6 +99,10 @@ export const RetentionConfig = () => {
       SwalManager.error("Error al eliminar el Retention");
     }
   };
+  useEffect(() => {
+    const hasRetentions = retentions && retentions.length > 0;
+    onConfigurationComplete?.(hasRetentions);
+  }, [retentions, onConfigurationComplete]);
   useEffect(() => {
     if (retention && accounts) {
       const data = {

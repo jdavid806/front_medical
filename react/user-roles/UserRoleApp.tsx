@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PrimeReactProvider } from 'primereact/api';
-import { useEffect } from 'react';
 import { UserRoleFormInputs } from './components/UserRoleForm';
 import { useUserRole } from './hooks/useUserRole';
 import { useUserRoleDelete } from './hooks/useUserRoleDelete';
@@ -10,7 +9,11 @@ import { UserRoleFormModal } from './components/UserRoleFormModal';
 import { useUserRoleCreate } from './hooks/useUserRoleUpdate';
 import { useUserRoleUpdate } from './hooks/useUserRoleCreate';
 
-export const UserRoleApp = () => {
+interface UserRoleAppProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const UserRoleApp = ({ onConfigurationComplete }: UserRoleAppProps) => {
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserRoleFormInputs | undefined>(undefined)
 
@@ -19,6 +22,11 @@ export const UserRoleApp = () => {
     const { updateUserRole } = useUserRoleUpdate();
     const { deleteUserRole } = useUserRoleDelete();
     const { userRole, fetchUserRole, setUserRole } = useUserRole();
+
+    useEffect(() => {
+        const hasUserRoles = userRoles && userRoles.length > 0;
+        onConfigurationComplete?.(hasUserRoles);
+    }, [userRoles, onConfigurationComplete]);
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -81,6 +89,15 @@ export const UserRoleApp = () => {
                     overlay: 100000
                 }
             }}>
+                <div className="mb-3">
+                    <div className="alert alert-info p-2">
+                        <small>
+                            <i className="pi pi-info-circle me-2"></i>
+                            Configure al menos un rol de usuario para poder continuar al siguiente módulo.
+                        </small>
+                    </div>
+                </div>
+
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Roles de Usuario</h4>
                     <div className="text-end mb-2">

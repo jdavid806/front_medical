@@ -234,22 +234,30 @@ const TableActionsMenu: React.FC<{
   const items = [
     {
       label: "Ver detalle",
-      icon: "pi pi-eye",
+      icon: <i className="fa fa-eye me-2"></i>,
       command: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
     },
     {
+      label: "Realizar revisión",
+      icon: <i className="fa fa-edit me-2"></i>,
+      visible: data.status === "pending_review",
+      command: () => {
+        console.log("Realizar revisión");
+      }
+    },
+    {
       label: "Solicitar cancelación",
-      icon: "pi pi-times",
+      icon: <i className="fa fa-times me-2"></i>,
       command: () => onCancelItem && onCancelItem(data.id)
     },
     {
       label: "Imprimir",
-      icon: "pi pi-print",
+      icon: <i className="fa fa-print me-2"></i>,
       command: () => onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
     },
     {
       label: "Descargar",
-      icon: "pi pi-download",
+      icon: <i className="fa fa-download me-2"></i>,
       command: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
     },
     {
@@ -257,16 +265,16 @@ const TableActionsMenu: React.FC<{
     },
     {
       label: "Compartir",
-      icon: "pi pi-share-alt",
+      icon: <i className="fa fa-share-alt me-2"></i>,
       items: [
         {
           label: "WhatsApp",
-          icon: "pi pi-whatsapp",
+          icon: <i className="fa fa-whatsapp me-2"></i>,
           command: () => onShareItem && onShareItem(data, "whatsapp")
         },
         {
           label: "Email",
-          icon: "pi pi-envelope",
+          icon: <i className="fa fa-envelope me-2"></i>,
           command: () => onShareItem && onShareItem(data, "email")
         }
       ]
@@ -282,7 +290,6 @@ const TableActionsMenu: React.FC<{
   return (
     <div className="table-actions-menu">
       <Button
-        icon="pi pi-ellipsis-v"
         className="p-button-rounded btn-primary"
         onClick={(e) => menu.current?.toggle(e)}
         aria-controls={`popup_menu_${data.id}`}
@@ -290,7 +297,6 @@ const TableActionsMenu: React.FC<{
       >
         Acciones
         <i className="fa fa-cog ml-2"></i>
-
       </Button>
       <Menu
         model={items}

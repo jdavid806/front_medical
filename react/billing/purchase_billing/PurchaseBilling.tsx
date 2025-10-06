@@ -27,7 +27,11 @@ import SupplyFormModal from "../../inventory/supply/SupplyFormModal";
 import VaccineFormModal from "../../inventory/vaccine/VaccineFormModal";
 import { useInvoicePurchase } from "./hooks/usePurchaseBilling";
 import { useInventory } from "./hooks/useInventory";
-import { brandService, invoiceService } from "../../../services/api";
+import {
+  brandService,
+  invoiceService,
+  accountingAccountsService,
+} from "../../../services/api";
 import { purchaseOrdersService } from "../../../services/api";
 import { BrandFormModal } from "../../inventory/brands/modal/BrandFormModal";
 
@@ -65,7 +69,7 @@ import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
 
 export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   purchaseOrder,
-  onClose = () => { },
+  onClose = () => {},
 }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productForExpiration, setProductForExpiration] = useState<{
@@ -92,7 +96,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       quantity: 0,
       price: 0,
       discount: 0,
-      tax: { id: 0, name: "3%" },
+      discountType: "percentage",
+      tax: 0,
       lotInfo: [],
       lotFormData: {
         lotNumber: "",
@@ -279,8 +284,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           }
           const discount = detail.discount
             ? (Number(detail.discount) /
-              (Number(detail.price) * Number(detail.quantity))) *
-            100
+                (Number(detail.price) * Number(detail.quantity))) *
+              100
             : 0;
 
           const subtotal = Number(detail.subtotal) - Number(detail.discount);
@@ -338,12 +343,20 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
 
-    const taxRate = typeof product.tax === 'object' && product.tax !== null
-      ? Number(product.tax.percentage)
-      : Number(product.tax) || 0;
+    const taxRate =
+      typeof product.tax === "object" && product.tax !== null
+        ? Number(product.tax.percentage)
+        : Number(product.tax) || 0;
 
     const subtotal = quantity * price;
-    const discountAmount = subtotal * (discount / 100);
+
+    let discountAmount = 0;
+    if (product.discountType === "percentage") {
+      discountAmount = subtotal * (discount / 100);
+    } else {
+      discountAmount = discount;
+    }
+
     const subtotalAfterDiscount = subtotal - discountAmount;
     const taxAmount = (subtotal - discountAmount) * (taxRate / 100) || 0;
 
@@ -379,24 +392,31 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       const subtotal =
         (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discount = Number(product.discount) || 0;
-      return total + subtotal * (discount / 100);
+
+      if (product.discountType === "percentage") {
+        return total + subtotal * (discount / 100);
+      } else {
+        return total + discount;
+      }
     }, 0);
   };
 
   const calculateTotalTax = (): number => {
     return productsArray.reduce((total, product) => {
-      const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
-      const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
-      const subtotalAfterDiscount = subtotal - discountAmount;
+      const subtotal =
+        (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      let discountAmount = 0;
 
-      let taxRate = 0;
-      if (typeof product.tax === 'object' && product.tax !== null) {
-        taxRate = Number(product.tax.percentage) || 0;
+      if (product.discountType === "percentage") {
+        discountAmount = subtotal * ((Number(product.discount) || 0) / 100)
       } else {
-        taxRate = Number(product.tax) || 0;
+        discountAmount = product.discount;
       }
 
-      return total + subtotalAfterDiscount * (taxRate / 100);
+      const subtotalAfterDiscount = subtotal - discountAmount;
+      const taxValue = subtotalAfterDiscount * (product.tax / 100)
+
+      return total + taxValue;
     }, 0);
   };
 
@@ -423,7 +443,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         quantity: 0,
         price: 0,
         discount: 0,
-        tax: { id: 0, name: "0%" },
+        tax: 0,
         lotInfo: [],
         showLotForm: false,
         isExpanded: false,
@@ -526,9 +546,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-            ...payment,
-            value: selectedAdvances.amount,
-          }
+              ...payment,
+              value: selectedAdvances.amount,
+            }
           : payment
       )
     );
@@ -686,9 +706,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           prev.map((p) =>
             p.id === productId
               ? {
-                ...p,
-                lotInfo: [...p.lotInfo, data],
-              }
+                  ...p,
+                  lotInfo: [...p.lotInfo, data],
+                }
               : p
           )
         );
@@ -728,8 +748,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           >
             <div className="d-flex align-items-center">
               <i
-                className={`fas fa-${product.isExpanded ? "minus" : "plus"
-                  } me-2`}
+                className={`fas fa-${
+                  product.isExpanded ? "minus" : "plus"
+                } me-2`}
               ></i>
               <span className="fw-bold">
                 {product.description || "Nuevo Producto Asignado"}
@@ -844,7 +865,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     <FixedAssetsForm
                       formId={`fixed-asset-form-${product.id}`}
                       onSubmit={handleSaveFixedAssetLocal}
-                      onCancel={() => { }}
+                      onCancel={() => {}}
                       initialData={localFixedAssetData}
                       key={`fixed-asset-form-${product.id}`}
                     />
@@ -909,8 +930,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         prev.map((p) =>
           p.id === productForExpiration.id
             ? {
-              ...p,
-            }
+                ...p,
+              }
             : p
         )
       );
@@ -923,8 +944,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const buildInvoiceData = async (formData: any) => {
     const purchaseIdValue = purchaseOrderId
       ? {
-        purchase_order_id: purchaseOrderId,
-      }
+          purchase_order_id: purchaseOrderId,
+        }
       : {};
 
     const billing = await fetchBillingByType("purchase_invoice");
@@ -953,41 +974,51 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         }
 
         const subtotal = Number(product.quantity) * Number(product.price);
-        const discountAmount = (subtotal * Number(product.discount)) / 100;
-        const taxAmount =
-          (subtotal - discountAmount) * (Number(product.tax) / 100) || 0;
+
+        let discountAmount = 0;
+        if (product.discountType === "percentage") {
+          // Descuento porcentual
+          discountAmount = (subtotal * Number(product.discount)) / 100;
+        } else {
+          // Descuento en valor fijo
+          discountAmount = Number(product.discount) || 0;
+        }
 
         const formAssets = product?.fixedAssetInfo
           ? {
-            description: product.fixedAssetInfo.description || "",
-            brand: product.fixedAssetInfo.brand || "",
-            model: product.fixedAssetInfo.model || "",
-            serial_number: product.fixedAssetInfo.serialNumber || "",
-            internal_code: product.fixedAssetInfo.internalCode || "",
-            asset_category_id:
-              Number(product.fixedAssetInfo.asset_category_id) || null,
-            accounting_account_id: product.product,
-          }
+              description: product.fixedAssetInfo.description || "",
+              brand: product.fixedAssetInfo.brand || "",
+              model: product.fixedAssetInfo.model || "",
+              serial_number: product.fixedAssetInfo.serialNumber || "",
+              internal_code: product.fixedAssetInfo.internalCode || "",
+              asset_category_id:
+                Number(product.fixedAssetInfo.asset_category_id) || null,
+              accounting_account_id: product.accountingAccount.id,
+            }
           : {};
 
         const formLot = infoLot
           ? {
-            expiration_date: infoLot?.expiration_date || null,
-            deposit_id: infoLot?.deposit_id || null,
-            lot_number: infoLot?.lot_number || "",
-          }
+              expiration_date: infoLot?.expiration_date || null,
+              deposit_id: infoLot?.deposit_id || null,
+              lot_number: infoLot?.lot_number || "",
+            }
           : {
-            deposit_id: product.depositId || null,
-          };
+              deposit_id: product.depositId || null,
+            };
 
         return {
           product_id:
-            product.typeProduct === "assets" ? null : Number(product.product),
+            product.typeProduct === "assets" || product.typeProduct === "spent"
+              ? null
+              : Number(product.product),
           quantity: product.quantity,
           unit_price: product.price,
-          discount: product.discount,
-          tax_product: taxAmount,
+          discount: discountAmount,
+          discount_type: product.discountType,
+          tax_product: product.tax,
           tax_charge_id: product.taxChargeId || null,
+          accounting_account_id: product.accountingAccount.id,
           ...formLot,
           ...formAssets,
         };
@@ -1065,7 +1096,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       return;
     }
 
-    if ((
+    if (
       !formData.invoiceNumber ||
       !formData.documentType ||
       !formData.supplier ||
@@ -1074,7 +1105,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       !formData.expirationDate ||
       !formData.buyer ||
       !formData.costCenter
-    )) {
+    ) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
@@ -1168,8 +1199,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           <ProductColumnBody
             rowData={rowData}
             type={rowData.typeProduct}
-            onChange={(value: string) => {
-              handleProductChange(rowData.id, "product", value);
+            onChange={(value: any) => {
+              handleProductChange(rowData.id, "product", value?.product_id);
+              handleProductChange(
+                rowData.id,
+                "accountingAccount",
+                value?.accountingAccount
+              );
             }}
             onProductSelection={handleProductSelection}
             disabled={disabledInputs}
@@ -1206,12 +1242,15 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       },
       {
         field: "discount",
-        header: "Descuento %",
+        header: "Descuento",
         body: (rowData: InvoiceProduct) => (
           <DiscountColumnBody
             rowData={rowData}
             onChange={(value: number | null) =>
               handleProductChange(rowData.id, "discount", value || 0)
+            }
+            onDiscountTypeChange={(type: "percentage" | "fixed") =>
+              handleProductChange(rowData.id, "discountType", type)
             }
             disabled={disabledInputs}
           />
@@ -1226,11 +1265,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             onChange={(value: any | null) => {
               // value ahora es el objeto completo del impuesto
               handleProductChange(rowData.id, "tax", value?.percentage || 0);
-              handleProductChange(
-                rowData.id,
-                "taxChargeId",
-                value?.id || null
-              );
+              handleProductChange(rowData.id, "taxChargeId", value?.id || null);
             }}
             value={rowData.tax}
             disabled={disabledInputs}
@@ -1315,22 +1350,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     Crear nueva factura de compra
                   </h1>
                 </div>
-                <div className="d-flex gap-2">
-                  {/* Botones de acción en header para mobile */}
-                  <Button
-                    label="Guardar"
-                    icon="pi pi-check"
-                    className="btn-info d-none d-md-inline-flex"
-                    type="submit"
-                  />
-                  <Button
-                    label="Enviar"
-                    icon="pi pi-send"
-                    className="btn-info d-none d-md-inline-flex"
-                    onClick={handleSubmit(save)}
-                    disabled={!paymentCoverage()}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -1352,7 +1371,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 <div className="row g-2 g-md-3">
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Número de factura *</label>
+                      <label className="form-label small fw-bold">
+                        Número de factura *
+                      </label>
                       <Controller
                         name="invoiceNumber"
                         control={control}
@@ -1370,7 +1391,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Tipo de documento *</label>
+                      <label className="form-label small fw-bold">
+                        Tipo de documento *
+                      </label>
                       <Controller
                         name="documentType"
                         control={control}
@@ -1378,8 +1401,14 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <Dropdown
                             {...field}
                             options={[
-                              { label: "Factura de compra", value: "factura_compra" },
-                              { label: "Documento Soporte", value: "documento_soporte" },
+                              {
+                                label: "Factura de compra",
+                                value: "factura_compra",
+                              },
+                              {
+                                label: "Documento Soporte",
+                                value: "documento_soporte",
+                              },
                             ]}
                             placeholder="Seleccione tipo"
                             className="w-100"
@@ -1394,7 +1423,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold"># Comprobante fiscal *</label>
+                      <label className="form-label small fw-bold">
+                        # Comprobante fiscal *
+                      </label>
                       <Controller
                         name="fiscalVoucher"
                         control={control}
@@ -1413,7 +1444,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Fecha de elaboración *</label>
+                      <label className="form-label small fw-bold">
+                        Fecha de elaboración *
+                      </label>
                       <Controller
                         name="elaborationDate"
                         control={control}
@@ -1434,7 +1467,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Fecha vencimiento *</label>
+                      <label className="form-label small fw-bold">
+                        Fecha vencimiento *
+                      </label>
                       <Controller
                         name="expirationDate"
                         control={control}
@@ -1455,7 +1490,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Proveedor *</label>
+                      <label className="form-label small fw-bold">
+                        Proveedor *
+                      </label>
                       <Controller
                         name="supplier"
                         control={control}
@@ -1487,7 +1524,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Centro de costo *</label>
+                      <label className="form-label small fw-bold">
+                        Centro de costo *
+                      </label>
                       <Controller
                         name="costCenter"
                         control={control}
@@ -1510,7 +1549,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
                   <div className="col-12 col-md-6 col-lg-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">Comprador *</label>
+                      <label className="form-label small fw-bold">
+                        Comprador *
+                      </label>
                       <Controller
                         name="buyer"
                         control={control}
@@ -1546,11 +1587,26 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     label="Añadir producto"
                     icon="pi pi-plus"
                     model={[
-                      { label: "Insumo", command: () => setShowInsumoModal(true) },
-                      { label: "Vacuna", command: () => setShowVaccineModal(true) },
-                      { label: "Medicamento", command: () => setShowMedicamentoModal(true) },
-                      { label: "Inventariable", command: () => setShowInventariableModal(true) },
-                      { label: "Marca", command: () => setShowBrandFormModal(true) },
+                      {
+                        label: "Insumo",
+                        command: () => setShowInsumoModal(true),
+                      },
+                      {
+                        label: "Vacuna",
+                        command: () => setShowVaccineModal(true),
+                      },
+                      {
+                        label: "Medicamento",
+                        command: () => setShowMedicamentoModal(true),
+                      },
+                      {
+                        label: "Inventariable",
+                        command: () => setShowInventariableModal(true),
+                      },
+                      {
+                        label: "Marca",
+                        command: () => setShowBrandFormModal(true),
+                      },
                     ]}
                     severity="contrast"
                     onClick={addProduct}
@@ -1587,6 +1643,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 totalDiscount={calculateTotalDiscount()}
                 retentions={retentions}
                 onRetentionsChange={setRetentions}
+                productsArray={productsArray}
               />
             </div>
 
@@ -1610,10 +1667,15 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               <div className="card-body p-2 p-md-3">
                 <div className="payment-methods-section">
                   {paymentMethodsArray.map((payment) => (
-                    <div key={payment.id} className="payment-method-row mb-3 p-2 border rounded">
+                    <div
+                      key={payment.id}
+                      className="payment-method-row mb-3 p-2 border rounded"
+                    >
                       <div className="row g-2 align-items-end">
                         <div className="col-12 col-md-4">
-                          <label className="form-label small fw-bold">Método *</label>
+                          <label className="form-label small fw-bold">
+                            Método *
+                          </label>
                           <Dropdown
                             value={payment.method}
                             options={filteredPaymentMethods}
@@ -1630,7 +1692,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         </div>
 
                         <div className="col-12 col-md-4">
-                          <label className="form-label small fw-bold">Descripción *</label>
+                          <label className="form-label small fw-bold">
+                            Descripción *
+                          </label>
                           <InputText
                             value={payment.authorizationNumber}
                             placeholder="Descripción"
@@ -1647,7 +1711,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         </div>
 
                         <div className="col-12 col-md-3">
-                          <label className="form-label small fw-bold">Valor</label>
+                          <label className="form-label small fw-bold">
+                            Valor
+                          </label>
                           <InputNumber
                             value={payment.value}
                             placeholder="Ingrese valor"
@@ -1685,7 +1751,11 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                   ))}
 
                   <div className="payment-summary mt-3">
-                    <div className={`payment-summary-card p-3 border rounded ${!paymentCoverage() ? "border-warning" : "border-success"}`}>
+                    <div
+                      className={`payment-summary-card p-3 border rounded ${
+                        !paymentCoverage() ? "border-warning" : "border-success"
+                      }`}
+                    >
                       <div className="row g-3 align-items-center">
                         <div className="col-12 col-md-6">
                           <div className="d-flex justify-content-between align-items-center">
@@ -1722,11 +1792,22 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         </div>
 
                         <div className="col-12">
-                          <div className={`text-center p-2 rounded ${!paymentCoverage() ? "bg-warning-light" : "bg-success-light"}`}>
+                          <div
+                            className={`text-center p-2 rounded ${
+                              !paymentCoverage()
+                                ? "bg-warning-light"
+                                : "bg-success-light"
+                            }`}
+                          >
                             {!paymentCoverage() ? (
                               <span className="text-warning-dark small fw-bold">
                                 <i className="pi pi-exclamation-triangle me-2"></i>
-                                Faltan {((calculateTotal() || 0) - (calculateTotalPayments() || 0)).toFixed(2)} DOP
+                                Faltan{" "}
+                                {(
+                                  (calculateTotal() || 0) -
+                                  (calculateTotalPayments() || 0)
+                                ).toFixed(2)}{" "}
+                                DOP
                               </span>
                             ) : (
                               <span className="text-success-dark small fw-bold">
@@ -1754,15 +1835,41 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               <div className="card-body p-3">
                 <div className="row g-2 g-md-3">
                   {[
-                    { label: "SUBTOTAL", value: calculateSubtotal() || 0, highlight: true },
-                    { label: "Descuento", value: calculateTotalDiscount() || 0, highlight: true },
-                    { label: "Impuestos", value: calculateTotalTax() || 0, highlight: true },
-                    { label: "Retenciones", value: retentions.reduce((sum, r) => sum + r.value, 0), highlight: true },
-                    { label: "TOTAL", value: calculateTotal() || 0, highlight: true }
+                    {
+                      label: "SUBTOTAL",
+                      value: calculateSubtotal() || 0,
+                      highlight: true,
+                    },
+                    {
+                      label: "Descuento",
+                      value: calculateTotalDiscount() || 0,
+                      highlight: true,
+                    },
+                    {
+                      label: "Impuestos",
+                      value: calculateTotalTax() || 0,
+                      highlight: true,
+                    },
+                    {
+                      label: "Retenciones",
+                      value: retentions.reduce((sum, r) => sum + r.value, 0),
+                      highlight: true,
+                    },
+                    {
+                      label: "TOTAL",
+                      value: calculateTotal() || 0,
+                      highlight: true,
+                    },
                   ].map((item, index) => (
                     <div key={index} className="col-12 col-sm-6 col-lg-3">
-                      <div className={`form-group p-2 rounded ${item.highlight ? 'bg-light' : ''}`}>
-                        <label className="form-label small fw-bold">{item.label}</label>
+                      <div
+                        className={`form-group p-2 rounded ${
+                          item.highlight ? "bg-light" : ""
+                        }`}
+                      >
+                        <label className="form-label small fw-bold">
+                          {item.label}
+                        </label>
                         <InputNumber
                           value={item.value}
                           className="w-100"
@@ -1771,7 +1878,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           locale="es-DO"
                           readOnly
                           size="small"
-                          inputClassName={item.highlight ? 'fw-bold text-primary' : ''}
+                          inputClassName={
+                            item.highlight ? "fw-bold text-primary" : ""
+                          }
                         />
                       </div>
                     </div>
@@ -2046,8 +2155,7 @@ const TypeColumnBody = ({
     { id: "supplies", name: "Insumos" },
     { id: "medications", name: "Medicamentos" },
     { id: "vaccines", name: "Vacunas" },
-    { id: "services", name: "Servicios" },
-    { id: "spent", name: "gastos" },
+    { id: "spent", name: "Gastos y servicios" },
     { id: "assets", name: "Activos fijos" },
     { id: "inventariables", name: "Inventariables" },
   ];
@@ -2080,7 +2188,7 @@ const ProductColumnBody = ({
   disabled,
 }: {
   rowData: InvoiceProduct;
-  type: string | null;
+  type: string | any;
   onChange: (value: string) => void;
   onProductSelection: (
     id: string,
@@ -2090,22 +2198,35 @@ const ProductColumnBody = ({
   ) => void;
   disabled?: boolean;
 }) => {
+  const [subAccounts, setSubAccounts] = useState<any>("");
   const { getByType, products, currentType, refreshProducts } = useInventory();
   const { accounts: spentAccounts } = useAccountingAccountsByCategory(
-    "account",
-    "5"
+    "sub_account",
+    subAccounts
   );
   const { accounts: propertyAccounts } = useAccountingAccountsByCategory(
     "sub_account",
-    "15"
+    "1"
   );
+
+  const { accounts: accountingAccountByCategory } =
+    useAccountingAccountsByCategory("category", type);
 
   const [options, setOptions] = useState<any[]>([]);
   const dropdownRef = useRef<any>(null);
 
   useEffect(() => {
-    if (type && type !== currentType &&
-      ["supplies", "medications", "vaccines", "services", "inventariables"].includes(type)) {
+    if (
+      type &&
+      type !== currentType &&
+      [
+        "supplies",
+        "medications",
+        "vaccines",
+        "services",
+        "inventariables",
+      ].includes(type)
+    ) {
       getByType(type);
     }
   }, [type, currentType]);
@@ -2145,6 +2266,7 @@ const ProductColumnBody = ({
     let formattedOptions: { id: number; label: string; name: string }[] = [];
 
     if (type === "spent") {
+      fetchAccountingAccounts();
       formattedOptions =
         spentAccounts?.map((acc) => ({
           id: acc.id,
@@ -2167,11 +2289,30 @@ const ProductColumnBody = ({
         })) || [];
     }
     setOptions(formattedOptions);
-
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
 
+  async function fetchAccountingAccounts() {
+    const data: any = await accountingAccountsService.getAll();
+
+    const dataMapped = data.data
+      .map((item: any) => item.sub_account)
+      .filter((subAccount: string, index: number, array: string[]) => {
+        const num = parseInt(subAccount);
+        return array.indexOf(subAccount) === index && !isNaN(num) && num >= 5;
+      })
+      .sort((a: string, b: string) => parseInt(a) - parseInt(b)); // Ordenar numéricamente
+
+    setSubAccounts(dataMapped.join(","));
+  }
+
   const handleProductChange = (e: DropdownChangeEvent) => {
-    onChange(e.value);
+    const accountingAccountId =
+      type === "spent" || type === "assets" ? { id: e.value } : 0;
+    const data: any = {
+      product_id: e.value,
+      accountingAccount: accountingAccountByCategory[0] || accountingAccountId,
+    };
+    onChange(data);
     const selectedProduct = options.find((opt) => opt.id === e.value);
     onProductSelection(
       rowData.id,
@@ -2249,23 +2390,90 @@ const PriceColumnBody = ({
 const DiscountColumnBody = ({
   rowData,
   onChange,
+  onDiscountTypeChange,
   disabled,
 }: {
   rowData: InvoiceProduct;
   onChange: (value: number | null) => void;
+  onDiscountTypeChange: (type: "percentage" | "fixed") => void;
   disabled?: boolean;
 }) => {
+  const [localDiscountType, setLocalDiscountType] = useState<
+    "percentage" | "fixed"
+  >(rowData.discountType || "percentage");
+
+  useEffect(() => {
+    if (rowData.discountType && rowData.discountType !== localDiscountType) {
+      setLocalDiscountType(rowData.discountType);
+    }
+  }, [rowData.discountType]);
+
+  const handleTypeChange = (type: "percentage" | "fixed") => {
+    setLocalDiscountType(type);
+    onDiscountTypeChange(type);
+
+    if (type !== (rowData.discountType || "percentage")) {
+      onChange(0);
+    }
+  };
+
   return (
-    <InputNumber
-      value={rowData.discount}
-      placeholder="Descuento"
-      className="w-100"
-      suffix="%"
-      min={0}
-      max={100}
-      onValueChange={(e: any) => onChange(e.value)}
-      disabled={disabled}
-    />
+    <div className="d-flex align-items-center gap-1">
+      {/* Selector de tipo de descuento - Solo símbolos */}
+      <Dropdown
+        value={localDiscountType}
+        options={[
+          { label: "%", value: "percentage" },
+          { label: "$", value: "fixed" },
+        ]}
+        optionLabel="label"
+        optionValue="value"
+        onChange={(e) => handleTypeChange(e.value)}
+        className="discount-type-selector"
+        style={{ width: "60px", minWidth: "60px" }}
+        size="small"
+        disabled={disabled}
+      />
+
+      <InputNumber
+        value={rowData.discount}
+        placeholder={localDiscountType === "percentage" ? "0" : "0.00"}
+        className="flex-grow-1"
+        suffix={localDiscountType === 'percentage' ? "%" : ""}
+        mode={localDiscountType === "fixed" ? "currency" : "decimal"}
+        currency={localDiscountType === "fixed" ? "DOP" : undefined}
+        locale="es-DO"
+        min={0}
+        max={localDiscountType === "percentage" ? 100 : undefined}
+        onValueChange={(e: any) => onChange(e.value)}
+        disabled={disabled}
+        style={{ minWidth: "85px" }}
+      />
+      <style>{`
+  .discount-type-selector .p-dropdown-label {
+    padding: 12px 2px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .discount-type-selector .p-dropdown-trigger {
+    width: 1.5rem;
+  }
+  
+  .discount-type-selector {
+    min-width: 60px !important;
+  }
+  
+  /* Para que los dos elementos queden bien alineados */
+  .d-flex.align-items-center.gap-1 {
+    align-items: stretch !important;
+  }
+  
+  .d-flex.align-items-center.gap-1 .p-inputnumber {
+    flex: 1;
+  }
+`}</style>
+    </div>
   );
 };
 
@@ -2284,9 +2492,8 @@ const IvaColumnBody = ({
     fetchTaxes();
   }, []);
 
-  const currentValue = typeof value === 'object' && value !== null
-    ? value.percentage
-    : value;
+  const currentValue =
+    typeof value === "object" && value !== null ? value.percentage : value;
 
   return (
     <Dropdown

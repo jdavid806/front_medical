@@ -1,35 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Card } from 'primereact/card';
-import { WhatsAppStatus } from '../types/consultorio';
 import WhatsAppConnection from './WhatsAppConnection';
-import SmtpConfigForm from '../form/SmtpConfigForm';
+import { WhatsAppStatus } from '../types/consultorio';
 
 interface CommunicationsTabProps {
     whatsAppStatus: WhatsAppStatus;
     onStatusChange: (status: WhatsAppStatus) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
 const CommunicationsTab: React.FC<CommunicationsTabProps> = ({
     whatsAppStatus,
-    onStatusChange
+    onStatusChange,
+    onValidationChange
 }) => {
-    return (
-        <div className="grid">
-            <div className="col-12 md:col-6">
-                <Card title="Estado WhatsApp">
-                    <WhatsAppConnection
-                        status={whatsAppStatus}
-                        onStatusChange={onStatusChange}
-                    />
-                </Card>
-            </div>
 
-            <div className="col-12 md:col-6">
-                <Card title="Configuración de Correo SMTP">
-                    <SmtpConfigForm />
-                </Card>
+    useEffect(() => {
+        const isValid = whatsAppStatus.connected === true;
+        onValidationChange?.(isValid);
+    }, [whatsAppStatus, onValidationChange]);
+
+    const handleStatusChange = (status: WhatsAppStatus) => {
+        onStatusChange(status);
+    };
+
+    return (
+        <Card className="shadow-sm">
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-12">
+                        <h5 className="fw-bold mb-4">Configuración de Comunicaciones</h5>
+                        <p className="text-muted mb-4">
+                            Configura la conexión de WhatsApp para enviar notificaciones a tus pacientes.
+                        </p>
+
+                        <WhatsAppConnection
+                            onStatusChange={handleStatusChange}
+                        />
+                    </div>
+                </div>
             </div>
-        </div>
+        </Card>
     );
 };
 

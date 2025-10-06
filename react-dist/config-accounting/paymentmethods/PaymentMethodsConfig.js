@@ -9,7 +9,9 @@ import { usePaymentMethodById } from "./hooks/usePaymentMethodConfigByIdTable.js
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { usePaymentMethodDelete } from "./hooks/usePaymentMethodDeleteTable.js";
 import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccounts.js";
-export const PaymentMethodsConfig = () => {
+export const PaymentMethodsConfig = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const {
@@ -114,6 +116,10 @@ export const PaymentMethodsConfig = () => {
       SwalManager.error('Error al eliminar el método de pago');
     }
   };
+  useEffect(() => {
+    const hasPaymentMethods = paymentMethods && paymentMethods.length > 0;
+    onConfigurationComplete?.(hasPaymentMethods);
+  }, [paymentMethods, onConfigurationComplete]);
   useEffect(() => {
     if (paymentMethod) {
       console.log("Setting initialData from paymentMethod:", paymentMethod);

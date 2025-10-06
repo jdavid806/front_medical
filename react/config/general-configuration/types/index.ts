@@ -4,13 +4,13 @@ export interface SubStep {
     icon: string;
 }
 
+// En tu archivo de tipos
 export interface ConfigurationStep {
     id: string;
     label: string;
-    icon: string;
+    icon: React.ReactNode;
     component: React.ComponentType<any>;
 }
-
 export interface SystemConfigurationProps {
     onSave?: (data: { currentStep: string; stepIndex: number }) => void;
     onCancel?: () => void;

@@ -128,7 +128,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision"))), "F"), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {

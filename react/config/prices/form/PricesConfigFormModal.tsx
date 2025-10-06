@@ -1,6 +1,6 @@
 import React from 'react';
-import { CustomModal } from '../../../components/CustomModal';
 import PricesConfigForm, { ProductFormInputs } from '../form/PricesConfigForm';
+import { Dialog } from 'primereact/dialog';
 
 interface UserFormModalProps {
     show: boolean;
@@ -17,10 +17,13 @@ const PricesConfigFormModal: React.FC<UserFormModalProps> = ({ show, handleSubmi
     const formId = 'createUserAvailability'
 
     return (
-        <CustomModal
-            show={show}
-            onHide={onHide}
-            title={initialData ? 'Editar Precio' : 'Nuevo Precio'}>
+        <Dialog
+            visible={show}
+            onHide={() => onHide?.()}
+            header={initialData ? 'Editar Precio' : 'Nuevo Precio'}
+            appendTo={document.body}
+            style={{ width: '75vw' }}
+        >
             <PricesConfigForm
                 formId={formId}
                 onHandleSubmit={handleSubmit}
@@ -28,7 +31,7 @@ const PricesConfigFormModal: React.FC<UserFormModalProps> = ({ show, handleSubmi
                 onCancel={onHide}
                 entitiesData={entitiesData}
             ></PricesConfigForm>
-        </CustomModal>
+        </Dialog>
     );
 };
 

@@ -10,10 +10,22 @@ export interface WebCreatorPanel {
     uuid: string;
     component: WebCreatorComponent | null;
     children: WebCreatorPanel[];
-    cols?: number; // Columnas (1-12) en lugar de porcentaje
+    cols?: number;
     minCols?: number;
     layout?: 'horizontal' | 'vertical';
-    // Nuevas propiedades de estilo
+    // NUEVO: Tipo de wrapper
+    wrapperType?: 'default' | 'tabs' | 'form';
+    // NUEVO: Configuración específica para tabs
+    tabsConfig?: {
+        tabs: TabConfig[];
+        activeTab: string;
+    };
+    // NUEVO: Configuración específica para formularios
+    formConfig?: {
+        formId?: string;
+        submitUrl?: string;
+        method?: 'GET' | 'POST';
+    };
     styles?: {
         backgroundColor?: string;
         borderColor?: string;
@@ -25,8 +37,14 @@ export interface WebCreatorPanel {
         alignItems?: string;
         justifyContent?: string;
         flexDirection?: string;
-        // Otras propiedades CSS que puedan ser necesarias
     };
+}
+
+// NUEVA interfaz para configuración de tabs
+export interface TabConfig {
+    id: string;
+    label: string;
+    content: WebCreatorPanel; // Cada tab tiene su propia grilla interna
 }
 
 interface WebCreatorSplitterEditorProps {

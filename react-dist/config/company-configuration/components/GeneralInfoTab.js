@@ -9,7 +9,8 @@ import { useCompany } from "../hooks/useCompanyGenralUpdate.js";
 import { SwalManager } from "../../../../services/alertManagerImported.js";
 const GeneralInfoTab = ({
   company,
-  onUpdate
+  onUpdate,
+  onValidationChange
 }) => {
   const {
     guardarInformacionGeneral,
@@ -29,6 +30,7 @@ const GeneralInfoTab = ({
     handleSubmit,
     formState: {
       errors,
+      isValid,
       isDirty
     },
     reset,
@@ -45,10 +47,18 @@ const GeneralInfoTab = ({
       city: '',
       logo: '',
       watermark: ''
-    }
+    },
+    mode: 'onChange'
   });
   const logoValue = watch('logo');
   const watermarkValue = watch('watermark');
+  const formValues = watch();
+
+  // Validar campos requeridos para habilitar siguiente tab
+  useEffect(() => {
+    const hasRequiredFields = Boolean(formValues.legal_name && formValues.document_type && formValues.document_number && formValues.phone && formValues.email && formValues.address && formValues.country && formValues.city);
+    onValidationChange?.(hasRequiredFields);
+  }, [formValues, onValidationChange]);
   useEffect(() => {
     if (company) {
       reset(company);
@@ -200,7 +210,6 @@ const GeneralInfoTab = ({
       });
     }
   };
-  const isFormDisabled = !isDirty && !newLogoFile && !newWatermarkFile;
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid"
   }, mutationError && /*#__PURE__*/React.createElement(Message, {
@@ -211,10 +220,18 @@ const GeneralInfoTab = ({
     severity: "success",
     text: "Informaci\xF3n guardada correctamente",
     className: "mb-3"
-  }), /*#__PURE__*/React.createElement("form", {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "row mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-info"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle mr-2"
+  }), /*#__PURE__*/React.createElement("strong", null, "Nota:"), " Complete todos los campos obligatorios para habilitar el siguiente m\xF3dulo.")))), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit(onSubmit)
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row mb-6"
+    className: "row mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement("h5", {
@@ -486,13 +503,17 @@ const GeneralInfoTab = ({
   }, "Formatos aceptados: JPG, PNG, GIF. Tama\xF1o m\xE1ximo: 5MB"))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end"
-  }, /*#__PURE__*/React.createElement(Button, {
+    className: "col-12 d-flex justify-content-between align-items-center"
+  }, /*#__PURE__*/React.createElement("div", null, isDirty && /*#__PURE__*/React.createElement("small", {
+    className: "text-warning"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle mr-2"
+  }), "Tienes cambios sin guardar")), /*#__PURE__*/React.createElement(Button, {
     type: "submit",
     label: "Guardar",
     icon: "pi pi-save",
     loading: mutationLoading,
-    disabled: isFormDisabled && mutationLoading,
+    disabled: mutationLoading,
     className: "btn-primary"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-save",

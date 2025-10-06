@@ -1,239 +1,386 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import {
+  AdmissionBillingFormData,
+  BillingData,
+  PatientData,
+  PatientStepProps,
+} from "../interfaces/AdmisionBilling";
+import { Controller, useForm } from "react-hook-form";
+import { validatePatientStep } from "../utils/helpers";
+import { classNames } from "primereact/utils";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Divider } from "primereact/divider";
-import { Tag } from "primereact/tag";
-import { Panel } from "primereact/panel";
-import { Badge } from "primereact/badge";
-import { calculateTotal, calculatePaid, calculateChange } from "../utils/helpers";
-import { paymentMethodOptions } from "../utils/constants";
+import { Calendar } from "primereact/calendar";
+import { InputSwitch } from "primereact/inputswitch";
+import { genderOptions } from "../utils/constants";
+import PatientFormModal from "../../../patients/modals/form/PatientFormModal";
+import { Patient } from "../../../models/models";
+import { usePatient } from "../../../patients/hooks/usePatient";
+import { genders } from "../../../../services/commons";
 
-interface PreviewAndDoneStepProps {
-  formData: any;
-  prevStep: () => void;
-  onHide: () => void;
-  onPrint: () => void;
-  onSubmit: () => Promise<void>;
-  loading?: boolean;
-}
-
-const PreviewDoneStep: React.FC<PreviewAndDoneStepProps> = ({
+const PatientStepPreview: React.FC<PatientStepProps> = ({
   formData,
-  prevStep,
-  onHide,
-  onPrint,
-  onSubmit,
-  loading = false
+  updateFormData,
+  updateBillingData,
+  nextStep,
+  toast,
 }) => {
-  const [isDone, setIsDone] = useState(false);
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm<AdmissionBillingFormData>({
+    defaultValues: formData,
+  });
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [mappedPatient, setMappedPatient] =
+    useState<Partial<PatientData> | null>(null);
+  const { patient, fetchPatient } = usePatient(formData.patient.id);
+  const [hideInputs, setHideInputs] = useState(false);
 
-  const total = calculateTotal(formData.products, formData.billing.facturacionEntidad);
-  const paid = calculatePaid(formData.payments);
-  const change = calculateChange(total, paid);
-  const balance = total - paid;
+  useEffect(() => {
+    if (patient) {
+      const mappedPatientData: Partial<PatientData> = {
+        id: patient.id,
+        documentType: patient.document_type || "",
+        documentNumber: patient.document_number || "",
+        firstName: patient.first_name || "",
+        middleName: patient.middle_name || "",
+        lastName: patient.last_name || "",
+        secondLastName: patient.second_last_name || "",
+        nameComplet: `${patient.first_name || ""} ${
+          patient.middle_name || ""
+        } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
+        birthDate: patient.date_of_birth
+          ? new Date(patient.date_of_birth)
+          : null,
+        gender: genders[patient.gender] || "",
+        country: patient.country_id || "",
+        department: patient.department_id || "",
+        city: patient.city_id || "",
+        address: patient.address || "",
+        email: patient.email || "",
+        whatsapp: patient.whatsapp || "",
+        bloodType: patient.blood_type || "",
+        affiliateType: patient.social_security?.affiliate_type || "",
+        insurance: patient.social_security?.entity?.name || "",
+        hasCompanion: patient.companions?.length > 0 || false,
+      };
+      setMappedPatient(mappedPatientData);
+    }
+  }, [patient && formData]);
 
-  const handleFinish = async () => {
-    try {
-      await onSubmit();
-      setIsDone(true);
-    } catch (error) {
-      console.error('Error finishing invoice:', error);
+  const handlePatientChange = <K extends keyof PatientData>(
+    field: K,
+    value: any
+  ) => {
+    updateFormData("patient", { [field]: value });
+  };
+
+  const handleBillingChange = <K extends keyof BillingData>(
+    field: K,
+    value: any
+  ) => {
+    updateBillingData(field, value);
+  };
+
+  const toggleBillingType = (type: "entity" | "consumer") => {
+    if (type === "entity") {
+      updateBillingData(
+        "facturacionEntidad",
+        !formData.billing.facturacionEntidad
+      );
+      updateBillingData("facturacionConsumidor", false);
+      formData.billing.facturacionEntidad =
+        !formData.billing.facturacionEntidad;
+      formData.billing.facturacionConsumidor = false;
+    } else {
+      updateBillingData(
+        "facturacionConsumidor",
+        !formData.billing.facturacionConsumidor
+      );
+      updateBillingData("facturacionEntidad", false);
+      formData.billing.facturacionConsumidor =
+        !formData.billing.facturacionConsumidor;
+      formData.billing.facturacionEntidad = false;
+    }
+
+    const mappedProducts = formData.products.map((product) => ({
+      ...product,
+      currentPrice: formData.billing.facturacionEntidad
+        ? product.copayment
+        : product.price,
+    }));
+
+    const matchProductWithEntity = formData.products.map((product) => {
+      return {
+        ...product.matchProductByEntity,
+      };
+    });
+
+    if (matchProductWithEntity.length && matchProductWithEntity[0]?.id > 0) {
+      const priceSums = matchProductWithEntity.reduce((total, objeto) => {
+        return total + parseFloat(objeto.price);
+      }, 0);
+      setHideInputs(true);
+
+      handleBillingChange("authorizedAmount", priceSums.toString() || "0");
+    }
+
+    formData.products = mappedProducts;
+    updateFormData("products", mappedProducts);
+    updateFormData("payments", []);
+  };
+
+  const toggleCompanion = (value: boolean) => {
+    handlePatientChange("hasCompanion", value);
+  };
+
+  const handleNext = () => {
+    if (validatePatientStep(formData.billing, toast)) {
+      nextStep();
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-DO', {
-      style: 'currency',
-      currency: 'DOP',
-      minimumFractionDigits: 2
-    }).format(value);
+  const getFormErrorMessage = (name: string) => {
+    const nameParts = name.split(".");
+    let errorObj = errors as any;
+
+    for (const part of nameParts) {
+      errorObj = errorObj?.[part];
+      if (!errorObj) break;
+    }
+
+    return errorObj && <small className="p-error">{errorObj.message}</small>;
   };
-
-  const paymentMethodTemplate = (rowData: any) => {
-    const methodLabel = paymentMethodOptions.find(m => m.value === rowData.method)?.label || rowData.method;
-
-    return (
-      <div className="d-flex align-items-center">
-        <i className={`pi ${rowData.method === 'CASH' ? 'pi-money-bill' : 'pi-credit-card'} mr-2`}></i>
-        <span>{methodLabel}</span>
-      </div>
-    );
-  };
-
-  const priceBodyTemplate = (rowData: any) => {
-    return <span className="fw-bold">{formatCurrency(rowData.currentPrice)}</span>;
-  };
-
-  const taxBodyTemplate = (rowData: any) => {
-    return <Tag value={`${rowData.tax}%`} severity="info" className="p-tag-rounded" />;
-  };
-
-  const subtotalBodyTemplate = (rowData: any) => {
-    const subtotal = rowData.currentPrice * rowData.quantity * (1 + rowData.tax / 100);
-    return <span className="fw-bold">{formatCurrency(subtotal)}</span>;
-  };
-
-  const paymentAmountTemplate = (rowData: any) => {
-    return <span className="font-bold">{formatCurrency(rowData.total)}</span>;
-  };
-
-  const paymentChangeTemplate = (rowData: any) => {
-    return <span className="font-bold">{formatCurrency(rowData.change)}</span>;
-  };
-
-  if (isDone) {
-    return (
-      <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
-        <h2 className="mb-3 fw-bold">¡Factura Generada Exitosamente!</h2>
-        <p className="text-lg text-muted mb-5">La transacción ha sido completada y guardada en el sistema</p>
-
-        <div className="d-flex justify-content-center gap-3">
-          <Button
-            label="Imprimir Factura"
-            icon="pi pi-print mr-2"
-            className="btn btn-outline-primary btn-lg"
-            onClick={onPrint}
-          />
-          <Button
-            label="Volver al Inicio"
-            className="btn btn-primary btn-lg"
-            onClick={onHide}
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="m-0 text-primary">
-          <i className="pi pi-file-invoice me-2"></i>
-          Vista Previa de Factura
-        </h2>
-      </div>
-
-      <Panel header="Datos del Cliente" toggleable className="mb-4 shadow-sm">
-        <div className="row">
-          <div className="col-md-6">
-            <div className="mb-3 p-3 bg-light rounded">
-              <label className="d-block text-muted small mb-1">Nombre completo</label>
-              <h5 className="mb-0">{`${formData.patient.firstName} ${formData.patient.lastName}`}</h5>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="mb-3 p-3 bg-light rounded">
-              <label className="d-block text-muted small mb-1">Documento</label>
-              <h5 className="mb-0">{formData.patient.documentNumber}</h5>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="mb-3 p-3 bg-light rounded">
-              <label className="d-block text-muted small mb-1">Ciudad</label>
-              <h5 className="mb-0">{formData.patient.city}</h5>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="mb-3 p-3 bg-light rounded">
-              <label className="d-block text-muted small mb-1">Fecha</label>
-              <h5 className="mb-0">{new Date().toLocaleDateString()}</h5>
-            </div>
-          </div>
-        </div>
-      </Panel>
-
-      <Panel header="Detalles de la Factura" toggleable className="mb-4 shadow-sm">
-        <div className="mb-4">
-          <DataTable
-            value={formData.products}
-            className="p-datatable-sm"
-            scrollable
-            scrollHeight="300px"
-            stripedRows
-            size="small"
-            tableStyle={{ minWidth: '50rem' }}
-          >
-            <Column field="id" header="#" headerStyle={{ width: '50px' }}></Column>
-            <Column field="description" header="Descripción" headerStyle={{ minWidth: '200px' }}></Column>
-            <Column field="quantity" header="Cantidad" headerStyle={{ width: '100px' }} body={(rowData) => (
-              <Badge value={rowData.quantity} severity="info"></Badge>
-            )}></Column>
-            <Column field="price" header="Precio Unitario" body={priceBodyTemplate}></Column>
-            <Column field="tax" header="Impuesto" body={taxBodyTemplate}></Column>
-            <Column field="total" header="Subtotal" body={subtotalBodyTemplate}></Column>
-          </DataTable>
-        </div>
-
-        <Divider />
-
-        <div className="row">
-          <div className="col-lg-6 mb-4 mb-lg-0">
-            <Panel header="Métodos de Pago" toggleable>
-              <DataTable
-                value={formData.payments}
-                className="p-datatable-sm"
-                stripedRows
-                size="small"
-              >
-                <Column field="method" header="Método" body={paymentMethodTemplate}></Column>
-                <Column field="amount" header="Monto" body={paymentAmountTemplate}></Column>
-                <Column field="change" header="Cambio" body={paymentChangeTemplate}></Column>
-              </DataTable>
-            </Panel>
-          </div>
-
-          <div className="col-lg-6">
-            <Panel header="Resumen de Pagos" toggleable>
-              <div className="p-3">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-muted">Subtotal:</span>
-                  <span className="fw-bold">{formatCurrency(total)}</span>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-muted">Total a Pagar:</span>
-                  <span className="fw-bold">{formatCurrency(total)}</span>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-muted">Pagado:</span>
-                  <span className="fw-bold text-success">{formatCurrency(paid)}</span>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                  <span className="text-muted">
-                    {balance > 0 ? 'Saldo Pendiente:' : 'Cambio a Devolver:'}
-                  </span>
-                  <span className={`fw-bold ${balance > 0 ? 'text-danger' : 'text-success'}`}>
-                    {formatCurrency(Math.abs(balance))}
-                  </span>
-                </div>
-                <Divider />
-                <div className="d-flex justify-content-between align-items-center pt-2">
-                  <span className="h5 mb-0">Total Factura:</span>
-                  <span className="h4 mb-0 text-primary">{formatCurrency(total)}</span>
-                </div>
+    <div className="row">
+      <div className="col-12">
+        <Card title="Datos Personales" className="mb-4">
+          <div className="row">
+            <div className="col-md-6">
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Nombre</b>
+                {mappedPatient?.nameComplet || "--"}
               </div>
-            </Panel>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Documento</b>
+                {mappedPatient?.documentNumber || "--"}
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Género</b>
+                {mappedPatient?.gender || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Dirección</b>
+                {mappedPatient?.address || "--"}
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Información Adicional" className="mb-4">
+          <div className="row">
+            <div className="col-md-6">
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>WhatsApp</b>
+                {mappedPatient?.whatsapp || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Correo</b>
+                {mappedPatient?.email || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Aseguradora</b>
+                {mappedPatient?.insurance || "--"}
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Ciudad</b>
+                {mappedPatient?.city || "--"}
+              </div>
+              <div className="mb-2 d-flex flex-column gap-2">
+                <b>Tipo de afiliado</b>
+                {mappedPatient?.affiliateType || "--"}
+              </div>
+              <Button
+                label="Actualizar Paciente"
+                className="btn btn-primary btn-sm"
+                icon="pi pi-user"
+                onClick={() => setShowUpdateModal(true)}
+              />
+            </div>
+          </div>
+        </Card>
+
+        <div className="container-fluid">
+          <div className="row justify-content-center">
+            <div className="col-lg-12 col-md-10 col-12 mb-4 w-40">
+              <Card title="Facturación Consumidor" className="h-100">
+                <div className="d-flex align-items-center mb-3">
+                  <InputSwitch
+                    checked={formData.billing.facturacionConsumidor}
+                    onChange={() => toggleBillingType("consumer")}
+                    className="me-3 bg-primary"
+                  />
+                  <span className="text-muted small">
+                    facturación consumidor
+                  </span>
+                </div>
+              </Card>
+            </div>
+            <div className="col-lg-12 col-md-10 col-12 mb-4">
+              <Card title="Facturación por Entidad" className="h-100">
+                <div className="d-flex align-items-center mb-3">
+                  <InputSwitch
+                    checked={formData.billing.facturacionEntidad}
+                    onChange={() => toggleBillingType("entity")}
+                    className="me-3 bg-primary"
+                  />
+                  <span className="text-muted small">
+                    Activar facturación por entidad
+                  </span>
+                </div>
+
+                {formData.billing.facturacionEntidad && (
+                  <div>
+                    <Controller
+                      name="billing.entity"
+                      control={control}
+                      rules={{ required: "Entidad es requerida" }}
+                      render={({ field, fieldState }) => (
+                        <div className="mb-3">
+                          <label className="form-label">Entidad *</label>
+                          <InputText
+                            className={classNames("w-100", {
+                              "p-invalid": fieldState.error,
+                            })}
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              handleBillingChange("entity", e.target.value);
+                            }}
+                            disabled
+                          />
+                          {getFormErrorMessage("billing.entity")}
+                        </div>
+                      )}
+                    />
+
+                    <Controller
+                      name="billing.authorizationDate"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="mb-3">
+                          <label className="form-label">
+                            Fecha de autorización
+                          </label>
+                          <Calendar
+                            className="w-100"
+                            value={field.value}
+                            onChange={(e) => {
+                              field.onChange(e.value);
+                              handleBillingChange("authorizationDate", e.value);
+                            }}
+                            dateFormat="dd/mm/yy"
+                            showIcon
+                            appendTo="self"
+                          />
+                        </div>
+                      )}
+                    />
+
+                    <Controller
+                      name="billing.authorizationNumber"
+                      control={control}
+                      rules={{
+                        required: "Número de autorización es requerido",
+                      }}
+                      render={({ field, fieldState }) => (
+                        <div className="mb-3">
+                          <label className="form-label">
+                            N° Autorización *
+                          </label>
+                          <InputText
+                            className={classNames("w-100", {
+                              "p-invalid": fieldState.error,
+                            })}
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              handleBillingChange(
+                                "authorizationNumber",
+                                e.target.value
+                              );
+                            }}
+                          />
+                          {getFormErrorMessage("billing.authorizationNumber")}
+                        </div>
+                      )}
+                    />
+
+                    <Controller
+                      name="billing.authorizedAmount"
+                      control={control}
+                      render={({ field }) => (
+                        <div
+                          className="mb-3"
+                          style={{ display: hideInputs ? "none" : "block" }}
+                        >
+                          <label className="form-label">Monto Autorizado</label>
+
+                          <InputText
+                            className="w-100"
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              handleBillingChange(
+                                "authorizedAmount",
+                                e.target.value
+                              );
+                            }}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
+                )}
+              </Card>
+            </div>
           </div>
         </div>
-      </Panel>
-
-      <div className="d-flex justify-content-center gap-3 mt-5 mb-4">
+      </div>
+      <div className="d-flex justify-content-end pt-4 col-12">
         <Button
-          label="Imprimir Factura"
-          icon={<i className="fas fa-file-pdf"></i>}
-          className="btn btn-primary btn-lg px-4"
-          onClick={onPrint}
-        />
-        <Button
-          label={"Guardar Factura"}
-          className="btn btn-primary btn-lg px-4"
-          onClick={handleFinish}
-          disabled={loading}
+          label="Siguiente"
+          icon={<i className="fas fa-arrow-right me-2"></i>}
+          iconPos="right"
+          onClick={handleNext}
+          className="btn btn-primary btn-sm"
         />
       </div>
+      <PatientFormModal
+        visible={showUpdateModal}
+        onHide={() => setShowUpdateModal(false)}
+        onSuccess={() => {
+          fetchPatient();
+          setShowUpdateModal(false);
+        }}
+        patientData={patient}
+      />
     </div>
   );
 };
 
-export default PreviewDoneStep;
+export default PatientStepPreview;

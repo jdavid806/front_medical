@@ -328,9 +328,11 @@ export interface PrescriptionDto {
   prescriber: UserDto;
   recipe_items: Medicine[];
   invoice_id: string;
+  status: string;
 }
 
 export interface Medicine {
+  id: string;
   medication: string;
   concentration: string;
   frequency: string;
@@ -509,6 +511,7 @@ export interface PatientClinicalRecordDto {
   patient: Patient;
   status: string;
   latest_pending_cancellation_request: GeneralRequestDto | null;
+  latest_pending_review_request: GeneralRequestDto | null;
 }
 
 export interface GeneralRequestDto {
@@ -750,4 +753,6 @@ export interface ProductDto {
   package_products: any[];
   packages: any[];
   brand: BrandDto;
+  product_stock: number;
+  pharmacy_product_stock: number;
 }

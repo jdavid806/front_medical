@@ -13,11 +13,10 @@ import { useInvoicePurchase } from "./hooks/usePurcharseInvoice.js";
 import { SplitButton } from "primereact/splitbutton";
 import { Toast } from "primereact/toast";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
-import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
 import { NewNoteModal } from "./NewNoteModal.js";
 import { useApplyNote } from "./hooks/useApplyNote.js";
+import { usePurchaseInvoicesFormat } from "../documents-generation/hooks/billing/invoices/usePurchaseInvoices.js";
 export const PurchaseInvoices = () => {
   const {
     thirdParties
@@ -44,6 +43,9 @@ export const PurchaseInvoices = () => {
     loading: loadingNote,
     error: errorNote
   } = useApplyNote();
+  const {
+    generateFormatPurchaseInvoices
+  } = usePurchaseInvoicesFormat();
 
   // Estado para filtros
   const [filtros, setFiltros] = useState({
@@ -79,18 +81,18 @@ export const PurchaseInvoices = () => {
   const loadFacturas = async () => {
     try {
       const data = await fetchAllInvoice();
-      console.log('Datos recibidos:', data);
+      console.log("Datos recibidos:", data);
       if (data && Array.isArray(data)) {
         setFacturas(data);
         setFilteredFacturas(data);
       } else {
-        console.error('Datos no válidos:', data);
+        console.error("Datos no válidos:", data);
         setFacturas([]);
         setFilteredFacturas([]);
       }
     } catch (error) {
-      console.error('Error cargando facturas:', error);
-      showToast('error', 'Error', 'No se pudieron cargar las facturas');
+      console.error("Error cargando facturas:", error);
+      showToast("error", "Error", "No se pudieron cargar las facturas");
       setFacturas([]);
       setFilteredFacturas([]);
     }
@@ -103,35 +105,30 @@ export const PurchaseInvoices = () => {
     }));
   };
   const aplicarFiltros = () => {
+    if (!facturas || facturas.length === 0) {
+      setFilteredFacturas([]);
+      return;
+    }
     let result = [...facturas];
-
-    // Filtro por número de factura
     if (filtros.numeroFactura) {
-      result = result.filter(factura => factura.numeroFactura.toLowerCase().includes(filtros.numeroFactura.toLowerCase()));
+      result = result.filter(factura => factura.numeroFactura?.toLowerCase().includes(filtros.numeroFactura.toLowerCase()));
     }
-
-    // Filtro por identificación - asegurarse de que existe y es string
     if (filtros.identificacion) {
-      result = result.filter(factura => factura.identificacion && factura.identificacion.toString().toLowerCase().includes(filtros.identificacion.toLowerCase()));
+      result = result.filter(factura => factura.identificacion?.toString().toLowerCase().includes(filtros.identificacion.toLowerCase()));
     }
-
-    // Filtro por rango de fechas
     if (filtros.fechaRango && filtros.fechaRango[0] && filtros.fechaRango[1]) {
       const startDate = new Date(filtros.fechaRango[0]);
       const endDate = new Date(filtros.fechaRango[1]);
-      endDate.setHours(23, 59, 59, 999); // Incluir todo el día final
-
+      endDate.setHours(23, 59, 59, 999);
       result = result.filter(factura => {
+        if (!factura.fecha) return false;
         const facturaDate = new Date(factura.fecha);
         return facturaDate >= startDate && facturaDate <= endDate;
       });
     }
-
-    // Filtro por estado - comparación exacta
     if (filtros.estado) {
-      result = result.filter(factura => factura.estado && factura.estado.toLowerCase() === filtros.estado?.toLowerCase());
+      result = result.filter(factura => factura.estado?.toLowerCase() === filtros.estado?.toLowerCase());
     }
-    setFilteredFacturas(result);
   };
   const limpiarFiltros = () => {
     setFiltros({
@@ -175,323 +172,10 @@ export const PurchaseInvoices = () => {
     // Aquí iría la llamada a la API para descargar Excel
   };
   const printInvoice = invoice => {
-    const namePDF = `Factura ${invoice.numeroFactura}.`;
-    const companyData = {
-      legal_name: "Centro Oriental de Diabetes y Endocrinologia",
-      document_type: "RNC",
-      document_number: "123003994",
-      address: "Avenida Presidente Estrella Ureña No. 109",
-      phone: "8095961335",
-      email: "info@cenode.com.do"
-    };
-    let dataCompany = {};
-    if (company) {
-      dataCompany = company;
-    } else {
-      dataCompany = companyData;
-    }
-    const pdfConfig = {
-      name: namePDF,
-      isDownload: false
-    };
-    const htmlInvoice = `
-    <style>
-      .invoice-header { width: 100%; }
-      .invoice-title { margin: 0; }
-      .invoice-date { margin: 0; text-align: right; }
-      .invoice-client { margin: 0; }
-      .invoice-table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 1rem; 
-      }
-      .table-header {
-        background-color: #132030;
-        color: white;
-        padding: 8px;
-        text-align: left;
-      }
-      .table-cell {
-        padding: 8px;
-        border-bottom: 1px solid #ccc;
-      }
-    
-      .seccion-final {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-            }
-    
-            .info-qr {
-                width: 40%;
-            }
-    
-            .qr-image {
-                width: 120px;
-                height: 120px;
-                background-color: #f0f0f0;
-                border: 1px dashed #ccc;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-bottom: 10px;
-            }
-    
-            .codigo-seguridad {
-                font-weight: bold;
-                margin-bottom: 15px;
-            }
-    
-            .fecha-firma {
-                font-style: italic;
-            }
-    
-            .totales {
-                text-align: right;
-                width: 65%;
-            }
-    
-            .fila-total {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 5px;
-            }
-    
-            .etiqueta-total {
-                font-weight: bold;
-                width: 150px;
-            }
-    
-            .valor-total {
-                width: 120px;
-                text-align: right;
-            }
-    </style>
-    
-    <div>
-      <table class="invoice-header">
-        <tr>
-          <td><h3 class="invoice-title">Factura de compra #${invoice.numeroFactura}</h3></td>
-          <td class="invoice-date">Fecha: ${formatDate(invoice.fecha)}</td>
-        </tr>
-      </table>
-      
-      <p class="invoice-client">Cliente: ${invoice.proveedor}</p>
-      <p class="invoice-client">Tipo: ${invoice.tipoFactura}</p>
-      
-      <table class="invoice-table">
-        <thead>
-          <tr>
-            <th class="table-header">Cantidad</th>
-            <th class="table-header">Descripción</th>
-            <th class="table-header">Precio Unitario</th>
-            <th class="table-header">ITBIS</th>
-            <th class="table-header">Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${invoice.detalles.map(detail => `
-            <tr>
-              <td class="table-cell">${detail.cantidad}</td>
-              <td class="table-cell">${detail.description || "Sin descripción"}</td>
-              <td class="table-cell">${formatCurrency(detail.precioUnitario || 0)}</td>
-              <td class="table-cell">${formatCurrency(detail.tax || 0)}</td>
-              <td class="table-cell">${formatCurrency(detail.precioUnitario * detail.cantidad)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-    
-    <table style="width: 100%; margin-top: 20px;">
-      <tr>
-        <td style="width: 50%; vertical-align: top;">
-          <div style="width: 120px; height: 120px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-            [Código QR]
-          </div>
-          <div style="font-weight: bold; margin-bottom: 15px;">
-            Código de seguridad: S/DQdu
-          </div>
-        </td>
-    
-        <td style="width: 50%; vertical-align: top; text-align: right;">
-          <table style="width: 100%;">
-            <tr>
-              <td style="font-weight: bold;">Total: ${formatCurrency(invoice.monto || 0)}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    
-        `;
-    // showToast(
-    //   "success",
-    //   "Éxito",
-    //   `Preparando factura ${invoice.numeroFactura} para impresión`
-    // );
-    // Aquí iría la llamada a la API para imprimir
-    // generatePDFFromHTML(htmlInvoice, companyData, pdfConfig);
-    generarFormatoContable("FacturaCompra", invoice, "Impresion");
+    generateFormatPurchaseInvoices(invoice, "Impresion");
   };
   const downloadPdf = invoice => {
-    const namePDF = `Factura ${invoice.numeroFactura}.`;
-    const companyData = {
-      legal_name: "Centro Oriental de Diabetes y Endocrinologia",
-      document_type: "RNC",
-      document_number: "123003994",
-      address: "Avenida Presidente Estrella Ureña No. 109",
-      phone: "8095961335",
-      email: "info@cenode.com.do"
-    };
-    let dataCompany = {};
-    if (company) {
-      dataCompany = company;
-    } else {
-      dataCompany = companyData;
-    }
-    const pdfConfig = {
-      name: namePDF,
-      isDownload: true
-    };
-    const htmlInvoice = `
-    <style>
-      .invoice-header { width: 100%; }
-      .invoice-title { margin: 0; }
-      .invoice-date { margin: 0; text-align: right; }
-      .invoice-client { margin: 0; }
-      .invoice-table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 1rem; 
-      }
-      .table-header {
-        background-color: #132030;
-        color: white;
-        padding: 8px;
-        text-align: left;
-      }
-      .table-cell {
-        padding: 8px;
-        border-bottom: 1px solid #ccc;
-      }
-    
-      .seccion-final {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-            }
-    
-            .info-qr {
-                width: 40%;
-            }
-    
-            .qr-image {
-                width: 120px;
-                height: 120px;
-                background-color: #f0f0f0;
-                border: 1px dashed #ccc;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-bottom: 10px;
-            }
-    
-            .codigo-seguridad {
-                font-weight: bold;
-                margin-bottom: 15px;
-            }
-    
-            .fecha-firma {
-                font-style: italic;
-            }
-    
-            .totales {
-                text-align: right;
-                width: 65%;
-            }
-    
-            .fila-total {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 5px;
-            }
-    
-            .etiqueta-total {
-                font-weight: bold;
-                width: 150px;
-            }
-    
-            .valor-total {
-                width: 120px;
-                text-align: right;
-            }
-    </style>
-    
-    <div>
-      <table class="invoice-header">
-        <tr>
-          <td><h3 class="invoice-title">Factura de compra #${invoice.numeroFactura}</h3></td>
-          <td class="invoice-date">Fecha: ${formatDate(invoice.fecha)}</td>
-        </tr>
-      </table>
-      
-      <p class="invoice-client">Cliente: ${invoice.proveedor}</p>
-      <p class="invoice-client">Tipo: ${invoice.tipoFactura}</p>
-      
-      <table class="invoice-table">
-        <thead>
-          <tr>
-            <th class="table-header">Cantidad</th>
-            <th class="table-header">Descripción</th>
-            <th class="table-header">Precio Unitario</th>
-            <th class="table-header">ITBIS</th>
-            <th class="table-header">Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${invoice.detalles.map(detail => `
-            <tr>
-              <td class="table-cell">${detail.cantidad}</td>
-              <td class="table-cell">${detail.description || "Sin descripción"}</td>
-              <td class="table-cell">${formatCurrency(detail.precioUnitario || 0)}</td>
-              <td class="table-cell">${formatCurrency(detail.tax || 0)}</td>
-              <td class="table-cell">${formatCurrency(detail.precioUnitario * detail.cantidad)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>
-    
-    <table style="width: 100%; margin-top: 20px;">
-      <tr>
-        <td style="width: 50%; vertical-align: top;">
-          <div style="width: 120px; height: 120px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-            [Código QR]
-          </div>
-          <div style="font-weight: bold; margin-bottom: 15px;">
-            Código de seguridad: S/DQdu
-          </div>
-        </td>
-    
-        <td style="width: 50%; vertical-align: top; text-align: right;">
-          <table style="width: 100%;">
-            <tr>
-              <td style="font-weight: bold;">Total: ${formatCurrency(invoice.monto || 0)}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    
-        `;
-    // showToast(
-    //   "success",
-    //   "Éxito",
-    //   `Descargando PDF de ${invoice.numeroFactura}`
-    // );
-    // Aquí iría la llamada a la API para generar el PDF
-    generatePDFFromHTML(htmlInvoice, dataCompany, pdfConfig);
+    generateFormatPurchaseInvoices(invoice, "Descargar");
   };
   const createActionTemplate = (icon, label, colorClass = "") => {
     return () => /*#__PURE__*/React.createElement("div", {

@@ -6,7 +6,8 @@ export const StepperNavigation = ({
   onPrevious,
   onNext,
   onSave,
-  onCancel
+  onCancel,
+  isNextDisabled = false
 }) => {
   return /*#__PURE__*/React.createElement("div", {
     className: "stepper-navigation mt-4 pt-4 border-top"
@@ -27,22 +28,31 @@ export const StepperNavigation = ({
       marginLeft: '10px'
     },
     className: "fa-solid fa-arrow-left me-2"
-  })), activeIndex === totalSteps - 1 ? /*#__PURE__*/React.createElement(Button, {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `${activeIndex === totalSteps - 1 ? 'd-block' : 'd-none'}`
+  }, /*#__PURE__*/React.createElement(Button, {
     label: "Finalizar Configuraci\xF3n",
     icon: "pi pi-check",
     className: "p-button-success",
     onClick: onSave,
     severity: "success"
-  }) : /*#__PURE__*/React.createElement(Button, {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `${!(activeIndex === totalSteps - 1) ? 'd-block' : 'd-none'}`
+  }, /*#__PURE__*/React.createElement(Button, {
     iconPos: "right",
     label: "Siguiente M\xF3dulo",
     className: "p-button-primary",
     onClick: onNext,
-    severity: "primary"
+    severity: "primary",
+    disabled: isNextDisabled,
+    tooltip: isNextDisabled ? "Complete la configuración actual para continuar" : "Continuar al siguiente módulo",
+    tooltipOptions: {
+      position: 'top'
+    }
   }, /*#__PURE__*/React.createElement("i", {
     style: {
       marginLeft: '10px'
     },
     className: "fa-solid fa-arrow-right"
-  })))));
+  }))))));
 };

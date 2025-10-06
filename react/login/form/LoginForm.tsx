@@ -73,14 +73,13 @@ export const LoginForm = ({ onLogin, onForgotPassword }) => {
 
     const itemTemplate = (imageURL: string) => {
         return (
-            <div className="w-100 d-flex align-items-center justify-content-center" style={{ height: '80vh' }}>
+            <div className="w-100 h-100 d-flex align-items-center justify-content-center">
                 <img
                     src={imageURL}
                     alt="Medical background"
-                    className="img-fluid h-100 w-100 object-fit-cover"
+                    className="w-100 h-100 object-fit-cover"
                     style={{ objectPosition: 'center' }}
                     onError={(e) => {
-                        // Fallback en caso de error de carga de imagen
                         e.currentTarget.src = "assets/img/gallery/MedicalSoft_Login_Default.jpg";
                     }}
                 />
@@ -89,80 +88,80 @@ export const LoginForm = ({ onLogin, onForgotPassword }) => {
     };
 
     return (
-        <div className="d-flex align-items-center justify-content-center p-0 bg-white">
-            <div className="container-fluid h-100 p-0">
-                <div className="row g-0 h-100">
-                    <div className="col-12 col-md-6 d-flex align-items-center justify-content-center p-3 p-md-4 p-lg-5">
-                        <div className="w-100" style={{ maxWidth: '450px' }}>
-                            <div className="text-center mb-4">
-                                <img
-                                    src="assets/img/logos/FullColor.svg"
-                                    alt="Logo Medicalsoft"
-                                    className="img-fluid mb-4"
-                                    style={{ maxWidth: '45%' }}
+        <div className="container-fluid h-100 p-0 overflow-hidden">
+            <div className="row g-0 h-100">
+                {/* Columna del formulario */}
+                <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center p-3 p-md-4 p-lg-5">
+                    <div className="w-100" style={{ maxWidth: '450px' }}>
+                        <div className="text-center mb-4">
+                            <img
+                                src="assets/img/logos/FullColor.svg"
+                                alt="Logo Medicalsoft"
+                                className="img-fluid mb-4"
+                                style={{ maxWidth: '45%' }}
+                            />
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="w-100">
+                            <div className="mb-4">
+                                <label htmlFor="username" className="form-label fw-semibold">
+                                    Usuario
+                                </label>
+                                <InputText
+                                    id="username"
+                                    name="username"
+                                    value={credentials.username}
+                                    onChange={handleChange}
+                                    onKeyDown={handleKeyPress}
+                                    className="w-100"
+                                    required
+                                    placeholder="Ingresa tu usuario"
                                 />
                             </div>
 
-                            <form onSubmit={handleSubmit} className="w-100">
-                                <div className="mb-4">
-                                    <label htmlFor="username" className="form-label fw-semibold">
-                                        Usuario
-                                    </label>
-                                    <InputText
-                                        id="username"
-                                        name="username"
-                                        value={credentials.username}
-                                        onChange={handleChange}
-                                        onKeyDown={handleKeyPress}
-                                        className="w-100"
-                                        required
-                                        placeholder="Ingresa tu usuario"
-                                    />
-                                </div>
-
-                                <div className="mb-4 w-100">
-                                    <label htmlFor="password" className="form-label fw-semibold">
-                                        Contraseña
-                                    </label>
-                                    <Password
-                                        id="password"
-                                        name="password"
-                                        value={credentials.password}
-                                        onChange={handleChange}
-                                        onKeyDown={handleKeyPress}
-                                        style={{ maxWidth: "100%", width: "100%" }}
-                                        className="w-100"
-                                        toggleMask
-                                        feedback={false}
-                                        placeholder="Ingresa tu contraseña"
-                                        required
-                                        inputClassName="w-100"
-                                    />
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    label="Iniciar sesión"
-                                    icon={loading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'}
-                                    loading={loading}
-                                    className="w-100 py-3 bg-gray-900 border-gray-900 hover:bg-gray-800"
-                                    style={{ fontSize: '1.1rem' }}
+                            <div className="mb-4 w-100">
+                                <label htmlFor="password" className="form-label fw-semibold">
+                                    Contraseña
+                                </label>
+                                <Password
+                                    id="password"
+                                    name="password"
+                                    value={credentials.password}
+                                    onChange={handleChange}
+                                    onKeyDown={handleKeyPress}
+                                    className="w-100"
+                                    toggleMask
+                                    feedback={false}
+                                    placeholder="Ingresa tu contraseña"
+                                    required
+                                    inputClassName="w-100"
                                 />
-                            </form>
-
-                            <div className="text-center mt-4">
-                                <button
-                                    type="button"
-                                    onClick={onForgotPassword}
-                                    className="btn btn-link p-0 text-primary fw-medium"
-                                >
-                                    ¿Has olvidado tu contraseña?
-                                </button>
                             </div>
+
+                            <Button
+                                type="submit"
+                                label="Iniciar sesión"
+                                icon={loading ? 'pi pi-spinner pi-spin' : 'pi pi-sign-in'}
+                                loading={loading}
+                                className="w-100 py-3 bg-gray-900 border-gray-900 hover:bg-gray-800"
+                                style={{ fontSize: '1.1rem' }}
+                            />
+                        </form>
+
+                        <div className="text-center mt-4">
+                            <button
+                                type="button"
+                                onClick={onForgotPassword}
+                                className="btn btn-link p-0 text-primary fw-medium"
+                            >
+                                ¿Has olvidado tu contraseña?
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    <div className="col-md-6 d-none d-md-flex align-items-center justify-content-center p-0">
+                <div className="col-lg-6 d-none d-lg-flex p-0">
+                    <div className="w-40 h-40 overflow-hidden">
                         <Galleria
                             value={images}
                             activeIndex={activeIndex}
@@ -174,12 +173,7 @@ export const LoginForm = ({ onLogin, onForgotPassword }) => {
                             circular={true}
                             autoPlay={false}
                             transitionInterval={5000}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                maxHeight: '100vh'
-                            }}
-                            className="h-100"
+                            className="h-100 w-100"
                         />
                     </div>
                 </div>

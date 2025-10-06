@@ -6,7 +6,11 @@ import { branchService } from "../../../../services/api";
 import { SwalManager } from "../../../../services/alertManagerImported";
 import { useBranch } from "./hooks/useBranch";
 
-export const BranchApp = () => {
+interface BranchAppProps {
+  onValidationChange?: (isValid: boolean) => void;
+}
+
+export const BranchApp: React.FC<BranchAppProps> = ({ onValidationChange }) => {
   const { branch, setBranch, fetchBranchHook } = useBranch();
   const [branches, setBranches] = useState<any[]>([]);
   const [showBranchFormModal, setShowBranchFormModal] = useState(false);
@@ -30,6 +34,13 @@ export const BranchApp = () => {
       });
     }
   }, [branch]);
+
+  // Validar si hay al menos una sede creada
+  useEffect(() => {
+    const isValid = branches && branches.length > 0;
+    console.log('🏢 Validación Sedes - Branches:', branches.length, 'IsValid:', isValid);
+    onValidationChange?.(isValid);
+  }, [branches, onValidationChange]);
 
   const onCreate = () => {
     setInitialData(undefined);
@@ -59,6 +70,7 @@ export const BranchApp = () => {
 
   const handleHideBranchFormModal = () => {
     setShowBranchFormModal(false);
+    setBranch(null);
   };
 
   const handleTableEdit = (id: string) => {
@@ -70,6 +82,7 @@ export const BranchApp = () => {
     try {
       const response = await branchService.getAll();
       setBranches(response);
+      console.log('📊 Sedes cargadas:', response.length);
     } catch (error) {
       console.error("Error fetching branches: ", error);
     }
@@ -86,7 +99,15 @@ export const BranchApp = () => {
         }}
       >
         <div style={{ marginLeft: '13px' }} className="d-flex justify-content-between align-items-center mb-4">
-          <h4 className="mb-1">Gestión de Sucursales</h4>
+          <div>
+            <h4 className="mb-1">Gestión de Sucursales</h4>
+            <small className="text-muted">
+              {branches.length > 0
+                ? `${branches.length} sede(s) configurada(s)`
+                : 'Crea al menos una sede para completar este módulo'
+              }
+            </small>
+          </div>
 
           <div className="text-end" style={{ marginRight: '12px' }}>
             <button

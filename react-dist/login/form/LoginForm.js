@@ -62,31 +62,25 @@ export const LoginForm = ({
   };
   const itemTemplate = imageURL => {
     return /*#__PURE__*/React.createElement("div", {
-      className: "w-100 d-flex align-items-center justify-content-center",
-      style: {
-        height: '80vh'
-      }
+      className: "w-100 h-100 d-flex align-items-center justify-content-center"
     }, /*#__PURE__*/React.createElement("img", {
       src: imageURL,
       alt: "Medical background",
-      className: "img-fluid h-100 w-100 object-fit-cover",
+      className: "w-100 h-100 object-fit-cover",
       style: {
         objectPosition: 'center'
       },
       onError: e => {
-        // Fallback en caso de error de carga de imagen
         e.currentTarget.src = "assets/img/gallery/MedicalSoft_Login_Default.jpg";
       }
     }));
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center justify-content-center p-0 bg-white"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid h-100 p-0"
+    className: "container-fluid h-100 p-0 overflow-hidden"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-0 h-100"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 d-flex align-items-center justify-content-center p-3 p-md-4 p-lg-5"
+    className: "col-12 col-lg-6 d-flex align-items-center justify-content-center p-3 p-md-4 p-lg-5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-100",
     style: {
@@ -129,10 +123,6 @@ export const LoginForm = ({
     value: credentials.password,
     onChange: handleChange,
     onKeyDown: handleKeyPress,
-    style: {
-      maxWidth: "100%",
-      width: "100%"
-    },
     className: "w-100",
     toggleMask: true,
     feedback: false,
@@ -155,7 +145,9 @@ export const LoginForm = ({
     onClick: onForgotPassword,
     className: "btn btn-link p-0 text-primary fw-medium"
   }, "\xBFHas olvidado tu contrase\xF1a?")))), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 d-none d-md-flex align-items-center justify-content-center p-0"
+    className: "col-lg-6 d-none d-lg-flex p-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-40 h-40 overflow-hidden"
   }, /*#__PURE__*/React.createElement(Galleria, {
     value: images,
     activeIndex: activeIndex,
@@ -167,11 +159,6 @@ export const LoginForm = ({
     circular: true,
     autoPlay: false,
     transitionInterval: 5000,
-    style: {
-      width: '100%',
-      height: '100%',
-      maxHeight: '100vh'
-    },
-    className: "h-100"
+    className: "h-100 w-100"
   })))));
 };

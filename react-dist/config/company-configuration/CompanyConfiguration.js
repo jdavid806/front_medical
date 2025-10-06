@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// CompanyConfiguration.tsx
+import React, { useEffect, useState } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -9,7 +10,10 @@ import BranchesTab from "./components/BranchesTab.js";
 import RepresentativeTab from "./components/RepresentativeTab.js";
 import { useCompanyGeneral } from "./hooks/useCompanyGeneral.js";
 import { Button } from 'primereact/button';
-export const CompanyConfiguration = () => {
+import { useTabValidation } from "../general-configuration/hooks/useTabValidation.js";
+export const CompanyConfiguration = ({
+  onComplete
+}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [whatsAppStatus, setWhatsAppStatus] = useState({
     connected: false
@@ -20,9 +24,55 @@ export const CompanyConfiguration = () => {
     error,
     refetch
   } = useCompanyGeneral();
+  const {
+    validations,
+    updateValidation,
+    allTabsCompleted,
+    getEnabledTabs
+  } = useTabValidation(company);
   const handleCompanyUpdate = updatedCompany => {
     refetch();
   };
+
+  // Notificar automáticamente cuando todos los tabs estén completos
+  useEffect(() => {
+    if (allTabsCompleted) {
+      console.log('✅ Todos los tabs de empresa completados, habilitando siguiente módulo...');
+      onComplete?.();
+    }
+  }, [allTabsCompleted, onComplete]);
+  const handleTabChange = index => {
+    const enabledTabs = getEnabledTabs();
+    if (enabledTabs.includes(index)) {
+      setActiveIndex(index);
+    }
+  };
+  const isTabEnabled = index => {
+    return getEnabledTabs().includes(index);
+  };
+  const getTabHeader = (index, icon, label) => {
+    const enabled = isTabEnabled(index);
+    const getDisabledReason = () => {
+      if (index === 1 && !validations.generalInfo) return "Complete Información General primero";
+      if (index === 2 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
+      if (index === 3 && (!validations.generalInfo || !validations.representative || !validations.communications)) return "Complete Comunicaciones primero";
+      return "Módulo bloqueado";
+    };
+    return /*#__PURE__*/React.createElement("div", {
+      className: `flex align-items-center gap-2 ${!enabled ? 'opacity-50' : ''}`
+    }, /*#__PURE__*/React.createElement("i", {
+      className: icon
+    }), /*#__PURE__*/React.createElement("span", null, label), !enabled && /*#__PURE__*/React.createElement("i", {
+      className: "pi pi-lock text-muted ml-2",
+      style: {
+        fontSize: '0.8rem'
+      },
+      title: getDisabledReason()
+    }));
+  };
+  useEffect(() => {
+    getEnabledTabs();
+  }, [validations, allTabsCompleted]);
   if (loading) {
     return /*#__PURE__*/React.createElement("div", {
       className: "container-fluid"
@@ -52,43 +102,60 @@ export const CompanyConfiguration = () => {
     className: "row gx-3 gy-4 mb-5"
   }, /*#__PURE__*/React.createElement(Card, {
     className: "p-3"
-  }, /*#__PURE__*/React.createElement(TabView, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-2"
+  }, /*#__PURE__*/React.createElement("small", {
+    className: "text-muted"
+  }, "Progreso: ", Object.values(validations).filter(Boolean).length, " de 4 m\xF3dulos completados"), /*#__PURE__*/React.createElement("small", {
+    className: `fw-bold ${allTabsCompleted ? 'text-success' : 'text-warning'}`
+  }, allTabsCompleted ? '✅ Listo para continuar' : '⚠️ Complete todos los módulos')), /*#__PURE__*/React.createElement("div", {
+    className: "progress",
+    style: {
+      height: '8px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "progress-bar",
+    style: {
+      width: `${Object.values(validations).filter(Boolean).length / 4 * 100}%`
+    }
+  }))), /*#__PURE__*/React.createElement(TabView, {
     activeIndex: activeIndex,
-    onTabChange: e => setActiveIndex(e.index),
+    onTabChange: e => handleTabChange(e.index),
     className: "company-config-tabs"
   }, /*#__PURE__*/React.createElement(TabPanel, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-circle-info"
-    }), /*#__PURE__*/React.createElement("span", null, "Informaci\xF3n General"))
+    header: getTabHeader(0, "fa-solid fa-circle-info", "Información General")
   }, /*#__PURE__*/React.createElement(GeneralInfoTab, {
     company: company,
-    onUpdate: handleCompanyUpdate
+    onUpdate: handleCompanyUpdate,
+    onValidationChange: isValid => updateValidation('generalInfo', isValid)
   })), /*#__PURE__*/React.createElement(TabPanel, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-address-book"
-    }), /*#__PURE__*/React.createElement("span", null, "Representante"))
+    header: getTabHeader(1, "fa-solid fa-address-book", "Representante"),
+    disabled: !isTabEnabled(1)
   }, /*#__PURE__*/React.createElement(RepresentativeTab, {
-    companyId: company?.id
+    companyId: company?.id,
+    onValidationChange: isValid => updateValidation('representative', isValid)
   })), /*#__PURE__*/React.createElement(TabPanel, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-envelopes-bulk"
-    }), /*#__PURE__*/React.createElement("span", null, "Comunicaciones"))
+    header: getTabHeader(2, "fa-solid fa-envelopes-bulk", "Comunicaciones"),
+    disabled: !isTabEnabled(2)
   }, /*#__PURE__*/React.createElement(CommunicationsTab, {
     whatsAppStatus: whatsAppStatus,
-    onStatusChange: setWhatsAppStatus
+    onStatusChange: setWhatsAppStatus,
+    onValidationChange: isValid => updateValidation('communications', isValid)
   })), /*#__PURE__*/React.createElement(TabPanel, {
-    header: /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-location-dot"
-    }), /*#__PURE__*/React.createElement("span", null, "Sedes"))
+    header: getTabHeader(3, "fa-solid fa-location-dot", "Sedes"),
+    disabled: !isTabEnabled(3)
   }, /*#__PURE__*/React.createElement(BranchesTab, {
-    companyId: company?.id
-  }))))));
+    companyId: company?.id,
+    onValidationChange: isValid => updateValidation('branches', isValid)
+  }))), allTabsCompleted && /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 p-3 border-top bg-success bg-opacity-10 rounded"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("small", {
+    className: "text-success"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-check-circle mr-2"
+  }), "\xA1Todos los m\xF3dulos de empresa est\xE1n completos! El bot\xF3n \"Siguiente M\xF3dulo\" est\xE1 ahora habilitado."))))));
 };

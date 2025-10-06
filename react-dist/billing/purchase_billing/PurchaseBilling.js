@@ -20,7 +20,7 @@ import SupplyFormModal from "../../inventory/supply/SupplyFormModal.js";
 import VaccineFormModal from "../../inventory/vaccine/VaccineFormModal.js";
 import { useInvoicePurchase } from "./hooks/usePurchaseBilling.js";
 import { useInventory } from "./hooks/useInventory.js";
-import { brandService, invoiceService } from "../../../services/api/index.js";
+import { brandService, invoiceService, accountingAccountsService } from "../../../services/api/index.js";
 import { purchaseOrdersService } from "../../../services/api/index.js";
 import { BrandFormModal } from "../../inventory/brands/modal/BrandFormModal.js";
 import { useAccountingAccountsByCategory } from "../../accounting/hooks/useAccountingAccounts.js";
@@ -59,10 +59,8 @@ export const PurchaseBilling = ({
     quantity: 0,
     price: 0,
     discount: 0,
-    tax: {
-      id: 0,
-      name: "3%"
-    },
+    discountType: "percentage",
+    tax: 0,
     lotInfo: [],
     lotFormData: {
       lotNumber: "",
@@ -261,9 +259,14 @@ export const PurchaseBilling = ({
     const quantity = Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
-    const taxRate = typeof product.tax === 'object' && product.tax !== null ? Number(product.tax.percentage) : Number(product.tax) || 0;
+    const taxRate = typeof product.tax === "object" && product.tax !== null ? Number(product.tax.percentage) : Number(product.tax) || 0;
     const subtotal = quantity * price;
-    const discountAmount = subtotal * (discount / 100);
+    let discountAmount = 0;
+    if (product.discountType === "percentage") {
+      discountAmount = subtotal * (discount / 100);
+    } else {
+      discountAmount = discount;
+    }
     const subtotalAfterDiscount = subtotal - discountAmount;
     const taxAmount = (subtotal - discountAmount) * (taxRate / 100) || 0;
     const total = subtotalAfterDiscount + taxAmount;
@@ -289,21 +292,25 @@ export const PurchaseBilling = ({
     return productsArray.reduce((total, product) => {
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discount = Number(product.discount) || 0;
-      return total + subtotal * (discount / 100);
+      if (product.discountType === "percentage") {
+        return total + subtotal * (discount / 100);
+      } else {
+        return total + discount;
+      }
     }, 0);
   };
   const calculateTotalTax = () => {
     return productsArray.reduce((total, product) => {
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
-      const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
-      const subtotalAfterDiscount = subtotal - discountAmount;
-      let taxRate = 0;
-      if (typeof product.tax === 'object' && product.tax !== null) {
-        taxRate = Number(product.tax.percentage) || 0;
+      let discountAmount = 0;
+      if (product.discountType === "percentage") {
+        discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
       } else {
-        taxRate = Number(product.tax) || 0;
+        discountAmount = product.discount;
       }
-      return total + subtotalAfterDiscount * (taxRate / 100);
+      const subtotalAfterDiscount = subtotal - discountAmount;
+      const taxValue = subtotalAfterDiscount * (product.tax / 100);
+      return total + taxValue;
     }, 0);
   };
   const calculateTotalPayments = () => {
@@ -325,10 +332,7 @@ export const PurchaseBilling = ({
       quantity: 0,
       price: 0,
       discount: 0,
-      tax: {
-        id: 0,
-        name: "0%"
-      },
+      tax: 0,
       lotInfo: [],
       showLotForm: false,
       isExpanded: false
@@ -687,8 +691,14 @@ export const PurchaseBilling = ({
           };
         }
         const subtotal = Number(product.quantity) * Number(product.price);
-        const discountAmount = subtotal * Number(product.discount) / 100;
-        const taxAmount = (subtotal - discountAmount) * (Number(product.tax) / 100) || 0;
+        let discountAmount = 0;
+        if (product.discountType === "percentage") {
+          // Descuento porcentual
+          discountAmount = subtotal * Number(product.discount) / 100;
+        } else {
+          // Descuento en valor fijo
+          discountAmount = Number(product.discount) || 0;
+        }
         const formAssets = product?.fixedAssetInfo ? {
           description: product.fixedAssetInfo.description || "",
           brand: product.fixedAssetInfo.brand || "",
@@ -696,7 +706,7 @@ export const PurchaseBilling = ({
           serial_number: product.fixedAssetInfo.serialNumber || "",
           internal_code: product.fixedAssetInfo.internalCode || "",
           asset_category_id: Number(product.fixedAssetInfo.asset_category_id) || null,
-          accounting_account_id: product.product
+          accounting_account_id: product.accountingAccount.id
         } : {};
         const formLot = infoLot ? {
           expiration_date: infoLot?.expiration_date || null,
@@ -706,12 +716,14 @@ export const PurchaseBilling = ({
           deposit_id: product.depositId || null
         };
         return {
-          product_id: product.typeProduct === "assets" ? null : Number(product.product),
+          product_id: product.typeProduct === "assets" || product.typeProduct === "spent" ? null : Number(product.product),
           quantity: product.quantity,
           unit_price: product.price,
-          discount: product.discount,
-          tax_product: taxAmount,
+          discount: discountAmount,
+          discount_type: product.discountType,
+          tax_product: product.tax,
           tax_charge_id: product.taxChargeId || null,
+          accounting_account_id: product.accountingAccount.id,
           ...formLot,
           ...formAssets
         };
@@ -854,7 +866,8 @@ export const PurchaseBilling = ({
         rowData: rowData,
         type: rowData.typeProduct,
         onChange: value => {
-          handleProductChange(rowData.id, "product", value);
+          handleProductChange(rowData.id, "product", value?.product_id);
+          handleProductChange(rowData.id, "accountingAccount", value?.accountingAccount);
         },
         onProductSelection: handleProductSelection,
         disabled: disabledInputs
@@ -883,10 +896,11 @@ export const PurchaseBilling = ({
       }
     }, {
       field: "discount",
-      header: "Descuento %",
+      header: "Descuento",
       body: rowData => /*#__PURE__*/React.createElement(DiscountColumnBody, {
         rowData: rowData,
         onChange: value => handleProductChange(rowData.id, "discount", value || 0),
+        onDiscountTypeChange: type => handleProductChange(rowData.id, "discountType", type),
         disabled: disabledInputs
       }),
       style: {
@@ -980,20 +994,7 @@ export const PurchaseBilling = ({
     className: "h4 h3-md mb-0 text-primary"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-file-invoice me-2"
-  }), "Crear nueva factura de compra")), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar",
-    icon: "pi pi-check",
-    className: "btn-info d-none d-md-inline-flex",
-    type: "submit"
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Enviar",
-    icon: "pi pi-send",
-    className: "btn-info d-none d-md-inline-flex",
-    onClick: handleSubmit(save),
-    disabled: !paymentCoverage()
-  }))))))), /*#__PURE__*/React.createElement("div", {
+  }), "Crear nueva factura de compra"))))))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
@@ -1235,7 +1236,8 @@ export const PurchaseBilling = ({
     subtotal: calculateSubtotal(),
     totalDiscount: calculateTotalDiscount(),
     retentions: retentions,
-    onRetentionsChange: setRetentions
+    onRetentionsChange: setRetentions,
+    productsArray: productsArray
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 mb-md-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1359,7 +1361,7 @@ export const PurchaseBilling = ({
     className: "text-warning-dark small fw-bold"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-exclamation-triangle me-2"
-  }), "Faltan ", ((calculateTotal() || 0) - (calculateTotalPayments() || 0)).toFixed(2), " DOP") : /*#__PURE__*/React.createElement("span", {
+  }), "Faltan", " ", ((calculateTotal() || 0) - (calculateTotalPayments() || 0)).toFixed(2), " ", "DOP") : /*#__PURE__*/React.createElement("span", {
     className: "text-success-dark small fw-bold"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-check-circle me-2"
@@ -1399,7 +1401,7 @@ export const PurchaseBilling = ({
     key: index,
     className: "col-12 col-sm-6 col-lg-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `form-group p-2 rounded ${item.highlight ? 'bg-light' : ''}`
+    className: `form-group p-2 rounded ${item.highlight ? "bg-light" : ""}`
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label small fw-bold"
   }, item.label), /*#__PURE__*/React.createElement(InputNumber, {
@@ -1410,7 +1412,7 @@ export const PurchaseBilling = ({
     locale: "es-DO",
     readOnly: true,
     size: "small",
-    inputClassName: item.highlight ? 'fw-bold text-primary' : ''
+    inputClassName: item.highlight ? "fw-bold text-primary" : ""
   }))))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column flex-md-row justify-content-end gap-2 mb-4"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1655,11 +1657,8 @@ const TypeColumnBody = ({
     id: "vaccines",
     name: "Vacunas"
   }, {
-    id: "services",
-    name: "Servicios"
-  }, {
     id: "spent",
-    name: "gastos"
+    name: "Gastos y servicios"
   }, {
     id: "assets",
     name: "Activos fijos"
@@ -1691,6 +1690,7 @@ const ProductColumnBody = ({
   onProductSelection,
   disabled
 }) => {
+  const [subAccounts, setSubAccounts] = useState("");
   const {
     getByType,
     products,
@@ -1699,10 +1699,13 @@ const ProductColumnBody = ({
   } = useInventory();
   const {
     accounts: spentAccounts
-  } = useAccountingAccountsByCategory("account", "5");
+  } = useAccountingAccountsByCategory("sub_account", subAccounts);
   const {
     accounts: propertyAccounts
-  } = useAccountingAccountsByCategory("sub_account", "15");
+  } = useAccountingAccountsByCategory("sub_account", "1");
+  const {
+    accounts: accountingAccountByCategory
+  } = useAccountingAccountsByCategory("category", type);
   const [options, setOptions] = useState([]);
   const dropdownRef = useRef(null);
   useEffect(() => {
@@ -1730,6 +1733,7 @@ const ProductColumnBody = ({
     // Formatear opciones basadas en el tipo
     let formattedOptions = [];
     if (type === "spent") {
+      fetchAccountingAccounts();
       formattedOptions = spentAccounts?.map(acc => ({
         id: acc.id,
         label: String(acc.account_name),
@@ -1750,8 +1754,24 @@ const ProductColumnBody = ({
     }
     setOptions(formattedOptions);
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
+  async function fetchAccountingAccounts() {
+    const data = await accountingAccountsService.getAll();
+    const dataMapped = data.data.map(item => item.sub_account).filter((subAccount, index, array) => {
+      const num = parseInt(subAccount);
+      return array.indexOf(subAccount) === index && !isNaN(num) && num >= 5;
+    }).sort((a, b) => parseInt(a) - parseInt(b)); // Ordenar numéricamente
+
+    setSubAccounts(dataMapped.join(","));
+  }
   const handleProductChange = e => {
-    onChange(e.value);
+    const accountingAccountId = type === "spent" || type === "assets" ? {
+      id: e.value
+    } : 0;
+    const data = {
+      product_id: e.value,
+      accountingAccount: accountingAccountByCategory[0] || accountingAccountId
+    };
+    onChange(data);
     const selectedProduct = options.find(opt => opt.id === e.value);
     onProductSelection(rowData.id, e.value, rowData.typeProduct || "", selectedProduct?.label);
   };
@@ -1809,18 +1829,82 @@ const PriceColumnBody = ({
 const DiscountColumnBody = ({
   rowData,
   onChange,
+  onDiscountTypeChange,
   disabled
 }) => {
-  return /*#__PURE__*/React.createElement(InputNumber, {
-    value: rowData.discount,
-    placeholder: "Descuento",
-    className: "w-100",
-    suffix: "%",
-    min: 0,
-    max: 100,
-    onValueChange: e => onChange(e.value),
+  const [localDiscountType, setLocalDiscountType] = useState(rowData.discountType || "percentage");
+  useEffect(() => {
+    if (rowData.discountType && rowData.discountType !== localDiscountType) {
+      setLocalDiscountType(rowData.discountType);
+    }
+  }, [rowData.discountType]);
+  const handleTypeChange = type => {
+    setLocalDiscountType(type);
+    onDiscountTypeChange(type);
+    if (type !== (rowData.discountType || "percentage")) {
+      onChange(0);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center gap-1"
+  }, /*#__PURE__*/React.createElement(Dropdown, {
+    value: localDiscountType,
+    options: [{
+      label: "%",
+      value: "percentage"
+    }, {
+      label: "$",
+      value: "fixed"
+    }],
+    optionLabel: "label",
+    optionValue: "value",
+    onChange: e => handleTypeChange(e.value),
+    className: "discount-type-selector",
+    style: {
+      width: "60px",
+      minWidth: "60px"
+    },
+    size: "small",
     disabled: disabled
-  });
+  }), /*#__PURE__*/React.createElement(InputNumber, {
+    value: rowData.discount,
+    placeholder: localDiscountType === "percentage" ? "0" : "0.00",
+    className: "flex-grow-1",
+    suffix: localDiscountType === 'percentage' ? "%" : "",
+    mode: localDiscountType === "fixed" ? "currency" : "decimal",
+    currency: localDiscountType === "fixed" ? "DOP" : undefined,
+    locale: "es-DO",
+    min: 0,
+    max: localDiscountType === "percentage" ? 100 : undefined,
+    onValueChange: e => onChange(e.value),
+    disabled: disabled,
+    style: {
+      minWidth: "85px"
+    }
+  }), /*#__PURE__*/React.createElement("style", null, `
+  .discount-type-selector .p-dropdown-label {
+    padding: 12px 2px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .discount-type-selector .p-dropdown-trigger {
+    width: 1.5rem;
+  }
+  
+  .discount-type-selector {
+    min-width: 60px !important;
+  }
+  
+  /* Para que los dos elementos queden bien alineados */
+  .d-flex.align-items-center.gap-1 {
+    align-items: stretch !important;
+  }
+  
+  .d-flex.align-items-center.gap-1 .p-inputnumber {
+    flex: 1;
+  }
+`));
 };
 const IvaColumnBody = ({
   onChange,
@@ -1835,7 +1919,7 @@ const IvaColumnBody = ({
   useEffect(() => {
     fetchTaxes();
   }, []);
-  const currentValue = typeof value === 'object' && value !== null ? value.percentage : value;
+  const currentValue = typeof value === "object" && value !== null ? value.percentage : value;
   return /*#__PURE__*/React.createElement(Dropdown, {
     value: currentValue,
     options: taxes,

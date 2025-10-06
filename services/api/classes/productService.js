@@ -41,6 +41,18 @@ export class ProductService extends BaseApiService {
     );
   }
 
+  async updateProductEntity(id, data) {
+    return await this.httpClient.put(
+      `api/v1/admin/product-update-entities/${id}`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
   async storeProduct(data) {
     return await this.httpClient.post(
       this.microservice + "/" + "product-create",

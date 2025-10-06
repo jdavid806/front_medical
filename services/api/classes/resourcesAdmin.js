@@ -9,7 +9,7 @@ export class ResourcesAdminService extends BaseApiService {
   }
 
   async getAssetCategories() {
-    return await this.httpClient.get(`${this.microservice}/asset-categories`);
+    return await this.httpClient.get(`api/v1/admin/asset-categories`);
   }
 
   async getAdvancePayments(thirdPartyId, type) {

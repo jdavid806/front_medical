@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Steps } from 'primereact/steps';
 import { authService } from "../../../services/api/index.js";
 import { DatosUsuarioModal } from "./DatosUsuarioModal.js";
-import { OTPModal } from "./OTPModal.js";
 import { NewPasswordModal } from "./NewPasswordModal.js";
 export const ForgotPasswordModal = ({
   visible,
@@ -13,19 +12,15 @@ export const ForgotPasswordModal = ({
   onSuccess
 }) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [formData, setFormData] = useState({
-    nombreCentro: '',
-    nombreUsuario: '',
-    codPais: '',
-    phone: '',
-    email: ''
-  });
+  const [username, setUsername] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [passwords, setPasswords] = useState({
     password: '',
     password_confirmation: ''
   });
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [userData, setUserData] = useState(null);
   const toast = useRef(null);
   const showToast = (severity, summary, detail) => {
     toast.current?.show({
@@ -36,28 +31,118 @@ export const ForgotPasswordModal = ({
     });
   };
   const steps = [{
-    label: 'Datos de Usuario'
-  }, {
-    label: 'Verificación OTP'
+    label: 'Verificación de Usuario'
   }, {
     label: 'Nueva Contraseña'
   }];
+
+  // Función para obtener los datos REALES del usuario del localStorage
+  const getRealUserDataFromLocalStorage = () => {
+    try {
+      // Buscar en el localStorage por la clave correcta donde se almacenan los datos del usuario
+      const userDataStr = localStorage.getItem('userData') || localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('usuario');
+      if (userDataStr) {
+        const userData = JSON.parse(userDataStr);
+        console.log('Datos del usuario encontrados en localStorage:', userData);
+
+        // Extraer email y phone del objeto de usuario
+        return {
+          email: userData.email || userData.correo || '',
+          phone: userData.phone || userData.telefono || userData.celular || ''
+        };
+      }
+
+      // Si no se encuentra en las claves comunes, buscar en todo el localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes('user') || key.includes('usuario')) {
+          try {
+            const value = localStorage.getItem(key);
+            if (value) {
+              const parsedValue = JSON.parse(value);
+              if (parsedValue && (parsedValue.email || parsedValue.phone)) {
+                console.log('Datos del usuario encontrados en clave:', key, parsedValue);
+                return {
+                  email: parsedValue.email || parsedValue.correo || '',
+                  phone: parsedValue.phone || parsedValue.telefono || parsedValue.celular || ''
+                };
+              }
+            }
+          } catch (e) {
+            // Ignorar errores de parseo
+          }
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener datos del usuario del localStorage:', error);
+      return null;
+    }
+  };
+
+  // Función para buscar usuario por username en localStorage
+  const findUserByUsername = username => {
+    try {
+      // Buscar en todas las entradas del localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          try {
+            const value = localStorage.getItem(key);
+            if (value) {
+              const parsedValue = JSON.parse(value);
+              // Verificar si este objeto tiene el username que buscamos
+              if (parsedValue && (parsedValue.username === username || parsedValue.nombre_usuario === username || parsedValue.email === username)) {
+                console.log('Usuario encontrado en localStorage:', parsedValue);
+                return {
+                  email: parsedValue.email || parsedValue.correo || '',
+                  phone: parsedValue.phone || parsedValue.telefono || parsedValue.celular || ''
+                };
+              }
+            }
+          } catch (e) {
+            // Ignorar errores de parseo
+          }
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error buscando usuario por username:', error);
+      return null;
+    }
+  };
   const handleSendOTP = async () => {
+    if (!username.trim()) {
+      showToast('error', 'Error', 'Por favor ingrese su nombre de usuario');
+      return;
+    }
     setLoading(true);
     try {
       const data = {
-        nombre_del_centro_medico: formData.nombreCentro,
-        nombre_usuario: formData.nombreUsuario,
-        cod_pais: formData.codPais,
-        phone: formData.codPais + formData.phone,
-        email: formData.email
+        nombre_usuario: username
       };
-      console.log(data, 'datos');
       const response = await authService.sendOTP(data);
       if (response.status === 200 || response.data?.success) {
-        localStorage.setItem('username', formData.nombreUsuario);
-        setActiveStep(1);
-        showToast('success', 'Éxito', 'Código OTP enviado correctamente');
+        localStorage.setItem('username', username);
+
+        // Obtener los datos REALES del usuario
+        let userDataFound = findUserByUsername(username);
+        if (!userDataFound) {
+          // Si no se encuentra por username, buscar datos generales del usuario
+          userDataFound = getRealUserDataFromLocalStorage();
+        }
+        if (userDataFound && userDataFound.email && userDataFound.phone) {
+          setUserData(userDataFound);
+          console.log('Datos del usuario que se usarán:', userDataFound);
+          showToast('success', 'Éxito', `Código OTP enviado correctamente`);
+        } else {
+          // SOLO como último recurso usar datos por defecto
+          // Pero es mejor mostrar un error
+          showToast('error', 'Error', 'No se pudieron obtener los datos del usuario. Contacte al administrador.');
+          setLoading(false);
+          return;
+        }
+        setOtpSent(true);
       } else {
         throw new Error(response.data?.message || 'Error al enviar OTP');
       }
@@ -75,16 +160,30 @@ export const ForgotPasswordModal = ({
         showToast('error', 'Error', 'El código OTP debe tener 6 dígitos numéricos');
         return;
       }
+
+      // Convertir OTP a número
+      const otpNumber = parseInt(otpCode, 10);
+      if (isNaN(otpNumber)) {
+        showToast('error', 'Error', 'El código OTP debe ser numérico');
+        return;
+      }
+      if (!userData || !userData.email || !userData.phone) {
+        showToast('error', 'Error', 'No se encontraron datos completos del usuario');
+        return;
+      }
+
+      // Crear payload con los datos REALES del usuario
       const payload = {
-        otp: otpCode,
-        email: formData.email,
-        phone: formData.phone
+        email: userData.email,
+        phone: userData.phone,
+        otp: otpNumber
       };
-      console.log('Payload OTP:', payload);
+      console.log('Enviando payload REAL:', payload); // Para debugging
+
       const response = await authService.validateOTP(payload);
       if (response.status === 200 || response.data?.success) {
         showToast('success', 'Éxito', 'OTP verificado correctamente');
-        setActiveStep(2);
+        setActiveStep(1);
       } else {
         throw new Error(response.data?.message || 'OTP inválido');
       }
@@ -109,7 +208,7 @@ export const ForgotPasswordModal = ({
     setLoading(true);
     try {
       const changePasswordData = {
-        username: formData.nombreUsuario,
+        username: username,
         password: passwords.password,
         password_confirmation: passwords.password_confirmation
       };
@@ -145,44 +244,31 @@ export const ForgotPasswordModal = ({
   };
   const resetForm = () => {
     setActiveStep(0);
-    setFormData({
-      nombreCentro: '',
-      nombreUsuario: '',
-      codPais: '',
-      phone: '',
-      email: ''
-    });
+    setUsername('');
     setOtp(['', '', '', '', '', '']);
     setPasswords({
       password: '',
       password_confirmation: ''
     });
-  };
-  const isStep1Complete = () => {
-    return formData.nombreCentro !== '' && formData.nombreUsuario !== '' && formData.codPais !== '' && formData.phone !== '' && formData.email !== '';
+    setOtpSent(false);
+    setUserData(null);
   };
   const isStep2Complete = () => {
-    return otp.every(digit => digit !== '');
-  };
-  const isStep3Complete = () => {
     return passwords.password !== '' && passwords.password_confirmation !== '' && passwords.password === passwords.password_confirmation;
   };
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
         return /*#__PURE__*/React.createElement(DatosUsuarioModal, {
-          formData: formData,
-          setFormData: setFormData
-        });
-      case 1:
-        return /*#__PURE__*/React.createElement(OTPModal, {
+          username: username,
+          setUsername: setUsername,
           otp: otp,
           setOtp: setOtp,
+          otpSent: otpSent,
           onResendOTP: handleSendOTP,
-          email: formData.email,
-          phone: formData.phone
+          userData: userData
         });
-      case 2:
+      case 1:
         return /*#__PURE__*/React.createElement(NewPasswordModal, {
           passwords: passwords,
           setPasswords: setPasswords
@@ -194,10 +280,8 @@ export const ForgotPasswordModal = ({
   const getNextButtonLabel = () => {
     switch (activeStep) {
       case 0:
-        return 'Enviar OTP';
+        return otpSent ? 'Verificar OTP' : 'Enviar OTP';
       case 1:
-        return 'Verificar OTP';
-      case 2:
         return 'Cambiar Contraseña';
       default:
         return 'Siguiente';
@@ -206,12 +290,13 @@ export const ForgotPasswordModal = ({
   const handleNext = () => {
     switch (activeStep) {
       case 0:
-        handleSendOTP();
+        if (!otpSent) {
+          handleSendOTP();
+        } else {
+          handleVerifyOTP();
+        }
         break;
       case 1:
-        handleVerifyOTP();
-        break;
-      case 2:
         handleChangePassword();
         break;
       default:
@@ -221,15 +306,38 @@ export const ForgotPasswordModal = ({
   const isNextDisabled = () => {
     switch (activeStep) {
       case 0:
-        return !isStep1Complete() || loading;
+        if (!otpSent) {
+          return !username.trim() || loading;
+        } else {
+          const isOtpComplete = otp.join('').length === 6;
+          return !isOtpComplete || loading;
+        }
       case 1:
         return !isStep2Complete() || loading;
-      case 2:
-        return !isStep3Complete() || loading;
       default:
         return true;
     }
   };
+
+  // Efecto para debug: mostrar qué hay en el localStorage
+  useEffect(() => {
+    if (visible) {
+      console.log('Contenido completo del localStorage:');
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          console.log(`Clave: ${key}, Valor:`, localStorage.getItem(key));
+        }
+      }
+
+      // Intentar cargar datos del usuario del localStorage al abrir el modal
+      const storedUserData = getRealUserDataFromLocalStorage();
+      if (storedUserData) {
+        setUserData(storedUserData);
+        console.log('Datos del usuario cargados al abrir modal:', storedUserData);
+      }
+    }
+  }, [visible]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement(Dialog, {
@@ -251,20 +359,28 @@ export const ForgotPasswordModal = ({
     footer: /*#__PURE__*/React.createElement("div", {
       className: "flex justify-content-between align-items-center"
     }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-center gap-6 mt-5 mb-4"
+    }, /*#__PURE__*/React.createElement("div", {
       style: {
         minWidth: '100px'
       }
-    }, activeStep > 0 && /*#__PURE__*/React.createElement(Button, {
+    }, activeStep === 0 && otpSent && /*#__PURE__*/React.createElement(Button, {
       label: "Atr\xE1s",
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fa-solid fa-arrow-left"
       }),
       className: "p-button p-component",
       disabled: loading,
-      onClick: () => setActiveStep(activeStep - 1)
-    })), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-center gap-6 mt-5 mb-4"
-    }, /*#__PURE__*/React.createElement(Button, {
+      onClick: () => setOtpSent(false)
+    }), activeStep === 1 && /*#__PURE__*/React.createElement(Button, {
+      label: "Atr\xE1s",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-arrow-left"
+      }),
+      className: "p-button p-component",
+      disabled: loading,
+      onClick: () => setActiveStep(0)
+    })), /*#__PURE__*/React.createElement(Button, {
       label: "Cancelar",
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fa-solid fa-xmark"

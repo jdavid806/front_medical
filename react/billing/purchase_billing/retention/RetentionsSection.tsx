@@ -22,6 +22,7 @@ export interface RetentionsSectionProps {
   totalDiscount: number;
   retentions: RetentionItem[];
   onRetentionsChange: (retentions: RetentionItem[]) => void;
+  productsArray: any[];
 }
 
 export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
@@ -29,6 +30,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
   totalDiscount,
   retentions,
   onRetentionsChange,
+  productsArray,
 }) => {
   const [retentionOptions, setRetentionOptions] = useState<RetentionOption[]>(
     []
@@ -51,9 +53,34 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
     return (subtotal || 0) - (totalDiscount || 0);
   };
 
-  const calculateRetentionValue = (percentage: number) => {
+  const calculateRetentionValue = (retention: any) => {
     const base = calculateBaseAmount();
-    return (base * (percentage || 0)) / 100;
+
+    if (retention != 0 && retention?.tax_id !== null) {
+      const productsFiltered = productsArray
+        .filter((item: any) => item.taxChargeId == retention.tax.id)
+        .reduce((total, product: any) => {
+          const subtotal = product.quantity * product.price;
+
+          let discount = 0;
+
+          if (product.discountType === "percentage") {
+            discount = subtotal * (product.discount / 100);
+          } else {
+            discount = product.discount;
+          }
+
+          const subtotalAfterDiscount = subtotal - discount;
+
+          const taxValue = (subtotalAfterDiscount * (product.tax || 0)) / 100;
+
+          return total + taxValue;
+        }, 0);
+
+      return (productsFiltered * (retention.percentage || 0)) / 100;
+    }
+
+    return (base * (retention.percentage || 0)) / 100;
   };
 
   const handleAddRetention = () => {
@@ -78,7 +105,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
         };
 
         if (field === "percentage") {
-          updatedRetention.value = calculateRetentionValue(value.percentage);
+          updatedRetention.value = calculateRetentionValue(value);
         }
 
         return updatedRetention;

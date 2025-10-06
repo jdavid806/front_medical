@@ -9,7 +9,9 @@ import { useCostCentersDelete } from "./hooks/useCostCentersDelete.js";
 import { CostCentersMapperCreate, CostCentersMapperUpdate } from "./mapper/mappedCostCenters.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTable.js";
-export const CostCenterConfig = () => {
+export const CostCenterConfig = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const {
@@ -84,6 +86,10 @@ export const CostCenterConfig = () => {
       SwalManager.error('Error al eliminar el Retention');
     }
   };
+  useEffect(() => {
+    const hasCostCenters = costCenters && costCenters.length > 0;
+    onConfigurationComplete?.(hasCostCenters);
+  }, [costCenters, onConfigurationComplete]);
   useEffect(() => {
     if (costCenter) {
       const data = {

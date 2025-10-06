@@ -190,7 +190,7 @@ export const PaymentMethodsConfig = () => {
 
   const addNewMethod = () => {
     showToast("info", "Nuevo", "Agregando nuevo método de pago");
-    z
+    
   };
 
   // Estilos

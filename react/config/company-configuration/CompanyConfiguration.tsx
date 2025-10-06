@@ -1,3 +1,4 @@
+// CompanyConfiguration.tsx
 import React, { useEffect, useState } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { Card } from 'primereact/card';
@@ -10,16 +11,69 @@ import BranchesTab from './components/BranchesTab';
 import RepresentativeTab from './components/RepresentativeTab';
 import { useCompanyGeneral } from './hooks/useCompanyGeneral';
 import { Button } from 'primereact/button';
+import { useTabValidation } from '../general-configuration/hooks/useTabValidation';
 
-export const CompanyConfiguration: React.FC = () => {
+interface CompanyConfigurationProps {
+    onComplete?: () => void;
+}
+
+export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onComplete }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [whatsAppStatus, setWhatsAppStatus] = useState<WhatsAppStatus>({ connected: false });
 
     const { company, loading, error, refetch } = useCompanyGeneral();
+    const { validations, updateValidation, allTabsCompleted, getEnabledTabs } = useTabValidation(company);
 
     const handleCompanyUpdate = (updatedCompany: Company) => {
         refetch();
     };
+
+    // Notificar automáticamente cuando todos los tabs estén completos
+    useEffect(() => {
+        if (allTabsCompleted) {
+            console.log('✅ Todos los tabs de empresa completados, habilitando siguiente módulo...');
+            onComplete?.();
+        }
+    }, [allTabsCompleted, onComplete]);
+
+    const handleTabChange = (index: number) => {
+        const enabledTabs = getEnabledTabs();
+        if (enabledTabs.includes(index)) {
+            setActiveIndex(index);
+        }
+    };
+
+    const isTabEnabled = (index: number): boolean => {
+        return getEnabledTabs().includes(index);
+    };
+
+    const getTabHeader = (index: number, icon: string, label: string) => {
+        const enabled = isTabEnabled(index);
+        const getDisabledReason = () => {
+            if (index === 1 && !validations.generalInfo) return "Complete Información General primero";
+            if (index === 2 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
+            if (index === 3 && (!validations.generalInfo || !validations.representative || !validations.communications)) return "Complete Comunicaciones primero";
+            return "Módulo bloqueado";
+        };
+
+        return (
+            <div className={`flex align-items-center gap-2 ${!enabled ? 'opacity-50' : ''}`}>
+                <i className={icon}></i>
+                <span>{label}</span>
+                {!enabled && (
+                    <i
+                        className="pi pi-lock text-muted ml-2"
+                        style={{ fontSize: '0.8rem' }}
+                        title={getDisabledReason()}
+                    ></i>
+                )}
+            </div>
+        );
+    };
+
+    useEffect(() => {
+        getEnabledTabs()
+    }, [validations, allTabsCompleted]);
 
     if (loading) {
         return (
@@ -52,53 +106,84 @@ export const CompanyConfiguration: React.FC = () => {
         <div className="container-fluid">
             <div className="row gx-3 gy-4 mb-5">
                 <Card className="p-3">
+                    {/* Indicador de progreso */}
+                    <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                            <small className="text-muted">
+                                Progreso: {Object.values(validations).filter(Boolean).length} de 4 módulos completados
+                            </small>
+                            <small className={`fw-bold ${allTabsCompleted ? 'text-success' : 'text-warning'}`}>
+                                {allTabsCompleted ? '✅ Listo para continuar' : '⚠️ Complete todos los módulos'}
+                            </small>
+                        </div>
+                        <div className="progress" style={{ height: '8px' }}>
+                            <div
+                                className="progress-bar"
+                                style={{
+                                    width: `${(Object.values(validations).filter(Boolean).length / 4) * 100}%`
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+
                     <TabView
                         activeIndex={activeIndex}
-                        onTabChange={(e) => setActiveIndex(e.index)}
+                        onTabChange={(e) => handleTabChange(e.index)}
                         className="company-config-tabs"
                     >
                         <TabPanel header={
-                            <div className="flex align-items-center gap-2">
-                                <i className="fa-solid fa-circle-info"></i>
-                                <span>Información General</span>
-                            </div>
+                            getTabHeader(0, "fa-solid fa-circle-info", "Información General")
                         }>
                             <GeneralInfoTab
                                 company={company}
                                 onUpdate={handleCompanyUpdate}
+                                onValidationChange={(isValid) => updateValidation('generalInfo', isValid)}
                             />
                         </TabPanel>
 
-                        <TabPanel header={
-                            <div className="flex align-items-center gap-2">
-                                <i className="fa-solid fa-address-book"></i>
-                                <span>Representante</span>
-                            </div>
-                        }>
-                            <RepresentativeTab companyId={company?.id} />
+                        <TabPanel
+                            header={getTabHeader(1, "fa-solid fa-address-book", "Representante")}
+                            disabled={!isTabEnabled(1)}
+                        >
+                            <RepresentativeTab
+                                companyId={company?.id}
+                                onValidationChange={(isValid) => updateValidation('representative', isValid)}
+                            />
                         </TabPanel>
 
-                        <TabPanel header={
-                            <div className="flex align-items-center gap-2">
-                                <i className="fa-solid fa-envelopes-bulk"></i>
-                                <span>Comunicaciones</span>
-                            </div>
-                        }>
+                        <TabPanel
+                            header={getTabHeader(2, "fa-solid fa-envelopes-bulk", "Comunicaciones")}
+                            disabled={!isTabEnabled(2)}
+                        >
                             <CommunicationsTab
                                 whatsAppStatus={whatsAppStatus}
                                 onStatusChange={setWhatsAppStatus}
+                                onValidationChange={(isValid) => updateValidation('communications', isValid)}
                             />
                         </TabPanel>
 
-                        <TabPanel header={
-                            <div className="flex align-items-center gap-2">
-                                <i className="fa-solid fa-location-dot"></i>
-                                <span>Sedes</span>
-                            </div>
-                        }>
-                            <BranchesTab companyId={company?.id} />
+                        <TabPanel
+                            header={getTabHeader(3, "fa-solid fa-location-dot", "Sedes")}
+                            disabled={!isTabEnabled(3)}
+                        >
+                            <BranchesTab
+                                companyId={company?.id}
+                                onValidationChange={(isValid) => updateValidation('branches', isValid)}
+                            />
                         </TabPanel>
                     </TabView>
+
+                    {/* SOLO mostrar mensaje de completado, SIN botón */}
+                    {allTabsCompleted && (
+                        <div className="mt-4 p-3 border-top bg-success bg-opacity-10 rounded">
+                            <div className="text-center">
+                                <small className="text-success">
+                                    <i className="pi pi-check-circle mr-2"></i>
+                                    ¡Todos los módulos de empresa están completos! El botón "Siguiente Módulo" está ahora habilitado.
+                                </small>
+                            </div>
+                        </div>
+                    )}
                 </Card>
             </div>
         </div>

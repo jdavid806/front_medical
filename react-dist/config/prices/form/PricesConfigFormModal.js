@@ -1,6 +1,6 @@
 import React from 'react';
-import { CustomModal } from "../../../components/CustomModal.js";
 import PricesConfigForm from "../form/PricesConfigForm.js";
+import { Dialog } from 'primereact/dialog';
 const PricesConfigFormModal = ({
   show,
   handleSubmit,
@@ -9,10 +9,14 @@ const PricesConfigFormModal = ({
   entitiesData
 }) => {
   const formId = 'createUserAvailability';
-  return /*#__PURE__*/React.createElement(CustomModal, {
-    show: show,
-    onHide: onHide,
-    title: initialData ? 'Editar Precio' : 'Nuevo Precio'
+  return /*#__PURE__*/React.createElement(Dialog, {
+    visible: show,
+    onHide: () => onHide?.(),
+    header: initialData ? 'Editar Precio' : 'Nuevo Precio',
+    appendTo: document.body,
+    style: {
+      width: '75vw'
+    }
   }, /*#__PURE__*/React.createElement(PricesConfigForm, {
     formId: formId,
     onHandleSubmit: handleSubmit,

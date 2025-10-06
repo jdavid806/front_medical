@@ -12,7 +12,7 @@ import { CreatePaymentMethodDTO } from './interfaces/PaymentMethodDTO';
 import { usePaymentMethodDelete } from './hooks/usePaymentMethodDeleteTable';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
 
-export const PaymentMethodsConfig = () => {
+export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<PaymentMethodFormInputs | undefined>(undefined);
 
@@ -110,6 +110,11 @@ export const PaymentMethodsConfig = () => {
             SwalManager.error('Error al eliminar el método de pago');
         }
     };
+
+    useEffect(() => {
+        const hasPaymentMethods = paymentMethods && paymentMethods.length > 0;
+        onConfigurationComplete?.(hasPaymentMethods);
+    }, [paymentMethods, onConfigurationComplete]);
 
     useEffect(() => {
         if (paymentMethod) {

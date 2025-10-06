@@ -6,6 +6,7 @@ import { ResolveRequestForm } from "../general-request/components/ResolveRequest
 import { SwalManager } from "../../services/alertManagerImported";
 import { CustomModal } from "../components/CustomModal";
 import { formatDate } from "../../services/utilidades";
+import { Dialog } from "primereact/dialog";
 
 interface TableItem {
     id: string;
@@ -151,15 +152,15 @@ export const ClinicalRecordsPendingCancellation = () => {
                 </div>
             </div >
 
-            <CustomModal
-                show={showResolveRequestModal}
+            <Dialog
+                visible={showResolveRequestModal}
                 onHide={() => setShowResolveRequestModal(false)}
-                title="Resolver solicitud">
+                header="Resolver solicitud">
                 <ResolveRequestForm
                     requestId={selectedRequestId}
                     onSave={handleSave}
                 />
-            </CustomModal>
+            </Dialog>
         </>
     );
 }

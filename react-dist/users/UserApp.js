@@ -6,7 +6,10 @@ import { useUserCreate } from "./hooks/useUserCreate.php.js";
 import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
 import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
-export const UserApp = () => {
+import { useActivateOtp } from "./hooks/useActivateOtp.js";
+export const UserApp = ({
+  onConfigurationComplete
+}) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const [initialUserFormConfig] = useState({
@@ -30,11 +33,32 @@ export const UserApp = () => {
     users,
     fetchUsers
   } = useAllTableUsers();
+  const {
+    activateOtp,
+    loading: otpLoading
+  } = useActivateOtp();
+
+  // Validar si hay al menos un usuario configurado
+  useEffect(() => {
+    const hasUsers = users && users.length > 0;
+    console.log('🔍 Validando usuarios:', {
+      totalUsuarios: users?.length,
+      hasUsers
+    });
+    onConfigurationComplete?.(hasUsers);
+  }, [users, onConfigurationComplete]);
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
     setUser(null);
     setShowUserFormModal(true);
+  };
+  const handleOtpChange = async (enabled, email) => {
+    const otpData = {
+      email: email,
+      otp_enabled: enabled
+    };
+    await activateOtp(otpData);
   };
   const handleSubmit = async data => {
     const finalData = {
@@ -59,6 +83,7 @@ export const UserApp = () => {
         });
       }
       fetchUsers();
+      handleOtpChange(data.otp_enabled, data.email);
       setShowUserFormModal(false);
     } catch (error) {
       console.error(error);
@@ -107,6 +132,12 @@ export const UserApp = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-info p-2"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle me-2"
+  }), "Configure al menos un usuario para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

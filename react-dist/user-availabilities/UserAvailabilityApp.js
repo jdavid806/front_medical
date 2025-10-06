@@ -8,7 +8,9 @@ import { useUserAvailabilityUpdate } from "./hooks/useUserAvailabilityUpdate.js"
 import { useUserAvailabilityDelete } from "./hooks/useUserAvailabilityDelete.js";
 import { useUserAvailabilityCreate } from "./hooks/useUserAvailabilityCreate.js";
 import { convertHHMMToDate } from "../../services/utilidades.js";
-export const UserAvailabilityApp = () => {
+export const UserAvailabilityApp = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const {
@@ -29,6 +31,10 @@ export const UserAvailabilityApp = () => {
     setUserAvailability,
     fetchUserAvailability
   } = useUserAvailability();
+  useEffect(() => {
+    const hasAvailabilities = availabilities && availabilities.length > 0;
+    onConfigurationComplete?.(hasAvailabilities);
+  }, [availabilities, onConfigurationComplete]);
   const onCreate = () => {
     setInitialData(undefined);
     setUserAvailability(null);
@@ -89,6 +95,12 @@ export const UserAvailabilityApp = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-info p-2"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle me-2"
+  }), "Configure al menos un horario de atenci\xF3n para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

@@ -8,7 +8,8 @@ export const StepperNavigation: React.FC<StepperNavigationProps> = ({
     onPrevious,
     onNext,
     onSave,
-    onCancel
+    onCancel,
+    isNextDisabled = false
 }) => {
 
     return (
@@ -31,27 +32,35 @@ export const StepperNavigation: React.FC<StepperNavigationProps> = ({
                         <i style={{ marginLeft: '10px' }} className="fa-solid fa-arrow-left me-2"></i>
                     </Button>
 
-                    {activeIndex === totalSteps - 1 ? (
-                        <Button
-                            label="Finalizar Configuración"
-                            icon="pi pi-check"
-                            className="p-button-success"
-                            onClick={onSave}
-                            severity="success"
-                        />
-                    ) : (
-                        <Button
-                            iconPos="right"
-                            label="Siguiente Módulo"
-                            className="p-button-primary"
-                            onClick={onNext}
-                            severity="primary"
-                        >
-                            <i style={{ marginLeft: '10px' }} className="fa-solid fa-arrow-right"></i>
-                        </Button>
-                    )}
+                  
+                        <div className={`${activeIndex === totalSteps - 1 ? 'd-block' : 'd-none'}`} >
+                            <Button
+                                label="Finalizar Configuración"
+                                icon="pi pi-check"
+                                className="p-button-success"
+                                onClick={onSave}
+                                severity="success"
+                            />
+                        </div>
+                  
+                        <div className={`${!(activeIndex === totalSteps - 1) ? 'd-block' : 'd-none'}`} >
+                            <Button
+                                iconPos="right"
+                                label="Siguiente Módulo"
+                                className="p-button-primary"
+                                onClick={onNext}
+                                severity="primary"
+                                disabled={isNextDisabled}
+                                tooltip={isNextDisabled ? "Complete la configuración actual para continuar" : "Continuar al siguiente módulo"}
+                                tooltipOptions={{ position: 'top' }}
+                            >
+                                <i style={{ marginLeft: '10px' }} className="fa-solid fa-arrow-right"></i>
+                            </Button>
+                        </div>
+
+               
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

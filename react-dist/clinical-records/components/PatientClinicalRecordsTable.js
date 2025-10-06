@@ -162,32 +162,55 @@ const TableActionsMenu = ({
   const [openMenuId, setOpenMenuId] = useState(null);
   const items = [{
     label: "Ver detalle",
-    icon: "pi pi-eye",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-eye me-2"
+    }),
     command: () => onSeeDetail && onSeeDetail(data.id, data.clinicalRecordType)
   }, {
+    label: "Realizar revisión",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-edit me-2"
+    }),
+    visible: data.status === "pending_review",
+    command: () => {
+      console.log("Realizar revisión");
+    }
+  }, {
     label: "Solicitar cancelación",
-    icon: "pi pi-times",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-times me-2"
+    }),
     command: () => onCancelItem && onCancelItem(data.id)
   }, {
     label: "Imprimir",
-    icon: "pi pi-print",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-print me-2"
+    }),
     command: () => onPrintItem && onPrintItem(data, data.id, data.clinicalRecordName)
   }, {
     label: "Descargar",
-    icon: "pi pi-download",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-download me-2"
+    }),
     command: () => onDownloadItem && onDownloadItem(data.id, data.clinicalRecordName)
   }, {
     separator: true
   }, {
     label: "Compartir",
-    icon: "pi pi-share-alt",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-share-alt me-2"
+    }),
     items: [{
       label: "WhatsApp",
-      icon: "pi pi-whatsapp",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-whatsapp me-2"
+      }),
       command: () => onShareItem && onShareItem(data, "whatsapp")
     }, {
       label: "Email",
-      icon: "pi pi-envelope",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-envelope me-2"
+      }),
       command: () => onShareItem && onShareItem(data, "email")
     }]
   }];
@@ -197,7 +220,6 @@ const TableActionsMenu = ({
   return /*#__PURE__*/React.createElement("div", {
     className: "table-actions-menu"
   }, /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-ellipsis-v",
     className: "p-button-rounded btn-primary",
     onClick: e => menu.current?.toggle(e),
     "aria-controls": `popup_menu_${data.id}`,

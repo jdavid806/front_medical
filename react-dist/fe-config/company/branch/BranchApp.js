@@ -5,7 +5,9 @@ import { BranchFormModal } from "./modal/BranchFormModal.js";
 import { branchService } from "../../../../services/api/index.js";
 import { SwalManager } from "../../../../services/alertManagerImported.js";
 import { useBranch } from "./hooks/useBranch.js";
-export const BranchApp = () => {
+export const BranchApp = ({
+  onValidationChange
+}) => {
   const {
     branch,
     setBranch,
@@ -31,6 +33,13 @@ export const BranchApp = () => {
       });
     }
   }, [branch]);
+
+  // Validar si hay al menos una sede creada
+  useEffect(() => {
+    const isValid = branches && branches.length > 0;
+    console.log('🏢 Validación Sedes - Branches:', branches.length, 'IsValid:', isValid);
+    onValidationChange?.(isValid);
+  }, [branches, onValidationChange]);
   const onCreate = () => {
     setInitialData(undefined);
     setShowBranchFormModal(true);
@@ -57,6 +66,7 @@ export const BranchApp = () => {
   };
   const handleHideBranchFormModal = () => {
     setShowBranchFormModal(false);
+    setBranch(null);
   };
   const handleTableEdit = id => {
     fetchBranchHook(id);
@@ -66,6 +76,7 @@ export const BranchApp = () => {
     try {
       const response = await branchService.getAll();
       setBranches(response);
+      console.log('📊 Sedes cargadas:', response.length);
     } catch (error) {
       console.error("Error fetching branches: ", error);
     }
@@ -82,9 +93,11 @@ export const BranchApp = () => {
       marginLeft: '13px'
     },
     className: "d-flex justify-content-between align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement("h4", {
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
-  }, "Gesti\xF3n de Sucursales"), /*#__PURE__*/React.createElement("div", {
+  }, "Gesti\xF3n de Sucursales"), /*#__PURE__*/React.createElement("small", {
+    className: "text-muted"
+  }, branches.length > 0 ? `${branches.length} sede(s) configurada(s)` : 'Crea al menos una sede para completar este módulo')), /*#__PURE__*/React.createElement("div", {
     className: "text-end",
     style: {
       marginRight: '12px'

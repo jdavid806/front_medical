@@ -7,7 +7,8 @@ export const RetentionsSection = ({
   subtotal,
   totalDiscount,
   retentions,
-  onRetentionsChange
+  onRetentionsChange,
+  productsArray
 }) => {
   const [retentionOptions, setRetentionOptions] = useState([]);
   useEffect(() => {
@@ -24,9 +25,24 @@ export const RetentionsSection = ({
   const calculateBaseAmount = () => {
     return (subtotal || 0) - (totalDiscount || 0);
   };
-  const calculateRetentionValue = percentage => {
+  const calculateRetentionValue = retention => {
     const base = calculateBaseAmount();
-    return base * (percentage || 0) / 100;
+    if (retention != 0 && retention?.tax_id !== null) {
+      const productsFiltered = productsArray.filter(item => item.taxChargeId == retention.tax.id).reduce((total, product) => {
+        const subtotal = product.quantity * product.price;
+        let discount = 0;
+        if (product.discountType === "percentage") {
+          discount = subtotal * (product.discount / 100);
+        } else {
+          discount = product.discount;
+        }
+        const subtotalAfterDiscount = subtotal - discount;
+        const taxValue = subtotalAfterDiscount * (product.tax || 0) / 100;
+        return total + taxValue;
+      }, 0);
+      return productsFiltered * (retention.percentage || 0) / 100;
+    }
+    return base * (retention.percentage || 0) / 100;
   };
   const handleAddRetention = () => {
     const newRetention = {
@@ -47,7 +63,7 @@ export const RetentionsSection = ({
           [field]: value
         };
         if (field === "percentage") {
-          updatedRetention.value = calculateRetentionValue(value.percentage);
+          updatedRetention.value = calculateRetentionValue(value);
         }
         return updatedRetention;
       }

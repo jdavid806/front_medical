@@ -148,16 +148,15 @@ export const objectToArray = (obj) => {
     return array;
 };
 
+export const getJWTPayloadByToken = (token) => {
+    if (!token) return null;
+    const payloadBase64 = token.split(".")[1];
+    return JSON.parse(atob(payloadBase64));
+}
+
 export const getJWTPayload = () => {
     const token = sessionStorage.getItem("auth_token");
-
-    if (token) {
-        const payloadBase64 = token.split(".")[1];
-        return JSON.parse(atob(payloadBase64));
-    }
-
-    // console.log("No token found in localStorage");
-    return null;
+    return getJWTPayloadByToken(token);
 };
 
 export const getUserLogged = () => {

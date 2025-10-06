@@ -9,15 +9,19 @@ import { Card } from 'primereact/card';
 import { useCompanyRepresentative } from "../hooks/useCompanyRepresentative.js";
 import { SwalManager } from "../../../../services/alertManagerImported.js";
 const RepresentativeTab = ({
-  companyId
+  companyId,
+  onValidationChange
 }) => {
   const {
     control,
     handleSubmit,
     formState: {
-      errors
+      errors,
+      isValid,
+      isDirty
     },
-    reset
+    reset,
+    watch
   } = useForm({
     defaultValues: {
       name: '',
@@ -25,7 +29,8 @@ const RepresentativeTab = ({
       email: '',
       document_type: '',
       document_number: ''
-    }
+    },
+    mode: 'onChange'
   });
   const {
     representative,
@@ -47,6 +52,9 @@ const RepresentativeTab = ({
     label: 'CEDULA DE CIUDADANIA',
     value: 'CC'
   }];
+
+  // Observar cambios en el formulario para validación
+  const formValues = watch();
   useEffect(() => {
     if (representative) {
       reset(representative);
@@ -60,6 +68,12 @@ const RepresentativeTab = ({
       });
     }
   }, [representative, loading, error, reset]);
+
+  // Validar cuando cambien los valores del formulario
+  useEffect(() => {
+    const hasRequiredFields = Boolean(formValues.name && formValues.document_type && formValues.document_number);
+    onValidationChange?.(hasRequiredFields);
+  }, [formValues, onValidationChange]);
   const onSubmit = async data => {
     try {
       if (!companyId) {
@@ -72,9 +86,13 @@ const RepresentativeTab = ({
       }
       const savedRepresentative = await saveRepresentative(companyId, data);
       reset(savedRepresentative);
+
+      // Notificar validación exitosa después de guardar
+      onValidationChange?.(true);
       SwalManager.success('Representante Legal se actualizo correctamente');
     } catch (error) {
       console.error('Error en onSubmit:', error);
+      onValidationChange?.(false);
     }
   };
   if (loading) {
@@ -239,13 +257,19 @@ const RepresentativeTab = ({
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, /*#__PURE__*/React.createElement(Button, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center"
+  }, /*#__PURE__*/React.createElement("div", null, isDirty && /*#__PURE__*/React.createElement("small", {
+    className: "text-warning"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle mr-2"
+  }), "Tienes cambios sin guardar")), /*#__PURE__*/React.createElement(Button, {
     type: "submit",
     label: "Guardar Representante",
     icon: "pi pi-save",
     loading: isSubmitting,
     className: "btn-primary",
-    disabled: !companyId
-  }))))));
+    disabled: !companyId || !isValid
+  })))))));
 };
 export default RepresentativeTab;

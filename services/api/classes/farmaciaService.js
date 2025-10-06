@@ -1,8 +1,8 @@
 import BaseApiService from "./baseApiService.js";
 
 export class FarmaciaService extends BaseApiService {
-  async getAllRecipes() {
-    return await this.httpClient.get(`${this.microservice}/recipes`);
+  async getAllRecipes(status = "ALL") {
+    return await this.httpClient.get(`${this.microservice}/recipes?status=${status}`);
   }
   async getAllprescriptions() {
     return await this.httpClient.get(`${this.microservice}/prescriptions`);
@@ -21,6 +21,14 @@ export class FarmaciaService extends BaseApiService {
 
   async validateMedicine(id) {
     return await this.httpClient.get(`${this.microservice}/medicines/${id}`);
+  }
+
+  async verifyProductsBulk(products) {
+    return await this.httpClient.post(`api/v1/admin/products/check/verify-product-bulk`, products);
+  }
+
+  async getProductsWithAvailableStock(productTypeNames, inventoryType) {
+    return await this.httpClient.get(`api/v1/admin/products/with/available-stock/${productTypeNames}/${inventoryType}`);
   }
 }
 

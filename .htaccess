@@ -32,6 +32,8 @@ RewriteRule ^validarKeys_Dom$ login/verificarLoginDom.php
 RewriteRule ^ConfigProfile$ Config/profile.php
 # Perfil de Usuario [FIN]
 RewriteRule ^LoginPrueba$ login/loginPrueba.php
+RewriteRule ^ConfiguracionGeneral$ Config/generalConfiguracion.php
+RewriteRule ^Landing$ Portada/portadaTest.php
 
 # Configuración[INICIO]
 RewriteRule ^RIPS_Report$ Reportes/ReportesRIPS.php
@@ -47,12 +49,12 @@ RewriteRule ^Commissions$ Reportes/Report_details/Commissions_report.php
 RewriteRule ^CommissionsCopy$ Reportes/Report_details/Commissions_report_copy.php
 RewriteRule ^InvoicesByEntity$ Reportes/Report_details/Invoices_by_entity_report.php
 RewriteRule ^AppointmentsReport$ Reportes/Report_details/Appointments_report.php
-RewriteRule ^ClinicalRecordReports$ Reportes/Report_details/Clinical_record_report.php
 RewriteRule ^InvoicesDoctors$ Reportes/Report_details/Invoices_doctors_report.php
 RewriteRule ^Estimates$ Reportes/Report_details/Estimates_report.php
 RewriteRule ^Accounts_receivable$ Reportes/Report_details/Accounts_receivable_report.php
 RewriteRule ^Sales_commission_by_user$ Reportes/Report_details/Sales_commission_by_user_report.php
 RewriteRule ^Config_PDF$ Configuracion/Print_format.php
+RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
 
 # Configuración [FIN]
 
@@ -122,12 +124,6 @@ RewriteRule ^FE_Entidades$ Entidades/Entidades.php
 # RewriteRule ^FE_FacturaCliente$ Cliente/FE_Factura.php
 # Entidades [FIN]
 
-
-# Configuracion del Sistema[INICIO]
-RewriteRule ^configuracionesGenerales$ Config/generalConfiguracion.php
-
-# Configuracion de Sistema [FIN]
-
 # Configuracion de FE [INICIO]
 RewriteRule ^FE_Config$ Configuracion/FE_Config.php
 # Configuracion de FE [FIN]
@@ -143,6 +139,10 @@ RewriteRule ^FE_ImprimirNominaG$ Nomina/FE_InprimirNominaGrupal.php
 RewriteRule ^FE_ImprimirNominaI$ Nomina/FE_InprimirNominaIndividual.php
 RewriteRule ^FE_ImprimirLiquidacion$ Nomina/FE_ImprimirLiquidacion.php
 # Configuracion de Nomina [FIN]
+
+
+# Configuracion del Sistema[INICIO]
+RewriteRule ^configuracionesGenerales$ Config/generalConfiguracion.php
 
 # Firma de Contrato por parte del empleado [INICIO]
 RewriteRule ^verContrato/(.+)$ Contrato/index.php?json=$1 
@@ -344,11 +344,11 @@ RewriteRule ^configUsuarios$ Configuracion/homeConfig/configUsuarios.php
 RewriteRule ^configImportaciones$ Configuracion/homeConfig/configImportaciones.php
 RewriteRule ^configConsentimientos$ Configuracion/homeConfig/configConsentimientos.php
 RewriteRule ^configEntidades$ Configuracion/homeConfig/configEntidades.php
-RewriteRule ^configPrecios$ Configuracion/homeConfig/configPrecios.php
+RewriteRule ^configPreciosPrueba$ Configuracion/homeConfig/configPrecios.php
+RewriteRule ^configPrecios$ Configuracion/homeConfig/ConfigPreciosPrueba.php
 
 RewriteRule ^configExamenes$ Configuracion/homeConfig/configExamenes.php
 RewriteRule ^configuracionEmpresa$ Configuracion/homeConfig/configuracionEmpresa.php
-RewriteRule ^configuracionEmpresaPrueba$ Config/configuracionEmpresa.php
 RewriteRule ^homeConfiguracion$ Configuracion/homeConfig/homeConfiguracion.php
 
 RewriteRule ^facturacionAdmisiones$ Citas/facturacionAdmisiones.php
@@ -386,5 +386,9 @@ RewriteRule ^seePatientInfoButtonTest$ Pacientes/seePatientInfoButtonTest.php
 RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
 RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
+RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
+RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
+
+
 
 

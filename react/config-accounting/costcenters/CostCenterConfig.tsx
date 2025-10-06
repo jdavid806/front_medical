@@ -11,7 +11,7 @@ import { CostCentersMapperCreate, CostCentersMapperUpdate } from "./mapper/mappe
 import { SwalManager } from "../../../services/alertManagerImported";
 import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTable";
 
-export const CostCenterConfig = () => {
+export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState<CostCenterFormInputs | undefined>(undefined);
 
@@ -77,7 +77,10 @@ export const CostCenterConfig = () => {
     }
   };
 
-
+  useEffect(() => {
+    const hasCostCenters = costCenters && costCenters.length > 0;
+    onConfigurationComplete?.(hasCostCenters);
+  }, [costCenters, onConfigurationComplete]);
 
   useEffect(() => {
     if (costCenter) {

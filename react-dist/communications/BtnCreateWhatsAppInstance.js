@@ -4,11 +4,17 @@ import { CreateWhatsAppInstanceForm } from "./CreateWhatsAppInstanceForm.js";
 import { useCreateEAInstance } from "./hooks/useCreateEAInstance.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
 import { PrimeReactProvider } from 'primereact/api';
-export const BtnCreateWhatsAppInstance = () => {
+import { useCompanyCommunication } from "../config/company-configuration/hooks/useCompanyCommunication.js";
+export const BtnCreateWhatsAppInstance = ({
+  onSave
+}) => {
   const [visible, setVisible] = useState(false);
   const {
     createEAInstance
   } = useCreateEAInstance();
+  const {
+    saveCommunication
+  } = useCompanyCommunication();
   const formId = "create-whatsapp-instance-form";
   const handleCreateEAInstance = async data => {
     try {
@@ -21,33 +27,27 @@ export const BtnCreateWhatsAppInstance = () => {
         });
         return;
       }
-      const id = document.getElementById("smtpId")?.value;
-      if (id) {
-        await updateSmtp({
-          api_key: response.hash,
-          instance: data.instanceName
-        });
-      } else {
-        await createSmtp({
-          api_key: response.hash,
-          instance: data.instanceName,
-          email: "",
-          password: "",
-          smtp_server: "",
-          port: 0,
-          security: ""
-        });
-      }
-      await consultarQR();
-      await cargarDatosTenant();
-      const modalVerQR = document.getElementById("modalButton");
-      if (modalVerQR) {
-        modalVerQR.click();
-      } else {
-        throw new Error("No se pudo encontrar el modal para visualizar el QR");
-      }
+      await saveCommunication({
+        api_key: response.hash || 'oEQ0j9ft1FX43QkGLDCEM0arw',
+        instance: data.instanceName,
+        email: "",
+        password: "",
+        smtp_server: "",
+        port: 587,
+        security: "tls"
+      });
+      SwalManager.success('Instancia creada correctamente');
+      onSave?.();
       setVisible(false);
-    } catch (error) {}
+
+      // Recargar la página para actualizar el estado
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('Error creating instance:', error);
+      SwalManager.error('Error al crear la instancia');
+    }
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
@@ -61,7 +61,7 @@ export const BtnCreateWhatsAppInstance = () => {
       setVisible(true);
     }
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-times-circle"
+    className: "fas fa-plus-circle"
   }), " Crear conexi\xF3n con WhatsApp"), /*#__PURE__*/React.createElement(Dialog, {
     header: "Crear nueva instancia de WhatsApp",
     visible: visible,

@@ -1,5 +1,5 @@
+import { Dialog } from "primereact/dialog";
 import React from "react";
-import { Modal } from "react-bootstrap";
 
 interface Props {
   children: React.ReactNode;
@@ -17,23 +17,19 @@ export const CustomModal: React.FC<Props> = ({
   onHide,
   footerTemplate,
   scrollable = false,
-  
+
 }) => {
   return (
-    <Modal
-      show={show}
-      onHide={onHide}
-      size="xl"
+    <Dialog
+      visible={show}
+      header={title}
+      footer={footerTemplate}
+      onHide={() => onHide?.()}
       aria-labelledby="contained-modal-title-vcenter"
-      centered
       className={`${scrollable ? "modal-dialog-scrollable" : ""}`}
-      scrollable={scrollable}
+      draggable={false}
     >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{children}</Modal.Body>
-      {footerTemplate && <Modal.Footer>{footerTemplate}</Modal.Footer>}
-    </Modal>
+      {children}
+    </Dialog>
   );
 };

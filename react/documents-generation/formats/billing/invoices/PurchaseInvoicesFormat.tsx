@@ -1,0 +1,400 @@
+import React from "react";
+import { statusInvoices } from "../../../../../services/commons";
+
+interface DetalleFactura {
+  cantidad: number;
+  description: string;
+  precioUnitario: number;
+  tax: number;
+}
+
+interface Factura {
+  numeroFactura: string;
+  fecha: string;
+  proveedor: string;
+  tipoFactura: string;
+  detalles: DetalleFactura[];
+  monto: number;
+}
+
+interface PrintInvoiceProps {
+  invoice: Factura;
+}
+
+export const PurchaseInvoicesFormat: React.FC<PrintInvoiceProps> = ({
+  invoice,
+}) => {
+  console.log("invoice => ", invoice);
+  // Función para formatear currency (igual que en el primer componente)
+  const formatCurrency = (value: number) => {
+    const formatted = new Intl.NumberFormat("es-DO", {
+      style: "currency",
+      currency: "DOP",
+      minimumFractionDigits: 2,
+    }).format(value);
+    return formatted.replace("RD$", "$");
+  };
+
+  // Función para formatear fechas
+  const formatDate = (
+    date: Date | string,
+    includeYear: boolean = false
+  ): string => {
+    if (typeof date === "string") {
+      date = new Date(date);
+    }
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+
+    if (includeYear) {
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    return `${day}/${month}`;
+  };
+
+  return (
+    <div
+      style={{
+        marginBottom: "2rem",
+        border: "1px solid #ddd",
+        padding: "1rem",
+      }}
+    >
+      <style>
+        {`
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            .print-container, .print-container * {
+              visibility: visible;
+            }
+            .print-container {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+            }
+            .user-table-container {
+              page-break-inside: avoid;
+            }
+          }
+          
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 25px;
+            font-size: 12px;
+          }
+          th { 
+            color: white; 
+            padding: 10px; 
+            text-align: left;
+            border: 1px solid #dee2e6;
+            font-weight: bold;
+          }
+          td { 
+            padding: 10px 8px; 
+            border: 1px solid #dee2e6;
+          }
+          
+          .summary-table {
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 13px;
+            margin-bottom: 20px;
+          }
+          
+          .summary-table td {
+            padding: 8px 0;
+            border-bottom: none;
+          }
+          
+          .currency {
+            text-align: right;
+          }
+          
+          .user-header {
+            text-align: center; 
+            margin-bottom: 1rem; 
+            background-color: #424a51; 
+            color: white; 
+            padding: 10px;
+            border-radius: 4px;
+          }
+
+          .seccion-final {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+          }
+
+          .info-qr {
+            width: 40%;
+          }
+
+          .qr-image {
+            width: 120px;
+            height: 120px;
+            background-color: #f0f0f0;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+          }
+
+          .codigo-seguridad {
+            font-weight: bold;
+            margin-bottom: 15px;
+          }
+
+          .totales {
+            text-align: right;
+            width: 65%;
+          }
+
+          .fila-total {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+          }
+
+          .etiqueta-total {
+            font-weight: bold;
+            width: 150px;
+          }
+
+          .valor-total {
+            width: 120px;
+            text-align: right;
+          }
+        `}
+      </style>
+
+      <div className="print-container">
+        {/* Encabezado con estilo similar al primer componente */}
+        <div className="user-header">
+          <h2 style={{ margin: 0 }}>Factura de compra</h2>
+        </div>
+
+        {/* Tabla de resumen */}
+        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
+          <table className="summary-table mr-3">
+            <tbody>
+              <tr>
+                <td style={{ padding: "8px 0" }}>
+                  <strong># Factura:</strong>
+                </td>
+                <td style={{ padding: "8px 0" }}>{invoice.numeroFactura}</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "8px 0" }}>
+                  <strong>Fecha:</strong>
+                </td>
+                <td style={{ padding: "8px 0" }}>
+                  {formatDate(invoice.fecha, true)}
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "8px 0" }}>
+                  <strong>Cliente:</strong>
+                </td>
+                <td style={{ padding: "8px 0" }}>{invoice.proveedor}</td>
+              </tr>
+              <tr>
+                <td style={{ padding: "8px 0" }}>
+                  <strong>Estado:</strong>
+                </td>
+                <td style={{ padding: "8px 0" }}>
+                  {statusInvoices[invoice.estado]}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Tabla de detalles con gridlines como el primer componente */}
+        <table>
+          <thead>
+            <tr>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Producto/Cuenta contable
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Cantidad
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Precio Unitario
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Valor
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Descuento
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Impuesto
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  padding: "10px",
+                  backgroundColor: "#f8f9fa",
+                  border: "1px solid #dee2e6",
+                  fontWeight: "bold",
+                  color: "#000",
+                }}
+              >
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoice.detalles.map((detail: any, index) => (
+              <tr key={index}>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "left",
+                  }}
+                >
+                  {detail.productoNombre || "--"}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "left",
+                  }}
+                >
+                  {detail.cantidad}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "right",
+                  }}
+                >
+                  {formatCurrency(detail.precioUnitario || 0)}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "right",
+                  }}
+                >
+                  {formatCurrency(detail.precioUnitario * detail.cantidad)}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "right",
+                  }}
+                >
+                  {detail.discount || 0}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "right",
+                  }}
+                >
+                  {formatCurrency(detail.tax || 0)}
+                </td>
+                <td
+                  style={{
+                    padding: "10px 8px",
+                    border: "1px solid #dee2e6",
+                    textAlign: "right",
+                  }}
+                >
+                  {formatCurrency(detail.total || 0)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Sección final */}
+        <div className="seccion-final">
+          <div className="info-qr">
+            <div className="qr-image">[Código QR]</div>
+            <div className="codigo-seguridad">Código de seguridad: S/DQdu</div>
+          </div>
+
+          <div className="totales">
+            <div className="fila-total">
+              <div className="etiqueta-total">Total:</div>
+              <div className="valor-total">
+                {formatCurrency(invoice.monto || 0)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

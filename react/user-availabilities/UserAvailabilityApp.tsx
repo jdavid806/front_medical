@@ -10,7 +10,11 @@ import { useUserAvailabilityDelete } from './hooks/useUserAvailabilityDelete';
 import { useUserAvailabilityCreate } from './hooks/useUserAvailabilityCreate';
 import { convertHHMMSSToDate, convertHHMMToDate } from '../../services/utilidades';
 
-export const UserAvailabilityApp = () => {
+interface UserAvailabilityAppProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const UserAvailabilityApp = ({ onConfigurationComplete }: UserAvailabilityAppProps) => {
 
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserAvailabilityFormInputs | undefined>(undefined)
@@ -20,6 +24,11 @@ export const UserAvailabilityApp = () => {
     const { updateUserAvailability } = useUserAvailabilityUpdate();
     const { deleteUserAvailability } = useUserAvailabilityDelete();
     const { userAvailability, setUserAvailability, fetchUserAvailability } = useUserAvailability();
+
+    useEffect(() => {
+        const hasAvailabilities = availabilities && availabilities.length > 0;
+        onConfigurationComplete?.(hasAvailabilities);
+    }, [availabilities, onConfigurationComplete]);
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -89,6 +98,15 @@ export const UserAvailabilityApp = () => {
                     overlay: 100000
                 }
             }}>
+                <div className="mb-3">
+                    <div className="alert alert-info p-2">
+                        <small>
+                            <i className="pi pi-info-circle me-2"></i>
+                            Configure al menos un horario de atención para poder continuar al siguiente módulo.
+                        </small>
+                    </div>
+                </div>
+
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Horarios de Atención</h4>
                     <div className="text-end mb-2">

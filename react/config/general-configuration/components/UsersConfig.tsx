@@ -1,8 +1,14 @@
 import React from 'react';
 import { UserApp } from '../../../users/UserApp';
 
-export const UsersConfig: React.FC = () => {
+interface UsersConfigProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const UsersConfig: React.FC<UsersConfigProps> = ({
+    onConfigurationComplete
+}) => {
     return (
-        <UserApp />
+        <UserApp onConfigurationComplete={onConfigurationComplete} />
     );
 };

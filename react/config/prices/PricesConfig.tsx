@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { PricesTableConfig } from '../prices/table/PricesTableConfig';
 import PricesConfigFormModal from '../prices/form/PricesConfigFormModal';
 import { PrimeReactProvider } from 'primereact/api';
@@ -12,16 +12,42 @@ import { usePriceConfigDelete } from './hooks/usePriceConfigDelete';
 import { entitiesService } from "../../../services/api";
 import { SwalManager } from '../../../services/alertManagerImported';
 
-export const PricesConfig = () => {
+interface PricesConfigProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const PricesConfig = ({ onConfigurationComplete }: PricesConfigProps) => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<ProductFormInputs | undefined>(undefined);
     const [entitiesData, setEntitiesData] = useState<any[]>([]);
+    const [isMounted, setIsMounted] = useState(true);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     const { fetchProducts, products } = usePricesConfigTable();
     const { createProduct, loading } = usePriceConfigCreate();
     const { updateProduct } = usePriceConfigUpdate();
     const { fetchPriceById, priceById, setPriceById } = usePriceConfigById();
     const { deleteProduct } = usePriceConfigDelete();
+
+    useEffect(() => {
+        if (!isMounted) return;
+
+        const hasProducts = products && products.length > 0;
+        console.log('🔍 Validando precios:', {
+            totalPrecios: products?.length,
+            hasProducts
+        });
+        onConfigurationComplete?.(hasProducts);
+        console.log("onConfigurationComplete!!!!", onConfigurationComplete)
+    }, [products, onConfigurationComplete, isMounted]);
+
+    // Cleanup para evitar el error de removeChild
+    useEffect(() => {
+        return () => {
+            setIsMounted(false);
+        };
+    }, []);
+
     const onCreate = () => {
         setInitialData(undefined);
         setPriceById(null);
@@ -29,7 +55,6 @@ export const PricesConfig = () => {
     };
 
     const handleSubmit = async (data: ProductFormInputs) => {
-
         const mapperDataProduct = ProductMapperCreate(data)
         const mapperDataProductUpdate = ProductMapperUpdate(data)
 
@@ -39,7 +64,7 @@ export const PricesConfig = () => {
             } else {
                 await createProduct(mapperDataProduct);
             }
-            fetchProducts();
+            await fetchProducts();
             setShowFormModal(false);
         } catch (error) {
             console.error(error);
@@ -59,8 +84,12 @@ export const PricesConfig = () => {
     };
 
     async function loadEntities() {
-        const entities = await entitiesService.getEntities();
-        setEntitiesData(entities.data);
+        try {
+            const entities = await entitiesService.getEntities();
+            setEntitiesData(entities.data);
+        } catch (error) {
+            console.error('Error loading entities:', error);
+        }
     }
 
     useEffect(() => {
@@ -68,9 +97,9 @@ export const PricesConfig = () => {
     }, []);
 
     useEffect(() => {
-        if (priceById) {
+        if (priceById && isMounted) {
             const data: ProductFormInputs = {
-                product_id: priceById.id?.toString(), // Agregar product_id para la actualización
+                product_id: priceById.id?.toString(),
                 name: priceById.name,
                 attention_type: priceById.attention_type,
                 curp: priceById.barcode,
@@ -80,7 +109,6 @@ export const PricesConfig = () => {
                 exam_type_id: priceById.exam_type_id?.toString() ?? '',
                 purchase_price: priceById.purchase_price,
                 entities: priceById.entities?.map(entity => {
-                    // Priorizar datos del pivot si existen, luego los datos directos
                     return {
                         entity_id: entity.pivot?.entity_id || entity.entity_id || entity.id,
                         entity_name: entitiesData.find(e => e.id === entity?.entity_id)?.name || 'N/A',
@@ -95,40 +123,62 @@ export const PricesConfig = () => {
             };
             setInitialData(data);
         }
-    }, [priceById]);
+    }, [priceById, entitiesData, isMounted]);
+
+    const handleModalHide = () => {
+        setShowFormModal(false);
+        setPriceById(null);
+        setInitialData(undefined);
+    };
 
     return (
         <>
             <PrimeReactProvider value={{
-                appendTo: 'self',
+                appendTo: modalRef.current || 'self',
                 zIndex: {
                     overlay: 100000
                 }
             }}>
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h4 className="mb-1">Configuración de Precios</h4>
-                    <div className="text-end mb-2">
-                        <button
-                            className="btn btn-primary d-flex align-items-center"
-                            onClick={onCreate}
-                        >
-                            <i className="fas fa-plus me-2"></i>
-                            Nuevo Precio
-                        </button>
+                <div ref={modalRef}>
+                    <div className="mb-3">
+                        <div className="alert alert-info p-2">
+                            <small>
+                                <i className="pi pi-info-circle me-2"></i>
+                                Configure al menos un precio para poder continuar al siguiente módulo.
+                            </small>
+                        </div>
                     </div>
+
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h4 className="mb-1">Configuración de Precios</h4>
+                        <div className="text-end mb-2">
+                            <button
+                                className="btn btn-primary d-flex align-items-center"
+                                onClick={onCreate}
+                                disabled={loading}
+                            >
+                                <i className="fas fa-plus me-2"></i>
+                                {loading ? 'Cargando...' : 'Nuevo Precio'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <PricesTableConfig
+                        prices={products}
+                        onEditItem={handleTableEdit}
+                        onDeleteItem={handleTableDelete}
+                    />
+
+                    {showFormModal && (
+                        <PricesConfigFormModal
+                            show={showFormModal}
+                            entitiesData={entitiesData}
+                            handleSubmit={handleSubmit}
+                            onHide={handleModalHide}
+                            initialData={initialData}
+                        />
+                    )}
                 </div>
-                <PricesTableConfig
-                    prices={products}
-                    onEditItem={handleTableEdit}
-                    onDeleteItem={handleTableDelete}
-                />
-                <PricesConfigFormModal
-                    show={showFormModal}
-                    entitiesData={entitiesData}
-                    handleSubmit={handleSubmit}
-                    onHide={() => { setShowFormModal(false); }}
-                    initialData={initialData}
-                />
             </PrimeReactProvider>
         </>
     );

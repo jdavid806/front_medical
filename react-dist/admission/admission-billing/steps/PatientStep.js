@@ -19,6 +19,7 @@ const PatientStepPreview = ({
 }) => {
   const {
     control,
+    setValue,
     handleSubmit,
     formState: {
       errors
@@ -33,6 +34,7 @@ const PatientStepPreview = ({
     patient,
     fetchPatient
   } = usePatient(formData.patient.id);
+  const [hideInputs, setHideInputs] = useState(false);
   useEffect(() => {
     if (patient) {
       const mappedPatientData = {
@@ -43,7 +45,7 @@ const PatientStepPreview = ({
         middleName: patient.middle_name || "",
         lastName: patient.last_name || "",
         secondLastName: patient.second_last_name || "",
-        nameComplet: `${patient.first_name || ''} ${patient.middle_name || ''} ${patient.last_name || ''} ${patient.second_last_name || ''}`,
+        nameComplet: `${patient.first_name || ""} ${patient.middle_name || ""} ${patient.last_name || ""} ${patient.second_last_name || ""}`,
         birthDate: patient.date_of_birth ? new Date(patient.date_of_birth) : null,
         gender: genders[patient.gender] || "",
         country: patient.country_id || "",
@@ -59,7 +61,7 @@ const PatientStepPreview = ({
       };
       setMappedPatient(mappedPatientData);
     }
-  }, [patient]);
+  }, [patient && formData]);
   const handlePatientChange = (field, value) => {
     updateFormData("patient", {
       [field]: value
@@ -80,12 +82,22 @@ const PatientStepPreview = ({
       formData.billing.facturacionConsumidor = !formData.billing.facturacionConsumidor;
       formData.billing.facturacionEntidad = false;
     }
-    console.log(!formData.billing.facturacionEntidad);
     const mappedProducts = formData.products.map(product => ({
       ...product,
       currentPrice: formData.billing.facturacionEntidad ? product.copayment : product.price
     }));
-    console.log(mappedProducts);
+    const matchProductWithEntity = formData.products.map(product => {
+      return {
+        ...product.matchProductByEntity
+      };
+    });
+    if (matchProductWithEntity.length && matchProductWithEntity[0]?.id > 0) {
+      const priceSums = matchProductWithEntity.reduce((total, objeto) => {
+        return total + parseFloat(objeto.price);
+      }, 0);
+      setHideInputs(true);
+      handleBillingChange("authorizedAmount", priceSums.toString() || "0");
+    }
     formData.products = mappedProducts;
     updateFormData("products", mappedProducts);
     updateFormData("payments", []);
@@ -94,7 +106,6 @@ const PatientStepPreview = ({
     handlePatientChange("hasCompanion", value);
   };
   const handleNext = () => {
-    console.log('formData', formData);
     if (validatePatientStep(formData.billing, toast)) {
       nextStep();
     }
@@ -258,7 +269,10 @@ const PatientStepPreview = ({
     render: ({
       field
     }) => /*#__PURE__*/React.createElement("div", {
-      className: "mb-3"
+      className: "mb-3",
+      style: {
+        display: hideInputs ? "none" : "block"
+      }
     }, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
     }, "Monto Autorizado"), /*#__PURE__*/React.createElement(InputText, {

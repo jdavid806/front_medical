@@ -10,6 +10,7 @@ export interface AccountingAccountNode {
     auxiliary: string | null;
     sub_auxiliary: string | null;
     account_name: string;
+    category: string;
     account_type: string;
     account_type_name: string;
     initial_balance: number;

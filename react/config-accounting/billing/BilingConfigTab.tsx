@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { TabView, TabPanel } from "primereact/tabview";
@@ -8,17 +8,40 @@ import { Calendar } from "primereact/calendar";
 import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import { Badge } from "primereact/badge";
 import { ConfigFactura, CuentaContable } from "./interfaces/BillingConfigTabTypes";
 import { useBillings } from "../../billing/hooks/useBillings";
 import { stringToDate } from "../../../services/utilidades";
 
-const BillingConfigTab = () => {
+interface BillingConfigTabProps {
+  onValidationChange?: (isValid: boolean) => void;
+  onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
+  onValidationChange,
+  onConfigurationComplete
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [cuentasContables, setCuentasContables] = useState<CuentaContable[]>([]);
+  const [savedConfigs, setSavedConfigs] = useState<Set<string>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState({
     cuentas: false,
     saving: false,
   });
+
+  // Detectar tamaño de pantalla
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const {
     register: registerFiscal,
@@ -81,36 +104,132 @@ const BillingConfigTab = () => {
       id: "fiscal",
       nombre: "Factura Fiscal",
       icono: "fa-solid fa-file-invoice-dollar",
+      apiType: "tax_invoice",
+      shortName: "Fiscal"
     },
-    { id: "consumidor", nombre: "Factura Consumidor", icono: "pi pi-receipt" },
+    {
+      id: "consumidor",
+      nombre: "Factura Consumidor",
+      icono: "pi pi-receipt",
+      apiType: "consumer",
+      shortName: "Consumidor"
+    },
     {
       id: "gubernamental",
       nombre: "Factura Gubernamental",
       icono: "pi pi-building",
+      apiType: "government_invoice",
+      shortName: "Gubernamental"
     },
-    { id: "notaCredito", nombre: "Notas de Crédito", icono: "pi pi-file-edit" },
-    { id: "notaDebito", nombre: "Notas de Débito", icono: "pi pi-file-edit" },
-    { id: "compra", nombre: "Factura de Compra", icono: "pi pi-shopping-cart" },
+    {
+      id: "notaCredito",
+      nombre: "Notas de Crédito",
+      icono: "pi pi-file-edit",
+      apiType: "credit_note",
+      shortName: "N. Crédito"
+    },
+    {
+      id: "notaDebito",
+      nombre: "Notas de Débito",
+      icono: "pi pi-file-edit",
+      apiType: "debit_note",
+      shortName: "N. Débito"
+    },
+    {
+      id: "compra",
+      nombre: "Factura de Compra",
+      icono: "pi pi-shopping-cart",
+      apiType: "purchase_invoice",
+      shortName: "Compra"
+    },
   ];
 
-  const handleFetchError = (error: unknown, message: string) => {
-    console.error(message, error);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: message,
-    });
-    return null;
-  };
+  // Verificar si todas las configuraciones están completas
+  const checkAllConfigurationsComplete = useCallback(() => {
+    const requiredTypes = [
+      "tax_invoice",
+      "consumer",
+      "government_invoice",
+      "credit_note",
+      "debit_note",
+      "purchase_invoice"
+    ];
 
-  // Load accounting accounts
+    const existingTypes = billings?.map(billing => billing.type) || [];
+    const hasAllConfigs = requiredTypes.every(type => existingTypes.includes(type));
+
+    console.log('🔍 Verificando configuraciones completas:', {
+      requiredTypes,
+      existingTypes,
+      hasAllConfigs
+    });
+
+    return hasAllConfigs;
+  }, [billings]);
+
+  // Efecto para verificar configuraciones existentes
+  useEffect(() => {
+    const hasExistingConfigs = billings && billings.length > 0;
+    const allComplete = checkAllConfigurationsComplete();
+
+    console.log('📊 Estado de configuraciones:', {
+      totalBillings: billings?.length,
+      hasExistingConfigs,
+      allComplete
+    });
+
+    onValidationChange?.(hasExistingConfigs);
+    onConfigurationComplete?.(allComplete);
+  }, [billings, checkAllConfigurationsComplete, onValidationChange, onConfigurationComplete]);
+
+  // Cargar datos existentes
+  useEffect(() => {
+    if (billings.length > 0) {
+      console.log('🔄 Cargando configuraciones existentes:', billings);
+
+      billings.forEach((billing) => {
+        const resolutionDate = billing.resolution_date ? stringToDate(billing.resolution_date) : null;
+        const expirationDate = billing.expiration_date ? stringToDate(billing.expiration_date) : null;
+        const data = {
+          ...billing,
+          resolution_date: resolutionDate,
+          expiration_date: expirationDate,
+          accounting_account: +billing.accounting_account
+        };
+
+        // Marcar como guardado
+        setSavedConfigs(prev => new Set(prev).add(billing.type));
+
+        switch (billing.type) {
+          case "tax_invoice":
+            resetFiscal(data);
+            break;
+          case "consumer":
+            resetConsumidor(data);
+            break;
+          case "government_invoice":
+            resetGubernamental(data);
+            break;
+          case "credit_note":
+            resetNotaCredito(data);
+            break;
+          case "debit_note":
+            resetNotaDebito(data);
+            break;
+          case "purchase_invoice":
+            resetCompra(data);
+            break;
+        }
+      });
+    }
+  }, [billings]);
+
+  // Cargar cuentas contables
   useEffect(() => {
     const cargarCuentasContables = async () => {
       setLoading((prev) => ({ ...prev, cuentas: true }));
       try {
-        const response = await fetch(
-          "/api/v1/admin/accounting-accounts?per_page=all"
-        );
+        const response = await fetch("/api/v1/admin/accounting-accounts?per_page=all");
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
@@ -125,10 +244,12 @@ const BillingConfigTab = () => {
           cuentas.filter((cuenta: CuentaContable) => cuenta.status === "active")
         );
       } catch (error) {
-        handleFetchError(
-          error,
-          "No se pudieron cargar las cuentas contables. Por favor, intente nuevamente."
-        );
+        console.error("Error cargando cuentas:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudieron cargar las cuentas contables.",
+        });
       } finally {
         setLoading((prev) => ({ ...prev, cuentas: false }));
       }
@@ -137,42 +258,6 @@ const BillingConfigTab = () => {
     cargarCuentasContables();
     fetchBillings();
   }, []);
-
-  useEffect(() => {
-    billings.forEach((billing) => {
-      const resolutionDate = billing.resolution_date ? stringToDate(billing.resolution_date) : null;
-      const expirationDate = billing.expiration_date ? stringToDate(billing.expiration_date) : null;
-
-      const data = {
-        ...billing,
-        resolution_date: resolutionDate,
-        expiration_date: expirationDate,
-        accounting_account: +billing.accounting_account,
-        accounting_account_discount: billing.accounting_account_discount ? +billing.accounting_account_discount : null
-      }
-
-      switch (billing.type) {
-        case "tax_invoice":
-          resetFiscal(data);
-          break;
-        case "consumer":
-          resetConsumidor(data);
-          break;
-        case "government_invoice":
-          resetGubernamental(data);
-          break;
-        case "credit_note":
-          resetNotaCredito(data);
-          break;
-        case "debit_note":
-          resetNotaDebito(data);
-          break;
-        case "purchase_invoice":
-          resetCompra(data);
-          break;
-      }
-    })
-  }, [billings]);
 
   const filtrarCuentas = () => {
     return cuentasContables.sort((a: CuentaContable, b: CuentaContable) =>
@@ -188,32 +273,22 @@ const BillingConfigTab = () => {
   ) => {
     setLoading((prev) => ({ ...prev, saving: true }));
 
-    console.log("data", data);
-    console.log("errors", errors);
-    console.log("tipo", tipo);
-
     try {
-      const tipoApi = {
-        fiscal: "tax_invoice",
-        consumidor: "consumer",
-        gubernamental: "government_invoice",
-        notaCredito: "credit_note",
-        notaDebito: "debit_note",
-        compra: "purchase_invoice",
-      }[tipo as keyof typeof tiposFacturacion];
-
-      if (!tipoApi) {
+      const tipoConfig = tiposFacturacion.find(t => t.id === tipo);
+      if (!tipoConfig) {
         throw new Error("Tipo de factura no válido");
       }
 
+      const tipoApi = tipoConfig.apiType;
+
+      // Format dates for API
       const formatDate = (date: Date | string | null): string | null => {
         if (!date) return null;
         if (typeof date === "string") return date;
-
-        const d = new Date(date);
-        return d.toISOString().split("T")[0];
+        return date.toISOString().split("T")[0];
       };
 
+      // Prepare payload
       const payload: any = {
         dian_prefix: data.dian_prefix,
         accounting_account: data.accounting_account?.toString(),
@@ -225,10 +300,9 @@ const BillingConfigTab = () => {
         type: tipoApi,
       };
 
-      if (["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo)) {
-        payload.accounting_account_reverse_id =
-          data.accounting_account_reverse_id;
-        payload.accounting_account_discount = data.accounting_account_discount?.toString();
+      // Add reverse account for specific invoice types
+      if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
+        payload.accounting_account_reverse_id = data.accounting_account_reverse_id;
       }
 
       const url = "/medical/companies/1/billings";
@@ -248,23 +322,30 @@ const BillingConfigTab = () => {
 
       const result = await response.json();
 
+      // Marcar como guardado y verificar estado completo
+      setSavedConfigs(prev => new Set(prev).add(tipoApi));
+
+      // Recargar billings para verificar estado actual
+      await fetchBillings();
+
       Swal.fire({
         icon: "success",
         title: "¡Guardado!",
-        text: `Configuración de ${tiposFacturacion.find((t) => t.id === tipo)?.nombre
-          } guardada correctamente`,
+        text: `Configuración de ${tipoConfig.nombre} guardada correctamente`,
         timer: 2000,
         showConfirmButton: false,
       });
+
+      // Verificar si ya puede avanzar después de guardar
+      const allComplete = checkAllConfigurationsComplete();
+      onConfigurationComplete?.(allComplete);
+
     } catch (error) {
       console.error(`Error al guardar ${tipo}:`, error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text:
-          error instanceof Error
-            ? error.message
-            : `Error al guardar la configuración`,
+        text: error instanceof Error ? error.message : "Error al guardar la configuración",
       });
     } finally {
       setLoading((prev) => ({ ...prev, saving: false }));
@@ -284,6 +365,24 @@ const BillingConfigTab = () => {
   const onSubmitCompra = (data: ConfigFactura) =>
     guardarConfiguracion("compra", data, errorsCompra, setValueCompra);
 
+  const renderTabHeader = (tipo: any) => {
+    const isSaved = savedConfigs.has(tipo.apiType);
+
+    return (
+      <span className="d-flex align-items-center" style={{ color: "#132030" }}>
+        {isMobile ? tipo.shortName : tipo.nombre}
+        <i className={`${tipo.icono} ms-1`} style={{ color: "#132030", fontSize: isMobile ? '0.8rem' : '1rem' }}></i>
+        {isSaved && (
+          <Badge
+            value=""
+            className="p-badge-success ms-1"
+            style={{ width: '8px', height: '8px', minWidth: '8px' }}
+          />
+        )}
+      </span>
+    );
+  };
+
   const renderFormFields = (
     tipo: string,
     register: any,
@@ -294,310 +393,401 @@ const BillingConfigTab = () => {
     const cuentasFiltradas = filtrarCuentas();
     const accountingAccount = watch("accounting_account");
     const accountingAccountReverse = watch("accounting_account_reverse_id");
-    const accountingAccountDiscount = watch("accounting_account_discount");
-    const showReverseAccount = ["fiscal", "consumidor", "gubernamental", "compra"].includes(tipo);
+    const showReverseAccount = ["fiscal", "consumidor", "gubernamental"].includes(tipo);
 
-    const getFormErrorMessage = (name: string) => {
-      return errors?.[name] && (
-        <small className="p-error" style={{ display: 'block', height: '20px', lineHeight: '20px' }}>
-          {errors[name]?.message}
-        </small>
-      );
-    };
+    const tipoConfig = tiposFacturacion.find(t => t.id === tipo);
+    const isSaved = tipoConfig && savedConfigs.has(tipoConfig.apiType);
 
     return (
-      <form onSubmit={handleFiscal(onSubmitFiscal)} className="p-fluid">
-        <div className="row">
-          {/* Columna izquierda */}
-          <div className="col-md-6">
-            <div className="field mb-4">
-              <label htmlFor={`dian_prefix_${tipo}`} className="font-medium block mb-2">
-                Prefijo DGII *
-              </label>
-              <InputText
-                id={`dian_prefix_${tipo}`}
-                {...register("dian_prefix", { required: "El prefijo DGII es requerido" })}
-                className={classNames({ "p-invalid": errors?.dian_prefix })}
-                placeholder="Ej: ABC"
-              />
-              {getFormErrorMessage("dian_prefix")}
-            </div>
-
-            {![
-              "compra",
-            ].includes(tipo) && (
-                <div className="field mb-4">
-                  <label htmlFor={`accounting_account_${tipo}`} className="font-medium block mb-2">
-                    Cuenta Contable *
-                  </label>
-                  <Dropdown
-                    id={`accounting_account_${tipo}`}
-                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                      value: cuenta.id,
-                    }))}
-                    value={accountingAccount}
-                    onChange={(e) => setValue("accounting_account", e.value)}
-                    filter
-                    filterBy="label"
-                    showClear
-                    filterPlaceholder="Buscar cuenta..."
-                    className={classNames("w-full", { "p-invalid": errors?.accounting_account })}
-                    loading={loading.cuentas}
-                    placeholder="Seleccione una cuenta"
-                  />
-                  {getFormErrorMessage("accounting_account")}
-                </div>
-              )}
-
-            {showReverseAccount && (
-              <>
-                <div className="field mb-4">
-                  <label htmlFor={`accounting_account_reverse_${tipo}`} className="font-medium block mb-2">
-                    Cuenta Contable Reversa *
-                  </label>
-                  <Dropdown
-                    id={`accounting_account_reverse_${tipo}`}
-                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                      value: cuenta.id,
-                    }))}
-                    value={accountingAccountReverse}
-                    onChange={(e) => setValue("accounting_account_reverse_id", e.value)}
-                    filter
-                    filterBy="label"
-                    showClear
-                    filterPlaceholder="Buscar cuenta..."
-                    className={classNames("w-full", { "p-invalid": errors?.accounting_account_reverse_id })}
-                    loading={loading.cuentas}
-                    placeholder="Seleccione una cuenta"
-                  />
-                  {getFormErrorMessage("accounting_account_reverse_id")}
-                </div>
-
-                <div className="field mb-4">
-                  <label htmlFor={`accounting_account_discount_${tipo}`} className="font-medium block mb-2">
-                    Cuenta Contable Descuento
-                  </label>
-                  <Dropdown
-                    id={`accounting_account_discount_${tipo}`}
-                    options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
-                      label: `${cuenta.account_code} - ${cuenta.account_name}`,
-                      value: cuenta.id,
-                    }))}
-                    value={accountingAccountDiscount}
-                    onChange={(e) => setValue("accounting_account_discount", e.value)}
-                    filter
-                    filterBy="label"
-                    showClear
-                    filterPlaceholder="Buscar cuenta..."
-                    className={classNames("w-full", { "p-invalid": errors?.accounting_account_discount })}
-                    loading={loading.cuentas}
-                    placeholder="Seleccione una cuenta"
-                  />
-                  {getFormErrorMessage("accounting_account_discount")}
-                </div>
-              </>
-            )}
-
-            <div className="field mb-4">
-              <label htmlFor={`resolution_number_${tipo}`} className="font-medium block mb-2">
-                Número Resolución *
-              </label>
-              <InputText
-                id={`resolution_number_${tipo}`}
-                {...register("resolution_number", { required: "El número de resolución es requerido" })}
-                className={classNames({ "p-invalid": errors?.resolution_number })}
-                placeholder="Ej: 1234567890"
-              />
-              {getFormErrorMessage("resolution_number")}
-            </div>
-          </div>
-
-          {/* Columna derecha */}
-          <div className="col-md-6">
-            <div className="field mb-4">
-              <label htmlFor={`invoice_from_${tipo}`} className="font-medium block mb-2">
-                Facturas Desde *
-              </label>
-              <InputNumber
-                id={`invoice_from_${tipo}`}
-                value={watch("invoice_from")}
-                onValueChange={(e) => setValue("invoice_from", e.value)}
-                mode="decimal"
-                useGrouping={false}
-                min={1}
-                className={classNames("w-full", { "p-invalid": errors?.invoice_from })}
-                placeholder="Ej: 1001"
-              />
-              {getFormErrorMessage("invoice_from")}
-            </div>
-
-            <div className="field mb-4">
-              <label htmlFor={`invoice_to_${tipo}`} className="font-medium block mb-2">
-                Facturas Hasta *
-              </label>
-              <InputNumber
-                id={`invoice_to_${tipo}`}
-                value={watch("invoice_to")}
-                onValueChange={(e) => setValue("invoice_to", e.value)}
-                mode="decimal"
-                useGrouping={false}
-                min={1}
-                className={classNames("w-full", { "p-invalid": errors?.invoice_to })}
-                placeholder="Ej: 2000"
-              />
-              {getFormErrorMessage("invoice_to")}
-            </div>
-
-            <div className="field mb-4">
-              <label htmlFor={`resolution_date_${tipo}`} className="font-medium block mb-2">
-                Fecha Resolución *
-              </label>
-              <Calendar
-                id={`resolution_date_${tipo}`}
-                value={watch("resolution_date")}
-                onChange={(e) => setValue("resolution_date", e.value)}
-                dateFormat="dd/mm/yy"
-                showIcon
-                placeholder="Seleccione la fecha de resolución"
-                className={classNames("w-full", { "p-invalid": errors?.resolution_date })}
-                readOnlyInput
-              />
-              {getFormErrorMessage("resolution_date")}
-            </div>
-
-            <div className="field mb-4">
-              <label htmlFor={`expiration_date_${tipo}`} className="font-medium block mb-2">
-                Fecha Vencimiento
-              </label>
-              <Calendar
-                id={`expiration_date_${tipo}`}
-                value={watch("expiration_date")}
-                onChange={(e) => setValue("expiration_date", e.value)}
-                dateFormat="dd/mm/yy"
-                showIcon
-                placeholder="Seleccione la fecha de vencimiento"
-                className={classNames("w-full", { "p-invalid": errors?.expiration_date })}
-                readOnlyInput
-              />
-              {getFormErrorMessage("expiration_date")}
-            </div>
-          </div>
-        </div>
-
-        {/* Botones centrados */}
-        <div className="row">
+      <div className="grid p-fluid">
+        {isSaved && (
           <div className="col-12">
-            <div className="d-flex justify-content-center mt-4 gap-6">
-              <Button
-                label="Guardar Configuración"
-                className="p-button-sm"
-                loading={loading.saving}
-                style={{ padding: "0 40px", width: "300px", height: "50px" }}
-                type="submit"
-              >
-                <i className="fas fa-save"></i>
-              </Button>
+            <div className="alert alert-success mb-3 p-2">
+              <i className="pi pi-check-circle me-2"></i>
+              <small>Esta configuración ya ha sido guardada. Puedes editarla si es necesario.</small>
             </div>
           </div>
+        )}
+
+        <div className="col-12 md:col-6">
+          <div className="field mb-3">
+            <label htmlFor={`dian_prefix_${tipo}`} className="block text-900 font-medium mb-1">
+              Prefijo DGII <span className="text-danger">*</span>
+            </label>
+            <InputText
+              id={`dian_prefix_${tipo}`}
+              {...register("dian_prefix", { required: true })}
+              className={`w-full ${errors?.dian_prefix ? "p-invalid" : ""}`}
+              placeholder="Ej: ABC"
+              size="small"
+            />
+            {errors?.dian_prefix && (
+              <small className="p-error">Favor ingrese el prefijo DGII.</small>
+            )}
+          </div>
+
+          {!["compra"].includes(tipo) && (
+            <div className="field mb-3">
+              <label htmlFor={`accounting_account_${tipo}`} className="block text-900 font-medium mb-1">
+                Cuenta Contable <span className="text-danger">*</span>
+              </label>
+              <Dropdown
+                id={`accounting_account_${tipo}`}
+                options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                  label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                  value: cuenta.id,
+                }))}
+                value={accountingAccount}
+                onChange={(e) => setValue("accounting_account", e.value)}
+                filter
+                filterBy="account_name,account_code"
+                showClear
+                filterPlaceholder="Buscar cuenta..."
+                className={`w-full ${errors?.accounting_account ? "p-invalid" : ""}`}
+                loading={loading.cuentas}
+                placeholder="Seleccione una cuenta"
+                panelStyle={{ maxWidth: isMobile ? '90vw' : 'auto' }}
+              />
+              {errors?.accounting_account && (
+                <small className="p-error">Favor seleccione una cuenta contable.</small>
+              )}
+            </div>
+          )}
+
+          {showReverseAccount && (
+            <div className="field mb-3">
+              <label htmlFor={`accounting_account_reverse_${tipo}`} className="block text-900 font-medium mb-1">
+                Cuenta Contable Reversa <span className="text-danger">*</span>
+              </label>
+              <Dropdown
+                id={`accounting_account_reverse_${tipo}`}
+                options={cuentasFiltradas.map((cuenta: CuentaContable) => ({
+                  label: `${cuenta.account_code} - ${cuenta.account_name}`,
+                  value: cuenta.id,
+                }))}
+                value={accountingAccountReverse}
+                onChange={(e) => setValue("accounting_account_reverse_id", e.value)}
+                filter
+                filterBy="account_name,account_code"
+                showClear
+                filterPlaceholder="Buscar cuenta..."
+                className={`w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""}`}
+                loading={loading.cuentas}
+                placeholder="Seleccione una cuenta"
+                panelStyle={{ maxWidth: isMobile ? '90vw' : 'auto' }}
+              />
+              {errors?.accounting_account_reverse_id && (
+                <small className="p-error">Favor seleccione una cuenta contable reversa.</small>
+              )}
+            </div>
+          )}
+
+          <div className="field mb-3">
+            <label htmlFor={`resolution_number_${tipo}`} className="block text-900 font-medium mb-1">
+              Número Resolución <span className="text-danger">*</span>
+            </label>
+            <InputText
+              id={`resolution_number_${tipo}`}
+              {...register("resolution_number", { required: true })}
+              className={`w-full ${errors?.resolution_number ? "p-invalid" : ""}`}
+              placeholder="Ej: 1234567890"
+              size="small"
+            />
+            {errors?.resolution_number && (
+              <small className="p-error">Favor ingrese el número de resolución.</small>
+            )}
+          </div>
         </div>
-      </form>
+
+        <div className="col-12 md:col-6">
+          <div className="field mb-3">
+            <label htmlFor={`invoice_from_${tipo}`} className="block text-900 font-medium mb-1">
+              Facturas Desde <span className="text-danger">*</span>
+            </label>
+            <InputNumber
+              id={`invoice_from_${tipo}`}
+              value={watch("invoice_from")}
+              onValueChange={(e) => setValue("invoice_from", e.value)}
+              mode="decimal"
+              useGrouping={false}
+              min={1}
+              className={`w-full ${errors?.invoice_from ? "p-invalid" : ""}`}
+              placeholder="Ej: 1001"
+              showButtons
+              buttonLayout="horizontal"
+
+            />
+            {errors?.invoice_from && (
+              <small className="p-error">Ingrese el número inicial de facturas.</small>
+            )}
+          </div>
+
+          <div className="field mb-3">
+            <label htmlFor={`invoice_to_${tipo}`} className="block text-900 font-medium mb-1">
+              Facturas Hasta <span className="text-danger">*</span>
+            </label>
+            <InputNumber
+              id={`invoice_to_${tipo}`}
+              value={watch("invoice_to")}
+              onValueChange={(e) => setValue("invoice_to", e.value)}
+              mode="decimal"
+              useGrouping={false}
+              min={1}
+              className={`w-full ${errors?.invoice_to ? "p-invalid" : ""}`}
+              placeholder="Ej: 2000"
+              showButtons
+              buttonLayout="horizontal"
+
+            />
+            {errors?.invoice_to && (
+              <small className="p-error">Ingrese el número final de facturas.</small>
+            )}
+          </div>
+
+          <div className="field mb-3">
+            <label htmlFor={`resolution_date_${tipo}`} className="block text-900 font-medium mb-1">
+              Fecha Resolución <span className="text-danger">*</span>
+            </label>
+            <Calendar
+              id={`resolution_date_${tipo}`}
+              value={watch("resolution_date")}
+              onChange={(e) => setValue("resolution_date", e.value)}
+              dateFormat="dd/mm/yy"
+              showIcon
+              placeholder="Seleccione la fecha"
+              className={`w-full ${errors?.resolution_date ? "p-invalid" : ""}`}
+              readOnlyInput
+              icon="pi pi-calendar"
+            />
+            {errors?.resolution_date && (
+              <small className="p-error">Seleccione la fecha de resolución.</small>
+            )}
+          </div>
+
+          <div className="field mb-3">
+            <label htmlFor={`expiration_date_${tipo}`} className="block text-900 font-medium mb-1">
+              Fecha Vencimiento <span className="text-danger">*</span>
+            </label>
+            <Calendar
+              id={`expiration_date_${tipo}`}
+              value={watch("expiration_date")}
+              onChange={(e) => setValue("expiration_date", e.value)}
+              dateFormat="dd/mm/yy"
+              showIcon
+              placeholder="Seleccione la fecha"
+              className={`w-full ${errors?.expiration_date ? "p-invalid" : ""}`}
+              readOnlyInput
+              icon="pi pi-calendar"
+            />
+            {errors?.expiration_date && (
+              <small className="p-error">Seleccione la fecha de vencimiento.</small>
+            )}
+          </div>
+        </div>
+
+        <div className="col-12">
+          <div className="flex justify-content-center mt-3">
+            <Button
+              type="submit"
+              label={isSaved ? "Actualizar Configuración" : "Guardar Configuración"}
+              className="p-button-sm w-full md:w-auto"
+              loading={loading.saving}
+              icon="pi pi-save"
+            />
+          </div>
+        </div>
+      </div>
     );
   };
 
+  const allComplete = checkAllConfigurationsComplete();
+  const completedCount = tiposFacturacion.filter(tipo => savedConfigs.has(tipo.apiType)).length;
+  const totalCount = tiposFacturacion.length;
+
   return (
-    <div className="p-4">
-      <Card title="Configuración de Facturación" className="shadow-3">
-        <TabView
-          activeIndex={activeTab}
-          onTabChange={(e) => setActiveTab(e.index)}
-          className="w-full"
-          scrollable
-        >
-          {/* Factura Fiscal */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fas fa-file-invoice-dollar me-2"></i>
-                Factura Fiscal
-              </span>
-            }
-          >
-            {renderFormFields("fiscal", registerFiscal, errorsFiscal, setValueFiscal, watchFiscal)}
-          </TabPanel>
+    <div className="p-2 p-md-4">
+      <Card
+        title="Configuración de Facturación"
+        className="shadow-2"
+        style={{ overflow: 'hidden' }}
+      >
+        {/* Header informativo */}
+        <div className="mb-3">
+          <div className={`alert ${allComplete ? 'alert-success' : 'alert-info'} p-2 p-md-3`}>
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+              <div className="d-flex align-items-center mb-2 mb-md-0">
+                <i className={`${allComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+                <span className="small">
+                  {allComplete
+                    ? "✅ Todas las configuraciones están completas. Puedes avanzar al siguiente módulo."
+                    : `ℹ️ Completa todas las configuraciones de facturación (${completedCount}/${totalCount})`
+                  }
+                </span>
+              </div>
+              <Badge
+                value={`${completedCount}/${totalCount}`}
+                severity={allComplete ? "success" : "info"}
+                className="ms-md-2"
+              />
+            </div>
+          </div>
+        </div>
 
-          {/* Factura Consumidor */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fa-solid fa-file-invoice me-2"></i>
-                Factura Consumidor
-              </span>
-            }
+        {/* Tabs Responsive */}
+        <div className="billing-tabs-responsive">
+          <TabView
+            activeIndex={activeTab}
+            onTabChange={(e) => setActiveTab(e.index)}
+            className="w-full"
+            scrollable
           >
-            {renderFormFields("consumidor", registerConsumidor, errorsConsumidor, setValueConsumidor, watchConsumidor)}
-          </TabPanel>
+            {tiposFacturacion.map((tipo) => (
+              <TabPanel
+                key={tipo.id}
+                header={renderTabHeader(tipo)}
+                headerClassName="p-tab-header-responsive"
+              >
+                <div className="tab-content-responsive p-2 p-md-3">
+                  <form onSubmit={
+                    tipo.id === "fiscal" ? handleFiscal(onSubmitFiscal) :
+                      tipo.id === "consumidor" ? handleConsumidor(onSubmitConsumidor) :
+                        tipo.id === "gubernamental" ? handleGubernamental(onSubmitGubernamental) :
+                          tipo.id === "notaCredito" ? handleNotaCredito(onSubmitNotaCredito) :
+                            tipo.id === "notaDebito" ? handleNotaDebito(onSubmitNotaDebito) :
+                              handleCompra(onSubmitCompra)
+                  } className="w-full">
+                    {renderFormFields(
+                      tipo.id,
+                      tipo.id === "fiscal" ? registerFiscal :
+                        tipo.id === "consumidor" ? registerConsumidor :
+                          tipo.id === "gubernamental" ? registerGubernamental :
+                            tipo.id === "notaCredito" ? registerNotaCredito :
+                              tipo.id === "notaDebito" ? registerNotaDebito :
+                                registerCompra,
+                      tipo.id === "fiscal" ? errorsFiscal :
+                        tipo.id === "consumidor" ? errorsConsumidor :
+                          tipo.id === "gubernamental" ? errorsGubernamental :
+                            tipo.id === "notaCredito" ? errorsNotaCredito :
+                              tipo.id === "notaDebito" ? errorsNotaDebito :
+                                errorsCompra,
+                      tipo.id === "fiscal" ? setValueFiscal :
+                        tipo.id === "consumidor" ? setValueConsumidor :
+                          tipo.id === "gubernamental" ? setValueGubernamental :
+                            tipo.id === "notaCredito" ? setValueNotaCredito :
+                              tipo.id === "notaDebito" ? setValueNotaDebito :
+                                setValueCompra,
+                      tipo.id === "fiscal" ? watchFiscal :
+                        tipo.id === "consumidor" ? watchConsumidor :
+                          tipo.id === "gubernamental" ? watchGubernamental :
+                            tipo.id === "notaCredito" ? watchNotaCredito :
+                              tipo.id === "notaDebito" ? watchNotaDebito :
+                                watchCompra
+                    )}
+                  </form>
+                </div>
+              </TabPanel>
+            ))}
+          </TabView>
+        </div>
 
-          {/* Factura Gubernamental */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fa-solid fa-building-columns me-2"></i>
-                Factura Gubernamental
-              </span>
-            }
-          >
-            {renderFormFields("gubernamental", registerGubernamental, errorsGubernamental, setValueGubernamental, watchGubernamental)}
-          </TabPanel>
-
-          {/* Notas de Crédito */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fa-solid fa-money-bill-transfer me-2"></i>
-                Notas de Crédito
-              </span>
-            }
-          >
-            {renderFormFields("notaCredito", registerNotaCredito, errorsNotaCredito, setValueNotaCredito, watchNotaCredito)}
-          </TabPanel>
-
-          {/* Notas de Débito */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fa-solid fa-money-bill-trend-up me-2"></i>
-                Notas de Débito
-              </span>
-            }
-          >
-            {renderFormFields("notaDebito", registerNotaDebito, errorsNotaDebito, setValueNotaDebito, watchNotaDebito)}
-          </TabPanel>
-
-          {/* Factura de Compra */}
-          <TabPanel
-            header={
-              <span className="d-flex align-items-center" style={{ color: "#132030" }}>
-                <i className="fa-solid fa-file-invoice me-2"></i>
-                Factura de Compra
-              </span>
-            }
-          >
-            {renderFormFields("compra", registerCompra, errorsCompra, setValueCompra, watchCompra)}
-          </TabPanel>
-        </TabView>
+        {/* Navegación entre tabs en móvil */}
+        {isMobile && (
+          <div className="d-flex justify-content-between mt-3">
+            <Button
+              icon="pi pi-chevron-left"
+              className="p-button-text p-button-sm"
+              disabled={activeTab === 0}
+              onClick={() => setActiveTab(prev => prev - 1)}
+              tooltip="Tab anterior"
+            />
+            <small className="text-muted align-self-center">
+              {activeTab + 1} de {tiposFacturacion.length}
+            </small>
+            <Button
+              icon="pi pi-chevron-right"
+              className="p-button-text p-button-sm"
+              disabled={activeTab === tiposFacturacion.length - 1}
+              onClick={() => setActiveTab(prev => prev + 1)}
+              tooltip="Siguiente tab"
+            />
+          </div>
+        )}
       </Card>
+
+      {/* Estilos CSS para responsive */}
+      <style>{`
+        .billing-tabs-responsive .p-tabview-nav {
+          flex-wrap: wrap;
+          overflow-x: auto;
+        }
+        
+        .billing-tabs-responsive .p-tabview-nav-link {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8rem;
+          white-space: nowrap;
+        }
+        
+        .p-tab-header-responsive {
+          min-width: auto;
+        }
+        
+        .tab-content-responsive {
+          max-height: 60vh;
+          overflow-y: auto;
+        }
+        
+        /* Mejoras para móviles */
+        @media (max-width: 767px) {
+          .p-tabview-nav {
+            font-size: 0.75rem;
+          }
+          
+          .p-tabview-nav-link {
+            padding: 0.4rem 0.6rem !important;
+          }
+          
+          .p-calendar .p-inputtext {
+            font-size: 0.8rem;
+          }
+          
+          .p-dropdown .p-dropdown-label {
+            font-size: 0.8rem;
+          }
+          
+          .field {
+            margin-bottom: 1rem;
+          }
+        }
+        
+        /* Mejoras para tablets */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .p-tabview-nav-link {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.85rem;
+          }
+        }
+        
+        /* Scroll suave para el contenido de tabs */
+        .tab-content-responsive::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .tab-content-responsive::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 3px;
+        }
+        
+        .tab-content-responsive::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 3px;
+        }
+        
+        .tab-content-responsive::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
+      `}</style>
     </div>
   );
 };
-
-// Función classNames helper
-function classNames(classes: { [key: string]: boolean }) {
-  return Object.entries(classes)
-    .filter(([key, value]) => value)
-    .map(([key]) => key)
-    .join(' ');
-}
 
 export default BillingConfigTab;

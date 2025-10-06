@@ -11,6 +11,7 @@ import { Dialog } from "primereact/dialog";
 import { ExamConfigFormModal } from "../../../exams-config/components/ExamConfigFormModal.js";
 import { CustomPRTable } from "../../../components/CustomPRTable.js";
 import { useProductsByType } from "../../../products/hooks/useProductsByType.js";
+import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 const PricesConfigForm = ({
   formId,
   onHandleSubmit,
@@ -40,6 +41,9 @@ const PricesConfigForm = ({
   // Estado para controlar la visibilidad del modal de exámenes
   const [showExamModal, setShowExamModal] = useState(false);
   const [supply, setSupply] = useState(null);
+  const {
+    accounts
+  } = useAccountingAccounts();
   const {
     control,
     handleSubmit,
@@ -629,11 +633,50 @@ const PricesConfigForm = ({
         placeholder: "Cantidad"
       }))
     }, {
+      field: 'accounting_account_debit_id',
+      header: 'Cuenta contable debita',
+      body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+        value: data.accounting_account_debit_id,
+        options: accounts,
+        onChange: e => {
+          updateSupply(formSupplies.indexOf(data), {
+            ...data,
+            accounting_account_debit_id: e.value
+          });
+        },
+        optionLabel: "account_name",
+        optionValue: "id",
+        placeholder: "Cuenta contable debita",
+        appendTo: document.body,
+        filter: true,
+        showClear: true
+      }))
+    }, {
+      field: 'accounting_account_credit_id',
+      header: 'Cuenta contable acredita',
+      body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
+        value: data.accounting_account_credit_id,
+        options: accounts,
+        onChange: e => {
+          updateSupply(formSupplies.indexOf(data), {
+            ...data,
+            accounting_account_credit_id: e.value
+          });
+        },
+        optionLabel: "account_name",
+        optionValue: "id",
+        placeholder: "Cuenta contable acredita",
+        appendTo: document.body,
+        filter: true,
+        showClear: true
+      }))
+    }, {
       field: 'actions',
       header: 'Acciones',
       body: data => /*#__PURE__*/React.createElement("div", {
         className: "d-flex justify-content-center align-items-center"
       }, /*#__PURE__*/React.createElement(Button, {
+        type: "button",
         icon: /*#__PURE__*/React.createElement("i", {
           className: "fas fa-trash"
         }),

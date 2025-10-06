@@ -53,6 +53,8 @@ export interface Product {
   tax: number;
   discount: number;
   total: number;
+  entities?: any[];
+  matchProductByEntity?: any | null;
 }
 
 export interface PaymentMethod {

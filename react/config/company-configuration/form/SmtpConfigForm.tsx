@@ -334,7 +334,7 @@ const SmtpConfigForm: React.FC = () => {
                         </div>
 
                         <div className="row mt-3">
-                            <div className="col-12 d-flex gap-2">
+                            <div className="col-12 d-flex justify-content-center justify-content-md-end gap-2">
                                 <Button
                                     type="submit"
                                     label="Guardar Configuración"
@@ -342,19 +342,12 @@ const SmtpConfigForm: React.FC = () => {
                                     loading={isSubmitting}
                                     className="btn-primary"
                                 />
-                                <Button
-                                    type="button"
-                                    label="Probar Conexión"
-                                    icon="pi pi-test-tube"
-                                    className="btn-outline-secondary"
-                                    onClick={handleTestConnection}
-                                />
                             </div>
                         </div>
 
                         <div className="row mt-4">
                             <div className="col-12">
-                                <div className="alert alert-light border">
+                                <div className="alert border">
                                     <h6 className="fw-bold mb-2">Configuraciones comunes:</h6>
                                     <div className="row small">
                                         <div className="col-md-4">

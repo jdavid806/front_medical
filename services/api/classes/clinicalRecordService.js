@@ -20,12 +20,13 @@ export class ClinicalRecordService extends OneToManyService {
     );
   }
 
-  async filterClinicalRecords({ per_page, page, search, hasLatestPendingCancellationRequest = null, patientId = null, forCurrentUserRole = null }) {
+  async filterClinicalRecords({ per_page, page, search, hasLatestPendingCancellationRequest = null, hasLatestPendingReviewRequest = null, patientId = null, forCurrentUserRole = null }) {
     return await this.httpClient.get(`medical/clinical-records/query/filter`, {
       per_page,
       page,
       search,
       hasLatestPendingCancellationRequest,
+      hasLatestPendingReviewRequest,
       patientId,
       forCurrentUserRole
     });

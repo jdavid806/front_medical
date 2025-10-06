@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SpecialityApp from '../../../fe-config/speciality/SpecialityApp';
 
-export const EspecialidadesConfig: React.FC = () => {
+interface EspecialidadesConfigProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const EspecialidadesConfig: React.FC<EspecialidadesConfigProps> = ({
+    onConfigurationComplete
+}) => {
     return (
-        <SpecialityApp />
+        <SpecialityApp onConfigurationComplete={onConfigurationComplete} />
     );
 };

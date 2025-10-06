@@ -10,7 +10,9 @@ import { useTaxesDeleteTable } from "./hooks/useTaxesDeleteTable.js";
 import { useTaxesUpdateTable } from "./hooks/useTaxesUpdteTable.js";
 import { TaxesMapperCreate, TaxesMapperUpdate } from "./mapper/mappedTaxes.js";
 import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccounts.js";
-export const TaxesConfig = () => {
+export const TaxesConfig = ({
+  onConfigurationComplete
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const {
@@ -97,6 +99,10 @@ export const TaxesConfig = () => {
       SwalManager.error('Error al eliminar el Impuesto');
     }
   };
+  useEffect(() => {
+    const hasTaxes = taxes && taxes.length > 0;
+    onConfigurationComplete?.(hasTaxes);
+  }, [taxes, onConfigurationComplete]);
   useEffect(() => {
     if (tax && accounts) {
       console.log("Setting initialData from tax:", tax);

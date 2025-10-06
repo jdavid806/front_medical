@@ -4,28 +4,27 @@ import { invoiceService } from "../../../services/api/index.js";
 
 
 const mapInvoiceData = (response) => {
-  console.log("Response map: ", response);
   return response.data.map(item => {
-    const attr = item.attributes;
+    const attr = item;
     const mappedItem = {
       id: attr.id.toString(),
       numeroFactura: `F-${attr.id.toString().padStart(4, '0')}`, 
-      proveedor: attr.customer?.name || "Sin cliente",
+      proveedor: attr.third_party?.full_name || "Sin cliente",
       fecha: new Date(attr.created_at),
-      identificacion: attr.customer?.id || "",
+      identificacion: attr.third_party?.id || "",
       monto: parseFloat(attr.total_amount),
       remainingAmount: parseFloat(attr.remaining_amount),
       paid: parseFloat(attr.total_amount) - parseFloat(attr.remaining_amount),
       tipoFactura: "Contado", 
       estado: attr.status || "pending",
-      detalles: item.relationships.details.map(d => ({
+      detalles: item?.details.map(d => ({
         id: d.id,
-        cantidad: d.attributes.quantity,
-        precioUnitario: parseFloat(d.attributes.unit_price),
-        subtotal: parseFloat(d.attributes.subtotal),
-        productoId: d.attributes.product_id,
-        productoNombre: d.attributes.product_name,
-        discount : d.attributes.discount
+        cantidad: d.quantity,
+        precioUnitario: parseFloat(d.unit_price),
+        subtotal: parseFloat(d.subtotal),
+        productoId: d.product_id,
+        productoNombre: d?.product?.name,
+        discount : d.discount
       }))
     };
 
@@ -57,7 +56,6 @@ export const useInvoicePurchase = () => {
     setLoading(true);
     try {
       const response = await invoiceService.getAllPurcharseInvoice(params);
-      console.log("Response from fetchAllInvoice: ", response);
       if (response?.data) {
         return mapInvoiceData(response);
       }

@@ -72,6 +72,8 @@ import { ManualUsuarioVideoService } from "./classes/manualUsuarioVideoServices.
 import { ConvenioTenantService } from "./classes/convenioTenantService.js";
 import { consentimientoService as ConsentimientoServiceClass } from "./classes/consentimientoService.js";
 import { SpecialtiesService } from "./classes/specialtiesService.js";
+import { GenericFilterServices } from "./classes/genericFilterServices.js";
+import { LandingAvailabilities } from "./classes/landingAvailabilities.js";
 
 export const authService = new AuthService("api/auth");
 
@@ -361,3 +363,5 @@ export const disabilityService = new DisabilityService();
 export const convenioTenantService = new ConvenioTenantService();
 export const consentimientoService = new ConsentimientoServiceClass();
 export const specialtiesService = new SpecialtiesService("medical", "specialties");
+export const genericFilterServices = new GenericFilterServices();
+export const landingAvailabilities = new LandingAvailabilities();

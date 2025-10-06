@@ -47,7 +47,7 @@ export const OTPModal: React.FC<OTPStepProps> = ({
             </div>
 
             <div className="text-center mt-3">
-                <span >¿No recibiste el código? </span>
+                <span>¿No recibiste el código? </span>
                 <Button
                     style={{ padding: "0px" }}
                     label="Reenviar OTP"

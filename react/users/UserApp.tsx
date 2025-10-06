@@ -8,8 +8,13 @@ import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
 import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
 import { set } from "react-hook-form";
+import { useActivateOtp } from "./hooks/useActivateOtp";
 
-export const UserApp = () => {
+interface UserAppProps {
+  onConfigurationComplete?: (isComplete: boolean) => void;
+}
+
+export const UserApp = ({ onConfigurationComplete }: UserAppProps) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState<UserFormInputs | undefined>(
     undefined
@@ -27,11 +32,32 @@ export const UserApp = () => {
   const { updateUser } = useUserUpdate();
   const { user, setUser, fetchUser } = useUser();
   const { users, fetchUsers } = useAllTableUsers();
+  const { activateOtp, loading: otpLoading } = useActivateOtp();
+
+  // Validar si hay al menos un usuario configurado
+  useEffect(() => {
+    const hasUsers = users && users.length > 0;
+    console.log('🔍 Validando usuarios:', {
+      totalUsuarios: users?.length,
+      hasUsers
+    });
+    onConfigurationComplete?.(hasUsers);
+  }, [users, onConfigurationComplete]);
+
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
     setUser(null);
     setShowUserFormModal(true);
+  };
+
+
+  const handleOtpChange = async (enabled: boolean, email: string) => {
+    const otpData = {
+      email: email,
+      otp_enabled: enabled
+    };
+    await activateOtp(otpData);
   };
 
   const handleSubmit = async (data: UserFormInputs) => {
@@ -66,6 +92,7 @@ export const UserApp = () => {
         });
       }
       fetchUsers();
+      handleOtpChange(data.otp_enabled, data.email);
       setShowUserFormModal(false);
     } catch (error) {
       console.error(error);
@@ -120,6 +147,15 @@ export const UserApp = () => {
           },
         }}
       >
+        <div className="mb-3">
+          <div className="alert alert-info p-2">
+            <small>
+              <i className="pi pi-info-circle me-2"></i>
+              Configure al menos un usuario para poder continuar al siguiente módulo.
+            </small>
+          </div>
+        </div>
+
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="mb-1">Usuarios</h4>
           <div className="text-end mb-2">

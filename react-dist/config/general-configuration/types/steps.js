@@ -13,27 +13,27 @@ export const configurationSteps = [{
 }, {
   id: 'contabilidad',
   label: 'Configuración de Contabilidad',
-  icon: 'fa fa-calculator',
+  icon: 'fas fa-calculator',
   component: ContabilidadConfig
 }, {
   id: 'especialidades',
   label: 'Especialidades Médicas',
-  icon: 'fa fa-heart',
+  icon: 'fas fa-heart',
   component: EspecialidadesConfig
 }, {
-  id: 'Roles',
+  id: 'roles',
   label: 'Creación de Roles',
-  icon: 'fa-solid fa-user',
+  icon: 'fas fa-user',
   component: RolesConfig
 }, {
   id: 'usuarios',
   label: 'Creación de Usuarios',
-  icon: 'fa-solid fa-user',
+  icon: 'fas fa-users',
   component: UsersConfig
 }, {
   id: 'horarios',
   label: 'Configuración Horarios',
-  icon: 'fa fa-clock-o',
+  icon: 'fas fa-clock',
   component: HorariosConfig
 }, {
   id: 'precios',

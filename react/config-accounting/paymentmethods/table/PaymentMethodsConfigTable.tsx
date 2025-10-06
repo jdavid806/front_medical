@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Menu } from "primereact/menu";
-import { classNames } from "primereact/utils";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../../components/CustomPRTable";
 import {
-  Filtros,
   PaymentMethod,
   PaymentMethodsConfigTableProps,
   ToastSeverity,
@@ -18,16 +15,14 @@ import {
 
 export const PaymentMethodsConfigTable: React.FC<
   PaymentMethodsConfigTableProps
-> = ({ onEditItem, paymentMethods = [], loading = false, onDeleteItem }) => {
+> = ({ onEditItem, paymentMethods = [], loading = false, onDeleteItem, onReload }) => {
   const toast = useRef<Toast>(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
-  const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(
-    null
-  );
-  const [filteredMethods, setFilteredMethods] = useState<PaymentMethod[]>([]);
-  const [filtros, setFiltros] = useState<Filtros>({
+  const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(null);
+  const [filteredPaymentMethods, setFilteredPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [filtros, setFiltros] = useState({
     name: "",
-    category: null,
+    category: null as string | null,
   });
 
   const categories = [
@@ -44,8 +39,9 @@ export const PaymentMethodsConfigTable: React.FC<
     return category ? category.label : categoryValue;
   };
 
+  // Inicializar los datos filtrados
   useEffect(() => {
-    setFilteredMethods(paymentMethods);
+    setFilteredPaymentMethods(paymentMethods);
   }, [paymentMethods]);
 
   const handleFilterChange = (field: string, value: any) => {
@@ -55,9 +51,11 @@ export const PaymentMethodsConfigTable: React.FC<
     }));
   };
 
+  // Aplicar filtros manualmente (igual que en el código que funciona)
   const aplicarFiltros = () => {
     let result = [...paymentMethods];
 
+    // Aplicar filtros específicos
     if (filtros.name) {
       result = result.filter((method) =>
         method.name.toLowerCase().includes(filtros.name.toLowerCase())
@@ -68,7 +66,13 @@ export const PaymentMethodsConfigTable: React.FC<
       result = result.filter((method) => method.category === filtros.category);
     }
 
-    setFilteredMethods(result);
+    setFilteredPaymentMethods(result);
+  };
+
+  // Función de búsqueda para CustomPRTable
+  const handleSearchChange = (searchValue: string) => {
+    // Si necesitas búsqueda global, puedes implementarla aquí
+    console.log("Search value:", searchValue);
   };
 
   const limpiarFiltros = () => {
@@ -76,7 +80,21 @@ export const PaymentMethodsConfigTable: React.FC<
       name: "",
       category: null,
     });
-    setFilteredMethods(paymentMethods);
+    setFilteredPaymentMethods(paymentMethods); // Resetear a todos los métodos
+  };
+
+  const handleRefresh = () => {
+    console.log("🔄 Refresh button clicked");
+
+    // Limpiar filtros locales
+    limpiarFiltros();
+
+    // Llamar a onReload para obtener datos frescos
+    if (onReload) {
+      onReload();
+    }
+
+    showToast("info", "Actualizando", "Recargando datos...");
   };
 
   const showToast = (
@@ -96,6 +114,13 @@ export const PaymentMethodsConfigTable: React.FC<
     if (methodToDelete && onDeleteItem) {
       onDeleteItem(methodToDelete.id.toString());
       showToast("success", "Éxito", `Método ${methodToDelete.name} eliminado`);
+
+      // Refrescar automáticamente después de eliminar
+      setTimeout(() => {
+        if (onReload) {
+          onReload();
+        }
+      }, 1000);
     }
     setDeleteDialogVisible(false);
     setMethodToDelete(null);
@@ -127,12 +152,10 @@ export const PaymentMethodsConfigTable: React.FC<
     const menu = useRef<Menu>(null);
 
     const handleEdit = () => {
-      console.log("Editando método con ID:", rowData.id.toString());
       onEdit(rowData.id.toString());
     };
 
     const handleDelete = () => {
-      console.log("Solicitando eliminar método con ID:", rowData.id.toString());
       onDelete(rowData);
     };
 
@@ -145,18 +168,18 @@ export const PaymentMethodsConfigTable: React.FC<
           aria-haspopup
         >
           Acciones
-          <i className="fa fa-cog ml-2"></i>
+          <i className="fas fa-cog ml-2"></i>
         </Button>
         <Menu
           model={[
             {
               label: "Editar",
-              icon: <i className="fa-solid fa-pen me-2"></i>,
+              icon: <i className="fas fa-edit me-2"></i>,
               command: handleEdit,
             },
             {
               label: "Eliminar",
-              icon: <i className="fa fa-trash me-2"></i>,
+              icon: <i className="fas fa-trash me-2"></i>,
               command: handleDelete,
             }
           ]}
@@ -185,42 +208,53 @@ export const PaymentMethodsConfigTable: React.FC<
     );
   };
 
-  // Template para mostrar la cuenta contable
-  const accountBodyTemplate = (rowData: PaymentMethod) => {
-    return rowData.account?.name || "No asignada";
-  };
+  // Mapear los datos para la tabla
+  const tableItems = filteredPaymentMethods.map(method => ({
+    id: method.id,
+    name: method.name,
+    category: getCategoryLabel(method.category),
+    account: method.account?.name || "No asignada",
+    additionalDetails: method.additionalDetails,
+    actions: method
+  }));
 
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px",
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: 'name',
+      header: 'Nombre del Método',
+      sortable: true
     },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333",
+    {
+      field: 'category',
+      header: 'Categoría',
+      sortable: true
     },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600,
+    {
+      field: 'account',
+      header: 'Cuenta Contable',
+      sortable: true
     },
-    tableCell: {
-      padding: "0.75rem 1rem",
+    {
+      field: 'additionalDetails',
+      header: 'Detalles Adicionales',
+      body: (rowData: any) => (
+        <span title={rowData.additionalDetails}>
+          {rowData.additionalDetails?.length > 30
+            ? `${rowData.additionalDetails.substring(0, 30)}...`
+            : rowData.additionalDetails}
+        </span>
+      )
     },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block",
-    },
-  };
+    {
+      field: 'actions',
+      header: 'Acciones',
+      body: (rowData: any) => actionBodyTemplate(rowData.actions),
+      exportable: false
+    }
+  ];
 
   return (
-    <div
-      className="container-fluid mt-4"
-      style={{ width: "100%", padding: "0 15px" }}
-    >
+    <div className="w-100">
       <Toast ref={toast} />
 
       <Dialog
@@ -233,7 +267,7 @@ export const PaymentMethodsConfigTable: React.FC<
       >
         <div className="flex align-items-center justify-content-center">
           <i
-            className="pi pi-exclamation-triangle mr-3"
+            className="fas fa-exclamation-triangle mr-3"
             style={{ fontSize: "2rem", color: "#f8bb86" }}
           />
           {methodToDelete && (
@@ -244,101 +278,67 @@ export const PaymentMethodsConfigTable: React.FC<
         </div>
       </Dialog>
 
-      <Card title="Filtros de Búsqueda" style={styles.card}>
-        <div className="row g-3">
-          <div className="col-md-6 col-lg-4">
-            <label style={styles.formLabel}>Nombre del Método</label>
-            <InputText
-              value={filtros.name}
-              onChange={(e) => handleFilterChange("name", e.target.value)}
-              placeholder="Buscar por nombre"
-              className={classNames("w-100")}
-            />
-          </div>
+      <div className="card mb-3">
+        <div className="card-body">
+          <Accordion>
+            <AccordionTab header="Filtros">
+              <div className="row">
+                <div className="col-md-6">
+                  <label className="form-label">
+                    Nombre del Método
+                  </label>
+                  <InputText
+                    value={filtros.name}
+                    onChange={(e) => handleFilterChange("name", e.target.value)}
+                    placeholder="Buscar por nombre"
+                    className="w-100"
+                  />
+                </div>
 
-          <div className="col-md-6 col-lg-4">
-            <label style={styles.formLabel}>Categoría</label>
-            <Dropdown
-              value={filtros.category}
-              options={categories}
-              onChange={(e) => handleFilterChange("category", e.value)}
-              optionLabel="label"
-              placeholder="Seleccione categoría"
-              className={classNames("w-100")}
-              showClear
-            />
-          </div>
+                <div className="col-md-6">
+                  <label className="form-label">
+                    Categoría
+                  </label>
+                  <Dropdown
+                    value={filtros.category}
+                    options={categories}
+                    onChange={(e) => handleFilterChange("category", e.value)}
+                    optionLabel="label"
+                    placeholder="Seleccione categoría"
+                    className="w-100"
+                    showClear
+                  />
+                </div>
+              </div>
+              <div className="row mt-3">
+                <div className="col-12 d-flex justify-content-end gap-2">
+                  <Button
+                    label="Limpiar"
+                    icon="fas fa-broom"
+                    className="p-button-secondary"
+                    onClick={limpiarFiltros}
+                  />
+                  <Button
+                    label="Aplicar Filtros"
+                    icon="fas fa-filter"
+                    className="p-button-primary"
+                    onClick={aplicarFiltros}
+                    loading={loading}
+                  />
+                </div>
+              </div>
+            </AccordionTab>
+          </Accordion>
 
-          <div className="col-12 d-flex justify-content-end gap-2">
-            <Button
-              label="Limpiar"
-              icon="pi pi-trash"
-              className="btn btn-phoenix-secondary"
-              onClick={limpiarFiltros}
-            />
-            <Button
-              label="Aplicar Filtros"
-              icon="pi pi-filter"
-              className="btn btn-primary"
-              onClick={aplicarFiltros}
-              loading={loading}
-            />
-          </div>
+          <CustomPRTable
+            columns={columns}
+            data={tableItems}
+            loading={loading}
+            onSearch={handleSearchChange}
+            onReload={handleRefresh}
+          />
         </div>
-      </Card>
-
-      <Card title="Métodos de Pago" style={styles.card}>
-        <DataTable
-          value={filteredMethods}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          loading={loading}
-          className="p-datatable-striped p-datatable-gridlines"
-          emptyMessage="No se encontraron métodos de pago"
-          responsiveLayout="scroll"
-          tableStyle={{ minWidth: "50rem" }}
-        >
-          <Column
-            field="name"
-            header="Nombre del Método"
-            sortable
-            style={styles.tableCell}
-          />
-          <Column
-            field="category"
-            header="Categoría"
-            sortable
-            body={(rowData) => getCategoryLabel(rowData.category)}
-            style={styles.tableCell}
-          />
-          <Column
-            field="account"
-            header="Cuenta Contable"
-            sortable
-            body={accountBodyTemplate}
-            style={styles.tableCell}
-          />
-          <Column
-            field="additionalDetails"
-            header="Detalles Adicionales"
-            style={styles.tableCell}
-            body={(rowData) => (
-              <span title={rowData.additionalDetails}>
-                {rowData.additionalDetails?.length > 30
-                  ? `${rowData.additionalDetails.substring(0, 30)}...`
-                  : rowData.additionalDetails}
-              </span>
-            )}
-          />
-          <Column
-            body={actionBodyTemplate}
-            header="Acciones"
-            style={{ width: "120px" }}
-            exportable={false}
-          />
-        </DataTable>
-      </Card>
+      </div>
     </div>
   );
 };

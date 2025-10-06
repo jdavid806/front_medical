@@ -11,14 +11,16 @@ import { SwalManager } from '../../../../services/alertManagerImported';
 
 interface RepresentativeTabProps {
     companyId?: string;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
-const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
+const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId, onValidationChange }) => {
     const {
         control,
         handleSubmit,
-        formState: { errors },
-        reset
+        formState: { errors, isValid, isDirty },
+        reset,
+        watch
     } = useForm<Representative>({
         defaultValues: {
             name: '',
@@ -26,7 +28,8 @@ const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
             email: '',
             document_type: '',
             document_number: ''
-        }
+        },
+        mode: 'onChange'
     });
 
     const { representative, loading, error, isSubmitting, saveRepresentative } = useCompanyRepresentative();
@@ -37,6 +40,9 @@ const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
         { label: 'NIT', value: 'NIT' },
         { label: 'CEDULA DE CIUDADANIA', value: 'CC' }
     ];
+
+    // Observar cambios en el formulario para validación
+    const formValues = watch();
 
     useEffect(() => {
         if (representative) {
@@ -52,7 +58,15 @@ const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
         }
     }, [representative, loading, error, reset]);
 
-
+    // Validar cuando cambien los valores del formulario
+    useEffect(() => {
+        const hasRequiredFields = Boolean(
+            formValues.name &&
+            formValues.document_type &&
+            formValues.document_number
+        );
+        onValidationChange?.(hasRequiredFields);
+    }, [formValues, onValidationChange]);
 
     const onSubmit = async (data: Representative) => {
         try {
@@ -66,13 +80,16 @@ const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
             }
 
             const savedRepresentative = await saveRepresentative(companyId, data);
-
             reset(savedRepresentative);
+
+            // Notificar validación exitosa después de guardar
+            onValidationChange?.(true);
 
             SwalManager.success('Representante Legal se actualizo correctamente');
 
         } catch (error) {
             console.error('Error en onSubmit:', error);
+            onValidationChange?.(false);
         }
     };
 
@@ -265,14 +282,24 @@ const RepresentativeTab: React.FC<RepresentativeTabProps> = ({ companyId }) => {
                     {/* Botón de Guardar */}
                     <div className="row">
                         <div className="col-12">
-                            <Button
-                                type="submit"
-                                label="Guardar Representante"
-                                icon="pi pi-save"
-                                loading={isSubmitting}
-                                className="btn-primary"
-                                disabled={!companyId}
-                            />
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {isDirty && (
+                                        <small className="text-warning">
+                                            <i className="pi pi-info-circle mr-2"></i>
+                                            Tienes cambios sin guardar
+                                        </small>
+                                    )}
+                                </div>
+                                <Button
+                                    type="submit"
+                                    label="Guardar Representante"
+                                    icon="pi pi-save"
+                                    loading={isSubmitting}
+                                    className="btn-primary"
+                                    disabled={!companyId || !isValid}
+                                />
+                            </div>
                         </div>
                     </div>
                 </form>

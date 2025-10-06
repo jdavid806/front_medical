@@ -9,11 +9,12 @@ import { useCompany } from '../hooks/useCompanyGenralUpdate';
 import { SwalManager } from '../../../../services/alertManagerImported';
 
 interface GeneralInfoTabProps {
-    company: Company | null;
+    company?: Company;
     onUpdate: (company: Company) => void;
+    onValidationChange?: (isValid: boolean) => void;
 }
 
-const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) => {
+const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate, onValidationChange }) => {
     const {
         guardarInformacionGeneral,
         mutationLoading,
@@ -33,7 +34,7 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
     const {
         control,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isValid, isDirty },
         reset,
         watch
     } = useForm<Company>({
@@ -48,11 +49,28 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
             city: '',
             logo: '',
             watermark: ''
-        }
+        },
+        mode: 'onChange'
     });
 
     const logoValue = watch('logo');
     const watermarkValue = watch('watermark');
+    const formValues = watch();
+
+    // Validar campos requeridos para habilitar siguiente tab
+    useEffect(() => {
+        const hasRequiredFields = Boolean(
+            formValues.legal_name &&
+            formValues.document_type &&
+            formValues.document_number &&
+            formValues.phone &&
+            formValues.email &&
+            formValues.address &&
+            formValues.country &&
+            formValues.city
+        );
+        onValidationChange?.(hasRequiredFields);
+    }, [formValues, onValidationChange]);
 
     useEffect(() => {
         if (company) {
@@ -172,6 +190,7 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
         { label: 'Chile', value: 'CL' },
         { label: 'Perú', value: 'PE' }
     ];
+
     const onSubmit = async (data: Company) => {
         try {
             resetMutation();
@@ -202,8 +221,6 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
         }
     };
 
-
-
     return (
         <div className="container-fluid">
             {mutationError && (
@@ -221,6 +238,18 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
                     className="mb-3"
                 />
             )}
+
+            {/* Información de validación */}
+            <div className="row mb-3">
+                <div className="col-12">
+                    <div className="alert alert-info">
+                        <small>
+                            <i className="pi pi-info-circle mr-2"></i>
+                            <strong>Nota:</strong> Complete todos los campos obligatorios para habilitar el siguiente módulo.
+                        </small>
+                    </div>
+                </div>
+            </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row mb-4">
@@ -522,15 +551,25 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate }) =>
                 </div>
 
                 <div className="row">
-                    <div className="col-12 d-flex justify-content-end">
+                    <div className="col-12 d-flex justify-content-between align-items-center">
+                        <div>
+                            {isDirty && (
+                                <small className="text-warning">
+                                    <i className="pi pi-info-circle mr-2"></i>
+                                    Tienes cambios sin guardar
+                                </small>
+                            )}
+                        </div>
                         <Button
                             type="submit"
                             label="Guardar"
                             icon="pi pi-save"
                             loading={mutationLoading}
-                            disabled={isFormDisabled && mutationLoading}
+                            disabled={mutationLoading}
                             className="btn-primary"
-                        ><i className="fas fa-save" style={{ marginLeft: "10px" }}></i></Button>
+                        >
+                            <i className="fas fa-save" style={{ marginLeft: "10px" }}></i>
+                        </Button>
                     </div>
                 </div>
             </form >
