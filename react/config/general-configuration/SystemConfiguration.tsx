@@ -363,7 +363,15 @@ export const SystemConfiguration = ({
                         <div className="row g-0">
                             <div className="col-md-3 border-end">
                                 <div className="p-3 h-100 bg-light">
-                                    <h6 className="text-primary mb-3 fw-bold">Módulos de Configuración</h6>
+                                    <div className="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 className="text-primary mb-0 fw-bold">Módulos de Configuración</h6>
+                                        <button
+                                            className="btn btn-sm btn-outline-primary"
+                                            onClick={resetToInitial}
+                                        >
+                                            <i className="fa-solid fa-caret-left"></i>
+                                        </button>
+                                    </div>
 
                                     <Stepper
                                         activeStep={activeIndex}

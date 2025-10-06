@@ -38,8 +38,6 @@ export const useCompanyGeneral = () => {
                 };
                 console.log("holisss", mappedCompany)
                 setCompany(mappedCompany);
-            } else {
-                setError('No se encontraron datos de la compañía');
             }
         } catch (err) {
             console.error('Error fetching company data:', err);

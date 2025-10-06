@@ -1,16 +1,13 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React from "react";
+import { Controller } from "react-hook-form";
 import { AutoComplete } from "primereact/autocomplete";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { RadioButton } from "primereact/radiobutton";
 import { Card } from "primereact/card";
-import { useAvailableSpecialties } from "../hooks/useAvailableSpecialties";
-import { useProductsByType } from "../../products/hooks/useProductsByType";
-import { useLandingAvailabilities } from "../hooks/useLandingAvailabilities";
-import { useValidateBulkAppointments } from "../../appointments/hooks/useValidateBulkAppointments";
-
+import { useAppointmentForm } from "../hooks/useAppointmentForm";
+import { useAppointmentBulkCreate } from "../../appointments/hooks/useAppointmentBulkCreate"; 
 
 interface AppointmentFormProps {
   patient?: any;
@@ -23,78 +20,21 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   onSave,
   onCancel,
 }) => {
-  const { control, handleSubmit } = useForm();
-
-  const { data: availabilities } = useLandingAvailabilities();
-
-  const allowedSpecialtyIds = useMemo(() => {
-    if (!availabilities?.length) return [];
-    return [...new Set(availabilities.flatMap((a: any) => a.specialties))];
-  }, [availabilities]);
-
-  const { specialties: allUserSpecialties, loading: loadingSpecialties } =
-    useAvailableSpecialties();
-
-  const userSpecialties = useMemo(() => {
-    if (!Array.isArray(allUserSpecialties)) return [];
-    if (!allowedSpecialtyIds?.length) return allUserSpecialties; // si no hay filtro, mostramos todas
-    return allUserSpecialties.filter((s: any) =>
-      allowedSpecialtyIds.includes(s.id)
-    );
-  }, [allUserSpecialties, allowedSpecialtyIds]);
-
-  // 🔹 5. Productos tipo "Servicios"
   const {
-    productsByType,
-    fetchProductsByType,
-    loading: loadingProcedures,
-  } = useProductsByType();
+    control,
+    handleSubmit,
+    loadingSpecialties,
+    loadingProcedures,
+    specialtyOptions,
+    doctorOptions,
+    procedureOptions,
+    selectedSpecialty,
+    selectedDoctor,
+    setSelectedSpecialty,
+    setSelectedDoctor,
+    onSubmit,
+  } = useAppointmentForm(patient, onSave);
 
-  const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
-  const [selectedDoctor, setSelectedDoctor] = useState<number | null>(null);
-
-  const loadedRef = useRef(false);
-  useEffect(() => {
-    if (!loadedRef.current) {
-      loadedRef.current = true;
-      fetchProductsByType("Servicios");
-    }
-  }, [fetchProductsByType]);
-
-  // 🔹 Mapear especialidades
-  const specialtyOptions = useMemo(() => {
-    if (!Array.isArray(userSpecialties)) return [];
-    return userSpecialties.map((s: any) => ({
-      label: s.name,
-      value: s.id,
-      doctors: Array.isArray(s.users) ? s.users : [], // si no trae users, queda []
-    }));
-  }, [userSpecialties]);
-
-  // 🔹 Mapear doctores según la especialidad
-  const doctorOptions = useMemo(() => {
-    const selected = specialtyOptions.find((s) => s.value === selectedSpecialty);
-    if (!selected) return [];
-    return selected.doctors.map((d: any) => ({
-      label: `${d.first_name ?? ""} ${d.last_name ?? ""}`.trim(),
-      value: d.id,
-    }));
-  }, [selectedSpecialty, specialtyOptions]);
-
-  // 🔹 Mapear procedimientos
-  const procedureOptions = useMemo(() => {
-    if (!Array.isArray(productsByType)) return [];
-    return productsByType.map((p: any) => ({
-      label: p.label || p.name,
-      value: p.id,
-    }));
-  }, [productsByType]);
-
-  const onSubmit = (data: any) => {
-    if (onSave) onSave({ ...data, patient });
-  };
-
-  // ✅ Render
   return (
     <form className="needs-validation row" noValidate onSubmit={handleSubmit(onSubmit)}>
       {/* Paciente */}
@@ -106,14 +46,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
               name="patient"
               control={control}
               render={({ field }) => (
-                <AutoComplete
-                  {...field}
-                  placeholder="Seleccione un paciente"
-                  field="label"
-                  inputClassName="w-100"
-                  className="w-100"
-                  appendTo="self"
-                />
+                <AutoComplete {...field} placeholder="Seleccione un paciente" field="label" className="w-100" />
               )}
             />
             <button type="button" className="btn btn-primary ms-2">
@@ -244,7 +177,15 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                   name="appointment_time"
                   control={control}
                   render={({ field }) => (
-                    <Dropdown {...field} className="w-100" placeholder="Seleccione una hora" />
+                    <Calendar
+                      {...field}
+                      className="w-100"
+                      placeholder="Seleccione una hora"
+                      timeOnly      
+                      showIcon      
+                      hourFormat="24" 
+                      stepMinute={1} 
+                    />
                   )}
                 />
               </div>
@@ -284,7 +225,6 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
               </div>
             </div>
 
-            {/* Columna derecha */}
             <div className="col-md-5">
               <h5>Citas programadas</h5>
               <hr />
