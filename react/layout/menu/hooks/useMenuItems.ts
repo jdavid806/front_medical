@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import { menuService } from "../../../../services/api";
 import { items } from "../dataMenu";
-import { filterMenuItems } from "../../../helpers/menuFilter";
 
-const removeEmptySections = (menu: any[]) => {
+const transformBackendMenu = (backendItems) => {
+  return backendItems.map(item => ({
+    label: item.name,
+    icon: item.icon,
+    url: item.route,
+    items: item.children && item.children.length > 0 ? transformBackendMenu(item.children) : undefined
+  })).filter(item => item.label);
+};
+
+const removeEmptySections = (menu) => {
   return menu
     .map((item) => {
       if (item.items) {
@@ -24,35 +32,29 @@ const removeEmptySections = (menu: any[]) => {
 
 export const useMenuItems = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadMenu = async () => {
-      const backendMenus = JSON.parse(localStorage.getItem("menus") || "[]");
-      const roles = JSON.parse(localStorage.getItem("roles") || "{}");
-      const roleId = roles?.id;
-
-      const rolesConMenuCompleto = [2, 9, 13];
-
-      if (rolesConMenuCompleto.includes(roleId)) {
+      try {
+        setLoading(true);
+        try {
+          const allMenus = await menuService.getAllMenu();
+          const transformedMenus = transformBackendMenu(allMenus.menus);
+          const cleanedMenus = removeEmptySections(transformedMenus);
+          setMenuItems(cleanedMenus);
+        } catch (error) {
+          setMenuItems(items);
+        }
+      } catch (error) {
         setMenuItems(items);
-        return;
+      } finally {
+        setLoading(false);
       }
-
-      const allowedKeys = backendMenus.map((m) => m.key);
-      const allMenus = await menuService.getAll();
-
-      const allowedRoutes = allMenus
-        .filter((menu) => allowedKeys.includes(menu.key_))
-        .map((menu) => menu.route)
-        .filter(Boolean);
-
-      const filtered = filterMenuItems(items, allowedRoutes);
-      const cleaned = removeEmptySections(filtered);
-      setMenuItems(cleaned);
     };
 
     loadMenu();
   }, []);
 
-  return menuItems;
+  return { menuItems, loading };
 };

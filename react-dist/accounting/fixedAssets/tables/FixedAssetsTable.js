@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
-import { ProgressBar } from "primereact/progressbar";
-import { classNames } from "primereact/utils";
 import { SplitButton } from "primereact/splitbutton";
 import { Toast } from "primereact/toast";
 import FixedAssetsModal from "../modal/FixedAssetsModal.js";
@@ -16,6 +12,8 @@ import DepreciationAppreciationModal from "../modal/DepreciationAppreciationModa
 import MaintenanceModal from "../modal/MaintenanceModal.js";
 import { useAssets } from "../hooks/useAssets.js";
 import { useUpdateAssetStatus } from "../hooks/useUpdateAssetStatus.js";
+import { useDataPagination } from "../../../hooks/useDataPagination.js";
+import { CustomPRTable } from "../../../components/CustomPRTable.js";
 export const FixedAssetsTable = () => {
   const {
     assets,
@@ -34,13 +32,28 @@ export const FixedAssetsTable = () => {
     updateAssetStatus
   } = useUpdateAssetStatus();
   const [filters, setFilters] = useState({
-    assetName: "",
-    assetCategory: null,
-    brand: "",
-    internalCode: "",
+    name: "",
+    category: null,
+    internal_code: "",
     status: null,
-    dateRange: null
+    date_range: null
   });
+  const {
+    data: assetsData,
+    loading: loadingPaginator,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh
+  } = useDataPagination({
+    fetchFunction: fetchAssets,
+    defaultPerPage: 10
+  });
+  useEffect(() => {
+    fetchAssets(filters);
+  }, []);
   const assetCategories = [{
     label: "Computador",
     value: "computer"
@@ -118,57 +131,15 @@ export const FixedAssetsTable = () => {
     setMaintenanceModalVisible(true);
   };
   const applyFilters = () => {
-    setLoading(true);
-    let results = [...assets];
-
-    // Filter by asset name
-    if (filters.assetName) {
-      results = results.filter(asset => asset.attributes.description?.toLowerCase().includes(filters.assetName.toLowerCase()));
-    }
-
-    // Filter by category
-    if (filters.assetCategory) {
-      results = results.filter(asset => asset.relationships.category.data.id === filters.assetCategory);
-    }
-
-    // Filter by brand
-    if (filters.brand) {
-      results = results.filter(asset => asset.attributes.brand?.toLowerCase().includes(filters.brand.toLowerCase()));
-    }
-
-    // Filter by internal code
-    if (filters.internalCode) {
-      results = results.filter(asset => asset.attributes.internal_code?.toLowerCase().includes(filters.internalCode.toLowerCase()));
-    }
-
-    // Filter by status
-    if (filters.status) {
-      results = results.filter(asset => asset.attributes.status === filters.status);
-    }
-
-    // Filter by date range
-    /*if (filters.dateRange && filters.dateRange.length === 2) {
-      const [start, end] = filters.dateRange;
-      results = results.filter((asset) => {
-        const assetDate = new Date(asset.acquisitionDate);
-        return assetDate >= start && assetDate <= end;
-      });
-    }*/
-
-    setTimeout(() => {
-      console.log(results);
-      setFilteredAssets(results);
-      setLoading(false);
-    }, 300);
+    fetchAssets(filters);
   };
   const clearFilters = () => {
     setFilters({
-      assetName: "",
-      assetCategory: null,
-      brand: "",
-      internalCode: "",
+      name: "",
+      category: null,
+      internal_code: "",
       status: null,
-      dateRange: null
+      date_range: null
     });
     setFilteredAssets(assets);
   };
@@ -260,6 +231,79 @@ export const FixedAssetsTable = () => {
       }
     });
   };
+  const columns = [{
+    field: "internal_code",
+    header: "Codigo"
+  }, {
+    field: "description",
+    header: "Nombre/Descripción"
+  }, {
+    field: "category.name",
+    header: "Categoría"
+  }, {
+    field: "brand",
+    header: "Marca"
+  }, {
+    field: "model",
+    header: "Modelo"
+  }, {
+    field: "status",
+    header: "Estado",
+    body: rowData => /*#__PURE__*/React.createElement(Tag, {
+      value: getStatusLabel(rowData.status),
+      severity: getStatusSeverity(rowData.status)
+    })
+  },
+  // {
+  //   field: "depreciation",
+  //   header: "Depreciación",
+  //   body: (rowData) => (
+  //     <div className="flex flex-column gap-1">
+  //       <span>
+  //         {calculateDepreciation(
+  //           rowData.purchaseValue,
+  //           rowData.currentValue
+  //         ).toFixed(2)}
+  //         %
+  //       </span>
+  //       <ProgressBar
+  //         value={calculateDepreciation(
+  //           rowData.purchaseValue,
+  //           rowData.currentValue
+  //         )}
+  //         showValue={false}
+  //         style={styles.depreciationBar}
+  //         className={classNames({
+  //           "p-progressbar-determinate": true,
+  //           "p-progressbar-danger":
+  //             calculateDepreciation(
+  //               rowData.purchaseValue,
+  //               rowData.currentValue
+  //             ) > 50,
+  //           "p-progressbar-warning":
+  //             calculateDepreciation(
+  //               rowData.purchaseValue,
+  //               rowData.currentValue
+  //             ) > 30 &&
+  //             calculateDepreciation(
+  //               rowData.purchaseValue,
+  //               rowData.currentValue
+  //             ) <= 50,
+  //           "p-progressbar-success":
+  //             calculateDepreciation(
+  //               rowData.purchaseValue,
+  //               rowData.currentValue
+  //             ) <= 30,
+  //         })}
+  //       />
+  //     </div>
+  //   ),
+  // },
+  {
+    field: "actions",
+    header: "Acciones",
+    body: actionBodyTemplate
+  }];
   const showToast = (severity, summary, detail) => {
     toast.current?.show({
       severity,
@@ -329,8 +373,8 @@ export const FixedAssetsTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Nombre/Descripci\xF3n"), /*#__PURE__*/React.createElement(InputText, {
-    value: filters.assetName,
-    onChange: e => handleFilterChange("assetName", e.target.value),
+    value: filters.name,
+    onChange: e => handleFilterChange("name", e.target.value),
     placeholder: "Nombre del activo",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
@@ -338,9 +382,9 @@ export const FixedAssetsTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Categor\xEDa"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filters.assetCategory,
+    value: filters.category,
     options: assetCategories,
-    onChange: e => handleFilterChange("assetCategory", e.value),
+    onChange: e => handleFilterChange("category", e.value),
     optionLabel: "label",
     placeholder: "Seleccione categor\xEDa",
     className: "w-100",
@@ -350,8 +394,8 @@ export const FixedAssetsTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "C\xF3digo Interno"), /*#__PURE__*/React.createElement(InputText, {
-    value: filters.internalCode,
-    onChange: e => handleFilterChange("internalCode", e.target.value),
+    value: filters.internal_code,
+    onChange: e => handleFilterChange("internal_code", e.target.value),
     placeholder: "C\xF3digo del activo",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
@@ -370,8 +414,8 @@ export const FixedAssetsTable = () => {
   }, /*#__PURE__*/React.createElement("label", {
     style: styles.formLabel
   }, "Fecha de Adquisici\xF3n"), /*#__PURE__*/React.createElement(Calendar, {
-    value: filters.dateRange,
-    onChange: e => handleFilterChange("dateRange", e.value),
+    value: filters.date_range,
+    onChange: e => handleFilterChange("date_range", e.value),
     selectionMode: "range",
     readOnlyInput: true,
     dateFormat: "dd/mm/yy",
@@ -389,81 +433,23 @@ export const FixedAssetsTable = () => {
     label: "Aplicar Filtros",
     icon: "pi pi-filter",
     className: "btn btn-primary",
-    onClick: applyFilters,
-    loading: loading
+    onClick: refresh,
+    loading: loadingPaginator
   })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Activos Fijos",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: filteredAssets,
-    paginator: true,
-    rows: 10,
-    rowsPerPageOptions: [5, 10, 25, 50],
-    loading: loading,
-    className: "p-datatable-striped p-datatable-gridlines",
-    emptyMessage: "No se encontraron activos",
-    responsiveLayout: "scroll",
-    tableStyle: {
-      minWidth: "50rem"
-    }
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "attributes.internal_code",
-    header: "C\xF3digo",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "attributes.description",
-    header: "Nombre/Descripci\xF3n",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "includes.category.attributes.name",
-    header: "Categor\xEDa",
-    sortable: true,
-    body: rowData => getCategoryLabel(rowData.includes.category?.attributes.name) || "--",
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "attributes.brand",
-    header: "Marca",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "attributes.model",
-    header: "Modelo",
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "status",
-    header: "Estado",
-    sortable: true,
-    body: rowData => /*#__PURE__*/React.createElement(Tag, {
-      value: getStatusLabel(rowData.attributes.status),
-      severity: getStatusSeverity(rowData.attributes.status)
-    }),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    header: "Depreciaci\xF3n",
-    body: rowData => /*#__PURE__*/React.createElement("div", {
-      className: "flex flex-column gap-1"
-    }, /*#__PURE__*/React.createElement("span", null, calculateDepreciation(rowData.purchaseValue, rowData.currentValue).toFixed(2), "%"), /*#__PURE__*/React.createElement(ProgressBar, {
-      value: calculateDepreciation(rowData.purchaseValue, rowData.currentValue),
-      showValue: false,
-      style: styles.depreciationBar,
-      className: classNames({
-        "p-progressbar-determinate": true,
-        "p-progressbar-danger": calculateDepreciation(rowData.purchaseValue, rowData.currentValue) > 50,
-        "p-progressbar-warning": calculateDepreciation(rowData.purchaseValue, rowData.currentValue) > 30 && calculateDepreciation(rowData.purchaseValue, rowData.currentValue) <= 50,
-        "p-progressbar-success": calculateDepreciation(rowData.purchaseValue, rowData.currentValue) <= 30
-      })
-    })),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    header: "Acciones",
-    body: actionBodyTemplate,
-    style: {
-      ...styles.tableCell,
-      width: "150px"
-    }
-  }))), /*#__PURE__*/React.createElement(FixedAssetsModal, {
+    title: "Activos fijos",
+    className: "shadow-2"
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: assetsData,
+    lazy: true,
+    first: first,
+    rows: perPage,
+    totalRecords: totalRecords,
+    loading: loadingPaginator,
+    onPage: handlePageChange,
+    onSearch: handleSearchChange,
+    onReload: refresh
+  })), /*#__PURE__*/React.createElement(FixedAssetsModal, {
     isVisible: modalVisible,
     onClose: () => {
       setModalVisible(false);
@@ -503,7 +489,7 @@ export const FixedAssetsTable = () => {
         status_comment: maintenanceData.comments || null
       };
       await updateAssetStatus(selectedAssetForMaintenance.id, body);
-      await fetchAssets();
+      await fetchAssets(filters);
       setMaintenanceModalVisible(false);
       setSelectedAssetForMaintenance(null);
       showToast("success", "Mantenimiento registrado", `El estado de ${selectedAssetForMaintenance?.attributes?.description} ha sido actualizado.`);

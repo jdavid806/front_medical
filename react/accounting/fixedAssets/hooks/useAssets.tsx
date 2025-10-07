@@ -1,23 +1,45 @@
-import { useState, useEffect } from 'react';
-import { assetsService } from '../../../../services/api';
-import { FixedAsset } from '../interfaces/FixedAssetsTableTypes';
+import { useState, useEffect } from "react";
+import { assetsService } from "../../../../services/api";
+import { FixedAsset } from "../interfaces/FixedAssetsTableTypes";
 
 export const useAssets = () => {
-    const [assets, setAssets] = useState<FixedAsset[]>([]);
+  const [assets, setAssets] = useState<FixedAsset[]>([]);
 
-    const fetchAssets = async () => {
-        try {
-            const data: { data: FixedAsset[] } = await assetsService.getAll();
-            setAssets(data.data);
-            return data;
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    };
+  const fetchAssets = async (paginationParams: any) => {
+    console.log("Fetching cash recipes...", paginationParams);
+    try {
+      const { per_page, page, search, ...filters } = paginationParams;
+      // Aplicar filtros adicionales a los parámetros de paginación
+      const params = {
+        per_page,
+        page,
+        search,
+        description: filters.name,
+        category: filters.category,
+        internal_code: filters.internal_code,
+        status: filters.status,
+        createdAt: filters.date_range
+          ?.filter((date: any) => !!date)
+          .map((date: any) => date.toISOString().split("T")[0])
+          .join(","),
+      };
 
-    useEffect(() => {
-        fetchAssets();
-    }, []);
+      console.log("params", params);
 
-    return { assets, fetchAssets };
+      const response = await assetsService.getAll(params);
+
+      return {
+        data: response.data.data || response.data, // Ajusta según la estructura de tu API
+        total: response.data.total || response.data.count || 0,
+      };
+    } catch (error) {
+      console.error("Error fetching cash recipes:", error);
+      return {
+        data: [],
+        total: 0,
+      };
+    }
+  };
+
+  return { assets, fetchAssets };
 };

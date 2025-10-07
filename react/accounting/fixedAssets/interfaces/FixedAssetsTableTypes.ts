@@ -71,10 +71,9 @@ export type FixedAssetsModalProps = {
 };
 
 export type Filters = {
-  assetName: string;
-  assetCategory: string | null;
-  brand: string;
-  internalCode: string;
+  name: string;
+  category: string | null;
+  internal_code: string;
   status: string | null;
-  dateRange: Date[] | null;
+  date_range: Date[] | null;
 };

@@ -1,9 +1,10 @@
 import BaseApiService from "./baseApiService.js";
+import { cleanJsonObject } from "../../utilidades.js";
 
 export class AssetsService extends BaseApiService {
 
-    async getAll() {
-        return await this.httpClient.get(`${this.microservice}${this.version}/${this.endpoint}/query?include=category,user`);
+    async getAll(data) {
+        return await this.httpClient.get(`${this.microservice}${this.version}/${this.endpoint}/query`, cleanJsonObject(data));
     }
 
     async updateAssetStatus(assetId, body) {

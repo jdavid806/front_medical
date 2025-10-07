@@ -27,7 +27,6 @@ const WhatsAppConnection: React.FC<WhatsAppConnectionProps> = ({ onStatusChange 
 
     // Notificar cambios de estado al componente padre
     useEffect(() => {
-        console.log('📱 Estado WhatsApp cambiado:', status);
         onStatusChange?.({ connected: status === 'CONECTADA', qrCode });
     }, [status, qrCode, onStatusChange]);
 

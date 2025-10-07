@@ -1,4 +1,3 @@
-// components/CommunicationsTab.tsx
 import React, { useEffect } from 'react';
 import { Card } from 'primereact/card';
 import WhatsAppConnection from "./WhatsAppConnection.js";
@@ -9,7 +8,6 @@ const CommunicationsTab = ({
 }) => {
   useEffect(() => {
     const isValid = whatsAppStatus.connected === true;
-    console.log('📱 Validación Comunicaciones - WhatsApp conectado:', isValid);
     onValidationChange?.(isValid);
   }, [whatsAppStatus, onValidationChange]);
   const handleStatusChange = status => {
@@ -27,9 +25,7 @@ const CommunicationsTab = ({
     className: "fw-bold mb-4"
   }, "Configuraci\xF3n de Comunicaciones"), /*#__PURE__*/React.createElement("p", {
     className: "text-muted mb-4"
-  }, "Configura la conexi\xF3n de WhatsApp para enviar notificaciones a tus pacientes.", /*#__PURE__*/React.createElement("strong", {
-    className: "text-primary"
-  }, " Debes conectar WhatsApp para habilitar el siguiente m\xF3dulo.")), /*#__PURE__*/React.createElement(WhatsAppConnection, {
+  }, "Configura la conexi\xF3n de WhatsApp para enviar notificaciones a tus pacientes."), /*#__PURE__*/React.createElement(WhatsAppConnection, {
     onStatusChange: handleStatusChange
   })))));
 };

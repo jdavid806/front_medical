@@ -19,6 +19,11 @@ import MaintenanceModal from "../modal/MaintenanceModal";
 import { useAssets } from "../hooks/useAssets";
 import { stringToDate } from "../../../../services/utilidades";
 import { useUpdateAssetStatus } from "../hooks/useUpdateAssetStatus";
+import { useDataPagination } from "../../../hooks/useDataPagination";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../../../components/CustomPRTable";
 
 export const FixedAssetsTable = () => {
   const { assets, fetchAssets } = useAssets();
@@ -37,13 +42,30 @@ export const FixedAssetsTable = () => {
   const { updateAssetStatus } = useUpdateAssetStatus();
 
   const [filters, setFilters] = useState<Filters>({
-    assetName: "",
-    assetCategory: null,
-    brand: "",
-    internalCode: "",
+    name: "",
+    category: null,
+    internal_code: "",
     status: null,
-    dateRange: null,
+    date_range: null,
   });
+
+  const {
+    data: assetsData,
+    loading: loadingPaginator,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+  } = useDataPagination({
+    fetchFunction: fetchAssets,
+    defaultPerPage: 10,
+  });
+
+  useEffect(() => {
+    fetchAssets(filters);
+  }, []);
 
   const assetCategories = [
     { label: "Computador", value: "computer" },
@@ -79,7 +101,7 @@ export const FixedAssetsTable = () => {
   ];
 
   const handleFilterChange = (field: keyof Filters, value: any) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       [field]: value,
     }));
@@ -91,77 +113,16 @@ export const FixedAssetsTable = () => {
   };
 
   const applyFilters = () => {
-    setLoading(true);
-
-    let results = [...assets];
-
-    // Filter by asset name
-    if (filters.assetName) {
-      results = results.filter((asset) =>
-        asset.attributes.description
-          ?.toLowerCase()
-          .includes(filters.assetName.toLowerCase())
-      );
-    }
-
-    // Filter by category
-    if (filters.assetCategory) {
-      results = results.filter(
-        (asset) =>
-          asset.relationships.category.data.id === filters.assetCategory
-      );
-    }
-
-    // Filter by brand
-    if (filters.brand) {
-      results = results.filter((asset) =>
-        asset.attributes.brand
-          ?.toLowerCase()
-          .includes(filters.brand.toLowerCase())
-      );
-    }
-
-    // Filter by internal code
-    if (filters.internalCode) {
-      results = results.filter((asset) =>
-        asset.attributes.internal_code
-          ?.toLowerCase()
-          .includes(filters.internalCode.toLowerCase())
-      );
-    }
-
-    // Filter by status
-    if (filters.status) {
-      results = results.filter(
-        (asset) => asset.attributes.status === filters.status
-      );
-    }
-
-    // Filter by date range
-    /*if (filters.dateRange && filters.dateRange.length === 2) {
-      const [start, end] = filters.dateRange;
-      results = results.filter((asset) => {
-        const assetDate = new Date(asset.acquisitionDate);
-        return assetDate >= start && assetDate <= end;
-      });
-    }*/
-
-    setTimeout(() => {
-      console.log(results);
-
-      setFilteredAssets(results);
-      setLoading(false);
-    }, 300);
+    fetchAssets(filters);
   };
 
   const clearFilters = () => {
     setFilters({
-      assetName: "",
-      assetCategory: null,
-      brand: "",
-      internalCode: "",
+      name: "",
+      category: null,
+      internal_code: "",
       status: null,
-      dateRange: null,
+      date_range: null,
     });
     setFilteredAssets(assets);
   };
@@ -279,6 +240,89 @@ export const FixedAssetsTable = () => {
     );
   };
 
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: "internal_code",
+      header: "Codigo",
+    },
+    {
+      field: "description",
+      header: "Nombre/Descripción",
+    },
+    {
+      field: "category.name",
+      header: "Categoría",
+    },
+    {
+      field: "brand",
+      header: "Marca",
+    },
+    {
+      field: "model",
+      header: "Modelo",
+    },
+    {
+      field: "status",
+      header: "Estado",
+      body: (rowData) => (
+        <Tag
+          value={getStatusLabel(rowData.status)}
+          severity={getStatusSeverity(rowData.status)}
+        />
+      ),
+    },
+    // {
+    //   field: "depreciation",
+    //   header: "Depreciación",
+    //   body: (rowData) => (
+    //     <div className="flex flex-column gap-1">
+    //       <span>
+    //         {calculateDepreciation(
+    //           rowData.purchaseValue,
+    //           rowData.currentValue
+    //         ).toFixed(2)}
+    //         %
+    //       </span>
+    //       <ProgressBar
+    //         value={calculateDepreciation(
+    //           rowData.purchaseValue,
+    //           rowData.currentValue
+    //         )}
+    //         showValue={false}
+    //         style={styles.depreciationBar}
+    //         className={classNames({
+    //           "p-progressbar-determinate": true,
+    //           "p-progressbar-danger":
+    //             calculateDepreciation(
+    //               rowData.purchaseValue,
+    //               rowData.currentValue
+    //             ) > 50,
+    //           "p-progressbar-warning":
+    //             calculateDepreciation(
+    //               rowData.purchaseValue,
+    //               rowData.currentValue
+    //             ) > 30 &&
+    //             calculateDepreciation(
+    //               rowData.purchaseValue,
+    //               rowData.currentValue
+    //             ) <= 50,
+    //           "p-progressbar-success":
+    //             calculateDepreciation(
+    //               rowData.purchaseValue,
+    //               rowData.currentValue
+    //             ) <= 30,
+    //         })}
+    //       />
+    //     </div>
+    //   ),
+    // },
+    {
+      field: "actions",
+      header: "Acciones",
+      body: actionBodyTemplate,
+    },
+  ];
+
   const showToast = (severity: string, summary: string, detail: string) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
@@ -339,8 +383,8 @@ export const FixedAssetsTable = () => {
           <div className="col-md-6 col-lg-3">
             <label style={styles.formLabel}>Nombre/Descripción</label>
             <InputText
-              value={filters.assetName}
-              onChange={(e) => handleFilterChange("assetName", e.target.value)}
+              value={filters.name}
+              onChange={(e) => handleFilterChange("name", e.target.value)}
               placeholder="Nombre del activo"
               className="w-100"
             />
@@ -350,9 +394,9 @@ export const FixedAssetsTable = () => {
           <div className="col-md-6 col-lg-3">
             <label style={styles.formLabel}>Categoría</label>
             <Dropdown
-              value={filters.assetCategory}
+              value={filters.category}
               options={assetCategories}
-              onChange={(e) => handleFilterChange("assetCategory", e.value)}
+              onChange={(e) => handleFilterChange("category", e.value)}
               optionLabel="label"
               placeholder="Seleccione categoría"
               className="w-100"
@@ -364,9 +408,9 @@ export const FixedAssetsTable = () => {
           <div className="col-md-6 col-lg-3">
             <label style={styles.formLabel}>Código Interno</label>
             <InputText
-              value={filters.internalCode}
+              value={filters.internal_code}
               onChange={(e) =>
-                handleFilterChange("internalCode", e.target.value)
+                handleFilterChange("internal_code", e.target.value)
               }
               placeholder="Código del activo"
               className="w-100"
@@ -390,8 +434,8 @@ export const FixedAssetsTable = () => {
           <div className="col-md-6 col-lg-3">
             <label style={styles.formLabel}>Fecha de Adquisición</label>
             <Calendar
-              value={filters.dateRange}
-              onChange={(e) => handleFilterChange("dateRange", e.value)}
+              value={filters.date_range}
+              onChange={(e) => handleFilterChange("date_range", e.value)}
               selectionMode="range"
               readOnlyInput
               dateFormat="dd/mm/yy"
@@ -413,151 +457,27 @@ export const FixedAssetsTable = () => {
               label="Aplicar Filtros"
               icon="pi pi-filter"
               className="btn btn-primary"
-              onClick={applyFilters}
-              loading={loading}
+              onClick={refresh}
+              loading={loadingPaginator}
             />
           </div>
         </div>
       </Card>
 
       {/* Tabla de resultados */}
-      <Card title="Activos Fijos" style={styles.card}>
-        <DataTable
-          value={filteredAssets}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          loading={loading}
-          className="p-datatable-striped p-datatable-gridlines"
-          emptyMessage="No se encontraron activos"
-          responsiveLayout="scroll"
-          tableStyle={{ minWidth: "50rem" }}
-        >
-          <Column
-            field="attributes.internal_code"
-            header="Código"
-            sortable
-            style={styles.tableCell}
-          />
-          <Column
-            field="attributes.description"
-            header="Nombre/Descripción"
-            sortable
-            style={styles.tableCell}
-          />
-          <Column
-            field="includes.category.attributes.name"
-            header="Categoría"
-            sortable
-            body={(rowData: FixedAsset) =>
-              getCategoryLabel(rowData.includes.category?.attributes.name) ||
-              "--"
-            }
-            style={styles.tableCell}
-          />
-          <Column
-            field="attributes.brand"
-            header="Marca"
-            sortable
-            style={styles.tableCell}
-          />
-          <Column
-            field="attributes.model"
-            header="Modelo"
-            style={styles.tableCell}
-          />
-          {/*<Column
-            field="acquisitionDate"
-            header="Fecha Adquisición"
-            sortable
-            body={(rowData) => formatDate(stringToDate(rowData.acquisitionDate))}
-            style={styles.tableCell}
-          />*/}
-          {/*<Column
-            field="purchaseValue"
-            header="Valor Compra"
-            sortable
-            body={(rowData) => formatCurrency(rowData.purchaseValue)}
-            style={styles.tableCell}
-          />
-          <Column
-            field="currentValue"
-            header="Valor Actual"
-            sortable
-            body={(rowData) => formatCurrency(rowData.currentValue)}
-            style={styles.tableCell}
-          />*/}
-          <Column
-            field="status"
-            header="Estado"
-            sortable
-            body={(rowData) => (
-              <Tag
-                value={getStatusLabel(rowData.attributes.status)}
-                severity={getStatusSeverity(rowData.attributes.status)}
-              />
-            )}
-            style={styles.tableCell}
-          />
-
-          <Column
-            header="Depreciación"
-            body={(rowData) => (
-              <div className="flex flex-column gap-1">
-                <span>
-                  {calculateDepreciation(
-                    rowData.purchaseValue,
-                    rowData.currentValue
-                  ).toFixed(2)}
-                  %
-                </span>
-                <ProgressBar
-                  value={calculateDepreciation(
-                    rowData.purchaseValue,
-                    rowData.currentValue
-                  )}
-                  showValue={false}
-                  style={styles.depreciationBar}
-                  className={classNames({
-                    "p-progressbar-determinate": true,
-                    "p-progressbar-danger":
-                      calculateDepreciation(
-                        rowData.purchaseValue,
-                        rowData.currentValue
-                      ) > 50,
-                    "p-progressbar-warning":
-                      calculateDepreciation(
-                        rowData.purchaseValue,
-                        rowData.currentValue
-                      ) > 30 &&
-                      calculateDepreciation(
-                        rowData.purchaseValue,
-                        rowData.currentValue
-                      ) <= 50,
-                    "p-progressbar-success":
-                      calculateDepreciation(
-                        rowData.purchaseValue,
-                        rowData.currentValue
-                      ) <= 30,
-                  })}
-                />
-              </div>
-            )}
-            style={styles.tableCell}
-          />
-          {/*<Column
-            field="assignedTo"
-            header="Asignado a"
-            sortable
-            style={styles.tableCell}
-            body={(rowData) => rowData.assignedTo || "No asignado"}
-          />*/}
-          <Column
-            header="Acciones"
-            body={actionBodyTemplate}
-            style={{ ...styles.tableCell, width: "150px" }}
-          />
-        </DataTable>
+      <Card title="Activos fijos" className="shadow-2">
+        <CustomPRTable
+          columns={columns}
+          data={assetsData}
+          lazy
+          first={first}
+          rows={perPage}
+          totalRecords={totalRecords}
+          loading={loadingPaginator}
+          onPage={handlePageChange}
+          onSearch={handleSearchChange}
+          onReload={refresh}
+        />
       </Card>
 
       {/* Modal para crear/editar activos */}
@@ -614,7 +534,7 @@ export const FixedAssetsTable = () => {
 
             await updateAssetStatus(selectedAssetForMaintenance.id, body);
 
-            await fetchAssets();
+            await fetchAssets(filters);
 
             setMaintenanceModalVisible(false);
             setSelectedAssetForMaintenance(null);

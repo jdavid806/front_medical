@@ -203,6 +203,8 @@ RewriteRule ^enfermeria$  NotasEnfermeria/notasEnfermeria.php
 RewriteRule ^consulta$  Consultas/consultaPlantilla.php
 RewriteRule ^seleccionarHistoria$  Consultas/consultas.php
 RewriteRule ^consultas-anulacion-pendiente$  Consultas/consultasAnulacionPendiente.php
+RewriteRule ^solicitud-anulacion-recetas$  Consultas/solicitudesAnulacionReceta.php
+
 RewriteRule ^admisiones-anulacion-pendiente$  Citas/admisionesAnulacionesPendientes.php
 RewriteRule ^general-requests$  Auditoria/generalRequests.php
 
@@ -387,6 +389,5 @@ RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
 RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
-
-
+RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
 
