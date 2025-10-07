@@ -35,6 +35,10 @@ RewriteRule ^LoginPrueba$ login/loginPrueba.php
 RewriteRule ^ConfiguracionGeneral$ generalConfiguration.php
 
 
+##dejenme de borrar esta ruta porfa
+##que no me borren esta ruta, segundo aviso, el que me la borre le pongo una denuncia, att: jeffer
+RewriteRule ^Landing$ Portada/portadaTest.php
+
 # Configuración[INICIO]
 RewriteRule ^RIPS_Report$ Reportes/ReportesRIPS.php
 RewriteRule ^Menu_reports$ Reportes/Menu_reports_v2.php

@@ -3,7 +3,10 @@ import React from 'react';
 import { navbarMenuStyle } from "./styles/navBarMegaMenu.js";
 import { useMenuItems } from "./hooks/useMenuItems.js";
 const NavbarHeader = () => {
-  const menuItemsFromHook = useMenuItems();
+  const {
+    menuItems: menuItemsFromHook,
+    loading
+  } = useMenuItems();
   const staticItems = [{
     label: "Home",
     icon: "fa-solid fa-house",
@@ -347,7 +350,6 @@ const NavbarHeader = () => {
       url: "GestionarTerceros"
     }]
   }];
-  ;
 
   // Usar menús del backend si existen, sino usar menú estático
   const finalItems = menuItemsFromHook.length > 0 ? menuItemsFromHook : staticItems;

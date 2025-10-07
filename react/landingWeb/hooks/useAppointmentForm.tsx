@@ -4,6 +4,7 @@ import { useAvailableSpecialties } from "../hooks/useAvailableSpecialties";
 import { useProductsByType } from "../../products/hooks/useProductsByType";
 import { useLandingAvailabilities } from "../hooks/useLandingAvailabilities";
 import { useAppointmentBulkCreate } from "../../appointments/hooks/useAppointmentBulkCreate";
+import { useValidateBulkAppointments } from "../../appointments/hooks/useValidateBulkAppointments";
 
 export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) => {
   const { control, handleSubmit } = useForm();
@@ -12,6 +13,7 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
   const { productsByType, fetchProductsByType, loading: loadingProcedures } = useProductsByType();
 
   const { loading: creating, createAppointmentBulk } = useAppointmentBulkCreate();
+  const { loading: validating, validateBulkAppointments } = useValidateBulkAppointments();
 
   const allowedSpecialtyIds = useMemo(() => {
     if (!availabilities?.length) return [];
@@ -63,9 +65,13 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
     [productsByType]
   );
 
-  // 🚀 GUARDAR CITA
   const onSubmit = async (data: any) => {
     try {
+      if (!patient?.id) {
+        alert("Debe seleccionar un paciente");
+        return;
+      }
+
       const payload = {
         appointments: [
           {
@@ -77,7 +83,7 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
               : null,
             assigned_user_availability_id: selectedDoctor,
             product_id: data.product_id,
-            created_by_user_id: 1, // o el user logueado
+            created_by_user_id: 1, // o el usuario logueado
             appointment_state_id: 1,
             attention_type: "CONSULTATION",
             consultation_purpose: "TREATMENT",
@@ -89,17 +95,18 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
         ],
       };
 
-      console.log("Payload a enviar:", payload);
+      // 1️⃣ Primero validamos disponibilidad
+      const validation = await validateBulkAppointments(payload.appointments, patient.id);
+      console.log("✅ Validación:", validation);
 
-      if (!patient?.id) {
-        alert("Debe seleccionar un paciente");
-        return;
-      }
+      // Si pasa validación, entonces creamos
+      await createAppointmentBulk(payload, patient.id);
+      console.log("✅ Cita creada exitosamente");
 
-    await createAppointmentBulk(payload, patient.id);
       if (onSave) onSave(data);
+
     } catch (error) {
-      console.error("Error creando la cita:", error);
+      console.error("❌ Error en el flujo de creación:", error);
     }
   };
 
@@ -117,5 +124,6 @@ export const useAppointmentForm = (patient?: any, onSave?: (data: any) => void) 
     setSelectedDoctor,
     onSubmit,
     creating,
+    validating,
   };
 };

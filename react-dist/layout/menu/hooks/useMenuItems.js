@@ -29,42 +29,53 @@ const removeEmptySections = menu => {
 };
 export const useMenuItems = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const loadMenu = async () => {
-      const backendMenus = JSON.parse(localStorage.getItem("menus") || "[]");
-      const roles = JSON.parse(localStorage.getItem("roles") || "{}");
-      const roleId = roles?.id;
-      const rolesConMenuCompleto = [2, 9, 13];
-      if (rolesConMenuCompleto.includes(roleId)) {
+      try {
+        setLoading(true);
+        const backendMenus = JSON.parse(localStorage.getItem("menus") || "[]");
+        const roles = JSON.parse(localStorage.getItem("roles") || "{}");
+        const roleId = roles?.id;
+        const rolesConMenuCompleto = [2, 9, 13];
+
+        // Si es rol con menú completo, obtener todos los menús del backend
+        if (rolesConMenuCompleto.includes(roleId)) {
+          try {
+            const allMenus = await menuService.getAllMenu();
+            const transformedMenus = transformBackendMenu(allMenus);
+            const cleanedMenus = removeEmptySections(transformedMenus);
+            setMenuItems(cleanedMenus);
+          } catch (error) {
+            setMenuItems(items);
+          }
+          return;
+        }
         try {
+          const allowedKeys = backendMenus.map(m => m.key);
           const allMenus = await menuService.getAllMenu();
-          const transformedMenus = transformBackendMenu(allMenus);
+          const filteredBackendMenus = allMenus.filter(menu => allowedKeys.includes(menu.key_));
+          const transformedMenus = transformBackendMenu(filteredBackendMenus);
           const cleanedMenus = removeEmptySections(transformedMenus);
           setMenuItems(cleanedMenus);
         } catch (error) {
-          console.error("Error loading backend menus, using static menu:", error);
-          setMenuItems(items);
+          const allowedKeys = backendMenus.map(m => m.key);
+          const permissionMenus = await menuService.getAll();
+          const allowedRoutes = permissionMenus.filter(menu => allowedKeys.includes(menu.key_)).map(menu => menu.route).filter(Boolean);
+          const filtered = filterMenuItems(items, allowedRoutes);
+          const cleaned = removeEmptySections(filtered);
+          setMenuItems(cleaned);
         }
-        return;
-      }
-      try {
-        const allowedKeys = backendMenus.map(m => m.key);
-        const allMenus = await menuService.getAllMenu();
-        const filteredBackendMenus = allMenus.filter(menu => allowedKeys.includes(menu.key_));
-        const transformedMenus = transformBackendMenu(filteredBackendMenus);
-        const cleanedMenus = removeEmptySections(transformedMenus);
-        setMenuItems(cleanedMenus);
       } catch (error) {
-        console.error("Error loading filtered backend menus, using static menu with filters:", error);
-        const allowedKeys = backendMenus.map(m => m.key);
-        const allMenus = await menuService.getAll();
-        const allowedRoutes = allMenus.filter(menu => allowedKeys.includes(menu.key_)).map(menu => menu.route).filter(Boolean);
-        const filtered = filterMenuItems(items, allowedRoutes);
-        const cleaned = removeEmptySections(filtered);
-        setMenuItems(cleaned);
+        setMenuItems(items);
+      } finally {
+        setLoading(false);
       }
     };
     loadMenu();
   }, []);
-  return menuItems;
+  return {
+    menuItems,
+    loading
+  };
 };

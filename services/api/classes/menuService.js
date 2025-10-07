@@ -8,8 +8,6 @@ export class MenuService extends BaseApiService {
         const roleId = currentUser.role.id;
         try {
             const response = await this.httpClient.get(`medical/menus/permissions/${roleId}`);
-
-
             return response.menus.map(item => ({
                 id: item.id,
                 name: item.label,
@@ -22,4 +20,15 @@ export class MenuService extends BaseApiService {
             throw error;
         }
     }
+
+    async getAllMenu() {
+        try {
+            return await this.httpClient.get(`medical/menus/submenus`);
+        } catch (error) {
+            console.error("Error fetching all menus:", error);
+            throw error;
+        }
+    }
 }
+
+export default MenuService;
