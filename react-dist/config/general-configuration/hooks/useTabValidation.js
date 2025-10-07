@@ -6,8 +6,6 @@ export const useTabValidation = company => {
     communications: false,
     branches: false
   });
-
-  // Validar información general cuando company cambie
   useEffect(() => {
     if (company) {
       const hasGeneralInfo = Boolean(company.legal_name && company.document_type && company.document_number && company.phone && company.email && company.address && company.country && company.city);
@@ -34,9 +32,13 @@ export const useTabValidation = company => {
   const getEnabledTabs = () => {
     const enabledTabs = [0]; // Siempre habilitar el primer tab
 
-    if (validations.generalInfo) enabledTabs.push(1);
-    if (validations.generalInfo && validations.representative) enabledTabs.push(2);
-    if (validations.generalInfo && validations.representative && validations.communications) enabledTabs.push(3);
+    if (validations.generalInfo) {
+      enabledTabs.push(1);
+      if (validations.representative) {
+        enabledTabs.push(2);
+        enabledTabs.push(3);
+      }
+    }
     return enabledTabs;
   };
   return {

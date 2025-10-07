@@ -356,3 +356,7 @@ $_SESSION["ID"] = 1;
 </body>
 
 </html>
+
+<?php
+include "footer.php";
+?>

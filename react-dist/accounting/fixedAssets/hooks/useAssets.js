@@ -3,8 +3,9 @@ import { assetsService } from "../../../../services/api/index.js";
 export const useAssets = () => {
   const [assets, setAssets] = useState([]);
   const fetchAssets = async paginationParams => {
-    console.log("Fetching cash recipes...", paginationParams);
     try {
+      const today = new Date().toISOString().split("T")[0];
+      const fiveDaysBack = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
       const {
         per_page,
         page,
@@ -20,9 +21,10 @@ export const useAssets = () => {
         category: filters.category,
         internal_code: filters.internal_code,
         status: filters.status,
+        start_date: filters?.date_range?.length ? filters.date_range[0].toISOString().split("T")[0] : today,
+        end_date: filters?.date_range?.length ? filters.date_range[1].toISOString().split("T")[0] : fiveDaysBack,
         createdAt: filters.date_range?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(",")
       };
-      console.log("params", params);
       const response = await assetsService.getAll(params);
       return {
         data: response.data.data || response.data,

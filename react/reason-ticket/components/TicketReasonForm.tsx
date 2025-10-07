@@ -48,7 +48,7 @@ export const TicketReasonForm: React.FC<TicketReasonFormProps> = ({ formId, onHa
         {errors.label && <div className="invalid-feedback">{errors.label.message}</div>}
       </div>
       <div className="form-group mb-3">
-        <label htmlFor="tag">Tag</label>
+        <label htmlFor="tag">Tagg</label>
         <InputText id="tag" {...register('tag', { required: 'Tag es requerido' })} className={`form-control ${errors.tag ? 'is-invalid' : ''}`} />
         {errors.tag && <div className="invalid-feedback">{errors.tag.message}</div>}
       </div>

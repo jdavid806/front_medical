@@ -24,6 +24,7 @@ const ConsentimientoApp = () => {
     setLocalData(data);
   }, [data]);
   const onCreate = () => {
+    console.log("Debug: ColumnActionsProps loaded");
     setCurrentConsentimiento(null);
     setInitialData({
       tenant_id: "",

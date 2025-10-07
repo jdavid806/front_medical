@@ -30,7 +30,7 @@ include "../header.php";
         </div>
 
         <div class="row mt-4">
-            <div id="PrescriptionCancellationRequest"></div>
+            <div id="PrescriptionCancellationRequestReact"></div>
         </div>
     </div>
 
@@ -41,7 +41,7 @@ include "../header.php";
             PrescriptionCancellationRequest
         } from './react-dist/clinical-records/PrescriptionCancellationRequest.js';
 
-        const rootElement = document.getElementById('PrescriptionCancellationRequest');
+        const rootElement = document.getElementById('PrescriptionCancellationRequestReact');
         ReactDOMClient.createRoot(rootElement).render(React.createElement(PrescriptionCancellationRequest));
     </script>
 

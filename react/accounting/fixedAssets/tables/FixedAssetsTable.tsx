@@ -61,6 +61,7 @@ export const FixedAssetsTable = () => {
   } = useDataPagination({
     fetchFunction: fetchAssets,
     defaultPerPage: 10,
+    getCustomFilters: () => filters,
   });
 
   useEffect(() => {
@@ -112,25 +113,17 @@ export const FixedAssetsTable = () => {
     setMaintenanceModalVisible(true);
   };
 
-  const applyFilters = () => {
-    fetchAssets(filters);
-  };
-
   const clearFilters = () => {
-    setFilters({
-      name: "",
-      category: null,
-      internal_code: "",
-      status: null,
-      date_range: null,
-    });
-    setFilteredAssets(assets);
-  };
-
-  useEffect(() => {
-    setFilteredAssets(assets);
-    applyFilters();
-  }, [assets]);
+  setFilters({
+    name: "",
+    category: null,
+    internal_code: "",
+    status: null,
+    date_range: null,
+  });
+  
+  refresh();
+};
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("es-DO", {
@@ -502,7 +495,6 @@ export const FixedAssetsTable = () => {
           }}
           onSave={async (adjustmentData) => {
             // Aquí implementas la lógica para guardar el ajuste
-            console.log("Ajuste guardado:", adjustmentData);
 
             // Actualiza el estado de los activos si es necesario
             setDepreciationModalVisible(false);

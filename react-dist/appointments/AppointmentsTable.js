@@ -18,6 +18,7 @@ import { useMassMessaging } from "../hooks/useMassMessaging.js";
 import { getIndicativeByCountry } from "../../services/utilidades.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
+import { PrimeReactProvider } from "primereact/api";
 export const AppointmentsTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState(null);
@@ -374,7 +375,14 @@ export const AppointmentsTable = () => {
   const handleLoadExamResultsFile = () => {
     setShowLoadExamResultsFileModal(true);
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
+    value: {
+      appendTo: "self",
+      zIndex: {
+        overlay: 100000
+      }
+    }
+  }, /*#__PURE__*/React.createElement("div", {
     className: "accordion mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "accordion-item"
@@ -429,7 +437,11 @@ export const AppointmentsTable = () => {
     value: selectedDate,
     onChange: e => setSelectedDate(e.value),
     className: "w-100",
-    placeholder: "Seleccione un rango"
+    placeholder: "Seleccione un rango",
+    appendTo: "self",
+    panelStyle: {
+      zIndex: 100000
+    }
   }))))))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
@@ -527,5 +539,5 @@ export const AppointmentsTable = () => {
       refresh();
       setShowRescheduleModal(false);
     }
-  }));
+  })));
 };

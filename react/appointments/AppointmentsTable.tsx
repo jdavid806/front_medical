@@ -41,6 +41,7 @@ import {
   CustomPRTableColumnProps,
 } from "../components/CustomPRTable";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
+import { PrimeReactProvider } from "primereact/api";
 
 export const AppointmentsTable: React.FC = () => {
   const patientId =
@@ -505,60 +506,71 @@ export const AppointmentsTable: React.FC = () => {
 
   return (
     <>
-      <div className="accordion mb-3">
-        <div className="accordion-item">
-          <h2 className="accordion-header" id="filters">
-            <button
-              className="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#filtersCollapse"
-              aria-expanded="false"
-              aria-controls="filtersCollapse"
+      <PrimeReactProvider
+        value={{
+          appendTo: "self",
+          zIndex: {
+            overlay: 100000,
+          },
+        }}
+      >
+        <div className="accordion mb-3">
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="filters">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#filtersCollapse"
+                aria-expanded="false"
+                aria-controls="filtersCollapse"
+              >
+                Filtrar citas
+              </button>
+            </h2>
+            <div
+              id="filtersCollapse"
+              className="accordion-collapse collapse"
+              aria-labelledby="filters"
             >
-              Filtrar citas
-            </button>
-          </h2>
-          <div
-            id="filtersCollapse"
-            className="accordion-collapse collapse"
-            aria-labelledby="filters"
-          >
-            <div className="accordion-body">
-              <div className="d-flex gap-2">
-                <div className="flex-grow-1">
-                  <div className="row g-3">
-                    <div className="col">
-                      <label htmlFor="branch_id" className="form-label">
-                        Estados
-                      </label>
-                      <Dropdown
-                        inputId="branch_id"
-                        options={getAppointmentStates()}
-                        optionLabel="label"
-                        optionValue="value"
-                        filter
-                        placeholder="Filtrar por estado"
-                        className="w-100"
-                        value={selectedBranch}
-                        onChange={(e) => setSelectedBranch(e.value)}
-                        showClear
-                      />
-                    </div>
-                    <div className="col">
-                      <label htmlFor="rangoFechasCitas" className="form-label">
-                        Rango de fechas
-                      </label>
-                      <Calendar
-                        id="rangoFechasCitas"
-                        name="rangoFechaCitas"
-                        selectionMode="range"
-                        dateFormat="dd/mm/yy"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.value)}
-                        className="w-100"
-                        placeholder="Seleccione un rango"
-                      />
+              <div className="accordion-body">
+                <div className="d-flex gap-2">
+                  <div className="flex-grow-1">
+                    <div className="row g-3">
+                      <div className="col">
+                        <label htmlFor="branch_id" className="form-label">
+                          Estados
+                        </label>
+                        <Dropdown
+                          inputId="branch_id"
+                          options={getAppointmentStates()}
+                          optionLabel="label"
+                          optionValue="value"
+                          filter
+                          placeholder="Filtrar por estado"
+                          className="w-100"
+                          value={selectedBranch}
+                          onChange={(e) => setSelectedBranch(e.value)}
+                          showClear
+                        />
+                      </div>
+                      <div className="col">
+                        <label htmlFor="rangoFechasCitas" className="form-label">
+                          Rango de fechas
+                        </label>
+                        <Calendar
+                          id="rangoFechasCitas"
+                          name="rangoFechaCitas"
+                          selectionMode="range"
+                          dateFormat="dd/mm/yy"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.value)}
+                          className="w-100"
+                          placeholder="Seleccione un rango"
+                          appendTo={"self"}
+                          panelStyle={{ zIndex: 100000 }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -566,129 +578,129 @@ export const AppointmentsTable: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-        style={{ minHeight: "400px" }}
-      >
-
-        <div className="card-body h-100 w-100 d-flex flex-column">
-          <CustomPRTable
-            columns={columns}
-            data={appointments}
-            lazy
-            first={first}
-            rows={perPage}
-            totalRecords={totalRecords}
-            loading={loadingAppointments}
-            onPage={handlePageChange}
-            onSearch={handleSearchChange}
-            onReload={refresh}
-          ></CustomPRTable>
-        </div>
-      </div>
-
-
-      {showPdfModal && (
         <div
-          className="modal fade show"
-          style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "400px" }}
         >
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Previsualización de PDF</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => {
-                    setPdfFile(null);
-                    setPdfPreviewUrl(null);
-                  }}
-                ></button>
-              </div>
-              <div className="modal-body">
-                {pdfPreviewUrl ? (
-                  <embed
-                    src={pdfPreviewUrl}
-                    width="100%"
-                    height="500px"
-                    type="application/pdf"
+
+          <div className="card-body h-100 w-100 d-flex flex-column">
+            <CustomPRTable
+              columns={columns}
+              data={appointments}
+              lazy
+              first={first}
+              rows={perPage}
+              totalRecords={totalRecords}
+              loading={loadingAppointments}
+              onPage={handlePageChange}
+              onSearch={handleSearchChange}
+              onReload={refresh}
+            ></CustomPRTable>
+          </div>
+        </div>
+
+
+        {showPdfModal && (
+          <div
+            className="modal fade show"
+            style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          >
+            <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Previsualización de PDF</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => {
+                      setPdfFile(null);
+                      setPdfPreviewUrl(null);
+                    }}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {pdfPreviewUrl ? (
+                    <embed
+                      src={pdfPreviewUrl}
+                      width="100%"
+                      height="500px"
+                      type="application/pdf"
+                    />
+                  ) : (
+                    <p>Por favor, seleccione un archivo PDF.</p>
+                  )}
+                </div>
+                <div className="modal-footer">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    id="inputPdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file) {
+                        setPdfFile(file);
+                        setPdfPreviewUrl(URL.createObjectURL(file));
+                      }
+                    }}
                   />
-                ) : (
-                  <p>Por favor, seleccione un archivo PDF.</p>
-                )}
-              </div>
-              <div className="modal-footer">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  id="inputPdf"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-                    if (file) {
-                      setPdfFile(file);
-                      setPdfPreviewUrl(URL.createObjectURL(file));
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setShowPdfModal(false);
-                    setPdfFile(null);
-                    setPdfPreviewUrl(null);
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => {
-                    handleSubmit();
-                    setShowPdfModal(false);
-                    setPdfFile(null);
-                    setPdfPreviewUrl(null);
-                  }}
-                >
-                  Confirmar
-                </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setShowPdfModal(false);
+                      setPdfFile(null);
+                      setPdfPreviewUrl(null);
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      handleSubmit();
+                      setShowPdfModal(false);
+                      setPdfFile(null);
+                      setPdfPreviewUrl(null);
+                    }}
+                  >
+                    Confirmar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-      <CustomFormModal
-        formId={"createPreadmission"}
-        show={showFormModal.isShow}
-        onHide={handleHideFormModal}
-        title={"Crear Preadmision" + " - " + showFormModal.data["patientName"]}
-      >
-        <PreadmissionForm
-          initialValues={showFormModal.data}
-          formId="createPreadmission"
-        ></PreadmissionForm>
-      </CustomFormModal>
-      <CustomFormModal
-        formId={"loadExamResultsFile"}
-        show={showLoadExamResultsFileModal}
-        onHide={() => setShowLoadExamResultsFileModal(false)}
-        title={"Subir resultados de examen"}
-      >
-        <ExamResultsFileForm></ExamResultsFileForm>
-      </CustomFormModal>
-      <RescheduleAppointmentModalV2
-        isOpen={showRescheduleModal}
-        onClose={() => setShowRescheduleModal(false)}
-        appointmentId={selectedAppointmentId}
-        onSuccess={() => {
-          refresh();
-          setShowRescheduleModal(false);
-        }}
-      />
+        )}
+        <CustomFormModal
+          formId={"createPreadmission"}
+          show={showFormModal.isShow}
+          onHide={handleHideFormModal}
+          title={"Crear Preadmision" + " - " + showFormModal.data["patientName"]}
+        >
+          <PreadmissionForm
+            initialValues={showFormModal.data}
+            formId="createPreadmission"
+          ></PreadmissionForm>
+        </CustomFormModal>
+        <CustomFormModal
+          formId={"loadExamResultsFile"}
+          show={showLoadExamResultsFileModal}
+          onHide={() => setShowLoadExamResultsFileModal(false)}
+          title={"Subir resultados de examen"}
+        >
+          <ExamResultsFileForm></ExamResultsFileForm>
+        </CustomFormModal>
+        <RescheduleAppointmentModalV2
+          isOpen={showRescheduleModal}
+          onClose={() => setShowRescheduleModal(false)}
+          appointmentId={selectedAppointmentId}
+          onSuccess={() => {
+            refresh();
+            setShowRescheduleModal(false);
+          }}
+        />
+      </PrimeReactProvider>
     </>
   );
 };
