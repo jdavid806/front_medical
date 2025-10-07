@@ -1,5 +1,5 @@
 // CompanyConfiguration.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { Card } from 'primereact/card';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -33,14 +33,6 @@ export const CompanyConfiguration = ({
   const handleCompanyUpdate = updatedCompany => {
     refetch();
   };
-
-  // Notificar automáticamente cuando todos los tabs estén completos
-  useEffect(() => {
-    if (allTabsCompleted) {
-      console.log('✅ Todos los tabs de empresa completados, habilitando siguiente módulo...');
-      onComplete?.();
-    }
-  }, [allTabsCompleted, onComplete]);
   const handleTabChange = index => {
     const enabledTabs = getEnabledTabs();
     if (enabledTabs.includes(index)) {
@@ -55,7 +47,7 @@ export const CompanyConfiguration = ({
     const getDisabledReason = () => {
       if (index === 1 && !validations.generalInfo) return "Complete Información General primero";
       if (index === 2 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
-      if (index === 3 && (!validations.generalInfo || !validations.representative || !validations.communications)) return "Complete Comunicaciones primero";
+      if (index === 3 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
       return "Módulo bloqueado";
     };
     return /*#__PURE__*/React.createElement("div", {
@@ -70,9 +62,6 @@ export const CompanyConfiguration = ({
       title: getDisabledReason()
     }));
   };
-  useEffect(() => {
-    getEnabledTabs();
-  }, [validations, allTabsCompleted]);
   if (loading) {
     return /*#__PURE__*/React.createElement("div", {
       className: "container-fluid"
@@ -102,25 +91,7 @@ export const CompanyConfiguration = ({
     className: "row gx-3 gy-4 mb-5"
   }, /*#__PURE__*/React.createElement(Card, {
     className: "p-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-2"
-  }, /*#__PURE__*/React.createElement("small", {
-    className: "text-muted"
-  }, "Progreso: ", Object.values(validations).filter(Boolean).length, " de 4 m\xF3dulos completados"), /*#__PURE__*/React.createElement("small", {
-    className: `fw-bold ${allTabsCompleted ? 'text-success' : 'text-warning'}`
-  }, allTabsCompleted ? '✅ Listo para continuar' : '⚠️ Complete todos los módulos')), /*#__PURE__*/React.createElement("div", {
-    className: "progress",
-    style: {
-      height: '8px'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "progress-bar",
-    style: {
-      width: `${Object.values(validations).filter(Boolean).length / 4 * 100}%`
-    }
-  }))), /*#__PURE__*/React.createElement(TabView, {
+  }, /*#__PURE__*/React.createElement(TabView, {
     activeIndex: activeIndex,
     onTabChange: e => handleTabChange(e.index),
     className: "company-config-tabs"
@@ -141,8 +112,7 @@ export const CompanyConfiguration = ({
     disabled: !isTabEnabled(2)
   }, /*#__PURE__*/React.createElement(CommunicationsTab, {
     whatsAppStatus: whatsAppStatus,
-    onStatusChange: setWhatsAppStatus,
-    onValidationChange: isValid => updateValidation('communications', isValid)
+    onStatusChange: setWhatsAppStatus
   })), /*#__PURE__*/React.createElement(TabPanel, {
     header: getTabHeader(3, "fa-solid fa-location-dot", "Sedes"),
     disabled: !isTabEnabled(3)
@@ -150,12 +120,18 @@ export const CompanyConfiguration = ({
     companyId: company?.id,
     onValidationChange: isValid => updateValidation('branches', isValid)
   }))), allTabsCompleted && /*#__PURE__*/React.createElement("div", {
-    className: "mt-4 p-3 border-top bg-success bg-opacity-10 rounded"
+    className: "mt-4 p-3 border-top"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "text-center"
-  }, /*#__PURE__*/React.createElement("small", {
+    className: "d-flex justify-content-between align-items-center"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("small", {
     className: "text-success"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-check-circle mr-2"
-  }), "\xA1Todos los m\xF3dulos de empresa est\xE1n completos! El bot\xF3n \"Siguiente M\xF3dulo\" est\xE1 ahora habilitado."))))));
+  }), "Todos los m\xF3dulos completados")), /*#__PURE__*/React.createElement(Button, {
+    label: "Continuar a Siguiente M\xF3dulo",
+    icon: "pi pi-arrow-right",
+    iconPos: "right",
+    className: "p-button-success",
+    onClick: onComplete
+  }))))));
 };

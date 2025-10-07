@@ -1,66 +1,12 @@
 import { ConsentimientoData } from "./ConsentimientoData";
 import { ConsentimientoTableColumn } from "./table-types";
-import React from "react";
 import { Button } from "primereact/button";
+import React from "react";
 
 interface ColumnActionsProps {
   editConsentimiento: (id: string) => void;
   deleteConsentimiento: (id: string) => void;
 }
-interface DescriptionCellProps {
-  html?: string | null;
-}
-
-export const DescriptionCell: React.FC<DescriptionCellProps> = ({ html }) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const [isOverflowing, setIsOverflowing] = React.useState(false);
-
-  React.useEffect(() => {
-    if (contentRef.current) {
-      const el = contentRef.current;
-      setIsOverflowing(el.scrollHeight > 250); // 🔹 detecta si hay más contenido que la altura visible
-    }
-  }, [html]);
-
-  if (!html) return <span>Sin descripción</span>;
-
-  return (
-    <div style={{ maxWidth: "800px" }}>
-      <div
-        ref={contentRef}
-        dangerouslySetInnerHTML={{ __html: html }}
-        style={{
-          maxHeight: expanded ? "none" : "250px",
-          overflow: expanded ? "visible" : "hidden",
-          whiteSpace: "normal",
-          transition: "max-height 0.3s ease",
-        }}
-      />
-      {isOverflowing && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded((prev) => !prev);
-          }}
-          style={{
-            color: "#007bff",
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            marginTop: "6px",
-            textDecoration: "underline",
-            fontWeight: 500,
-          }}
-        >
-          {expanded ? "Ver menos" : "Ver más"}
-        </button>
-      )}
-    </div>
-  );
-};
 
 export const getColumns = ({
   editConsentimiento,
@@ -71,16 +17,55 @@ export const getColumns = ({
   {
     field: "description",
     header: "Descripción",
-    body: (rowData: ConsentimientoData) => (
-      <DescriptionCell html={rowData.description} />
-    ),
+    body: (rowData: ConsentimientoData) => {
+      const html = rowData.description || "";
+      const text = html.replace(/<[^>]+>/g, "");
+      const shortText = text.slice(0, 300);
+      const isLong = text.length > 300;
+
+      return (
+        <div style={{ maxWidth: "600px" }}>
+          <div
+            id={`desc-${rowData.id}`}
+            data-full={html}
+            data-short={shortText}
+            data-expanded="false"
+            dangerouslySetInnerHTML={{ __html: isLong ? shortText + "..." : html }}
+          ></div>
+
+          {isLong && (
+            <span
+              onClick={(e) => {
+                const el = document.getElementById(`desc-${rowData.id}`);
+                if (!el) return;
+                const expanded = el.dataset.expanded === "true";
+                el.innerHTML = expanded
+                  ? el.dataset.short + "..."
+                  : el.dataset.full || "";
+                el.dataset.expanded = expanded ? "false" : "true";
+                e.currentTarget.textContent = expanded ? "Ver más" : "Ver menos";
+              }}
+              style={{
+                color: "#007bff",
+                cursor: "pointer",
+                textDecoration: "underline",
+                display: "inline-block",
+                marginTop: "4px",
+              }}
+            >
+              Ver más
+            </span>
+          )}
+        </div>
+      );
+    },
   },
   {
     field: "",
     header: "Acciones",
     style: { width: "60px" },
     body: (rowData: ConsentimientoData) => (
-      <div>
+      <div key={rowData.id}>
         <Button
           className="p-button-rounded p-button-text p-button-sm"
           onClick={(e) => {

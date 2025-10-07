@@ -3,7 +3,6 @@ export const useTabValidation = company => {
   const [validations, setValidations] = useState({
     generalInfo: false,
     representative: false,
-    communications: false,
     branches: false
   });
   useEffect(() => {

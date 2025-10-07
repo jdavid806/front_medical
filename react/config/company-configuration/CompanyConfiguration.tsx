@@ -28,14 +28,6 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
         refetch();
     };
 
-    // Notificar automáticamente cuando todos los tabs estén completos
-    useEffect(() => {
-        if (allTabsCompleted) {
-            console.log('✅ Todos los tabs de empresa completados, habilitando siguiente módulo...');
-            onComplete?.();
-        }
-    }, [allTabsCompleted, onComplete]);
-
     const handleTabChange = (index: number) => {
         const enabledTabs = getEnabledTabs();
         if (enabledTabs.includes(index)) {
@@ -52,7 +44,7 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
         const getDisabledReason = () => {
             if (index === 1 && !validations.generalInfo) return "Complete Información General primero";
             if (index === 2 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
-            if (index === 3 && (!validations.generalInfo || !validations.representative || !validations.communications)) return "Complete Comunicaciones primero";
+            if (index === 3 && (!validations.generalInfo || !validations.representative)) return "Complete Representante primero";
             return "Módulo bloqueado";
         };
 
@@ -70,10 +62,6 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
             </div>
         );
     };
-
-    useEffect(() => {
-        getEnabledTabs()
-    }, [validations, allTabsCompleted]);
 
     if (loading) {
         return (
@@ -106,26 +94,6 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
         <div className="container-fluid">
             <div className="row gx-3 gy-4 mb-5">
                 <Card className="p-3">
-                    {/* Indicador de progreso */}
-                    <div className="mb-4">
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                            <small className="text-muted">
-                                Progreso: {Object.values(validations).filter(Boolean).length} de 4 módulos completados
-                            </small>
-                            <small className={`fw-bold ${allTabsCompleted ? 'text-success' : 'text-warning'}`}>
-                                {allTabsCompleted ? '✅ Listo para continuar' : '⚠️ Complete todos los módulos'}
-                            </small>
-                        </div>
-                        <div className="progress" style={{ height: '8px' }}>
-                            <div
-                                className="progress-bar"
-                                style={{
-                                    width: `${(Object.values(validations).filter(Boolean).length / 4) * 100}%`
-                                }}
-                            ></div>
-                        </div>
-                    </div>
-
                     <TabView
                         activeIndex={activeIndex}
                         onTabChange={(e) => handleTabChange(e.index)}
@@ -158,7 +126,6 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
                             <CommunicationsTab
                                 whatsAppStatus={whatsAppStatus}
                                 onStatusChange={setWhatsAppStatus}
-                                onValidationChange={(isValid) => updateValidation('communications', isValid)}
                             />
                         </TabPanel>
 
@@ -173,14 +140,23 @@ export const CompanyConfiguration: React.FC<CompanyConfigurationProps> = ({ onCo
                         </TabPanel>
                     </TabView>
 
-                    {/* SOLO mostrar mensaje de completado, SIN botón */}
+                    {/* Botón para continuar al siguiente módulo */}
                     {allTabsCompleted && (
-                        <div className="mt-4 p-3 border-top bg-success bg-opacity-10 rounded">
-                            <div className="text-center">
-                                <small className="text-success">
-                                    <i className="pi pi-check-circle mr-2"></i>
-                                    ¡Todos los módulos de empresa están completos! El botón "Siguiente Módulo" está ahora habilitado.
-                                </small>
+                        <div className="mt-4 p-3 border-top">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small className="text-success">
+                                        <i className="pi pi-check-circle mr-2"></i>
+                                        Todos los módulos completados
+                                    </small>
+                                </div>
+                                <Button
+                                    label="Continuar a Siguiente Módulo"
+                                    icon="pi pi-arrow-right"
+                                    iconPos="right"
+                                    className="p-button-success"
+                                    onClick={onComplete}
+                                />
                             </div>
                         </div>
                     )}

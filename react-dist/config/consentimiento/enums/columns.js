@@ -1,51 +1,5 @@
-import React from "react";
 import { Button } from "primereact/button";
-export const DescriptionCell = ({
-  html
-}) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const contentRef = React.useRef(null);
-  const [isOverflowing, setIsOverflowing] = React.useState(false);
-  React.useEffect(() => {
-    if (contentRef.current) {
-      const el = contentRef.current;
-      setIsOverflowing(el.scrollHeight > 250); // 🔹 detecta si hay más contenido que la altura visible
-    }
-  }, [html]);
-  if (!html) return /*#__PURE__*/React.createElement("span", null, "Sin descripci\xF3n");
-  return /*#__PURE__*/React.createElement("div", {
-    style: {
-      maxWidth: "800px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    ref: contentRef,
-    dangerouslySetInnerHTML: {
-      __html: html
-    },
-    style: {
-      maxHeight: expanded ? "none" : "250px",
-      overflow: expanded ? "visible" : "hidden",
-      whiteSpace: "normal",
-      transition: "max-height 0.3s ease"
-    }
-  }), isOverflowing && /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    onClick: e => {
-      e.stopPropagation();
-      setExpanded(prev => !prev);
-    },
-    style: {
-      color: "#007bff",
-      background: "none",
-      border: "none",
-      padding: 0,
-      cursor: "pointer",
-      marginTop: "6px",
-      textDecoration: "underline",
-      fontWeight: 500
-    }
-  }, expanded ? "Ver menos" : "Ver más"));
-};
+import React from "react";
 export const getColumns = ({
   editConsentimiento,
   deleteConsentimiento
@@ -58,16 +12,50 @@ export const getColumns = ({
 }, {
   field: "description",
   header: "Descripción",
-  body: rowData => /*#__PURE__*/React.createElement(DescriptionCell, {
-    html: rowData.description
-  })
+  body: rowData => {
+    const html = rowData.description || "";
+    const text = html.replace(/<[^>]+>/g, "");
+    const shortText = text.slice(0, 300);
+    const isLong = text.length > 300;
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        maxWidth: "600px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      id: `desc-${rowData.id}`,
+      "data-full": html,
+      "data-short": shortText,
+      "data-expanded": "false",
+      dangerouslySetInnerHTML: {
+        __html: isLong ? shortText + "..." : html
+      }
+    }), isLong && /*#__PURE__*/React.createElement("span", {
+      onClick: e => {
+        const el = document.getElementById(`desc-${rowData.id}`);
+        if (!el) return;
+        const expanded = el.dataset.expanded === "true";
+        el.innerHTML = expanded ? el.dataset.short + "..." : el.dataset.full || "";
+        el.dataset.expanded = expanded ? "false" : "true";
+        e.currentTarget.textContent = expanded ? "Ver más" : "Ver menos";
+      },
+      style: {
+        color: "#007bff",
+        cursor: "pointer",
+        textDecoration: "underline",
+        display: "inline-block",
+        marginTop: "4px"
+      }
+    }, "Ver m\xE1s"));
+  }
 }, {
   field: "",
   header: "Acciones",
   style: {
     width: "60px"
   },
-  body: rowData => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+  body: rowData => /*#__PURE__*/React.createElement("div", {
+    key: rowData.id
+  }, /*#__PURE__*/React.createElement(Button, {
     className: "p-button-rounded p-button-text p-button-sm",
     onClick: e => {
       e.stopPropagation();

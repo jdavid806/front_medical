@@ -251,7 +251,7 @@ export const FinishClinicalRecordModal: React.FC<FinishClinicalRecordModalProps>
         };
 
         const getRecipeTab = () => {
-            if (specialtyName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "oftalmologia") {
+            if (["historiaOptometria", "historiaOptometriaD"].map((item) => item.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()).includes(clinicalRecordType.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())) {
                 return {
                     key: "optometry",
                     label: "Receta de Optometría",

@@ -4,7 +4,6 @@ import { Company } from '../../company-configuration/types/consultorio';
 interface TabValidationState {
     generalInfo: boolean;
     representative: boolean;
-    communications: boolean;
     branches: boolean;
 }
 
@@ -12,7 +11,6 @@ export const useTabValidation = (company?: Company) => {
     const [validations, setValidations] = useState<TabValidationState>({
         generalInfo: false,
         representative: false,
-        communications: false,
         branches: false
     });
 

@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { InputText } from 'primereact/inputtext';
 import { Checkbox } from 'primereact/checkbox';
+import { Toast } from 'primereact/toast';
+import { useRef } from 'react';
 export const TicketReasonForm = ({
   formId,
   onHandleSubmit,
@@ -15,15 +17,17 @@ export const TicketReasonForm = ({
     control,
     formState: {
       errors
-    }
+    },
+    watch
   } = useForm({
     defaultValues: {
       key: '',
       label: '',
-      tag: '',
+      tag: 'RC',
       is_active: true
     }
   });
+  const toast = useRef(null);
   useEffect(() => {
     reset(initialData ?? {
       key: '',
@@ -32,10 +36,32 @@ export const TicketReasonForm = ({
       is_active: true
     });
   }, [initialData, reset]);
+  const showError = message => {
+    toast.current?.show({
+      severity: 'error',
+      summary: 'Error de validación',
+      detail: message,
+      life: 5000
+    });
+  };
   const onSubmit = data => {
+    // Validación adicional para el tag
+    if (!data.tag || data.tag.trim() === '') {
+      showError('El tag no puede estar en blanco');
+      return;
+    }
+    if (data.tag.length > 5) {
+      showError('El tag no puede tener más de 5 caracteres');
+      return;
+    }
     onHandleSubmit(data);
   };
-  return /*#__PURE__*/React.createElement("form", {
+
+  // Watch para validación en tiempo real del tag
+  const tagValue = watch('tag');
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onSubmit),
     className: "container-fluid p-3"
@@ -46,8 +72,13 @@ export const TicketReasonForm = ({
   }, "Key"), /*#__PURE__*/React.createElement(InputText, _extends({
     id: "key"
   }, register('key', {
-    required: 'Key es requerido'
+    required: 'Key es requerido',
+    pattern: {
+      value: /^[a-zA-Z0-9_]+$/,
+      message: 'Key solo puede contener letras, números y guiones bajos'
+    }
   }), {
+    placeholder: "Reason_Consulta",
     className: `form-control ${errors.key ? 'is-invalid' : ''}`
   })), errors.key && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback"
@@ -60,6 +91,7 @@ export const TicketReasonForm = ({
   }, register('label', {
     required: 'Label es requerido'
   }), {
+    placeholder: "Razon Consulta",
     className: `form-control ${errors.label ? 'is-invalid' : ''}`
   })), errors.label && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback"
@@ -70,12 +102,29 @@ export const TicketReasonForm = ({
   }, "Tag"), /*#__PURE__*/React.createElement(InputText, _extends({
     id: "tag"
   }, register('tag', {
-    required: 'Tag es requerido'
+    required: 'Tag es requerido',
+    minLength: {
+      value: 1,
+      message: 'El tag no puede estar vacío'
+    },
+    maxLength: {
+      value: 5,
+      message: 'El tag no puede tener más de 5 caracteres'
+    },
+    pattern: {
+      value: /^[a-zA-Z0-9]+$/,
+      message: 'El tag solo puede contener letras y números'
+    }
   }), {
+    placeholder: "RC",
     className: `form-control ${errors.tag ? 'is-invalid' : ''}`
   })), errors.tag && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback"
-  }, errors.tag.message)), /*#__PURE__*/React.createElement("div", {
+  }, errors.tag.message), /*#__PURE__*/React.createElement("small", {
+    className: "form-text text-muted"
+  }, tagValue?.length || 0, "/5 caracteres", tagValue && tagValue.length > 5 && /*#__PURE__*/React.createElement("span", {
+    className: "text-danger ms-2"
+  }, "(M\xE1ximo 5 caracteres)"))), /*#__PURE__*/React.createElement("div", {
     className: "form-check mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "is_active",
@@ -90,5 +139,5 @@ export const TicketReasonForm = ({
   }), /*#__PURE__*/React.createElement("label", {
     htmlFor: "is_active",
     className: "form-check-label ms-2"
-  }, "Activo")));
+  }, "Activo"))));
 };

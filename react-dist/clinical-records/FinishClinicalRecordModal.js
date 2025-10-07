@@ -169,7 +169,7 @@ export const FinishClinicalRecordModal = /*#__PURE__*/forwardRef((props, ref) =>
     });
   };
   const getRecipeTab = () => {
-    if (specialtyName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === "oftalmologia") {
+    if (["historiaOptometria", "historiaOptometriaD"].map(item => item.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()).includes(clinicalRecordType.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())) {
       return {
         key: "optometry",
         label: "Receta de Optometría"
