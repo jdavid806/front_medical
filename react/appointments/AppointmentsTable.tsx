@@ -42,6 +42,7 @@ import {
 } from "../components/CustomPRTable";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { PrimeReactProvider } from "primereact/api";
+import { Accordion, AccordionTab } from "primereact/accordion";
 
 export const AppointmentsTable: React.FC = () => {
   const patientId =
@@ -118,9 +119,9 @@ export const AppointmentsTable: React.FC = () => {
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] =
     useState(false);
 
-  const [pdfFile, setPdfFile] = useState<File | null>(null); // Para almacenar el archivo PDF
-  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null); // Para la previsualización del PDF
-  const [showPdfModal, setShowPdfModal] = useState(false); // Para controlar la visibilidad del modal de PDF
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
   const { fetchTemplate, switchTemplate } = useTemplateBuilded();
 
@@ -138,7 +139,6 @@ export const AppointmentsTable: React.FC = () => {
     sendMessageAppointment.current = sendMessageAppointmentHook;
   }, [sendMessageAppointmentHook]);
 
-  // Función para obtener el icono y nombre del tipo de cita
   const getAppointmentTypeInfo = (appointmentType: any) => {
     if (!appointmentType) return { icon: "❓", name: "No definido" };
 
@@ -184,7 +184,6 @@ export const AppointmentsTable: React.FC = () => {
         );
         return (
           <span className="d-flex align-items-center gap-2">
-            {/* <span>{typeInfo.icon}</span> */}
             <span>{typeInfo.name}</span>
           </span>
         );
@@ -442,11 +441,9 @@ export const AppointmentsTable: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // Llamar a la función guardarArchivoExamen
       //@ts-ignore
       const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
 
-      // Acceder a la PromiseResult
       if (enviarPDf !== undefined) {
         const dataUpdate = {
           minio_url: enviarPDf,
@@ -473,7 +470,6 @@ export const AppointmentsTable: React.FC = () => {
     } catch (error) {
       console.error("Error al guardar el archivo:", error);
     } finally {
-      // Limpiar el estado después de la operación
       setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);
@@ -496,7 +492,6 @@ export const AppointmentsTable: React.FC = () => {
     });
   };
 
-  //filtrar objecto en el select
   const getAppointmentStates = () => {
     return Object.entries(appointmentStateFilters).map(([key, label]) => ({
       value: key,
@@ -589,91 +584,65 @@ export const AppointmentsTable: React.FC = () => {
           },
         }}
       >
-        <div className="accordion mb-3">
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="filters">
-              <button
-                className="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#filtersCollapse"
-                aria-expanded="false"
-                aria-controls="filtersCollapse"
-              >
-                Filtrar citas
-              </button>
-            </h2>
-            <div
-              id="filtersCollapse"
-              className="accordion-collapse collapse"
-              aria-labelledby="filters"
-            >
-              <div className="accordion-body">
-                <div className="d-flex gap-2">
-                  <div className="flex-grow-1">
-                    <div className="row g-3">
-                      <div className="col">
-                        <label htmlFor="branch_id" className="form-label">
-                          Estados
-                        </label>
-                        <Dropdown
-                          inputId="branch_id"
-                          options={getAppointmentStates()}
-                          optionLabel="label"
-                          optionValue="value"
-                          filter
-                          placeholder="Filtrar por estado"
-                          className="w-100"
-                          value={selectedBranch}
-                          onChange={(e) => setSelectedBranch(e.value)}
-                          showClear
-                        />
-                      </div>
-                      <div className="col">
-                        <label
-                          htmlFor="appointment_type"
-                          className="form-label"
-                        >
-                          Tipo de Cita
-                        </label>
-                        <Dropdown
-                          inputId="appointment_type"
-                          options={appointmentTypes}
-                          optionLabel="label"
-                          optionValue="value"
-                          filter
-                          placeholder="Filtrar por tipo"
-                          className="w-100"
-                          value={selectedAppointmentType}
-                          onChange={(e) => setSelectedAppointmentType(e.value)}
-                          showClear
-                        />
-                      </div>
-                      <div className="col">
-                        <label
-                          htmlFor="rangoFechasCitas"
-                          className="form-label"
-                        >
-                          Rango de fechas
-                        </label>
-                        <Calendar
-                          id="rangoFechasCitas"
-                          name="rangoFechaCitas"
-                          selectionMode="range"
-                          dateFormat="dd/mm/yy"
-                          value={selectedDate}
-                          onChange={(e) => setSelectedDate(e.value)}
-                          className="w-100"
-                          placeholder="Seleccione un rango"
-                          appendTo={"self"}
-                          panelStyle={{ zIndex: 100000 }}
-                        />
-                      </div>
-                    </div>
+        <div className="card mb-3">
+          <div className="card-body">
+            <Accordion>
+              <AccordionTab header="Filtros">
+                <div className="row mb-3">
+                  <div className="col-md-4">
+                    <label htmlFor="branch_id" className="form-label">
+                      Estados
+                    </label>
+                    <Dropdown
+                      inputId="branch_id"
+                      options={getAppointmentStates()}
+                      optionLabel="label"
+                      optionValue="value"
+                      filter
+                      placeholder="Filtrar por estado"
+                      className="w-100"
+                      value={selectedBranch}
+                      onChange={(e) => setSelectedBranch(e.value)}
+                      showClear
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label htmlFor="appointment_type" className="form-label">
+                      Tipo de Cita
+                    </label>
+                    <Dropdown
+                      inputId="appointment_type"
+                      options={appointmentTypes}
+                      optionLabel="label"
+                      optionValue="value"
+                      filter
+                      placeholder="Filtrar por tipo"
+                      className="w-100"
+                      value={selectedAppointmentType}
+                      onChange={(e) => setSelectedAppointmentType(e.value)}
+                      showClear
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <label htmlFor="rangoFechasCitas" className="form-label">
+                      Rango de fechas
+                    </label>
+                    <Calendar
+                      id="rangoFechasCitas"
+                      name="rangoFechaCitas"
+                      selectionMode="range"
+                      dateFormat="dd/mm/yy"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.value)}
+                      className="w-100"
+                      placeholder="Seleccione un rango"
+                      appendTo={"self"}
+                      panelStyle={{ zIndex: 100000 }}
+                    />
                   </div>
                 </div>
-              </div>
-            </div>
+              </AccordionTab>
+            </Accordion>
           </div>
         </div>
 

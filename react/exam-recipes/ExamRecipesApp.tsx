@@ -100,7 +100,7 @@ export const ExamRecipesApp: React.FC = () => {
         user: prescription.user,
         details: prescription.details,
         original: prescription,
-        updated_at: prescription.result_updated_at_formatted
+        updated_at: prescription.result_updated_at_formatted,
       }));
     setTableExamRecipes(mappedExamRecipes);
     setTotalRecords(mappedExamRecipes.length);
@@ -302,7 +302,7 @@ export const ExamRecipesApp: React.FC = () => {
           onDownload={() => {
             generarFormato("RecetaExamen", rowData, "Descarga");
           }}
-          onViewResults={() => seeExamRecipeResults(rowData.resultMinioUrl)}
+          onViewResults={() => { seeExamRecipeResults(rowData.resultMinioUrl) }}
           onCancel={() => cancelPrescription(rowData.id)}
           onShare={async () => {
             sendMessageWhatsapp(rowData.original);
@@ -358,31 +358,6 @@ const TableActionsMenu: React.FC<{
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const items = [
-    {
-      label: "Visualizar resultados",
-      icon: "pi pi-eye",
-      command: () => {
-        onViewResults();
-      },
-    },
-    {
-      label: "Imprimir",
-      icon: "pi pi-print",
-      command: () => {
-        onPrint();
-      },
-    },
-    ...(rowData.status === "uploaded"
-      ? [
-          {
-            label: "Descargar",
-            icon: "pi pi-download",
-            command: () => {
-              onDownload();
-            },
-          },
-        ]
-      : []),
     ...(rowData.status === "pending"
       ? [
           {
@@ -394,22 +369,47 @@ const TableActionsMenu: React.FC<{
           },
         ]
       : []),
-    {
-      separator: true,
-    },
-    {
-      label: "Compartir",
-      icon: "pi pi-share-alt",
-      items: [
-        {
-          label: "WhatsApp",
-          icon: "pi pi-whatsapp",
-          command: () => {
-            onShare();
+    ...(rowData.status === "uploaded"
+      ? [
+          {
+            label: "Visualizar resultados",
+            icon: "pi pi-eye",
+            command: () => {
+              onViewResults();
+            },
           },
-        },
-      ],
-    },
+          {
+            label: "Imprimir",
+            icon: "pi pi-print",
+            command: () => {
+              onPrint();
+            },
+          },
+          {
+            label: "Descargar",
+            icon: "pi pi-download",
+            command: () => {
+              onDownload();
+            },
+          },
+          {
+            separator: true,
+          },
+          {
+            label: "Compartir",
+            icon: "pi pi-share-alt",
+            items: [
+              {
+                label: "WhatsApp",
+                icon: "pi pi-whatsapp",
+                command: () => {
+                  onShare();
+                },
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const handleMenuHide = () => {
@@ -419,7 +419,6 @@ const TableActionsMenu: React.FC<{
   return (
     <div className="table-actions-menu">
       <Button
-        icon="pi pi-ellipsis-v"
         className="p-button-rounded btn-primary"
         onClick={(e) => menu.current?.toggle(e)}
         aria-controls={`popup_menu_${rowData.id}`}

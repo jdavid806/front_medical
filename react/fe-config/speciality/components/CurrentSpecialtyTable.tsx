@@ -1,9 +1,14 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
-import { CurrentSpecialtyTableProps } from '../interfaces'
+import { CurrentSpecialtyTableProps, Specialty } from '../interfaces'
+import { MenuItem } from 'primereact/menuitem'
+import { Menu } from 'primereact/menu'
+import { Dialog } from 'primereact/dialog'
+import { SpecialtyPatientViewConfigForm } from './SpecialtyPatientViewConfigForm'
+import { Divider } from 'primereact/divider'
 
 export default function CurrentSpecialityTable({
     specialties,
@@ -13,6 +18,15 @@ export default function CurrentSpecialityTable({
     onGlobalFilterChange,
     onDeactiveSpecialty
 }: CurrentSpecialtyTableProps) {
+
+    const [showPatientViewConfigModal, setShowPatientViewConfigModal] = useState<boolean>(false)
+    const [selectedItem, setSelectedItem] = useState<Specialty>()
+
+    const openPatientViewConfigmModal = (rowData: Specialty) => {
+        setSelectedItem(rowData)
+        setShowPatientViewConfigModal(true)
+
+    }
 
     const renderHeader = () => {
         return (
@@ -30,21 +44,14 @@ export default function CurrentSpecialityTable({
         )
     }
 
-    const actionBodyTemplate = (rowData: any) => {
-        return (
-            <div className="d-flex gap-2">
-                <Button
-                    className="btn btn-sm btn-text btn-danger"
-                    onClick={() => onDeactiveSpecialty(rowData)}
-                    tooltip="Desactivar especialidad"
-                >
-                    <i className="fa-solid fa-xmark-circle"></i>
-                </Button>
-            </div>
-        )
+    const actionBodyTemplate = (rowData: Specialty) => {
+        return <CurrentSpecialityTableActions
+            onDeactiveSpecialty={() => onDeactiveSpecialty(rowData)}
+            onShowPatientViewConfig={() => openPatientViewConfigmModal(rowData)}
+        />
     }
 
-    return (
+    return (<>
         <div className="container-fluid mt-4" style={{ width: '100%', padding: '0 15px' }}>
             <DataTable
                 value={specialties}
@@ -72,5 +79,74 @@ export default function CurrentSpecialityTable({
                 />
             </DataTable>
         </div>
-    )
+
+        <Dialog
+            visible={showPatientViewConfigModal}
+            header={"Configurar vista de paciente"}
+            onHide={() => setShowPatientViewConfigModal(false)}
+            style={{ width: "70vw" }}
+        >
+            {!selectedItem && <>Selecciona una especialidad</>}
+
+            {selectedItem && <>
+                <SpecialtyPatientViewConfigForm
+                    formId={"specialtyPatientViewConfigForm"}
+                    specialty={selectedItem}
+                />
+                <Divider />
+                <div className="d-flex justify-content-end gap-2">
+                    <button
+                        className="btn btn-danger"
+                        type="button"
+                        onClick={() => setShowPatientViewConfigModal(false)}
+                    >
+                        <i className="fa fa-times me-2"></i>Cancelar
+                    </button>
+                    <button form='specialtyPatientViewConfigForm' className="btn btn-primary" type="submit">
+                        <i className="fa fa-save me-2"></i>Guardar
+                    </button>
+                </div>
+            </>}
+        </Dialog>
+    </>)
+}
+
+interface CurrentSpecialityTableActionsProps {
+    onDeactiveSpecialty: () => void
+    onShowPatientViewConfig: () => void
+}
+
+export const CurrentSpecialityTableActions = (props: CurrentSpecialityTableActionsProps) => {
+
+    const { onDeactiveSpecialty, onShowPatientViewConfig } = props
+
+    const menuActions = useRef<Menu>(null);
+    const actions: MenuItem[] = [
+        {
+            label: 'Configurar vista de paciente',
+            icon: <i className='fa fa-upload me-2'></i>,
+            command: () => {
+                onShowPatientViewConfig()
+            }
+        },
+        {
+            label: 'Desactivar especialidad',
+            icon: <i className="fa-solid fa-xmark-circle me-2"></i>,
+            command: () => {
+                onDeactiveSpecialty()
+            }
+        }
+    ];
+
+    return <>
+        <Menu model={actions} popup ref={menuActions} id="popup_menu_actions" />
+        <button
+            className='btn btn-primary'
+            onClick={(event) => menuActions.current?.toggle(event)}
+            aria-controls="popup_menu_actions"
+            aria-haspopup
+        >
+            <i className='fa fa-cog'></i> Acciones
+        </button>
+    </>
 }

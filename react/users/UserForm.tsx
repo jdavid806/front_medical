@@ -169,15 +169,12 @@ const UserForm: React.FC<UserFormProps> = ({
   };
 
   // useEffect para el reset
+  // En UserForm, corrige el useEffect del reset
   useEffect(() => {
     if (initialData) {
-      console.log('Reseteando con initialData:', initialData);
       const resetData = {
         ...initialData,
-        // Forzamos otp_enabled a false cuando editamos porque el backend no lo envía
-        otp_enabled: false,
       };
-      console.log('Datos después del reset:', resetData);
       reset(resetData);
     } else {
       reset({
@@ -198,7 +195,7 @@ const UserForm: React.FC<UserFormProps> = ({
         minio_id: null,
         minio_url: null,
         clinical_record: null,
-        otp_enabled: false,
+        otp_enabled: false, 
       });
     }
   }, [initialData, reset]);

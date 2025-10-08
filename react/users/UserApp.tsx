@@ -133,6 +133,7 @@ export const UserApp = ({ onConfigurationComplete }: UserAppProps) => {
         minio_id: user.minio_id || "",
         minio_url: user.minio_url || "",
         clinical_record: user.clinical_record || "",
+        otp_enabled: user.otp_enabled || false
       });
     }
   }, [user]);

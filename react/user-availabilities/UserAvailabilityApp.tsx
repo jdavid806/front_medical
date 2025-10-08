@@ -10,11 +10,7 @@ import { useUserAvailabilityDelete } from './hooks/useUserAvailabilityDelete';
 import { useUserAvailabilityCreate } from './hooks/useUserAvailabilityCreate';
 import { convertHHMMSSToDate, convertHHMMToDate } from '../../services/utilidades';
 
-interface UserAvailabilityAppProps {
-    onConfigurationComplete?: (isComplete: boolean) => void;
-}
-
-export const UserAvailabilityApp = ({ onConfigurationComplete }: UserAvailabilityAppProps) => {
+export const UserAvailabilityApp = () => {
 
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserAvailabilityFormInputs | undefined>(undefined)
@@ -24,11 +20,6 @@ export const UserAvailabilityApp = ({ onConfigurationComplete }: UserAvailabilit
     const { updateUserAvailability } = useUserAvailabilityUpdate();
     const { deleteUserAvailability } = useUserAvailabilityDelete();
     const { userAvailability, setUserAvailability, fetchUserAvailability } = useUserAvailability();
-
-    useEffect(() => {
-        const hasAvailabilities = availabilities && availabilities.length > 0;
-        onConfigurationComplete?.(hasAvailabilities);
-    }, [availabilities, onConfigurationComplete]);
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -71,6 +62,7 @@ export const UserAvailabilityApp = ({ onConfigurationComplete }: UserAvailabilit
                 user_id: userAvailability?.user_id.toString() ?? '',
                 office: userAvailability?.office ?? '',
                 module_id: userAvailability?.module_id ?? '',
+                otp_enabled: userAvailability.is_active,
                 appointment_type_id: userAvailability?.appointment_type_id.toString() ?? '',
                 branch_id: userAvailability?.branch_id?.toString() ?? '1',
                 appointment_duration: userAvailability?.appointment_duration ?? 0,
@@ -98,15 +90,6 @@ export const UserAvailabilityApp = ({ onConfigurationComplete }: UserAvailabilit
                     overlay: 100000
                 }
             }}>
-                <div className="mb-3">
-                    <div className="alert alert-info p-2">
-                        <small>
-                            <i className="pi pi-info-circle me-2"></i>
-                            Configure al menos un horario de atención para poder continuar al siguiente módulo.
-                        </small>
-                    </div>
-                </div>
-
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Horarios de Atención</h4>
                     <div className="text-end mb-2">

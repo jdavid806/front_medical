@@ -34,4 +34,8 @@ export class UserService extends BaseApiService {
     async getMenuByRolePermission(roleId) {
         return await this.httpClient.get(`${this.microservice}/menus/permissions/${roleId}`);
     }
+
+    async getPatientViewConfig() {
+        return await this.httpClient.get(`${this.microservice}/users/config/patient-view`);
+    }
 }

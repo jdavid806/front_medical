@@ -18,6 +18,7 @@ export const useActivateOtp = () => {
       if (!response.ok) {
         throw new Error('Error al activar/desactivar OTP');
       }
+      const result = await response.json();
       setSuccess(true);
       return true;
     } catch (err) {

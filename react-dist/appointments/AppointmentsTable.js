@@ -19,6 +19,7 @@ import { getIndicativeByCountry } from "../../services/utilidades.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { PrimeReactProvider } from "primereact/api";
+import { Accordion, AccordionTab } from "primereact/accordion";
 export const AppointmentsTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState(null);
@@ -79,10 +80,9 @@ export const AppointmentsTable = () => {
   const [selectedExamOrder, setSelectedExamOrder] = useState(null);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showLoadExamResultsFileModal, setShowLoadExamResultsFileModal] = useState(false);
-  const [pdfFile, setPdfFile] = useState(null); // Para almacenar el archivo PDF
-  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null); // Para la previsualización del PDF
-  const [showPdfModal, setShowPdfModal] = useState(false); // Para controlar la visibilidad del modal de PDF
-
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
+  const [showPdfModal, setShowPdfModal] = useState(false);
   const {
     fetchTemplate,
     switchTemplate
@@ -98,8 +98,6 @@ export const AppointmentsTable = () => {
   useEffect(() => {
     sendMessageAppointment.current = sendMessageAppointmentHook;
   }, [sendMessageAppointmentHook]);
-
-  // Función para obtener el icono y nombre del tipo de cita
   const getAppointmentTypeInfo = appointmentType => {
     if (!appointmentType) return {
       icon: "❓",
@@ -346,11 +344,8 @@ export const AppointmentsTable = () => {
   });
   const handleSubmit = async () => {
     try {
-      // Llamar a la función guardarArchivoExamen
       //@ts-ignore
       const enviarPDf = await guardarArchivoExamen("inputPdf", 2);
-
-      // Acceder a la PromiseResult
       if (enviarPDf !== undefined) {
         const dataUpdate = {
           minio_url: enviarPDf
@@ -373,7 +368,6 @@ export const AppointmentsTable = () => {
     } catch (error) {
       console.error("Error al guardar el archivo:", error);
     } finally {
-      // Limpiar el estado después de la operación
       setShowPdfModal(false);
       setPdfFile(null);
       setPdfPreviewUrl(null);
@@ -390,8 +384,6 @@ export const AppointmentsTable = () => {
       }
     });
   };
-
-  //filtrar objecto en el select
   const getAppointmentStates = () => {
     return Object.entries(appointmentStateFilters).map(([key, label]) => ({
       value: key,
@@ -464,33 +456,15 @@ export const AppointmentsTable = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion mb-3"
+    className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-item"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "accordion-header",
-    id: "filters"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "accordion-button collapsed",
-    type: "button",
-    "data-bs-toggle": "collapse",
-    "data-bs-target": "#filtersCollapse",
-    "aria-expanded": "false",
-    "aria-controls": "filtersCollapse"
-  }, "Filtrar citas")), /*#__PURE__*/React.createElement("div", {
-    id: "filtersCollapse",
-    className: "accordion-collapse collapse",
-    "aria-labelledby": "filters"
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-body"
+    className: "row mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-grow-1"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col"
+    className: "col-md-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "branch_id",
     className: "form-label"
@@ -506,7 +480,7 @@ export const AppointmentsTable = () => {
     onChange: e => setSelectedBranch(e.value),
     showClear: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col"
+    className: "col-md-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "appointment_type",
     className: "form-label"
@@ -522,7 +496,7 @@ export const AppointmentsTable = () => {
     onChange: e => setSelectedAppointmentType(e.value),
     showClear: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col"
+    className: "col-md-4"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "rangoFechasCitas",
     className: "form-label"
@@ -539,7 +513,7 @@ export const AppointmentsTable = () => {
     panelStyle: {
       zIndex: 100000
     }
-  }))))))))), /*#__PURE__*/React.createElement("div", {
+  }))))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
       minHeight: "400px"

@@ -222,7 +222,9 @@ export const ExamRecipesApp = () => {
       onDownload: () => {
         generarFormato("RecetaExamen", rowData, "Descarga");
       },
-      onViewResults: () => seeExamRecipeResults(rowData.resultMinioUrl),
+      onViewResults: () => {
+        seeExamRecipeResults(rowData.resultMinioUrl);
+      },
       onCancel: () => cancelPrescription(rowData.id),
       onShare: async () => {
         sendMessageWhatsapp(rowData.original);
@@ -268,7 +270,13 @@ const TableActionsMenu = ({
 }) => {
   const menu = useRef(null);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const items = [{
+  const items = [...(rowData.status === "pending" ? [{
+    label: "Anular receta",
+    icon: "pi pi-times",
+    command: () => {
+      onCancel();
+    }
+  }] : []), ...(rowData.status === "uploaded" ? [{
     label: "Visualizar resultados",
     icon: "pi pi-eye",
     command: () => {
@@ -280,19 +288,13 @@ const TableActionsMenu = ({
     command: () => {
       onPrint();
     }
-  }, ...(rowData.status === "uploaded" ? [{
+  }, {
     label: "Descargar",
     icon: "pi pi-download",
     command: () => {
       onDownload();
     }
-  }] : []), ...(rowData.status === "pending" ? [{
-    label: "Anular receta",
-    icon: "pi pi-times",
-    command: () => {
-      onCancel();
-    }
-  }] : []), {
+  }, {
     separator: true
   }, {
     label: "Compartir",
@@ -304,14 +306,13 @@ const TableActionsMenu = ({
         onShare();
       }
     }]
-  }];
+  }] : [])];
   const handleMenuHide = () => {
     setOpenMenuId(null);
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "table-actions-menu"
   }, /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-ellipsis-v",
     className: "p-button-rounded btn-primary",
     onClick: e => menu.current?.toggle(e),
     "aria-controls": `popup_menu_${rowData.id}`,

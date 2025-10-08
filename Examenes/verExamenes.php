@@ -10,9 +10,6 @@ include "../header.php";
         padding: 0;
         margin: 0;
     }
-    .btn-primary{
-      display: none;
-    }
 </style>
 <div class="content">
   <div class="container-small">

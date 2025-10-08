@@ -121,15 +121,12 @@ const UserForm = ({
   };
 
   // useEffect para el reset
+  // En UserForm, corrige el useEffect del reset
   useEffect(() => {
     if (initialData) {
-      console.log('Reseteando con initialData:', initialData);
       const resetData = {
-        ...initialData,
-        // Forzamos otp_enabled a false cuando editamos porque el backend no lo envía
-        otp_enabled: false
+        ...initialData
       };
-      console.log('Datos después del reset:', resetData);
       reset(resetData);
     } else {
       reset({
