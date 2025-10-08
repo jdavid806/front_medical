@@ -778,43 +778,23 @@ const PatientFormModal = ({
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.middle_name",
     control: control,
-    rules: {
-      required: "Segundo nombre es requerido",
-      minLength: {
-        value: 2,
-        message: "El segundo nombre debe tener al menos 2 caracteres"
-      }
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
     }, "Segundo Nombre *"), /*#__PURE__*/React.createElement(InputText, _extends({
-      className: classNames("w-100", {
-        "is-invalid": fieldState.error
-      })
-    }, field)), getFormErrorMessage(field.name))
+      className: classNames("w-100")
+    }, field)))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.second_last_name",
     control: control,
-    rules: {
-      required: "Segundo apellido es requerido",
-      minLength: {
-        value: 2,
-        message: "El segundo apellido debe tener al menos 2 caracteres"
-      }
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
     }, "Segundo apellido *"), /*#__PURE__*/React.createElement(InputText, _extends({
-      className: classNames("w-100", {
-        "is-invalid": fieldState.error
-      })
-    }, field)), getFormErrorMessage(field.name))
+      className: classNames("w-100")
+    }, field)))
   })))), /*#__PURE__*/React.createElement(Card, {
     title: "Informaci\xF3n Adicional"
   }, /*#__PURE__*/React.createElement("div", {

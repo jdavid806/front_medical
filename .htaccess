@@ -390,4 +390,4 @@ RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
 RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
-
+RewriteRule ^preadmisionControl$ Citas/preadmisionControl.php

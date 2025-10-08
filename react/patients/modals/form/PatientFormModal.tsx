@@ -178,7 +178,7 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
 
   useEffect(() => {
 
-    
+
     if (patientData) {
       console.log("patientData", patientData);
 
@@ -564,7 +564,7 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
 
   const onSubmit = async (data: any) => {
     try {
-    for (let i = 0; i < Object.keys(stepValidations).length; i++) {
+      for (let i = 0; i < Object.keys(stepValidations).length; i++) {
         const isValid = await validateStep(i);
         if (!isValid) {
           stepperRef.current?.goto(i);
@@ -725,7 +725,7 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
   const validateStep = async (stepIndex: number): Promise<boolean> => {
     const fields = stepValidations[stepIndex];
     if (!fields) return true;
-    
+
     const isValid = await trigger(fields as any);
     if (!isValid) {
       toast.current?.show({
@@ -739,10 +739,10 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
   };
 
 
- const validateAndNext = async () => {
+  const validateAndNext = async () => {
     const currentStep = stepperRef.current?.getActiveStep();
-        console.log("currentStep", currentStep);
-      console.log("stepperRef", stepperRef);
+    console.log("currentStep", currentStep);
+    console.log("stepperRef", stepperRef);
     if (currentStep === undefined) return;
 
     const isValid = await validateStep(currentStep)
@@ -864,48 +864,26 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
                 <Controller
                   name="patient.middle_name"
                   control={control}
-                  rules={{
-                    required: "Segundo nombre es requerido",
-                    minLength: {
-                      value: 2,
-                      message:
-                        "El segundo nombre debe tener al menos 2 caracteres",
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div>
                       <label className="form-label">Segundo Nombre *</label>
                       <InputText
-                        className={classNames("w-100", {
-                          "is-invalid": fieldState.error,
-                        })}
+                        className={classNames("w-100")}
                         {...field}
                       />
-                      {getFormErrorMessage(field.name)}
                     </div>
                   )}
                 />
                 <Controller
                   name="patient.second_last_name"
                   control={control}
-                  rules={{
-                    required: "Segundo apellido es requerido",
-                    minLength: {
-                      value: 2,
-                      message:
-                        "El segundo apellido debe tener al menos 2 caracteres",
-                    },
-                  }}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <div>
                       <label className="form-label">Segundo apellido *</label>
                       <InputText
-                        className={classNames("w-100", {
-                          "is-invalid": fieldState.error,
-                        })}
+                        className={classNames("w-100")}
                         {...field}
                       />
-                      {getFormErrorMessage(field.name)}
                     </div>
                   )}
                 />

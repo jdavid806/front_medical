@@ -45,7 +45,6 @@ export const PaymentMethodsConfigTable = ({
     const category = categories.find(cat => cat.value === categoryValue);
     return category ? category.label : categoryValue;
   };
-
   // Inicializar los datos filtrados
   useEffect(() => {
     setFilteredPaymentMethods(paymentMethods);
@@ -56,11 +55,9 @@ export const PaymentMethodsConfigTable = ({
       [field]: value
     }));
   };
-
   // Aplicar filtros manualmente (igual que en el código que funciona)
   const aplicarFiltros = () => {
     let result = [...paymentMethods];
-
     // Aplicar filtros específicos
     if (filtros.name) {
       result = result.filter(method => method.name.toLowerCase().includes(filtros.name.toLowerCase()));
@@ -70,7 +67,6 @@ export const PaymentMethodsConfigTable = ({
     }
     setFilteredPaymentMethods(result);
   };
-
   // Función de búsqueda para CustomPRTable
   const handleSearchChange = searchValue => {
     // Si necesitas búsqueda global, puedes implementarla aquí
@@ -84,11 +80,9 @@ export const PaymentMethodsConfigTable = ({
     setFilteredPaymentMethods(paymentMethods); // Resetear a todos los métodos
   };
   const handleRefresh = () => {
-    console.log("🔄 Refresh button clicked");
-
+    console.log(":flechas_en_sentido_antihorario: Refresh button clicked");
     // Limpiar filtros locales
     limpiarFiltros();
-
     // Llamar a onReload para obtener datos frescos
     if (onReload) {
       onReload();
@@ -111,7 +105,6 @@ export const PaymentMethodsConfigTable = ({
     if (methodToDelete && onDeleteItem) {
       onDeleteItem(methodToDelete.id.toString());
       showToast("success", "Éxito", `Método ${methodToDelete.name} eliminado`);
-
       // Refrescar automáticamente después de eliminar
       setTimeout(() => {
         if (onReload) {
@@ -194,7 +187,6 @@ export const PaymentMethodsConfigTable = ({
       onDelete: confirmDelete
     }));
   };
-
   // Mapear los datos para la tabla
   const tableItems = filteredPaymentMethods.map(method => ({
     id: method.id,
@@ -247,7 +239,7 @@ export const PaymentMethodsConfigTable = ({
     className: "fas fa-exclamation-triangle mr-3",
     style: {
       fontSize: "2rem",
-      color: "#f8bb86"
+      color: "#F8BB86"
     }
   }), methodToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que desea eliminar el m\xE9todo de pago, tenga en cuenta que afectar\xE1 a todos los pagos asociados ", /*#__PURE__*/React.createElement("b", null, methodToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"

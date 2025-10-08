@@ -76,6 +76,10 @@ export const ExamGeneralTable = ({
 
   // Columnas para la tabla
   const columnsUploadExams = [{
+    field: "id",
+    header: "ID",
+    sortable: true
+  }, {
     field: "patientName",
     header: "Paciente",
     sortable: true

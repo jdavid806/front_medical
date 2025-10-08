@@ -27,6 +27,7 @@ export interface PaymentMethodsConfigTableProps {
   loading?: boolean;
   onEditItem: (id: string) => void;
   onDeleteItem: (id: string) => void;
+  onReload: () => void;
 
 }
 

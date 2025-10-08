@@ -48,6 +48,7 @@ $tabs = [
     ['icono' => 'file-prescription', 'titulo' => 'Post - Consulta', 'texto' => 'Visualiza los pacientes que finalizarón consulta', 'url' => 'postconsultaControl'],
     ['icono' => 'house-chimney-medical', 'titulo' => 'Admisiones', 'texto' => 'Visualiza el historial de adminisiones', 'url' => 'controlAdmisiones'],
     ['icono' => 'house-chimney-medical', 'titulo' => 'Consentimientos', 'texto' => 'Visualiza consentimientos pendientes de firma', 'url' => 'controlAdmisiones'],
+    ['icono' => 'syringe', 'titulo' => 'Pre-admisiones', 'texto' => 'Visualiza los pacientes que requieren pre-admision', 'url' => 'preadmisionControl'],
 ];
 ?>
 

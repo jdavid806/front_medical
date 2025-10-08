@@ -42,11 +42,7 @@ export const useSystemConfiguration = ({
                         stepIndex: savedStepIndex
                     };
 
-                    console.log('🔄 ✅ Paso RESTAURADO exitosamente:', {
-                        index: savedStepIndex,
-                        step: steps[savedStepIndex].id,
-                        config: configData
-                    });
+             
                 } else {
                     console.warn('❌ Índice de paso guardado inválido:', savedStepIndex);
                     setActiveIndex(initialStep);

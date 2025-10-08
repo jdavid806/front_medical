@@ -112,11 +112,6 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
     };
 
     useEffect(() => {
-        const hasPaymentMethods = paymentMethods && paymentMethods.length > 0;
-        onConfigurationComplete?.(hasPaymentMethods);
-    }, [paymentMethods, onConfigurationComplete]);
-
-    useEffect(() => {
         if (paymentMethod) {
             console.log("Setting initialData from paymentMethod:", paymentMethod);
             const data: PaymentMethodFormInputs = {
@@ -131,6 +126,10 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
         }
     }, [paymentMethod]);
 
+    useEffect(() => {
+        const hasPaymentMethod = paymentMethods && paymentMethods.length > 0;
+        onConfigurationComplete?.(hasPaymentMethod)
+    }, [paymentMethod, onConfigurationComplete]);
     return (
         <PrimeReactProvider
             value={{
@@ -173,6 +172,7 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                         paymentMethods={enrichedPaymentMethods}
                         onDeleteItem={handleDeleteMethod}
                         loading={loading}
+                        onReload={refreshPaymentMethods}
                     />
                 </div>
 

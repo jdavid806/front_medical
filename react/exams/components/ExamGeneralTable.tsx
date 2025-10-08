@@ -48,23 +48,24 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
 
 
     useEffect(() => {
-        const mappedExams: ExamTableItem[] = exams.map((exam: any) => {
-            return {
-                id: exam.id,
-                examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(', ') : exam.exam_type?.name) || '--',
-                status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
-                statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
-                minioId: exam.minio_id,
-                patientId: exam.patient_id,
-                patientName: `${exam.patient.first_name || ''} ${exam.patient.middle_name || ''} ${exam.patient?.last_name || ''} ${exam.patient?.second_last_name || ''}`.trim(),
-                appointmentId: exam.appointment_id,
-                state: exam.exam_order_state?.name || 'pending',
-                created_at: exam.created_at,
-                dateTime: formatDate(exam.created_at),
-                original: exam,
-                updated_at: exam.updated_at_formatted || undefined
-            }
-        })
+      const mappedExams: ExamTableItem[] = exams
+    .map((exam: any) => ({
+        id: exam.id,
+        examName: (exam.items.length > 0 ? exam.items.map(item => item.exam.name).join(', ') : exam.exam_type?.name) || '--',
+        status: examOrderStates[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+        statusColor: examOrderStateColors[exam.exam_order_state?.name.toLowerCase()] ?? '--',
+        minioId: exam.minio_id,
+        patientId: exam.patient_id,
+        patientName: `${exam.patient.first_name || ''} ${exam.patient.middle_name || ''} ${exam.patient?.last_name || ''} ${exam.patient?.second_last_name || ''}`.trim(),
+        appointmentId: exam.appointment_id,
+        state: exam.exam_order_state?.name || 'pending',
+        created_at: exam.created_at,
+        dateTime: formatDate(exam.created_at),
+        original: exam,
+        updated_at: exam.updated_at_formatted || undefined
+    }))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
 
         const sortedExams = [...mappedExams].sort((a, b) => {
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -104,6 +105,11 @@ export const ExamGeneralTable: React.FC<ExamTableProps> = ({ exams, onLoadExamRe
 
     // Columnas para la tabla
     const columnsUploadExams: CustomPRTableColumnProps[] = [
+        {
+            field: "id",
+            header: "ID",
+            sortable: true,
+        },
         {
             field: "patientName",
             header: "Paciente",

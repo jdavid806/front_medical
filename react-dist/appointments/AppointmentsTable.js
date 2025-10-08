@@ -23,14 +23,46 @@ export const AppointmentsTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState(null);
   const [selectedDate, setSelectedDate] = React.useState([new Date(new Date().setDate(new Date().getDate())), new Date()]);
+  const [selectedAppointmentType, setSelectedAppointmentType] = React.useState(null);
   const userLogged = getUserLogged();
+  const appointmentTypes = [{
+    value: null,
+    label: "Todos los tipos",
+    icon: "📋"
+  }, {
+    value: "1",
+    label: "🏥 Presencial",
+    icon: "🏥"
+  }, {
+    value: "2",
+    label: "💻 Virtual",
+    icon: "💻"
+  }, {
+    value: "3",
+    label: "🏠 Domiciliaria",
+    icon: "🏠"
+  }];
   const getCustomFilters = () => {
-    return {
+    const filters = {
       patientId,
       sort: "-appointment_date,appointment_time",
       appointmentState: selectedBranch,
       appointmentDate: selectedDate?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(",")
     };
+    if (selectedAppointmentType) {
+      console.log("🔍 Aplicando filtro de tipo de cita:", selectedAppointmentType);
+      const typeNameMap = {
+        "1": "Presencial",
+        "2": "Virtual",
+        "3": "Domiciliaria"
+      };
+      const typeName = typeNameMap[selectedAppointmentType];
+      if (typeName) {
+        filters.appointmentType = typeName;
+      }
+    }
+    console.log("Filtros enviados:", filters);
+    return filters;
   };
   const {
     appointments,
@@ -66,6 +98,46 @@ export const AppointmentsTable = () => {
   useEffect(() => {
     sendMessageAppointment.current = sendMessageAppointmentHook;
   }, [sendMessageAppointmentHook]);
+
+  // Función para obtener el icono y nombre del tipo de cita
+  const getAppointmentTypeInfo = appointmentType => {
+    if (!appointmentType) return {
+      icon: "❓",
+      name: "No definido"
+    };
+    const typeMap = {
+      "1": {
+        icon: "🏥",
+        name: "Presencial"
+      },
+      "2": {
+        icon: "💻",
+        name: "Virtual"
+      },
+      "3": {
+        icon: "🏠",
+        name: "Domiciliaria"
+      },
+      Presencial: {
+        icon: "🏥",
+        name: "Presencial"
+      },
+      Virtual: {
+        icon: "💻",
+        name: "Virtual"
+      },
+      Domiciliaria: {
+        icon: "🏠",
+        name: "Domiciliaria"
+      }
+    };
+    const typeId = appointmentType.id?.toString();
+    const typeName = appointmentType.name;
+    return typeMap[typeId] || typeMap[typeName] || {
+      icon: "❓",
+      name: typeName || "No definido"
+    };
+  };
   const columns = [{
     header: "Paciente",
     field: "patientName",
@@ -87,6 +159,15 @@ export const AppointmentsTable = () => {
   }, {
     header: "Entidad",
     field: "entity"
+  }, {
+    header: "Tipo de Cita",
+    field: "appointmentType",
+    body: data => {
+      const typeInfo = getAppointmentTypeInfo(data.user_availability?.appointment_type);
+      return /*#__PURE__*/React.createElement("span", {
+        className: "d-flex align-items-center gap-2"
+      }, /*#__PURE__*/React.createElement("span", null, typeInfo.name));
+    }
   }, {
     header: "Estado",
     field: "status",
@@ -129,7 +210,7 @@ export const AppointmentsTable = () => {
       style: {
         width: "20px"
       }
-    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision"))), "F"), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
+    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
       onClick: e => {
@@ -301,7 +382,7 @@ export const AppointmentsTable = () => {
   };
   useEffect(() => {
     refresh();
-  }, [selectedBranch, selectedDate]);
+  }, [selectedBranch, selectedDate, selectedAppointmentType]);
   const handleMakeClinicalRecord = (patientId, appointmentId) => {
     UserManager.onAuthChange((isAuthenticated, user) => {
       if (user) {
@@ -423,6 +504,22 @@ export const AppointmentsTable = () => {
     className: "w-100",
     value: selectedBranch,
     onChange: e => setSelectedBranch(e.value),
+    showClear: true
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "appointment_type",
+    className: "form-label"
+  }, "Tipo de Cita"), /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "appointment_type",
+    options: appointmentTypes,
+    optionLabel: "label",
+    optionValue: "value",
+    filter: true,
+    placeholder: "Filtrar por tipo",
+    className: "w-100",
+    value: selectedAppointmentType,
+    onChange: e => setSelectedAppointmentType(e.value),
     showClear: true
   })), /*#__PURE__*/React.createElement("div", {
     className: "col"

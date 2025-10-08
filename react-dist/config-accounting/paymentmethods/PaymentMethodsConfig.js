@@ -117,10 +117,6 @@ export const PaymentMethodsConfig = ({
     }
   };
   useEffect(() => {
-    const hasPaymentMethods = paymentMethods && paymentMethods.length > 0;
-    onConfigurationComplete?.(hasPaymentMethods);
-  }, [paymentMethods, onConfigurationComplete]);
-  useEffect(() => {
     if (paymentMethod) {
       console.log("Setting initialData from paymentMethod:", paymentMethod);
       const data = {
@@ -134,6 +130,10 @@ export const PaymentMethodsConfig = ({
       setInitialData(data);
     }
   }, [paymentMethod]);
+  useEffect(() => {
+    const hasPaymentMethod = paymentMethods && paymentMethods.length > 0;
+    onConfigurationComplete?.(hasPaymentMethod);
+  }, [paymentMethod, onConfigurationComplete]);
   return /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: "self",
@@ -167,7 +167,8 @@ export const PaymentMethodsConfig = ({
     onEditItem: handleTableEdit,
     paymentMethods: enrichedPaymentMethods,
     onDeleteItem: handleDeleteMethod,
-    loading: loading
+    loading: loading,
+    onReload: refreshPaymentMethods
   }))), /*#__PURE__*/React.createElement(PaymentMethodModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,

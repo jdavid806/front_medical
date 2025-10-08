@@ -52,10 +52,20 @@ export const AppointmentsTable: React.FC = () => {
   const [selectedDate, setSelectedDate] = React.useState<
     Nullable<(Date | null)[]>
   >([new Date(new Date().setDate(new Date().getDate())), new Date()]);
+  const [selectedAppointmentType, setSelectedAppointmentType] = React.useState<
+    string | null
+  >(null);
   const userLogged = getUserLogged();
 
+  const appointmentTypes = [
+    { value: null, label: "Todos los tipos", icon: "📋" },
+    { value: "1", label: "🏥 Presencial", icon: "🏥" },
+    { value: "2", label: "💻 Virtual", icon: "💻" },
+    { value: "3", label: "🏠 Domiciliaria", icon: "🏠" },
+  ];
+
   const getCustomFilters = () => {
-    return {
+    const filters: any = {
       patientId,
       sort: "-appointment_date,appointment_time",
       appointmentState: selectedBranch,
@@ -64,6 +74,28 @@ export const AppointmentsTable: React.FC = () => {
         .map((date) => date.toISOString().split("T")[0])
         .join(","),
     };
+
+    if (selectedAppointmentType) {
+      console.log(
+        "🔍 Aplicando filtro de tipo de cita:",
+        selectedAppointmentType
+      );
+
+      const typeNameMap = {
+        "1": "Presencial",
+        "2": "Virtual",
+        "3": "Domiciliaria",
+      };
+
+      const typeName = typeNameMap[selectedAppointmentType];
+
+      if (typeName) {
+        filters.appointmentType = typeName;
+      }
+    }
+
+    console.log("Filtros enviados:", filters);
+    return filters;
   };
 
   const {
@@ -106,6 +138,28 @@ export const AppointmentsTable: React.FC = () => {
     sendMessageAppointment.current = sendMessageAppointmentHook;
   }, [sendMessageAppointmentHook]);
 
+  // Función para obtener el icono y nombre del tipo de cita
+  const getAppointmentTypeInfo = (appointmentType: any) => {
+    if (!appointmentType) return { icon: "❓", name: "No definido" };
+
+    const typeMap: { [key: string]: { icon: string; name: string } } = {
+      "1": { icon: "🏥", name: "Presencial" },
+      "2": { icon: "💻", name: "Virtual" },
+      "3": { icon: "🏠", name: "Domiciliaria" },
+      Presencial: { icon: "🏥", name: "Presencial" },
+      Virtual: { icon: "💻", name: "Virtual" },
+      Domiciliaria: { icon: "🏠", name: "Domiciliaria" },
+    };
+
+    const typeId = appointmentType.id?.toString();
+    const typeName = appointmentType.name;
+
+    return (
+      typeMap[typeId] ||
+      typeMap[typeName] || { icon: "❓", name: typeName || "No definido" }
+    );
+  };
+
   const columns: CustomPRTableColumnProps[] = [
     {
       header: "Paciente",
@@ -121,6 +175,21 @@ export const AppointmentsTable: React.FC = () => {
     { header: "Hora Consulta", field: "time" },
     { header: "Profesional asignado", field: "doctorName" },
     { header: "Entidad", field: "entity" },
+    {
+      header: "Tipo de Cita",
+      field: "appointmentType",
+      body: (data: AppointmentTableItem) => {
+        const typeInfo = getAppointmentTypeInfo(
+          data.user_availability?.appointment_type
+        );
+        return (
+          <span className="d-flex align-items-center gap-2">
+            {/* <span>{typeInfo.icon}</span> */}
+            <span>{typeInfo.name}</span>
+          </span>
+        );
+      },
+    },
     {
       header: "Estado",
       field: "status",
@@ -171,7 +240,7 @@ export const AppointmentsTable: React.FC = () => {
                     ></i>
                     <span>Generar preadmision</span>
                   </div>
-                </a>F
+                </a>
               </li>
               {(data.stateKey === "pending_consultation" ||
                 data.stateKey === "called" ||
@@ -305,15 +374,21 @@ export const AppointmentsTable: React.FC = () => {
                       patient: data.patient,
                       assigned_user_availability: data.user_availability,
                       appointment_date: data.date,
-                      appointment_time: data.time
-                    }
-                    const templateAppointments = await fetchTemplate(dataTemplate);
+                      appointment_time: data.time,
+                    };
+                    const templateAppointments = await fetchTemplate(
+                      dataTemplate
+                    );
                     const finishTemplate = await switchTemplate(
                       templateAppointments.template,
                       "appointments",
                       dataFormated
                     );
-                    await sendMessageWhatsapp(data.patient, finishTemplate, null);
+                    await sendMessageWhatsapp(
+                      data.patient,
+                      finishTemplate,
+                      null
+                    );
                   }}
                 >
                   <div className="d-flex gap-2 align-items-center">
@@ -408,7 +483,7 @@ export const AppointmentsTable: React.FC = () => {
 
   useEffect(() => {
     refresh();
-  }, [selectedBranch, selectedDate]);
+  }, [selectedBranch, selectedDate, selectedAppointmentType]);
 
   const handleMakeClinicalRecord = (
     patientId: string,
@@ -555,7 +630,30 @@ export const AppointmentsTable: React.FC = () => {
                         />
                       </div>
                       <div className="col">
-                        <label htmlFor="rangoFechasCitas" className="form-label">
+                        <label
+                          htmlFor="appointment_type"
+                          className="form-label"
+                        >
+                          Tipo de Cita
+                        </label>
+                        <Dropdown
+                          inputId="appointment_type"
+                          options={appointmentTypes}
+                          optionLabel="label"
+                          optionValue="value"
+                          filter
+                          placeholder="Filtrar por tipo"
+                          className="w-100"
+                          value={selectedAppointmentType}
+                          onChange={(e) => setSelectedAppointmentType(e.value)}
+                          showClear
+                        />
+                      </div>
+                      <div className="col">
+                        <label
+                          htmlFor="rangoFechasCitas"
+                          className="form-label"
+                        >
                           Rango de fechas
                         </label>
                         <Calendar
@@ -583,7 +681,6 @@ export const AppointmentsTable: React.FC = () => {
           className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
           style={{ minHeight: "400px" }}
         >
-
           <div className="card-body h-100 w-100 d-flex flex-column">
             <CustomPRTable
               columns={columns}
@@ -599,7 +696,6 @@ export const AppointmentsTable: React.FC = () => {
             ></CustomPRTable>
           </div>
         </div>
-
 
         {showPdfModal && (
           <div
@@ -676,7 +772,9 @@ export const AppointmentsTable: React.FC = () => {
           formId={"createPreadmission"}
           show={showFormModal.isShow}
           onHide={handleHideFormModal}
-          title={"Crear Preadmision" + " - " + showFormModal.data["patientName"]}
+          title={
+            "Crear Preadmision" + " - " + showFormModal.data["patientName"]
+          }
         >
           <PreadmissionForm
             initialValues={showFormModal.data}

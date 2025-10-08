@@ -46,7 +46,7 @@ $examenes = [
 
         <h2 id="productName"></h2>
         <div id="examsAppReact"></div>
-
+        <div>Tiempo en examen: <span id="timerReact"></span></div>
     </div>
     <?php include "../footer.php"; ?>
 </div>
@@ -74,6 +74,8 @@ $examenes = [
         formatWhatsAppMessage,
         getIndicativeByCountry,
         formatDate,
+        formatTimeByMilliseconds,
+        generateURLStorageKey,
     } from "../services/utilidades";
     import {
         createMassMessaging
@@ -81,6 +83,14 @@ $examenes = [
     import {
         generarFormato
     } from '../funciones/funcionesJS/generarPDF.js';
+
+    import {
+        TimerApp
+    } from './react-dist/components/timer/TimerApp.js';
+
+    ReactDOMClient.createRoot(document.getElementById('timerReact')).render(React.createElement(TimerApp));
+
+    console.log('hola');
 
     const patientId = new URLSearchParams(window.location.search).get('patient_id');
     const examId = new URLSearchParams(window.location.search).get('exam_id');
@@ -234,14 +244,21 @@ $examenes = [
                     "results": data
                 })
                 .then(async (response) => {
+                    const formattedTime = formatTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('elapsedTime')));
+
+                    await examOrderService.update(examOrder.id, {
+                        duration: `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
+                    });
                     await sendMessageWhatsapp(response);
                     await appointmentService.changeStatus(appointmentId, 'consultation_completed');
                     const appointmentData = await appointmentService.get(appointmentId);
 
-                    await examRecipeService.changeStatus(
-                        appointmentData.exam_recipe_id,
-                        "uploaded"
-                    );
+                    if (appointmentData.exam_recipe_id) {
+                        await examRecipeService.changeStatus(
+                            appointmentData.exam_recipe_id,
+                            "uploaded"
+                        );
+                    }
                     AlertManager.success({
                         text: 'Se ha creado el registro exitosamente'
                     })

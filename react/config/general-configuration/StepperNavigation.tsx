@@ -57,8 +57,6 @@ export const StepperNavigation: React.FC<StepperNavigationProps> = ({
                                 <i style={{ marginLeft: '10px' }} className="fa-solid fa-arrow-right"></i>
                             </Button>
                         </div>
-
-               
                 </div>
             </div>
         </div >
