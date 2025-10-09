@@ -56,7 +56,7 @@ export const useCompanyCommunication = () => {
     setSubmitError(null);
     try {
       let response;
-      if (companyId) {
+      if (communication?.id) {
         console.log('Actualizando comunicación para companyId:', companyId);
         response = await companyService.updateCommunication(companyId, data);
         SwalManager.success('Configuración SMTP se actualizó correctamente');

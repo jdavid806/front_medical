@@ -10,7 +10,8 @@ import { usePriceConfigById } from "./hooks/usePriceConfigById.js";
 import { usePriceConfigDelete } from "./hooks/usePriceConfigDelete.js";
 import { entitiesService } from "../../../services/api/index.js";
 export const PricesConfig = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  isConfigurationContext = false
 }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -36,15 +37,12 @@ export const PricesConfig = ({
   const {
     deleteProduct
   } = usePriceConfigDelete();
+  const isComplete = products && products.length > 0;
+  const showValidations = isConfigurationContext;
   useEffect(() => {
     if (!isMounted) return;
     const hasProducts = products && products.length > 0;
-    console.log('🔍 Validando precios:', {
-      totalPrecios: products?.length,
-      hasProducts
-    });
     onConfigurationComplete?.(hasProducts);
-    console.log("onConfigurationComplete!!!!", onConfigurationComplete);
   }, [products, onConfigurationComplete, isMounted]);
 
   // Cleanup para evitar el error de removeChild
@@ -136,13 +134,13 @@ export const PricesConfig = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     ref: modalRef
+  }, showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), "Configure al menos un precio para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? 'Precios configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

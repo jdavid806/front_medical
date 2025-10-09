@@ -3,12 +3,20 @@ import { PricesConfig } from '../../prices/PricesConfig';
 
 interface PreciosConfigProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
+
 }
 
 export const PreciosConfig: React.FC<PreciosConfigProps> = ({
-    onConfigurationComplete
+    onConfigurationComplete,
+    isConfigurationContext = false
+
 }) => {
     return (
-        <PricesConfig onConfigurationComplete={onConfigurationComplete} />
+        <PricesConfig
+            onConfigurationComplete={onConfigurationComplete}
+            isConfigurationContext={isConfigurationContext}
+
+        />
     );
 };

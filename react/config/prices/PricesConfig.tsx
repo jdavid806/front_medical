@@ -14,9 +14,11 @@ import { SwalManager } from '../../../services/alertManagerImported';
 
 interface PricesConfigProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
+
 }
 
-export const PricesConfig = ({ onConfigurationComplete }: PricesConfigProps) => {
+export const PricesConfig = ({ onConfigurationComplete, isConfigurationContext = false }: PricesConfigProps) => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<ProductFormInputs | undefined>(undefined);
     const [entitiesData, setEntitiesData] = useState<any[]>([]);
@@ -29,17 +31,19 @@ export const PricesConfig = ({ onConfigurationComplete }: PricesConfigProps) => 
     const { fetchPriceById, priceById, setPriceById } = usePriceConfigById();
     const { deleteProduct } = usePriceConfigDelete();
 
+
+
+    const isComplete = products && products.length > 0;
+    const showValidations = isConfigurationContext;
+
     useEffect(() => {
         if (!isMounted) return;
 
         const hasProducts = products && products.length > 0;
-        console.log('🔍 Validando precios:', {
-            totalPrecios: products?.length,
-            hasProducts
-        });
         onConfigurationComplete?.(hasProducts);
-        console.log("onConfigurationComplete!!!!", onConfigurationComplete)
     }, [products, onConfigurationComplete, isMounted]);
+
+
 
     // Cleanup para evitar el error de removeChild
     useEffect(() => {
@@ -140,14 +144,17 @@ export const PricesConfig = ({ onConfigurationComplete }: PricesConfigProps) => 
                 }
             }}>
                 <div ref={modalRef}>
-                    <div className="mb-3">
-                        <div className="alert alert-info p-2">
-                            <small>
-                                <i className="pi pi-info-circle me-2"></i>
-                                Configure al menos un precio para poder continuar al siguiente módulo.
-                            </small>
+                    {showValidations && (
+                        <div className="validation-section mb-3">
+                            <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+                                <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+                                {isComplete
+                                    ? 'Precios configurados correctamente! Puede continuar al siguiente módulo.'
+                                    : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
+                                }
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <h4 className="mb-1">Configuración de Precios</h4>
