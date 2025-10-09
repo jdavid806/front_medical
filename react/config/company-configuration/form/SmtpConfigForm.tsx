@@ -24,8 +24,6 @@ const SmtpConfigForm: React.FC = () => {
             security: 'tls',
             email: '',
             password: '',
-            api_key: '',
-            instance: ''
         }
     });
 
@@ -49,8 +47,6 @@ const SmtpConfigForm: React.FC = () => {
                 security: 'tls',
                 email: '',
                 password: '',
-                api_key: '',
-                instance: ''
             });
         }
     }, [communication, loading, error, reset]);
@@ -295,52 +291,24 @@ const SmtpConfigForm: React.FC = () => {
                                     )}
                                 </div>
 
-                                <div className="mb-3">
-                                    <label htmlFor="api_key" className="form-label">
-                                        API Key
-                                    </label>
-                                    <Controller
-                                        name="api_key"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <InputText
-                                                {...field}
-                                                id="api_key"
-                                                className="form-control"
-                                                placeholder="Clave API"
-                                            />
-                                        )}
-                                    />
-                                </div>
-
-                                <div className="mb-3">
-                                    <label htmlFor="instance" className="form-label">
-                                        Instancia
-                                    </label>
-                                    <Controller
-                                        name="instance"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <InputText
-                                                {...field}
-                                                id="instance"
-                                                className="form-control"
-                                                placeholder="Nombre de instancia"
-                                            />
-                                        )}
-                                    />
-                                </div>
                             </div>
                         </div>
 
                         <div className="row mt-3">
-                            <div className="col-12 d-flex justify-content-center justify-content-md-end gap-2">
+                            <div className="col-12 d-flex gap-2">
                                 <Button
                                     type="submit"
                                     label="Guardar Configuración"
                                     icon="pi pi-save"
                                     loading={isSubmitting}
                                     className="btn-primary"
+                                />
+                                <Button
+                                    type="button"
+                                    label="Probar Conexión"
+                                    icon="pi pi-test-tube"
+                                    className="btn-outline-secondary"
+                                    onClick={handleTestConnection}
                                 />
                             </div>
                         </div>

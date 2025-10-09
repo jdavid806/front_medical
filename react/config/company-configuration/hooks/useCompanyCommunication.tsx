@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { SmtpConfig } from '../types/consultorio';
+import { Company, SmtpConfig } from '../types/consultorio';
 import { companyService } from '../../../../services/api';
 import { SwalManager } from '../../../../services/alertManagerImported';
 
 export const useCompanyCommunication = () => {
+    const [company, setCompany] = useState<Company | null>(null);
     const [communication, setCommunication] = useState<SmtpConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,8 @@ export const useCompanyCommunication = () => {
 
             if (response.status === 200 && response.data && response.data.length > 0) {
                 const companyData = response.data[0];
+
+                setCompany(companyData);
 
                 if (companyData.includes && companyData.includes.communication) {
                     const commData = companyData.includes.communication;
@@ -54,7 +57,9 @@ export const useCompanyCommunication = () => {
 
     const saveCommunication = async (data: SmtpConfig): Promise<SmtpConfig> => {
         // Usamos el company_id que viene en los datos de communication
-        const companyId = communication?.company_id;
+        const companyId = company?.id;
+
+        console.log('company', company);
 
         if (!companyId) {
             throw new Error('No se encontró company_id en la configuración');

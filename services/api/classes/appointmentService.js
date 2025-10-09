@@ -69,7 +69,7 @@ export class AppointmentService extends OneToManyService {
     );
   }
 
-    async getProductsToBeInvoiced(appointmentId) {
+  async getProductsToBeInvoiced(appointmentId) {
     return await this.httpClient.get(
       `medical/appointments/products/to-be-invoiced/${appointmentId}`
     );
@@ -80,6 +80,10 @@ export class AppointmentService extends OneToManyService {
       `medical/appointments/report-by-scheduler`,
       data
     );
+  }
+
+  async getAppointmentsConsultationsToday() {
+    return await this.httpClient.get(`${this.microservice}/appointments/consultations/today-stats`);
   }
 }
 

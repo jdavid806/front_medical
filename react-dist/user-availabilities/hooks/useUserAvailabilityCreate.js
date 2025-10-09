@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { ErrorHandler } from "../../../services/errorHandler.js";
-import { SwalManager } from "../../../services/alertManagerImported.js";
 import { userAvailabilityService } from "../../../services/api/index.js";
 import { convertDateToHHMM } from "../../../services/utilidades.js";
+import { usePRToast } from "../../hooks/usePRToast.js";
 export const useUserAvailabilityCreate = () => {
   const [loading, setLoading] = useState(false);
+  const {
+    showSuccessToast,
+    showServerErrorsToast,
+    toast
+  } = usePRToast();
   const createUserAvailability = async userAvailabilityData => {
     setLoading(true);
     try {
@@ -19,9 +23,12 @@ export const useUserAvailabilityCreate = () => {
         }))
       };
       await userAvailabilityService.createForParent(userAvailabilityData.user_id, data);
-      SwalManager.success();
+      showSuccessToast({
+        title: "Horario creado",
+        message: "El horario de atención se ha creado correctamente"
+      });
     } catch (error) {
-      ErrorHandler.generic(error);
+      showServerErrorsToast(error);
       throw error;
     } finally {
       setLoading(false);
@@ -29,6 +36,7 @@ export const useUserAvailabilityCreate = () => {
   };
   return {
     loading,
-    createUserAvailability
+    createUserAvailability,
+    toast
   };
 };

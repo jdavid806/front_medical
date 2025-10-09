@@ -8,7 +8,8 @@ import { UserRoleFormModal } from "./components/UserRoleFormModal.js";
 import { useUserRoleCreate } from "./hooks/useUserRoleUpdate.js";
 import { useUserRoleUpdate } from "./hooks/useUserRoleCreate.js";
 export const UserRoleApp = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  isConfigurationContext = false
 }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -30,10 +31,13 @@ export const UserRoleApp = ({
     fetchUserRole,
     setUserRole
   } = useUserRole();
+
+  // Determinar si está completo
+  const isComplete = userRoles && userRoles.length > 0;
+  const showValidations = isConfigurationContext;
   useEffect(() => {
-    const hasUserRoles = userRoles && userRoles.length > 0;
-    onConfigurationComplete?.(hasUserRoles);
-  }, [userRoles, onConfigurationComplete]);
+    onConfigurationComplete?.(isComplete);
+  }, [userRoles, onConfigurationComplete, isComplete]);
   const onCreate = () => {
     setInitialData(undefined);
     setShowFormModal(true);
@@ -88,13 +92,13 @@ export const UserRoleApp = ({
         overlay: 100000
       }
     }
+  }, showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), "Configure al menos un rol de usuario para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

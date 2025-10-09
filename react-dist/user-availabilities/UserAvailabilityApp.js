@@ -9,7 +9,8 @@ import { useUserAvailabilityDelete } from "./hooks/useUserAvailabilityDelete.js"
 import { useUserAvailabilityCreate } from "./hooks/useUserAvailabilityCreate.js";
 import { convertHHMMToDate } from "../../services/utilidades.js";
 export const UserAvailabilityApp = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  isConfigurationContext = false
 }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -31,15 +32,18 @@ export const UserAvailabilityApp = ({
     setUserAvailability,
     fetchUserAvailability
   } = useUserAvailability();
-  useEffect(() => {
-    const hasAvailabilities = availabilities && availabilities.length > 0;
-    onConfigurationComplete?.(hasAvailabilities);
-  }, [availabilities, onConfigurationComplete]);
   const onCreate = () => {
     setInitialData(undefined);
     setUserAvailability(null);
     setShowFormModal(true);
   };
+
+  // Determinar si está completo
+  const isComplete = availabilities && availabilities.length > 0;
+  const showValidations = isConfigurationContext;
+  useEffect(() => {
+    onConfigurationComplete?.(isComplete);
+  }, [availabilities, onConfigurationComplete, isComplete]);
   const handleSubmit = async data => {
     const finalData = {
       ...data,
@@ -72,6 +76,7 @@ export const UserAvailabilityApp = ({
         user_id: userAvailability?.user_id.toString() ?? '',
         office: userAvailability?.office ?? '',
         module_id: userAvailability?.module_id ?? '',
+        otp_enabled: userAvailability.is_active,
         appointment_type_id: userAvailability?.appointment_type_id.toString() ?? '',
         branch_id: userAvailability?.branch_id?.toString() ?? '1',
         appointment_duration: userAvailability?.appointment_duration ?? 0,
@@ -94,13 +99,13 @@ export const UserAvailabilityApp = ({
         overlay: 100000
       }
     }
+  }, showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), "Configure al menos un horario de atenci\xF3n para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? 'Horarios configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de Horarios para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

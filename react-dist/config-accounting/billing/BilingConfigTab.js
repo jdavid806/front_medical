@@ -354,13 +354,7 @@ const BillingConfigTab = ({
     const isSaved = tipoConfig && savedConfigs.has(tipoConfig.apiType);
     return /*#__PURE__*/React.createElement("div", {
       className: "grid p-fluid"
-    }, isSaved && /*#__PURE__*/React.createElement("div", {
-      className: "col-12"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "alert alert-success mb-3 p-2"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "pi pi-check-circle me-2"
-    }), /*#__PURE__*/React.createElement("small", null, "Esta configuraci\xF3n ya ha sido guardada. Puedes editarla si es necesario."))), /*#__PURE__*/React.createElement("div", {
       className: "col-12 md:col-6"
     }, /*#__PURE__*/React.createElement("div", {
       className: "field mb-3"
@@ -542,9 +536,6 @@ const BillingConfigTab = ({
       icon: "pi pi-save"
     }))));
   };
-  const allComplete = checkAllConfigurationsComplete();
-  const completedCount = tiposFacturacion.filter(tipo => savedConfigs.has(tipo.apiType)).length;
-  const totalCount = tiposFacturacion.length;
   return /*#__PURE__*/React.createElement("div", {
     className: "p-2 p-md-4"
   }, /*#__PURE__*/React.createElement(Card, {
@@ -554,22 +545,6 @@ const BillingConfigTab = ({
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: `alert ${allComplete ? 'alert-success' : 'alert-info'} p-2 p-md-3`
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center mb-2 mb-md-0"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `${allComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "small"
-  }, allComplete ? "✅ Todas las configuraciones están completas. Puedes avanzar al siguiente módulo." : `ℹ️ Completa todas las configuraciones de facturación (${completedCount}/${totalCount})`)), /*#__PURE__*/React.createElement(Badge, {
-    value: `${completedCount}/${totalCount}`,
-    severity: allComplete ? "success" : "info",
-    className: "ms-md-2"
-  })))), /*#__PURE__*/React.createElement("div", {
     className: "billing-tabs-responsive"
   }, /*#__PURE__*/React.createElement(TabView, {
     activeIndex: activeTab,

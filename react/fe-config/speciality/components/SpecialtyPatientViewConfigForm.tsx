@@ -1,16 +1,17 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Specialty } from "../interfaces"
 import { classNames } from "primereact/utils"
 import { MultiSelect } from "primereact/multiselect"
 import { Dialog } from "primereact/dialog"
 import { PreviewSpecialtyPatientViewCards } from "./PreviewSpecialtyPatientViewCards"
-import { useLoggedUser } from "../../../users/hooks/useLoggedUser"
-import { Divider } from "primereact/divider"
+import { useUpdateSpecialtyPatientViewConfig } from "../hooks/useUpdateSpecialtyPatientViewConfig"
+import { userSpecialtyService } from "../../../../services/api"
+import { Toast } from "primereact/toast"
 
 interface SpecialtyPatientViewConfigFormProps {
     formId: string
-    specialty: Specialty
+    specialtyId: string
+    onSave?: () => void
 }
 
 interface SpecialtyPatientViewConfigFormInputs {
@@ -19,11 +20,11 @@ interface SpecialtyPatientViewConfigFormInputs {
 
 export const SpecialtyPatientViewConfigForm = (props: SpecialtyPatientViewConfigFormProps) => {
 
-    const { specialty, formId } = props
+    const { onSave, specialtyId, formId } = props
 
-    const { loggedUser } = useLoggedUser()
+    const { updateSpecialtyPatientViewConfig, toast } = useUpdateSpecialtyPatientViewConfig()
 
-    const { handleSubmit, control, formState: { errors } } = useForm<SpecialtyPatientViewConfigFormInputs>({
+    const { handleSubmit, control, formState: { errors }, setValue } = useForm<SpecialtyPatientViewConfigFormInputs>({
         defaultValues: {
             visible_cards: []
         }
@@ -31,8 +32,14 @@ export const SpecialtyPatientViewConfigForm = (props: SpecialtyPatientViewConfig
 
     const [showPreview, setShowPreview] = useState<boolean>(false)
 
-    const onSubmit = (data: SpecialtyPatientViewConfigFormInputs) => {
-        console.log(data);
+    const onSubmit = async (data: SpecialtyPatientViewConfigFormInputs) => {
+        try {
+            const response = await updateSpecialtyPatientViewConfig(specialtyId, data)
+            onSave?.()
+            return response
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const visibleCards = useWatch({
@@ -68,7 +75,19 @@ export const SpecialtyPatientViewConfigForm = (props: SpecialtyPatientViewConfig
         { value: 'preadmisiones', label: "Preadmisiones" },
     ]
 
+    useEffect(() => {
+        if (specialtyId) {
+            const asyncScope = async () => {
+                const response = await userSpecialtyService.get(specialtyId)
+                setValue("visible_cards", response.patient_view_config_json.visible_cards)
+            }
+
+            asyncScope()
+        }
+    }, [specialtyId])
+
     return <>
+        <Toast ref={toast} />
         <form id={formId} onSubmit={handleSubmit(onSubmit)}>
             <div className="d-flex flex-column gap-3">
                 <div className="d-flex align-items-center gap-2">
@@ -119,7 +138,6 @@ export const SpecialtyPatientViewConfigForm = (props: SpecialtyPatientViewConfig
             <PreviewSpecialtyPatientViewCards
                 disableRedirects={true}
                 availableCardsIds={visibleCards}
-                userId={loggedUser?.id}
             />
         </Dialog>
     </>

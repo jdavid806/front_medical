@@ -162,7 +162,7 @@ $resumenPaciente = [
               </div>
             </div>
           </div>
-          <div id="contenedor-tabs"
+          <!-- <div id="contenedor-tabs"
             class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2 d-none">
 
             <?php foreach ($tabs as $tab) { ?>
@@ -170,17 +170,13 @@ $resumenPaciente = [
                 <div class="card text-center" style="max-width:15rem;  min-height: 15em;">
                   <div class="card-body d-flex flex-column justify-content-between align-items-center"
                     style="height: 100%;">
-                    <!-- Icono en la parte superior -->
                     <div class="mb-2">
                       <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
                     </div>
-                    <!-- Título -->
                     <h5 class="card-title"><?= $tab['titulo'] ?></h5>
-                    <!-- Texto -->
                     <p class="card-text fs-9 text-center">
                       <?= $tab['texto'] ?>
                     </p>
-                    <!-- Botón siempre al fondo -->
                     <button class="btn btn-primary btn-icon mt-auto btn-tab"
                       data-url="<?= $tab['url'] ?>" id="<?= $tab['id'] ?>">
                       <span class="fa-solid fa-chevron-right"></span>
@@ -191,16 +187,18 @@ $resumenPaciente = [
             <?php } ?>
 
 
-          </div>
+          </div> -->
 
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2">
+          <div id="tabsReact"></div>
+
+          <!-- <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2">
             <div id="tabs-loading-container" class="d-flex justify-content-center align-items-center"
               style="width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5);">
               <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden">Loading...</span>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
 
       </div>
@@ -234,6 +232,16 @@ $resumenPaciente = [
     </div>
   </div>
 </template>
+
+<script type="module">
+  import React from "react"
+  import ReactDOMClient from "react-dom/client"
+  import {
+    PreviewCurrentUserPatientViewCards
+  } from './react-dist/fe-config/speciality/components/PreviewCurrentUserPatientViewCards';
+
+  ReactDOMClient.createRoot(document.getElementById('tabsReact')).render(React.createElement(PreviewCurrentUserPatientViewCards));
+</script>
 
 <script>
   const resumenPaciente = {
@@ -348,7 +356,7 @@ $resumenPaciente = [
   mostrarResumenPacienteTextual(resumenPaciente);
 </script>
 
-<script type="module">
+<!-- <script type="module">
   import {
     patientService
   } from './services/api/index.js';
@@ -391,7 +399,7 @@ $resumenPaciente = [
       }
     });
   }
-</script>
+</script> -->
 
 <script type="module">
   import {
@@ -430,7 +438,7 @@ $resumenPaciente = [
   });
 </script>
 
-<script type="module">
+<!-- <script type="module">
   import {
     patientService,
     appointmentService,
@@ -479,9 +487,9 @@ $resumenPaciente = [
           } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
           }`,
           TICKET: `${data?.ticket_number ?? ""}`,
-          MODULO: `${currentAppointment?.user_availability?.module?.name ?? ""}`,
+          MODULO: `${data?.module?.name ?? ""}`,
           ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
-          CONSULTORIO: `${currentAppointment?.user_availability?.office ?? ""}`,
+          CONSULTORIO: `${data?.branch?.address ?? ""}`,
         };
 
         const templateFormatted = formatWhatsAppMessage(
@@ -585,7 +593,7 @@ $resumenPaciente = [
       console.error('Error:', error);
     }
   });
-</script>
+</script> -->
 
 <style>
   .card-text {
@@ -660,7 +668,7 @@ $resumenPaciente = [
 
 
 <?php
-include "../Consultas/modalAntencedentes.php";
-include "../Consultas/modalInfoPacientes.php";
+// include "../Consultas/modalAntencedentes.php";
+// include "../Consultas/modalInfoPacientes.php";
 include "../footer.php";
 ?>

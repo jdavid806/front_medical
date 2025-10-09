@@ -2292,9 +2292,9 @@ const ProductColumnBody = ({
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
 
   async function fetchAccountingAccounts() {
-    const data: any = await accountingAccountsService.getAll();
+    const data: any = await accountingAccountsService.getAccountingAccountWithColumneUnique("sub_account");
 
-    const dataMapped = data.data
+    const dataMapped = data
       .map((item: any) => item.sub_account)
       .filter((subAccount: string, index: number, array: string[]) => {
         const num = parseInt(subAccount);

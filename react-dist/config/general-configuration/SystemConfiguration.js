@@ -185,28 +185,53 @@ export const SystemConfiguration = ({
     };
   };
   const contabilidadProgress = getContabilidadProgress();
-  const getModuleSpecificMessage = () => {
-    switch (currentStep.id) {
-      case 'empresa':
-        return !canProceedFromCompany ? 'Complete todos los módulos de empresa para habilitar el botón "Siguiente Módulo"' : '¡Empresa configurada correctamente! Puede continuar al siguiente módulo.';
-      case 'contabilidad':
-        return !canProceedFromContabilidad ? `Complete todos los submódulos de contabilidad para habilitar el botón "Siguiente Módulo" (${contabilidadProgress?.completedSubSteps}/${contabilidadProgress?.totalSubSteps})` : '¡Todos los submódulos de contabilidad están completos! Puede continuar al siguiente módulo.';
-      case 'especialidades':
-        return !canProceedFromEspecialidades ? 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"' : '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.';
-      case 'servicios':
-        return !canProceedFromServicios ? 'Configure al menos un servicio para habilitar el botón "Siguiente Módulo"' : '¡Servicios configurados correctamente! Puede continuar al siguiente módulo.';
-      case 'usuarios':
-        return !canProceedFromUsuarios ? 'Configure al menos un usuario para habilitar el botón "Siguiente Módulo"' : '¡Usuarios configurados correctamente! Puede continuar al siguiente módulo.';
-      case 'roles':
-        return !canProceedFromRoles ? 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"' : '¡Roles configurados correctamente! Puede continuar al siguiente módulo.';
-      case 'horarios':
-        return !canProceedFromHorarios ? 'Configure al menos un horario de atención para habilitar el botón "Siguiente Módulo"' : '¡Horarios configurados correctamente! Puede continuar al siguiente módulo.';
-      case 'precios':
-        return !canProceedFromPrecios ? 'Configure al menos un precio para habilitar el botón "Siguiente Módulo"' : '¡Precios configurados correctamente! Puede continuar al siguiente módulo.';
-      default:
-        return 'Complete la configuración de este módulo antes de continuar al siguiente.';
-    }
-  };
+
+  // const getModuleSpecificMessage = () => {
+  //     switch (currentStep.id) {
+  //         case 'empresa':
+  //             return !canProceedFromCompany
+  //                 ? 'Complete todos los módulos de empresa para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Empresa configurada correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'contabilidad':
+  //             return !canProceedFromContabilidad
+  //                 ? `Complete todos los submódulos de contabilidad para habilitar el botón "Siguiente Módulo" (${contabilidadProgress?.completedSubSteps}/${contabilidadProgress?.totalSubSteps})`
+  //                 : '¡Todos los submódulos de contabilidad están completos! Puede continuar al siguiente módulo.';
+
+  //         case 'especialidades':
+  //             return !canProceedFromEspecialidades
+  //                 ? 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'servicios':
+  //             return !canProceedFromServicios
+  //                 ? 'Configure al menos un servicio para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Servicios configurados correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'usuarios':
+  //             return !canProceedFromUsuarios
+  //                 ? 'Configure al menos un usuario para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Usuarios configurados correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'roles':
+  //             return !canProceedFromRoles
+  //                 ? 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Roles configurados correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'horarios':
+  //             return !canProceedFromHorarios
+  //                 ? 'Configure al menos un horario de atención para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Horarios configurados correctamente! Puede continuar al siguiente módulo.';
+
+  //         case 'precios':
+  //             return !canProceedFromPrecios
+  //                 ? 'Configure al menos un precio para habilitar el botón "Siguiente Módulo"'
+  //                 : '¡Precios configurados correctamente! Puede continuar al siguiente módulo.';
+
+  //         default:
+  //             return 'Complete la configuración de este módulo antes de continuar al siguiente.';
+  //     }
+  // };
 
   // Verificar si mostrar alerta de éxito
   const shouldShowSuccessAlert = () => {
@@ -251,44 +276,56 @@ export const SystemConfiguration = ({
   };
   const renderCurrentComponent = () => {
     const CurrentComponent = currentStep.component;
+
+    // Definir qué steps son de configuración
+    const configurationStepsIds = ['empresa', 'contabilidad', 'especialidades', 'servicios', 'usuarios', 'roles', 'horarios', 'precios'];
+    const isConfigurationContext = configurationStepsIds.includes(currentStep.id);
     if (currentStep.id === 'empresa') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleCompanyConfigComplete
+        onConfigurationComplete: handleCompanyConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'contabilidad') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleContabilidadConfigComplete
+        onConfigurationComplete: handleContabilidadConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'especialidades') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleEspecialidadesConfigComplete
+        onConfigurationComplete: handleEspecialidadesConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'servicios') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleServiciosConfigComplete
+        onConfigurationComplete: handleServiciosConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'usuarios') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleUsuariosConfigComplete
+        onConfigurationComplete: handleUsuariosConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'roles') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleRolesConfigComplete
+        onConfigurationComplete: handleRolesConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'horarios') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handleHorariosConfigComplete
+        onConfigurationComplete: handleHorariosConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     if (currentStep.id === 'precios') {
       return /*#__PURE__*/React.createElement(CurrentComponent, {
-        onConfigurationComplete: handlePreciosConfigComplete
+        onConfigurationComplete: handlePreciosConfigComplete,
+        isConfigurationContext: isConfigurationContext
       });
     }
     return /*#__PURE__*/React.createElement(CurrentComponent, null);
@@ -358,22 +395,6 @@ export const SystemConfiguration = ({
       borderRadius: '5px'
     }
   })), /*#__PURE__*/React.createElement("div", {
-    className: "content-header mb-4"
-  }, /*#__PURE__*/React.createElement("h3", {
-    className: "text-primary mb-2"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `${currentStep.icon} me-3`
-  }), currentStep.label), /*#__PURE__*/React.createElement("p", {
-    className: "text-muted mb-0"
-  }, getModuleSpecificMessage()), shouldShowSuccessAlert() && /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-success mt-2 p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-check-circle me-2"
-  }), currentStep.id === 'empresa' && '¡Empresa configurada correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'contabilidad' && '¡Todos los submódulos de contabilidad están completos! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'especialidades' && '¡Especialidades configuradas correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'servicios' && '¡Servicios configurados correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'usuarios' && '¡Usuarios configurados correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'roles' && '¡Roles configurados correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'horarios' && '¡Horarios configurados correctamente! El botón "Siguiente Módulo" está ahora habilitado.', currentStep.id === 'precios' && '¡Precios configurados correctamente! El botón "Siguiente Módulo" está ahora habilitado.')), shouldShowInfoAlert() && /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info mt-2 p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), currentStep.id === 'contabilidad' && /*#__PURE__*/React.createElement(React.Fragment, null, "Progreso: ", contabilidadProgress?.completedSubSteps, " de ", contabilidadProgress?.totalSubSteps, " subm\xF3dulos completados. Complete todos para continuar."), currentStep.id === 'empresa' && 'Complete la configuración de la empresa para continuar.', currentStep.id === 'especialidades' && 'Configure al menos una especialidad activa para continuar.', currentStep.id === 'servicios' && 'Configure al menos un servicio para continuar.', currentStep.id === 'usuarios' && 'Configure al menos un usuario para continuar.', currentStep.id === 'roles' && 'Configure al menos un rol de usuario para continuar.', currentStep.id === 'horarios' && 'Configure al menos un horario de atención para continuar.', currentStep.id === 'precios' && 'Configure al menos un precio para continuar.'))), /*#__PURE__*/React.createElement("div", {
     className: "content-body mb-4"
   }, renderCurrentComponent()), /*#__PURE__*/React.createElement(StepperNavigation, {
     activeIndex: activeIndex,

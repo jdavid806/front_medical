@@ -400,15 +400,6 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
 
     return (
       <div className="grid p-fluid">
-        {isSaved && (
-          <div className="col-12">
-            <div className="alert alert-success mb-3 p-2">
-              <i className="pi pi-check-circle me-2"></i>
-              <small>Esta configuración ya ha sido guardada. Puedes editarla si es necesario.</small>
-            </div>
-          </div>
-        )}
-
         <div className="col-12 md:col-6">
           <div className="field mb-3">
             <label htmlFor={`dian_prefix_${tipo}`} className="block text-900 font-medium mb-1">
@@ -600,10 +591,6 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
     );
   };
 
-  const allComplete = checkAllConfigurationsComplete();
-  const completedCount = tiposFacturacion.filter(tipo => savedConfigs.has(tipo.apiType)).length;
-  const totalCount = tiposFacturacion.length;
-
   return (
     <div className="p-2 p-md-4">
       <Card
@@ -611,27 +598,7 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
         className="shadow-2"
         style={{ overflow: 'hidden' }}
       >
-        {/* Header informativo */}
-        <div className="mb-3">
-          <div className={`alert ${allComplete ? 'alert-success' : 'alert-info'} p-2 p-md-3`}>
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-              <div className="d-flex align-items-center mb-2 mb-md-0">
-                <i className={`${allComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
-                <span className="small">
-                  {allComplete
-                    ? "✅ Todas las configuraciones están completas. Puedes avanzar al siguiente módulo."
-                    : `ℹ️ Completa todas las configuraciones de facturación (${completedCount}/${totalCount})`
-                  }
-                </span>
-              </div>
-              <Badge
-                value={`${completedCount}/${totalCount}`}
-                severity={allComplete ? "success" : "info"}
-                className="ms-md-2"
-              />
-            </div>
-          </div>
-        </div>
+
 
         {/* Tabs Responsive */}
         <div className="billing-tabs-responsive">

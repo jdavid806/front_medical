@@ -11,9 +11,13 @@ import { useUserRoleUpdate } from './hooks/useUserRoleCreate';
 
 interface UserRoleAppProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
 }
 
-export const UserRoleApp = ({ onConfigurationComplete }: UserRoleAppProps) => {
+export const UserRoleApp = ({
+    onConfigurationComplete,
+    isConfigurationContext = false
+}: UserRoleAppProps) => {
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserRoleFormInputs | undefined>(undefined)
 
@@ -23,10 +27,13 @@ export const UserRoleApp = ({ onConfigurationComplete }: UserRoleAppProps) => {
     const { deleteUserRole } = useUserRoleDelete();
     const { userRole, fetchUserRole, setUserRole } = useUserRole();
 
+    // Determinar si está completo
+    const isComplete = userRoles && userRoles.length > 0;
+    const showValidations = isConfigurationContext;
+
     useEffect(() => {
-        const hasUserRoles = userRoles && userRoles.length > 0;
-        onConfigurationComplete?.(hasUserRoles);
-    }, [userRoles, onConfigurationComplete]);
+        onConfigurationComplete?.(isComplete);
+    }, [userRoles, onConfigurationComplete, isComplete]);
 
     const onCreate = () => {
         setInitialData(undefined)
@@ -89,14 +96,18 @@ export const UserRoleApp = ({ onConfigurationComplete }: UserRoleAppProps) => {
                     overlay: 100000
                 }
             }}>
-                <div className="mb-3">
-                    <div className="alert alert-info p-2">
-                        <small>
-                            <i className="pi pi-info-circle me-2"></i>
-                            Configure al menos un rol de usuario para poder continuar al siguiente módulo.
-                        </small>
+                {/* Mostrar validaciones solo en contexto de configuración */}
+                {showValidations && (
+                    <div className="validation-section mb-3">
+                        <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+                            <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+                            {isComplete
+                                ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.'
+                                : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
+                            }
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Roles de Usuario</h4>
@@ -109,12 +120,14 @@ export const UserRoleApp = ({ onConfigurationComplete }: UserRoleAppProps) => {
                         </button>
                     </div>
                 </div>
+
                 <UserRoleTable
                     userRoles={userRoles}
                     onEditItem={handleTableEdit}
                     onDeleteItem={handleTableDelete}
                 >
                 </UserRoleTable>
+
                 <UserRoleFormModal
                     title={userRole ? 'Editar rol de Usuario' : 'Crear rol de Usuario'}
                     show={showFormModal}

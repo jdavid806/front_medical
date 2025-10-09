@@ -3,7 +3,7 @@ import { AppointmentFormModal } from '../../appointments/AppointmentFormModal';
 
 export const AppointmentsSummaryCard = () => {
     const [showAppointmentFormModal, setShowAppointmentFormModal] = React.useState(false);
-      const handleViewAppointments = () => {
+    const handleViewAppointments = () => {
         window.location.href = 'citasControl';
     };
 

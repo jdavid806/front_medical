@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react' // Agregar useEffect
 import { Toast } from 'primereact/toast'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 
@@ -10,11 +10,16 @@ import SpecialityModal from './components/SpecialityModal'
 import { useSpecialty } from './hooks/useSpecialty'
 import CurrentSpecialityTable from './components/CurrentSpecialtyTable'
 
+// Definir las props
 interface SpecialityAppProps {
   onConfigurationComplete?: (isComplete: boolean) => void;
+  isConfigurationContext?: boolean;
 }
 
-export default function SpecialityApp({ onConfigurationComplete }: SpecialityAppProps) {
+export default function SpecialityApp({
+  onConfigurationComplete,
+  isConfigurationContext = false
+}: SpecialityAppProps) {
   const {
     // State
     specialties,
@@ -48,10 +53,14 @@ export default function SpecialityApp({ onConfigurationComplete }: SpecialityApp
     onDeactiveSpecialty
   } = useSpecialty()
 
+  // Lógica para determinar si está completo
   useEffect(() => {
-    const hasCurrentSpecialties = currentSpecialties && currentSpecialties.length > 0;
-    onConfigurationComplete?.(hasCurrentSpecialties);
-  }, [currentSpecialties, specialties, onConfigurationComplete]);
+    const hasActiveSpecialties = currentSpecialties && currentSpecialties.length > 0;
+    onConfigurationComplete?.(hasActiveSpecialties);
+  }, [currentSpecialties, onConfigurationComplete]);
+
+  const isComplete = currentSpecialties && currentSpecialties.length > 0;
+  const showValidations = isConfigurationContext;
 
   const handleModalClose = () => {
     setShowConfigModal(false)
@@ -63,14 +72,18 @@ export default function SpecialityApp({ onConfigurationComplete }: SpecialityApp
       <Toast ref={toast} />
       <ConfirmDialog />
 
-      <div className="mb-3">
-        <div className="alert alert-info p-2">
-          <small>
-            <i className="pi pi-info-circle me-2"></i>
-            Configure al menos una especialidad activa para poder continuar al siguiente submódulo.
-          </small>
+      {/* Mostrar validaciones solo en contexto de configuración */}
+      {showValidations && (
+        <div className="validation-section mb-4">
+          <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+            <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+            {isComplete
+              ? '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.'
+              : 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"'
+            }
+          </div>
         </div>
-      </div>
+      )}
 
       <div className='row'>
         <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
@@ -86,6 +99,7 @@ export default function SpecialityApp({ onConfigurationComplete }: SpecialityApp
           />
         </div>
         <div className='col-md-6 col-lg-6 col-xl-6 col-12'>
+
           {/* Current Specialty Table */}
           <CurrentSpecialityTable
             specialties={currentSpecialties}

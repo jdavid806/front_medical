@@ -37,6 +37,11 @@ export class AdmissionService extends BaseApiService {
       filters || {}
     );
   }
+
+  async getAdmisionsCurrentMonth() {
+    return await this.httpClient.get(`${this.microservice}/admissions-statistics/current-month`);
+  }
+
 }
 
 export default AdmissionService;

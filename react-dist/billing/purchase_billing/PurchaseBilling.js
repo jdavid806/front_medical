@@ -1755,8 +1755,8 @@ const ProductColumnBody = ({
     setOptions(formattedOptions);
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
   async function fetchAccountingAccounts() {
-    const data = await accountingAccountsService.getAll();
-    const dataMapped = data.data.map(item => item.sub_account).filter((subAccount, index, array) => {
+    const data = await accountingAccountsService.getAccountingAccountWithColumneUnique("sub_account");
+    const dataMapped = data.map(item => item.sub_account).filter((subAccount, index, array) => {
       const num = parseInt(subAccount);
       return array.indexOf(subAccount) === index && !isNaN(num) && num >= 5;
     }).sort((a, b) => parseInt(a) - parseInt(b)); // Ordenar numéricamente

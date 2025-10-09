@@ -82,7 +82,8 @@ export default function CurrentSpecialityTable({
     }
   }, !selectedItem && /*#__PURE__*/React.createElement(React.Fragment, null, "Selecciona una especialidad"), selectedItem && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(SpecialtyPatientViewConfigForm, {
     formId: "specialtyPatientViewConfigForm",
-    specialty: selectedItem
+    specialtyId: selectedItem.id.toString(),
+    onSave: () => setShowPatientViewConfigModal(false)
   }), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2"
   }, /*#__PURE__*/React.createElement("button", {

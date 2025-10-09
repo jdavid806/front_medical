@@ -239,7 +239,6 @@ const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ company, onUpdate, onVa
                 />
             )}
 
-            {/* Información de validación */}
             <div className="row mb-3">
                 <div className="col-12">
                     <div className="alert alert-info">

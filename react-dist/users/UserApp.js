@@ -8,7 +8,8 @@ import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
 import { useActivateOtp } from "./hooks/useActivateOtp.js";
 export const UserApp = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  isConfigurationContext = false
 }) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
@@ -47,6 +48,8 @@ export const UserApp = ({
     });
     onConfigurationComplete?.(hasUsers);
   }, [users, onConfigurationComplete]);
+  const isComplete = users && users.length > 0;
+  const showValidations = isConfigurationContext;
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
@@ -132,13 +135,13 @@ export const UserApp = ({
         overlay: 100000
       }
     }
+  }, showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), "Configure al menos un usuario para poder continuar al siguiente m\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), "v>", /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

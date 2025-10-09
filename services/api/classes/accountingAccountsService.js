@@ -49,6 +49,10 @@ export class AccountingAccountsService extends BaseApiService {
     async getAccountingAccountsTree() {
         return await this.httpClient.get(`${this.microservice}/accounting-accounts/list/tree`);
     }
+
+    async getAccountingAccountWithColumneUnique(column){
+         return await this.httpClient.get(`${this.microservice}/accounting-accounts/column-unique/${column}`);
+    }
 }
 
 export default AccountingAccountsService;

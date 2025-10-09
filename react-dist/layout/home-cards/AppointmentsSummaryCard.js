@@ -1,10 +1,17 @@
 import React from 'react';
 import { AppointmentFormModal } from "../../appointments/AppointmentFormModal.js";
+import { useAppointmentsConsultationsToday } from "./hooks/useAppointmentsConsultationsToday.js";
 export const AppointmentsSummaryCard = () => {
   const [showAppointmentFormModal, setShowAppointmentFormModal] = React.useState(false);
   const handleViewAppointments = () => {
     window.location.href = 'citasControl';
   };
+  const {
+    apointmentCount,
+    fetchAppointmentConsultationsToday,
+    toast: ToastAppoinmentError
+  } = useAppointmentsConsultationsToday();
+  console.log("holaappointmentss", apointmentCount);
   return /*#__PURE__*/React.createElement("div", {
     className: "card dashboard-card"
   }, /*#__PURE__*/React.createElement("div", {

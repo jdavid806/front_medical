@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { companyService } from "../../../../services/api/index.js";
 import { SwalManager } from "../../../../services/alertManagerImported.js";
 export const useCompanyCommunication = () => {
+  const [company, setCompany] = useState(null);
   const [communication, setCommunication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +15,7 @@ export const useCompanyCommunication = () => {
       const response = await companyService.getAllCompanies();
       if (response.status === 200 && response.data && response.data.length > 0) {
         const companyData = response.data[0];
+        setCompany(companyData);
         if (companyData.includes && companyData.includes.communication) {
           const commData = companyData.includes.communication;
           const mappedCommunication = {
@@ -45,7 +47,8 @@ export const useCompanyCommunication = () => {
   };
   const saveCommunication = async data => {
     // Usamos el company_id que viene en los datos de communication
-    const companyId = communication?.company_id;
+    const companyId = company?.id;
+    console.log('company', company);
     if (!companyId) {
       throw new Error('No se encontró company_id en la configuración');
     }
@@ -53,7 +56,7 @@ export const useCompanyCommunication = () => {
     setSubmitError(null);
     try {
       let response;
-      if (data.id) {
+      if (companyId) {
         console.log('Actualizando comunicación para companyId:', companyId);
         response = await companyService.updateCommunication(companyId, data);
         SwalManager.success('Configuración SMTP se actualizó correctamente');

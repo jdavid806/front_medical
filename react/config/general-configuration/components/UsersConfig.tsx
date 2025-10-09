@@ -3,12 +3,18 @@ import { UserApp } from '../../../users/UserApp';
 
 interface UsersConfigProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
+
 }
 
 export const UsersConfig: React.FC<UsersConfigProps> = ({
-    onConfigurationComplete
+    onConfigurationComplete,
+    isConfigurationContext = false
+
 }) => {
     return (
-        <UserApp onConfigurationComplete={onConfigurationComplete} />
+        <UserApp onConfigurationComplete={onConfigurationComplete}
+            isConfigurationContext={isConfigurationContext}
+        />
     );
 };

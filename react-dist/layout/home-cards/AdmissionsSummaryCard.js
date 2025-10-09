@@ -1,9 +1,18 @@
 import React from 'react';
+import { useAdmisionsCurrentMonth } from "./hooks/useAdmisionsCurrentMonth.js";
+import { Toast } from 'primereact/toast';
 export const AdmissionsSummaryCard = () => {
   const handleViewAdmissions = () => {
     window.location.href = 'citasControl';
   };
-  return /*#__PURE__*/React.createElement("div", {
+  const {
+    admisionCount,
+    fetchAdmisionCurrentMonth,
+    toast: ErrorAdmisions
+  } = useAdmisionsCurrentMonth();
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: ErrorAdmisions
+  }), /*#__PURE__*/React.createElement("div", {
     className: "card dashboard-card",
     style: {
       backgroundColor: 'var(--phoenix-info)'
@@ -18,7 +27,7 @@ export const AdmissionsSummaryCard = () => {
     className: "card-content"
   }, /*#__PURE__*/React.createElement("h3", {
     id: "admissionsActiveCount"
-  }, "24"), /*#__PURE__*/React.createElement("span", {
+  }, admisionCount?.admissions_count), /*#__PURE__*/React.createElement("span", {
     className: "text-span-descripcion"
   }, "Admisiones este mes")), /*#__PURE__*/React.createElement("div", {
     className: "card-button"
@@ -28,5 +37,5 @@ export const AdmissionsSummaryCard = () => {
     onClick: handleViewAdmissions
   }, /*#__PURE__*/React.createElement("span", {
     className: "fas fa-plus-circle"
-  }), " Nueva Admisi\xF3n"))));
+  }), " Nueva Admisi\xF3n")))));
 };

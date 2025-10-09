@@ -151,8 +151,9 @@ export const ControlCashFlow = () => {
       const response = await userService.getAllUsers();
       setSpecialists(
         response.map((user) => ({
-          label: `${user.first_name} ${user.last_name} - ${user.specialty?.name || ""
-            }`,
+          label: `${user.first_name} ${user.last_name} - ${
+            user.specialty?.name || ""
+          }`,
           value: user.id,
         }))
       );
@@ -243,11 +244,16 @@ export const ControlCashFlow = () => {
         fecha: formatDateUtils(item?.created_at),
         ingresos: formatCurrency(
           parseInt(item?.invoice?.total_amount) +
-          (parseInt(item?.entity_authorized_amount) || 0) || 0
+            (parseInt(item?.entity_authorized_amount) || 0) || 0
         ),
         salidas:
-          item?.invoice?.status === "canceled"
-            ? formatCurrency(item?.invoice?.total_amount || 0)
+          item?.invoice?.status === "cancelled"
+            ? formatCurrency(
+                item?.invoice.notes.reduce(
+                  (acc: number, note: any) => acc + parseInt(note.amount) || 0,
+                  0
+                )
+              )
             : formatCurrency(0),
       };
     });
@@ -317,39 +323,49 @@ export const ControlCashFlow = () => {
             </thead>
             <tbody>
               ${dataExport.reduce(
-        (acc: string, rowData: any) =>
-          acc +
-          `
+                (acc: string, rowData: any) =>
+                  acc +
+                  `
                 <tr>
-                  <td>${rowData?.invoice?.details.length <= 1
-            ? rowData?.invoice?.details[0]?.product?.name || ""
-            : "Laboratorio"
-          }</td>
+                  <td>${
+                    rowData?.invoice?.details.length <= 1
+                      ? rowData?.invoice?.details[0]?.product?.name || ""
+                      : "Laboratorio"
+                  }</td>
                   <td>${rowData?.authorization_number || ""}</td>
-                  <td>${rowData?.invoice?.type === "entity"
-            ? formatCurrency(rowData?.invoice?.total_amount || 0)
-            : formatCurrency(0)
-          }</td>
-                  <td>${rowData?.invoice?.type === "public"
-            ? formatCurrency(rowData?.invoice?.total_amount || 0)
-            : formatCurrency(0)
-          }</td>
+                  <td>${
+                    rowData?.invoice?.type === "entity"
+                      ? formatCurrency(rowData?.invoice?.total_amount || 0)
+                      : formatCurrency(0)
+                  }</td>
+                  <td>${
+                    rowData?.invoice?.type === "public"
+                      ? formatCurrency(rowData?.invoice?.total_amount || 0)
+                      : formatCurrency(0)
+                  }</td>
                   <td>${formatCurrency(
-            rowData?.entity_authorized_amount || 0
-          )}</td>
+                    rowData?.entity_authorized_amount || 0
+                  )}</td>
                   <td>${formatDateUtils(rowData.created_at)}</td>
                   <td class="right">${formatCurrency(
-            (parseInt(rowData?.invoice?.total_amount) || 0) +
-            (parseInt(rowData?.entity_authorized_amount) || 0)
-          )}</td>
-                  <td class="right">${rowData?.invoice?.status === "canceled"
-            ? formatCurrency(rowData?.invoice?.total_amount || 0)
-            : formatCurrency(0)
-          }</td>
+                    (parseInt(rowData?.invoice?.total_amount) || 0) +
+                      (parseInt(rowData?.entity_authorized_amount) || 0)
+                  )}</td>
+                  <td class="right">${
+                    rowData?.invoice?.status === "cancelled"
+                      ? formatCurrency(
+                          rowData?.invoice.notes.reduce(
+                            (acc: number, note: any) =>
+                              acc + parseInt(note.amount) || 0,
+                            0
+                          )
+                        )
+                      : formatCurrency(0)
+                  }</td>
                 </tr>
               `,
-        ""
-      )}
+                ""
+              )}
             </tbody>
           </table>`;
       const configPDF = {
@@ -379,14 +395,12 @@ export const ControlCashFlow = () => {
       {
         field: "procedure",
         header: "# Factura",
-        body: (rowData: any) =>
-          rowData?.invoice?.id,
+        body: (rowData: any) => rowData?.invoice?.id,
       },
       {
         field: "procedure",
         header: "Código de Factura",
-        body: (rowData: any) =>
-          rowData?.invoice?.invoice_code,
+        body: (rowData: any) => rowData?.invoice?.invoice_code,
       },
       {
         field: "procedure",
@@ -436,7 +450,7 @@ export const ControlCashFlow = () => {
         body: (rowData: any) =>
           formatCurrency(
             parseInt(rowData?.invoice?.total_amount) +
-            (parseInt(rowData?.entity_authorized_amount) || 0) || 0
+              (parseInt(rowData?.entity_authorized_amount) || 0) || 0
           ),
       },
       {
@@ -445,11 +459,12 @@ export const ControlCashFlow = () => {
         style: createColumnStyle("right"),
         body: (rowData: any) =>
           rowData?.invoice?.status === "cancelled"
-            ? formatCurrency(rowData?.invoice.notes.reduce(
-              (acc: number, note: any) =>
-                acc + parseInt(note.amount) || 0,
-              0
-            ))
+            ? formatCurrency(
+                rowData?.invoice.notes.reduce(
+                  (acc: number, note: any) => acc + parseInt(note.amount) || 0,
+                  0
+                )
+              )
             : formatCurrency(0),
       },
     ];

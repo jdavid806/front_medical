@@ -10,7 +10,15 @@ import { useUserAvailabilityDelete } from './hooks/useUserAvailabilityDelete';
 import { useUserAvailabilityCreate } from './hooks/useUserAvailabilityCreate';
 import { convertHHMMSSToDate, convertHHMMToDate } from '../../services/utilidades';
 
-export const UserAvailabilityApp = () => {
+interface UserAvailabilityAppProps {
+    onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
+}
+export const UserAvailabilityApp = ({
+    onConfigurationComplete,
+    isConfigurationContext = false
+}: UserAvailabilityAppProps) => {
+
 
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserAvailabilityFormInputs | undefined>(undefined)
@@ -26,6 +34,14 @@ export const UserAvailabilityApp = () => {
         setUserAvailability(null)
         setShowFormModal(true)
     }
+
+    // Determinar si está completo
+    const isComplete = availabilities && availabilities.length > 0;
+    const showValidations = isConfigurationContext;
+
+    useEffect(() => {
+        onConfigurationComplete?.(isComplete);
+    }, [availabilities, onConfigurationComplete, isComplete]);
 
     const handleSubmit = async (data: UserAvailabilityFormInputs) => {
         const finalData: UserAvailabilityFormInputs = {
@@ -90,6 +106,19 @@ export const UserAvailabilityApp = () => {
                     overlay: 100000
                 }
             }}>
+
+                {/* Mostrar validaciones solo en contexto de configuración */}
+                {showValidations && (
+                    <div className="validation-section mb-3">
+                        <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+                            <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+                            {isComplete
+                                ? 'Horarios configurados correctamente! Puede continuar al siguiente módulo.'
+                                : 'Configure al menos un rol de Horarios para habilitar el botón "Siguiente Módulo"'
+                            }
+                        </div>
+                    </div>
+                )}
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h4 className="mb-1">Horarios de Atención</h4>
                     <div className="text-end mb-2">

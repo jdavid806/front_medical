@@ -1,33 +1,44 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { classNames } from "primereact/utils";
 import { MultiSelect } from "primereact/multiselect";
 import { Dialog } from "primereact/dialog";
 import { PreviewSpecialtyPatientViewCards } from "./PreviewSpecialtyPatientViewCards.js";
-import { useLoggedUser } from "../../../users/hooks/useLoggedUser.js";
+import { useUpdateSpecialtyPatientViewConfig } from "../hooks/useUpdateSpecialtyPatientViewConfig.js";
+import { userSpecialtyService } from "../../../../services/api/index.js";
+import { Toast } from "primereact/toast";
 export const SpecialtyPatientViewConfigForm = props => {
   const {
-    specialty,
+    onSave,
+    specialtyId,
     formId
   } = props;
   const {
-    loggedUser
-  } = useLoggedUser();
+    updateSpecialtyPatientViewConfig,
+    toast
+  } = useUpdateSpecialtyPatientViewConfig();
   const {
     handleSubmit,
     control,
     formState: {
       errors
-    }
+    },
+    setValue
   } = useForm({
     defaultValues: {
       visible_cards: []
     }
   });
   const [showPreview, setShowPreview] = useState(false);
-  const onSubmit = data => {
-    console.log(data);
+  const onSubmit = async data => {
+    try {
+      const response = await updateSpecialtyPatientViewConfig(specialtyId, data);
+      onSave?.();
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   };
   const visibleCards = useWatch({
     name: "visible_cards",
@@ -87,7 +98,18 @@ export const SpecialtyPatientViewConfigForm = props => {
     value: 'preadmisiones',
     label: "Preadmisiones"
   }];
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
+  useEffect(() => {
+    if (specialtyId) {
+      const asyncScope = async () => {
+        const response = await userSpecialtyService.get(specialtyId);
+        setValue("visible_cards", response.patient_view_config_json.visible_cards);
+      };
+      asyncScope();
+    }
+  }, [specialtyId]);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("form", {
     id: formId,
     onSubmit: handleSubmit(onSubmit)
   }, /*#__PURE__*/React.createElement("div", {
@@ -137,7 +159,6 @@ export const SpecialtyPatientViewConfigForm = props => {
     }
   }, /*#__PURE__*/React.createElement(PreviewSpecialtyPatientViewCards, {
     disableRedirects: true,
-    availableCardsIds: visibleCards,
-    userId: loggedUser?.id
+    availableCardsIds: visibleCards
   })));
 };

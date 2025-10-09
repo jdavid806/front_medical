@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useLoadUserPatientViewCards } from "../hooks/useLoadUserPatientViewCards"
+import { appointmentService, infoCompanyService, patientService, templateService, ticketService } from "../../../../services/api"
+import { formatWhatsAppMessage, getIndicativeByCountry } from "../../../../services/utilidades"
+import { createMassMessaging } from "../../../../funciones/funcionesJS/massMessage"
 
 interface PreviewSpecialtyPatientViewCardsProps {
     patientId?: string
@@ -10,11 +13,50 @@ interface PreviewSpecialtyPatientViewCardsProps {
 
 export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientViewCardsProps) => {
 
-    const { patientId, disableRedirects = false, availableCardsIds, userId } = props
+    const urlParams = new URLSearchParams(window.location.search)
+
+    const {
+        patientId = urlParams.get("patient_id") || urlParams.get("id"),
+        disableRedirects = false,
+        availableCardsIds,
+        userId
+    } = props
 
     const { patientViewCards, fetchUserPatientViewCards } = useLoadUserPatientViewCards()
 
     const [finalAvailableCardsIds, setFinalAvailableCardsIds] = useState<string[]>()
+    const [messaging, setMessaging] = useState<any | null>(null);
+    const [template, setTemplate] = useState<any | null>(null);
+
+
+    useEffect(() => {
+        const asyncScope = async () => {
+            const tenant = window.location.hostname.split(".")[0];
+            const data = {
+                tenantId: tenant,
+                belongsTo: "turnos-llamadoPaciente",
+                type: "whatsapp",
+            };
+            const companies = await infoCompanyService.getCompany();
+            const communications = await infoCompanyService.getInfoCommunication(companies.data[0].id);
+            let template;
+            try {
+                template = await templateService.getTemplate(data);
+            } catch (error) {
+                console.error('Error al obtener template:', error);
+            }
+            const infoInstance = {
+                api_key: communications.api_key,
+                instance: communications.instance
+            }
+
+            const messaging = createMassMessaging(infoInstance);
+            setMessaging(messaging);
+            setTemplate(template);
+        }
+
+        asyncScope();
+    }, [])
 
     useEffect(() => {
         if (availableCardsIds) {
@@ -24,11 +66,13 @@ export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientV
 
     useEffect(() => {
         if (userId) {
+            console.log("patientViewCards", patientViewCards)
             setFinalAvailableCardsIds(patientViewCards)
         }
     }, [patientViewCards])
 
     useEffect(() => {
+        console.log("userId", userId)
         fetchUserPatientViewCards()
     }, [userId])
 
@@ -147,16 +191,92 @@ export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientV
         }
     ];
 
+    function sendMessageWhatsapp(data, currentAppointment) {
+        const replacements = {
+            NOMBRE_PACIENTE: `${data?.patient?.first_name ?? ""} ${data?.patient?.middle_name ?? ""
+                } ${data?.patient?.last_name ?? ""} ${data?.patient?.second_last_name ?? ""
+                }`,
+            TICKET: `${data?.ticket_number ?? ""}`,
+            MODULO: `${data?.module?.name ?? ""}`,
+            ESPECIALISTA: `${currentAppointment?.user_availability?.user?.specialty?.name ?? ""}`,
+            CONSULTORIO: `${data?.branch?.address ?? ""}`,
+        };
+
+        const templateFormatted = formatWhatsAppMessage(
+            template?.data?.template,
+            replacements
+        );
+
+        const dataMessage = {
+            channel: "whatsapp",
+            message_type: "text",
+            recipients: [
+                getIndicativeByCountry(data?.patient.country_id) +
+                data?.patient.whatsapp,
+            ],
+            message: templateFormatted,
+            webhook_url: "https://example.com/webhook",
+        };
+        messaging?.sendMessage(dataMessage).then(() => { });
+    }
+
+    // Llamar paciente
+    const llamarPaciente = async (patientId) => {
+        //@ts-ignore
+        Swal.fire({
+            title: '¿Estás seguro de llamar al paciente al consultorio?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, llamar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const patient = await patientService.get(patientId);
+                const currentAppointment = patient.appointments.find(appointment => (
+                    appointment.appointment_state.name === 'pending_consultation' &&
+                    appointment.appointment_date == new Date().toISOString().split('T')[0]
+                ));
+
+                if (currentAppointment) {
+                    await appointmentService.changeStatus(currentAppointment.id, 'called');
+                    await ticketService.lastByPatient(patientId).then((response) => {
+
+                        if (response?.patient?.whatsapp_notifications) {
+                            sendMessageWhatsapp(response, currentAppointment);
+                        }
+                        //@ts-ignore
+                        Swal.fire(
+                            '¡Paciente llamado!',
+                            'Se ha llamado al paciente para que se acerque al consultorio.',
+                            'success'
+                        )
+
+                    });
+                } else {
+                    //@ts-ignore
+                    Swal.fire(
+                        'Error',
+                        'El paciente no está en espera de consulta.',
+                        'error'
+                    )
+                }
+            }
+        });
+    };
+
     const handleCardClick = (card: any) => {
         switch (card.id) {
             case "llamar-paciente":
-                console.log("Llamar paciente");
+                llamarPaciente(patientId);
                 break;
             default:
                 window.location.href = card.url;
                 break;
         }
     }
+
+    console.log("finalAvailableCardsIds", finalAvailableCardsIds)
 
     return <>
         <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2">
@@ -171,7 +291,7 @@ export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientV
                             <p className="card-text fs-9 text-center">{card.texto}</p>
                             <button
                                 className="btn btn-primary btn-icon mt-auto btn-tab"
-                                onClick={handleCardClick}
+                                onClick={() => handleCardClick(card)}
                                 disabled={disableRedirects}
                             >
                                 <span className="fa-solid fa-chevron-right"></span>

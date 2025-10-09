@@ -121,9 +121,9 @@ $baner = "";
   .dashboard-card h3 {
     text-align: center;
     color: #f8f9fa !important;
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    font-weight: bold;
+    margin-bottom: 0.5rem !important;
+    font-size: 1.8rem !important;
+    font-weight: bold !important;
   }
   
   .text-span-descripcion {

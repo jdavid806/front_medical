@@ -301,36 +301,91 @@ export const SystemConfiguration = ({
     const renderCurrentComponent = () => {
         const CurrentComponent = currentStep.component;
 
+        // Definir qué steps son de configuración
+        const configurationStepsIds = [
+            'empresa',
+            'contabilidad',
+            'especialidades',
+            'servicios',
+            'usuarios',
+            'roles',
+            'horarios',
+            'precios'
+        ];
+
+        const isConfigurationContext = configurationStepsIds.includes(currentStep.id);
+
         if (currentStep.id === 'empresa') {
-            return <CurrentComponent onConfigurationComplete={handleCompanyConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleCompanyConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'contabilidad') {
-            return <CurrentComponent onConfigurationComplete={handleContabilidadConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleContabilidadConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'especialidades') {
-            return <CurrentComponent onConfigurationComplete={handleEspecialidadesConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleEspecialidadesConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'servicios') {
-            return <CurrentComponent onConfigurationComplete={handleServiciosConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleServiciosConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+
+                />
+            );
         }
 
         if (currentStep.id === 'usuarios') {
-            return <CurrentComponent onConfigurationComplete={handleUsuariosConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleUsuariosConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'roles') {
-            return <CurrentComponent onConfigurationComplete={handleRolesConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleRolesConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'horarios') {
-            return <CurrentComponent onConfigurationComplete={handleHorariosConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handleHorariosConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         if (currentStep.id === 'precios') {
-            return <CurrentComponent onConfigurationComplete={handlePreciosConfigComplete} />;
+            return (
+                <CurrentComponent
+                    onConfigurationComplete={handlePreciosConfigComplete}
+                    isConfigurationContext={isConfigurationContext}
+                />
+            );
         }
 
         return <CurrentComponent />;
@@ -411,7 +466,7 @@ export const SystemConfiguration = ({
                                         />
                                     </div>
 
-                                    <div className="content-header mb-4">
+                                    {/* <div className="content-header mb-4">
                                         <h3 className="text-primary mb-2">
                                             <i className={`${currentStep.icon} me-3`}></i>
                                             {currentStep.label}
@@ -436,7 +491,6 @@ export const SystemConfiguration = ({
                                             </div>
                                         )}
 
-                                        {/* Alertas de estado - Información */}
                                         {shouldShowInfoAlert() && (
                                             <div className="alert alert-info mt-2 p-2">
                                                 <small>
@@ -457,7 +511,7 @@ export const SystemConfiguration = ({
                                                 </small>
                                             </div>
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="content-body mb-4">
                                         {renderCurrentComponent()}

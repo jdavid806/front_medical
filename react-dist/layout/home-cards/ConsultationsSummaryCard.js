@@ -1,10 +1,19 @@
 // ConsultationsSummaryCard.js
 import React from 'react';
+import { useAppointmentsConsultationsToday } from "./hooks/useAppointmentsConsultationsToday.js";
+import { Toast } from 'primereact/toast';
 export const ConsultationsSummaryCard = () => {
   const handleViewAppointments = () => {
     window.location.href = 'pacientes';
   };
-  return /*#__PURE__*/React.createElement("div", {
+  const {
+    apointmentCount,
+    fetchAppointmentConsultationsToday,
+    toast: ToastConsultationError
+  } = useAppointmentsConsultationsToday();
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: ToastConsultationError
+  }), /*#__PURE__*/React.createElement("div", {
     className: "card dashboard-card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -14,7 +23,7 @@ export const ConsultationsSummaryCard = () => {
     className: "fa-solid fa-magnifying-glass"
   }), " Consultas"), /*#__PURE__*/React.createElement("div", {
     className: "card-content"
-  }, /*#__PURE__*/React.createElement("h3", null, "0/2"), /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("h3", null, apointmentCount?.display), /*#__PURE__*/React.createElement("span", {
     className: "text-span-descripcion"
   }, "Consultas para Hoy")), /*#__PURE__*/React.createElement("div", {
     className: "card-button"
@@ -24,5 +33,5 @@ export const ConsultationsSummaryCard = () => {
     onClick: handleViewAppointments
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-magnifying-glass"
-  }), " Ver Consultas"))));
+  }), " Ver Consultas")))));
 };

@@ -184,7 +184,7 @@ export const ControlCashFlow = () => {
         monto_autorizado: item?.entity_authorized_amount,
         fecha: formatDateUtils(item?.created_at),
         ingresos: formatCurrency(parseInt(item?.invoice?.total_amount) + (parseInt(item?.entity_authorized_amount) || 0) || 0),
-        salidas: item?.invoice?.status === "canceled" ? formatCurrency(item?.invoice?.total_amount || 0) : formatCurrency(0)
+        salidas: item?.invoice?.status === "cancelled" ? formatCurrency(item?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)
       };
     });
     return dataFilter;
@@ -266,7 +266,7 @@ export const ControlCashFlow = () => {
                   <td>${formatCurrency(rowData?.entity_authorized_amount || 0)}</td>
                   <td>${formatDateUtils(rowData.created_at)}</td>
                   <td class="right">${formatCurrency((parseInt(rowData?.invoice?.total_amount) || 0) + (parseInt(rowData?.entity_authorized_amount) || 0))}</td>
-                  <td class="right">${rowData?.invoice?.status === "canceled" ? formatCurrency(rowData?.invoice?.total_amount || 0) : formatCurrency(0)}</td>
+                  <td class="right">${rowData?.invoice?.status === "cancelled" ? formatCurrency(rowData?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)}</td>
                 </tr>
               `, "")}
             </tbody>

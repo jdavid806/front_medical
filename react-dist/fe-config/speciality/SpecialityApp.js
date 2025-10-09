@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'; // Agregar useEffect
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 
@@ -6,9 +6,10 @@ import { ConfirmDialog } from 'primereact/confirmdialog';
 import SpecialityTable from "./components/SpecialityTable.js";
 import SpecialityModal from "./components/SpecialityModal.js"; // Hook
 import { useSpecialty } from "./hooks/useSpecialty.js";
-import CurrentSpecialityTable from "./components/CurrentSpecialtyTable.js";
+import CurrentSpecialityTable from "./components/CurrentSpecialtyTable.js"; // Definir las props
 export default function SpecialityApp({
-  onConfigurationComplete
+  onConfigurationComplete,
+  isConfigurationContext = false
 }) {
   const {
     // State
@@ -40,10 +41,14 @@ export default function SpecialityApp({
     onActiveSpecialty,
     onDeactiveSpecialty
   } = useSpecialty();
+
+  // Lógica para determinar si está completo
   useEffect(() => {
-    const hasCurrentSpecialties = currentSpecialties && currentSpecialties.length > 0;
-    onConfigurationComplete?.(hasCurrentSpecialties);
-  }, [currentSpecialties, specialties, onConfigurationComplete]);
+    const hasActiveSpecialties = currentSpecialties && currentSpecialties.length > 0;
+    onConfigurationComplete?.(hasActiveSpecialties);
+  }, [currentSpecialties, onConfigurationComplete]);
+  const isComplete = currentSpecialties && currentSpecialties.length > 0;
+  const showValidations = isConfigurationContext;
   const handleModalClose = () => {
     setShowConfigModal(false);
     resetModalForm();
@@ -52,13 +57,13 @@ export default function SpecialityApp({
     className: "container-fluid mt-4"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+  }), /*#__PURE__*/React.createElement(ConfirmDialog, null), showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "alert alert-info p-2"
-  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-info-circle me-2"
-  }), "Configure al menos una especialidad activa para poder continuar al siguiente subm\xF3dulo."))), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 col-lg-6 col-xl-6 col-12"

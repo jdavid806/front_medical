@@ -21,8 +21,7 @@ const TaxFormConfig = ({
     formState: {
       errors
     },
-    reset,
-    watch
+    reset
   } = useForm({
     defaultValues: initialData || {
       name: "",
@@ -34,8 +33,6 @@ const TaxFormConfig = ({
       description: ""
     }
   });
-  const selectedPurchaseAccount = watch("accounting_account_id");
-  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -182,7 +179,8 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts.filter(acc => acc.id !== selectedPurchaseAccount),
+      options: accounts // QUITAR EL FILTRO
+      ,
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
@@ -248,7 +246,8 @@ const TaxFormConfig = ({
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts.filter(acc => acc.id !== selectedSellAccount),
+      options: accounts // QUITAR EL FILTRO
+      ,
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,

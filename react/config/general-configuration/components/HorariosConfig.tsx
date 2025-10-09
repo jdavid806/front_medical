@@ -3,12 +3,18 @@ import { UserAvailabilityApp } from '../../../user-availabilities/UserAvailabili
 
 interface HorariosConfigProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
+    isConfigurationContext?: boolean;
+
 }
 
 export const HorariosConfig: React.FC<HorariosConfigProps> = ({
-    onConfigurationComplete
+    onConfigurationComplete,
+    isConfigurationContext = false
+
 }) => {
     return (
-        <UserAvailabilityApp onConfigurationComplete={onConfigurationComplete} />
+        <UserAvailabilityApp onConfigurationComplete={onConfigurationComplete}
+            isConfigurationContext={isConfigurationContext}
+        />
     );
 };

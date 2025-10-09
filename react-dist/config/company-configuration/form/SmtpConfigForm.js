@@ -23,9 +23,7 @@ const SmtpConfigForm = () => {
       port: 587,
       security: 'tls',
       email: '',
-      password: '',
-      api_key: '',
-      instance: ''
+      password: ''
     }
   });
   const {
@@ -56,9 +54,7 @@ const SmtpConfigForm = () => {
         port: 587,
         security: 'tls',
         email: '',
-        password: '',
-        api_key: '',
-        instance: ''
+        password: ''
       });
     }
   }, [communication, loading, error, reset]);
@@ -293,46 +289,22 @@ const SmtpConfigForm = () => {
     }))
   }), errors.password && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback d-block"
-  }, errors.password.message)), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "api_key",
-    className: "form-label"
-  }, "API Key"), /*#__PURE__*/React.createElement(Controller, {
-    name: "api_key",
-    control: control,
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
-      id: "api_key",
-      className: "form-control",
-      placeholder: "Clave API"
-    }))
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "instance",
-    className: "form-label"
-  }, "Instancia"), /*#__PURE__*/React.createElement(Controller, {
-    name: "instance",
-    control: control,
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
-      id: "instance",
-      className: "form-control",
-      placeholder: "Nombre de instancia"
-    }))
-  })))), /*#__PURE__*/React.createElement("div", {
+  }, errors.password.message)))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-center justify-content-md-end gap-2"
+    className: "col-12 d-flex gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     type: "submit",
     label: "Guardar Configuraci\xF3n",
     icon: "pi pi-save",
     loading: isSubmitting,
     className: "btn-primary"
+  }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    label: "Probar Conexi\xF3n",
+    icon: "pi pi-test-tube",
+    className: "btn-outline-secondary",
+    onClick: handleTestConnection
   }))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-4"
   }, /*#__PURE__*/React.createElement("div", {

@@ -12,9 +12,11 @@ import { useActivateOtp } from "./hooks/useActivateOtp";
 
 interface UserAppProps {
   onConfigurationComplete?: (isComplete: boolean) => void;
+  isConfigurationContext?: boolean;
+
 }
 
-export const UserApp = ({ onConfigurationComplete }: UserAppProps) => {
+export const UserApp = ({ onConfigurationComplete, isConfigurationContext = false }: UserAppProps) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState<UserFormInputs | undefined>(
     undefined
@@ -43,6 +45,10 @@ export const UserApp = ({ onConfigurationComplete }: UserAppProps) => {
     });
     onConfigurationComplete?.(hasUsers);
   }, [users, onConfigurationComplete]);
+
+  const isComplete = users && users.length > 0;
+
+  const showValidations = isConfigurationContext;
 
   const onCreate = () => {
     setInitialData(undefined);
@@ -148,14 +154,19 @@ export const UserApp = ({ onConfigurationComplete }: UserAppProps) => {
           },
         }}
       >
-        <div className="mb-3">
-          <div className="alert alert-info p-2">
-            <small>
-              <i className="pi pi-info-circle me-2"></i>
-              Configure al menos un usuario para poder continuar al siguiente módulo.
-            </small>
+
+
+        {showValidations && (
+          <div className="validation-section mb-3">
+            <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+              <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+              {isComplete
+                ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.'
+                : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
+              }
+            </div>
           </div>
-        </div>
+        )}v>
 
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="mb-1">Usuarios</h4>

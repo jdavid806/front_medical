@@ -11,7 +11,7 @@ interface ColumnActionsProps {
 export const getColumns = ({ editConsentimiento, deleteConsentimiento }: ColumnActionsProps): ConsentimientoTableColumn[] => [
   // { field: "tenant_id", header: "ID del Tenant" },
   { field: "title", header: "Título",},
-  { field: "data", header: "Datos" },
+  //{ field: "data", header: "Datos" },
   { field: "description", header: "Descripción" },
   {
     field: "",

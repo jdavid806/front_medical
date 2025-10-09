@@ -12,7 +12,7 @@ import { useTaxesUpdateTable } from './hooks/useTaxesUpdteTable';
 import { TaxesMapperCreate, TaxesMapperUpdate } from './mapper/mappedTaxes';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
 
-export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
+export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<TaxFormInputs | undefined>(undefined);
 

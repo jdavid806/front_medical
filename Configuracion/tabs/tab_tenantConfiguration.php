@@ -76,7 +76,7 @@
       </ul>
 
       <!-- Contenido de los tabs -->
-      <div class="tab-content" id="typeMessages-tabContent">
+      <div class="tab-content overflow-hidden" id="typeMessages-tabContent">
 
         <input type="hidden" id="id_Empresa" value="">
         <div class="tab-pane fade show active" id="general-tab-pane" role="tabpanel"
@@ -542,10 +542,7 @@
         </div>
 
         <div class="tab-pane fade" id="sedes-tab-pane" role="tabpanel" aria-labelledby="sedes-tab">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5>Listado de Sedes</h5>
             <div id="branchComponent"></div>
-          </div>
         </div>
 
       </div>

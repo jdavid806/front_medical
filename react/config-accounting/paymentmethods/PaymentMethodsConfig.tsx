@@ -12,7 +12,7 @@ import { CreatePaymentMethodDTO } from './interfaces/PaymentMethodDTO';
 import { usePaymentMethodDelete } from './hooks/usePaymentMethodDeleteTable';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
 
-export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
+export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
     const [initialData, setInitialData] = useState<PaymentMethodFormInputs | undefined>(undefined);
 

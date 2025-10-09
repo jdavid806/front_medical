@@ -11,7 +11,7 @@ import { CostCentersMapperCreate, CostCentersMapperUpdate } from "./mapper/mappe
 import { SwalManager } from "../../../services/alertManagerImported";
 import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTable";
 
-export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
+export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState<CostCenterFormInputs | undefined>(undefined);
 

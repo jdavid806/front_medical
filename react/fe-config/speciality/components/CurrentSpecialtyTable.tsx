@@ -91,7 +91,8 @@ export default function CurrentSpecialityTable({
             {selectedItem && <>
                 <SpecialtyPatientViewConfigForm
                     formId={"specialtyPatientViewConfigForm"}
-                    specialty={selectedItem}
+                    specialtyId={selectedItem.id.toString()}
+                    onSave={() => setShowPatientViewConfigModal(false)}
                 />
                 <Divider />
                 <div className="d-flex justify-content-end gap-2">

@@ -17,7 +17,7 @@ import {
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 
-export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void }) => {
+export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [initialData, setInitialData] = useState<
     RetentionFormInputs | undefined

@@ -8,10 +8,9 @@ export const getColumns = ({
 {
   field: "title",
   header: "Título"
-}, {
-  field: "data",
-  header: "Datos"
-}, {
+},
+//{ field: "data", header: "Datos" },
+{
   field: "description",
   header: "Descripción"
 }, {
