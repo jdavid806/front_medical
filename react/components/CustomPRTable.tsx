@@ -30,7 +30,8 @@ export interface CustomPRTableProps {
     disableSearch?: boolean
     disableReload?: boolean
     disablePaginator?: boolean
-    size?: "normal" | "small" | "large" | undefined
+    size?: "normal" | "small" | "large" | undefined,
+    footerGroup?: any
     onSelectedRow?: (rowData: any) => void
     onReload?: () => void
     onSort?: (event: DataTableStateEvent) => void
@@ -60,6 +61,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
     onSort,
     onPage,
     onSearch,
+    footerGroup
 }) => {
 
     const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -134,6 +136,7 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
                 onSort={onSort}
                 lazy={lazy}
                 size={size}
+                footerColumnGroup={footerGroup}
             >
                 {columns.map((column) => (
                     <Column

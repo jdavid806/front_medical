@@ -4,11 +4,15 @@ import { Dropdown } from 'primereact/dropdown';
 import { Paginator } from 'primereact/paginator';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
+import { TabView, TabPanel } from 'primereact/tabview';
+import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Dialog } from 'primereact/dialog';
 import { appointmentService, examOrderService, examRecipeResultService, examRecipeService, infoCompanyService, patientService, templateService, ticketService } from '../../services/api';
 import { getPatientNextAppointment } from '../../services/patientHelpers';
 import { reestructurarPacientes } from '../../Pacientes/js/reestructurarPacientes';
 import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from '../../services/utilidades';
 import { createMassMessaging } from '../../funciones/funcionesJS/massMessage';
+import AdmissionBilling from '../admission/admission-billing/AdmissionBilling';
 
 import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useAppointmentStates } from '../appointments/hooks/useAppointmentStates';
@@ -23,6 +27,7 @@ export const PatientConsultationList = () => {
     const [searchText, setSearchText] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState(0);
 
     const [messaging, setMessaging] = useState<any | null>(null);
     const [template, setTemplate] = useState<any | null>(null);
@@ -33,6 +38,10 @@ export const PatientConsultationList = () => {
     const [selectedExamOrder, setSelectedExamOrder] = useState<any>(null);
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
     const [showPdfModal, setShowPdfModal] = useState(false);
+
+    // Estados para el modal de facturación
+    const [showBillingDialog, setShowBillingDialog] = useState(false);
+    const [selectedBillingAppointment, setSelectedBillingAppointment] = useState<any>(null);
 
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
@@ -112,10 +121,15 @@ export const PatientConsultationList = () => {
             let isMatch = true;
             const paciente = citaData.paciente;
 
-            if (searchText &&
-                !paciente.fullName?.toLowerCase().includes(searchText.toLowerCase()) &&
-                !paciente.document_number.includes(searchText)) {
-                isMatch = false;
+            if (searchText) {
+                const searchLower = searchText.toLowerCase();
+                const nombreCompleto = `${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`.toLowerCase();
+                const documento = paciente.document_number || '';
+
+                // Buscar tanto en el nombre completo como en el documento
+                if (!nombreCompleto.includes(searchLower) && !documento.includes(searchText)) {
+                    isMatch = false;
+                }
             }
 
             if (statusFilter && citaData.estado !== statusFilter && statusFilter !== 'all') {
@@ -406,6 +420,36 @@ export const PatientConsultationList = () => {
         });
     };
 
+    // Función para abrir el modal de facturación
+    const handleFacturarAdmision = (citaData: any) => {
+        // Preparar los datos para el modal de facturación
+        const appointmentData = {
+            id: citaData.cita.id,
+            patientId: citaData.paciente.id,
+            patientName: `${citaData.paciente.first_name || ''} ${citaData.paciente.middle_name || ''} ${citaData.paciente.last_name || ''} ${citaData.paciente.second_last_name || ''}`,
+            patient: citaData.paciente,
+            appointment_date: citaData.cita.appointment_date,
+            appointment_time: citaData.cita.appointment_time,
+            // Agregar más campos según sea necesario
+        };
+
+        setSelectedBillingAppointment(appointmentData);
+        setShowBillingDialog(true);
+    };
+
+    // Función para manejar el éxito de la facturación
+    const handleBillingSuccess = () => {
+        setShowBillingDialog(false);
+        setSelectedBillingAppointment(null);
+        refresh(); // Refrescar la lista de pacientes
+    };
+
+    // Función para cerrar el modal de facturación
+    const handleBillingHide = () => {
+        setShowBillingDialog(false);
+        setSelectedBillingAppointment(null);
+    };
+
     const refresh = () => {
         fetchPatients();
     };
@@ -437,19 +481,27 @@ export const PatientConsultationList = () => {
         return colores[estado] || 'secondary';
     };
 
+    // Filtrar pacientes por estado para los tabs
+    const getPatientsByStatus = (status) => {
+        if (status === 'all') {
+            return filteredPatients;
+        }
+        return filteredPatients.filter(citaData => citaData.estado === status);
+    };
+
     // Renderizar tarjetas de pacientes
-    const renderPatientCards = () => {
+    const renderPatientCards = (patientsToRender) => {
         if (loading) {
             return <div className="text-center py-5">Cargando pacientes...</div>;
         }
 
-        if (filteredPatients.length === 0) {
+        if (patientsToRender.length === 0) {
             return <div className="text-center py-5">No se encontraron pacientes</div>;
         }
 
         return (
-            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                {filteredPatients.map((citaData, index) => {
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3">
+                {patientsToRender.map((citaData, index) => {
                     const paciente = citaData.paciente;
                     const cita = citaData.cita;
                     const estadoActual = cita.appointment_state?.name || citaData.estado || 'Sin estado';
@@ -457,62 +509,72 @@ export const PatientConsultationList = () => {
                     const estadoColor = obtenerColorEstado(estadoActual);
 
                     return (
-                        <div key={`${paciente.id}-${cita.id}-${index}`} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                            <div className="card card-paciente">
-                                <div className="card-body">
-                                    <Badge
-                                        value={estadoTraducido}
-                                        className={`badge-phoenix badge-phoenix-${estadoColor} fs-10 mb-3`}
-                                    />
+                        <div key={`${paciente.id}-${cita.id}-${index}`} className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-3">
+                            <div className="card card-paciente h-100">
+                                <div className="card-body d-flex flex-column p-3">
+                                    <div className="text-center mb-2">
+                                        <Badge
+                                            value={estadoTraducido}
+                                            className={`badge-phoenix badge-phoenix-${estadoColor} fs-9`}
+                                        />
+                                    </div>
 
-                                    <div className="info-paciente row">
-                                        <div className="col-6">
-                                            <div className="d-flex align-items-center">
-                                                <i className="fa-solid fa-id-card me-2 text-body-tertiary fs-9 fw-extra-bold"></i>
-                                                <p className="fw-bold mb-0">Documento</p>
+                                    <div className="info-paciente flex-grow-1">
+                                        {/* Grid de 2 columnas para los datos del paciente */}
+                                        <div className="patient-data-grid">
+                                            <div className="grid-item">
+                                                <div className="d-flex align-items-center mb-1">
+                                                    <i className="fa-solid fa-id-card me-1 text-body-tertiary fs-8"></i>
+                                                    <span className="fw-bold">Documento</span>
+                                                </div>
+                                                <div className="text-body-emphasis text-truncate" title={paciente.document_number}>
+                                                    {paciente.document_number}
+                                                </div>
                                             </div>
-                                            <p className="text-body-emphasis mb-3">{paciente.document_number}</p>
+
+                                            <div className="grid-item">
+                                                <div className="d-flex align-items-center mb-1">
+                                                    <i className="fa-solid fa-cake-candles me-1 text-body-tertiary fs-8"></i>
+                                                    <span className="fw-bold">Edad</span>
+                                                </div>
+                                                <div className="text-body-emphasis">
+                                                    {calculateAge(paciente.date_of_birth)} Años
+                                                </div>
+                                            </div>
+
+                                            <div className="grid-item">
+                                                <div className="d-flex align-items-center mb-1">
+                                                    <i className="far fa-calendar-check me-1 text-body-tertiary fs-8"></i>
+                                                    <span className="fw-bold">Fecha</span>
+                                                </div>
+                                                <div className="text-body-emphasis">
+                                                    {cita.appointment_date || "N/A"}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid-item">
+                                                <div className="d-flex align-items-center mb-1">
+                                                    <i className="far fa-clock me-1 text-body-tertiary fs-8"></i>
+                                                    <span className="fw-bold">Hora</span>
+                                                </div>
+                                                <div className="text-body-emphasis">
+                                                    {cita.appointment_time || "N/A"}
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="col-6">
-                                            <div className="d-flex align-items-center">
-                                                <i className="fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"></i>
-                                                <p className="fw-bold mb-0">Edad</p>
+                                        {/* Nombre completo - Ocupa toda la fila */}
+                                        <div className="mt-2 pt-2 border-top">
+                                            <div className="d-flex align-items-center mb-1">
+                                                <i className="fa-solid fa-user me-1 text-body-tertiary fs-8"></i>
+                                                <span className="fw-bold">Nombre</span>
                                             </div>
-                                            <p className="text-body-emphasis mb-3">{calculateAge(paciente.date_of_birth)} Años</p>
-                                        </div>
-
-                                        <div className="col-6">
-                                            <div className="d-flex align-items-center">
-                                                <i className="far fa-calendar-check me-2 text-body-tertiary fs-9 fw-extra-bold"></i>
-                                                <p className="fw-bold mb-0">Fecha</p>
-                                            </div>
-                                            <p className="text-body-emphasis mb-3">
-                                                {cita.appointment_date || "Fecha no disponible"}
-                                            </p>
-                                        </div>
-
-                                        <div className="col-6">
-                                            <div className="d-flex align-items-center">
-                                                <i className="far fa-clock me-2 text-body-tertiary fs-9 fw-extra-bold"></i>
-                                                <p className="fw-bold mb-0">Hora</p>
-                                            </div>
-                                            <p className="text-body-emphasis">
-                                                {cita.appointment_time || "Hora no disponible"}
-                                            </p>
-                                        </div>
-
-                                        <div className="col-6">
-                                            <div className="d-flex align-items-center">
-                                                <i className="fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"></i>
-                                                <p className="fw-bold mb-0">Nombre</p>
-                                            </div>
-                                            <p className="text-body-emphasis">
+                                            <div className="text-body-emphasis text-truncate" title={`${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`}>
                                                 {paciente.first_name || ''}
                                                 {paciente.middle_name ? ` ${paciente.middle_name}` : ''}
                                                 {paciente.last_name ? ` ${paciente.last_name}` : ''}
                                                 {paciente.second_last_name ? ` ${paciente.second_last_name}` : ''}
-                                            </p>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -523,13 +585,22 @@ export const PatientConsultationList = () => {
                                             onClick={() => window.location.href = `verPaciente?id=${paciente.id}`}
                                         />
 
-                                        {(estadoActual === "pending_consultation" && (
+                                        {/* Botón Facturar Admisión - Solo para estado Pendiente */}
+                                        {estadoActual === "pending" && (
+                                            <Button
+                                                label="Facturar Admisión"
+                                                className="btn-sm btn btn-success"
+                                                onClick={() => handleFacturarAdmision(citaData)}
+                                            />
+                                        )}
+
+                                        {(estadoActual === "pending_consultation" || estadoActual === "called") && (
                                             <Button
                                                 label="Llamar paciente"
                                                 className="btn-sm btn btn-primary"
                                                 onClick={() => llamarPaciente(paciente.id, cita.id)}
                                             />
-                                        ))}
+                                        )}
 
                                         {(estadoActual === "pending_consultation" ||
                                             estadoActual === "called" ||
@@ -538,7 +609,7 @@ export const PatientConsultationList = () => {
                                             (
                                                 <Button
                                                     label="Realizar Consulta"
-                                                    className="btn-sm btn btn-primary mb-2"
+                                                    className="btn-sm btn btn-primary"
                                                     onClick={() => handleMakeClinicalRecord(paciente.id, cita.id)}
                                                 />
                                             )}
@@ -582,48 +653,76 @@ export const PatientConsultationList = () => {
         );
     };
 
+    // Definir los tabs con nuevo orden: En Espera primero, Todos al final
+    const tabItems = [
+        { label: 'En Espera', value: 'pending_consultation', count: getPatientsByStatus('pending_consultation').length },
+        { label: 'Pendientes', value: 'pending', count: getPatientsByStatus('pending').length },
+        { label: 'Llamados', value: 'called', count: getPatientsByStatus('called').length },
+        { label: 'En Proceso', value: 'in_consultation', count: getPatientsByStatus('in_consultation').length },
+        { label: 'Finalizadas', value: 'consultation_completed', count: getPatientsByStatus('consultation_completed').length },
+        { label: 'Canceladas', value: 'cancelled', count: getPatientsByStatus('cancelled').length },
+        { label: 'Todos', value: 'all', count: filteredPatients.length }
+    ];
+
+    // Función para limpiar filtros
+    const limpiarFiltros = () => {
+        setSearchText('');
+        setFilteredPatients(patients);
+    };
+
     return (<>
-        <div className="accordion mb-4" id="accordionFiltros">
-            <div className="accordion-item">
-                <h2 className="accordion-header" id="headingFiltros">
-                    <button className="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseFiltros" aria-expanded="false"
-                        aria-controls="collapseFiltros">
-                        Filtros
-                    </button>
-                </h2>
-                <div id="collapseFiltros" className="accordion-collapse collapse"
-                    aria-labelledby="headingFiltros" data-bs-parent="#accordionFiltros">
-                    <div className="accordion-body">
-                        <div className="row g-3 mb-4">
-                            <div className="col-12 col-md-6">
-                                <label htmlFor="searchPaciente" className="form-label">Buscar Paciente</label>
+
+        <div className="card mb-4">
+            <div className="card-body">
+                <Accordion>
+                    <AccordionTab header="Filtros">
+                        <div className="row">
+                            <div className="col-md-6">
+                                <label className="form-label">
+                                    Buscar Paciente
+                                </label>
                                 <InputText
-                                    id="searchPaciente"
                                     value={searchText}
                                     onChange={(e) => setSearchText(e.target.value)}
                                     placeholder="Buscar por nombre o documento"
                                     className="w-100"
                                 />
                             </div>
-                            <div className="col-12 col-md-6">
-                                <label htmlFor="statusPaciente" className="form-label">Filtrar por Estado</label>
-                                <Dropdown
-                                    id="statusPaciente"
-                                    value={statusFilter}
-                                    options={statusOptions}
-                                    onChange={(e) => setStatusFilter(e.value)}
-                                    placeholder="Seleccione Estado"
-                                    className="w-100"
+                        </div>
+                    </AccordionTab>
+                </Accordion>
+            </div>
+            <TabView
+                activeIndex={activeTab}
+                onTabChange={(e) => setActiveTab(e.index)}
+                className="custom-tabview"
+            >
+                {tabItems.map((tab, index) => (
+                    <TabPanel
+                        key={tab.value}
+                        header={
+                            <div className="d-flex align-items-center gap-2">
+                                <span>{tab.label}</span>
+                                <Badge
+                                    value={tab.count}
+                                    className={`badge-count badge-${obtenerColorEstado(tab.value)}`}
                                 />
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        }
+                    >
+                        {renderPatientCards(getPatientsByStatus(tab.value))}
+                    </TabPanel>
+                ))}
+            </TabView>
         </div>
 
-        {renderPatientCards()}
+        {/* Modal de Facturación de Admisión */}
+        <AdmissionBilling
+            visible={showBillingDialog}
+            onHide={handleBillingHide}
+            onSuccess={handleBillingSuccess}
+            appointmentData={selectedBillingAppointment}
+        />
 
         <div className="d-flex justify-content-center mt-4">
             <Paginator
@@ -709,87 +808,157 @@ export const PatientConsultationList = () => {
         )}
 
         <style>{`
-                .card-paciente {
-                    display: flex;
-                    flex-direction: column;
-                    height: 100%;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s, box-shadow 0.2s;
-                }
+            .card-paciente {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s, box-shadow 0.2s;
+                border: 1px solid #e9ecef;
+            }
 
-                .card-paciente:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                }
+            .card-paciente:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
 
+            .card-paciente .card-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            .card-paciente .badge {
+                font-size: 10px;
+                margin-bottom: 8px;
+            }
+
+            .patient-data-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .grid-item {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .grid-item .fw-bold {
+                font-size: 11px;
+                color: #6c757d;
+            }
+
+            .grid-item .text-body-emphasis {
+                font-size: 12px;
+                color: #212529;
+                word-break: break-word;
+            }
+
+            .card-paciente .btn {
+                font-size: 11px;
+                padding: 4px 8px;
+                margin-bottom: 4px;
+            }
+
+            /* Estilos para los tabs */
+            .custom-tabview .p-tabview-nav {
+                background: #f8f9fa;
+                border: none;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .custom-tabview .p-tabview-nav-link {
+                padding: 0.75rem 1rem;
+                border: none;
+                background: transparent;
+                color: #6c757d;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                font-size: 14px;
+            }
+
+            .custom-tabview .p-tabview-nav-link:hover {
+                background: #e9ecef;
+                color: #495057;
+            }
+
+            .custom-tabview .p-tabview-nav-link:not(.p-disabled):focus {
+                box-shadow: none;
+            }
+
+            .custom-tabview .p-highlight .p-tabview-nav-link {
+                background: #007bff;
+                color: white;
+                border-radius: 6px;
+            }
+
+            .custom-tabview .p-tabview-panels {
+                background: white;
+                border: 1px solid #dee2e6;
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                padding: 1rem;
+            }
+
+            .badge-count {
+                min-width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                font-size: 0.7rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 576px) {
                 .card-paciente .card-body {
-                    flex: 1;
-                    display: flex;
+                    padding: 8px;
+                }
+                
+                .patient-data-grid {
+                    gap: 6px;
+                }
+                
+                .card-paciente .btn {
+                    font-size: 10px;
+                    padding: 3px 6px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .custom-tabview .p-tabview-nav {
                     flex-direction: column;
-                    align-items: center;
-                    padding: 15px;
                 }
 
-                .card-paciente .avatar {
-                    width: 80px;
-                    height: 80px;
-                    margin-bottom: 10px;
-                }
-
-                .card-paciente .badge {
+                .custom-tabview .p-tabview-nav-link {
+                    margin-bottom: 0.25rem;
                     font-size: 12px;
-                    margin-bottom: 10px;
+                    padding: 0.5rem 0.75rem;
                 }
-
-                .card-paciente .info-paciente {
-                    width: 100%;
-                    text-align: left;
+                
+                .card-paciente {
+                    margin-bottom: 12px;
                 }
+            }
 
-                .card-paciente .info-paciente p {
-                    margin-bottom: 8px;
-                    font-size: 14px;
-                    white-space: normal;
-                    overflow: visible;
+            @media (min-width: 1200px) {
+                .col-xl-3 {
+                    flex: 0 0 auto;
+                    width: 25%;
                 }
+            }
 
-                .card-paciente .btn-ver {
-                    width: 100%;
-                    margin-top: auto;
-                    font-size: 14px;
+            @media (min-width: 1400px) {
+                .col-xxl-3 {
+                    flex: 0 0 auto;
+                    width: 25%;
                 }
-
-                .info-paciente .row {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                }
-
-                .info-paciente .col-6 {
-                    flex: 1 1 45%;
-                    min-width: 45%;
-                }
-
-                @media (max-width: 768px) {
-                    .card-paciente .avatar {
-                        width: 60px;
-                        height: 60px;
-                    }
-
-                    .card-paciente .info-paciente p {
-                        font-size: 12px;
-                    }
-
-                    .card-paciente .btn-ver {
-                        font-size: 12px;
-                    }
-
-                    .info-paciente .col-6 {
-                        flex: 1 1 100%;
-                        min-width: 100%;
-                    }
-                }
-            `}</style>
+            }
+        `}</style>
     </>);
 };

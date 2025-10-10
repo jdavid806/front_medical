@@ -91,11 +91,11 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
     return accounts.find(account => account.id === accountId) || null;
   };
 
-  async function fetchTaxes(){
+  async function fetchTaxes() {
     try {
       const taxes = await taxesService.getAll();
       setTaxes(taxes.data);
-    }catch (error) {
+    } catch (error) {
       console.error("Error fetching taxes:", error);
     }
   }
@@ -280,9 +280,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             <Controller
               name="accounting_account_id"
               control={control}
-              rules={{
-                required: "La cuenta contable de compras es requerida",
-              }}
+
               render={({ field, fieldState }) => (
                 <>
                   <Dropdown
@@ -295,13 +293,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                     placeholder="Seleccione una cuenta"
                     filter
                     showClear
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    className={classNames("w-full")}
                     loading={isLoadingAccounts}
                     appendTo="self"
                   />
-                  {getFormErrorMessage("accounting_account_id")}
                 </>
               )}
             />
@@ -317,10 +312,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             <Controller
               name="accounting_account_reverse_id"
               control={control}
-              rules={{
-                required: "La cuenta contable reversa de compras es requerida",
-              }}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <>
                   <Dropdown
                     id={field.name}
@@ -333,13 +325,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                     filter
                     filterBy="account_label,account_name,account_code"
                     showClear
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    className={classNames("w-full")}
                     loading={isLoadingAccounts}
                     appendTo="self"
                   />
-                  {getFormErrorMessage("accounting_account_reverse_id")}
                 </>
               )}
             />
@@ -361,10 +350,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             <Controller
               name="sell_accounting_account_id"
               control={control}
-              rules={{
-                required: "La cuenta contable de ventas es requerida",
-              }}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <>
                   <Dropdown
                     id={field.name}
@@ -377,13 +363,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                     filter
                     filterBy="account_label,account_name,account_code"
                     showClear
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    className={classNames("w-full")}
                     loading={isLoadingAccounts}
                     appendTo="self"
                   />
-                  {getFormErrorMessage("sell_accounting_account_id")}
                 </>
               )}
             />
@@ -399,10 +382,7 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             <Controller
               name="sell_reverse_accounting_account_id"
               control={control}
-              rules={{
-                required: "La cuenta contable reversa de ventas es requerida",
-              }}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <>
                   <Dropdown
                     id={field.name}
@@ -415,13 +395,10 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
                     filter
                     filterBy="account_label,account_name,account_code"
                     showClear
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    className={classNames("w-full")}
                     loading={isLoadingAccounts}
                     appendTo="self"
                   />
-                  {getFormErrorMessage("sell_reverse_accounting_account_id")}
                 </>
               )}
             />

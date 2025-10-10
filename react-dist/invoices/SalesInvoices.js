@@ -110,7 +110,8 @@ export const SalesInvoices = () => {
       thirdParty: filtros.cliente || null,
       type: "sale",
       page,
-      per_page
+      per_page,
+      sort: "-id"
     };
     try {
       const response = await invoiceService.filterInvoices(cleanJsonObject(filterInvoiceParams));

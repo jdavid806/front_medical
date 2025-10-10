@@ -21,7 +21,8 @@ const TaxFormConfig = ({
     formState: {
       errors
     },
-    reset
+    reset,
+    watch
   } = useForm({
     defaultValues: initialData || {
       name: "",
@@ -33,6 +34,8 @@ const TaxFormConfig = ({
       description: ""
     }
   });
+  const selectedPurchaseAccount = watch("accounting_account_id");
+  const selectedSellAccount = watch("sell_accounting_account_id");
   const onFormSubmit = data => {
     onSubmit(data);
   };
@@ -139,12 +142,8 @@ const TaxFormConfig = ({
   }, "Cuenta Contable Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable de compras es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -156,11 +155,9 @@ const TaxFormConfig = ({
       filter: true,
       filterBy: "account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: false
-    }), getFormErrorMessage("accounting_account_id"))
+    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -169,29 +166,22 @@ const TaxFormConfig = ({
   }, "Cuenta Contable Reversa Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_reverse_id",
     control: control,
-    rules: {
-      required: "La cuenta contable reversa de compras es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts // QUITAR EL FILTRO
-      ,
+      options: accounts.filter(acc => acc.id !== selectedPurchaseAccount),
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
       filterBy: "account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: false
-    }), getFormErrorMessage("accounting_account_reverse_id"))
+    }))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
@@ -206,12 +196,8 @@ const TaxFormConfig = ({
   }, "Cuenta Contable Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable de ventas es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -223,11 +209,9 @@ const TaxFormConfig = ({
       filter: true,
       filterBy: "account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: false
-    }), getFormErrorMessage("sell_accounting_account_id"))
+    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -236,29 +220,22 @@ const TaxFormConfig = ({
   }, "Cuenta Contable Reversa Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_reverse_accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable reversa de ventas es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
       onChange: e => field.onChange(e.value),
-      options: accounts // QUITAR EL FILTRO
-      ,
+      options: accounts.filter(acc => acc.id !== selectedSellAccount),
       optionLabel: "account_name",
       placeholder: "Seleccione una cuenta",
       filter: true,
       optionValue: "id",
       filterBy: "account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: false
-    }), getFormErrorMessage("sell_reverse_accounting_account_id"))
+    }))
   })))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {

@@ -12,7 +12,7 @@ export class HttpClient {
             Accept: "application/json",
             "X-DOMAIN": url.split('.')[0],
             "X-External-ID": getJWTPayload()?.sub,
-            "X-TENANT-ID": getJWTPayload()?.sub || tenantId,
+            "X-TENANT-ID": tenantId,
             ...(token && { "Authorization": `Bearer ${token}` }),
         };
     }

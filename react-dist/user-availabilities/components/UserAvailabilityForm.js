@@ -11,12 +11,13 @@ import { Calendar } from 'primereact/calendar';
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { Button } from 'primereact/button';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { useUsers } from "../../users/hooks/useUsers.js";
 import { useModules } from "../../modules/hooks/useModules.js";
 import UserFormModal from "../../users/UserFormModal.js";
+import { InputSwitch } from 'primereact/inputswitch';
 const UserAvailabilityForm = ({
   formId,
   onHandleSubmit,
@@ -46,6 +47,8 @@ const UserAvailabilityForm = ({
       days_of_week: [],
       start_time: null,
       end_time: null,
+      is_group: false,
+      max_capacity: 0,
       free_slots: []
     }
   });
@@ -62,6 +65,10 @@ const UserAvailabilityForm = ({
   });
   const [selectedUser, setSelectedUser] = useState(undefined);
   const watchUserId = watch('user_id');
+  const isGroup = useWatch({
+    control,
+    name: 'is_group'
+  });
   const {
     users,
     fetchUsers
@@ -335,6 +342,40 @@ const UserAvailabilityForm = ({
       appendTo: "self"
     }))
   }), getFormErrorMessage('days_of_week')), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "is_group",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-center gap-2"
+    }, /*#__PURE__*/React.createElement(InputSwitch, {
+      checked: field.value,
+      onChange: e => field.onChange(e.value)
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Es grupal")))
+  })), isGroup && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "max_capacity",
+    control: control,
+    rules: {
+      required: 'Este campo es requerido'
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Capacidad m\xE1xima *"), /*#__PURE__*/React.createElement(InputNumber, {
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      className: "w-100"
+    }))
+  }), getFormErrorMessage('max_capacity'))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex pt-4 justify-content-end"
   }, /*#__PURE__*/React.createElement(Button, {
     className: "btn btn-primary btn-sm",

@@ -1,13 +1,14 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { InputNumber } from 'primereact/inputnumber';
-import { Controller, useForm } from 'react-hook-form';
-import { InputSwitch } from 'primereact/inputswitch';
-import { classNames } from 'primereact/utils';
-import { Divider } from 'primereact/divider';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { InputNumber } from "primereact/inputnumber";
+import { Controller, useForm } from "react-hook-form";
+import { InputSwitch } from "primereact/inputswitch";
+import { classNames } from "primereact/utils";
+import { Divider } from "primereact/divider";
+import { Dropdown } from "primereact/dropdown";
 export const EditAccountingAccountFormModal = /*#__PURE__*/forwardRef((props, ref) => {
   const {
     visible,
@@ -29,21 +30,37 @@ export const EditAccountingAccountFormModal = /*#__PURE__*/forwardRef((props, re
       initial_balance: 0,
       fiscal_difference: false,
       active: true,
-      sub_account_code: ""
+      sub_account_code: "",
+      category: ""
     }
   });
+  const [showInputs, setShowInputs] = useState(false);
   const getFormErrorMessage = name => {
-    console.log(errors);
+    console.error(errors);
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, errors[name].message);
   };
+  const categoryOptions = [{
+    label: "Medicamentos",
+    value: "medications"
+  }, {
+    label: "Vacunas",
+    value: "vaccines"
+  }, {
+    label: "Inventariables",
+    value: "inventariables"
+  }, {
+    label: "Insumos",
+    value: "supplies"
+  }];
   const onSubmit = data => {
     const accountData = {
       id: selectedAccount?.id.toString() || "",
       account_name: data.account_name,
       initial_balance: data.initial_balance,
-      status: data.active ? "active" : "inactive"
+      status: data.active ? "active" : "inactive",
+      category: data.category
     };
     handleUpdateAccount(accountData);
   };
@@ -58,6 +75,10 @@ export const EditAccountingAccountFormModal = /*#__PURE__*/forwardRef((props, re
       setValue("initial_balance", selectedAccount.initial_balance);
       setValue("fiscal_difference", false);
       setValue("active", selectedAccount.status === "active");
+      setValue("category", selectedAccount.category || "");
+      if (selectedAccount.account_code.startsWith("1")) {
+        setShowInputs(true);
+      }
     }
   }, [selectedAccount]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dialog, {
@@ -110,14 +131,40 @@ export const EditAccountingAccountFormModal = /*#__PURE__*/forwardRef((props, re
       onBlur: field.onBlur,
       onValueChange: e => field.onChange(e),
       className: "w-100",
-      inputClassName: classNames('w-100', {
-        'p-invalid': errors.initial_balance
+      inputClassName: classNames("w-100", {
+        "p-invalid": errors.initial_balance
       }),
       mode: "currency",
       currency: "DOP",
       locale: "es-DO"
     })
   })), /*#__PURE__*/React.createElement("div", {
+    className: "field col-12 mb-3",
+    style: {
+      display: showInputs ? "block" : "none"
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "accountName"
+  }, "Categor\xEDa *"), /*#__PURE__*/React.createElement(Controller, {
+    name: "category",
+    control: control,
+    rules: {
+      required: "Este campo es requerido",
+      minLength: {
+        value: 3,
+        message: "El nombre debe tener al menos 3 caracteres"
+      }
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(Dropdown, {
+      className: "w-100",
+      value: field.value,
+      onChange: e => field.onChange(e.value),
+      options: categoryOptions,
+      placeholder: "Seleccionar..."
+    })
+  }), getFormErrorMessage("category")), /*#__PURE__*/React.createElement("div", {
     className: "field-checkbox col-12 mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "fiscal_difference",

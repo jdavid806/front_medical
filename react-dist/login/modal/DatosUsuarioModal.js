@@ -26,10 +26,7 @@ export const DatosUsuarioModal = ({
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, !otpSent ?
-  /*#__PURE__*/
-  // Solo campo de nombre de usuario
-  React.createElement("div", {
+  }, !otpSent ? /*#__PURE__*/React.createElement("div", {
     className: "text-center"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-4"
@@ -51,10 +48,7 @@ export const DatosUsuarioModal = ({
     onChange: handleUsernameChange,
     className: "w-100",
     placeholder: "Ingresa tu nombre de usuario"
-  }))) :
-  /*#__PURE__*/
-  // Sección de OTP
-  React.createElement("div", {
+  }))) : /*#__PURE__*/React.createElement("div", {
     className: "text-center"
   }, /*#__PURE__*/React.createElement("p", {
     className: "text-gray-600 mb-4"

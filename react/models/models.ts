@@ -256,6 +256,8 @@ export interface UserAvailability {
   updated_at: string;
   office: string;
   module_id: string;
+  is_group: boolean;
+  max_capacity: number;
   user: UserDto;
   appointment_type: AppointmentTypeDto;
   branch: BranchDto;

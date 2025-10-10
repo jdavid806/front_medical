@@ -7,7 +7,7 @@ const NavbarHeader = () => {
     menuItems: menuItemsFromHook,
     loading
   } = useMenuItems();
-
+  console.log(menuItemsFromHook, "Menuuu holaaa");
   // const staticItems = [{
   //     label: "Home",
   //     icon: "fa-solid fa-house",

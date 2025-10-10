@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
 import { Paginator } from 'primereact/paginator';
 import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
+import { TabView, TabPanel } from 'primereact/tabview';
+import { Accordion, AccordionTab } from 'primereact/accordion';
 import { appointmentService, examOrderService, examRecipeResultService, examRecipeService, infoCompanyService, patientService, templateService, ticketService } from "../../services/api/index.js";
 import { formatWhatsAppMessage, getIndicativeByCountry, getUserLogged } from "../../services/utilidades.js";
 import { createMassMessaging } from "../../funciones/funcionesJS/massMessage.js";
+import AdmissionBilling from "../admission/admission-billing/AdmissionBilling.js";
 import "https://js.pusher.com/8.2.0/pusher.min.js";
 import { useAppointmentStates } from "../appointments/hooks/useAppointmentStates.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
@@ -19,12 +21,17 @@ export const PatientConsultationList = () => {
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
   const [messaging, setMessaging] = useState(null);
   const [template, setTemplate] = useState(null);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [selectedExamOrder, setSelectedExamOrder] = useState(null);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
+
+  // Estados para el modal de facturación
+  const [showBillingDialog, setShowBillingDialog] = useState(false);
+  const [selectedBillingAppointment, setSelectedBillingAppointment] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const userLogged = getUserLogged();
@@ -103,8 +110,15 @@ export const PatientConsultationList = () => {
     const filtered = patients.filter(citaData => {
       let isMatch = true;
       const paciente = citaData.paciente;
-      if (searchText && !paciente.fullName?.toLowerCase().includes(searchText.toLowerCase()) && !paciente.document_number.includes(searchText)) {
-        isMatch = false;
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const nombreCompleto = `${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`.toLowerCase();
+        const documento = paciente.document_number || '';
+
+        // Buscar tanto en el nombre completo como en el documento
+        if (!nombreCompleto.includes(searchLower) && !documento.includes(searchText)) {
+          isMatch = false;
+        }
       }
       if (statusFilter && citaData.estado !== statusFilter && statusFilter !== 'all') {
         isMatch = false;
@@ -331,6 +345,35 @@ export const PatientConsultationList = () => {
       }
     });
   };
+
+  // Función para abrir el modal de facturación
+  const handleFacturarAdmision = citaData => {
+    // Preparar los datos para el modal de facturación
+    const appointmentData = {
+      id: citaData.cita.id,
+      patientId: citaData.paciente.id,
+      patientName: `${citaData.paciente.first_name || ''} ${citaData.paciente.middle_name || ''} ${citaData.paciente.last_name || ''} ${citaData.paciente.second_last_name || ''}`,
+      patient: citaData.paciente,
+      appointment_date: citaData.cita.appointment_date,
+      appointment_time: citaData.cita.appointment_time
+      // Agregar más campos según sea necesario
+    };
+    setSelectedBillingAppointment(appointmentData);
+    setShowBillingDialog(true);
+  };
+
+  // Función para manejar el éxito de la facturación
+  const handleBillingSuccess = () => {
+    setShowBillingDialog(false);
+    setSelectedBillingAppointment(null);
+    refresh(); // Refrescar la lista de pacientes
+  };
+
+  // Función para cerrar el modal de facturación
+  const handleBillingHide = () => {
+    setShowBillingDialog(false);
+    setSelectedBillingAppointment(null);
+  };
   const refresh = () => {
     fetchPatients();
   };
@@ -362,21 +405,29 @@ export const PatientConsultationList = () => {
     return colores[estado] || 'secondary';
   };
 
+  // Filtrar pacientes por estado para los tabs
+  const getPatientsByStatus = status => {
+    if (status === 'all') {
+      return filteredPatients;
+    }
+    return filteredPatients.filter(citaData => citaData.estado === status);
+  };
+
   // Renderizar tarjetas de pacientes
-  const renderPatientCards = () => {
+  const renderPatientCards = patientsToRender => {
     if (loading) {
       return /*#__PURE__*/React.createElement("div", {
         className: "text-center py-5"
       }, "Cargando pacientes...");
     }
-    if (filteredPatients.length === 0) {
+    if (patientsToRender.length === 0) {
       return /*#__PURE__*/React.createElement("div", {
         className: "text-center py-5"
       }, "No se encontraron pacientes");
     }
     return /*#__PURE__*/React.createElement("div", {
-      className: "row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"
-    }, filteredPatients.map((citaData, index) => {
+      className: "row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4 g-3"
+    }, patientsToRender.map((citaData, index) => {
       const paciente = citaData.paciente;
       const cita = citaData.cita;
       const estadoActual = cita.appointment_state?.name || citaData.estado || 'Sin estado';
@@ -384,79 +435,89 @@ export const PatientConsultationList = () => {
       const estadoColor = obtenerColorEstado(estadoActual);
       return /*#__PURE__*/React.createElement("div", {
         key: `${paciente.id}-${cita.id}-${index}`,
-        className: "col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
+        className: "col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-3"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "card card-paciente"
+        className: "card card-paciente h-100"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "card-body"
+        className: "card-body d-flex flex-column p-3"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "text-center mb-2"
       }, /*#__PURE__*/React.createElement(Badge, {
         value: estadoTraducido,
-        className: `badge-phoenix badge-phoenix-${estadoColor} fs-10 mb-3`
-      }), /*#__PURE__*/React.createElement("div", {
-        className: "info-paciente row"
+        className: `badge-phoenix badge-phoenix-${estadoColor} fs-9`
+      })), /*#__PURE__*/React.createElement("div", {
+        className: "info-paciente flex-grow-1"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "col-6"
+        className: "patient-data-grid"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center"
+        className: "grid-item"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "d-flex align-items-center mb-1"
       }, /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-id-card me-2 text-body-tertiary fs-9 fw-extra-bold"
-      }), /*#__PURE__*/React.createElement("p", {
-        className: "fw-bold mb-0"
-      }, "Documento")), /*#__PURE__*/React.createElement("p", {
-        className: "text-body-emphasis mb-3"
+        className: "fa-solid fa-id-card me-1 text-body-tertiary fs-8"
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "fw-bold"
+      }, "Documento")), /*#__PURE__*/React.createElement("div", {
+        className: "text-body-emphasis text-truncate",
+        title: paciente.document_number
       }, paciente.document_number)), /*#__PURE__*/React.createElement("div", {
-        className: "col-6"
+        className: "grid-item"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center"
+        className: "d-flex align-items-center mb-1"
       }, /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-cake-candles me-2 text-body-tertiary fs-9 fw-extra-bold"
-      }), /*#__PURE__*/React.createElement("p", {
-        className: "fw-bold mb-0"
-      }, "Edad")), /*#__PURE__*/React.createElement("p", {
-        className: "text-body-emphasis mb-3"
+        className: "fa-solid fa-cake-candles me-1 text-body-tertiary fs-8"
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "fw-bold"
+      }, "Edad")), /*#__PURE__*/React.createElement("div", {
+        className: "text-body-emphasis"
       }, calculateAge(paciente.date_of_birth), " A\xF1os")), /*#__PURE__*/React.createElement("div", {
-        className: "col-6"
+        className: "grid-item"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center"
+        className: "d-flex align-items-center mb-1"
       }, /*#__PURE__*/React.createElement("i", {
-        className: "far fa-calendar-check me-2 text-body-tertiary fs-9 fw-extra-bold"
-      }), /*#__PURE__*/React.createElement("p", {
-        className: "fw-bold mb-0"
-      }, "Fecha")), /*#__PURE__*/React.createElement("p", {
-        className: "text-body-emphasis mb-3"
-      }, cita.appointment_date || "Fecha no disponible")), /*#__PURE__*/React.createElement("div", {
-        className: "col-6"
-      }, /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center"
-      }, /*#__PURE__*/React.createElement("i", {
-        className: "far fa-clock me-2 text-body-tertiary fs-9 fw-extra-bold"
-      }), /*#__PURE__*/React.createElement("p", {
-        className: "fw-bold mb-0"
-      }, "Hora")), /*#__PURE__*/React.createElement("p", {
+        className: "far fa-calendar-check me-1 text-body-tertiary fs-8"
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "fw-bold"
+      }, "Fecha")), /*#__PURE__*/React.createElement("div", {
         className: "text-body-emphasis"
-      }, cita.appointment_time || "Hora no disponible")), /*#__PURE__*/React.createElement("div", {
-        className: "col-6"
+      }, cita.appointment_date || "N/A")), /*#__PURE__*/React.createElement("div", {
+        className: "grid-item"
       }, /*#__PURE__*/React.createElement("div", {
-        className: "d-flex align-items-center"
+        className: "d-flex align-items-center mb-1"
       }, /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-user me-2 text-body-tertiary fs-9 fw-extra-bold"
-      }), /*#__PURE__*/React.createElement("p", {
-        className: "fw-bold mb-0"
-      }, "Nombre")), /*#__PURE__*/React.createElement("p", {
+        className: "far fa-clock me-1 text-body-tertiary fs-8"
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "fw-bold"
+      }, "Hora")), /*#__PURE__*/React.createElement("div", {
         className: "text-body-emphasis"
+      }, cita.appointment_time || "N/A"))), /*#__PURE__*/React.createElement("div", {
+        className: "mt-2 pt-2 border-top"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "d-flex align-items-center mb-1"
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-user me-1 text-body-tertiary fs-8"
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "fw-bold"
+      }, "Nombre")), /*#__PURE__*/React.createElement("div", {
+        className: "text-body-emphasis text-truncate",
+        title: `${paciente.first_name || ''} ${paciente.middle_name || ''} ${paciente.last_name || ''} ${paciente.second_last_name || ''}`
       }, paciente.first_name || '', paciente.middle_name ? ` ${paciente.middle_name}` : '', paciente.last_name ? ` ${paciente.last_name}` : '', paciente.second_last_name ? ` ${paciente.second_last_name}` : ''))), /*#__PURE__*/React.createElement("div", {
         className: "d-flex flex-column gap-2 w-100 mt-3"
       }, /*#__PURE__*/React.createElement(Button, {
         label: "Ver Paciente",
         className: "btn-sm btn btn-primary",
         onClick: () => window.location.href = `verPaciente?id=${paciente.id}`
-      }), estadoActual === "pending_consultation" && /*#__PURE__*/React.createElement(Button, {
+      }), estadoActual === "pending" && /*#__PURE__*/React.createElement(Button, {
+        label: "Facturar Admisi\xF3n",
+        className: "btn-sm btn btn-primary",
+        onClick: () => handleFacturarAdmision(citaData)
+      }), (estadoActual === "pending_consultation" || estadoActual === "called") && /*#__PURE__*/React.createElement(Button, {
         label: "Llamar paciente",
         className: "btn-sm btn btn-primary",
         onClick: () => llamarPaciente(paciente.id, cita.id)
       }), (estadoActual === "pending_consultation" || estadoActual === "called" || estadoActual === "in_consultation") && cita.attention_type === "CONSULTATION" && /*#__PURE__*/React.createElement(Button, {
         label: "Realizar Consulta",
-        className: "btn-sm btn btn-primary mb-2",
+        className: "btn-sm btn btn-primary",
         onClick: () => handleMakeClinicalRecord(paciente.id, cita.id)
       }), (estadoActual === "pending_consultation" || estadoActual === "called" || estadoActual === "in_consultation") && cita.attention_type === "PROCEDURE" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
         label: "Realizar Examen",
@@ -476,54 +537,78 @@ export const PatientConsultationList = () => {
       }))))));
     }));
   };
+
+  // Definir los tabs con nuevo orden: En Espera primero, Todos al final
+  const tabItems = [{
+    label: 'En Espera',
+    value: 'pending_consultation',
+    count: getPatientsByStatus('pending_consultation').length
+  }, {
+    label: 'Pendientes',
+    value: 'pending',
+    count: getPatientsByStatus('pending').length
+  }, {
+    label: 'Llamados',
+    value: 'called',
+    count: getPatientsByStatus('called').length
+  }, {
+    label: 'En Proceso',
+    value: 'in_consultation',
+    count: getPatientsByStatus('in_consultation').length
+  }, {
+    label: 'Finalizadas',
+    value: 'consultation_completed',
+    count: getPatientsByStatus('consultation_completed').length
+  }, {
+    label: 'Canceladas',
+    value: 'cancelled',
+    count: getPatientsByStatus('cancelled').length
+  }, {
+    label: 'Todos',
+    value: 'all',
+    count: filteredPatients.length
+  }];
+
+  // Función para limpiar filtros
+  const limpiarFiltros = () => {
+    setSearchText('');
+    setFilteredPatients(patients);
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "accordion mb-4",
-    id: "accordionFiltros"
+    className: "card mb-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-item"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "accordion-header",
-    id: "headingFiltros"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "accordion-button",
-    type: "button",
-    "data-bs-toggle": "collapse",
-    "data-bs-target": "#collapseFiltros",
-    "aria-expanded": "false",
-    "aria-controls": "collapseFiltros"
-  }, "Filtros")), /*#__PURE__*/React.createElement("div", {
-    id: "collapseFiltros",
-    className: "accordion-collapse collapse",
-    "aria-labelledby": "headingFiltros",
-    "data-bs-parent": "#accordionFiltros"
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-body"
+    className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3 mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "searchPaciente",
     className: "form-label"
   }, "Buscar Paciente"), /*#__PURE__*/React.createElement(InputText, {
-    id: "searchPaciente",
     value: searchText,
     onChange: e => setSearchText(e.target.value),
     placeholder: "Buscar por nombre o documento",
     className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6"
-  }, /*#__PURE__*/React.createElement("label", {
-    htmlFor: "statusPaciente",
-    className: "form-label"
-  }, "Filtrar por Estado"), /*#__PURE__*/React.createElement(Dropdown, {
-    id: "statusPaciente",
-    value: statusFilter,
-    options: statusOptions,
-    onChange: e => setStatusFilter(e.value),
-    placeholder: "Seleccione Estado",
-    className: "w-100"
-  }))))))), renderPatientCards(), /*#__PURE__*/React.createElement("div", {
+  })))))), /*#__PURE__*/React.createElement(TabView, {
+    activeIndex: activeTab,
+    onTabChange: e => setActiveTab(e.index),
+    className: "custom-tabview"
+  }, tabItems.map((tab, index) => /*#__PURE__*/React.createElement(TabPanel, {
+    key: tab.value,
+    header: /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-center gap-2"
+    }, /*#__PURE__*/React.createElement("span", null, tab.label), /*#__PURE__*/React.createElement(Badge, {
+      value: tab.count,
+      className: `badge-count badge-${obtenerColorEstado(tab.value)}`
+    }))
+  }, renderPatientCards(getPatientsByStatus(tab.value)))))), /*#__PURE__*/React.createElement(AdmissionBilling, {
+    visible: showBillingDialog,
+    onHide: handleBillingHide,
+    onSuccess: handleBillingSuccess,
+    appointmentData: selectedBillingAppointment
+  }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center mt-4"
   }, /*#__PURE__*/React.createElement(Paginator, {
     first: (currentPage - 1) * itemsPerPage,
@@ -591,86 +676,156 @@ export const PatientConsultationList = () => {
       setPdfPreviewUrl(null);
     }
   }, "Confirmar"))))), /*#__PURE__*/React.createElement("style", null, `
-                .card-paciente {
-                    display: flex;
-                    flex-direction: column;
-                    height: 100%;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.2s, box-shadow 0.2s;
-                }
+            .card-paciente {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s, box-shadow 0.2s;
+                border: 1px solid #e9ecef;
+            }
 
-                .card-paciente:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                }
+            .card-paciente:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
 
+            .card-paciente .card-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding: 12px;
+            }
+
+            .card-paciente .badge {
+                font-size: 10px;
+                margin-bottom: 8px;
+            }
+
+            .patient-data-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .grid-item {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .grid-item .fw-bold {
+                font-size: 11px;
+                color: #6c757d;
+            }
+
+            .grid-item .text-body-emphasis {
+                font-size: 12px;
+                color: #212529;
+                word-break: break-word;
+            }
+
+            .card-paciente .btn {
+                font-size: 11px;
+                padding: 4px 8px;
+                margin-bottom: 4px;
+            }
+
+            /* Estilos para los tabs */
+            .custom-tabview .p-tabview-nav {
+                background: #f8f9fa;
+                border: none;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .custom-tabview .p-tabview-nav-link {
+                padding: 0.75rem 1rem;
+                border: none;
+                background: transparent;
+                color: #6c757d;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                font-size: 14px;
+            }
+
+            .custom-tabview .p-tabview-nav-link:hover {
+                background: #e9ecef;
+                color: #495057;
+            }
+
+            .custom-tabview .p-tabview-nav-link:not(.p-disabled):focus {
+                box-shadow: none;
+            }
+
+            .custom-tabview .p-highlight .p-tabview-nav-link {
+                background: #007bff;
+                color: white;
+                border-radius: 6px;
+            }
+
+            .custom-tabview .p-tabview-panels {
+                background: white;
+                border: 1px solid #dee2e6;
+                border-top: none;
+                border-radius: 0 0 8px 8px;
+                padding: 1rem;
+            }
+
+            .badge-count {
+                min-width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                font-size: 0.7rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 576px) {
                 .card-paciente .card-body {
-                    flex: 1;
-                    display: flex;
+                    padding: 8px;
+                }
+                
+                .patient-data-grid {
+                    gap: 6px;
+                }
+                
+                .card-paciente .btn {
+                    font-size: 10px;
+                    padding: 3px 6px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .custom-tabview .p-tabview-nav {
                     flex-direction: column;
-                    align-items: center;
-                    padding: 15px;
                 }
 
-                .card-paciente .avatar {
-                    width: 80px;
-                    height: 80px;
-                    margin-bottom: 10px;
-                }
-
-                .card-paciente .badge {
+                .custom-tabview .p-tabview-nav-link {
+                    margin-bottom: 0.25rem;
                     font-size: 12px;
-                    margin-bottom: 10px;
+                    padding: 0.5rem 0.75rem;
                 }
-
-                .card-paciente .info-paciente {
-                    width: 100%;
-                    text-align: left;
+                
+                .card-paciente {
+                    margin-bottom: 12px;
                 }
+            }
 
-                .card-paciente .info-paciente p {
-                    margin-bottom: 8px;
-                    font-size: 14px;
-                    white-space: normal;
-                    overflow: visible;
+            @media (min-width: 1200px) {
+                .col-xl-3 {
+                    flex: 0 0 auto;
+                    width: 25%;
                 }
+            }
 
-                .card-paciente .btn-ver {
-                    width: 100%;
-                    margin-top: auto;
-                    font-size: 14px;
+            @media (min-width: 1400px) {
+                .col-xxl-3 {
+                    flex: 0 0 auto;
+                    width: 25%;
                 }
-
-                .info-paciente .row {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                }
-
-                .info-paciente .col-6 {
-                    flex: 1 1 45%;
-                    min-width: 45%;
-                }
-
-                @media (max-width: 768px) {
-                    .card-paciente .avatar {
-                        width: 60px;
-                        height: 60px;
-                    }
-
-                    .card-paciente .info-paciente p {
-                        font-size: 12px;
-                    }
-
-                    .card-paciente .btn-ver {
-                        font-size: 12px;
-                    }
-
-                    .info-paciente .col-6 {
-                        flex: 1 1 100%;
-                        min-width: 100%;
-                    }
-                }
-            `));
+            }
+        `));
 };

@@ -12,14 +12,12 @@ import { Divider } from "primereact/divider";
 import { Password } from "primereact/password";
 import { useCitiesByCountry } from "../cities/hooks/useCitiesByCountry.js";
 import { useRef } from "react";
-import { InputSwitch } from "primereact/inputswitch";
 const UserForm = ({
   formId,
   onHandleSubmit,
   initialData,
   config
 }) => {
-  console.log('initialData en UserForm:', initialData);
   const [profileUrl, setProfileUrl] = useState("../assets/img/profile/profile_default.jpg");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -81,9 +79,10 @@ const UserForm = ({
     reset,
     watch,
     setValue,
+    register,
     getValues
   } = useForm({
-    defaultValues: {
+    defaultValues: initialData || {
       username: "",
       email: "",
       password: "",
@@ -99,15 +98,10 @@ const UserForm = ({
       address: "",
       phone: "",
       minio_id: null,
-      minio_url: null,
-      clinical_record: null,
-      otp_enabled: false
+      minio_url: null
     }
   });
   const onSubmit = data => onHandleSubmit(data);
-
-  // Manejar cambio del switch OTP
-
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
@@ -119,37 +113,25 @@ const UserForm = ({
       fetchCities(country.id);
     }
   };
-
-  // useEffect para el reset
-  // En UserForm, corrige el useEffect del reset
   useEffect(() => {
-    if (initialData) {
-      const resetData = {
-        ...initialData
-      };
-      reset(resetData);
-    } else {
-      reset({
-        username: "",
-        email: "",
-        password: "",
-        first_name: "",
-        middle_name: "",
-        last_name: "",
-        second_last_name: "",
-        user_role_id: 0,
-        user_specialty_id: 0,
-        country_id: "",
-        city_id: "",
-        gender: "",
-        address: "",
-        phone: "",
-        minio_id: null,
-        minio_url: null,
-        clinical_record: null,
-        otp_enabled: false
-      });
-    }
+    reset(initialData || {
+      username: "",
+      email: "",
+      password: "",
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      second_last_name: "",
+      user_role_id: 0,
+      user_specialty_id: 0,
+      country_id: "",
+      city_id: "",
+      gender: "",
+      address: "",
+      phone: "",
+      minio_id: null,
+      minio_url: null
+    });
   }, [initialData, reset]);
   const {
     countries
@@ -173,22 +155,11 @@ const UserForm = ({
   const watchUserRoleId = watch("user_role_id");
   const watchCountryId = watch("country_id");
   const watchMinioUrl = watch("minio_url");
-  const watchOtpEnabled = watch("otp_enabled");
-  const watchEmail = watch("email");
-
-  // Debug para ver los valores actuales
-  useEffect(() => {
-    console.log('Valores actuales del formulario:', {
-      otp_enabled: watchOtpEnabled,
-      email: watchEmail,
-      user_role_id: watchUserRoleId
-    });
-  }, [watchOtpEnabled, watchEmail, watchUserRoleId]);
   useEffect(() => {
     if (initialData && initialData.country_id) {
       fetchCitiesByCountryName(initialData.country_id);
     }
-  }, [countries, initialData]);
+  }, [countries]);
   useEffect(() => {
     if (isInitialCitiesLoad && cities.length > 0 && initialData?.city_id) {
       setValue("city_id", initialData.city_id);
@@ -517,31 +488,7 @@ const UserForm = ({
         "p-invalid": errors.email
       })
     }, field)))
-  }), getFormErrorMessage("email")), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12 mb-1"
-  }, /*#__PURE__*/React.createElement(Controller, {
-    name: "otp_enabled",
-    control: control,
-    render: ({
-      field
-    }) => /*#__PURE__*/React.createElement("div", {
-      className: "d-flex align-items-center p-3 border rounded bg-light"
-    }, /*#__PURE__*/React.createElement(InputSwitch, {
-      inputId: field.name,
-      checked: field.value,
-      onChange: e => {
-        field.onChange(e.value);
-      },
-      disabled: !watchEmail
-    }), /*#__PURE__*/React.createElement("label", {
-      htmlFor: field.name,
-      className: "form-label ms-3 mb-0 flex-grow-1"
-    }, /*#__PURE__*/React.createElement("strong", null, "Autenticaci\xF3n de dos factores (OTP)"), /*#__PURE__*/React.createElement("div", {
-      className: "text-muted small"
-    }, !watchEmail ? "Complete el campo de email primero" : field.value ? "OTP activado" : "OTP desactivado")))
-  }), /*#__PURE__*/React.createElement("small", {
-    className: "text-muted"
-  }, "Al activar/desactivar se enviar\xE1 autom\xE1ticamente al servidor"))))), /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("email"))))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -572,7 +519,7 @@ const UserForm = ({
         "p-invalid": errors.user_role_id
       })
     }, field)))
-  }), getFormErrorMessage("user_role_id")), selectedRole && ["DOCTOR_ASSISTANT", "DOCTOR"].includes(selectedRole.group) && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }), getFormErrorMessage("user_role_id")), selectedRole && ["ADMIN", "DOCTOR"].includes(selectedRole.group) && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-1"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "user_specialty_id",
@@ -653,14 +600,14 @@ const UserForm = ({
     name: "password",
     control: control,
     rules: {
-      required: !initialData
+      required: "Este campo es requerido"
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
       htmlFor: field.name,
       className: "form-label"
-    }, "Contrase\xF1a ", !initialData && /*#__PURE__*/React.createElement("span", {
+    }, "Contrase\xF1a ", /*#__PURE__*/React.createElement("span", {
       className: "text-primary"
     }, "*")), /*#__PURE__*/React.createElement(Password, _extends({}, field, {
       header: passwordHeader,
@@ -670,8 +617,7 @@ const UserForm = ({
       weakLabel: "De\u0301bil",
       className: "w-100",
       inputClassName: "w-100",
-      toggleMask: true,
-      placeholder: initialData ? "Dejar en blanco para no cambiar" : ""
+      toggleMask: true
     })))
   }), getFormErrorMessage("password")))))));
 };

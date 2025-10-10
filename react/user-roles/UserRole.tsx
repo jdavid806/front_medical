@@ -4,11 +4,11 @@ import { useEffect } from 'react';
 import { UserRoleFormInputs } from './components/UserRoleForm';
 import { useUserRole } from './hooks/useUserRole';
 import { useUserRoleDelete } from './hooks/useUserRoleDelete';
-import { useUserRoleUpdate } from './hooks/useUserRoleUpdate';
-import { useUserRoleCreate } from './hooks/useUserRoleCreate';
 import { useRoles } from './hooks/useUserRoles';
 import { UserRoleTable } from './components/UserRoleTable';
 import { UserRoleFormModal } from './components/UserRoleFormModal';
+import { useUserRoleCreate } from './hooks/useUserRoleUpdate';
+import { useUserRoleUpdate } from './hooks/useUserRoleCreate';
 
 export const ModuleApp = () => {
 

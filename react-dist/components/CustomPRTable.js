@@ -25,7 +25,8 @@ export const CustomPRTable = ({
   loading,
   onSort,
   onPage,
-  onSearch
+  onSearch,
+  footerGroup
 }) => {
   const [filters, setFilters] = useState({
     global: {
@@ -98,7 +99,8 @@ export const CustomPRTable = ({
     onPage: onPage,
     onSort: onSort,
     lazy: lazy,
-    size: size
+    size: size,
+    footerColumnGroup: footerGroup
   }, columns.map(column => /*#__PURE__*/React.createElement(Column, {
     key: column.field,
     field: column.field,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { formatDateDMY } from "../../../services/utilidades";
@@ -8,6 +8,9 @@ import { PrescriptionDto } from "../../models/models";
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import { useActiveTenantConvenios } from "../../convenios/hooks/useActiveTenantConvenios";
+import { useConvenioRecipes } from "../../convenios/hooks/useConvenioRecipes";
 
 interface MedicationDeliveryListProps {
     onDeliverySelect: (delivery: PrescriptionDto) => void;
@@ -16,22 +19,40 @@ interface MedicationDeliveryListProps {
 export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryListProps) => {
 
     const { fetchAllRecipes, recipes } = useAllRecipes();
+    const { convenios } = useActiveTenantConvenios();
+    const { fetchConvenioRecipes, recipes: convenioRecipes } = useConvenioRecipes();
+
+    const [selectedConvenio, setSelectedConvenio] = useState<any>(null);
 
     const statusItems: MenuItem[] = [
-        { label: 'Todos', command: () => fetchAllRecipes("ALL") },
-        { label: 'Pendiente', command: () => fetchAllRecipes("PENDING") },
-        { label: 'Entregado', command: () => fetchAllRecipes("DELIVERED") },
+        { label: 'Todos', command: () => fetchRecipes("ALL") },
+        { label: 'Pendiente', command: () => fetchRecipes("PENDING") },
+        { label: 'Entregado', command: () => fetchRecipes("DELIVERED") },
     ];
 
     const statusMenu = useRef<Menu>(null);
 
+    const finalRecipes = selectedConvenio ? convenioRecipes : recipes;
+
     useEffect(() => {
-        fetchAllRecipes("PENDING");
-    }, []);
+        fetchRecipes("PENDING");
+    }, [selectedConvenio]);
+
+    const fetchRecipes = (status: string) => {
+        if (!selectedConvenio) {
+            fetchAllRecipes(status);
+        } else {
+            fetchConvenioRecipes({
+                tenantId: selectedConvenio.tenant_b_id,
+                apiKey: selectedConvenio.api_keys.find((apiKey: any) => apiKey.module === "farmacia").key,
+                module: "farmacia"
+            });
+        }
+    };
 
     return (
         <>
-            <div className="d-flex flex-wrap justify-content-between gap-2 align-items-center mb-4">
+            <div className="d-flex flex-wrap justify-content-between gap-2 align-items-center mb-3">
                 <Button
                     icon={<i className="fa fa-filter me-2"></i>}
                     label="Filtrar por estado"
@@ -41,7 +62,21 @@ export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryL
                 <Menu model={statusItems} popup ref={statusMenu} />
             </div>
 
-            <div className="input-group mb-4">
+            <div className="mb-3">
+                <Dropdown
+                    inputId="convenio"
+                    options={convenios}
+                    optionLabel="label"
+                    filter
+                    showClear
+                    placeholder="Convenio"
+                    className="w-100"
+                    value={selectedConvenio}
+                    onChange={(e) => setSelectedConvenio(e.value)}
+                />
+            </div>
+
+            <div className="input-group mb-2">
                 <InputText
                     placeholder="Buscar por # o nombre..."
                     id="searchOrder"
@@ -49,10 +84,10 @@ export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryL
                 />
             </div>
 
-            <Divider className="my-3" />
+            <Divider className="my-2" />
 
             <div className="d-flex flex-column gap-4">
-                {recipes.map((recipe) => {
+                {finalRecipes.map((recipe) => {
                     const manager = new MedicationPrescriptionManager(recipe);
 
                     return (

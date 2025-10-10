@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Toast } from 'primereact/toast';
 import { ConfigColumns } from "datatables.net-bs5";
 import CustomDataTable from "../components/CustomDataTable.js";
 import { UserTableItem } from "../models/models.js";
@@ -9,6 +10,7 @@ import { CustomFormModal } from "../components/CustomFormModal.js";
 import { UserAssistantForm, UserAssistantFormInputs } from "./UserAssistantForm.js";
 import { useUserAssistantBulkCreate } from "./hooks/useUserAssistantBulkCreate.js";
 import { userAssistantService } from "../../services/api/index.js";
+import { GoogleCalendarModal } from './components/GoogleCalendarModal.jsx';
 
 interface UserTableProps {
   users: UserTableItem[];
@@ -36,9 +38,12 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentEmail, setCurrentEmail] = useState<string | null>(null);
   const [actionType, setActionType] = useState<"signature" | "stamp" | null>(
     null
   );
+  const toast = useRef<Toast>(null);
+  const [showGoogleCalendarModal, setShowGoogleCalendarModal] = useState(false);
 
   const { createUserAssistantBulk } = useUserAssistantBulkCreate();
 
@@ -116,6 +121,12 @@ const UserTable: React.FC<UserTableProps> = ({
     });
   };
 
+  const openGoogleCalendarModal = (data: any) => {
+    setCurrentUserId(data.id);
+    setCurrentEmail(data.email);
+    setShowGoogleCalendarModal(true);
+  };
+
   const columns: ConfigColumns[] = [
     { data: "fullName" },
     { data: "role" },
@@ -183,6 +194,18 @@ const UserTable: React.FC<UserTableProps> = ({
               <a
                 className="dropdown-item"
                 href="#"
+                onClick={() => openGoogleCalendarModal(data)}
+              >
+                <div className="d-flex gap-2 align-items-center">
+                  <i className="fas fa-calendar-alt" style={{ width: "20px" }}></i>
+                  <span>Configurar Google Calendar</span>
+                </div>
+              </a>
+            </li>
+            <li style={{ marginBottom: "8px" }}>
+              <a
+                className="dropdown-item"
+                href="#"
                 onClick={() => openAssistantsModal(data.id)}
               >
                 <div className="d-flex gap-2 align-items-center">
@@ -202,6 +225,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
   return (
     <>
+      <Toast ref={toast} />
       <div className="card mb-3">
         <div className="card-body">
           <CustomDataTable data={users} slots={slots} columns={columns}>
@@ -330,6 +354,16 @@ const UserTable: React.FC<UserTableProps> = ({
           initialData={assistantsFormInitialData}
         />
       </CustomFormModal>
+        <GoogleCalendarModal
+          show={showGoogleCalendarModal}
+          userId={currentUserId || ''}
+          userEmail={currentEmail || ''}
+          onHide={() => setShowGoogleCalendarModal(false)}
+          onSuccess={() => {
+            onReload && onReload();
+          }}
+          toast={toast.current}
+        />
     </>
   );
 };

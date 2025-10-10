@@ -1,73 +1,148 @@
-import React, { useEffect, useState } from "react";
-import { PrimeReactProvider } from "primereact/api";
-import { PharmacyInvoices } from "./components/PharmacyInvoices.js";
-import { cleanJsonObject, formatDate } from "../../services/utilidades.js";
-import { InvoiceService } from "../../services/api/classes/invoiceService.js";
+// PharmacyApp.tsx
+import React, { useEffect, useState } from 'react';
+import { usePharmacyInvoices } from "./hooks/usePharmacyInvoices.js";
+import { PrimeReactProvider } from 'primereact/api';
+import { useMakeRequest } from "../general-request/hooks/useMakeRequest.js";
+import { CustomFormModal } from "../components/CustomFormModal.js";
+import { MakeRequestForm } from "../general-request/components/MakeRequestForm.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
+import { PharmacyTable } from "./PharmacyTable.js";
 export const PharmacyApp = () => {
-  const [filters, setFilters] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [invoices, setInvoices] = useState([]);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [lazyState, setLazyState] = useState({
-    first: 0,
-    rows: 10,
-    page: 1
-  });
+  const {
+    invoices,
+    fetchInvoices,
+    loading,
+    totalRecords
+  } = usePharmacyInvoices();
+  const {
+    makeRequest
+  } = useMakeRequest();
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [first, setFirst] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+  const [search, setSearch] = useState(null);
+  const [filters, setFilters] = useState({});
   useEffect(() => {
-    applyFilters(lazyState.page, lazyState.rows);
-  }, [lazyState.page, lazyState.rows]);
-  const applyFilters = async (page = 1, per_page = 10) => {
-    setLoading(true);
-    const invoiceService = new InvoiceService();
-    const filterInvoiceParams = {
-      subType: "pharmacy",
-      page,
-      per_page
-    };
+    fetchInvoices({
+      per_page: perPage,
+      page: currentPage,
+      search: search || "",
+      ...filters
+    });
+  }, []);
+  const handlePageChange = page => {
+    const calculatedPage = Math.floor(page.first / page.rows) + 1;
+    setFirst(page.first);
+    setPerPage(page.rows);
+    setCurrentPage(calculatedPage);
+    fetchInvoices({
+      per_page: page.rows,
+      page: calculatedPage,
+      search: search || "",
+      ...filters
+    });
+  };
+  const handleSearchChange = _search => {
+    setSearch(_search);
+    fetchInvoices({
+      per_page: perPage,
+      page: currentPage,
+      search: _search,
+      ...filters
+    });
+  };
+  const refresh = () => {
+    fetchInvoices({
+      per_page: perPage,
+      page: currentPage,
+      search: search || "",
+      ...filters
+    });
+  };
+  const requestCancellation = id => {
+    setSelectedItemId(id);
+    setShowCancellationModal(true);
+  };
+  const handleMakeRequest = async requestData => {
     try {
-      const response = await invoiceService.filterInvoices(cleanJsonObject(filterInvoiceParams));
-      console.log("response", response);
-      setInvoices(response.data.map(invoice => handleToMappedInvoice(invoice)));
-      setTotalRecords(response.total);
+      if (selectedItemId) {
+        await makeRequest({
+          type: "cancellation",
+          requestable_id: selectedItemId,
+          requestable_type: "pharmacy_invoice",
+          notes: requestData.notes || null
+        });
+        setShowCancellationModal(false);
+        refresh();
+        SwalManager.success({
+          text: "Solicitud de anulación enviada correctamente",
+          title: "Éxito"
+        });
+      } else {
+        SwalManager.error({
+          text: "No se ha seleccionado una factura",
+          title: "Error"
+        });
+      }
     } catch (error) {
-      console.error("Error al obtener facturas:", error);
-    } finally {
-      setLoading(false);
+      console.error(error);
+      SwalManager.error({
+        text: "Error al enviar la solicitud de anulación",
+        title: "Error"
+      });
     }
   };
-  function handleToMappedInvoice(response) {
-    return {
-      id: response.id,
-      invoice: response.invoice_code,
-      date: formatDate(response.created_at, true),
-      client: response.third_party?.name || "Sin cliente",
-      total_amount: parseFloat(response.total_amount),
-      remaining_amount: parseFloat(response.remaining_amount),
-      paid: parseFloat(response.total_amount) - parseFloat(response.remaining_amount),
-      status: response.status
-    };
-  }
-  const onPage = event => {
-    setLazyState({
-      ...lazyState,
-      first: event.first,
-      rows: event.rows,
-      page: event.page + 1
+  const handleFilter = filters => {
+    const newFilters = {};
+    if (filters.selectedClient) {
+      newFilters.thirdParty = filters.selectedClient;
+    }
+    if (filters.selectedStatus) {
+      newFilters.status = filters.selectedStatus;
+    }
+    if (filters.selectedDate?.filter(date => !!date).length === 2) {
+      const [startDate, endDate] = filters.selectedDate;
+      if (startDate && endDate) {
+        newFilters.createdAt = `${startDate.toISOString().split('T')[0]},${endDate.toISOString().split('T')[0]}`;
+      }
+    }
+    setFilters(newFilters);
+    fetchInvoices({
+      per_page: perPage,
+      page: 1,
+      search: search || "",
+      ...newFilters
     });
-    applyFilters(event.page + 1, event.rows);
+    setCurrentPage(1);
+    setFirst(0);
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
-      appendTo: "self",
+      appendTo: 'self',
       zIndex: {
         overlay: 100000
       }
     }
-  }, /*#__PURE__*/React.createElement(PharmacyInvoices, {
-    invoices: invoices,
-    lazyState: lazyState,
-    loading: loading,
+  }, /*#__PURE__*/React.createElement(PharmacyTable, {
+    items: invoices,
+    onCancelItem: requestCancellation,
+    first: first,
+    rows: perPage,
     totalRecords: totalRecords,
-    onPage: onPage
+    loading: loading,
+    onPage: handlePageChange,
+    onSearch: handleSearchChange,
+    onReload: refresh,
+    handleFilter: handleFilter
+  })), /*#__PURE__*/React.createElement(CustomFormModal, {
+    show: showCancellationModal,
+    onHide: () => setShowCancellationModal(false),
+    formId: "cancellationForm",
+    title: "Solicitud de anulaci\xF3n de factura"
+  }, /*#__PURE__*/React.createElement(MakeRequestForm, {
+    formId: "cancellationForm",
+    onHandleSubmit: handleMakeRequest
   })));
 };

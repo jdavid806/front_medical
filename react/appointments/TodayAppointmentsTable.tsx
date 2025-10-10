@@ -17,6 +17,8 @@ import { getLocalTodayISODate } from "../../services/utilidades";
 import { appointmentService } from "../../services/api";
 import { SwalManager } from "../../services/alertManagerImported";
 import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2";
+import { usePRToast } from "../hooks/usePRToast";
+import { Toast } from "primereact/toast";
 
 interface TodayAppointmentsTableProps {
   onPrintItem?: (id: string, title: string) => void;
@@ -35,6 +37,7 @@ export const TodayAppointmentsTable: React.FC<
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentTableItem | null>(null);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+  const { toast, showSuccessToast } = usePRToast();
 
   const customFilters = () => {
     return {
@@ -92,6 +95,17 @@ export const TodayAppointmentsTable: React.FC<
     });
   };
 
+
+  const handleAppointmentCreated = () => {
+    refresh();
+    showSuccessToast({
+      title: "Cita creada",
+      message: "La cita se ha creado exitosamente y se ha actualizado la tabla"
+    });
+    setShowAppointmentForm(false);
+  };
+
+
   // Función para abrir modal de reagendar
   const openRescheduleAppointmentModal = (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);
@@ -142,6 +156,7 @@ export const TodayAppointmentsTable: React.FC<
 
   return (
     <>
+      <Toast ref={toast} />
       <div className="d-flex justify-content-end gap-3 mb-4">
         <Button
           label="Control de turnos"
@@ -230,6 +245,7 @@ export const TodayAppointmentsTable: React.FC<
         <AppointmentFormModal
           isOpen={showAppointmentForm}
           onClose={() => setShowAppointmentForm(false)}
+          onAppointmentCreated={handleAppointmentCreated}
         />
       </Dialog>
     </>

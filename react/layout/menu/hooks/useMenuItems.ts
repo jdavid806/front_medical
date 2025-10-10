@@ -40,14 +40,18 @@ export const useMenuItems = () => {
         setLoading(true);
         try {
           const allMenus = await menuService.getAllMenu();
-          const transformedMenus = transformBackendMenu(allMenus.menus);
-          const cleanedMenus = removeEmptySections(transformedMenus);
-          setMenuItems(cleanedMenus);
+          console.log('menusssService', allMenus)
+          // const transformedMenus = transformBackendMenu(allMenus.menus);
+          // const cleanedMenus = removeEmptySections(transformedMenus);
+          setMenuItems(allMenus.menus);
         } catch (error) {
-          setMenuItems(items);
+          console.log('error', error)
+          // setMenuItems(allMenus);
         }
       } catch (error) {
-        setMenuItems(items);
+        console.log('catch2')
+
+        // setMenuItems(items);
       } finally {
         setLoading(false);
       }

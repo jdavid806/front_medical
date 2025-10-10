@@ -31,6 +31,13 @@ export class AuthService extends BaseApiService {
     async verifySupervisor(data = { external_id, password }) {
         return await this.httpClient.post(`${this.microservice}/check-supervisor`, data);
     }
+
+    async checkUsernameByTenant(username) {
+        return await this.httpClient.post(`${this.microservice}/check-username-by-tenant`, {
+            "username": username,
+            "tenant_id": url.split('.')[0],
+        })
+    }
 }
 
 export default AuthService;

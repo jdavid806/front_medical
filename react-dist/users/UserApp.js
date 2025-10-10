@@ -6,11 +6,7 @@ import { useUserCreate } from "./hooks/useUserCreate.php.js";
 import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
 import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
-import { useActivateOtp } from "./hooks/useActivateOtp.js";
-export const UserApp = ({
-  onConfigurationComplete,
-  isConfigurationContext = false
-}) => {
+export const UserApp = () => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const [initialUserFormConfig] = useState({
@@ -34,34 +30,11 @@ export const UserApp = ({
     users,
     fetchUsers
   } = useAllTableUsers();
-  const {
-    activateOtp,
-    loading: otpLoading
-  } = useActivateOtp();
-
-  // Validar si hay al menos un usuario configurado
-  useEffect(() => {
-    const hasUsers = users && users.length > 0;
-    console.log('🔍 Validando usuarios:', {
-      totalUsuarios: users?.length,
-      hasUsers
-    });
-    onConfigurationComplete?.(hasUsers);
-  }, [users, onConfigurationComplete]);
-  const isComplete = users && users.length > 0;
-  const showValidations = isConfigurationContext;
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
     setUser(null);
     setShowUserFormModal(true);
-  };
-  const handleOtpChange = async (enabled, email) => {
-    const otpData = {
-      email: email,
-      otp_enabled: enabled
-    };
-    await activateOtp(otpData);
   };
   const handleSubmit = async data => {
     const finalData = {
@@ -86,7 +59,6 @@ export const UserApp = ({
         });
       }
       fetchUsers();
-      handleOtpChange(data.otp_enabled, data.email);
       setShowUserFormModal(false);
     } catch (error) {
       console.error(error);
@@ -123,8 +95,7 @@ export const UserApp = ({
         phone: user.phone || "",
         minio_id: user.minio_id || "",
         minio_url: user.minio_url || "",
-        clinical_record: user.clinical_record || "",
-        otp_enabled: user.otp_enabled || false
+        clinical_record: user.clinical_record || ""
       });
     }
   }, [user]);
@@ -135,13 +106,7 @@ export const UserApp = ({
         overlay: 100000
       }
     }
-  }, showValidations && /*#__PURE__*/React.createElement("div", {
-    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
-  }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), "v>", /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-4"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"

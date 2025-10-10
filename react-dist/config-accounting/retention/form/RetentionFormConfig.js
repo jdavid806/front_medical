@@ -255,9 +255,6 @@ const RetentionFormConfig = ({
   }, "Cuenta Contable Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable de compras es requerida"
-    },
     render: ({
       field,
       fieldState
@@ -271,12 +268,10 @@ const RetentionFormConfig = ({
       placeholder: "Seleccione una cuenta",
       filter: true,
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: isLoadingAccounts,
       appendTo: "self"
-    }), getFormErrorMessage("accounting_account_id"))
+    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -285,12 +280,8 @@ const RetentionFormConfig = ({
   }, "Cuenta Contable Reversa Compras *"), /*#__PURE__*/React.createElement(Controller, {
     name: "accounting_account_reverse_id",
     control: control,
-    rules: {
-      required: "La cuenta contable reversa de compras es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -302,12 +293,10 @@ const RetentionFormConfig = ({
       filter: true,
       filterBy: "account_label,account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: isLoadingAccounts,
       appendTo: "self"
-    }), getFormErrorMessage("accounting_account_reverse_id"))
+    }))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
@@ -322,12 +311,8 @@ const RetentionFormConfig = ({
   }, "Cuenta Contable Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable de ventas es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -339,12 +324,10 @@ const RetentionFormConfig = ({
       filter: true,
       filterBy: "account_label,account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: isLoadingAccounts,
       appendTo: "self"
-    }), getFormErrorMessage("sell_accounting_account_id"))
+    }))
   })), /*#__PURE__*/React.createElement("div", {
     className: "field mb-4"
   }, /*#__PURE__*/React.createElement("label", {
@@ -353,12 +336,8 @@ const RetentionFormConfig = ({
   }, "Cuenta Contable Reversa Ventas *"), /*#__PURE__*/React.createElement(Controller, {
     name: "sell_reverse_accounting_account_id",
     control: control,
-    rules: {
-      required: "La cuenta contable reversa de ventas es requerida"
-    },
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -370,12 +349,10 @@ const RetentionFormConfig = ({
       filter: true,
       filterBy: "account_label,account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: isLoadingAccounts,
       appendTo: "self"
-    }), getFormErrorMessage("sell_reverse_accounting_account_id"))
+    }))
   })))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {

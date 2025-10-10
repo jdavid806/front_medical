@@ -10,8 +10,15 @@ export class ConvenioTenantService extends BaseApiService {
         return await this.httpClient.get(`medical/convenios/activos`);
     }
 
-    async getFarmaciasWithRecetasConvenio(data) {
-        return await this.httpClient.get(`medical/convenios/farmacias-recetas`, data);
+    async getFarmaciasWithRecetasConvenio(data, tenantId, apiKey) {
+        return await this.httpClient.get(
+            `medical/convenios/farmacia/recetas`,
+            data,
+            {
+                "X-TENANT-ID": tenantId,
+                "X-API-KEY": apiKey
+            }
+        );
     }
 
     //listar todo los clientes disponibles para hacer convenio

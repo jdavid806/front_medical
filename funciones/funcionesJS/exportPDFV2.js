@@ -217,8 +217,9 @@ export async function generatePDFReceipts(content, configPDF, targetInputId = nu
     </body>
     </html>
     `;
-    const pdfGenerateUrl =
-      "https://dev.monaros.co/api/v2/mensajeria/pdf/generate";
+    const scheme = window.location.protocol;
+
+    const pdfGenerateUrl =`${scheme}//${window.location.hostname}/api/v2/mensajeria/pdf/generate`;
 
     if (!targetInputId) {
       // Comportamiento original (abrir en nueva ventana)

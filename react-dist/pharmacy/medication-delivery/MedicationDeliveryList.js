@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { formatDateDMY } from "../../../services/utilidades.js";
@@ -6,29 +6,53 @@ import { useAllRecipes } from "./hooks/useAllRecipes.js";
 import { MedicationPrescriptionManager } from "./helpers/MedicationPrescriptionManager.js";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import { useActiveTenantConvenios } from "../../convenios/hooks/useActiveTenantConvenios.js";
+import { useConvenioRecipes } from "../../convenios/hooks/useConvenioRecipes.js";
 export const MedicationDeliveryList = ({
-  onDeliverySelect
+  onDeliverySelect,
+  onDeliverySelectConvenio
 }) => {
   const {
     fetchAllRecipes,
     recipes
   } = useAllRecipes();
+  const {
+    convenios
+  } = useActiveTenantConvenios();
+  const {
+    fetchConvenioRecipes,
+    recipes: convenioRecipes
+  } = useConvenioRecipes();
+  const [selectedConvenio, setSelectedConvenio] = useState(null);
   const statusItems = [{
     label: 'Todos',
-    command: () => fetchAllRecipes("ALL")
+    command: () => fetchRecipes("ALL")
   }, {
     label: 'Pendiente',
-    command: () => fetchAllRecipes("PENDING")
+    command: () => fetchRecipes("PENDING")
   }, {
     label: 'Entregado',
-    command: () => fetchAllRecipes("DELIVERED")
+    command: () => fetchRecipes("DELIVERED")
   }];
   const statusMenu = useRef(null);
+  const finalRecipes = selectedConvenio ? convenioRecipes : recipes;
   useEffect(() => {
-    fetchAllRecipes("PENDING");
-  }, []);
+    fetchRecipes("PENDING");
+  }, [selectedConvenio]);
+  const fetchRecipes = status => {
+    if (!selectedConvenio) {
+      fetchAllRecipes(status);
+    } else {
+      fetchConvenioRecipes({
+        tenantId: selectedConvenio.tenant_b_id,
+        apiKey: selectedConvenio.api_keys.find(apiKey => apiKey.module === "farmacia").key,
+        module: "farmacia"
+      });
+    }
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-wrap justify-content-between gap-2 align-items-center mb-4"
+    className: "d-flex flex-wrap justify-content-between gap-2 align-items-center mb-3"
   }, /*#__PURE__*/React.createElement(Button, {
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fa fa-filter me-2"
@@ -41,16 +65,32 @@ export const MedicationDeliveryList = ({
     popup: true,
     ref: statusMenu
   })), /*#__PURE__*/React.createElement("div", {
-    className: "input-group mb-4"
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Dropdown, {
+    inputId: "convenio",
+    options: convenios,
+    optionLabel: "label",
+    filter: true,
+    showClear: true,
+    placeholder: "Convenio",
+    className: "w-100",
+    value: selectedConvenio,
+    onChange: e => {
+      console.log(e.value);
+      setSelectedConvenio(e.value);
+      onDeliverySelectConvenio(e.value);
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "input-group mb-2"
   }, /*#__PURE__*/React.createElement(InputText, {
     placeholder: "Buscar por # o nombre...",
     id: "searchOrder",
     className: "w-100"
   })), /*#__PURE__*/React.createElement(Divider, {
-    className: "my-3"
+    className: "my-2"
   }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-4"
-  }, recipes.map(recipe => {
+  }, finalRecipes.map(recipe => {
     const manager = new MedicationPrescriptionManager(recipe);
     return /*#__PURE__*/React.createElement("div", {
       key: recipe.id,

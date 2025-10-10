@@ -72,6 +72,8 @@ export const UserAvailabilityApp = ({
         if (confirmed) fetchAvailabilities()
     };
 
+
+
     useEffect(() => {
         if (userAvailability) {
             const data = {
@@ -82,6 +84,8 @@ export const UserAvailabilityApp = ({
                 appointment_type_id: userAvailability?.appointment_type_id.toString() ?? '',
                 branch_id: userAvailability?.branch_id?.toString() ?? '1',
                 appointment_duration: userAvailability?.appointment_duration ?? 0,
+                is_group: userAvailability?.is_group ?? false,
+                max_capacity: userAvailability?.max_capacity ?? 0,
                 days_of_week: Array.isArray(userAvailability?.days_of_week)
                     ? userAvailability.days_of_week.map(day => parseInt(day))
                     : (userAvailability?.days_of_week ? [userAvailability.days_of_week] : []).map(day => parseInt(day)),

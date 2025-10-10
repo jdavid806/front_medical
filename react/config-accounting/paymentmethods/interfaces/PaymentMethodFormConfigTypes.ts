@@ -25,7 +25,7 @@ export interface PaymentMethodDTO {
   created_at: string;
   updated_at: string;
   account: string | null;
-  accounting_account_id: number;
+  accounting_account_id: number | null;
   category: string | null;
   is_cash: boolean;
 

@@ -3,8 +3,6 @@ import { MultiSelect } from "primereact/multiselect";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { exportToExcel } from "../../accounting/utils/ExportToExcelOptions";
 import { formatDate as formatDateUtils } from "../../../services/utilidades";
@@ -20,27 +18,14 @@ import {
   entityService,
 } from "../../../services/api/index";
 import { Card } from "primereact/card";
-
-type TextAlign =
-  | "left"
-  | "right"
-  | "center"
-  | "justify"
-  | "initial"
-  | "inherit";
-
-interface ColumnStyle extends React.CSSProperties {
-  minWidth?: string;
-  textAlign?: TextAlign;
-}
-
-interface TableColumn {
-  field: string;
-  header: string;
-  body?: (rowData: any) => React.ReactNode;
-  style?: ColumnStyle;
-  headerStyle?: ColumnStyle;
-}
+import { useDataPagination } from "../../hooks/useDataPagination";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../../components/CustomPRTable";
+import { ColumnGroup } from "primereact/columngroup";
+import { Row } from "primereact/row";
+import { Column } from "primereact/column";
 
 export const ControlCashFlow = () => {
   // Set default date range (last 5 days)
@@ -60,68 +45,75 @@ export const ControlCashFlow = () => {
   const [dateRange, setDateRange] = useState([fiveDaysAgo, today]);
   const { company, setCompany, fetchCompany } = useCompany();
 
-  // State for report data
-  const [reportData, setReportData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [tableLoading, setTableLoading] = useState(false);
-
-  // Pagination state
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
-
   // Export loading state
   const [exporting, setExporting] = useState({
     excel: false,
     pdf: false,
   });
 
+  // Función para obtener datos del flujo de caja
+  const fetchCashFlowData = async (params: any) => {
+    try {
+      // Combinar parámetros de paginación con filtros actuales
+      const filterParams = {
+        ...params,
+        end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
+        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
+        patient_ids: selectedPatients,
+        product_ids: selectedProcedures,
+        user_ids: selectedSpecialists,
+        entity_id: selectedEntity,
+      };
+
+      // Usar el servicio de flujo de caja
+      const data = await billingService.getCashFlowReport(filterParams);
+
+      // Ajustar según la estructura de tu API
+      return {
+        data: data.data || data || [], // Ajusta según la estructura de tu API
+        total:
+          data.total || data.count || (Array.isArray(data) ? data.length : 0),
+      };
+    } catch (error) {
+      console.error("Error fetching cash flow data:", error);
+      return {
+        data: [],
+        total: 0,
+      };
+    }
+  };
+
+  // Hook de paginación
+  const {
+    data: reportData,
+    loading: tableLoading,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh,
+  } = useDataPagination({
+    fetchFunction: fetchCashFlowData,
+    defaultPerPage: 10,
+  });
+
   useEffect(() => {
     const initializeData = async () => {
       try {
-        setLoading(true);
         // Load initial data
         await loadProcedures();
         await loadSpecialists();
         await loadPatients();
         await loadEntities();
-        const defaultFilters = {
-          end_date: formatDate(today),
-          start_date: formatDate(fiveDaysAgo),
-          patient_ids: [],
-          product_ids: [],
-          user_ids: [],
-          entity_id: null,
-        };
-        await loadData(defaultFilters, true);
+        // Los datos se cargarán automáticamente mediante el hook useDataPagination
       } catch (error) {
         console.error("Error initializing data:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     initializeData();
   }, []);
-
-  const loadData = async (filterParams = {}, useAlternateService = true) => {
-    try {
-      setTableLoading(true);
-      // Use the cash flow service specifically
-      const data = await billingService.getCashFlowReport(filterParams);
-      setReportData(data);
-      return data;
-    } catch (error) {
-      console.error("Error loading cash control data:", error);
-      throw error;
-    } finally {
-      setTableLoading(false);
-    }
-  };
-
-  const onPageChange = (event: any) => {
-    setFirst(event.first);
-    setRows(event.rows);
-  };
 
   const formatCurrency = (value: number) => {
     const formatted = new Intl.NumberFormat("es-DO", {
@@ -191,27 +183,11 @@ export const ControlCashFlow = () => {
     }
   };
 
-  const createColumnStyle = (
-    textAlign: TextAlign = "left",
-    minWidth: string = "150px"
-  ): ColumnStyle => ({
-    textAlign,
-    minWidth,
-  });
-
   const handleFilter = async () => {
     try {
-      const filterParams = {
-        end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity,
-      };
-
-      await loadData(filterParams, true);
-      setFirst(0); // Reset to first page when filtering
+      // Al llamar a refresh, el hook useDataPagination volverá a ejecutar fetchCashFlowData
+      // con los filtros actualizados automáticamente
+      refresh();
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -280,6 +256,24 @@ export const ControlCashFlow = () => {
     try {
       setExporting({ ...exporting, pdf: true });
       const dataExport = reportData;
+      const fullIncome = reportData.reduce(
+        (acc: number, item: any) =>
+          acc +
+          (parseInt(item?.invoice?.total_amount) +
+            (parseInt(item?.entity_authorized_amount) || 0) || 0),
+        0
+      );
+      const fullOutflows = reportData.reduce(
+        (acc: number, item: any) =>
+          acc +
+          (item?.invoice?.status === "cancelled"
+            ? item?.invoice.notes.reduce(
+                (acc: number, note: any) => acc + parseInt(note.amount) || 0,
+                0
+              )
+            : 0),
+        0
+      );
 
       // Generar las cabeceras de la tabla
       const headers = `
@@ -315,6 +309,15 @@ export const ControlCashFlow = () => {
             border-bottom: 1px solid #eee;
           }
           .right { text-align: right; }
+          .total-row {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-top: 2px solid #ddd;
+          }
+          .total-label {
+            text-align: right;
+            padding-right: 20px;
+          }
           </style>
       
           <table>
@@ -366,6 +369,12 @@ export const ControlCashFlow = () => {
               `,
                 ""
               )}
+              <!-- Fila de totales -->
+              <tr class="total-row">
+                <td colspan="6" class="total-label">TOTALES:</td>
+                <td class="right">${formatCurrency(fullIncome)}</td>
+                <td class="right">${formatCurrency(fullOutflows)}</td>
+              </tr>
             </tbody>
           </table>`;
       const configPDF = {
@@ -379,144 +388,120 @@ export const ControlCashFlow = () => {
     }
   };
 
-  const generateCashControlTable = () => {
-    if (!reportData || reportData.length === 0) {
-      return (
-        <div
-          className="flex justify-content-center align-items-center"
-          style={{ height: "200px" }}
-        >
-          <span>No hay datos disponibles</span>
-        </div>
-      );
-    }
-
-    const cashControlColumns: TableColumn[] = [
-      {
-        field: "procedure",
-        header: "# Factura",
-        body: (rowData: any) => rowData?.invoice?.id,
-      },
-      {
-        field: "procedure",
-        header: "Código de Factura",
-        body: (rowData: any) => rowData?.invoice?.invoice_code,
-      },
-      {
-        field: "procedure",
-        header: "Procedimiento",
-        body: (rowData: any) =>
-          rowData?.invoice?.details.length <= 1
-            ? rowData?.invoice?.details[0].product.name
-            : "Laboratorio",
-      },
-      {
-        field: "cod_entity",
-        header: "Codigo Entidad",
-        body: (rowData: any) => rowData?.authorization_number,
-      },
-      {
-        field: "copayment",
-        header: "Copago",
-        body: (rowData: any) =>
-          rowData?.invoice?.type === "entity"
-            ? formatCurrency(rowData?.invoice?.total_amount)
-            : formatCurrency(0),
-      },
-      {
-        field: "authorized_amount_user",
-        header: "Particular",
-        body: (rowData: any) =>
-          rowData?.invoice?.type === "public"
-            ? formatCurrency(rowData?.invoice?.total_amount)
-            : formatCurrency(0),
-      },
-      {
-        field: "entity_authorized_amount",
-        header: "Monto autorizado",
-        body: (rowData: any) =>
-          formatCurrency(rowData?.entity_authorized_amount || 0),
-      },
-      {
-        field: "date",
-        header: "Fecha",
-        style: createColumnStyle("left", "150px"),
-        body: (rowData: any) => formatDateUtils(rowData.created_at),
-      },
-      {
-        field: "income",
-        header: "Ingresos",
-        style: createColumnStyle("right"),
-        body: (rowData: any) =>
-          formatCurrency(
-            parseInt(rowData?.invoice?.total_amount) +
-              (parseInt(rowData?.entity_authorized_amount) || 0) || 0
-          ),
-      },
-      {
-        field: "outflows",
-        header: "Salidas",
-        style: createColumnStyle("right"),
-        body: (rowData: any) =>
-          rowData?.invoice?.status === "cancelled"
-            ? formatCurrency(
-                rowData?.invoice.notes.reduce(
-                  (acc: number, note: any) => acc + parseInt(note.amount) || 0,
-                  0
-                )
+  // Definición de columnas para CustomPRTable
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: "invoice.id",
+      header: "# Factura",
+      body: (rowData: any) => rowData?.invoice?.id,
+    },
+    {
+      field: "invoice.invoice_code",
+      header: "Código de Factura",
+      body: (rowData: any) => rowData?.invoice?.invoice_code,
+    },
+    {
+      field: "procedure",
+      header: "Procedimiento",
+      body: (rowData: any) =>
+        rowData?.invoice?.details.length <= 1
+          ? rowData?.invoice?.details[0].product.name
+          : "Laboratorio",
+    },
+    {
+      field: "authorization_number",
+      header: "Codigo Entidad",
+      body: (rowData: any) => rowData?.authorization_number,
+    },
+    {
+      field: "copayment",
+      header: "Copago",
+      body: (rowData: any) =>
+        rowData?.invoice?.type === "entity"
+          ? formatCurrency(rowData?.invoice?.total_amount)
+          : formatCurrency(0),
+    },
+    {
+      field: "authorized_amount_user",
+      header: "Particular",
+      body: (rowData: any) =>
+        rowData?.invoice?.type === "public"
+          ? formatCurrency(rowData?.invoice?.total_amount)
+          : formatCurrency(0),
+    },
+    {
+      field: "entity_authorized_amount",
+      header: "Monto autorizado",
+      body: (rowData: any) =>
+        formatCurrency(rowData?.entity_authorized_amount || 0),
+    },
+    {
+      field: "created_at",
+      header: "Fecha",
+      body: (rowData: any) => formatDateUtils(rowData.created_at),
+    },
+    {
+      field: "income",
+      header: "Ingresos",
+      body: (rowData: any) =>
+        formatCurrency(
+          parseInt(rowData?.invoice?.total_amount) +
+            (parseInt(rowData?.entity_authorized_amount) || 0) || 0
+        ),
+    },
+    {
+      field: "outflows",
+      header: "Salidas",
+      body: (rowData: any) =>
+        rowData?.invoice?.status === "cancelled"
+          ? formatCurrency(
+              rowData?.invoice.notes.reduce(
+                (acc: number, note: any) => acc + parseInt(note.amount) || 0,
+                0
               )
-            : formatCurrency(0),
-      },
-    ];
+            )
+          : formatCurrency(0),
+    },
+  ];
 
+  const footerGroup = (reportData: any) => {
+    const fullIncome = reportData.reduce(
+      (acc: number, item: any) =>
+        acc +
+        (parseInt(item?.invoice?.total_amount) +
+          (parseInt(item?.entity_authorized_amount) || 0) || 0),
+      0
+    );
+    const fullOutflows = reportData.reduce(
+      (acc: number, item: any) =>
+        acc +
+        (item?.invoice?.status === "cancelled"
+          ? item?.invoice.notes.reduce(
+              (acc: number, note: any) => acc + parseInt(note.amount) || 0,
+              0
+            )
+          : 0),
+      0
+    );
     return (
-      <div className="card">
-        {tableLoading ? (
-          <div
-            className="flex justify-content-center align-items-center"
-            style={{ height: "200px" }}
-          >
-            <ProgressSpinner />
-          </div>
-        ) : (
-          <DataTable
-            value={reportData}
-            loading={tableLoading}
-            scrollable
-            scrollHeight="flex"
-            showGridlines
-            stripedRows
-            size="small"
-            tableStyle={{ minWidth: "100%" }}
-            className="p-datatable-sm"
-            paginator
-            rows={rows}
-            first={first}
-            onPage={onPageChange}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-          >
-            {cashControlColumns.map((col, i) => (
-              <Column
-                key={i}
-                field={col.field}
-                header={col.header}
-                body={col.body}
-                style={col.style}
-                headerStyle={col.headerStyle}
-              />
-            ))}
-          </DataTable>
-        )}
-      </div>
+      <ColumnGroup>
+        <Row>
+          <Column
+            footer="Totals:"
+            colSpan={8}
+            footerStyle={{ textAlign: "right" }}
+          />
+          <Column footer={formatCurrency(fullIncome)} />
+          <Column footer={formatCurrency(fullOutflows)} />
+        </Row>
+      </ColumnGroup>
     );
   };
 
   return (
     <main className="main" id="top">
       <div className="pb-9">
-        {loading ? (
+        {tableLoading && (
           <div
             className="flex justify-content-center align-items-center"
             style={{
@@ -527,139 +512,145 @@ export const ControlCashFlow = () => {
           >
             <ProgressSpinner />
           </div>
-        ) : (
-          <>
-            <div className="row g-3 justify-content-between align-items-start mb-4">
-              <div className="col-12">
-                <Card title="Filtros de Búsqueda" className="mb-3">
-                  <div className="row">
-                    <div className="col-12 col-md-6 mb-3">
-                      <label className="form-label" htmlFor="procedure">
-                        Procedimientos
-                      </label>
-                      <MultiSelect
-                        id="procedure"
-                        value={selectedProcedures}
-                        options={procedures}
-                        onChange={(e) => setSelectedProcedures(e.value)}
-                        placeholder="Seleccione procedimientos"
-                        display="chip"
-                        filter
-                        className="w-100"
-                      />
-                    </div>
-                    <div className="col-12 col-md-6 mb-3">
-                      <label className="form-label" htmlFor="especialistas">
-                        Especialistas
-                      </label>
-                      <MultiSelect
-                        id="especialistas"
-                        value={selectedSpecialists}
-                        options={specialists}
-                        onChange={(e) => setSelectedSpecialists(e.value)}
-                        placeholder="Seleccione especialistas"
-                        display="chip"
-                        filter
-                        className="w-100"
-                      />
-                    </div>
-                    <div className="col-12 col-md-6 mb-3">
-                      <label className="form-label" htmlFor="patients">
-                        Pacientes
-                      </label>
-                      <MultiSelect
-                        id="patients"
-                        value={selectedPatients}
-                        options={patients}
-                        onChange={(e) => setSelectedPatients(e.value)}
-                        placeholder="Seleccione pacientes"
-                        display="chip"
-                        filter
-                        className="w-100"
-                      />
-                    </div>
-                    <div className="col-12 col-md-6 mb-3">
-                      <label
-                        className="form-label"
-                        htmlFor="fechasProcedimiento"
-                      >
-                        Fecha inicio - fin Procedimiento
-                      </label>
-                      <Calendar
-                        id="fechasProcedimiento"
-                        value={dateRange}
-                        onChange={(e: any) => setDateRange(e.value)}
-                        selectionMode="range"
-                        readOnlyInput
-                        dateFormat="dd/mm/yy"
-                        placeholder="dd/mm/yyyy - dd/mm/yyyy"
-                        className="w-100"
-                      />
-                    </div>
-                    <div className="col-12 col-md-6 mb-3">
-                      <label className="form-label" htmlFor="entity">
-                        Entidad
-                      </label>
-                      <Dropdown
-                        id="entity"
-                        value={selectedEntity}
-                        options={entities}
-                        onChange={(e) => setSelectedEntity(e.value)}
-                        placeholder="Seleccione entidad"
-                        filter
-                        className="w-100"
-                      />
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-end m-2">
-                    <Button
-                      label="Filtrar"
-                      icon="pi pi-filter"
-                      onClick={handleFilter}
-                      className="p-button-primary"
-                    />
-                  </div>
-                </Card>
-              </div>
-            </div>
-
-            <div className="row gy-5">
-              <div className="col-12 col-xxl-12">
-                <Card>
-                  <div className="d-flex justify-content-end gap-2 mb-3">
-                    <Button
-                      tooltip="Exportar a excel"
-                      tooltipOptions={{ position: "top" }}
-                      onClick={exportCashControlToExcel}
-                      className="p-button-success"
-                      disabled={
-                        !reportData ||
-                        reportData.length === 0 ||
-                        exporting.excel
-                      }
-                      loading={exporting.excel}
-                    >
-                      <i className="fa-solid fa-file-excel"></i>
-                    </Button>
-                    <Button
-                      tooltip="Exportar a PDF"
-                      tooltipOptions={{ position: "top" }}
-                      onClick={exportCashFlowToPDF}
-                      className="p-button-secondary"
-                      disabled={
-                        !reportData || reportData.length === 0 || exporting.pdf
-                      }
-                      loading={exporting.pdf}
-                    >
-                      <i className="fa-solid fa-file-pdf"></i>
-                    </Button>
-                  </div>
-                  {generateCashControlTable()}
-                </Card>
-              </div>
-            </div>
-          </>
         )}
+
+        <div className="row g-3 justify-content-between align-items-start mb-4">
+          <div className="col-12">
+            <Card title="Filtros de Búsqueda" className="mb-3">
+              <div className="row">
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label" htmlFor="procedure">
+                    Procedimientos
+                  </label>
+                  <MultiSelect
+                    id="procedure"
+                    value={selectedProcedures}
+                    options={procedures}
+                    onChange={(e) => setSelectedProcedures(e.value)}
+                    placeholder="Seleccione procedimientos"
+                    display="chip"
+                    filter
+                    className="w-100"
+                  />
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label" htmlFor="especialistas">
+                    Especialistas
+                  </label>
+                  <MultiSelect
+                    id="especialistas"
+                    value={selectedSpecialists}
+                    options={specialists}
+                    onChange={(e) => setSelectedSpecialists(e.value)}
+                    placeholder="Seleccione especialistas"
+                    display="chip"
+                    filter
+                    className="w-100"
+                  />
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label" htmlFor="patients">
+                    Pacientes
+                  </label>
+                  <MultiSelect
+                    id="patients"
+                    value={selectedPatients}
+                    options={patients}
+                    onChange={(e) => setSelectedPatients(e.value)}
+                    placeholder="Seleccione pacientes"
+                    display="chip"
+                    filter
+                    className="w-100"
+                  />
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label" htmlFor="fechasProcedimiento">
+                    Fecha inicio - fin Procedimiento
+                  </label>
+                  <Calendar
+                    id="fechasProcedimiento"
+                    value={dateRange}
+                    onChange={(e: any) => setDateRange(e.value)}
+                    selectionMode="range"
+                    readOnlyInput
+                    dateFormat="dd/mm/yy"
+                    placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                    className="w-100"
+                  />
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label className="form-label" htmlFor="entity">
+                    Entidad
+                  </label>
+                  <Dropdown
+                    id="entity"
+                    value={selectedEntity}
+                    options={entities}
+                    onChange={(e) => setSelectedEntity(e.value)}
+                    placeholder="Seleccione entidad"
+                    filter
+                    className="w-100"
+                  />
+                </div>
+              </div>
+              <div className="d-flex justify-content-end m-2">
+                <Button
+                  label="Filtrar"
+                  icon="pi pi-filter"
+                  onClick={handleFilter}
+                  className="p-button-primary"
+                />
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        <div className="row gy-5">
+          <div className="col-12 col-xxl-12">
+            <Card title="Control de Flujo de Caja" className="shadow-2">
+              <div className="d-flex justify-content-end gap-2 mb-3">
+                <Button
+                  tooltip="Exportar a excel"
+                  tooltipOptions={{ position: "top" }}
+                  onClick={exportCashControlToExcel}
+                  className="p-button-success"
+                  disabled={
+                    !reportData || reportData.length === 0 || exporting.excel
+                  }
+                  loading={exporting.excel}
+                >
+                  <i className="fa-solid fa-file-excel"></i>
+                </Button>
+                <Button
+                  tooltip="Exportar a PDF"
+                  tooltipOptions={{ position: "top" }}
+                  onClick={exportCashFlowToPDF}
+                  className="p-button-secondary"
+                  disabled={
+                    !reportData || reportData.length === 0 || exporting.pdf
+                  }
+                  loading={exporting.pdf}
+                >
+                  <i className="fa-solid fa-file-pdf"></i>
+                </Button>
+              </div>
+
+              <CustomPRTable
+                columns={columns}
+                data={reportData}
+                lazy
+                first={first}
+                rows={perPage}
+                totalRecords={totalRecords}
+                loading={tableLoading}
+                onPage={handlePageChange}
+                onSearch={handleSearchChange}
+                onReload={refresh}
+                footerGroup={footerGroup(reportData)}
+              />
+            </Card>
+          </div>
+        </div>
       </div>
     </main>
   );

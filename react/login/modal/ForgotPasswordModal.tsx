@@ -49,89 +49,7 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
         { label: 'Nueva Contraseña' }
     ];
 
-    // Función para obtener los datos REALES del usuario del localStorage
-    const getRealUserDataFromLocalStorage = (): UserData | null => {
-        try {
-            // Buscar en el localStorage por la clave correcta donde se almacenan los datos del usuario
-            const userDataStr = localStorage.getItem('userData') ||
-                localStorage.getItem('user') ||
-                localStorage.getItem('currentUser') ||
-                localStorage.getItem('usuario');
 
-            if (userDataStr) {
-                const userData = JSON.parse(userDataStr);
-                console.log('Datos del usuario encontrados en localStorage:', userData);
-
-                // Extraer email y phone del objeto de usuario
-                return {
-                    email: userData.email || userData.correo || '',
-                    phone: userData.phone || userData.telefono || userData.celular || ''
-                };
-            }
-
-            // Si no se encuentra en las claves comunes, buscar en todo el localStorage
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.includes('user') || key.includes('usuario')) {
-                    try {
-                        const value = localStorage.getItem(key);
-                        if (value) {
-                            const parsedValue = JSON.parse(value);
-                            if (parsedValue && (parsedValue.email || parsedValue.phone)) {
-                                console.log('Datos del usuario encontrados en clave:', key, parsedValue);
-                                return {
-                                    email: parsedValue.email || parsedValue.correo || '',
-                                    phone: parsedValue.phone || parsedValue.telefono || parsedValue.celular || ''
-                                };
-                            }
-                        }
-                    } catch (e) {
-                        // Ignorar errores de parseo
-                    }
-                }
-            }
-
-            return null;
-        } catch (error) {
-            console.error('Error al obtener datos del usuario del localStorage:', error);
-            return null;
-        }
-    };
-
-    // Función para buscar usuario por username en localStorage
-    const findUserByUsername = (username: string): UserData | null => {
-        try {
-            // Buscar en todas las entradas del localStorage
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key) {
-                    try {
-                        const value = localStorage.getItem(key);
-                        if (value) {
-                            const parsedValue = JSON.parse(value);
-                            // Verificar si este objeto tiene el username que buscamos
-                            if (parsedValue &&
-                                (parsedValue.username === username ||
-                                    parsedValue.nombre_usuario === username ||
-                                    parsedValue.email === username)) {
-                                console.log('Usuario encontrado en localStorage:', parsedValue);
-                                return {
-                                    email: parsedValue.email || parsedValue.correo || '',
-                                    phone: parsedValue.phone || parsedValue.telefono || parsedValue.celular || ''
-                                };
-                            }
-                        }
-                    } catch (e) {
-                        // Ignorar errores de parseo
-                    }
-                }
-            }
-            return null;
-        } catch (error) {
-            console.error('Error buscando usuario por username:', error);
-            return null;
-        }
-    };
 
     const handleSendOTP = async () => {
         if (!username.trim()) {
@@ -148,23 +66,14 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             const response = await authService.sendOTP(data);
 
             if (response.status === 200 || response.data?.success) {
-                localStorage.setItem('username', username);
 
-                // Obtener los datos REALES del usuario
-                let userDataFound = findUserByUsername(username);
-
-                if (!userDataFound) {
-                    // Si no se encuentra por username, buscar datos generales del usuario
-                    userDataFound = getRealUserDataFromLocalStorage();
-                }
+                const response = await authService.checkUsernameByTenant(username)
+                const userDataFound = response.data.user
 
                 if (userDataFound && userDataFound.email && userDataFound.phone) {
                     setUserData(userDataFound);
-                    console.log('Datos del usuario que se usarán:', userDataFound);
                     showToast('success', 'Éxito', `Código OTP enviado correctamente`);
                 } else {
-                    // SOLO como último recurso usar datos por defecto
-                    // Pero es mejor mostrar un error
                     showToast('error', 'Error', 'No se pudieron obtener los datos del usuario. Contacte al administrador.');
                     setLoading(false);
                     return;
@@ -211,7 +120,6 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
                 otp: otpNumber
             };
 
-            console.log('Enviando payload REAL:', payload); // Para debugging
 
             const response = await authService.validateOTP(payload);
 
@@ -367,26 +275,6 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             default: return true;
         }
     };
-
-    // Efecto para debug: mostrar qué hay en el localStorage
-    useEffect(() => {
-        if (visible) {
-            console.log('Contenido completo del localStorage:');
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key) {
-                    console.log(`Clave: ${key}, Valor:`, localStorage.getItem(key));
-                }
-            }
-
-            // Intentar cargar datos del usuario del localStorage al abrir el modal
-            const storedUserData = getRealUserDataFromLocalStorage();
-            if (storedUserData) {
-                setUserData(storedUserData);
-                console.log('Datos del usuario cargados al abrir modal:', storedUserData);
-            }
-        }
-    }, [visible]);
 
     return (
         <>

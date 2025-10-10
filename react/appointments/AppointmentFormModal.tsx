@@ -49,6 +49,9 @@ import { Dialog } from "primereact/dialog";
 import { PrimeReactProvider } from "primereact/api";
 import { usePRToast } from "../hooks/usePRToast";
 import { Toast } from "primereact/toast";
+import { InputSwitch } from "primereact/inputswitch";
+import { useAppointmentBulkCreateGroup } from "./hooks/useAppointmentBulkCreateGroup";
+import { useGoogleCalendarConfig } from './hooks/useGoogleCalendarConfig';
 
 export interface AppointmentFormInputs {
   uuid: string;
@@ -64,9 +67,11 @@ export interface AppointmentFormInputs {
   consultation_purpose: string | null;
   consultation_type: string | null;
   external_cause: string | null;
+  patients: Patient[];
   patient: Patient | null;
   patient_whatsapp: string;
   patient_email: string;
+  is_group: boolean;
 }
 
 export interface FormAppointment extends AppointmentFormInputs {
@@ -75,7 +80,7 @@ export interface FormAppointment extends AppointmentFormInputs {
   specialty_name: string;
 }
 
-export const AppointmentFormModal = ({ isOpen, onClose }) => {
+export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [appointments, setAppointments] = useState<FormAppointment[]>([]);
   const [currentAppointment, setCurrentAppointment] =
@@ -115,6 +120,8 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
   const { userSpecialties } = useUserSpecialties();
   const { productsByType: products, fetchProductsByType } = useProductsByType();
   const { createAppointmentBulk } = useAppointmentBulkCreate();
+  const { createAppointmentBulkGroup } = useAppointmentBulkCreateGroup();
+  const { createGoogleCalendarConfig, loading: googleCalendarLoading } = useGoogleCalendarConfig(null);
   const { validateBulkAppointments } = useValidateBulkAppointments();
   const { patientExamRecipes, setPatientExamRecipes, fetchPatientExamRecipes } =
     usePatientExamRecipes();
@@ -179,6 +186,8 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
       consultation_type: "FOLLOW_UP",
       external_cause: "NOT_APPLICABLE",
       consultation_purpose: "TREATMENT",
+      is_group: false,
+      patients: [],
     },
   });
 
@@ -195,7 +204,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         ? app.assigned_user_availability?.id
         : null;
 
-      return {
+      const data: any = {
         appointment_date: app.appointment_date?.toISOString().split("T")[0],
         appointment_time: app.appointment_time + ":00",
         assigned_user_availability_id: assignedUserAvailability,
@@ -208,7 +217,13 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         external_cause: app.external_cause,
         assigned_supervisor_user_availability_id: supervisorUserId,
         exam_recipe_id: app.exam_recipe_id,
-      };
+      }
+
+      if (app.is_group) {
+        data.patients = app.patients.map(patient => patient.id);
+      }
+
+      return data;
     });
   };
 
@@ -278,10 +293,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     const mappedAppointments = await mapAppointmentsToServer(_appointments);
 
     try {
-      await validateBulkAppointments(
-        mappedAppointments,
-        patient?.id?.toString() || ""
-      );
+      await validateBulkAppointments(mappedAppointments);
 
       // Si la validación es exitosa, limpiamos los errores
       return _appointments.map((appointment) => ({
@@ -310,31 +322,75 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     const data = await mapAppointmentsToServer(appointments);
 
     try {
-      await createAppointmentBulk(
-        {
-          appointments: data,
-        },
-        patient!.id?.toString()
-      );
-
-      showSuccessToast();
-
-      for (const appointment of appointments) {
-        await sendMessageWhatsapp(appointment);
+      if (!isGroup) {
+        await createAppointmentBulk(
+          {
+            appointments: data,
+          },
+          patient!.id?.toString()
+        );
+      } else {
+        await createAppointmentBulkGroup(
+          {
+            appointments: data,
+          }
+        );
       }
 
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
+    for (const appointment of appointments) {
+      const googleCalendarPayload = {
+        user_id: appointment.assigned_user_availability?.user?.id || "12",
+        nombre: `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim(),
+        fecha: appointment.appointment_date?.toISOString().split('T')[0] || '',
+        hora: `${appointment.appointment_time}:00` || '',
+        hora_final: calcularHoraFinal(appointment.appointment_time, appointment.assigned_user_availability?.appointment_duration),
+        motivo: appointment.consultation_purpose || 'Consulta médica'
+      };
+      
+      await createGoogleCalendarConfig(googleCalendarPayload);
+    }
+
+      showSuccessToast();
+      if (onAppointmentCreated) {
+        onAppointmentCreated();
+      }
+
+      if (!isGroup) {
+        for (const appointment of appointments) {
+          await sendMessageWhatsapp(appointment, appointment.patient);
+        }
+      }
+
+      if (isGroup) {
+        for (const appointment of appointments) {
+          for (const patient of appointment.patients) {
+            await sendMessageWhatsapp(appointment, patient);
+          }
+        }
+      }
+
+      onClose();
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 1000);
     } catch (error) {
       showServerErrorsToast(error);
       console.error(error);
     }
   };
 
-  async function sendMessageWhatsapp(appointment: any) {
+  const calcularHoraFinal = (horaInicio: string, duracionMinutos: number) => {
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+    const fecha = new Date();
+    fecha.setHours(horas, minutos, 0, 0);
+    fecha.setMinutes(fecha.getMinutes() + duracionMinutos);
+    
+    return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}:00`;
+  };
+
+  async function sendMessageWhatsapp(appointment: any, patient: any) {
     const replacements = {
-      NOMBRE_PACIENTE: `${appointment.patient.first_name} ${appointment.patient.middle_name} ${appointment.patient.last_name} ${appointment.patient.second_last_name}`,
+      NOMBRE_PACIENTE: `${patient.first_name} ${patient.middle_name} ${patient.last_name} ${patient.second_last_name}`,
       ESPECIALISTA: `${appointment.assigned_user_availability.full_name}`,
       ESPECIALIDAD: `${appointment.user_specialty.name}`,
       FECHA_CITA: `${formatDate(appointment.appointment_date, true)}`,
@@ -350,14 +406,19 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
       channel: "whatsapp",
       message_type: "text",
       recipients: [
-        getIndicativeByCountry(appointment.patient.country_id) +
-          appointment.patient.whatsapp,
+        getIndicativeByCountry(patient.country_id) +
+        patient.whatsapp,
       ],
       message: templateFormatted,
       webhook_url: "https://example.com/webhook",
     };
     await sendMessage(dataMessage);
   }
+
+  const isGroup = useWatch({
+    control,
+    name: "is_group",
+  });
 
   const userSpecialty = useWatch({
     control,
@@ -575,8 +636,14 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
   }, [appointmentTimeOptions]);
 
   useEffect(() => {
-    setFormValid(appointments.length > 0 && !!patient);
-  }, [appointments, patient]);
+    if (isGroup) {
+      // En modo grupal: validar que haya citas y al menos un paciente
+      setFormValid(appointments.length > 0 && patients.length > 0);
+    } else {
+      // En modo individual: validar que haya citas y un paciente seleccionado
+      setFormValid(appointments.length > 0 && !!patient);
+    }
+  }, [appointments, patient, patients, isGroup]);
 
   useEffect(() => {
     fetchProductsByType("Servicios");
@@ -631,6 +698,12 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     setEditingId(null);
   };
 
+  const clearPatientForm = () => {
+    setValue("patient", null);
+    setValue("patient_whatsapp", "");
+    setValue("patient_email", "");
+  };
+
   const getFormErrorMessage = (name: keyof AppointmentFormInputs) => {
     return (
       errors[name] &&
@@ -672,9 +745,8 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         if (day.date === dateString) {
           availableDoctors.push({
             ...item,
-            full_name: `${item.user.first_name || ""} ${
-              item.user.middle_name || ""
-            } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+            full_name: `${item.user.first_name || ""} ${item.user.middle_name || ""
+              } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
             id: item.availability_id,
             user_id: item.user.id, // Agregamos el user_id para referencia
           });
@@ -747,9 +819,8 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         if (hasAvailability) {
           availableAssistants.push({
             ...item,
-            full_name: `${item.user.first_name || ""} ${
-              item.user.middle_name || ""
-            } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+            full_name: `${item.user.first_name || ""} ${item.user.middle_name || ""
+              } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
             id: item.availability_id, // Usamos el ID de disponibilidad
             user_id: item.user.id, // Guardamos también el user_id
           });
@@ -920,6 +991,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
     };
   };
 
+  console.log(errors);
 
   return (
     <>
@@ -942,87 +1014,149 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
         {/* Columna izquierda - Formulario */}
         <form className="needs-validation row" noValidate onSubmit={onSubmit}>
           <div className="col-12">
-            <div className="mb-3">
-              <Controller
-                name="patient"
-                control={control}
-                rules={{ required: "Este campo es requerido" }}
-                render={({ field }) => (
-                  <>
-                    <label htmlFor={field.name} className="form-label">
-                      Paciente *
-                    </label>
-                    <div className="d-flex">
-                      <AutoComplete
-                        inputId={field.name}
-                        placeholder="Seleccione un paciente"
-                        field="label"
-                        suggestions={patients}
-                        completeMethod={searchPatients}
-                        inputClassName="w-100"
-                        className={classNames("w-100", {
-                          "p-invalid": errors.patient,
-                        })}
-                        appendTo={"self"}
-                        {...field}
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={() => setShowPatientModal(true)}
-                      >
-                        <i className="fas fa-plus"></i>
-                      </button>
-                    </div>
-                  </>
-                )}
-              />
-              {getFormErrorMessage("patient")}
-            </div>
-            <div className="row">
-              <div className="col-md-6 mb-3">
+            {isGroup && <>
+              <div className="mb-3 w-100">
                 <Controller
-                  name="patient_whatsapp"
+                  name="patients"
                   control={control}
                   rules={{ required: "Este campo es requerido" }}
                   render={({ field }) => (
                     <>
                       <label htmlFor={field.name} className="form-label">
-                        Whatsapp *
+                        Pacientes *
                       </label>
-                      <InputText
-                        id={field.name}
-                        className={classNames("w-100", {
-                          "p-invalid": errors.patient_whatsapp,
-                        })}
-                        {...field}
-                      />
+                      <div className="d-flex w-100">
+                        <div className="d-flex flex-grow-1">
+                          <div className="grid row p-fluid w-100">
+                            <div className="col-12">
+                              <AutoComplete
+                                inputId={field.name}
+                                placeholder="Seleccione uno o más pacientes"
+                                field="label"
+                                suggestions={patients}
+                                completeMethod={searchPatients}
+                                inputClassName="w-100"
+                                panelClassName="w-100"
+                                multiple={true}
+                                className={classNames("w-100", {
+                                  "p-invalid": errors.patients,
+                                })}
+                                appendTo={"self"}
+                                {...field}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => setShowPatientModal(true)}
+                          >
+                            <i className="fas fa-plus"></i>
+                          </button>
+                        </div>
+                      </div>
                     </>
                   )}
                 />
-                {getFormErrorMessage("patient_whatsapp")}
+                {getFormErrorMessage("patients")}
               </div>
-              <div className="col-md-6 mb-3">
+            </>}
+            {!isGroup && <>
+              <div className="mb-3 w-100">
                 <Controller
-                  name="patient_email"
+                  name="patient"
                   control={control}
+                  rules={{ required: "Este campo es requerido" }}
                   render={({ field }) => (
                     <>
                       <label htmlFor={field.name} className="form-label">
-                        Email
+                        Paciente *
                       </label>
-                      <InputText
-                        id={field.name}
-                        className={classNames("w-100", {
-                          "p-invalid": errors.patient_email,
-                        })}
-                        {...field}
-                      />
+                      <div className="d-flex w-100">
+                        <div className="d-flex flex-grow-1">
+                          <div className="grid row p-fluid w-100">
+                            <div className="col-12">
+                              <AutoComplete
+                                inputId={field.name}
+                                placeholder={"Seleccione un paciente"}
+                                field="label"
+                                suggestions={patients}
+                                completeMethod={searchPatients}
+                                inputClassName="w-100"
+                                panelClassName="w-100"
+                                className={classNames("w-100", {
+                                  "p-invalid": errors.patient,
+                                })}
+                                appendTo={"self"}
+                                {...field}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => setShowPatientModal(true)}
+                          >
+                            <i className="fas fa-plus"></i>
+                          </button>
+                        </div>
+                      </div>
                     </>
                   )}
                 />
+                {getFormErrorMessage("patient")}
               </div>
-            </div>
+            </>}
+            {!isGroup && (
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <Controller
+                    name="patient_whatsapp"
+                    control={control}
+                    rules={{ required: "Este campo es requerido" }}
+                    render={({ field }) => (
+                      <>
+                        <label htmlFor={field.name} className="form-label">
+                          Whatsapp *
+                        </label>
+                        <InputText
+                          id={field.name}
+                          className={classNames("w-100", {
+                            "p-invalid": errors.patient_whatsapp,
+                          })}
+                          {...field}
+                        />
+                      </>
+                    )}
+                  />
+                  {getFormErrorMessage("patient_whatsapp")}
+                </div>
+                <div className="col-md-6 mb-3">
+                  <Controller
+                    name="patient_email"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <label htmlFor={field.name} className="form-label">
+                          Email
+                        </label>
+                        <InputText
+                          id={field.name}
+                          className={classNames("w-100", {
+                            "p-invalid": errors.patient_email,
+                          })}
+                          {...field}
+                        />
+                      </>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
           </div>
           <div className="col-12 px-3 mb-3">
             <Card>
@@ -1201,6 +1335,26 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                           )}
                         />
                       </div>
+
+                      <Controller
+                        name='is_group'
+                        control={control}
+                        render={({ field }) =>
+                          <>
+                            <div className="d-flex align-items-center gap-2">
+                              <InputSwitch
+                                checked={field.value}
+                                onChange={(e) => {
+                                  clearPatientForm()
+                                  clearAppointmentForm()
+                                  field.onChange(e.value)
+                                }}
+                              />
+                              <label htmlFor={field.name} className='form-label'>Grupal</label>
+                            </div>
+                          </>
+                        }
+                      />
                     </div>
 
                     {getFormErrorMessage("appointment_type")}
@@ -1550,7 +1704,7 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
                       onClick={handleSubmit(addAppointments)}
                     >
                       {editingId &&
-                      appointments.find((a) => a.uuid === editingId)
+                        appointments.find((a) => a.uuid === editingId)
                         ? "Actualizar cita"
                         : "Agregar cita"}
                     </button>
@@ -1573,12 +1727,10 @@ export const AppointmentFormModal = ({ isOpen, onClose }) => {
 
                         return (
                           <div
-                            key={`${appointment.uuid}-${
-                              Object.keys(appointment.errors).length
-                            }`}
-                            className={`card ${
-                              hasErrors ? "border-danger" : "border-success"
-                            }`}
+                            key={`${appointment.uuid}-${Object.keys(appointment.errors).length
+                              }`}
+                            className={`card ${hasErrors ? "border-danger" : "border-success"
+                              }`}
                           >
                             <div className="card-body">
                               <div className="mb-2">

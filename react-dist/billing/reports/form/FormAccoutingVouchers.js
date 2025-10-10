@@ -11,11 +11,9 @@ import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
-import { accountingAccountsService, resourcesAdminService, accountingVouchersService } from "../../../../services/api/index.js";
+import { resourcesAdminService, accountingVouchersService } from "../../../../services/api/index.js";
 import { getUserLogged } from "../../../../services/utilidades.js";
-
-// Definición de tipos
-
+import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js"; // Definición de tipos
 export const FormAccoutingVouchers = ({
   voucherId = undefined,
   initialData = null,
@@ -509,25 +507,35 @@ const AccountingAccountField = ({
   rowData,
   onChange
 }) => {
-  const [accountingAccounts, setAccountingAccounts] = useState([]);
+  const {
+    accounts,
+    isLoading,
+    error
+  } = useAccountingAccounts();
+
+  /*
+  const [accountingAccounts, setAccountingAccounts] = useState<any[]>([]);
   const loadAccountingAcounts = async () => {
-    const response = await accountingAccountsService.getAllAccounts();
-    console.log("Accounts: ", response.data);
+  
+  const response = await accountingAccountsService.getAllAccounts();
+  console.log("Accounts: ", response.data);
     setAccountingAccounts(response.data);
   };
   useEffect(() => {
-    loadAccountingAcounts();
+  loadAccountingAcounts();
   }, []);
+  */
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
     value: rowData.account,
-    options: accountingAccounts,
-    optionLabel: "account_name",
+    options: accounts,
+    optionLabel: "account_label",
     optionValue: "id",
     placeholder: "Seleccione cuenta",
     onChange: e => onChange(e.value),
     filter: true,
     showClear: true,
-    appendTo: document.body
+    appendTo: document.body,
+    className: "w-full"
   }));
 };
 const ThirdPartyField = ({

@@ -67,7 +67,6 @@ export const RetentionConfig = ({
       await refreshRetentions();
       setShowFormModal(false);
     } catch (error) {
-      console.error("Error al guardar retención:", error);
       SwalManager.error(error.message || "Error al guardar la retención");
     }
   };
@@ -77,11 +76,9 @@ export const RetentionConfig = ({
       if (retentionData) {
         setShowFormModal(true);
       } else {
-        console.error("No se encontró la retención con ID:", id);
         SwalManager.error("No se pudo cargar la retención para editar");
       }
     } catch (error) {
-      console.error("Error al cargar retención para editar:", error);
       SwalManager.error("Error al cargar la retención");
     }
   };

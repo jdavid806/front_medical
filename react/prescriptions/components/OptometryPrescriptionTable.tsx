@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PrescriptionDto, PrescriptionTableItem } from "../../models/models.js";
-import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable.js";
+import {
+  CustomPRTable,
+  CustomPRTableColumnProps,
+} from "../../components/CustomPRTable.js";
 import {
   recipeInvoiceStates,
   recipeInvoiceStateColors,
@@ -18,6 +21,7 @@ import { SwalManager } from "../../../services/alertManagerImported.js";
 import { Badge } from "primereact/badge";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 
 interface PrescriptionTableProps {
   prescriptions: PrescriptionDto[];
@@ -28,21 +32,24 @@ interface ShowBillingModal {
   id: any;
 }
 
-const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
+export const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
   prescriptions,
 }) => {
   const [showBillingModal, setShowBillingModal] = useState<ShowBillingModal>({
     show: false,
     id: 0,
   });
-  const [tablePrescriptions, setTablePrescriptions] = useState<PrescriptionTableItem[]>([]);
+  const [tablePrescriptions, setTablePrescriptions] = useState<
+    PrescriptionTableItem[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [sortField, setSortField] = useState<string>('created_at');
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [sortField, setSortField] = useState<string>("created_at");
   const [sortOrder, setSortOrder] = useState<-1 | 1>(-1);
+  const toast = useRef<Toast>(null);
 
   const { getRecipeInvoiceStatus } = useOptometry();
   const tenant = window.location.hostname.split(".")[0];
@@ -117,7 +124,12 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
 
   async function generatePdfFile(prescription) {
     //@ts-ignore
-    await generarFormato("RecetaOptometria", prescription, "Impresion", "prescriptionInput");
+    await generarFormato(
+      "RecetaOptometria",
+      prescription,
+      "Impresion",
+      "prescriptionInput"
+    );
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -173,7 +185,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
         channel: "whatsapp",
         recipients: [
           getIndicativeByCountry(prescription.patient_data.country_id) +
-          prescription.patient_data.whatsapp,
+            prescription.patient_data.whatsapp,
         ],
         message_type: "media",
         message: templateFormatted,
@@ -197,41 +209,36 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
     {
       field: "doctor",
       header: "Doctor",
-      sortable: true
+      sortable: true,
     },
     {
       field: "created_at",
       header: "Fecha de creación",
-      sortable: true
+      sortable: true,
     },
     {
       field: "status",
       header: "Estado de facturación",
-      width:""
       body: (data: PrescriptionTableItem) => {
         const text = recipeInvoiceStates[data.status] || "SIN ESTADO";
         const color = recipeInvoiceStateColors[data.status] || "secondary";
 
         // Mapear colores de Phoenix a PrimeReact
         const severityMap: Record<string, string> = {
-          'success': 'success',
-          'warning': 'warning',
-          'danger': 'danger',
-          'info': 'info',
-          'primary': 'secondary',
-          'secondary': 'secondary'
+          success: "success",
+          warning: "warning",
+          danger: "danger",
+          info: "info",
+          primary: "secondary",
+          secondary: "secondary",
         };
 
-        const severity = severityMap[color] || 'secondary';
+        const severity = severityMap[color] || "secondary";
 
         return (
-          <Badge
-            value={text}
-            severity={severity}
-            className="p-badge-lg"
-          />
+          <Badge value={text} severity={severity} className="p-badge-lg" />
         );
-      }
+      },
     },
     {
       field: "actions",
@@ -257,11 +264,21 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
               setShowBillingModal({ show: true, id: data.id });
             }
           }}
-          onShare={() => {
-            sendMessageWhatsapp(data);
+          onShare={async () => {
+            const result = await getRecipeInvoiceStatus(data.id);
+            if (result.has_invoice) {
+              sendMessageWhatsapp(data);
+            } else {
+              toast.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "Primero debe facturar la receta",
+                life: 5000,
+              });
+            }
           }}
         />
-      )
+      ),
     },
   ];
 
@@ -285,6 +302,7 @@ const OptometryPrescriptionTable: React.FC<PrescriptionTableProps> = ({
             onSort={handleSort}
           />
         </div>
+        <Toast ref={toast} />
       </div>
       <OptometryBillingModal
         receiptId={showBillingModal.id}
@@ -311,21 +329,21 @@ const TableActionsMenu: React.FC<{
     {
       label: "Imprimir",
       icon: "pi pi-print",
-      command: onPrint
+      command: onPrint,
     },
     {
       label: "Descargar",
       icon: "pi pi-download",
-      command: onDownload
+      command: onDownload,
     },
     {
-      separator: true
+      separator: true,
     },
     {
       label: "Compartir por WhatsApp",
       icon: "pi pi-whatsapp",
-      command: onShare
-    }
+      command: onShare,
+    },
   ];
 
   const handleButtonClick = (e: React.MouseEvent) => {
@@ -364,10 +382,8 @@ const TableActionsMenu: React.FC<{
         ref={menu}
         id={`popup_menu_${data.id}`}
         onHide={handleMenuHide}
-        appendTo={typeof document !== 'undefined' ? document.body : undefined}
+        appendTo={typeof document !== "undefined" ? document.body : undefined}
       />
     </div>
   );
 };
-
-export default OptometryPrescriptionTable;

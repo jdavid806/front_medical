@@ -51,7 +51,6 @@ export const ForgotPasswordModal = ({
         const userDataFound = response.data.user;
         if (userDataFound && userDataFound.email && userDataFound.phone) {
           setUserData(userDataFound);
-          console.log('Datos del usuario que se usarán:', userDataFound);
           showToast('success', 'Éxito', `Código OTP enviado correctamente`);
         } else {
           showToast('error', 'Error', 'No se pudieron obtener los datos del usuario. Contacte al administrador.');

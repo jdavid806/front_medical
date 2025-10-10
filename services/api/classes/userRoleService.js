@@ -8,8 +8,8 @@ export class UserRoleService extends BaseApiService {
         return await this.httpClient.put(`${this.microservice}/${this.endpoint}/menus/permissions/${id}`, data);
     }
     async saveRoleMenus(roleId, menus) {
+        console.log(menus, "menusserviceeeeeee")
         try {
-            // Filtrar solo los menús que están activos (is_active: true)
             const activeMenus = menus.filter(menu => menu.is_active);
 
             const payload = {

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import PrescriptionModal from "./components/PrescriptionModal.js";
 import { usePrescriptionCreate } from "./hooks/usePrescriptionCreate.js";
 import { usePrescription } from "./hooks/usePrescription.js";
 import { usePrescriptionUpdate } from "./hooks/usePrescriptionUpdate.js";
 import { usePatientPrescriptions } from "./hooks/usePatientPrescriptions.js";
-import OptometryPrescriptionTable from "./components/OptometryPrescriptionTable.js";
-const patientId = (new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? "0";
+import { OptometryPrescriptionTable } from "./components/OptometryPrescriptionTable.js";
+const patientId = (new URLSearchParams(window.location.search).get("patient_id") || new URLSearchParams(window.location.search).get("id")) ?? "0";
 export const OptometryPrescriptionApp = () => {
   const {
     createPrescription
@@ -23,7 +23,6 @@ export const OptometryPrescriptionApp = () => {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const handleSubmit = async data => {
-    console.log(data);
     const newData = {
       user_id: 1,
       patient_id: +patientId,
@@ -45,10 +44,9 @@ export const OptometryPrescriptionApp = () => {
     fetchPrescriptions(patientId, "optometry");
   }, []);
   useEffect(() => {
-    console.log('Prescription: ', prescription);
     if (!prescription) return;
     setInitialData({
-      patient_id: +((new URLSearchParams(window.location.search).get('patient_id') || new URLSearchParams(window.location.search).get('id')) ?? "0"),
+      patient_id: +((new URLSearchParams(window.location.search).get("patient_id") || new URLSearchParams(window.location.search).get("id")) ?? "0"),
       medicines: prescription.recipe_items,
       user_id: 1,
       is_active: true
@@ -61,7 +59,7 @@ export const OptometryPrescriptionApp = () => {
   }, "Recetas")), /*#__PURE__*/React.createElement(OptometryPrescriptionTable, {
     prescriptions: prescriptions
   }), /*#__PURE__*/React.createElement(PrescriptionModal, {
-    title: prescription ? 'Editar receta' : 'Crear receta',
+    title: prescription ? "Editar receta" : "Crear receta",
     show: showPrescriptionModal,
     handleSubmit: handleSubmit,
     onHide: handleHidePrescriptionModal,

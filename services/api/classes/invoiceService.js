@@ -9,7 +9,7 @@ export class InvoiceService extends BaseApiService {
         return await this.httpClient.post(`api/v1/admin/invoices/sales`, data);
     }
 
-    async filterInvoices({ per_page, page, type, invoiceCode, createdAt, thirdParty, status, subType }) {
+    async filterInvoices({ per_page, page, type, invoiceCode, createdAt, thirdParty, status, subType, sort }) {
         return await this.httpClient.post(`api/v1/admin/invoices/query/filter`, {
             per_page,
             page,
@@ -18,7 +18,8 @@ export class InvoiceService extends BaseApiService {
             createdAt,
             thirdParty,
             status,
-            subType
+            subType,
+            sort
         });
     }
 

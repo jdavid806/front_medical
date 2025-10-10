@@ -1,6 +1,6 @@
 import React from 'react';
 import UserAvailabilityForm, { UserAvailabilityFormInputs } from './UserAvailabilityForm';
-import { CustomModal } from '../../components/CustomModal';
+import { Dialog } from 'primereact/dialog';
 
 interface UserFormModalProps {
     show: boolean;
@@ -14,16 +14,18 @@ const UserAvailabilityFormModal: React.FC<UserFormModalProps> = ({ show, handleS
     const formId = 'createUserAvailability'
 
     return (
-        <CustomModal
-            show={show}
-            onHide={onHide}
-            title='Crear Horarios de Atención'>
+        <Dialog
+            visible={show}
+            onHide={() => onHide?.()}
+            header='Crear Horarios de Atención'
+            style={{ width: '65vw' }}
+        >
             <UserAvailabilityForm
                 formId={formId}
                 onHandleSubmit={handleSubmit}
                 initialData={initialData}
             ></UserAvailabilityForm>
-        </CustomModal>
+        </Dialog>
     );
 };
 

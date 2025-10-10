@@ -11,13 +11,14 @@ import { Nullable } from 'primereact/ts-helpers';
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { Button } from 'primereact/button';
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { useEffect } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
 import { UserDto } from '../../models/models';
 import { useModules } from '../../modules/hooks/useModules';
 import UserFormModal from '../../users/UserFormModal';
+import { InputSwitch } from 'primereact/inputswitch';
 
 export type UserAvailabilityFormInputs = {
     user_id: string
@@ -29,6 +30,8 @@ export type UserAvailabilityFormInputs = {
     days_of_week: number[]
     start_time: Nullable<Date>
     end_time: Nullable<Date>
+    is_group: boolean
+    max_capacity: number
     free_slots: {
         start_time: Nullable<Date>;
         end_time: Nullable<Date>;
@@ -70,6 +73,8 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({
             days_of_week: [],
             start_time: null,
             end_time: null,
+            is_group: false,
+            max_capacity: 0,
             free_slots: []
         }
     })
@@ -84,6 +89,11 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({
 
     const [selectedUser, setSelectedUser] = useState<UserDto | undefined>(undefined);
     const watchUserId = watch('user_id');
+
+    const isGroup = useWatch({
+        control,
+        name: 'is_group'
+    })
 
     const { users, fetchUsers } = useUsers()
     const [usersForSelect, setUsersForSelect] = useState<{ value: string, label: string }[]>([])
@@ -375,6 +385,47 @@ const UserAvailabilityForm: React.FC<UserAvailabilityFormProps> = ({
                             />
                             {getFormErrorMessage('days_of_week')}
                         </div>
+
+                        <div className="mb-3">
+                            <Controller
+                                name='is_group'
+                                control={control}
+                                render={({ field }) =>
+                                    <>
+                                        <div className="d-flex align-items-center gap-2">
+                                            <InputSwitch
+                                                checked={field.value}
+                                                onChange={(e) => field.onChange(e.value)}
+                                            />
+                                            <label htmlFor={field.name} className='form-label'>Es grupal</label>
+                                        </div>
+                                    </>
+                                }
+                            />
+                        </div>
+
+                        {isGroup && <>
+                            <div className="mb-3">
+                                <Controller
+                                    name='max_capacity'
+                                    control={control}
+                                    rules={{ required: 'Este campo es requerido' }}
+                                    render={({ field }) =>
+                                        <>
+                                            <label htmlFor={field.name} className='form-label'>Capacidad máxima *</label>
+                                            <InputNumber
+                                                value={field.value}
+                                                onChange={(e) => field.onChange(e.value)}
+                                                className='w-100'
+                                            />
+                                        </>
+                                    }
+                                />
+
+                                {getFormErrorMessage('max_capacity')}
+                            </div>
+                        </>}
+
                         <div className="d-flex pt-4 justify-content-end">
                             <Button
                                 className='btn btn-primary btn-sm'

@@ -56,7 +56,7 @@ export const OptometryBillingForm = receiptId => {
   async function fetchThirdParty() {
     const patientThirdParty = await thirdPartyService.getByExternalIdAndType({
       externalId: patientId,
-      externalType: "patient"
+      externalType: "client"
     });
     const billingData = await billingService.getBillingByType("consumer");
     setBillingInfo(billingData.data);

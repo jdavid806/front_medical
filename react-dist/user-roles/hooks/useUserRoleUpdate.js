@@ -7,16 +7,7 @@ export const useUserRoleCreate = () => {
   const createUserRole = async userRoleData => {
     setLoading(true);
     try {
-      console.log('Data a enviar:', userRoleData);
-      const finalData = {
-        role: {
-          group: userRoleData.group,
-          name: userRoleData.name
-        },
-        menus: userRoleData.menus.filter(menu => menu.is_active).map(menu => menu.key_),
-        permissions: userRoleData.permissions
-      };
-      await userRolesService.storeMenusPermissions(finalData);
+      await userRolesService.saveRoleMenus(userRoleData);
       SwalManager.success();
     } catch (error) {
       ErrorHandler.generic(error);

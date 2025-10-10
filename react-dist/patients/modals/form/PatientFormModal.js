@@ -190,8 +190,8 @@ const PatientFormModal = ({
   };
   const toast = useRef(null);
   useEffect(() => {
+    loadCountries();
     if (patientData) {
-      console.log("patientData", patientData);
       setValue("patient.document_type", patientData.document_type);
       setValue("patient.document_number", patientData.document_number);
       setValue("patient.first_name", patientData.first_name);
@@ -232,7 +232,6 @@ const PatientFormModal = ({
           email: comp.email || ""
         })));
       }
-      loadCountries();
       if (patientData.country_id) {
         handleCountryChange(patientData.country_id);
       }
@@ -423,7 +422,6 @@ const PatientFormModal = ({
         }
       };
       reader.readAsDataURL(file);
-      console.log(file);
     }
   };
   const handleAddCompanion = companion => {
@@ -610,7 +608,6 @@ const PatientFormModal = ({
           });
         }
       }
-      console.log("Respuesta del servidor:", response);
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
@@ -661,11 +658,8 @@ const PatientFormModal = ({
   };
   const validateAndNext = async () => {
     const currentStep = stepperRef.current?.getActiveStep();
-    console.log("currentStep", currentStep);
-    console.log("stepperRef", stepperRef);
     if (currentStep === undefined) return;
     const isValid = await validateStep(currentStep);
-    console.log("isValid", isValid);
     if (isValid && stepperRef.current) {
       if (currentStep < Object.keys(stepValidations).length - 1) {
         stepperRef.current.nextCallback();
@@ -706,7 +700,6 @@ const PatientFormModal = ({
       field,
       fieldState
     }) => {
-      console.log("Valor actual de document_type:", field.value);
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
         className: "form-label"
       }, "Tipo de documento *"), /*#__PURE__*/React.createElement(Dropdown, {
@@ -720,7 +713,6 @@ const PatientFormModal = ({
         }),
         value: field.value || "",
         onChange: e => {
-          console.log("Nuevo valor seleccionado:", e.value);
           field.onChange(e.value);
         }
       }), getFormErrorMessage(field.name));

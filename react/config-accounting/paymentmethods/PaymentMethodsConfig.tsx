@@ -54,7 +54,7 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                 method: data.name,
                 payment_type: data.payment_type || '',
                 description: data.additionalDetails || '',
-                accounting_account_id: data.accounting_account_id || 0,
+                accounting_account_id: data.accounting_account_id || null,
                 category: data.category,
                 is_cash: data.is_cash
             };
@@ -119,7 +119,7 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                 payment_type: paymentMethod.payment_type,
                 category: paymentMethod.category || 'other',
                 is_cash: paymentMethod.is_cash,
-                accounting_account_id: paymentMethod.accounting_account_id,
+                accounting_account_id: paymentMethod.accounting_account_id || null,
                 additionalDetails: paymentMethod.description,
             };
             setInitialData(data);

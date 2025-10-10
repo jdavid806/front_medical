@@ -16,6 +16,7 @@ import {
   accountingVouchersService,
 } from "../../../../services/api/index.js";
 import { getUserLogged } from "../../../../services/utilidades.js";
+import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.jsx";
 
 // Definición de tipos
 
@@ -642,31 +643,36 @@ const AccountingAccountField = ({
   rowData: Transaction;
   onChange: (value: string) => void;
 }) => {
+  const { accounts, isLoading, error } = useAccountingAccounts();
 
-  const [accountingAccounts, setAccountingAccounts] = useState<any[]>([]);
+  /*
+const [accountingAccounts, setAccountingAccounts] = useState<any[]>([]);
 
-  const loadAccountingAcounts = async () => {
-    const response = await accountingAccountsService.getAllAccounts();
-    console.log("Accounts: ", response.data);
+const loadAccountingAcounts = async () => {
 
-    setAccountingAccounts(response.data);
-  };
 
-  useEffect(() => {
-    loadAccountingAcounts();
-  }, []);
+  const response = await accountingAccountsService.getAllAccounts();
+  console.log("Accounts: ", response.data);
 
+  setAccountingAccounts(response.data);
+};
+
+useEffect(() => {
+  loadAccountingAcounts();
+}, []);
+*/
   return <>
     <Dropdown
       value={rowData.account}
-      options={accountingAccounts}
-      optionLabel="account_name"
+      options={accounts}
+      optionLabel="account_label"
       optionValue="id"
       placeholder="Seleccione cuenta"
       onChange={(e) => onChange(e.value)}
       filter
       showClear
       appendTo={document.body}
+      className="w-full"
     />
   </>
 }

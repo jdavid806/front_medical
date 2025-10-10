@@ -28,9 +28,13 @@ import PatientFormModal from "../patients/modals/form/PatientFormModal.js";
 import { Dialog } from "primereact/dialog";
 import { usePRToast } from "../hooks/usePRToast.js";
 import { Toast } from "primereact/toast";
+import { InputSwitch } from "primereact/inputswitch";
+import { useAppointmentBulkCreateGroup } from "./hooks/useAppointmentBulkCreateGroup.js";
+import { useGoogleCalendarConfig } from "./hooks/useGoogleCalendarConfig.js";
 export const AppointmentFormModal = ({
   isOpen,
-  onClose
+  onClose,
+  onAppointmentCreated
 }) => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [appointments, setAppointments] = useState([]);
@@ -62,6 +66,13 @@ export const AppointmentFormModal = ({
   const {
     createAppointmentBulk
   } = useAppointmentBulkCreate();
+  const {
+    createAppointmentBulkGroup
+  } = useAppointmentBulkCreateGroup();
+  const {
+    createGoogleCalendarConfig,
+    loading: googleCalendarLoading
+  } = useGoogleCalendarConfig(null);
   const {
     validateBulkAppointments
   } = useValidateBulkAppointments();
@@ -144,7 +155,9 @@ export const AppointmentFormModal = ({
       appointment_type: "1",
       consultation_type: "FOLLOW_UP",
       external_cause: "NOT_APPLICABLE",
-      consultation_purpose: "TREATMENT"
+      consultation_purpose: "TREATMENT",
+      is_group: false,
+      patients: []
     }
   });
   const mapAppointmentsToServer = async appointments => {
@@ -152,7 +165,7 @@ export const AppointmentFormModal = ({
     return appointments.map(app => {
       const assignedUserAvailability = app.assigned_user_assistant_availability_id || app.assigned_user_availability?.id;
       const supervisorUserId = app.assigned_user_assistant_availability_id ? app.assigned_user_availability?.id : null;
-      return {
+      const data = {
         appointment_date: app.appointment_date?.toISOString().split("T")[0],
         appointment_time: app.appointment_time + ":00",
         assigned_user_availability_id: assignedUserAvailability,
@@ -166,6 +179,10 @@ export const AppointmentFormModal = ({
         assigned_supervisor_user_availability_id: supervisorUserId,
         exam_recipe_id: app.exam_recipe_id
       };
+      if (app.is_group) {
+        data.patients = app.patients.map(patient => patient.id);
+      }
+      return data;
     });
   };
   const addAppointments = async data => {
@@ -221,7 +238,7 @@ export const AppointmentFormModal = ({
   const validateAppointments = async _appointments => {
     const mappedAppointments = await mapAppointmentsToServer(_appointments);
     try {
-      await validateBulkAppointments(mappedAppointments, patient?.id?.toString() || "");
+      await validateBulkAppointments(mappedAppointments);
 
       // Si la validación es exitosa, limpiamos los errores
       return _appointments.map(appointment => ({
@@ -246,24 +263,61 @@ export const AppointmentFormModal = ({
     e.preventDefault();
     const data = await mapAppointmentsToServer(appointments);
     try {
-      await createAppointmentBulk({
-        appointments: data
-      }, patient.id?.toString());
-      showSuccessToast();
-      for (const appointment of appointments) {
-        await sendMessageWhatsapp(appointment);
+      if (!isGroup) {
+        await createAppointmentBulk({
+          appointments: data
+        }, patient.id?.toString());
+      } else {
+        await createAppointmentBulkGroup({
+          appointments: data
+        });
       }
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
+      for (const appointment of appointments) {
+        const googleCalendarPayload = {
+          user_id: appointment.assigned_user_availability?.user?.id || "12",
+          nombre: `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim(),
+          fecha: appointment.appointment_date?.toISOString().split('T')[0] || '',
+          hora: `${appointment.appointment_time}:00` || '',
+          hora_final: calcularHoraFinal(appointment.appointment_time, appointment.assigned_user_availability?.appointment_duration),
+          motivo: appointment.consultation_purpose || 'Consulta médica'
+        };
+        await createGoogleCalendarConfig(googleCalendarPayload);
+      }
+      showSuccessToast();
+      if (onAppointmentCreated) {
+        onAppointmentCreated();
+      }
+      if (!isGroup) {
+        for (const appointment of appointments) {
+          await sendMessageWhatsapp(appointment, appointment.patient);
+        }
+      }
+      if (isGroup) {
+        for (const appointment of appointments) {
+          for (const patient of appointment.patients) {
+            await sendMessageWhatsapp(appointment, patient);
+          }
+        }
+      }
+      onClose();
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 1000);
     } catch (error) {
       showServerErrorsToast(error);
       console.error(error);
     }
   };
-  async function sendMessageWhatsapp(appointment) {
+  const calcularHoraFinal = (horaInicio, duracionMinutos) => {
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+    const fecha = new Date();
+    fecha.setHours(horas, minutos, 0, 0);
+    fecha.setMinutes(fecha.getMinutes() + duracionMinutos);
+    return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}:00`;
+  };
+  async function sendMessageWhatsapp(appointment, patient) {
     const replacements = {
-      NOMBRE_PACIENTE: `${appointment.patient.first_name} ${appointment.patient.middle_name} ${appointment.patient.last_name} ${appointment.patient.second_last_name}`,
+      NOMBRE_PACIENTE: `${patient.first_name} ${patient.middle_name} ${patient.last_name} ${patient.second_last_name}`,
       ESPECIALISTA: `${appointment.assigned_user_availability.full_name}`,
       ESPECIALIDAD: `${appointment.user_specialty.name}`,
       FECHA_CITA: `${formatDate(appointment.appointment_date, true)}`,
@@ -273,12 +327,16 @@ export const AppointmentFormModal = ({
     const dataMessage = {
       channel: "whatsapp",
       message_type: "text",
-      recipients: [getIndicativeByCountry(appointment.patient.country_id) + appointment.patient.whatsapp],
+      recipients: [getIndicativeByCountry(patient.country_id) + patient.whatsapp],
       message: templateFormatted,
       webhook_url: "https://example.com/webhook"
     };
     await sendMessage(dataMessage);
   }
+  const isGroup = useWatch({
+    control,
+    name: "is_group"
+  });
   const userSpecialty = useWatch({
     control,
     name: "user_specialty"
@@ -435,8 +493,14 @@ export const AppointmentFormModal = ({
     }
   }, [appointmentTimeOptions]);
   useEffect(() => {
-    setFormValid(appointments.length > 0 && !!patient);
-  }, [appointments, patient]);
+    if (isGroup) {
+      // En modo grupal: validar que haya citas y al menos un paciente
+      setFormValid(appointments.length > 0 && patients.length > 0);
+    } else {
+      // En modo individual: validar que haya citas y un paciente seleccionado
+      setFormValid(appointments.length > 0 && !!patient);
+    }
+  }, [appointments, patient, patients, isGroup]);
   useEffect(() => {
     fetchProductsByType("Servicios");
   }, []);
@@ -482,6 +546,11 @@ export const AppointmentFormModal = ({
     setAppointmentFrequency("diary");
     setAppointmentRepetitions(1);
     setEditingId(null);
+  };
+  const clearPatientForm = () => {
+    setValue("patient", null);
+    setValue("patient_whatsapp", "");
+    setValue("patient_email", "");
   };
   const getFormErrorMessage = name => {
     return errors[name] && errors[name].type !== "required" && /*#__PURE__*/React.createElement("small", {
@@ -679,6 +748,7 @@ export const AppointmentFormModal = ({
       specialty_name: app.specialty_name
     };
   };
+  console.log(errors);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showPatientModal,
     onHide: () => setShowPatientModal(false),
@@ -703,8 +773,51 @@ export const AppointmentFormModal = ({
     onSubmit: onSubmit
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-3"
+  }, isGroup && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3 w-100"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "patients",
+    control: control,
+    rules: {
+      required: "Este campo es requerido"
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Pacientes *"), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex flex-grow-1"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid row p-fluid w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "col-12"
+    }, /*#__PURE__*/React.createElement(AutoComplete, _extends({
+      inputId: field.name,
+      placeholder: "Seleccione uno o m\xE1s pacientes",
+      field: "label",
+      suggestions: patients,
+      completeMethod: searchPatients,
+      inputClassName: "w-100",
+      panelClassName: "w-100",
+      multiple: true,
+      className: classNames("w-100", {
+        "p-invalid": errors.patients
+      }),
+      appendTo: "self"
+    }, field))))), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex"
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      className: "btn btn-primary",
+      onClick: () => setShowPatientModal(true)
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus"
+    })))))
+  }), getFormErrorMessage("patients"))), !isGroup && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "mb-3 w-100"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "patient",
     control: control,
@@ -717,7 +830,13 @@ export const AppointmentFormModal = ({
       htmlFor: field.name,
       className: "form-label"
     }, "Paciente *"), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex"
+      className: "d-flex w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex flex-grow-1"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "grid row p-fluid w-100"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "col-12"
     }, /*#__PURE__*/React.createElement(AutoComplete, _extends({
       inputId: field.name,
       placeholder: "Seleccione un paciente",
@@ -725,18 +844,21 @@ export const AppointmentFormModal = ({
       suggestions: patients,
       completeMethod: searchPatients,
       inputClassName: "w-100",
+      panelClassName: "w-100",
       className: classNames("w-100", {
         "p-invalid": errors.patient
       }),
       appendTo: "self"
-    }, field)), /*#__PURE__*/React.createElement("button", {
+    }, field))))), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex"
+    }, /*#__PURE__*/React.createElement("button", {
       type: "button",
       className: "btn btn-primary",
       onClick: () => setShowPatientModal(true)
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-plus"
-    }))))
-  }), getFormErrorMessage("patient")), /*#__PURE__*/React.createElement("div", {
+    })))))
+  }), getFormErrorMessage("patient"))), !isGroup && /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6 mb-3"
@@ -912,7 +1034,25 @@ export const AppointmentFormModal = ({
       htmlFor: field.name + "2",
       className: "ml-2 form-check-label"
     }, "Virtual"))
-  }))), getFormErrorMessage("appointment_type")), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(Controller, {
+    name: "is_group",
+    control: control,
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex align-items-center gap-2"
+    }, /*#__PURE__*/React.createElement(InputSwitch, {
+      checked: field.value,
+      onChange: e => {
+        clearPatientForm();
+        clearAppointmentForm();
+        field.onChange(e.value);
+      }
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Grupal")))
+  })), getFormErrorMessage("appointment_type")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "appointment_date",

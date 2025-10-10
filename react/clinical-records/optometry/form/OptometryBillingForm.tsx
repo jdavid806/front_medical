@@ -107,7 +107,7 @@ export const OptometryBillingForm: React.FC<any> = (receiptId: any) => {
   async function fetchThirdParty() {
     const patientThirdParty = await thirdPartyService.getByExternalIdAndType({
       externalId: patientId,
-      externalType: "patient",
+      externalType: "client",
     });
     const billingData = await billingService.getBillingByType("consumer");
     setBillingInfo(billingData.data);

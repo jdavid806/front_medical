@@ -117,7 +117,7 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
             <Controller
               name="accounting_account_id"
               control={control}
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <>
                   <Dropdown
                     id={field.name}
@@ -130,13 +130,10 @@ const PaymentMethodFormConfig: React.FC<PaymentMethodFormProps> = ({
                     filter
                     filterBy="account_label,account_name,account_code"
                     showClear
-                    className={classNames("w-full", {
-                      "p-invalid": fieldState.error,
-                    })}
+                    className={classNames("w-full")}
                     loading={isLoadingAccounts}
                     appendTo="self"
                   />
-                  {getFormErrorMessage("accounting_account_id")}
                 </>
               )}
             />

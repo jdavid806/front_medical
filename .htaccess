@@ -49,6 +49,7 @@ RewriteRule ^Clients$ Reportes/Report_details/Clients_report.php
 RewriteRule ^Schedule$ Reportes/Report_details/Schedule_report.php
 RewriteRule ^Dates_by_status$ Reportes/Report_details/Dates_by_status_report.php
 RewriteRule ^Invoices$ Reportes/Report_details/Invoices_report.php
+RewriteRule ^ClinicalRecordReports$ Reportes/Report_details/Clinical_record_report.php
 RewriteRule ^Commissions$ Reportes/Report_details/Commissions_report.php
 RewriteRule ^CommissionsCopy$ Reportes/Report_details/Commissions_report_copy.php
 RewriteRule ^InvoicesByEntity$ Reportes/Report_details/Invoices_by_entity_report.php
@@ -390,4 +391,4 @@ RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
 RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
-RewriteRule ^preadmisionControl$ Citas/preadmisionControl.php
+

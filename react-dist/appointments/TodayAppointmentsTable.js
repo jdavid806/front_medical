@@ -13,6 +13,8 @@ import { getLocalTodayISODate } from "../../services/utilidades.js";
 import { appointmentService } from "../../services/api/index.js";
 import { SwalManager } from "../../services/alertManagerImported.js";
 import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2.js";
+import { usePRToast } from "../hooks/usePRToast.js";
+import { Toast } from "primereact/toast";
 export const TodayAppointmentsTable = () => {
   const [showBillingDialog, setShowBillingDialog] = useState(false);
   const [showTicketControl, setShowTicketControl] = useState(false);
@@ -21,6 +23,10 @@ export const TodayAppointmentsTable = () => {
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const {
+    toast,
+    showSuccessToast
+  } = usePRToast();
   const customFilters = () => {
     return {
       appointmentState: "pending",
@@ -75,6 +81,14 @@ export const TodayAppointmentsTable = () => {
       }
     });
   };
+  const handleAppointmentCreated = () => {
+    refresh();
+    showSuccessToast({
+      title: "Cita creada",
+      message: "La cita se ha creado exitosamente y se ha actualizado la tabla"
+    });
+    setShowAppointmentForm(false);
+  };
 
   // Función para abrir modal de reagendar
   const openRescheduleAppointmentModal = appointmentId => {
@@ -119,7 +133,9 @@ export const TodayAppointmentsTable = () => {
       }));
     }
   }];
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Control de turnos",
@@ -198,7 +214,8 @@ export const TodayAppointmentsTable = () => {
     modal: true
   }, /*#__PURE__*/React.createElement(AppointmentFormModal, {
     isOpen: showAppointmentForm,
-    onClose: () => setShowAppointmentForm(false)
+    onClose: () => setShowAppointmentForm(false),
+    onAppointmentCreated: handleAppointmentCreated
   })));
 };
 const TableMenu = ({

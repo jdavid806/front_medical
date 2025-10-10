@@ -10,6 +10,7 @@ export const ProductsDelivery = () => {
     interval: 1000
   });
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [selectedConvenio, setSelectedConvenio] = useState(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -25,7 +26,8 @@ export const ProductsDelivery = () => {
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement(MedicationDeliveryList, {
-    onDeliverySelect: setSelectedDelivery
+    onDeliverySelect: setSelectedDelivery,
+    onDeliverySelectConvenio: setSelectedConvenio
   })))), /*#__PURE__*/React.createElement("div", {
     className: "col-8"
   }, /*#__PURE__*/React.createElement("div", {

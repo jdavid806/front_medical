@@ -29,7 +29,7 @@ export const useAuth = () => {
 
             window.location.href = "/Dashboard";
         } else {
-            window.location.href = "/ConfiguracionGeneral";
+            window.location.href = "/configuracionesGenerales";
         }
     };
 

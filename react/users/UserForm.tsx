@@ -12,7 +12,6 @@ import { Password } from "primereact/password";
 import { useCitiesByCountry } from "../cities/hooks/useCitiesByCountry";
 import { CountryDto } from "../models/models";
 import { useRef } from "react";
-import { InputSwitch } from "primereact/inputswitch";
 
 export type UserFormInputs = {
   username: string;
@@ -32,7 +31,6 @@ export type UserFormInputs = {
   minio_id: string | null;
   minio_url: string | null;
   clinical_record: string | null;
-  otp_enabled: boolean;
 };
 
 export interface UserFormElementConfig {
@@ -58,15 +56,12 @@ const UserForm: React.FC<UserFormProps> = ({
   initialData,
   config,
 }) => {
-  console.log('initialData en UserForm:', initialData);
-
   const [profileUrl, setProfileUrl] = useState<string | null>(
     "../assets/img/profile/profile_default.jpg"
   );
   const videoRef = useRef<any | null>(null);
   const canvasRef = useRef<any | null>(null);
   const fileInputRef = useRef<any | null>(null);
-
 
   // Iniciar cámara
   const handleTakePhoto = async () => {
@@ -122,9 +117,10 @@ const UserForm: React.FC<UserFormProps> = ({
     reset,
     watch,
     setValue,
+    register,
     getValues,
   } = useForm<UserFormInputs>({
-    defaultValues: {
+    defaultValues: initialData || {
       username: "",
       email: "",
       password: "",
@@ -141,16 +137,11 @@ const UserForm: React.FC<UserFormProps> = ({
       phone: "",
       minio_id: null,
       minio_url: null,
-      clinical_record: null,
-      otp_enabled: false,
-    }
+    },
   });
 
   const onSubmit: SubmitHandler<UserFormInputs> = (data) =>
     onHandleSubmit(data);
-
-  // Manejar cambio del switch OTP
-
 
   const getFormErrorMessage = (name: keyof UserFormInputs) => {
     return (
@@ -168,16 +159,9 @@ const UserForm: React.FC<UserFormProps> = ({
     }
   };
 
-  // useEffect para el reset
-  // En UserForm, corrige el useEffect del reset
   useEffect(() => {
-    if (initialData) {
-      const resetData = {
-        ...initialData,
-      };
-      reset(resetData);
-    } else {
-      reset({
+    reset(
+      initialData || {
         username: "",
         email: "",
         password: "",
@@ -194,10 +178,8 @@ const UserForm: React.FC<UserFormProps> = ({
         phone: "",
         minio_id: null,
         minio_url: null,
-        clinical_record: null,
-        otp_enabled: false, 
-      });
-    }
+      }
+    );
   }, [initialData, reset]);
 
   const { countries } = useCountries();
@@ -213,26 +195,16 @@ const UserForm: React.FC<UserFormProps> = ({
   const watchUserRoleId = watch("user_role_id");
   const watchCountryId = watch("country_id");
   const watchMinioUrl = watch("minio_url");
-  const watchOtpEnabled = watch("otp_enabled");
-  const watchEmail = watch("email");
-
-  // Debug para ver los valores actuales
-  useEffect(() => {
-    console.log('Valores actuales del formulario:', {
-      otp_enabled: watchOtpEnabled,
-      email: watchEmail,
-      user_role_id: watchUserRoleId
-    });
-  }, [watchOtpEnabled, watchEmail, watchUserRoleId]);
 
   useEffect(() => {
     if (initialData && initialData.country_id) {
       fetchCitiesByCountryName(initialData.country_id);
     }
-  }, [countries, initialData]);
+  }, [countries]);
 
   useEffect(() => {
     if (isInitialCitiesLoad && cities.length > 0 && initialData?.city_id) {
+
       setValue("city_id", initialData.city_id);
       setIsInitialCitiesLoad(false);
     }
@@ -591,36 +563,6 @@ const UserForm: React.FC<UserFormProps> = ({
                 />
                 {getFormErrorMessage("email")}
               </div>
-              <div className="col-md-12 mb-1">
-                <Controller
-                  name="otp_enabled"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="d-flex align-items-center p-3 border rounded bg-light">
-                      <InputSwitch
-                        inputId={field.name}
-                        checked={field.value}
-                        onChange={(e) => {
-                          field.onChange(e.value);
-                        }}
-                        disabled={!watchEmail}
-                      />
-                      <label htmlFor={field.name} className="form-label ms-3 mb-0 flex-grow-1">
-                        <strong>Autenticación de dos factores (OTP)</strong>
-                        <div className="text-muted small">
-                          {!watchEmail
-                            ? "Complete el campo de email primero"
-                            : field.value ? "OTP activado" : "OTP desactivado"
-                          }
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                />
-                <small className="text-muted">
-                  Al activar/desactivar se enviará automáticamente al servidor
-                </small>
-              </div>
             </div>
           </div>
         </div>
@@ -654,7 +596,7 @@ const UserForm: React.FC<UserFormProps> = ({
                 {getFormErrorMessage("user_role_id")}
               </div>
               {selectedRole &&
-                ["DOCTOR_ASSISTANT", "DOCTOR"].includes(selectedRole.group) && (
+                ["ADMIN", "DOCTOR"].includes(selectedRole.group) && (
                   <>
                     <div className="col-md-6 mb-1">
                       <Controller
@@ -707,8 +649,6 @@ const UserForm: React.FC<UserFormProps> = ({
                       />
                       {getFormErrorMessage("clinical_record")}
                     </div>
-
-
                   </>
                 )}
             </div>
@@ -746,11 +686,11 @@ const UserForm: React.FC<UserFormProps> = ({
                     <Controller
                       name="password"
                       control={control}
-                      rules={{ required: !initialData }}
+                      rules={{ required: "Este campo es requerido" }}
                       render={({ field }) => (
                         <>
                           <label htmlFor={field.name} className="form-label">
-                            Contraseña {!initialData && <span className="text-primary">*</span>}
+                            Contraseña <span className="text-primary">*</span>
                           </label>
                           <Password
                             {...field}
@@ -762,15 +702,12 @@ const UserForm: React.FC<UserFormProps> = ({
                             className="w-100"
                             inputClassName="w-100"
                             toggleMask
-                            placeholder={initialData ? "Dejar en blanco para no cambiar" : ""}
                           />
                         </>
                       )}
                     />
                     {getFormErrorMessage("password")}
                   </div>
-
-
                 </div>
               </div>
             </div>

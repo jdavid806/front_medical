@@ -42,9 +42,16 @@ export class AppointmentService extends OneToManyService {
     );
   }
 
-  async bulkValidate(data, patientId) {
+  async bulkCreateGroup(data) {
     return await this.httpClient.post(
-      `${this.microservice}/${this.parentEndpoint}/${patientId}/${this.childEndpoint}/validate-bulk`,
+      `${this.microservice}/${this.childEndpoint}/store-group`,
+      data
+    );
+  }
+
+  async bulkValidate(data) {
+    return await this.httpClient.post(
+      `${this.microservice}/${this.childEndpoint}/validate-bulk`,
       data
     );
   }

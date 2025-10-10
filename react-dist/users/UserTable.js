@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Toast } from 'primereact/toast';
 import CustomDataTable from "../components/CustomDataTable.js";
 import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
 import { EditTableAction } from "../components/table-actions/EditTableAction.js";
@@ -7,6 +8,7 @@ import { CustomFormModal } from "../components/CustomFormModal.js";
 import { UserAssistantForm } from "./UserAssistantForm.js";
 import { useUserAssistantBulkCreate } from "./hooks/useUserAssistantBulkCreate.js";
 import { userAssistantService } from "../../services/api/index.js";
+import { GoogleCalendarModal } from "./components/GoogleCalendarModal.js";
 const UserTable = ({
   users,
   onEditItem,
@@ -22,7 +24,10 @@ const UserTable = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentEmail, setCurrentEmail] = useState(null);
   const [actionType, setActionType] = useState(null);
+  const toast = useRef(null);
+  const [showGoogleCalendarModal, setShowGoogleCalendarModal] = useState(false);
   const {
     createUserAssistantBulk
   } = useUserAssistantBulkCreate();
@@ -83,6 +88,11 @@ const UserTable = ({
       setShowAssistantsModal(false);
       onReload && onReload();
     });
+  };
+  const openGoogleCalendarModal = data => {
+    setCurrentUserId(data.id);
+    setCurrentEmail(data.email);
+    setShowGoogleCalendarModal(true);
   };
   const columns = [{
     data: "fullName"
@@ -156,6 +166,21 @@ const UserTable = ({
     }, /*#__PURE__*/React.createElement("a", {
       className: "dropdown-item",
       href: "#",
+      onClick: () => openGoogleCalendarModal(data)
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-calendar-alt",
+      style: {
+        width: "20px"
+      }
+    }), /*#__PURE__*/React.createElement("span", null, "Configurar Google Calendar")))), /*#__PURE__*/React.createElement("li", {
+      style: {
+        marginBottom: "8px"
+      }
+    }, /*#__PURE__*/React.createElement("a", {
+      className: "dropdown-item",
+      href: "#",
       onClick: () => openAssistantsModal(data.id)
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2 align-items-center"
@@ -166,7 +191,9 @@ const UserTable = ({
       }
     }), /*#__PURE__*/React.createElement("span", null, "Gestionar asistentes"))))))
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -264,6 +291,15 @@ const UserTable = ({
     formId: "assistantsForm",
     onHandleSubmit: handleAssistantsSubmit,
     initialData: assistantsFormInitialData
-  })));
+  })), /*#__PURE__*/React.createElement(GoogleCalendarModal, {
+    show: showGoogleCalendarModal,
+    userId: currentUserId || '',
+    userEmail: currentEmail || '',
+    onHide: () => setShowGoogleCalendarModal(false),
+    onSuccess: () => {
+      onReload && onReload();
+    },
+    toast: toast.current
+  }));
 };
 export default UserTable;

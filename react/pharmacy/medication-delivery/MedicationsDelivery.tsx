@@ -8,6 +8,7 @@ export const ProductsDelivery = () => {
     const { formatCurrentTime } = useTimer({ autoStart: true, interval: 1000 });
 
     const [selectedDelivery, setSelectedDelivery] = useState<any | null>(null);
+    const [selectedConvenio, setSelectedConvenio] = useState<any | null>(null);
 
     return (<>
         <div className="d-flex flex-column gap-3">
@@ -22,7 +23,7 @@ export const ProductsDelivery = () => {
                 <div className="col-4">
                     <div className="card">
                         <div className="card-body">
-                            <MedicationDeliveryList onDeliverySelect={setSelectedDelivery} />
+                            <MedicationDeliveryList onDeliverySelect={setSelectedDelivery} onDeliverySelectConvenio={setSelectedConvenio} />
                         </div>
                     </div>
                 </div>

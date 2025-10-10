@@ -124,8 +124,7 @@ const PaymentMethodFormConfig = ({
     name: "accounting_account_id",
     control: control,
     render: ({
-      field,
-      fieldState
+      field
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Dropdown, {
       id: field.name,
       value: field.value,
@@ -137,12 +136,10 @@ const PaymentMethodFormConfig = ({
       filter: true,
       filterBy: "account_label,account_name,account_code",
       showClear: true,
-      className: classNames("w-full", {
-        "p-invalid": fieldState.error
-      }),
+      className: classNames("w-full"),
       loading: isLoadingAccounts,
       appendTo: "self"
-    }), getFormErrorMessage("accounting_account_id"))
+    }))
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {

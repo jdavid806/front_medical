@@ -3,8 +3,6 @@ import { MultiSelect } from "primereact/multiselect";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { exportToExcel } from "../../accounting/utils/ExportToExcelOptions.js";
 import { formatDate as formatDateUtils } from "../../../services/utilidades.js";
@@ -12,6 +10,11 @@ import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF.js
 import { useCompany } from "../../hooks/useCompany.js"; // Import your services
 import { productService, userService, patientService, billingService, entityService } from "../../../services/api/index.js";
 import { Card } from "primereact/card";
+import { useDataPagination } from "../../hooks/useDataPagination.js";
+import { CustomPRTable } from "../../components/CustomPRTable.js";
+import { ColumnGroup } from "primereact/columngroup";
+import { Row } from "primereact/row";
+import { Column } from "primereact/column";
 export const ControlCashFlow = () => {
   // Set default date range (last 5 days)
   const today = new Date();
@@ -34,64 +37,73 @@ export const ControlCashFlow = () => {
     fetchCompany
   } = useCompany();
 
-  // State for report data
-  const [reportData, setReportData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [tableLoading, setTableLoading] = useState(false);
-
-  // Pagination state
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
-
   // Export loading state
   const [exporting, setExporting] = useState({
     excel: false,
     pdf: false
   });
+
+  // Función para obtener datos del flujo de caja
+  const fetchCashFlowData = async params => {
+    try {
+      // Combinar parámetros de paginación con filtros actuales
+      const filterParams = {
+        ...params,
+        end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
+        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
+        patient_ids: selectedPatients,
+        product_ids: selectedProcedures,
+        user_ids: selectedSpecialists,
+        entity_id: selectedEntity
+      };
+
+      // Usar el servicio de flujo de caja
+      const data = await billingService.getCashFlowReport(filterParams);
+
+      // Ajustar según la estructura de tu API
+      return {
+        data: data.data || data || [],
+        // Ajusta según la estructura de tu API
+        total: data.total || data.count || (Array.isArray(data) ? data.length : 0)
+      };
+    } catch (error) {
+      console.error("Error fetching cash flow data:", error);
+      return {
+        data: [],
+        total: 0
+      };
+    }
+  };
+
+  // Hook de paginación
+  const {
+    data: reportData,
+    loading: tableLoading,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh
+  } = useDataPagination({
+    fetchFunction: fetchCashFlowData,
+    defaultPerPage: 10
+  });
   useEffect(() => {
     const initializeData = async () => {
       try {
-        setLoading(true);
         // Load initial data
         await loadProcedures();
         await loadSpecialists();
         await loadPatients();
         await loadEntities();
-        const defaultFilters = {
-          end_date: formatDate(today),
-          start_date: formatDate(fiveDaysAgo),
-          patient_ids: [],
-          product_ids: [],
-          user_ids: [],
-          entity_id: null
-        };
-        await loadData(defaultFilters, true);
+        // Los datos se cargarán automáticamente mediante el hook useDataPagination
       } catch (error) {
         console.error("Error initializing data:", error);
-      } finally {
-        setLoading(false);
       }
     };
     initializeData();
   }, []);
-  const loadData = async (filterParams = {}, useAlternateService = true) => {
-    try {
-      setTableLoading(true);
-      // Use the cash flow service specifically
-      const data = await billingService.getCashFlowReport(filterParams);
-      setReportData(data);
-      return data;
-    } catch (error) {
-      console.error("Error loading cash control data:", error);
-      throw error;
-    } finally {
-      setTableLoading(false);
-    }
-  };
-  const onPageChange = event => {
-    setFirst(event.first);
-    setRows(event.rows);
-  };
   const formatCurrency = value => {
     const formatted = new Intl.NumberFormat("es-DO", {
       style: "currency",
@@ -147,22 +159,11 @@ export const ControlCashFlow = () => {
       console.error("Error loading entities:", error);
     }
   };
-  const createColumnStyle = (textAlign = "left", minWidth = "150px") => ({
-    textAlign,
-    minWidth
-  });
   const handleFilter = async () => {
     try {
-      const filterParams = {
-        end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
-        start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
-        patient_ids: selectedPatients,
-        product_ids: selectedProcedures,
-        user_ids: selectedSpecialists,
-        entity_id: selectedEntity
-      };
-      await loadData(filterParams, true);
-      setFirst(0); // Reset to first page when filtering
+      // Al llamar a refresh, el hook useDataPagination volverá a ejecutar fetchCashFlowData
+      // con los filtros actualizados automáticamente
+      refresh();
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -216,6 +217,8 @@ export const ControlCashFlow = () => {
         pdf: true
       });
       const dataExport = reportData;
+      const fullIncome = reportData.reduce((acc, item) => acc + (parseInt(item?.invoice?.total_amount) + (parseInt(item?.entity_authorized_amount) || 0) || 0), 0);
+      const fullOutflows = reportData.reduce((acc, item) => acc + (item?.invoice?.status === "cancelled" ? item?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0) : 0), 0);
 
       // Generar las cabeceras de la tabla
       const headers = `
@@ -250,6 +253,15 @@ export const ControlCashFlow = () => {
             border-bottom: 1px solid #eee;
           }
           .right { text-align: right; }
+          .total-row {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-top: 2px solid #ddd;
+          }
+          .total-label {
+            text-align: right;
+            padding-right: 20px;
+          }
           </style>
       
           <table>
@@ -269,6 +281,12 @@ export const ControlCashFlow = () => {
                   <td class="right">${rowData?.invoice?.status === "cancelled" ? formatCurrency(rowData?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)}</td>
                 </tr>
               `, "")}
+              <!-- Fila de totales -->
+              <tr class="total-row">
+                <td colspan="6" class="total-label">TOTALES:</td>
+                <td class="right">${formatCurrency(fullIncome)}</td>
+                <td class="right">${formatCurrency(fullOutflows)}</td>
+              </tr>
             </tbody>
           </table>`;
       const configPDF = {
@@ -284,107 +302,77 @@ export const ControlCashFlow = () => {
       });
     }
   };
-  const generateCashControlTable = () => {
-    if (!reportData || reportData.length === 0) {
-      return /*#__PURE__*/React.createElement("div", {
-        className: "flex justify-content-center align-items-center",
-        style: {
-          height: "200px"
-        }
-      }, /*#__PURE__*/React.createElement("span", null, "No hay datos disponibles"));
-    }
-    const cashControlColumns = [{
-      field: "procedure",
-      header: "# Factura",
-      body: rowData => rowData?.invoice?.id
-    }, {
-      field: "procedure",
-      header: "Código de Factura",
-      body: rowData => rowData?.invoice?.invoice_code
-    }, {
-      field: "procedure",
-      header: "Procedimiento",
-      body: rowData => rowData?.invoice?.details.length <= 1 ? rowData?.invoice?.details[0].product.name : "Laboratorio"
-    }, {
-      field: "cod_entity",
-      header: "Codigo Entidad",
-      body: rowData => rowData?.authorization_number
-    }, {
-      field: "copayment",
-      header: "Copago",
-      body: rowData => rowData?.invoice?.type === "entity" ? formatCurrency(rowData?.invoice?.total_amount) : formatCurrency(0)
-    }, {
-      field: "authorized_amount_user",
-      header: "Particular",
-      body: rowData => rowData?.invoice?.type === "public" ? formatCurrency(rowData?.invoice?.total_amount) : formatCurrency(0)
-    }, {
-      field: "entity_authorized_amount",
-      header: "Monto autorizado",
-      body: rowData => formatCurrency(rowData?.entity_authorized_amount || 0)
-    }, {
-      field: "date",
-      header: "Fecha",
-      style: createColumnStyle("left", "150px"),
-      body: rowData => formatDateUtils(rowData.created_at)
-    }, {
-      field: "income",
-      header: "Ingresos",
-      style: createColumnStyle("right"),
-      body: rowData => formatCurrency(parseInt(rowData?.invoice?.total_amount) + (parseInt(rowData?.entity_authorized_amount) || 0) || 0)
-    }, {
-      field: "outflows",
-      header: "Salidas",
-      style: createColumnStyle("right"),
-      body: rowData => rowData?.invoice?.status === "cancelled" ? formatCurrency(rowData?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)
-    }];
-    return /*#__PURE__*/React.createElement("div", {
-      className: "card"
-    }, tableLoading ? /*#__PURE__*/React.createElement("div", {
-      className: "flex justify-content-center align-items-center",
-      style: {
-        height: "200px"
+
+  // Definición de columnas para CustomPRTable
+  const columns = [{
+    field: "invoice.id",
+    header: "# Factura",
+    body: rowData => rowData?.invoice?.id
+  }, {
+    field: "invoice.invoice_code",
+    header: "Código de Factura",
+    body: rowData => rowData?.invoice?.invoice_code
+  }, {
+    field: "procedure",
+    header: "Procedimiento",
+    body: rowData => rowData?.invoice?.details.length <= 1 ? rowData?.invoice?.details[0].product.name : "Laboratorio"
+  }, {
+    field: "authorization_number",
+    header: "Codigo Entidad",
+    body: rowData => rowData?.authorization_number
+  }, {
+    field: "copayment",
+    header: "Copago",
+    body: rowData => rowData?.invoice?.type === "entity" ? formatCurrency(rowData?.invoice?.total_amount) : formatCurrency(0)
+  }, {
+    field: "authorized_amount_user",
+    header: "Particular",
+    body: rowData => rowData?.invoice?.type === "public" ? formatCurrency(rowData?.invoice?.total_amount) : formatCurrency(0)
+  }, {
+    field: "entity_authorized_amount",
+    header: "Monto autorizado",
+    body: rowData => formatCurrency(rowData?.entity_authorized_amount || 0)
+  }, {
+    field: "created_at",
+    header: "Fecha",
+    body: rowData => formatDateUtils(rowData.created_at)
+  }, {
+    field: "income",
+    header: "Ingresos",
+    body: rowData => formatCurrency(parseInt(rowData?.invoice?.total_amount) + (parseInt(rowData?.entity_authorized_amount) || 0) || 0)
+  }, {
+    field: "outflows",
+    header: "Salidas",
+    body: rowData => rowData?.invoice?.status === "cancelled" ? formatCurrency(rowData?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0)) : formatCurrency(0)
+  }];
+  const footerGroup = reportData => {
+    const fullIncome = reportData.reduce((acc, item) => acc + (parseInt(item?.invoice?.total_amount) + (parseInt(item?.entity_authorized_amount) || 0) || 0), 0);
+    const fullOutflows = reportData.reduce((acc, item) => acc + (item?.invoice?.status === "cancelled" ? item?.invoice.notes.reduce((acc, note) => acc + parseInt(note.amount) || 0, 0) : 0), 0);
+    return /*#__PURE__*/React.createElement(ColumnGroup, null, /*#__PURE__*/React.createElement(Row, null, /*#__PURE__*/React.createElement(Column, {
+      footer: "Totals:",
+      colSpan: 8,
+      footerStyle: {
+        textAlign: "right"
       }
-    }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
-      value: reportData,
-      loading: tableLoading,
-      scrollable: true,
-      scrollHeight: "flex",
-      showGridlines: true,
-      stripedRows: true,
-      size: "small",
-      tableStyle: {
-        minWidth: "100%"
-      },
-      className: "p-datatable-sm",
-      paginator: true,
-      rows: rows,
-      first: first,
-      onPage: onPageChange,
-      rowsPerPageOptions: [5, 10, 25, 50],
-      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
-    }, cashControlColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
-      key: i,
-      field: col.field,
-      header: col.header,
-      body: col.body,
-      style: col.style,
-      headerStyle: col.headerStyle
-    }))));
+    }), /*#__PURE__*/React.createElement(Column, {
+      footer: formatCurrency(fullIncome)
+    }), /*#__PURE__*/React.createElement(Column, {
+      footer: formatCurrency(fullOutflows)
+    })));
   };
   return /*#__PURE__*/React.createElement("main", {
     className: "main",
     id: "top"
   }, /*#__PURE__*/React.createElement("div", {
     className: "pb-9"
-  }, loading ? /*#__PURE__*/React.createElement("div", {
+  }, tableLoading && /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
     style: {
       height: "50vh",
       marginLeft: "900px",
       marginTop: "300px"
     }
-  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)), /*#__PURE__*/React.createElement("div", {
     className: "row g-3 justify-content-between align-items-start mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
@@ -473,7 +461,10 @@ export const ControlCashFlow = () => {
     className: "row gy-5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-xxl-12"
-  }, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Card, {
+    title: "Control de Flujo de Caja",
+    className: "shadow-2"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2 mb-3"
   }, /*#__PURE__*/React.createElement(Button, {
     tooltip: "Exportar a excel",
@@ -497,5 +488,17 @@ export const ControlCashFlow = () => {
     loading: exporting.pdf
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-file-pdf"
-  }))), generateCashControlTable()))))));
+  }))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: reportData,
+    lazy: true,
+    first: first,
+    rows: perPage,
+    totalRecords: totalRecords,
+    loading: tableLoading,
+    onPage: handlePageChange,
+    onSearch: handleSearchChange,
+    onReload: refresh,
+    footerGroup: footerGroup(reportData)
+  }))))));
 };

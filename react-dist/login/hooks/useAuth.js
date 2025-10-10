@@ -28,7 +28,7 @@ export const useAuth = () => {
     if (currentConfig?.config_tenants?.finished_configuration) {
       window.location.href = "/Dashboard";
     } else {
-      window.location.href = "/ConfiguracionGeneral";
+      window.location.href = "/configuracionesGenerales";
     }
   };
   const saveUserData = userInfo => {

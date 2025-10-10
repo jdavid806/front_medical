@@ -159,29 +159,24 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
       "patient.date_of_birth",
       "patient.whatsapp",
       "patient.email",
-      "patient.blood_type"
+      "patient.blood_type",
     ],
     1: [
       "patient.country_id",
       "patient.department_id",
       "patient.city_id",
       "patient.address",
-      "patient.nationality"
+      "patient.nationality",
     ],
-    2: [
-      "social_security.entity_id",
-      "social_security.affiliate_type"
-    ]
+    2: ["social_security.entity_id", "social_security.affiliate_type"],
   };
 
   const toast = useRef<Toast>(null);
 
   useEffect(() => {
-
+    loadCountries();
 
     if (patientData) {
-      console.log("patientData", patientData);
-
       setValue("patient.document_type", patientData.document_type);
       setValue("patient.document_number", patientData.document_number);
       setValue("patient.first_name", patientData.first_name);
@@ -234,7 +229,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
         );
       }
 
-      loadCountries();
       if (patientData.country_id) {
         handleCountryChange(patientData.country_id);
       }
@@ -463,8 +457,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
         }
       };
       reader.readAsDataURL(file);
-
-      console.log(file);
     }
   };
 
@@ -673,7 +665,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
           });
         }
       }
-      console.log("Respuesta del servidor:", response);
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
@@ -721,7 +712,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
     }
   };
 
-
   const validateStep = async (stepIndex: number): Promise<boolean> => {
     const fields = stepValidations[stepIndex];
     if (!fields) return true;
@@ -731,29 +721,26 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: `Por favor complete todos los campos requeridos en el paso ${stepIndex + 1}`,
+        detail: `Por favor complete todos los campos requeridos en el paso ${
+          stepIndex + 1
+        }`,
         life: 3000,
       });
     }
     return isValid;
   };
 
-
   const validateAndNext = async () => {
     const currentStep = stepperRef.current?.getActiveStep();
-    console.log("currentStep", currentStep);
-    console.log("stepperRef", stepperRef);
     if (currentStep === undefined) return;
 
-    const isValid = await validateStep(currentStep)
-    console.log("isValid", isValid);
+    const isValid = await validateStep(currentStep);
     if (isValid && stepperRef.current) {
       if (currentStep < Object.keys(stepValidations).length - 1) {
         stepperRef.current.nextCallback();
       }
     }
   };
-
 
   const getFormErrorMessage = (name: string) => {
     const nameParts = name.split(".");
@@ -779,8 +766,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
                   control={control}
                   rules={{ required: "Tipo de documento es requerido" }}
                   render={({ field, fieldState }) => {
-                    console.log("Valor actual de document_type:", field.value);
-
                     return (
                       <div>
                         <label className="form-label">
@@ -797,7 +782,6 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
                           })}
                           value={field.value || ""}
                           onChange={(e) => {
-                            console.log("Nuevo valor seleccionado:", e.value);
                             field.onChange(e.value);
                           }}
                         />
@@ -867,10 +851,7 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
                   render={({ field }) => (
                     <div>
                       <label className="form-label">Segundo Nombre *</label>
-                      <InputText
-                        className={classNames("w-100")}
-                        {...field}
-                      />
+                      <InputText className={classNames("w-100")} {...field} />
                     </div>
                   )}
                 />
@@ -880,10 +861,7 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
                   render={({ field }) => (
                     <div>
                       <label className="form-label">Segundo apellido *</label>
-                      <InputText
-                        className={classNames("w-100")}
-                        {...field}
-                      />
+                      <InputText className={classNames("w-100")} {...field} />
                     </div>
                   )}
                 />
@@ -1514,7 +1492,12 @@ const PatientFormModal: React.FC<PatientFormModalProps> = ({
         visible={visible}
         onHide={onHide}
         header="Nuevo Paciente"
-        style={{ width: "90vw", maxWidth: "1200px", height: "100vh", maxHeight: "900px" }}
+        style={{
+          width: "90vw",
+          maxWidth: "1200px",
+          height: "100vh",
+          maxHeight: "900px",
+        }}
         appendTo={"self"}
         maximizable
       >

@@ -27,19 +27,19 @@ export interface TaxDTO {
 export interface CreateTaxDTO {
   name: string;
   percentage: number;
-  accounting_account_id: number;
-  accounting_account_reverse_id: number;
-  sell_accounting_account_id: number;
-  sell_reverse_accounting_account_id: number;
+  accounting_account_id: number | null;
+  accounting_account_reverse_id: number | null;
+  sell_accounting_account_id: number | null;
+  sell_reverse_accounting_account_id: number | null;
   description: string;
 }
 
 export interface UpdateTaxDTO {
   name?: string;
-  percentage?: number;
-  accounting_account_id?: number;
-  accounting_account_reverse_id?: number;
-  sell_accounting_account_id?: number;
-  sell_reverse_accounting_account_id?: number;
+  percentage?: number | null;
+  accounting_account_id?: number | null;
+  accounting_account_reverse_id?: number | null;
+  sell_accounting_account_id?: number | null;
+  sell_reverse_accounting_account_id?: number | null;
   description?: string;
 }

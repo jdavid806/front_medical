@@ -206,17 +206,17 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
       return;
     }
 
-    if (paymentAmount > remaining) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: `El monto no puede exceder el saldo pendiente: ${formatCurrency(
-          remaining
-        )}`,
-        life: 3000,
-      });
-      return;
-    }
+    // if (paymentAmount > remaining) {
+    //   toast.current?.show({
+    //     severity: "error",
+    //     summary: "Error",
+    //     detail: `El monto no puede exceder el saldo pendiente: ${formatCurrency(
+    //       remaining
+    //     )}`,
+    //     life: 3000,
+    //   });
+    //   return;
+    // }
 
     addPayment({
       method: method.method as string,
