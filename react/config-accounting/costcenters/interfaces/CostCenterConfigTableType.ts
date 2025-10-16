@@ -17,5 +17,6 @@ export interface CostCenterConfigTableProps {
   onEditItem: (id: string) => void;
   onDeleteItem?: (id: string) => void;
   loading?: boolean;
+  onReload: () => void;
 
 }

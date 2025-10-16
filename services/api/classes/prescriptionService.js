@@ -25,6 +25,17 @@ export class PrescriptionService extends BaseApiService {
       this.microservice + "/recipes/last-of/patient/" + patientId + '/' + type
     );
   }
+
+  async getConvenioRecipeById(id, data, tenantId, apiKey) {
+    return await this.httpClient.get(
+      this.microservice + "/convenios/recipes/" + id,
+      data,
+      {
+        "X-TENANT-ID": tenantId,
+        "X-API-KEY": apiKey
+      }
+    );
+  }
 }
 
 export default PrescriptionService;

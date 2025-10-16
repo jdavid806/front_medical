@@ -27,7 +27,9 @@ export const OTPModal = ({
     length: 6,
     integerOnly: true,
     className: "justify-center",
-    mask: true
+    mask: true,
+    autoComplete: "off",
+    type: "number"
   })), /*#__PURE__*/React.createElement("div", {
     className: "text-center mt-3"
   }, /*#__PURE__*/React.createElement("span", null, "\xBFNo recibiste el c\xF3digo? "), /*#__PURE__*/React.createElement(Button, {

@@ -100,7 +100,7 @@ export const ReasonTicket = () => {
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
+    className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Motivos de Consulta"), /*#__PURE__*/React.createElement("div", {

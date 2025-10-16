@@ -54,8 +54,6 @@ export const SalesBilling: React.FC<any> = ({
   const { paymentMethods, loading: loadingPaymentMethods } =
     usePaymentMethods();
 
-
-
   const [filteredPaymentMethods, setFilteredPaymentMethods] = useState<
     PaymentMethod[]
   >([]);
@@ -99,6 +97,7 @@ export const SalesBilling: React.FC<any> = ({
       quantity: 0,
       price: 0,
       discount: 0,
+      discountType: "percentage",
       iva: 0,
     },
   ]);
@@ -178,8 +177,8 @@ export const SalesBilling: React.FC<any> = ({
         }
         const discount = item.discount
           ? (Number(item.discount) /
-            (Number(item.price) * Number(item.quantity))) *
-          100
+              (Number(item.price) * Number(item.quantity))) *
+            100
           : 0;
 
         const subtotal = Number(item.subtotal) - Number(item.discount);
@@ -195,6 +194,7 @@ export const SalesBilling: React.FC<any> = ({
           quantity: Number(item.quantity),
           price: Number(item.price),
           discount: discount,
+          discountType: "percentage",
           iva: percentageTax || 0,
           taxAmount: item.total_taxes,
           depositId: item.deposit_id || null,
@@ -213,7 +213,14 @@ export const SalesBilling: React.FC<any> = ({
     const ivaRate = product.iva || 0;
 
     const subtotal = quantity * price;
-    const discountAmount = subtotal * (discount / 100);
+
+    let discountAmount = 0;
+    if (product.discountType === "percentage") {
+      discountAmount = subtotal * (discount / 100);
+    } else {
+      discountAmount = discount; // Valor fijo
+    }
+
     const subtotalAfterDiscount = subtotal - discountAmount;
     const taxAmount = subtotalAfterDiscount * (ivaRate / 100);
 
@@ -234,7 +241,11 @@ export const SalesBilling: React.FC<any> = ({
       const subtotal =
         (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discount = Number(product.discount) || 0;
-      return total + subtotal * (discount / 100);
+      if (product.discountType === "percentage") {
+        return total + subtotal * (discount / 100);
+      } else {
+        return total + discount;
+      }
     }, 0);
   };
 
@@ -242,12 +253,20 @@ export const SalesBilling: React.FC<any> = ({
     return productsArray.reduce((total, product) => {
       const subtotal =
         (Number(product.quantity) || 0) * (Number(product.price) || 0);
-      const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
+      const discount = Number(product.discount) || 0;
+
+      let discountAmount = 0;
+      if (product.discountType === "percentage") {
+        discountAmount = subtotal * (discount / 100);
+      } else {
+        discountAmount = discount; // Valor fijo
+      }
+
       const subtotalAfterDiscount = subtotal - discountAmount;
       const ivaRate = product.iva || 0;
       return total + subtotalAfterDiscount * (ivaRate / 100);
     }, 0);
-  }
+  };
 
   const calculateSubtotalAfterDiscount = (): number => {
     return calculateSubtotal() - calculateTotalDiscount();
@@ -290,6 +309,7 @@ export const SalesBilling: React.FC<any> = ({
         quantity: 0,
         price: 0,
         discount: 0,
+        discountType: "percentage",
         iva: 0,
       },
     ]);
@@ -302,9 +322,9 @@ export const SalesBilling: React.FC<any> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-            ...payment,
-            value: selectedAdvances.amount,
-          }
+              ...payment,
+              value: selectedAdvances.amount,
+            }
           : payment
       )
     );
@@ -397,7 +417,9 @@ export const SalesBilling: React.FC<any> = ({
     const currentPaymentsTotal = calculateTotalPayments();
     const remainingAmount = total - currentPaymentsTotal;
 
-    const currentPaymentValue = Number(paymentMethodsArray.find(p => p.id === paymentId)?.value || 0);
+    const currentPaymentValue = Number(
+      paymentMethodsArray.find((p) => p.id === paymentId)?.value || 0
+    );
     const amountToSet = remainingAmount + currentPaymentValue;
 
     if (amountToSet > 0) {
@@ -492,16 +514,16 @@ export const SalesBilling: React.FC<any> = ({
   function formatInvoiceForBackend(frontendData: any) {
     const purchaseIdValue = purchaseOrderId
       ? {
-        purchase_order_id: purchaseOrderId,
-      }
+          purchase_order_id: purchaseOrderId,
+        }
       : {};
     const retentionsValue =
       retentions[0].value > 0
         ? {
-          retentions: retentions.map(
-            (retention: any) => retention.percentage.id
-          ),
-        }
+            retentions: retentions.map(
+              (retention: any) => retention.percentage.id
+            ),
+          }
         : {};
     return {
       invoice: {
@@ -514,12 +536,22 @@ export const SalesBilling: React.FC<any> = ({
         billing: billing,
       },
       invoice_detail: productsArray.map((product: any) => {
+        const subtotal = Number(product.quantity) * Number(product.price);
+        let discountAmount = 0;
+        if (product.discountType === "percentage") {
+          // Descuento porcentual
+          discountAmount = (subtotal * Number(product.discount)) / 100;
+        } else {
+          // Descuento en valor fijo
+          discountAmount = Number(product.discount) || 0;
+        }
         return {
           product_id: Number(product.product),
+          type_product: product.typeProduct,
           deposit_id: product.depositId,
           quantity: product.quantity,
           unit_price: product.price,
-          discount: product.discount,
+          discount: discountAmount,
           tax_product: product.taxAmount || product.iva || 0,
           tax_accounting_account_id: product.taxAccountingAccountId || null,
           tax_charge_id: product.taxChargeId || null,
@@ -770,15 +802,36 @@ export const SalesBilling: React.FC<any> = ({
                     <table className="table table-hover mb-0">
                       <thead className="table-light">
                         <tr>
-                          <th scope="col" style={{ minWidth: "120px" }}>Tipo</th>
-                          <th scope="col" style={{ minWidth: "180px" }}>Producto</th>
-                          <th scope="col" style={{ minWidth: "100px" }}>Cantidad</th>
-                          <th scope="col" style={{ minWidth: "200px" }}>Valor unitario</th>
-                          <th scope="col" style={{ minWidth: "220px" }}>Descuento %</th>
-                          <th scope="col" style={{ minWidth: "120px" }}>Impuestos</th>
-                          <th scope="col" style={{ minWidth: "130px" }}>Depósito</th>
-                          <th scope="col" style={{ minWidth: "200px !important" }}>Valor total</th>
-                          <th scope="col" style={{ width: "80px" }}>Acciones</th>
+                          <th scope="col" style={{ minWidth: "120px" }}>
+                            Tipo
+                          </th>
+                          <th scope="col" style={{ minWidth: "180px" }}>
+                            Producto
+                          </th>
+                          <th scope="col" style={{ minWidth: "100px" }}>
+                            Cantidad
+                          </th>
+                          <th scope="col" style={{ minWidth: "200px" }}>
+                            Valor unitario
+                          </th>
+                          <th scope="col" style={{ minWidth: "220px" }}>
+                            Descuento %
+                          </th>
+                          <th scope="col" style={{ minWidth: "120px" }}>
+                            Impuestos
+                          </th>
+                          <th scope="col" style={{ minWidth: "130px" }}>
+                            Depósito
+                          </th>
+                          <th
+                            scope="col"
+                            style={{ minWidth: "200px !important" }}
+                          >
+                            Valor total
+                          </th>
+                          <th scope="col" style={{ width: "80px" }}>
+                            Acciones
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -788,8 +841,16 @@ export const SalesBilling: React.FC<any> = ({
                               <TypeColumnBody
                                 rowData={product}
                                 onChange={(newType: string) => {
-                                  handleProductChange(product.id, "typeProduct", newType);
-                                  handleProductChange(product.id, "product", null);
+                                  handleProductChange(
+                                    product.id,
+                                    "typeProduct",
+                                    newType
+                                  );
+                                  handleProductChange(
+                                    product.id,
+                                    "product",
+                                    null
+                                  );
                                 }}
                                 disabled={disabledInpputs}
                               />
@@ -799,7 +860,11 @@ export const SalesBilling: React.FC<any> = ({
                                 rowData={product}
                                 type={product.typeProduct}
                                 onChange={(value: string) => {
-                                  handleProductChange(product.id, "product", value);
+                                  handleProductChange(
+                                    product.id,
+                                    "product",
+                                    value
+                                  );
                                 }}
                                 handleProductChange={handleProductChange}
                                 disabled={disabledInpputs}
@@ -808,7 +873,11 @@ export const SalesBilling: React.FC<any> = ({
                             <td className="p-2">
                               <QuantityColumnBody
                                 onChange={(value: number | null) =>
-                                  handleProductChange(product.id, "quantity", value || 0)
+                                  handleProductChange(
+                                    product.id,
+                                    "quantity",
+                                    value || 0
+                                  )
                                 }
                                 value={product.quantity}
                                 disabled={disabledInpputs}
@@ -817,7 +886,11 @@ export const SalesBilling: React.FC<any> = ({
                             <td className="p-2">
                               <PriceColumnBody
                                 onChange={(value: number | null) =>
-                                  handleProductChange(product.id, "price", value || 0)
+                                  handleProductChange(
+                                    product.id,
+                                    "price",
+                                    value || 0
+                                  )
                                 }
                                 value={product.price}
                                 disabled={disabledInpputs}
@@ -826,16 +899,34 @@ export const SalesBilling: React.FC<any> = ({
                             <td className="p-2">
                               <DiscountColumnBody
                                 onChange={(value: number | null) =>
-                                  handleProductChange(product.id, "discount", value || 0)
+                                  handleProductChange(
+                                    product.id,
+                                    "discount",
+                                    value || 0
+                                  )
+                                }
+                                onTypeChange={(type: "percentage" | "fixed") =>
+                                  handleProductChange(
+                                    product.id,
+                                    "discountType",
+                                    type
+                                  )
                                 }
                                 value={product.discount}
+                                discountType={
+                                  product.discountType || "percentage"
+                                }
                                 disabled={disabledInpputs}
                               />
                             </td>
                             <td className="p-2">
                               <IvaColumnBody
                                 onChange={(value: any | null) => {
-                                  handleProductChange(product.id, "iva", value?.percentage || 0);
+                                  handleProductChange(
+                                    product.id,
+                                    "iva",
+                                    value?.percentage || 0
+                                  );
                                   handleProductChange(
                                     product.id,
                                     "taxAccountingAccountId",
@@ -854,7 +945,11 @@ export const SalesBilling: React.FC<any> = ({
                             <td className="p-2">
                               <DepositColumnBody
                                 onChange={(value: string | null) =>
-                                  handleProductChange(product.id, "depositId", value)
+                                  handleProductChange(
+                                    product.id,
+                                    "depositId",
+                                    value
+                                  )
                                 }
                                 value={product.depositId}
                                 disabled={disabledInpputs}
@@ -864,7 +959,6 @@ export const SalesBilling: React.FC<any> = ({
                               <InputNumber
                                 value={calculateLineTotal(product)}
                                 mode="currency"
-
                                 currency="DOP"
                                 locale="es-DO"
                                 readOnly
@@ -896,6 +990,7 @@ export const SalesBilling: React.FC<any> = ({
                 totalDiscount={calculateTotalDiscount()}
                 retentions={retentions}
                 onRetentionsChange={setRetentions}
+                productsArray={productsArray}
               />
             </div>
 
@@ -967,7 +1062,7 @@ export const SalesBilling: React.FC<any> = ({
                             className="p-button-outlined p-button-info p-button-sm"
                             onClick={() => copyTotalToPayment(payment.id)}
                             tooltip="Copiar valor total restante"
-                            tooltipOptions={{ position: 'top' }}
+                            tooltipOptions={{ position: "top" }}
                           />
                         </div>
                       </div>
@@ -979,7 +1074,7 @@ export const SalesBilling: React.FC<any> = ({
                         onClick={() => removePayment(payment.id)}
                         disabled={paymentMethodsArray.length <= 1}
                         tooltip="Eliminar método"
-                        tooltipOptions={{ position: 'top' }}
+                        tooltipOptions={{ position: "top" }}
                       >
                         <i className="fa-solid fa-trash"></i>
                       </Button>
@@ -1511,34 +1606,71 @@ const PriceColumnBody = ({
 
 const DiscountColumnBody = ({
   onChange,
+  onTypeChange,
   value,
+  discountType,
   disabled,
 }: {
   onChange: (value: number | null) => void;
+  onTypeChange: (type: "percentage" | "fixed") => void;
   value: number | null;
+  discountType: "percentage" | "fixed";
   disabled?: boolean;
 }) => {
+  const [localDiscountType, setLocalDiscountType] = useState<
+    "percentage" | "fixed"
+  >(discountType || "percentage");
+  useEffect(() => {
+    if (discountType && discountType !== localDiscountType) {
+      setLocalDiscountType(discountType);
+    }
+  }, [discountType]);
+  const handleTypeChange = (type: "percentage" | "fixed") => {
+    setLocalDiscountType(type);
+    onTypeChange(type);
+
+    if (type !== (discountType || "percentage")) {
+      onChange(0);
+    }
+  };
   return (
-    <>
+    <div className="d-flex gap-1 align-items-center">
+      <Dropdown
+        value={discountType}
+        options={[
+          { label: "%", value: "percentage" },
+          { label: "$", value: "fixed" },
+        ]}
+        optionLabel="label"
+        optionValue="value"
+        style={{ width: "50px" }}
+        onChange={(e: DropdownChangeEvent) => {
+          handleTypeChange(e.value);
+        }}
+        disabled={disabled}
+        showClear
+      />
       <InputNumber
         value={value}
-        placeholder="Descuento"
-        className="w-100"
-        style={{ maxWidth: "200px" }}
-        suffix="%"
+        placeholder={
+          discountType === "percentage" ? "Descuento %" : "Descuento $"
+        }
+        className="flex-grow-1"
+        style={{ minWidth: "100px" }}
+        suffix={discountType === "percentage" ? "%" : ""}
+        prefix={discountType === "fixed" ? "$ " : ""}
+        mode={localDiscountType === "fixed" ? "currency" : "decimal"}
+        currency={localDiscountType === "fixed" ? "DOP" : undefined}
+        locale="es-DO"
         min={0}
-        max={100}
+        max={discountType === "percentage" ? 100 : undefined}
         onValueChange={(e: any) => {
           onChange(e.value);
         }}
         disabled={disabled}
         inputClassName="form-control"
-        mode="decimal"
-        minFractionDigits={0}
-        maxFractionDigits={2}
-        useGrouping={false}
       />
-    </>
+    </div>
   );
 };
 

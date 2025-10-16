@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
@@ -14,11 +14,9 @@ import { useThirdParties } from "../billing/third-parties/hooks/useThirdParties.
 import { InvoiceService } from "../../services/api/classes/invoiceService.js";
 import { cleanJsonObject } from "../../services/utilidades.js";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
-import { useCompany } from "../hooks/useCompany.js";
-import { CustomModal } from "../components/CustomModal.js";
 import { FormDebitCreditNotes } from "../invoices/form/FormDebitCreditNotes.js";
-import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
+import { Dialog } from "primereact/dialog";
+import { useSaleInvoicesFormat } from "../documents-generation/hooks/billing/invoices/useSaleInvoiceFormat.js";
 export const SalesInvoices = () => {
   const {
     thirdParties
@@ -38,10 +36,12 @@ export const SalesInvoices = () => {
     page: 1
   });
   const {
-    company,
-    setCompany,
-    fetchCompany
-  } = useCompany();
+    generateFormatSaleInvoices
+  } = useSaleInvoicesFormat();
+  const generateInvoiceRef = useRef(generateFormatSaleInvoices);
+  useEffect(() => {
+    generateInvoiceRef.current = generateFormatSaleInvoices;
+  }, [generateFormatSaleInvoices]);
 
   // Estado para los filtros
   const [filtros, setFiltros] = useState({
@@ -141,6 +141,10 @@ export const SalesInvoices = () => {
       third_party: response.third_party,
       centre_cost: response.centre_cost || null,
       notes: response.notes || [],
+      subtotal: parseFloat(response.subtotal),
+      discount: parseFloat(response.discount),
+      tax: parseFloat(response.iva),
+      withholding_tax: parseFloat(response.withholdings),
       adjustedType: response?.notes && response.notes.length ? response.notes.map(note => {
         note.name = "";
         note.type == "debit" ? note.name = "Débito" : note.name = "Crédito";
@@ -197,381 +201,12 @@ export const SalesInvoices = () => {
     showToast("success", "Éxito", `Descargando Excel para ${invoice.numeroFactura}`);
     // Aquí iría la llamada a la API para descargar Excel
   };
-  const printInvoice = invoice => {
-    const namePDF = `Factura ${invoice.numeroFactura}.`;
-    const companyData = {
-      legal_name: "Centro Oriental de Diabetes y Endocrinologia",
-      document_type: "RNC",
-      document_number: "123003994",
-      address: "Avenida Presidente Estrella Ureña No. 109",
-      phone: "8095961335",
-      email: "info@cenode.com.do"
-    };
-    let dataCompany = {};
-    if (company) {
-      dataCompany = company;
-    } else {
-      dataCompany = companyData;
-    }
-    const pdfConfigView = {
-      name: namePDF,
-      isDownload: false
-    };
-    const htmlInvoice = `
-<style>
-  .invoice-header { width: 100%; }
-  .invoice-title { margin: 0; }
-  .invoice-date { margin: 0; text-align: right; }
-  .invoice-client { margin: 0; }
-  .invoice-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-top: 1rem; 
-  }
-  .table-header {
-    background-color: #132030;
-    color: white;
-    padding: 8px;
-    text-align: left;
-  }
-  .table-cell {
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-  }
-
-  .seccion-final {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .info-qr {
-            width: 40%;
-        }
-
-        .qr-image {
-            width: 120px;
-            height: 120px;
-            background-color: #f0f0f0;
-            border: 1px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .codigo-seguridad {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .fecha-firma {
-            font-style: italic;
-        }
-
-        .totales {
-            text-align: right;
-            width: 65%;
-        }
-
-        .fila-total {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
-        }
-
-        .etiqueta-total {
-            font-weight: bold;
-            width: 150px;
-        }
-
-        .valor-total {
-            width: 120px;
-            text-align: right;
-        }
-</style>
-
-<div>
-  <table class="invoice-header">
-    <tr>
-      <td><h3 class="invoice-title">Factura de venta #${invoice.numeroFactura}</h3></td>
-      <td class="invoice-date">Fecha: ${formatDate(invoice.fecha)}</td>
-    </tr>
-  </table>
-  
-  <p class="invoice-client"><strong>Cliente:</strong> ${invoice.cliente || "Sin cliente"}</p>
-  <p class="invoice-client"><strong>Identificación:</strong> ${invoice.third_party?.document_type || "N/A"}-${invoice.third_party?.document_number || "-"}</p>
-  <p class="invoice-client"><strong>Teléfono:</strong> ${invoice.third_party?.phone || "--"}</p>
-  <p class="invoice-client"><strong>Correo:</strong> ${invoice.third_party?.email || "--"}</p>
-  
-  <table class="invoice-table">
-    <thead>
-      <tr>
-        <th class="table-header">Cantidad</th>
-        <th class="table-header">Descripción</th>
-        <th class="table-header">Precio Unitario</th>
-        <th class="table-header">ITBIS</th>
-        <th class="table-header">Valor</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${invoice.details.map(detail => `
-        <tr>
-          <td class="table-cell">${detail.quantity}</td>
-          <td class="table-cell">${detail.description || "Sin descripción"}</td>
-          <td class="table-cell">${formatCurrency(parseFloat(detail.unit_price) || 0)}</td>
-          <td class="table-cell">${formatCurrency(detail.tax || 0)}</td>
-          <td class="table-cell">${formatCurrency(detail.unit_price * detail.quantity || 0)}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-  </table>
-</div>
-
-        <h4>Pagos</h4>
-  <table class="invoice-table">
-    <thead>
-      <tr>
-        <th class="table-header">Valor</th>
-        <th class="table-header">Metodo</th>
-        <th class="table-header">Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-    ${invoice.payments.map(payment => `
-        <tr>
-        <td class="table-cell">${formatCurrency(parseFloat(payment.amount) || 0)}</td>
-        <td class="table-cell">${payment.payment_method.method}</td>
-        <td class="table-cell">${payment.payment_date}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-    </table>
-
-
-<table style="width: 100%; margin-top: 20px;">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      <div style="width: 120px; height: 120px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-        [Código QR]
-      </div>
-      <div style="font-weight: bold; margin-bottom: 15px;">
-        Código de seguridad: S/DQdu
-      </div>
-    </td>
-
-      <td style="width: 50%; vertical-align: top; text-align: right;">
-      <table style="width: 100%;">
-        <tr>
-          <td style="font-weight: bold;">Subtotal gravado: ${formatCurrency(invoice.monto || 0)}</td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">ITBIS: ${formatCurrency(0)}</td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total: ${formatCurrency(invoice.monto || 0)}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-    `;
-    // showToast(
-    //   "success",
-    //   "Éxito",
-    //   `Preparando factura ${invoice.numeroFactura} para impresión`
-    // );
-    // Aquí iría la llamada a la API para imprimir
-    // generatePDFFromHTML(htmlInvoice, dataCompany, pdfConfigView);
-    generarFormatoContable("FacturaVenta", invoice, "Impresion");
-  };
-  const downloadPdf = invoice => {
-    const namePDF = `Factura ${invoice.numeroFactura}.`;
-    const companyData = {
-      legal_name: "Centro Oriental de Diabetes y Endocrinologia",
-      document_type: "RNC",
-      document_number: "123003994",
-      address: "Avenida Presidente Estrella Ureña No. 109",
-      phone: "8095961335",
-      email: "info@cenode.com.do"
-    };
-    let dataCompany = {};
-    if (company) {
-      dataCompany = company;
-    } else {
-      dataCompany = companyData;
-    }
-    const pdfConfigDown = {
-      name: namePDF,
-      isDownload: true
-    };
-    const htmlInvoice = `
-<style>
-  .invoice-header { width: 100%; }
-  .invoice-title { margin: 0; }
-  .invoice-date { margin: 0; text-align: right; }
-  .invoice-client { margin: 0; }
-  .invoice-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-top: 1rem; 
-  }
-  .table-header {
-    background-color: #132030;
-    color: white;
-    padding: 8px;
-    text-align: left;
-  }
-  .table-cell {
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-  }
-
-  .seccion-final {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .info-qr {
-            width: 40%;
-        }
-
-        .qr-image {
-            width: 120px;
-            height: 120px;
-            background-color: #f0f0f0;
-            border: 1px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .codigo-seguridad {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .fecha-firma {
-            font-style: italic;
-        }
-
-        .totales {
-            text-align: right;
-            width: 65%;
-        }
-
-        .fila-total {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 5px;
-        }
-
-        .etiqueta-total {
-            font-weight: bold;
-            width: 150px;
-        }
-
-        .valor-total {
-            width: 120px;
-            text-align: right;
-        }
-</style>
-
-<div>
-  <table class="invoice-header">
-    <tr>
-      <td><h3 class="invoice-title">Factura de venta #${invoice.numeroFactura}</h3></td>
-      <td class="invoice-date">Fecha: ${formatDate(invoice.fecha)}</td>
-    </tr>
-  </table>
-  
-  <p class="invoice-client"><strong>Cliente:</strong> ${invoice.cliente || "Sin cliente"}</p>
-  <p class="invoice-client"><strong>Identificación:</strong> ${invoice.third_party?.document_type || "N/A"}-${invoice.third_party?.document_number || "-"}</p>
-  <p class="invoice-client"><strong>Teléfono:</strong> ${invoice.third_party?.phone || "--"}</p>
-  <p class="invoice-client"><strong>Correo:</strong> ${invoice.third_party?.email || "--"}</p>
-  
-  <table class="invoice-table">
-    <thead>
-      <tr>
-        <th class="table-header">Cantidad</th>
-        <th class="table-header">Descripción</th>
-        <th class="table-header">Precio Unitario</th>
-        <th class="table-header">ITBIS</th>
-        <th class="table-header">Valor</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${invoice.details.map(detail => `
-        <tr>
-          <td class="table-cell">${detail.quantity}</td>
-          <td class="table-cell">${detail.description || "Sin descripción"}</td>
-          <td class="table-cell">${formatCurrency(parseFloat(detail.unit_price) || 0)}</td>
-          <td class="table-cell">${formatCurrency(detail.tax || 0)}</td>
-          <td class="table-cell">${formatCurrency(detail.unit_price * detail.quantity || 0)}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-  </table>
-</div>
-
-        <h4>Pagos</h4>
-  <table class="invoice-table">
-    <thead>
-      <tr>
-        <th class="table-header">Valor</th>
-        <th class="table-header">Metodo</th>
-        <th class="table-header">Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-    ${invoice.payments.map(payment => `
-        <tr>
-        <td class="table-cell">${formatCurrency(parseFloat(payment.amount) || 0)}</td>
-        <td class="table-cell">${payment.payment_method.method}</td>
-        <td class="table-cell">${payment.payment_date}</td>
-        </tr>
-      `).join("")}
-    </tbody>
-    </table>
-
-
-<table style="width: 100%; margin-top: 20px;">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      <div style="width: 120px; height: 120px; background-color: #f0f0f0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-        [Código QR]
-      </div>
-      <div style="font-weight: bold; margin-bottom: 15px;">
-        Código de seguridad: S/DQdu
-      </div>
-    </td>
-
-      <td style="width: 50%; vertical-align: top; text-align: right;">
-      <table style="width: 100%;">
-        <tr>
-          <td style="font-weight: bold;">Subtotal gravado: ${formatCurrency(invoice.monto || 0)}</td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">ITBIS: ${formatCurrency(0)}</td>
-        </tr>
-        <tr>
-          <td style="font-weight: bold;">Total: ${formatCurrency(invoice.monto || 0)}</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-    `;
-    // showToast(
-    //   "success",
-    //   "Éxito",
-    //   `Descargando PDF de ${invoice.numeroFactura}`
-    // );
-    // Aquí iría la llamada a la API para generar el PDF
-    generatePDFFromHTML(htmlInvoice, dataCompany, pdfConfigDown);
-  };
+  const printInvoice = useCallback(async invoice => {
+    generateInvoiceRef.current(invoice, "Impresion");
+  }, [generateFormatSaleInvoices]);
+  const downloadPdf = useCallback(async invoice => {
+    generateInvoiceRef.current(invoice, "Descargar");
+  }, [generateFormatSaleInvoices]);
   function generateDebitNote(invoice) {
     invoice.noteType = {
       id: "DEBIT",
@@ -903,9 +538,12 @@ export const SalesInvoices = () => {
       centreCost: facturaParaRecibo?.centre_cost || null,
       invoiceType: "sale-invoice"
     }
-  }), /*#__PURE__*/React.createElement(CustomModal, {
-    title: "Generar Factura",
-    show: showModal,
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    style: {
+      width: "85vw"
+    },
+    header: "Generar Factura",
+    visible: showModal,
     onHide: () => setShowModal(false)
   }, /*#__PURE__*/React.createElement(FormDebitCreditNotes, {
     initialData: invoiceToNote,

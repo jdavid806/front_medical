@@ -109,7 +109,7 @@ export const UserRoleApp = ({
                     </div>
                 )}
 
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="d-flex justify-content-between align-items-center">
                     <h4 className="mb-1">Roles de Usuario</h4>
                     <div className="text-end mb-2">
                         <button

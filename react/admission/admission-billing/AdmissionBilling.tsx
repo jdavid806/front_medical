@@ -524,7 +524,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         visible={internalVisible}
         onHide={handleHide}
         header="Nueva Factura"
-        style={{ width: "100vw", maxWidth: "1600px" }}
+        style={{ width: "75vw", maxWidth: "1600px" }}
         maximizable
       >
         <Steps

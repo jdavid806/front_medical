@@ -157,32 +157,31 @@ export const TodayAppointmentsTable: React.FC<
   return (
     <>
       <Toast ref={toast} />
-      <div className="d-flex justify-content-end gap-3 mb-4">
-        <Button
-          label="Control de turnos"
-          icon={<i className="fa-solid fa-clock me-2">‌</i>}
-          className="p-button-primary me-2"
-          onClick={() => setShowTicketControl(true)}
-        />
-        <Button
-          label="Solicitar turno"
-          icon={<i className="fa-solid fa-clipboard-check me-2">‌</i>}
-          className="p-button-primary me-2"
-          onClick={() => setShowTicketRequest(true)}
-        />
-        <Button
-          label="Crear Cita"
-          icon={<i className="fa-solid fa-comment-medical me-2">‌</i>}
-          className="p-button-primary"
-          onClick={() => setShowAppointmentForm(true)}
-        />
-      </div>
-
       <div
-        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-        style={{ minHeight: "400px" }}
+        className="card text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "400px", marginTop: "-20px" }}
       >
         <div className="card-body h-100 w-100 d-flex flex-column">
+          <div className="d-flex justify-content-end gap-3 mb-2" style={{ marginTop: "-30px" }}>
+            <Button
+              label="Control de turnos"
+              icon={<i className="fa-solid fa-clock me-2">‌</i>}
+              className="p-button-primary me-2"
+              onClick={() => setShowTicketControl(true)}
+            />
+            <Button
+              label="Solicitar turno"
+              icon={<i className="fa-solid fa-clipboard-check me-2">‌</i>}
+              className="p-button-primary me-2"
+              onClick={() => setShowTicketRequest(true)}
+            />
+            <Button
+              label="Crear Cita"
+              icon={<i className="fa-solid fa-comment-medical me-2">‌</i>}
+              className="p-button-primary"
+              onClick={() => setShowAppointmentForm(true)}
+            />
+          </div>
           <CustomPRTable
             columns={columns}
             data={appointments}
@@ -263,7 +262,7 @@ const TableMenu: React.FC<{
 
   return <>
     <Button
-      className="btn-primary flex items-center gap-2"
+      className="p-button-primaryflex items-center gap-2"
       onClick={(e) => menu.current?.toggle(e)}
       aria-controls={`popup_menu_${rowData.id}`}
       aria-haspopup

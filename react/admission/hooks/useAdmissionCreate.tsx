@@ -50,6 +50,7 @@ export const useAdmissionCreate = () => {
                 },
                 invoice_detail: formData.products.map(product => ({
                     product_id: product.id,
+                    type_product: "",
                     description: product.description,
                     quantity: product.quantity,
                     unit_price: product.price,

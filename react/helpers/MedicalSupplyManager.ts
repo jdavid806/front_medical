@@ -11,7 +11,6 @@ interface MedicalSupplyRequestedBy {
 
 export class MedicalSupplyManager {
     private data: MedicalSupply;
-    private requestedBy_: MedicalSupplyRequestedBy | null;
 
     constructor(data: MedicalSupply) {
         this.data = data;
@@ -33,11 +32,12 @@ export class MedicalSupplyManager {
     }
 
     get requestedBy(): MedicalSupplyRequestedBy | null {
-        return this.requestedBy_;
-    }
-
-    set requestedBy(value: MedicalSupplyRequestedBy | null) {
-        this.requestedBy_ = value;
+        return {
+            name: `${this.data.requested_by_user?.first_name || ''} ${this.data.requested_by_user?.middle_name || ''} ${this.data.requested_by_user?.last_name || ''} ${this.data.requested_by_user?.second_last_name || ''}`,
+            email: this.data.requested_by_user?.email || '--',
+            phone: this.data.requested_by_user?.phone || '--',
+            address: this.data.requested_by_user?.address || '--'
+        };
     }
 
     get statusLabel(): string {

@@ -188,21 +188,7 @@ export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationCo
         },
       }}
     >
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="mb-1">Configuración de Retenciones</h4>
-        <div className="text-end">
-          <button
-            className="btn btn-primary d-flex align-items-center"
-            onClick={onCreate}
-            disabled={createLoading || updateLoading || deleteLoading}
-          >
-            <i className="fas fa-plus me-2"></i>
-            {createLoading || updateLoading
-              ? "Procesando..."
-              : "Nueva Retención"}
-          </button>
-        </div>
-      </div>
+
 
       {error && (
         <div className="alert alert-danger" role="alert">
@@ -215,12 +201,28 @@ export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationCo
         style={{ minHeight: "400px" }}
       >
         <div className="card-body h-100 w-100 d-flex flex-column">
+          <div className="text-end pt-3 mb-2">
+            <Button
+              className="p-button-primary"
+              onClick={onCreate}
+              disabled={createLoading || updateLoading || deleteLoading}
+            >
+              <i className="fas fa-plus me-2"></i>
+              {createLoading || updateLoading
+                ? "Procesando..."
+                : "Nueva Retención"}
+            </Button>
+          </div>
+
           <RetentionConfigTable
             retentions={enrichedRetentions}
             onEditItem={handleTableEdit}
             onDeleteItem={handleDeleteRetention}
             loading={loading || isLoadingAccounts}
+            onReload={refreshRetentions}
+
           />
+
         </div>
       </div>
       <RetentionModalConfig

@@ -10,6 +10,7 @@ import { CustomFormModal } from "../components/CustomFormModal";
 import { MakeRequestForm, MakeRequestFormInputs } from "../general-request/components/MakeRequestForm";
 import { RequestCancellationTableAction } from "../components/table-actions/RequestCancellationTableAction";
 import { cancelConsultationClaim } from "../../services/koneksiService";
+import { formatDate } from "../../services/utilidades";
 
 export interface PharmacyTableFilters {
     selectedDate: Nullable<(Date | null)[]>;
@@ -27,7 +28,7 @@ interface pharmacyInvoicesI {
     status: string;
     originalItem?: any;
     koneksiClaimId?: string | null;
-    appointment_id?: string; // Para generateInvoice
+    appointment_id?: string;
 }
 
 interface PharmacyTableProps {
@@ -88,31 +89,14 @@ export const PharmacyTable: React.FC<PharmacyTableProps> = ({
         onFilter();
     }, [selectedClient, selectedStatus, selectedDate]);
 
-    // FUNCIONES COPIADAS DIRECTAMENTE DEL ADMISSIONTABLE
-    const generateInvoice = async (appointmentId: string, download: boolean = false): Promise<void> => {
-        try {
-            //@ts-ignore - Esta función ya existe en el contexto global
-            await generateInvoice(appointmentId, download);
-
-            if (download) {
-                SwalManager.success({
-                    title: "Éxito",
-                    text: "Factura descargada correctamente.",
-                });
-            } else {
-                SwalManager.success({
-                    title: "Éxito",
-                    text: "Factura impresa correctamente.",
-                });
-            }
-        } catch (error) {
-            console.error("Error al generar factura:", error);
-            SwalManager.error({
-                title: "Error",
-                text: "No se pudo generar la factura.",
-            });
-        }
-    };
+    // ELIMINA ESTA FUNCIÓN LOCAL - ES LA QUE CAUSA EL CONFLICTO
+    // const generateInvoice = async (appointmentId: string, download: boolean = false): Promise<void> => {
+    //     try {
+    //         //@ts-ignore - Esta función ya existe en el contexto global
+    //         await generateInvoice(appointmentId, download);
+    //         ...
+    //     }
+    // };
 
     const cancelClaim = (claimId: string) => {
         SwalManager.confirmCancel(async () => {
@@ -142,6 +126,41 @@ export const PharmacyTable: React.FC<PharmacyTableProps> = ({
     const handleCancelInvoice = (invoiceId: string) => {
         setSelectedInvoiceId(invoiceId);
         setShowCancellationModal(true);
+    };
+
+    const handleRegisterPayment = (invoiceId: string, currentInvoice: pharmacyInvoicesI) => {
+        SwalManager.prompt({
+            title: "Registrar Pago",
+            text: `Ingrese el monto del pago (Máximo: $${currentInvoice.remaining_amount.toFixed(2)}):`,
+            input: "number",
+            inputValue: currentInvoice.remaining_amount.toFixed(2),
+            inputAttributes: {
+                min: "0",
+                max: currentInvoice.remaining_amount.toString(),
+                step: "0.01"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Registrar Pago",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                const amount = parseFloat(result.value);
+                if (amount > 0 && amount <= currentInvoice.remaining_amount) {
+                    // Lógica para registrar el pago
+                    console.log(`Registrando pago de $${amount} para factura ${invoiceId}`);
+                    SwalManager.success({
+                        title: "Éxito",
+                        text: `Pago de $${amount.toFixed(2)} registrado correctamente.`,
+                    });
+                    onReload && onReload();
+                } else {
+                    SwalManager.error({
+                        title: "Error",
+                        text: "El monto ingresado no es válido.",
+                    });
+                }
+            }
+        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -202,12 +221,26 @@ export const PharmacyTable: React.FC<PharmacyTableProps> = ({
                         </a>
                     </li>
 
+                    {/* IMPRIMIR FACTURA - EXACTAMENTE IGUAL QUE EN ADMISSIONTABLE */}
                     <li>
                         <a
                             className="dropdown-item"
                             href="#"
                             onClick={async () => {
-                                await generateInvoice(data.originalItem?.appointment_id || data.id, false);
+                                try {
+                                    //@ts-ignore - USAR DIRECTAMENTE LA FUNCIÓN GLOBAL
+                                    await generateInvoice(data.originalItem?.appointment_id || data.id, false);
+                                    SwalManager.success({
+                                        title: "Éxito",
+                                        text: "Factura impresa correctamente.",
+                                    });
+                                } catch (error) {
+                                    console.error("Error al imprimir factura:", error);
+                                    SwalManager.error({
+                                        title: "Error",
+                                        text: "No se pudo imprimir la factura.",
+                                    });
+                                }
                             }}
                         >
                             <div className="d-flex gap-2 align-items-center">
@@ -217,12 +250,26 @@ export const PharmacyTable: React.FC<PharmacyTableProps> = ({
                         </a>
                     </li>
 
+                    {/* DESCARGAR FACTURA - EXACTAMENTE IGUAL QUE EN ADMISSIONTABLE */}
                     <li>
                         <a
                             className="dropdown-item"
                             href="#"
                             onClick={async () => {
-                                await generateInvoice(data.originalItem?.appointment_id || data.id, true);
+                                try {
+                                    //@ts-ignore - USAR DIRECTAMENTE LA FUNCIÓN GLOBAL
+                                    await generateInvoice(data.originalItem?.appointment_id || data.id, true);
+                                    SwalManager.success({
+                                        title: "Éxito",
+                                        text: "Factura descargada correctamente.",
+                                    });
+                                } catch (error) {
+                                    console.error("Error al descargar factura:", error);
+                                    SwalManager.error({
+                                        title: "Error",
+                                        text: "No se pudo descargar la factura.",
+                                    });
+                                }
                             }}
                         >
                             <div className="d-flex gap-2 align-items-center">
@@ -232,31 +279,12 @@ export const PharmacyTable: React.FC<PharmacyTableProps> = ({
                         </a>
                     </li>
 
-                    {data.status === "pending" && (
+                    {data.status === "pending" && data.remaining_amount > 0 && (
                         <li>
                             <a
                                 className="dropdown-item"
                                 href="#"
-                                onClick={() => {
-                                    SwalManager.prompt({
-                                        title: "Registrar Pago",
-                                        text: "Ingrese el monto del pago:",
-                                        input: "number",
-                                        inputPlaceholder: "0.00",
-                                    }).then((result) => {
-                                        if (result.isConfirmed && result.value) {
-                                            const amount = parseFloat(result.value);
-                                            if (amount > 0) {
-                                                // Lógica para registrar el pago
-                                                console.log(`Registrando pago de $${amount} para factura ${data.id}`);
-                                                SwalManager.success({
-                                                    title: "Éxito",
-                                                    text: `Pago de $${amount} registrado correctamente.`,
-                                                });
-                                            }
-                                        }
-                                    });
-                                }}
+                                onClick={() => handleRegisterPayment(data.id, data)}
                             >
                                 <div className="d-flex gap-2 align-items-center">
                                     <i className="fa-solid fa-money-bill" style={{ width: "20px" }}></i>

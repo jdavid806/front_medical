@@ -717,6 +717,7 @@ export const PurchaseBilling = ({
         };
         return {
           product_id: product.typeProduct === "assets" || product.typeProduct === "spent" ? null : Number(product.product),
+          product_type: product.typeProduct,
           quantity: product.quantity,
           unit_price: product.price,
           discount: discountAmount,
@@ -1870,7 +1871,7 @@ const DiscountColumnBody = ({
     value: rowData.discount,
     placeholder: localDiscountType === "percentage" ? "0" : "0.00",
     className: "flex-grow-1",
-    suffix: localDiscountType === 'percentage' ? "%" : "",
+    suffix: localDiscountType === "percentage" ? "%" : "",
     mode: localDiscountType === "fixed" ? "currency" : "decimal",
     currency: localDiscountType === "fixed" ? "DOP" : undefined,
     locale: "es-DO",

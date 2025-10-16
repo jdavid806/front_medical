@@ -6,10 +6,10 @@ export const useSuppliesDeliveries = () => {
     const [suppliesDeliveries, setSuppliesDeliveries] = useState<MedicalSupply[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchSuppliesDeliveries = async () => {
+    const fetchSuppliesDeliveries = async ({ search, status }: { search?: string; status?: string }) => {
         setLoading(true);
         try {
-            const response: MedicalSupplyResponse = await suppliesService.getAllSupplies();
+            const response: MedicalSupplyResponse = await suppliesService.filterSupplies({ search, status });
             setSuppliesDeliveries(response.data);
         } catch (error) {
             console.error(error);
@@ -19,7 +19,7 @@ export const useSuppliesDeliveries = () => {
     };
 
     useEffect(() => {
-        fetchSuppliesDeliveries();
+        fetchSuppliesDeliveries({});
     }, []);
 
     return {

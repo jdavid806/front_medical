@@ -1,15 +1,15 @@
-import React, { useState, useRef } from "react";
-import { Toast } from 'primereact/toast';
-import CustomDataTable from "../components/CustomDataTable.js";
-import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
-import { EditTableAction } from "../components/table-actions/EditTableAction.js";
-import { DeleteTableAction } from "../components/table-actions/DeleteTableAction.js";
+import React, { useState, useEffect, useRef } from "react";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { UserAssistantForm } from "./UserAssistantForm.js";
 import { useUserAssistantBulkCreate } from "./hooks/useUserAssistantBulkCreate.js";
 import { userAssistantService } from "../../services/api/index.js";
+import { CustomPRTable } from "../components/CustomPRTable.js";
 import { GoogleCalendarModal } from "./components/GoogleCalendarModal.js";
-const UserTable = ({
+export const UserTable = ({
   users,
   onEditItem,
   onDeleteItem,
@@ -17,8 +17,18 @@ const UserTable = ({
   onAddStamp,
   onDeleteSignature,
   onDeleteStamp,
-  onReload
+  onReload,
+  loading = false
 }) => {
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filtros, setFiltros] = useState({
+    fullName: "",
+    role: "",
+    city: "",
+    email: ""
+  });
   const [showAssistantsModal, setShowAssistantsModal] = useState(false);
   const [assistantsFormInitialData, setAssistantsFormInitialData] = useState();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -31,6 +41,80 @@ const UserTable = ({
   const {
     createUserAssistantBulk
   } = useUserAssistantBulkCreate();
+  const syncFilteredData = () => {
+    let result = [...users];
+    if (filtros.fullName) {
+      result = result.filter(user => user.fullName.toLowerCase().includes(filtros.fullName.toLowerCase()));
+    }
+    if (filtros.role) {
+      result = result.filter(user => user.role.toLowerCase().includes(filtros.role.toLowerCase()));
+    }
+    setFilteredUsers(result);
+  };
+  useEffect(() => {
+    syncFilteredData();
+  }, [users, filtros]);
+  const handleFilterChange = (field, value) => {
+    setFiltros(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  const handleSearchChange = searchValue => {
+    console.log("Search value:", searchValue);
+  };
+  const limpiarFiltros = () => {
+    setFiltros({
+      fullName: "",
+      role: "",
+      city: "",
+      email: ""
+    });
+  };
+  const handleRefresh = async () => {
+    limpiarFiltros();
+    if (onReload) {
+      await onReload();
+    }
+  };
+  const showToast = (severity, summary, detail) => {
+    toast.current?.show({
+      severity,
+      summary,
+      detail,
+      life: 3000
+    });
+  };
+  const confirmDelete = user => {
+    setUserToDelete(user);
+    setDeleteDialogVisible(true);
+  };
+  const deleteUser = async () => {
+    if (userToDelete && onDeleteItem) {
+      await onDeleteItem(userToDelete.id);
+      showToast("success", "Éxito", `Usuario ${userToDelete.fullName} eliminado`);
+      if (onReload) {
+        await onReload();
+      }
+    }
+    setDeleteDialogVisible(false);
+    setUserToDelete(null);
+  };
+  const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-end gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    icon: "pi pi-times",
+    className: "p-button-text",
+    onClick: () => setDeleteDialogVisible(false)
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Eliminar",
+    icon: "pi pi-check",
+    className: "p-button-danger",
+    onClick: deleteUser
+  }));
+
+  // Funciones existentes (sin cambios)
   const handleFileChange = (event, type) => {
     const file = event.target.files?.[0] || null;
     setSelectedFile(file);
@@ -94,127 +178,182 @@ const UserTable = ({
     setCurrentEmail(data.email);
     setShowGoogleCalendarModal(true);
   };
-  const columns = [{
-    data: "fullName"
-  }, {
-    data: "role"
-  }, {
-    data: "city"
-  }, {
-    data: "phone"
-  }, {
-    data: "email"
-  }, {
-    orderable: false,
-    searchable: false
-  }];
-  const slots = {
-    5: (cell, data) => /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement("li", {
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando usuario con ID:", rowData.id);
+      onEdit(rowData.id);
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar usuario con ID:", rowData.id);
+      onDelete(rowData);
+    };
+    const handleSignature = () => {
+      setCurrentUserId(rowData.id);
+      setActionType("signature");
+      document.getElementById("fileInput")?.click();
+    };
+    const handleStamp = () => {
+      setCurrentUserId(rowData.id);
+      setActionType("stamp");
+      document.getElementById("fileInput")?.click();
+    };
+    const handleGoogleCalendar = () => {
+      openGoogleCalendarModal(rowData);
+    };
+    const handleAssistants = () => {
+      openAssistantsModal(rowData.id);
+    };
+    const menuItems = [{
+      label: "Editar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-edit me-2"
+      }),
+      command: handleEdit
+    }, {
+      label: "Eliminar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-trash me-2"
+      }),
+      command: handleDelete
+    }];
+
+    // Agregar items específicos para DOCTOR
+    if (rowData.roleGroup === "DOCTOR") {
+      menuItems.push({
+        label: rowData.signatureMinioUrl ? "Actualizar firma" : "Añadir firma",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fas fa-file-signature me-2"
+        }),
+        command: handleSignature
+      }, {
+        label: rowData.imageMinioUrl ? "Actualizar sello" : "Añadir sello",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fas fa-stamp me-2"
+        }),
+        command: handleStamp
+      }, {
+        label: "Configurar Google Calendar",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fas fa-calendar-alt me-2"
+        }),
+        command: handleGoogleCalendar
+      }, {
+        label: "Gestionar asistentes",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fas fa-user-nurse me-2"
+        }),
+        command: handleAssistants
+      });
+    }
+    return /*#__PURE__*/React.createElement("div", {
       style: {
-        marginBottom: "8px"
+        position: "relative"
       }
-    }, /*#__PURE__*/React.createElement(EditTableAction, {
-      onTrigger: () => onEditItem && onEditItem(data.id)
-    })), /*#__PURE__*/React.createElement("li", {
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "btn-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
       style: {
-        marginBottom: "8px"
+        zIndex: 9999
       }
-    }, /*#__PURE__*/React.createElement(DeleteTableAction, {
-      onTrigger: () => onDeleteItem && onDeleteItem(data.id)
-    })), data.roleGroup === "DOCTOR" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", {
-      style: {
-        marginBottom: "8px"
-      }
-    }, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => {
-        setCurrentUserId(data.id);
-        setActionType("signature");
-        document.getElementById("fileInput")?.click();
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-file-signature",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, data.signatureMinioUrl ? "Actualizar firma" : "Añadir firma")))), /*#__PURE__*/React.createElement("li", {
-      style: {
-        marginBottom: "8px"
-      }
-    }, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => {
-        setCurrentUserId(data.id);
-        setActionType("stamp");
-        document.getElementById("fileInput")?.click();
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-stamp",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, data.imageMinioUrl ? "Actualizar sello" : "Añadir sello")))), /*#__PURE__*/React.createElement("li", {
-      style: {
-        marginBottom: "8px"
-      }
-    }, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => openGoogleCalendarModal(data)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-calendar-alt",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Configurar Google Calendar")))), /*#__PURE__*/React.createElement("li", {
-      style: {
-        marginBottom: "8px"
-      }
-    }, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => openAssistantsModal(data.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-user-nurse",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Gestionar asistentes"))))))
+    }));
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: onEditItem ? onEditItem : () => {},
+      onDelete: confirmDelete
+    }));
+  };
+
+  // Mapear los datos para la tabla
+  const tableItems = filteredUsers.map(user => ({
+    id: user.id,
+    fullName: user.fullName,
+    role: user.role,
+    city: user.city,
+    phone: user.phone,
+    email: user.email,
+    actions: user
+  }));
+  const columns = [{
+    field: 'fullName',
+    header: 'Nombre',
+    sortable: true
+  }, {
+    field: 'role',
+    header: 'Rol',
+    sortable: true
+  }, {
+    field: 'city',
+    header: 'Ciudad',
+    sortable: true
+  }, {
+    field: 'phone',
+    header: 'Número de contacto',
+    sortable: true
+  }, {
+    field: 'email',
+    header: 'Correo',
+    sortable: true
+  }, {
+    field: 'actions',
+    header: 'Acciones',
+    body: rowData => actionBodyTemplate(rowData.actions),
+    exportable: false
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    visible: deleteDialogVisible,
+    style: {
+      width: "450px"
+    },
+    header: "Confirmar",
+    modal: true,
+    footer: deleteDialogFooter,
+    onHide: () => setDeleteDialogVisible(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex align-items-center justify-content-center"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-exclamation-triangle mr-3",
+    style: {
+      fontSize: "2rem",
+      color: "#F8BB86"
+    }
+  }), userToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar al usuario ", /*#__PURE__*/React.createElement("b", null, userToDelete.fullName), "?"))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
-  }, /*#__PURE__*/React.createElement(CustomDataTable, {
-    data: users,
-    slots: slots,
-    columns: columns
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Nombre"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Rol"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Ciudad"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "N\xFAmero de contacto"), /*#__PURE__*/React.createElement("th", {
-    className: "border-top custom-th"
-  }, "Correo"), /*#__PURE__*/React.createElement("th", {
-    className: "text-end align-middle pe-0 border-top mb-2",
-    scope: "col"
-  })))))), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
+    loading: false,
+    onSearch: handleSearchChange,
+    onReload: handleRefresh
+  }))), /*#__PURE__*/React.createElement("input", {
     id: "fileInput",
     type: "file",
     accept: "image/*",
@@ -278,11 +417,11 @@ const UserTable = ({
       setPreviewUrl(null);
       setSelectedFile(null);
     }
-  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signature ? "Eliminar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.stamp ? "Eliminar sello" : "Eliminar"), /*#__PURE__*/React.createElement("button", {
+  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signatureMinioUrl ? "Eliminar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.imageMinioUrl ? "Eliminar sello" : "Eliminar"), /*#__PURE__*/React.createElement("button", {
     type: "button",
     className: "btn btn-primary",
     onClick: handleConfirm
-  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signature ? "Actualizar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.stamp ? "Actualizar sello" : "Confirmar"))))), /*#__PURE__*/React.createElement(CustomFormModal, {
+  }, actionType === "signature" && users.find(user => user.id === currentUserId)?.signatureMinioUrl ? "Actualizar firma" : actionType === "stamp" && users.find(user => user.id === currentUserId)?.imageMinioUrl ? "Actualizar sello" : "Confirmar"))))), /*#__PURE__*/React.createElement(CustomFormModal, {
     show: showAssistantsModal,
     formId: "assistantsForm",
     title: "Gestionar asistentes",

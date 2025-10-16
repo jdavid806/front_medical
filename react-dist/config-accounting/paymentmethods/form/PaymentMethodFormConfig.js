@@ -14,10 +14,9 @@ const categories = [{
 }, {
   label: "Vencimiento Proveedores",
   value: "supplier_expiration"
-}, {
-  label: "Transferencia",
-  value: "transfer"
-}, {
+},
+// { label: "Transferencia", value: "transfer" },
+{
   label: "Vencimiento Clientes",
   value: "customer_expiration"
 }, {

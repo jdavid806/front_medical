@@ -408,13 +408,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       let discountAmount = 0;
 
       if (product.discountType === "percentage") {
-        discountAmount = subtotal * ((Number(product.discount) || 0) / 100)
+        discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
       } else {
         discountAmount = product.discount;
       }
 
       const subtotalAfterDiscount = subtotal - discountAmount;
-      const taxValue = subtotalAfterDiscount * (product.tax / 100)
+      const taxValue = subtotalAfterDiscount * (product.tax / 100);
 
       return total + taxValue;
     }, 0);
@@ -1012,6 +1012,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             product.typeProduct === "assets" || product.typeProduct === "spent"
               ? null
               : Number(product.product),
+          product_type: product.typeProduct,
           quantity: product.quantity,
           unit_price: product.price,
           discount: discountAmount,
@@ -2292,7 +2293,10 @@ const ProductColumnBody = ({
   }, [type, currentType, products, spentAccounts, propertyAccounts]);
 
   async function fetchAccountingAccounts() {
-    const data: any = await accountingAccountsService.getAccountingAccountWithColumneUnique("sub_account");
+    const data: any =
+      await accountingAccountsService.getAccountingAccountWithColumneUnique(
+        "sub_account"
+      );
 
     const dataMapped = data
       .map((item: any) => item.sub_account)
@@ -2439,7 +2443,7 @@ const DiscountColumnBody = ({
         value={rowData.discount}
         placeholder={localDiscountType === "percentage" ? "0" : "0.00"}
         className="flex-grow-1"
-        suffix={localDiscountType === 'percentage' ? "%" : ""}
+        suffix={localDiscountType === "percentage" ? "%" : ""}
         mode={localDiscountType === "fixed" ? "currency" : "decimal"}
         currency={localDiscountType === "fixed" ? "DOP" : undefined}
         locale="es-DO"

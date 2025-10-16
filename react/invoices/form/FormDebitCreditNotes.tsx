@@ -13,9 +13,17 @@ import {
 import { useThirdParties } from "../../billing/third-parties/hooks/useThirdParties";
 import { useCentresCosts } from "../../centres-cost/hooks/useCentresCosts";
 import { getUserLogged } from "../../../services/utilidades";
-import { productService, invoiceService } from "../../../services/api";
+import {
+  productService,
+  invoiceService,
+  paymentMethodService,
+} from "../../../services/api";
 import { useTaxes } from "../hooks/useTaxes";
 import { useBillingByType } from "../../billing/hooks/useBillingByType";
+import {
+  PaymentMethodsSection,
+  PaymentMethod,
+} from "../../components/billing/CustomPaymentMethods";
 
 // Definición de tipos
 
@@ -104,10 +112,29 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     },
   ]);
 
+  const [paymentMethodsArray, setPaymentMethodsArray] = useState<
+    PaymentMethod[]
+  >([
+    {
+      id: generateId(),
+      method: "",
+      authorizationNumber: "",
+      value: "",
+    },
+  ]);
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState<any[]>(
+    []
+  );
+
+  const handlePaymentMethodsChange = (paymentMethods: PaymentMethod[]) => {
+    setPaymentMethodsArray(paymentMethods);
+  };
+
   const noteType: any = watch("noteType");
 
   useEffect(() => {
     if (invoices.length && initialData) {
+      loadPaymentMethods();
       const invoice = invoices.filter(
         (invoice: any) => invoice.id === Number(initialData.id)
       )[0];
@@ -138,6 +165,22 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     loadInvoices();
     loadProducts();
   }, []);
+
+  const loadPaymentMethods = async () => {
+    const methods = await paymentMethodService.getAll();
+    let methodsFiltered: any[] = [];
+
+    if (initialData.noteType.id === "DEBIT") {
+      methodsFiltered = methods.filter(
+        (method: any) => method.payment_type === "sale"
+      );
+    } else {
+      methodsFiltered = methods.filter(
+        (method: any) => method.payment_type === "purchase"
+      );
+    }
+    setAvailablePaymentMethods(methodsFiltered);
+  };
 
   async function loadInvoices() {
     const invoices = await invoiceService.getTogenerateNotes();
@@ -213,6 +256,33 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     return billingItems.reduce((total, item) => {
       return total + calculateLineTotal(item);
     }, 0);
+  };
+
+  const calculateAdjustmentDifference = (): number => {
+    const currentTotal = calculateTotal(); // Total actual con los ajustes
+
+    // Calcular el total original basado en los valores originales de la factura
+    const originalTotal = billingItems.reduce((total, item) => {
+      const originalQuantity = item.originalQuantity || 0;
+      const originalUnitPrice = item.originalUnitPrice || 0;
+      const discount = Number(item.discount) || 0;
+      const taxRate =
+        typeof item.tax === "object"
+          ? item.tax.percentage
+          : Number(item.tax) || 0;
+
+      const subtotal = originalQuantity * originalUnitPrice;
+      const discountAmount = subtotal * (discount / 100);
+      const subtotalAfterDiscount = subtotal - discountAmount;
+      const taxAmount = subtotalAfterDiscount * (taxRate / 100);
+
+      return total + (subtotalAfterDiscount + taxAmount);
+    }, 0);
+
+    // La diferencia es el total actual menos el total original
+    const difference = currentTotal - originalTotal;
+
+    return parseFloat(difference.toFixed(2));
   };
 
   // Funciones para manejar items de facturación
@@ -298,7 +368,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     const billingTypeMap = {
       DEBIT: "debit_note",
       CREDIT: "credit_note",
-    }
+    };
     const billing = await fetchBillingByType(billingTypeMap[noteType?.id]);
     const noteData = {
       invoice_id: selectedInvoice?.id,
@@ -313,6 +383,13 @@ export const FormDebitCreditNotes: React.FC<any> = ({
         };
       }),
       billing: billing.data,
+      payments: paymentMethodsArray.map((payment:any) => {
+        return {
+          payment_method_id: payment.method,
+          payment_date: new Date(),
+          amount: payment.value
+        }
+      }),
     };
     if (!validateForm) {
       switch (noteType?.id) {
@@ -336,7 +413,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                 }, 1000);
               }
             })
-            .catch((error) => { });
+            .catch((error) => {});
           break;
         case "CREDIT":
           invoiceService
@@ -358,7 +435,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                 }, 1000);
               }
             })
-            .catch((error) => { });
+            .catch((error) => {});
           break;
       }
     }
@@ -546,11 +623,11 @@ export const FormDebitCreditNotes: React.FC<any> = ({
               noteType
                 ? noteType.id === "DEBIT"
                   ? `Mínimo: ${formatCurrency(
-                    rowData.originalUnitPrice || 0
-                  )} (valor original)`
+                      rowData.originalUnitPrice || 0
+                    )} (valor original)`
                   : `Máximo: ${formatCurrency(
-                    rowData.originalUnitPrice || 0
-                  )} (valor original)`
+                      rowData.originalUnitPrice || 0
+                    )} (valor original)`
                 : "Seleccione tipo de nota"
             }
           />
@@ -822,8 +899,9 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                   type="button"
                   icon="pi pi-plus"
                   label={`${!noteType ? "Seleccione tipo" : "Añadir "}`}
-                  className={`btn ${!noteType ? "btn-secondary" : "btn-primary"
-                    }`}
+                  className={`btn ${
+                    !noteType ? "btn-secondary" : "btn-primary"
+                  }`}
                   onClick={addBillingItem}
                   disabled={!noteType || noteType?.id === "CREDIT"}
                 />
@@ -930,9 +1008,34 @@ export const FormDebitCreditNotes: React.FC<any> = ({
                       />
                     </div>
                   </div>
+                  <div className="col-fixed">
+                    <div className="form-group">
+                      <label className="form-label">
+                        {noteType?.id === "DEBIT"
+                          ? "Ajuste a Favor"
+                          : "Ajuste en Contra"}
+                      </label>
+                      <InputNumber
+                        value={calculateAdjustmentDifference()}
+                        className="w-100 font-weight-bold"
+                        mode="currency"
+                        currency="DOP"
+                        locale="es-DO"
+                        readOnly
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <PaymentMethodsSection
+              totalInvoice={calculateAdjustmentDifference()}
+              paymentMethods={paymentMethodsArray}
+              availablePaymentMethods={availablePaymentMethods}
+              onPaymentMethodsChange={handlePaymentMethodsChange}
+              labelTotal="Total ajuste"
+            />
 
             {/* Botones de Acción */}
             <div className="d-flex justify-content-end gap-3 mb-4">

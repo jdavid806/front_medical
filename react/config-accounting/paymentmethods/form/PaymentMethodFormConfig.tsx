@@ -15,7 +15,7 @@ import { Checkbox } from 'primereact/checkbox';
 const categories = [
   { label: "Transaccional", value: "transactional" },
   { label: "Vencimiento Proveedores", value: "supplier_expiration" },
-  { label: "Transferencia", value: "transfer" },
+  // { label: "Transferencia", value: "transfer" },
   { label: "Vencimiento Clientes", value: "customer_expiration" },
   { label: "Anticipo Clientes", value: "customer_advance" },
   { label: "Anticipo Proveedores", value: "supplier_advance" },

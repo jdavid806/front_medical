@@ -37,7 +37,7 @@ export const RetentionsSection = ({
           discount = product.discount;
         }
         const subtotalAfterDiscount = subtotal - discount;
-        const taxValue = subtotalAfterDiscount * (product.tax || 0) / 100;
+        const taxValue = subtotalAfterDiscount * (product.tax || product.iva) / 100;
         return total + taxValue;
       }, 0);
       return productsFiltered * (retention.percentage || 0) / 100;

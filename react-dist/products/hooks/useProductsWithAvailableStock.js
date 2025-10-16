@@ -13,6 +13,7 @@ export const useProductsWithAvailableStock = () => {
           id: product.id,
           name: concentration ? `${product.attributes.name} - ${concentration} | Stock: ${product.attributes.product_stock}` : `${product.attributes.name} | Stock: ${product.attributes.product_stock}`,
           product_stock: product.attributes.product_stock,
+          pharmacy_product_stock: product.attributes.pharmacy_product_stock,
           sale_price: product.attributes.sale_price
         };
       });

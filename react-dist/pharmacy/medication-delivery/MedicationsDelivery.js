@@ -35,6 +35,7 @@ export const ProductsDelivery = () => {
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, selectedDelivery && /*#__PURE__*/React.createElement(MedicationDeliveryDetail, {
-    deliveryId: selectedDelivery?.id
+    deliveryId: selectedDelivery?.id,
+    selectedConvenio: selectedConvenio
   }), !selectedDelivery && /*#__PURE__*/React.createElement("p", null, "Seleccione un pedido")))))));
 };

@@ -18,7 +18,7 @@ $_SESSION["ID"] = 1;
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="https://erp.medicalsoftplus.com/pseudoiconomedical.png" type="image/x-icon">
 
   <!-- ===============================================-->
@@ -50,11 +50,6 @@ $_SESSION["ID"] = 1;
   <!-- ===============================================-->
   <!--    Favicons-->
   <!-- ===============================================-->
-  <!-- <link rel="apple-touch-icon" sizes="180x180" href="<?= $BASE ?>assets/img/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= $BASE ?>assets/img/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= $BASE ?>assets/img/favicons/favicon-16x16.png">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= $BASE ?>assets/img/favicons/favicon.ico">
-    <link rel="manifest" href="<?= $BASE ?>assets/img/favicons/manifest.json"> -->
   <meta name="msapplication-TileImage" content="<?= $BASE ?>assets/img/favicons/mstile-150x150.png">
   <meta name="theme-color" content="#ffffff">
   <script src="<?= $BASE ?>vendors/simplebar/simplebar.min.js"></script>
@@ -97,6 +92,9 @@ $_SESSION["ID"] = 1;
   <link
     href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&display=swap"
     rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/grift" rel="stylesheet">
+
 
   <link href="<?= $BASE ?>vendors/leaflet/leaflet.css" rel="stylesheet">
   <link href="<?= $BASE ?>vendors/leaflet.markercluster/MarkerCluster.css" rel="stylesheet">
@@ -106,35 +104,107 @@ $_SESSION["ID"] = 1;
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
 
-  <!-- DATATABLES -->
+  <!-- SWEET ALERT -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+  <!-- Particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <!-- ESTILOS PERSONALIZADOS Y CORRECCIONES -->
   <style>
-    /* Contenedor de partículas con posición fija */
+    /* === INICIO DE LA CORRECCIÓN === */
+
+    /* 1. Forzar el fondo oscuro y los estilos base del cuerpo */
+    body, html {
+      font-family: 'Inter', sans-serif;
+      background-color: #0D1721 !important; /* Forza el fondo oscuro deseado */
+      color: #ffffff;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      overflow: hidden !important; /* Previene las barras de desplazamiento */
+    }
+
+    /* 2. Estilos para el contenedor de partículas */
     #particles-js-container {
-      position: fixed;
+      position: fixed; /* Usar fixed para que cubra toda la pantalla */
       top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      z-index: 0; /* z-index base, para que esté sobre el fondo del body */
     }
 
     #particles-js {
       width: 100%;
       height: 100%;
     }
+    
+    /* 3. El contenedor principal debe estar por encima de las partículas */
+    main.main {
+      position: relative; /* Crea un contexto de apilamiento */
+      z-index: 1; /* Coloca el main por encima de las partículas */
+      background-color: transparent !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    
+    /* 4. El contenido hereda el contexto de apilamiento del main */
+    .content {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 !important;
+    }
+    
+    /* === FIN DE LA CORRECCIÓN === */
 
-    .container {
-      position: relative;
-      z-index: 1;
+    /* Estilos originales del usuario (mantenidos) */
+    .container-small{
+      max-width: 48vw !important;
+      margin-top: 50px !important;
+    }
+    
+    @media (max-width: 1024px) {
+      .container-small {
+        max-width: 90vw !important;
+        margin-top: 200px !important;
+        margin-bottom: 20px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container-small {
+        max-width: 95vw !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
+        padding: 0 10px !important;
+      }
+      #LoginApp {
+        width: 100% !important;
+        margin-top: 90px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container-small {
+        max-width: 100vw !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        padding: 0 5px !important;
+      }
+      /* Reducir partículas en móviles para mejor rendimiento */
+      #particles-js-container {
+        transform: scale(0.8);
+      }
     }
 
     /* Personaliza los botones de paginación */
     .dataTables_wrapper .dataTables_paginate .paginate_button {
       padding: 0.5em;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
       margin: 0.2em;
       border-radius: 0.3em;
       border: 1px solid #007bff;
@@ -154,100 +224,37 @@ $_SESSION["ID"] = 1;
     }
 
     .breadcrumb-item a {
-      color: rgb(56 116 255 / 66%);
+      color: #1A99FB !important;
     }
 
-    /* Asegurar que el main ocupe toda la altura */
-    .main {
-      min-height: 100vh;
-      position: relative;
-    }
+    /* Estilos de marca */
+    .text-primary { color: #132030 !important; }
+    .active { color: #132030 !important; }
+    .btn-primary { background-color: #132030 !important; }
+    .btn-info { background-color: #274161 !important; }
+    .btn-infov2 { background-color: #bbd5e7 !important; color: #000000 !important; }
 
-    .content {
-      position: relative;
-      z-index: 2;
-    }
-  </style>
+    /* Fuentes */
+    body,html,td,span{ font-family: 'Inter', sans-serif !important; }
+    h1, h2, h3, h4, li, button,label,th { font-family: 'Grift', sans-serif !important; }
 
-  <!-- SWEET ALERT -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-  <!-- Particles.js -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <!-- SWEET ALERT -->
-
-  <!-- <link rel="stylesheet" href="monaros/css/main_bootstrap_sobreescritos_2.css"> -->
-
-  <style>
-    /*ALUSIVOS A LOS COLORES DE MONAROS*/
-    .text-primary {
-      color: #132030 !important;
-    }
-
-    .text-primary {
-      color: #132030 !important;
-    }
-
-    .active {
-      color: #132030 !important;
-    }
-
-    .btn-primary {
-      background-color: #132030 !important;
-    }
-
-    .btn-info {
-      background-color: #274161 !important;
-    }
-
-    .btn-infov2 {
-      background-color: #bbd5e7 !important;
-      color: #000000 !important
-    }
-
-    * {
-      font-family: "Open Sans" !important;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    li,
-    button {
-      font-weight: normal !important;
-    }
-
-    /* Para navegadores basados en Webkit (Chrome, Edge, Safari) */
-    body::-webkit-scrollbar {
-      border-radius: 5px;
-      width: 10px;
-    }
-
-    body::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    body::-webkit-scrollbar-thumb {
-      background-color: #888;
-      border-radius: 10px;
-      border: 2px solid #f1f1f1;
-    }
-
-    body::-webkit-scrollbar-thumb:hover {
-      background-color: #555;
-    }
+    /* Scrollbar personalizado */
+    body::-webkit-scrollbar { border-radius: 5px; width: 10px; }
+    body::-webkit-scrollbar-track { background: transparent; }
+    body::-webkit-scrollbar-thumb { background-color: #888; border-radius: 10px; border: 2px solid #f1f1f1; }
+    body::-webkit-scrollbar-thumb:hover { background-color: #555; }
   </style>
 </head>
 
 <body>
-  <!-- Contenedor para las partículas -->
+  <!-- Contenedor para las partículas (irá detrás de todo) -->
   <div id="particles-js-container">
     <div id="particles-js"></div>
   </div>
 
+  <!-- Pantalla de carga -->
   <div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center d-none"
-    id="loading-screen">
+    id="loading-screen" style="background: #fff; z-index: 100000;">
     <div class="text-center d-flex flex-column gap-2 justify-content-center align-items-center">
       <img src="/logo_monaros_sinbg_light.png" alt="phoenix" width="125">
       <div class="spinner-border text-primary" role="status">
@@ -255,13 +262,7 @@ $_SESSION["ID"] = 1;
       </div>
     </div>
   </div>
-  <style>
-    #loading-screen {
-      background: #fff;
-      z-index: 100000;
-    }
-  </style>
-
+  
   <script type="importmap">
     {
     "imports": {
@@ -314,7 +315,6 @@ $_SESSION["ID"] = 1;
       "primereact/confirmdialog":"https://esm.sh/primereact/confirmdialog?dev",
       "primereact/toast":"https://esm.sh/primereact/toast?dev",
       "primereact/confirmpopup":"https://esm.sh/primereact/confirmpopup?dev",
-      "primereact/confirmpopup":"https://esm.sh/primereact/confirmpopup?dev",
       "primereact/fileupload":"https://esm.sh/primereact/fileupload?dev",
       "primereact/progressspinner":"https://esm.sh/primereact/progressspinner?dev",
       "primereact/message":"https://esm.sh/primereact/message?dev",
@@ -330,10 +330,10 @@ $_SESSION["ID"] = 1;
       "primereact/menubar" : "https://esm.sh/primereact/menubar?dev",
       "primereact/avatar" : "https://esm.sh/primereact/avatar?dev",
       "primereact/inputotp" : "https://esm.sh/primereact/inputotp?dev",
+      "primereact/galleria" : "https://esm.sh/primereact/galleria?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
-      "react-dom/server": "https://esm.sh/react-dom/server?dev",
-      "primereact/galleria": "https://esm.sh/primereact/galleria?dev"
+      "react-dom/server": "https://esm.sh/react-dom/server?dev"
     }
   }
 </script>
@@ -344,119 +344,115 @@ $_SESSION["ID"] = 1;
         <div id="LoginApp"></div>
       </div>
     </div>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const particlesConfig = {
-          particles: {
-            number: {
-              value: 80,
-              density: {
-                enable: true,
-                value_area: 800
-              }
-            },
-            color: {
-              value: "#132030"
-            },
-            shape: {
-              type: "circle",
-              stroke: {
-                width: 0,
-                color: "#000000"
-              }
-            },
-            opacity: {
-              value: 0.5,
-              random: false,
-              anim: {
-                enable: false,
-                speed: 1,
-                opacity_min: 0.1,
-                sync: false
-              }
-            },
-            size: {
-              value: 3,
-              random: true,
-              anim: {
-                enable: false,
-                speed: 40,
-                size_min: 0.1,
-                sync: false
-              }
-            },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: "#132030",
-              opacity: 0.4,
-              width: 1
-            },
-            move: {
-              enable: true,
-              speed: 2,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false,
-              attract: {
-                enable: false,
-                rotateX: 600,
-                rotateY: 1200
-              }
-            }
-          },
-          interactivity: {
-            detect_on: "canvas",
-            events: {
-              onhover: {
-                enable: true,
-                mode: "grab"
-              },
-              onclick: {
-                enable: true,
-                mode: "push"
-              },
-              resize: true
-            },
-            modes: {
-              grab: {
-                distance: 140,
-                line_linked: {
-                  opacity: 1
-                }
-              },
-              push: {
-                particles_nb: 4
-              }
-            }
-          },
-          retina_detect: true
-        };
-
-        if (typeof particlesJS !== 'undefined') {
-          particlesJS('particles-js', particlesConfig);
-        }
-      });
-    </script>
-
-    <script type="module">
-      import React from "react";
-      import ReactDOMClient from "react-dom/client";
-      import {
-        LoginApp
-      } from './react-dist/login/LoginApp.js';
-
-      const appointmentFormModalRef = React.createRef();
-
-      document.addEventListener('DOMContentLoaded', function() {
-        const rootElement = document.getElementById('LoginApp');
-        ReactDOMClient.createRoot(rootElement).render(React.createElement(LoginApp));
-      });
-    </script>
   </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Paleta de colores de tu marca
+        const brandColors = ["#244255", "#29F6C1", "#1A99FB", "#24D7DE"];
+        // Configuración de particles.js
+        const particlesConfig = {
+            particles: {
+                number: {
+                    value: 150, // ¡Aumentado a 150 para mayor densidad!
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: brandColors // Usa la matriz de colores para que las partículas sean aleatorias
+                },
+                shape: {
+                    type: "circle",
+                    stroke: {
+                        width: 0,
+                        color: "#000000"
+                    }
+                },
+                opacity: {
+                    value: 0.6, // Ligeramente más opaco para que destaquen
+                    random: true,
+                    anim: {
+                        enable: false,
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 140,
+                    color: "#244255", // Usamos Azul Profundo para las líneas
+                    opacity: 0.5,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2.5, // Ligeramente más rápido
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: "grab"
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: "push"
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 160, // Distancia de agarre un poco mayor
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        };
+        // Inicializa particles.js si la librería está cargada
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', particlesConfig);
+        } else {
+            console.error("particles.js no está cargado.");
+        }
+    });
+  </script>
+  <script type="module">
+    import React from "react";
+    import ReactDOMClient from "react-dom/client";
+    import {
+      LoginApp
+    } from './react-dist/login/LoginApp.js';
+
+    const appointmentFormModalRef = React.createRef();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const rootElement = document.getElementById('LoginApp');
+      ReactDOMClient.createRoot(rootElement).render(React.createElement(LoginApp));
+    });
+  </script>
 </body>
 
 </html>

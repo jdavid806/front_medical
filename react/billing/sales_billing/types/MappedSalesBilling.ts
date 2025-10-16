@@ -32,6 +32,7 @@ export type InvoiceProduct = {
   quantity: number;
   price: number;
   discount: number;
+  discountType: 'percentage' | 'fixed';
   iva: any;
   depositId?: any;
   fixedAssetInfo?: any;

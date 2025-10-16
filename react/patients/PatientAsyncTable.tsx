@@ -163,20 +163,20 @@ export const PatientAsyncTable: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-end align-items-center mb-4">
-        <Button
-          label="Nuevo Paciente "
-          className="btn btn-primary"
-          onClick={() => setShowPatientModal(true)}
-        >
-          <i className="fas fa-plus"></i>
-        </Button>
-      </div>
       <div
         className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
         style={{ minHeight: "400px" }}
       >
         <div className="card-body h-100 w-100 d-flex flex-column">
+          <div className="d-flex justify-content-end align-items-center mb-2">
+            <Button
+              label="Nuevo Paciente "
+              className="p-button-primary"
+              onClick={() => setShowPatientModal(true)}
+              icon={<i className="fas fa-plus me-2"></i>}
+            >
+            </Button>
+          </div>
           <CustomPRTable
             columns={columns}
             data={tableItems}
@@ -236,13 +236,14 @@ const TableMenu: React.FC<{
   return (
     <>
       <Button
-        className="btn-primary flex items-center gap-2"
+        label="Acciones"
+        className="p-button-primary flex items-center"
         onClick={(e) => menu.current?.toggle(e)}
         aria-controls={`popup_menu_${patientId}`}
         aria-haspopup
+        icon={<i className="fa fa-cog me-2"></i>}
       >
-        Acciones
-        <i className="fa fa-cog ml-2"></i>
+
       </Button>
       <Menu
         model={[

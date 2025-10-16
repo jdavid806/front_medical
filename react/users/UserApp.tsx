@@ -4,34 +4,58 @@ import UserFormModal from "./UserFormModal";
 import { PrimeReactProvider } from "primereact/api";
 import { UserFormConfig, UserFormInputs } from "./UserForm";
 import { useUserCreate } from "./hooks/useUserCreate.php.js";
-import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
 import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
-import { set } from "react-hook-form";
+import { useActivateOtp } from "./hooks/useActivateOtp";
+import { useAllTableUsers } from "./hooks/useAllTableUsers";
 
-export const UserApp = () => {
+interface UserAppProps {
+  onConfigurationComplete?: (isComplete: boolean) => void;
+  isConfigurationContext?: boolean;
+}
+
+export const UserApp = ({ onConfigurationComplete, isConfigurationContext = false }: UserAppProps) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
-  const [initialData, setInitialData] = useState<UserFormInputs | undefined>(
-    undefined
-  );
+  const [initialData, setInitialData] = useState<UserFormInputs | undefined>(undefined);
   const [initialUserFormConfig] = useState<UserFormConfig>({
     credentials: {
       visible: true,
     },
   });
-  const [userFormConfig, setUserFormConfig] = useState<UserFormConfig>(
-    initialUserFormConfig
-  );
+  const [userFormConfig, setUserFormConfig] = useState<UserFormConfig>(initialUserFormConfig);
 
   const { createUser } = useUserCreate();
   const { updateUser } = useUserUpdate();
   const { user, setUser, fetchUser } = useUser();
-  const { users, fetchUsers } = useAllTableUsers();
+  const { activateOtp, loading: otpLoading } = useActivateOtp();
+  const { users, loading, error, refreshUsers } = useAllTableUsers();
+
+  // Validar si hay al menos un usuario configurado
+  useEffect(() => {
+    const hasUsers = users && users.length > 0;
+    console.log('🔍 Validando usuarios:', {
+      totalUsuarios: users?.length,
+      hasUsers
+    });
+    onConfigurationComplete?.(hasUsers);
+  }, [users, onConfigurationComplete]);
+
+  const isComplete = users && users.length > 0;
+  const showValidations = isConfigurationContext;
+
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
     setUser(null);
     setShowUserFormModal(true);
+  };
+
+  const handleOtpChange = async (enabled: boolean, email: string) => {
+    const otpData = {
+      email: email,
+      otp_enabled: enabled
+    };
+    await activateOtp(otpData);
   };
 
   const handleSubmit = async (data: UserFormInputs) => {
@@ -45,10 +69,7 @@ export const UserApp = () => {
     try {
       if (user) {
         //@ts-ignore
-        let minioUrl = await guardarArchivoUsuario(
-          "uploadImageConfigUsers",
-          user.id
-        );
+        let minioUrl = await guardarArchivoUsuario("uploadImageConfigUsers", user.id);
         console.log("minioUrl", minioUrl);
         await updateUser(user.id, {
           ...finalData,
@@ -57,15 +78,16 @@ export const UserApp = () => {
       } else {
         const res = await createUser(finalData);
         //@ts-ignore
-        let minioUrl = await guardarArchivoUsuario(
-          "uploadImageConfigUsers",
-          res.id
-        );
+        let minioUrl = await guardarArchivoUsuario("uploadImageConfigUsers", res.id);
         await updateUser(res.id, {
           minio_url: minioUrl,
         });
       }
-      fetchUsers();
+
+      // ✅ CORREGIDO: Usar refreshUsers en lugar de fetchUsers
+      await refreshUsers();
+
+      handleOtpChange(data.otp_enabled, data.email);
       setShowUserFormModal(false);
     } catch (error) {
       console.error(error);
@@ -106,6 +128,7 @@ export const UserApp = () => {
         minio_id: user.minio_id || "",
         minio_url: user.minio_url || "",
         clinical_record: user.clinical_record || "",
+        otp_enabled: user.otp_enabled || false
       });
     }
   }, [user]);
@@ -120,19 +143,44 @@ export const UserApp = () => {
           },
         }}
       >
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h4 className="mb-1">Usuarios</h4>
+        {showValidations && (
+          <div className="validation-section mb-3">
+            <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
+              <i className={`${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`}></i>
+              {isComplete
+                ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.'
+                : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
+              }
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        <div className="d-flex justify-content-between align-items-center">
           <div className="text-end mb-2">
             <button
               className="btn btn-primary d-flex align-items-center"
               onClick={onCreate}
+              disabled={loading}
             >
               <i className="fas fa-plus me-2"></i>
-              Nuevo
+              {loading ? 'Cargando...' : 'Nuevo'}
             </button>
           </div>
         </div>
-        <UserTable users={users} onEditItem={handleTableEdit}></UserTable>
+
+        <UserTable
+          users={users}
+          onReload={refreshUsers}
+          onEditItem={handleTableEdit}
+          loading={loading}
+        />
+
         <UserFormModal
           title="Crear usuario"
           show={showUserFormModal}
@@ -140,7 +188,7 @@ export const UserApp = () => {
           onHide={handleHideUserFormModal}
           initialData={initialData}
           config={userFormConfig}
-        ></UserFormModal>
+        />
       </PrimeReactProvider>
     </>
   );

@@ -5,6 +5,10 @@ export class SuppliesService extends BaseApiService {
         return await this.httpClient.get(`${this.microservice}/medical-supplies/`)
     }
 
+    async filterSupplies({ search, status }) {
+        return await this.httpClient.get(`${this.microservice}/medical-supplies`, { search, status })
+    }
+
     async getSuppliesById(productId) {
         return await this.httpClient.get(`${this.microservice}/medical-supplies/${productId}`)
     }

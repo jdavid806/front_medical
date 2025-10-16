@@ -6,11 +6,15 @@ export const useConvenioRecipes = () => {
     const {
       tenantId,
       apiKey,
-      module
+      module,
+      search,
+      status
     } = params;
     try {
       const response = await convenioTenantService.getFarmaciasWithRecetasConvenio({
-        module
+        module,
+        search,
+        status
       }, tenantId, apiKey);
       console.log("response", response);
       setRecipes(response.data || []);

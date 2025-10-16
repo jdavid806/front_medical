@@ -134,7 +134,8 @@ export const CostCenterConfig = ({
     costCenters: costCenters,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteCostCenter,
-    loading: loading
+    loading: loading,
+    onReload: refreshCostCenters
   }))), /*#__PURE__*/React.createElement(CostCenterModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,

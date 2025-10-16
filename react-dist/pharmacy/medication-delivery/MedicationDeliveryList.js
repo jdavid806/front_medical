@@ -24,6 +24,7 @@ export const MedicationDeliveryList = ({
     fetchConvenioRecipes,
     recipes: convenioRecipes
   } = useConvenioRecipes();
+  const [search, setSearch] = useState('');
   const [selectedConvenio, setSelectedConvenio] = useState(null);
   const statusItems = [{
     label: 'Todos',
@@ -37,20 +38,30 @@ export const MedicationDeliveryList = ({
   }];
   const statusMenu = useRef(null);
   const finalRecipes = selectedConvenio ? convenioRecipes : recipes;
-  useEffect(() => {
-    fetchRecipes("PENDING");
-  }, [selectedConvenio]);
+
+  // useEffect(() => {
+  //     fetchRecipes("PENDING");
+  // }, [selectedConvenio]);
+
   const fetchRecipes = status => {
+    if (search.length < 3) {
+      return;
+    }
     if (!selectedConvenio) {
-      fetchAllRecipes(status);
+      fetchAllRecipes(status, search);
     } else {
       fetchConvenioRecipes({
         tenantId: selectedConvenio.tenant_b_id,
         apiKey: selectedConvenio.api_keys.find(apiKey => apiKey.module === "farmacia").key,
-        module: "farmacia"
+        module: "farmacia",
+        search,
+        status
       });
     }
   };
+  useEffect(() => {
+    fetchRecipes("PENDING");
+  }, [search]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-wrap justify-content-between gap-2 align-items-center mb-3"
   }, /*#__PURE__*/React.createElement(Button, {
@@ -85,7 +96,9 @@ export const MedicationDeliveryList = ({
   }, /*#__PURE__*/React.createElement(InputText, {
     placeholder: "Buscar por # o nombre...",
     id: "searchOrder",
-    className: "w-100"
+    className: "w-100",
+    value: search,
+    onChange: e => setSearch(e.target.value)
   })), /*#__PURE__*/React.createElement(Divider, {
     className: "my-2"
   }), /*#__PURE__*/React.createElement("div", {

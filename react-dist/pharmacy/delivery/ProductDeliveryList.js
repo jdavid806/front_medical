@@ -1,16 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { useSuppliesDeliveries } from "../supplies/hooks/useSuppliesDeliveries.js";
 import { formatDateDMY } from "../../../services/utilidades.js";
 import { MedicalSupplyManager } from "../../helpers/MedicalSupplyManager.js";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 export const ProductDeliveryList = ({
   onDeliverySelect
 }) => {
   const {
-    suppliesDeliveries
+    suppliesDeliveries,
+    fetchSuppliesDeliveries
   } = useSuppliesDeliveries();
+  const [search, setSearch] = useState('');
   const [expandedObservations, setExpandedObservations] = useState(null);
+  const statusMenu = React.useRef(null);
+  const statusItems = [{
+    label: 'Todos',
+    command: () => fetchDeliveries("ALL")
+  }, {
+    label: 'Pendiente',
+    command: () => fetchDeliveries("pendiente")
+  }, {
+    label: 'Entregado',
+    command: () => fetchDeliveries("entregado")
+  }];
   const toggleObservations = (deliveryId, event) => {
     event.stopPropagation();
     setExpandedObservations(expandedObservations === deliveryId ? null : deliveryId);
@@ -26,14 +41,41 @@ export const ProductDeliveryList = ({
     const lines = text.split('\n');
     return lines.slice(maxLines).join('\n');
   };
+  const fetchDeliveries = status => {
+    if (search.length < 3) {
+      return;
+    }
+    fetchSuppliesDeliveries({
+      search,
+      status
+    });
+  };
+  useEffect(() => {
+    fetchDeliveries("ALL");
+  }, [search]);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h5", {
     className: "card-title mb-4"
   }, "Pedidos Pendientes"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-wrap justify-content-between gap-2 align-items-center mb-3"
+  }, /*#__PURE__*/React.createElement(Button, {
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-filter me-2"
+    }),
+    label: "Filtrar por estado",
+    onClick: event => statusMenu.current?.toggle(event),
+    className: "btn btn-sm btn-outline-secondary"
+  }), /*#__PURE__*/React.createElement(Menu, {
+    model: statusItems,
+    popup: true,
+    ref: statusMenu
+  })), /*#__PURE__*/React.createElement("div", {
     className: "input-group mb-4"
   }, /*#__PURE__*/React.createElement(InputText, {
     placeholder: "Buscar por # o nombre...",
     id: "searchOrder",
-    className: "w-100"
+    className: "w-100",
+    value: search,
+    onChange: e => setSearch(e.target.value)
   })), /*#__PURE__*/React.createElement(Divider, {
     className: "my-3"
   }), /*#__PURE__*/React.createElement("div", {
@@ -91,7 +133,7 @@ export const ProductDeliveryList = ({
     }, expandedObservations === delivery.id ? 'Ver menos' : 'Ver más')))), /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between align-items-center"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-3"
+      className: "d-flex flex-column gap-2"
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex align-items-center gap-1"
     }, /*#__PURE__*/React.createElement("small", {

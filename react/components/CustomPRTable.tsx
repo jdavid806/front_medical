@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
 import { useDebounce } from 'primereact/hooks';
+import { Button } from "primereact/button";
 
 export interface CustomPRTableColumnProps {
     field: string;
@@ -91,12 +92,12 @@ export const CustomPRTable: React.FC<CustomPRTableProps> = ({
     const header = () => {
         return (
             <div className="d-flex justify-content-between">
-                {!disableReload && <button
+                {!disableReload && <Button
                     type="button"
-                    className="btn btn-outline-primary me-2"
+                    className="p-button-primary me-2"
                     onClick={onReload}>
                     <i className="fas fa-sync"></i>
-                </button>}
+                </Button>}
                 {!disableSearch && <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Buscar" />}
             </div>
         );

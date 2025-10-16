@@ -22,15 +22,15 @@ export const ComissionApp = () => {
       const productsIds = commission.services.map(service => service.product.id);
       setInitialData({
         users: [commission.user.id],
-        attention_type: commission.attention_type,
-        application_type: commission.application_type,
-        commission_type: commission.commission_type,
+        attention_type: commission?.attention_type,
+        application_type: commission?.application_type,
+        commission_type: commission?.commission_type,
         services: productsIds,
-        commission_value: commission.commission_value,
-        percentage_base: commission.percentage_base,
-        percentage_value: commission.percentage_value,
-        retention_type: commission.retention_type,
-        value_retention: commission.value_retention,
+        commission_value: commission?.commission_value,
+        percentage_base: commission?.percentage_base,
+        percentage_value: commission?.percentage_value,
+        retention_type: commission?.retention_type,
+        value_retention: commission?.value_retention,
         isEditing: true,
         id: commission.id
       });
@@ -96,7 +96,7 @@ export const ComissionApp = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
+    className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Comisiones"), /*#__PURE__*/React.createElement("div", {

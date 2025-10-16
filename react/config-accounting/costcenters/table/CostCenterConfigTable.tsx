@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { Toast } from "primereact/toast";
-import { Menu } from "primereact/menu";
-import { classNames } from "primereact/utils";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../../components/CustomPRTable";
 import {
   CostCenter,
   CostCenterConfigTableProps,
@@ -18,28 +17,22 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
   onEditItem,
   onDeleteItem,
   loading = false,
+  onReload
 }) => {
   const toast = useRef<Toast>(null);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [costCenterToDelete, setCostCenterToDelete] = useState<CostCenter | null>(null);
   const [filteredCostCenters, setFilteredCostCenters] = useState<CostCenter[]>([]);
   const [filtros, setFiltros] = useState({
     code: "",
     name: "",
   });
 
-  useEffect(() => {
-    setFilteredCostCenters(costCenters);
-  }, [costCenters]);
-
-  const handleFilterChange = (field: string, value: any) => {
-    setFiltros((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const aplicarFiltros = () => {
+  // Función para sincronizar los datos filtrados
+  const syncFilteredData = () => {
     let result = [...costCenters];
 
+    // Aplicar filtros actuales
     if (filtros.code) {
       result = result.filter((cc) =>
         cc.code.toLowerCase().includes(filtros.code.toLowerCase())
@@ -55,12 +48,35 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
     setFilteredCostCenters(result);
   };
 
+  // Sincroniza cuando cambian los costCenters o los filtros
+  useEffect(() => {
+    syncFilteredData();
+  }, [costCenters, filtros]);
+
+  const handleFilterChange = (field: string, value: any) => {
+    setFiltros((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSearchChange = (searchValue: string) => {
+    console.log("Search value:", searchValue);
+  };
+
   const limpiarFiltros = () => {
     setFiltros({
       code: "",
       name: "",
     });
-    setFilteredCostCenters(costCenters);
+  };
+
+  const handleRefresh = async () => {
+    limpiarFiltros();
+
+    if (onReload) {
+      await onReload();
+    }
   };
 
   const showToast = (
@@ -70,6 +86,42 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
+  const confirmDelete = (costCenter: CostCenter) => {
+    setCostCenterToDelete(costCenter);
+    setDeleteDialogVisible(true);
+  };
+
+  const deleteCostCenter = async () => {
+    if (costCenterToDelete && onDeleteItem) {
+      await onDeleteItem(costCenterToDelete.id.toString());
+      showToast("success", "Éxito", `Centro de costo ${costCenterToDelete.name} eliminado`);
+
+      // Refrescar después de eliminar
+      if (onReload) {
+        await onReload();
+      }
+    }
+    setDeleteDialogVisible(false);
+    setCostCenterToDelete(null);
+  };
+
+  const deleteDialogFooter = (
+    <div className="flex justify-content-end gap-2">
+      <Button
+        label="Cancelar"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={() => setDeleteDialogVisible(false)}
+      />
+      <Button
+        label="Eliminar"
+        icon="pi pi-check"
+        className="p-button-danger"
+        onClick={deleteCostCenter}
+      />
+    </div>
+  );
 
   const TableMenu: React.FC<{
     rowData: CostCenter,
@@ -132,132 +184,104 @@ export const CostCenterConfigTable: React.FC<CostCenterConfigTableProps> = ({
         <TableMenu
           rowData={rowData}
           onEdit={onEditItem ? onEditItem : () => { }}
-          onDelete={(costCenter) => {
-            if (onDeleteItem) {
-              onDeleteItem(costCenter.id.toString());
-            }
-          }}
+          onDelete={confirmDelete}
         />
       </div>
     );
   };
 
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px",
+  // Mapear los datos para la tabla
+  const tableItems = filteredCostCenters.map(costCenter => ({
+    id: costCenter.id,
+    code: costCenter.code,
+    name: costCenter.name,
+    description: costCenter.description,
+    actions: costCenter
+  }));
+
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: 'code',
+      header: 'Código',
+      sortable: true
     },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333",
+    {
+      field: 'name',
+      header: 'Nombre',
+      sortable: true
     },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600,
+    {
+      field: 'description',
+      header: 'Descripción',
+      body: (rowData: any) => (
+        <span title={rowData.description}>
+          {rowData.description && rowData.description.length > 30
+            ? `${rowData.description.substring(0, 30)}...`
+            : rowData.description || "N/A"}
+        </span>
+      )
     },
-    tableCell: {
-      padding: "0.75rem 1rem",
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block",
-    },
-  };
+    {
+      field: 'actions',
+      header: 'Acciones',
+      width: "20px",
+      body: (rowData: any) => actionBodyTemplate(rowData.actions),
+      exportable: false
+    }
+  ];
 
   return (
-    <div
-      className="container-fluid mt-4"
-      style={{ width: "100%", padding: "0 15px" }}
-    >
+    <div className="w-100">
       <Toast ref={toast} />
-
-      <Card title="Filtros de Búsqueda" style={styles.card}>
-        <div className="row g-3">
-          <div className="col-md-6 col-lg-4">
-            <label style={styles.formLabel}>Código</label>
-            <InputText
-              value={filtros.code}
-              onChange={(e) => handleFilterChange("code", e.target.value)}
-              placeholder="Buscar por código"
-              className={classNames("w-100")}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4">
-            <label style={styles.formLabel}>Nombre</label>
-            <InputText
-              value={filtros.name}
-              onChange={(e) => handleFilterChange("name", e.target.value)}
-              placeholder="Buscar por nombre"
-              className={classNames("w-100")}
-            />
-          </div>
-
-          <div className="col-12 d-flex justify-content-end gap-2">
-            <Button
-              label="Limpiar"
-              icon="pi pi-trash"
-              className="btn btn-phoenix-secondary"
-              onClick={limpiarFiltros}
-            />
-            <Button
-              label="Aplicar Filtros"
-              icon="pi pi-filter"
-              className="btn btn-primary"
-              onClick={aplicarFiltros}
-              loading={loading}
-            />
-          </div>
+      <Dialog
+        visible={deleteDialogVisible}
+        style={{ width: "450px" }}
+        header="Confirmar"
+        modal
+        footer={deleteDialogFooter}
+        onHide={() => setDeleteDialogVisible(false)}
+      >
+        <div className="flex align-items-center justify-content-center">
+          <i
+            className="fas fa-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem", color: "#F8BB86" }}
+          />
+          {costCenterToDelete && (
+            <span>
+              ¿Estás seguro que deseas eliminar el centro de costo <b>{costCenterToDelete.name}</b>?
+            </span>
+          )}
         </div>
-      </Card>
+      </Dialog>
+      <div className="card mb-3">
+        <div className="card-body">
+          <Accordion>
+            <AccordionTab header="Filtros">
+              <div className="row">
+                <div className="col-md-6">
+                  <label className="form-label">
+                    Código
+                  </label>
+                  <InputText
+                    value={filtros.code}
+                    onChange={(e) => handleFilterChange("code", e.target.value)}
+                    placeholder="Buscar por código"
+                    className="w-100"
+                  />
+                </div>
 
-      <Card title="Configuración de Centros de Costo" style={styles.card}>
-        <DataTable
-          value={filteredCostCenters}
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          loading={loading}
-          className="p-datatable-striped p-datatable-gridlines"
-          emptyMessage="No se encontraron centros de costo"
-          responsiveLayout="scroll"
-          tableStyle={{ minWidth: "50rem" }}
-        >
-          <Column
-            field="code"
-            header="Código"
-            sortable
-            style={styles.tableCell}
+              </div>
+            </AccordionTab>
+          </Accordion>
+          <CustomPRTable
+            columns={columns}
+            data={tableItems}
+            loading={loading}
+            onSearch={handleSearchChange}
+            onReload={handleRefresh}
           />
-          <Column
-            field="name"
-            header="Nombre"
-            sortable
-            style={styles.tableCell}
-          />
-          <Column
-            field="description"
-            header="Descripción"
-            style={styles.tableCell}
-            body={(rowData) => (
-              <span title={rowData.description || ""}>
-                {rowData.description && rowData.description.length > 30
-                  ? `${rowData.description.substring(0, 30)}...`
-                  : rowData.description || "N/A"}
-              </span>
-            )}
-          />
-          <Column
-            body={actionBodyTemplate}
-            header="Acciones"
-            style={{ width: "120px" }}
-            exportable={false}
-          />
-        </DataTable>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

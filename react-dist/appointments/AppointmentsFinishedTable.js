@@ -9,6 +9,7 @@ import { ExamResultsFileForm } from "../exams/components/ExamResultsFileForm.js"
 import { SwalManager } from "../../services/alertManagerImported.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { PrimeReactProvider } from "primereact/api";
+import { Accordion, AccordionTab } from 'primereact/accordion';
 export const AppointmentsFinishedTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const startDate = new Date(new Date().setDate(new Date().getDate() - 7));
@@ -116,25 +117,14 @@ export const AppointmentsFinishedTable = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion mb-3"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-item"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "accordion-header",
-    id: "filters"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "accordion-button collapsed",
-    type: "button",
-    "data-bs-toggle": "collapse",
-    "data-bs-target": "#filtersCollapse",
-    "aria-expanded": "false",
-    "aria-controls": "filtersCollapse"
-  }, "Filtrar citas")), /*#__PURE__*/React.createElement("div", {
-    id: "filtersCollapse",
-    className: "accordion-collapse collapse",
-    "aria-labelledby": "filters"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-body"
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtrar citas"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement("div", {
@@ -159,14 +149,7 @@ export const AppointmentsFinishedTable = () => {
     panelStyle: {
       zIndex: 100000
     }
-  }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+  }))))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,
     lazy: true,

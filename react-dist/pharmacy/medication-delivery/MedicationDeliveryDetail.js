@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tag } from "primereact/tag";
-import { formatDateDMY, generateUUID, getJWTPayload } from "../../../services/utilidades.js";
+import { formatDate, formatDateDMY, formatWhatsAppMessage, generateUUID, getIndicativeByCountry, getJWTPayload } from "../../../services/utilidades.js";
 import "../../extensions/number.extensions.js";
 import { CustomPRTable } from "../../components/CustomPRTable.js";
 import { Button } from "primereact/button";
@@ -19,13 +19,29 @@ import { farmaciaService } from "../../../Farmacia/js/services/api.service.js";
 import { usePaymentMethods } from "../../payment-methods/hooks/usePaymentMethods.js";
 import { usePRToast } from "../../hooks/usePRToast.js";
 import { Toast } from "primereact/toast";
+import { useConvenioRecipe } from "../../convenios/hooks/useConvenioRecipe.js";
+import { thirdPartyService, userService } from "../../../services/api/index.js";
+import { Dialog } from "primereact/dialog";
+import { useTemplate } from "../../hooks/useTemplate.js";
+import { useMassMessaging } from "../../hooks/useMassMessaging.js";
+import { SwalManager } from "../../../services/alertManagerImported.js";
 export const MedicationDeliveryDetail = ({
-  deliveryId
+  deliveryId,
+  selectedConvenio
 }) => {
+  const [finalPrescription, setFinalPrescription] = useState(null);
+  const [finalPaymentMethods, setFinalPaymentMethods] = useState([]);
+  const [finishDialogVisible, setFinishDialogVisible] = useState(false);
+  const [responseInvoice, setResponseInvoice] = useState(null);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const {
     prescription,
     fetchPrescription
   } = usePrescription();
+  const {
+    recipe: convenioRecipe,
+    fetchConvenioRecipe
+  } = useConvenioRecipe();
   const {
     paymentMethods
   } = usePaymentMethods();
@@ -46,6 +62,99 @@ export const MedicationDeliveryDetail = ({
     showServerErrorsToast,
     showErrorToast
   } = usePRToast();
+  const tenant = window.location.hostname.split(".")[0];
+  const templateData = {
+    tenantId: tenant,
+    belongsTo: "facturacion-creacion",
+    type: "whatsapp"
+  };
+  const {
+    template,
+    fetchTemplate
+  } = useTemplate(templateData);
+  const {
+    sendMessage: sendMessageHook,
+    loading: loadingMessage
+  } = useMassMessaging();
+  const sendMessage = useRef(sendMessageHook);
+  useEffect(() => {
+    sendMessage.current = sendMessageHook;
+  }, [sendMessageHook]);
+  const handleSendWhatsApp = async () => {
+    setSendingWhatsApp(true);
+    try {
+      await sendMessageWhatsapp(responseInvoice);
+    } catch (error) {
+      console.error("Error enviando WhatsApp:", error);
+    } finally {
+      setSendingWhatsApp(false);
+    }
+  };
+  async function generatePdfFile(admissionData) {
+    //@ts-ignore - Esta función debería existir en tu entorno
+    await generarFormato("Factura", admissionData, "Impresion", "admissionInput");
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let fileInput = document.getElementById("pdf-input-hidden-to-admissionInput");
+        let file = fileInput?.files[0];
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("model_type", "App\\Models\\Admission");
+        formData.append("model_id", admissionData.admission_data.id);
+        //@ts-ignore - Esta función debería existir en tu entorno
+        guardarArchivo(formData, true).then(response => {
+          resolve(response.file);
+        }).catch(reject);
+      }, 1000);
+    });
+  }
+  const sendMessageWhatsapp = useCallback(async admissionData => {
+    try {
+      // Generar el PDF primero
+      // @ts-ignore
+      const dataToFile = await generatePdfFile(admissionData.invoice);
+      //@ts-ignore - Esta función debería existir en tu entorno
+      const urlPDF = getUrlImage(dataToFile.file_url.replaceAll("\\", "/"), true);
+      if (!template) {
+        await fetchTemplate();
+      }
+      const replacements = {
+        NOMBRE_PACIENTE: `${finalPrescription.patient.first_name ?? ""} ${finalPrescription.patient.middle_name ?? ""} ${finalPrescription.patient.last_name ?? ""} ${finalPrescription.patient.second_last_name ?? ""}`,
+        NUMERO_FACTURA: admissionData.invoice.invoice_code || admissionData.invoice.invoice_reminder,
+        FECHA_FACTURA: formatDate(admissionData.invoice.created_at),
+        MONTO_FACTURADO: "$" + admissionData.invoice.total_amount.toFixed(2),
+        "ENLACE DOCUMENTO": ""
+      };
+      const templateFormatted = formatWhatsAppMessage(template?.template || "", replacements);
+      const dataMessage = {
+        channel: "whatsapp",
+        recipients: [getIndicativeByCountry(finalPrescription.patient.country) + finalPrescription.patient.whatsapp],
+        message_type: "media",
+        message: templateFormatted,
+        attachment_url: urlPDF,
+        attachment_type: "document",
+        minio_model_type: dataToFile?.model_type,
+        minio_model_id: dataToFile?.model_id,
+        minio_id: dataToFile?.id,
+        webhook_url: "https://example.com/webhook"
+      };
+      await sendMessage.current(dataMessage);
+      SwalManager.success({
+        text: "Mensaje enviado correctamente",
+        title: "Éxito"
+      });
+    } catch (error) {
+      console.error("Error enviando mensaje por WhatsApp:", error);
+      SwalManager.error({
+        text: "Error al enviar el mensaje por WhatsApp",
+        title: "Error"
+      });
+    }
+  }, [template, responseInvoice, finalPrescription, sendMessage]);
   const {
     control,
     handleSubmit,
@@ -85,6 +194,7 @@ export const MedicationDeliveryDetail = ({
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [processing, setProcessing] = useState(false);
+  console.log("medications", medications);
 
   // Calcular productos verificados para entrega
   const verifiedProductsForDelivery = medications.filter(med => med.quantity_to_deliver && med.quantity_to_deliver > 0 && med.product_id && med.sale_price);
@@ -97,13 +207,35 @@ export const MedicationDeliveryDetail = ({
     fetchProductsWithAvailableStock("Medicamentos", "pharmacy");
   }, []);
   useEffect(() => {
-    fetchPrescription(deliveryId);
-  }, [deliveryId]);
-  useEffect(() => {
-    if (prescription) {
-      setMedicationPrescriptionManager(new MedicationPrescriptionManager(prescription));
+    if (paymentMethods.length > 0) {
+      const paymentMethodsMapped = paymentMethods.filter(paymentMethod => paymentMethod.category === "transactional" && paymentMethod.payment_type === "sale");
+      setFinalPaymentMethods(paymentMethodsMapped);
     }
-  }, [prescription]);
+  }, [paymentMethods]);
+  useEffect(() => {
+    console.log("selectedConvenio", selectedConvenio);
+    if (selectedConvenio) {
+      fetchConvenioRecipe(deliveryId, {
+        tenantId: selectedConvenio.tenant_b_id,
+        apiKey: selectedConvenio.api_keys.find(apiKey => apiKey.module === "farmacia").key,
+        module: "farmacia"
+      });
+      return;
+    }
+    fetchPrescription(deliveryId);
+  }, [deliveryId, selectedConvenio]);
+  useEffect(() => {
+    if (selectedConvenio) {
+      setFinalPrescription(convenioRecipe);
+      return;
+    }
+    setFinalPrescription(prescription);
+  }, [prescription, convenioRecipe]);
+  useEffect(() => {
+    if (finalPrescription) {
+      setMedicationPrescriptionManager(new MedicationPrescriptionManager(finalPrescription));
+    }
+  }, [finalPrescription]);
   useEffect(() => {
     setValue("medications", []);
     if (medicationPrescriptionManager && medicationPrescriptionManager.products.length > 0) {
@@ -172,9 +304,9 @@ export const MedicationDeliveryDetail = ({
     }
   };
   const handlePrint = () => {
-    if (!prescription || !medicationPrescriptionManager) return;
+    if (!finalPrescription || !medicationPrescriptionManager) return;
     generateFormat({
-      prescription: prescription,
+      prescription: finalPrescription,
       prescriptionManager: medicationPrescriptionManager,
       type: 'Impresion'
     });
@@ -206,7 +338,7 @@ export const MedicationDeliveryDetail = ({
         });
         return;
       }
-      if (!prescription) {
+      if (!finalPrescription) {
         showErrorToast({
           title: "Advertencia",
           message: "No se ha seleccionado una receta."
@@ -227,14 +359,14 @@ export const MedicationDeliveryDetail = ({
         quantity: prod.quantity_to_deliver || 0
       }));
       const payload = {
-        recipe_id: prescription.id,
+        recipe_id: finalPrescription.id,
         products: productPayload
       };
 
       // 2. Enviar solicitud de entrega
       const deliveryResult = await farmaciaService.completeDelivery(payload);
       if (deliveryResult.status == "DELIVERED") {
-        await farmaciaService.changeStatus("DELIVERED", prescription.id);
+        await farmaciaService.changeStatus("DELIVERED", finalPrescription.id);
       }
       if (deliveryResult.status !== "DELIVERED" && deliveryResult.status !== "PARTIALLY_DELIVERED") {
         showErrorToast({
@@ -265,7 +397,8 @@ export const MedicationDeliveryDetail = ({
         deposit_id: 1,
         quantity: prod.quantity_to_deliver || 1,
         unit_price: prod.sale_price || 0,
-        discount: 0
+        discount: 0,
+        type_product: "medications"
       }));
 
       // Si no quedó ningún producto para facturar
@@ -281,15 +414,34 @@ export const MedicationDeliveryDetail = ({
       const {
         data: billing
       } = await farmaciaService.getBillingByType("consumer");
+      const thirdParty = await thirdPartyService.verifyAndStore({
+        type: 'client',
+        name: `${finalPrescription.patient.first_name || ''} ${finalPrescription.patient.middle_name || ''} ${finalPrescription.patient.last_name || ''} ${finalPrescription.patient.second_last_name || ''}`,
+        external_id: finalPrescription.patient.id.toString(),
+        document_type: finalPrescription.patient.document_type,
+        document_number: finalPrescription.patient.document_number,
+        email: finalPrescription.patient.email,
+        phone: finalPrescription.patient.whatsapp,
+        address: finalPrescription.patient.address,
+        first_name: finalPrescription.patient.first_name,
+        middle_name: finalPrescription.patient.middle_name,
+        last_name: finalPrescription.patient.last_name,
+        second_last_name: finalPrescription.patient.second_last_name,
+        date_of_birth: finalPrescription.patient.date_of_birth,
+        tax_type: null,
+        agreement_id: selectedConvenio?.destination_name
+      });
       const invoice = {
         type: "sale",
         user_id: getJWTPayload().sub,
         due_date: new Date().toISOString(),
-        observations: `Factura de compra ${prescription.id}`,
+        observations: `Factura de compra ${finalPrescription.id}`,
         payment_method_id: selectedPaymentMethod,
         sub_type: "pharmacy",
-        third_party_id: prescription.patient_id,
-        billing: billing
+        third_party_id: thirdParty.id,
+        billing: billing,
+        agreement_patient_id: finalPrescription.patient.id,
+        agreement_id: selectedConvenio?.destination_name
       };
 
       // 6. Construir payments
@@ -297,7 +449,7 @@ export const MedicationDeliveryDetail = ({
         payment_method_id: selectedPaymentMethod,
         payment_date: new Date().toISOString(),
         amount: totalAmount,
-        notes: `Pago de receta ${prescription.id}`
+        notes: `Pago de receta ${finalPrescription.id}`
       }];
 
       // 7. Enviar factura
@@ -307,6 +459,9 @@ export const MedicationDeliveryDetail = ({
         payments
       };
       const facturaResult = await farmaciaService.createInvoice(facturaPayload);
+      setResponseInvoice(facturaResult);
+      await sendMessageWhatsapp(facturaResult);
+      setFinishDialogVisible(true);
 
       // 8. Mensaje final
       const finalMessage = deliveryResult.status === "PARTIALLY_DELIVERED" ? "Entrega parcial registrada. Se facturaron los productos disponibles." : "La entrega y factura fueron registradas correctamente.";
@@ -319,7 +474,7 @@ export const MedicationDeliveryDetail = ({
       setSelectedPaymentMethod(null);
       setDeliveryNotes('');
       fetchProductsWithAvailableStock("Medicamentos", "pharmacy");
-      fetchPrescription(prescription.id);
+      fetchPrescription(finalPrescription?.id);
     } catch (error) {
       console.error("Error al entregar pedido:", error);
       showServerErrorsToast(error);
@@ -366,11 +521,11 @@ export const MedicationDeliveryDetail = ({
     className: "d-flex flex-column gap-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center gap-2"
-  }, /*#__PURE__*/React.createElement("b", null, "Receta #", prescription?.id), /*#__PURE__*/React.createElement(Tag, {
+  }, /*#__PURE__*/React.createElement("b", null, "Receta #", finalPrescription?.id), /*#__PURE__*/React.createElement(Tag, {
     value: medicationPrescriptionManager?.statusLabel,
     severity: medicationPrescriptionManager?.statusSeverity,
     className: "fs-6"
-  })), /*#__PURE__*/React.createElement("p", null, "Creado: ", formatDateDMY(prescription?.created_at)), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("p", null, "Creado: ", formatDateDMY(finalPrescription?.created_at)), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
@@ -471,6 +626,7 @@ export const MedicationDeliveryDetail = ({
           }
         },
         showClear: true,
+        filter: true,
         placeholder: "Seleccione del inventario",
         className: "w-100"
       }), deposit.product && deposit.product.pharmacy_product_stock < deposit.quantity && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", null, "No hay stock suficiente para la cantidad solicitada. Solo hay ", deposit.product.pharmacy_product_stock, " unidades disponibles. Si desea hacer una entrega parcial, por favor ingrese la cantidad a entregar."), /*#__PURE__*/React.createElement("div", {
@@ -507,7 +663,7 @@ export const MedicationDeliveryDetail = ({
     className: "card-header"
   }, /*#__PURE__*/React.createElement("h5", {
     className: "card-title mb-0"
-  }, "Resumen de Entrega - Pedido #", prescription?.id)), /*#__PURE__*/React.createElement("div", {
+  }, "Resumen de Entrega - Pedido #", finalPrescription?.id)), /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
     className: "table-responsive mb-3"
@@ -530,7 +686,7 @@ export const MedicationDeliveryDetail = ({
   }, "M\xE9todo de pago *"), /*#__PURE__*/React.createElement(Dropdown, {
     id: "paymentMethod",
     value: selectedPaymentMethod,
-    options: paymentMethods,
+    options: finalPaymentMethods,
     onChange: e => setSelectedPaymentMethod(e.value),
     optionLabel: "method",
     optionValue: "id",
@@ -560,9 +716,9 @@ export const MedicationDeliveryDetail = ({
     className: "fas fa-file-prescription text-primary me-2 fs-4"
   }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "fw-medium"
-  }, "Receta #", prescription?.id), /*#__PURE__*/React.createElement("div", {
+  }, "Receta #", finalPrescription?.id), /*#__PURE__*/React.createElement("div", {
     className: "text-muted small"
-  }, medicationPrescriptionManager?.patient?.name || '--', " - ", formatDateDMY(prescription?.created_at)))), /*#__PURE__*/React.createElement("div", {
+  }, medicationPrescriptionManager?.patient?.name || '--', " - ", formatDateDMY(finalPrescription?.created_at)))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex"
   }, /*#__PURE__*/React.createElement("button", {
     type: "button",
@@ -594,6 +750,56 @@ export const MedicationDeliveryDetail = ({
   }))), /*#__PURE__*/React.createElement(MedicationDeliveryDetailDialog, {
     visible: dialogVisible,
     onHide: () => setDialogVisible(false),
-    prescription: prescription
-  })));
+    prescription: finalPrescription
+  })), /*#__PURE__*/React.createElement(Dialog, {
+    visible: finishDialogVisible,
+    onHide: () => setFinishDialogVisible(false)
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-center py-6 px-4 bg-light rounded-3 shadow-sm",
+    style: {
+      maxWidth: '600px',
+      margin: '0 auto'
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-check-circle text-6xl text-success mb-4"
+  }), /*#__PURE__*/React.createElement("h2", {
+    className: "mb-3 fw-bold"
+  }, "\xA1Entrega Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
+    className: "text-muted mb-4"
+  }, "La entrega ha sido creada y guardada en el sistema."), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-center gap-3 flex-wrap"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Enviar por WhatsApp",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-whatsapp"
+    }),
+    className: "p-button-success p-button-lg",
+    onClick: handleSendWhatsApp,
+    loading: sendingWhatsApp,
+    disabled: sendingWhatsApp
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Imprimir Factura",
+    className: "p-button-primary p-button-lg",
+    icon: "pi pi-print",
+    onClick: async () => {
+      const user = await userService.getLoggedUser();
+      await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, false);
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Descargar Factura",
+    icon: "pi pi-download",
+    className: "p-button-help p-button-lg",
+    onClick: async () => {
+      const user = await userService.getLoggedUser();
+      await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, true);
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Cerrar",
+    className: "p-button-secondary p-button-lg",
+    onClick: () => setFinishDialogVisible(false)
+  })), sendingWhatsApp && /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 text-sm text-muted"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-spin pi-spinner mr-2"
+  }), "Enviando mensaje por WhatsApp..."))));
 };

@@ -160,7 +160,7 @@ export const LoginApp = () => {
     }
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "min-vh-100 d-flex align-items-center justify-content-center bg-light p-4 overflow-hidden"
+    className: " d-flex align-items-center justify-content-center bg-light p-4 overflow-hidden"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toastRef
   }), /*#__PURE__*/React.createElement(ConfirmDialog, null), /*#__PURE__*/React.createElement("div", {

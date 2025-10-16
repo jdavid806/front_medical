@@ -12,6 +12,17 @@ export const useFieldListOptionsStatic = source => {
           label: "DGII - 3",
           value: "DGII_3"
         }];
+      case "SISPRO_ID_TYPE":
+        return [{
+          label: "Cédula de ciudadanía",
+          value: "CC"
+        }, {
+          label: "Cédula de extranjería",
+          value: "CE"
+        }, {
+          label: "Pasaporte",
+          value: "PA"
+        }];
       default:
         return [];
     }

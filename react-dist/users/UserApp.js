@@ -3,10 +3,14 @@ import UserTable from "./UserTable.js";
 import UserFormModal from "./UserFormModal.js";
 import { PrimeReactProvider } from "primereact/api";
 import { useUserCreate } from "./hooks/useUserCreate.php.js";
-import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
 import { useUserUpdate } from "./hooks/useUserUpdate.js";
 import { useUser } from "./hooks/useUser.js";
-export const UserApp = () => {
+import { useActivateOtp } from "./hooks/useActivateOtp.js";
+import { useAllTableUsers } from "./hooks/useAllTableUsers.js";
+export const UserApp = ({
+  onConfigurationComplete,
+  isConfigurationContext = false
+}) => {
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState(undefined);
   const [initialUserFormConfig] = useState({
@@ -27,14 +31,39 @@ export const UserApp = () => {
     fetchUser
   } = useUser();
   const {
+    activateOtp,
+    loading: otpLoading
+  } = useActivateOtp();
+  const {
     users,
-    fetchUsers
+    loading,
+    error,
+    refreshUsers
   } = useAllTableUsers();
+
+  // Validar si hay al menos un usuario configurado
+  useEffect(() => {
+    const hasUsers = users && users.length > 0;
+    console.log('🔍 Validando usuarios:', {
+      totalUsuarios: users?.length,
+      hasUsers
+    });
+    onConfigurationComplete?.(hasUsers);
+  }, [users, onConfigurationComplete]);
+  const isComplete = users && users.length > 0;
+  const showValidations = isConfigurationContext;
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
     setUser(null);
     setShowUserFormModal(true);
+  };
+  const handleOtpChange = async (enabled, email) => {
+    const otpData = {
+      email: email,
+      otp_enabled: enabled
+    };
+    await activateOtp(otpData);
   };
   const handleSubmit = async data => {
     const finalData = {
@@ -58,7 +87,10 @@ export const UserApp = () => {
           minio_url: minioUrl
         });
       }
-      fetchUsers();
+
+      // ✅ CORREGIDO: Usar refreshUsers en lugar de fetchUsers
+      await refreshUsers();
+      handleOtpChange(data.otp_enabled, data.email);
       setShowUserFormModal(false);
     } catch (error) {
       console.error(error);
@@ -95,7 +127,8 @@ export const UserApp = () => {
         phone: user.phone || "",
         minio_id: user.minio_id || "",
         minio_url: user.minio_url || "",
-        clinical_record: user.clinical_record || ""
+        clinical_record: user.clinical_record || "",
+        otp_enabled: user.otp_enabled || false
       });
     }
   }, [user]);
@@ -106,20 +139,32 @@ export const UserApp = () => {
         overlay: 100000
       }
     }
+  }, showValidations && /*#__PURE__*/React.createElement("div", {
+    className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
+    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), error && /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-danger",
+    role: "alert"
+  }, error), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
-  }, "Usuarios"), /*#__PURE__*/React.createElement("div", {
+  }, "Configuraci\xF3n Usuarios"), /*#__PURE__*/React.createElement("div", {
     className: "text-end mb-2"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate
+    onClick: onCreate,
+    disabled: loading
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-plus me-2"
-  }), "Nuevo"))), /*#__PURE__*/React.createElement(UserTable, {
+  }), loading ? 'Cargando...' : 'Nuevo'))), /*#__PURE__*/React.createElement(UserTable, {
     users: users,
-    onEditItem: handleTableEdit
+    onReload: refreshUsers,
+    onEditItem: handleTableEdit,
+    loading: loading
   }), /*#__PURE__*/React.createElement(UserFormModal, {
     title: "Crear usuario",
     show: showUserFormModal,

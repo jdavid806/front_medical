@@ -4,9 +4,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { PreadmissionForm } from "./PreadmissionForm.js";
-import { PrintTableAction } from "../components/table-actions/PrintTableAction.js";
-import { DownloadTableAction } from "../components/table-actions/DownloadTableAction.js";
-import { ShareTableAction } from "../components/table-actions/ShareTableAction.js";
 import { appointmentService, examOrderService, examRecipeResultService, examRecipeService } from "../../services/api/index.js";
 import UserManager from "../../services/userManager.js";
 import { appointmentStatesColors, appointmentStateColorsByKey, appointmentStatesByKeyTwo } from "../../services/commons.js";
@@ -15,11 +12,13 @@ import { SwalManager } from "../../services/alertManagerImported.js";
 import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2.js";
 import { getUserLogged } from "../../services/utilidades.js";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
-import { getIndicativeByCountry } from "../../services/utilidades.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { PrimeReactProvider } from "primereact/api";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { Toast } from "primereact/toast";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 export const PreadmissionsControlApp = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState("pending_consultation");
@@ -48,7 +47,6 @@ export const PreadmissionsControlApp = () => {
       patientId,
       sort: "-appointment_date,appointment_time",
       appointmentState: "pending_consultation",
-      // Siempre filtrar por este estado
       appointmentDate: selectedDate?.filter(date => !!date).map(date => date.toISOString().split("T")[0]).join(",")
     };
     if (selectedAppointmentType) {
@@ -96,6 +94,7 @@ export const PreadmissionsControlApp = () => {
   } = useMassMessaging();
   const tenant = window.location.hostname.split(".")[0];
   const sendMessageAppointment = useRef(sendMessageAppointmentHook);
+  const toast = useRef(null);
   useEffect(() => {
     sendMessageAppointment.current = sendMessageAppointmentHook;
   }, [sendMessageAppointmentHook]);
@@ -137,27 +136,211 @@ export const PreadmissionsControlApp = () => {
       name: typeName || "No definido"
     };
   };
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleGeneratePreadmission = () => {
+      setShowFormModal({
+        isShow: true,
+        data: rowData
+      });
+    };
+    const handleMakeClinicalRecord = () => {
+      UserManager.onAuthChange((isAuthenticated, user) => {
+        if (user) {
+          window.location.href = `consultas-especialidad?patient_id=${rowData.patientId}&especialidad=${user.specialty.name}&appointment_id=${rowData.id}`;
+        }
+      });
+    };
+    const handleLoadExamResults = () => {
+      window.location.href = `cargarResultadosExamen?patient_id=${rowData.patientId}&product_id=${rowData.productId}&appointment_id=${rowData.id}`;
+    };
+    const handleUploadExam = () => {
+      setSelectedAppointment(rowData);
+      setSelectedAppointmentId(rowData.id);
+      setSelectedExamOrder(rowData.orders[0]);
+      setShowPdfModal(true);
+    };
+    const handleRescheduleAppointment = () => {
+      openRescheduleAppointmentModal(rowData.id);
+    };
+    const handleCancelAppointment = () => {
+      handleCancelAppointmentAction(rowData);
+    };
+    const handleShareAppointment = async () => {
+      const dataTemplate = {
+        tenantId: tenant,
+        belongsTo: "citas-compartir",
+        type: "whatsapp"
+      };
+      const dataFormated = {
+        patient: rowData.patient,
+        assigned_user_availability: rowData.user_availability,
+        appointment_date: rowData.date,
+        appointment_time: rowData.time
+      };
+      const templateAppointments = await fetchTemplate(dataTemplate);
+      const finishTemplate = await switchTemplate(templateAppointments.template, "appointments", dataFormated);
+      await sendMessageWhatsapp(rowData.patient, finishTemplate, null);
+    };
+    const handlePrintInvoice = () => {
+      //@ts-ignore
+      generateInvoice(rowData.id, false);
+    };
+    const handleDownloadInvoice = () => {
+      //@ts-ignore
+      generateInvoice(rowData.id, true);
+    };
+    const handleShareInvoiceWhatsapp = () => {
+      //@ts-ignore
+      sendInvoice(rowData.id, rowData.patientId);
+    };
+    const handleShareInvoiceEmail = () => {
+      //@ts-ignore
+      sendInvoice(rowData.id, rowData.patientId);
+    };
+    const menuItems = [{
+      label: "Generar preadmision",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid far fa-hospital me-2"
+      }),
+      command: handleGeneratePreadmission
+    }, ...((rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "CONSULTATION" && patientId ? [{
+      label: "Realizar consulta",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-stethoscope me-2"
+      }),
+      command: handleMakeClinicalRecord
+    }] : []), ...((rowData.stateId === "2" || rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "PROCEDURE" && patientId ? [{
+      label: "Realizar examen",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-stethoscope me-2"
+      }),
+      command: handleLoadExamResults
+    }, {
+      label: "Subir Examen",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-file-pdf me-2"
+      }),
+      command: handleUploadExam
+    }] : []), ...(rowData.stateId === "1" || (rowData.stateKey === "pending" ? [{
+      label: "Reagendar cita",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-calendar-alt me-2"
+      }),
+      command: handleRescheduleAppointment
+    }, {
+      label: "Cancelar cita",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-ban me-2"
+      }),
+      command: handleCancelAppointment
+    }] : [])), {
+      separator: true
+    }, {
+      label: "Cita",
+      items: [{
+        label: "Compartir cita",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-brands fa-whatsapp me-2"
+        }),
+        command: handleShareAppointment
+      }]
+    }, {
+      separator: true
+    }, {
+      label: "Factura",
+      items: [{
+        label: "Imprimir factura",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-print me-2"
+        }),
+        command: handlePrintInvoice
+      }, {
+        label: "Descargar factura",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-download me-2"
+        }),
+        command: handleDownloadInvoice
+      }, {
+        label: "Compartir por WhatsApp",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-brands fa-whatsapp me-2"
+        }),
+        command: handleShareInvoiceWhatsapp
+      }, {
+        label: "Compartir por Email",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-envelope me-2"
+        }),
+        command: handleShareInvoiceEmail
+      }]
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-end",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: () => openRescheduleAppointmentModal(rowData.id),
+      onDelete: () => {}
+    }));
+  };
   const columns = [{
     header: "Paciente",
     field: "patientName",
-    body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
+    body: data => /*#__PURE__*/React.createElement("a", {
       href: `verPaciente?id=${data.patientId}`
-    }, data.patientName))
+    }, data.patientName),
+    sortable: true
   }, {
     header: "Número de documento",
-    field: "patientDNI"
+    field: "patientDNI",
+    sortable: true
   }, {
     header: "Fecha Consulta",
-    field: "date"
+    field: "date",
+    sortable: true
   }, {
     header: "Hora Consulta",
-    field: "time"
+    field: "time",
+    sortable: true
   }, {
     header: "Profesional asignado",
-    field: "doctorName"
+    field: "doctorName",
+    sortable: true
   }, {
     header: "Entidad",
-    field: "entity"
+    field: "entity",
+    sortable: true
   }, {
     header: "Tipo de Cita",
     field: "appointmentType",
@@ -166,7 +349,8 @@ export const PreadmissionsControlApp = () => {
       return /*#__PURE__*/React.createElement("span", {
         className: "d-flex align-items-center gap-2"
       }, /*#__PURE__*/React.createElement("span", null, typeInfo.name));
-    }
+    },
+    sortable: true
   }, {
     header: "Estado",
     field: "status",
@@ -176,168 +360,13 @@ export const PreadmissionsControlApp = () => {
       return /*#__PURE__*/React.createElement("span", {
         className: `badge badge-phoenix badge-phoenix-${color}`
       }, text);
-    }
+    },
+    sortable: true
   }, {
-    header: "",
-    field: "",
-    body: data => /*#__PURE__*/React.createElement("div", {
-      className: "text-end align-middle"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "dropdown"
-    }, /*#__PURE__*/React.createElement("button", {
-      className: "btn btn-primary dropdown-toggle",
-      type: "button",
-      "data-bs-toggle": "dropdown",
-      "aria-expanded": "false"
-    }, /*#__PURE__*/React.createElement("i", {
-      "data-feather": "settings"
-    }), " Acciones"), /*#__PURE__*/React.createElement("ul", {
-      className: "dropdown-menu",
-      style: {
-        zIndex: 10000
-      }
-    }, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      onClick: () => setShowFormModal({
-        isShow: true,
-        data: data
-      })
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid far fa-hospital",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Generar preadmision")))), (data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "CONSULTATION" && patientId && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: e => {
-        e.preventDefault();
-        handleMakeClinicalRecord(data.patientId, data.id);
-      },
-      "data-column": "realizar-consulta"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-stethoscope",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar consulta")))), (data.stateId === "2" || data.stateKey === "pending_consultation" || data.stateKey === "called" || data.stateKey === "in_consultation") && data.attentionType === "PROCEDURE" && patientId && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: e => {
-        e.preventDefault();
-        handleLoadExamResults(data.id, data.patientId, data.productId);
-      },
-      "data-column": "realizar-consulta"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-stethoscope",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Realizar examen"))), /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      onClick: () => {
-        setSelectedAppointment(data);
-        setSelectedAppointmentId(data.id);
-        setSelectedExamOrder(data.orders[0]);
-        setShowPdfModal(true);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-pdf",
-      style: {
-        width: "20px",
-        cursor: "pointer"
-      }
-    }), /*#__PURE__*/React.createElement("span", {
-      style: {
-        cursor: "pointer"
-      }
-    }, "Subir Examen"))))), data.stateId === "1" || data.stateKey === "pending" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: e => openRescheduleAppointmentModal(data.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-calendar-alt",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Reagendar cita")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: e => {
-        e.preventDefault();
-        handleCancelAppointment(data);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-ban",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Cancelar cita"))))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
-      className: "dropdown-header"
-    }, "Cita"), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: async e => {
-        e.preventDefault();
-        const dataTemplate = {
-          tenantId: tenant,
-          belongsTo: "citas-compartir",
-          type: "whatsapp"
-        };
-        const dataFormated = {
-          patient: data.patient,
-          assigned_user_availability: data.user_availability,
-          appointment_date: data.date,
-          appointment_time: data.time
-        };
-        const templateAppointments = await fetchTemplate(dataTemplate);
-        const finishTemplate = await switchTemplate(templateAppointments.template, "appointments", dataFormated);
-        await sendMessageWhatsapp(data.patient, finishTemplate, null);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-brands fa-whatsapp",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Compartir cita")))), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement("li", {
-      className: "dropdown-header"
-    }, "Factura"), /*#__PURE__*/React.createElement(PrintTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
-        generateInvoice(data.id, false);
-      }
-    }), /*#__PURE__*/React.createElement(DownloadTableAction, {
-      onTrigger: () => {
-        //@ts-ignore
-        generateInvoice(data.id, true);
-      }
-    }), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "whatsapp",
-      onTrigger: () => {
-        //@ts-ignore
-        sendInvoice(data.id, data.patientId);
-      }
-    }), /*#__PURE__*/React.createElement(ShareTableAction, {
-      shareType: "email",
-      onTrigger: () => {
-        //@ts-ignore
-        sendInvoice(data.id, data.patientId);
-      }
-    }))))
+    header: "Acciones",
+    field: "actions",
+    body: actionBodyTemplate,
+    exportable: false
   }];
   const [showFormModal, setShowFormModal] = useState({
     isShow: false,
@@ -385,13 +414,7 @@ export const PreadmissionsControlApp = () => {
       }
     });
   };
-  const getAppointmentStates = () => {
-    return [{
-      value: "pending_consultation",
-      label: "En espera de consulta"
-    }];
-  };
-  const handleCancelAppointment = async data => {
+  const handleCancelAppointmentAction = async data => {
     SwalManager.confirmCancel(async data => {
       await appointmentService.changeStatus(Number(data.id), "cancelled");
       const dataTemplate = {
@@ -446,20 +469,24 @@ export const PreadmissionsControlApp = () => {
   const handleLoadExamResults = (appointmentId, patientId, productId) => {
     window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
   };
-  const handleLoadExamResultsFile = () => {
-    setShowLoadExamResultsFileModal(true);
-  };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: "self",
       zIndex: {
         overlay: 100000
       }
     }
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
@@ -504,14 +531,7 @@ export const PreadmissionsControlApp = () => {
     className: "col-md-12"
   }, /*#__PURE__*/React.createElement("small", {
     className: "text-muted"
-  }, "* Mostrando solo citas en estado: ", /*#__PURE__*/React.createElement("strong", null, "En espera de consulta")))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+  }, "* Mostrando solo citas en estado: ", /*#__PURE__*/React.createElement("strong", null, "En espera de consulta")))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,
     lazy: true,

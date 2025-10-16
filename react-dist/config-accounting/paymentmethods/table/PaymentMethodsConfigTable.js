@@ -27,11 +27,10 @@ export const PaymentMethodsConfigTable = ({
     value: "transactional"
   }, {
     label: "Vencimiento Proveedores",
-    value: "card"
-  }, {
-    label: "Transferencia",
     value: "supplier_expiration"
-  }, {
+  },
+  // { label: "Transferencia", value: "supplier_expiration" },
+  {
     label: "Vencimiento Clientes",
     value: "customer_expiration"
   }, {
@@ -41,24 +40,8 @@ export const PaymentMethodsConfigTable = ({
     label: "Anticipo Proveedores",
     value: "supplier_advance"
   }];
-  const getCategoryLabel = categoryValue => {
-    const category = categories.find(cat => cat.value === categoryValue);
-    return category ? category.label : categoryValue;
-  };
-  // Inicializar los datos filtrados
-  useEffect(() => {
-    setFilteredPaymentMethods(paymentMethods);
-  }, [paymentMethods]);
-  const handleFilterChange = (field, value) => {
-    setFiltros(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-  // Aplicar filtros manualmente (igual que en el código que funciona)
-  const aplicarFiltros = () => {
+  const syncFilteredData = () => {
     let result = [...paymentMethods];
-    // Aplicar filtros específicos
     if (filtros.name) {
       result = result.filter(method => method.name.toLowerCase().includes(filtros.name.toLowerCase()));
     }
@@ -67,9 +50,20 @@ export const PaymentMethodsConfigTable = ({
     }
     setFilteredPaymentMethods(result);
   };
-  // Función de búsqueda para CustomPRTable
+  useEffect(() => {
+    syncFilteredData();
+  }, [paymentMethods, filtros]);
+  const getCategoryLabel = categoryValue => {
+    const category = categories.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
+  };
+  const handleFilterChange = (field, value) => {
+    setFiltros(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
   const handleSearchChange = searchValue => {
-    // Si necesitas búsqueda global, puedes implementarla aquí
     console.log("Search value:", searchValue);
   };
   const limpiarFiltros = () => {
@@ -77,17 +71,12 @@ export const PaymentMethodsConfigTable = ({
       name: "",
       category: null
     });
-    setFilteredPaymentMethods(paymentMethods); // Resetear a todos los métodos
   };
-  const handleRefresh = () => {
-    console.log(":flechas_en_sentido_antihorario: Refresh button clicked");
-    // Limpiar filtros locales
+  const handleRefresh = async () => {
     limpiarFiltros();
-    // Llamar a onReload para obtener datos frescos
     if (onReload) {
-      onReload();
+      await onReload();
     }
-    showToast("info", "Actualizando", "Recargando datos...");
   };
   const showToast = (severity, summary, detail) => {
     toast.current?.show({
@@ -101,16 +90,15 @@ export const PaymentMethodsConfigTable = ({
     setMethodToDelete(method);
     setDeleteDialogVisible(true);
   };
-  const deleteMethod = () => {
+  const deleteMethod = async () => {
     if (methodToDelete && onDeleteItem) {
-      onDeleteItem(methodToDelete.id.toString());
+      await onDeleteItem(methodToDelete.id.toString());
       showToast("success", "Éxito", `Método ${methodToDelete.name} eliminado`);
-      // Refrescar automáticamente después de eliminar
-      setTimeout(() => {
-        if (onReload) {
-          onReload();
-        }
-      }, 1000);
+
+      // Refrescar después de eliminar
+      if (onReload) {
+        await onReload();
+      }
     }
     setDeleteDialogVisible(false);
     setMethodToDelete(null);
@@ -145,7 +133,7 @@ export const PaymentMethodsConfigTable = ({
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "btn-primary flex items-center gap-2",
+      className: "p-button-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true
@@ -187,6 +175,7 @@ export const PaymentMethodsConfigTable = ({
       onDelete: confirmDelete
     }));
   };
+
   // Mapear los datos para la tabla
   const tableItems = filteredPaymentMethods.map(method => ({
     id: method.id,
@@ -218,7 +207,8 @@ export const PaymentMethodsConfigTable = ({
     field: 'actions',
     header: 'Acciones',
     body: rowData => actionBodyTemplate(rowData.actions),
-    exportable: false
+    exportable: false,
+    width: "120px"
   }];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-100"
@@ -270,21 +260,6 @@ export const PaymentMethodsConfigTable = ({
     placeholder: "Seleccione categor\xEDa",
     className: "w-100",
     showClear: true
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "row mt-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Limpiar",
-    icon: "fas fa-broom",
-    className: "p-button-secondary",
-    onClick: limpiarFiltros
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Aplicar Filtros",
-    icon: "fas fa-filter",
-    className: "p-button-primary",
-    onClick: aplicarFiltros,
-    loading: loading
   }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: tableItems,

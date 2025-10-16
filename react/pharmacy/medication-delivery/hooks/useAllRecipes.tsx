@@ -7,9 +7,9 @@ export const useAllRecipes = () => {
 
     const [recipes, setRecipes] = useState<PrescriptionDto[]>([]);
 
-    const fetchAllRecipes = async (status: string) => {
+    const fetchAllRecipes = async (status: string, search: string) => {
         try {
-            const recipesResponse = await farmaciaService.getAllRecipes(status);
+            const recipesResponse = await farmaciaService.getAllRecipes(status, search);
 
             const filteredRecipes = Array.isArray(recipesResponse)
                 ? recipesResponse

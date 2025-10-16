@@ -136,7 +136,18 @@ export const TodayAppointmentsTable = () => {
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-3 mb-4"
+    className: "card text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px",
+      marginTop: "-20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end gap-3 mb-2",
+    style: {
+      marginTop: "-30px"
+    }
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Control de turnos",
     icon: /*#__PURE__*/React.createElement("i", {
@@ -158,14 +169,7 @@ export const TodayAppointmentsTable = () => {
     }, "\u200C"),
     className: "p-button-primary",
     onClick: () => setShowAppointmentForm(true)
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+  })), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,
     lazy: true,
@@ -226,7 +230,7 @@ const TableMenu = ({
 }) => {
   const menu = useRef(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
-    className: "btn-primary flex items-center gap-2",
+    className: "p-button-primaryflex items-center gap-2",
     onClick: e => menu.current?.toggle(e),
     "aria-controls": `popup_menu_${rowData.id}`,
     "aria-haspopup": true

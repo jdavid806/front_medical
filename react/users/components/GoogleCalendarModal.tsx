@@ -48,7 +48,7 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
 
   const { saveGoogleCalendarConfig, getGoogleCalendarConfig, loading } = useGoogleCalendarConfig(toast);
 
-  
+
   useEffect(() => {
     if (show) {
       loadExistingConfig();
@@ -60,7 +60,7 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
     try {
       const existing = await getGoogleCalendarConfig(userId);
       setExistingConfig(existing);
-      
+
       if (existing) {
 
         setConfig({
@@ -91,17 +91,17 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const configToSend = config.syncEnabled 
+      const configToSend = config.syncEnabled
         ? {
-            calendar_id: config.calendarId,
-            timezone: config.timezone
-          }
+          calendar_id: config.calendarId,
+          timezone: config.timezone
+        }
         : {
-            calendar_id: '',
-            timezone: config.timezone
-          };
+          calendar_id: '',
+          timezone: config.timezone
+        };
 
       await saveGoogleCalendarConfig(configToSend, userEmail, userId);
       onSuccess?.();
@@ -150,7 +150,7 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
               disabled={loading}
             ></button>
           </div>
-          
+
           <form onSubmit={handleSubmit}>
             <div className="modal-body">
 
@@ -185,24 +185,24 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
                     </select>
                   </div>
 
-                    <div className="mb-3">
-                      <label htmlFor="calendarId" className="form-label">
-                        Calendar ID
-                      </label>
-                      <input
-                        type="text"
-                        id="calendarId"
-                        className="form-control"
-                        value={config.calendarId}
-                        onChange={(e) => setConfig(prev => ({ ...prev, calendarId: e.target.value }))}
-                        placeholder="Ingrese el ID de su calendario de Google"
-                        disabled={loading || !config.syncEnabled}
-                        required={config.syncEnabled}
-                      />
-                      <div className="form-text">
-                        El Calendar ID es el identificador único de su calendario en Google Calendar.
-                      </div>
+                  <div className="mb-3">
+                    <label htmlFor="calendarId" className="form-label">
+                      Calendar ID
+                    </label>
+                    <input
+                      type="text"
+                      id="calendarId"
+                      className="form-control"
+                      value={config.calendarId}
+                      onChange={(e) => setConfig(prev => ({ ...prev, calendarId: e.target.value }))}
+                      placeholder="Ingrese el ID de su calendario de Google"
+                      disabled={loading || !config.syncEnabled}
+                      required={config.syncEnabled}
+                    />
+                    <div className="form-text">
+                      El Calendar ID es el identificador único de su calendario en Google Calendar.
                     </div>
+                  </div>
 
 
                   <div className="mb-4">
@@ -242,7 +242,7 @@ export const GoogleCalendarModal: React.FC<GoogleCalendarModalProps> = ({
                 </>
               )}
             </div>
-            
+
             <div className="modal-footer">
               <button
                 type="button"

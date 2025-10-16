@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppointmentFormModal } from "./AppointmentFormModal.js";
+import { Button } from 'primereact/button';
 export const AppointmentCreateFormModalButton = () => {
   const [visible, setVisible] = React.useState(false);
   const showModal = () => {
@@ -8,8 +9,8 @@ export const AppointmentCreateFormModalButton = () => {
   const handleCancel = () => {
     setVisible(false);
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary",
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
     type: "button",
     onClick: showModal
   }, /*#__PURE__*/React.createElement("i", {

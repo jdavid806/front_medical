@@ -3,6 +3,10 @@ import { LabplusIntegrationConfig } from "./forms/LabplusIntegrationConfig";
 import { IntegrationsTabs } from "./components/IntegrationsTabs";
 import { useIntegrationConfigs } from "./hooks/useIntegrationConfigs";
 import { DGIIIntegrationConfig } from "./forms/DGIIIntegrationConfig";
+import { SISPROIntegrationConfig } from "./forms/SISPROIntegrationConfig";
+import { OpenAIIntegrationConfig } from "./forms/OpenAIIntegrationConfig";
+import { CarnetIntegrationConfig } from "./forms/CarnetIntegrationConfig";
+import { GeminiIntegrationConfig } from "./forms/GeminiIntegrationConfig";
 
 export const IntegrationsApp = () => {
 
@@ -22,22 +26,28 @@ export const IntegrationsApp = () => {
             content: <DGIIIntegrationConfig configs={configs} />
         },
         {
-            id: "representante-tab",
-            label: "Representante",
+            id: "sispro-tab",
+            label: "SISPRO",
             icon: "fa-solid fa-address-book",
-            content: <div>Contenido del tab Representante</div>
+            content: <SISPROIntegrationConfig configs={configs} />
         },
         {
-            id: "comunicacion-tab",
-            label: "Comunicaciones",
+            id: "carnet-tab",
+            label: "Carnet",
             icon: "fa-solid fa-envelopes-bulk",
-            content: <div>Contenido del tab Comunicaciones</div>
+            content: <CarnetIntegrationConfig configs={configs} />
         },
         {
-            id: "sedes-tab",
-            label: "Sedes",
-            icon: "fa-solid fa-location-dot",
-            content: <div>Contenido del tab Sedes</div>
+            id: "openai-tab",
+            label: "OpenAI",
+            icon: "fa-solid fa-brain",
+            content: <OpenAIIntegrationConfig configs={configs} />
+        },
+        {
+            id: "gemini-tab",
+            label: "Gemini",
+            icon: "fa-solid fa-brain",
+            content: <GeminiIntegrationConfig configs={configs} />
         }
     ];
 

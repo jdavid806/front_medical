@@ -21,26 +21,19 @@ export const TicketTable = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [ticketReasonsBackend, setTicketReasonsBackend] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [dataReady, setDataReady] = useState(false);
-  const [tableKey, setTableKey] = useState(0);
   const toast = useRef(null);
   const columns = [{
-    data: "ticket_number",
-    render: data => data || "-"
+    data: "ticket_number"
   }, {
-    data: "reason",
-    defaultContent: "Motivo no disponible",
-    render: data => data || "Motivo no disponible"
+    data: "reason"
   }, {
-    data: "priority",
-    render: data => data || "-"
+    data: "priority"
   }, {
-    data: "statusView",
-    render: data => data || "-"
-  }
-  // { orderable: false, searchable: false },
-  ];
+    data: "statusView"
+  }, {
+    orderable: false,
+    searchable: false
+  }];
   const {
     sendMessage: sendMessageTickets,
     responseMsg,
@@ -62,21 +55,15 @@ export const TicketTable = () => {
   useEffect(() => {
     const fetchReasons = async () => {
       try {
-        setLoading(true);
         const response = await ticketService.getAllTicketReasons();
+        // Transformar array a objeto { key: label }
         const reasonsMap = response.reasons.reduce((acc, reason) => {
           acc[reason.key] = reason.label;
           return acc;
         }, {});
         setTicketReasonsBackend(reasonsMap);
-        setDataReady(true);
-        setTableKey(prev => prev + 1);
       } catch (error) {
         console.error("Error al cargar ticket reasons:", error);
-        setDataReady(true);
-        setTableKey(prev => prev + 1);
-      } finally {
-        setLoading(false);
       }
     };
     fetchReasons();
@@ -92,19 +79,15 @@ export const TicketTable = () => {
     var hostname = window.location.hostname.split(".")[0];
     const channel = pusher.subscribe(`tickets.${hostname}`);
     channel.bind("ticket.generated", function (data) {
-      console.log("data0", data);
-      console.log("data0", data);
-      console.log("data1", data);
-      const reasonText = data.ticket.reason && ticketReasonsBackend[data.ticket.reason] || "Motivo no disponible";
       const newTicketData = {
         id: data.ticket.id,
         ticket_number: data.ticket.ticket_number,
         phone: data.ticket.phone,
-        reason: reasonText,
+        reason: data.ticket.reason_label,
         reason_key: data.ticket.reason,
-        priority: ticketPriorities[data.ticket.priority] || "NORMAL",
+        priority: ticketPriorities[data.ticket.priority],
         status: data.ticket.status,
-        statusView: ticketStatus[data.ticket.status] || "PENDIENTE",
+        statusView: ticketStatus[data.ticket.status],
         statusColor: ticketStatusColors[data.ticket.status],
         step: ticketStatusSteps[data.ticket.status],
         created_at: data.ticket.created_at,
@@ -123,7 +106,7 @@ export const TicketTable = () => {
           return priorityA - priorityB;
         };
         newData.splice(0, 0, newTicketData);
-        newData.sort((a, b) => priorityOrder(a, b) || new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        newData.sort((a, b) => priorityOrder(a, b) || a.created_at.localeCompare(b.created_at));
         return newData;
       });
     });
@@ -142,30 +125,27 @@ export const TicketTable = () => {
       });
     });
     return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
-      pusher.disconnect();
+      channel.unbind_all(); // Eliminar todos los listeners
+      channel.unsubscribe(); // Desuscribirse del canal
+      pusher.disconnect(); // Desconectar Pusher
     };
-  }, [tickets, ticketReasonsBackend]);
-
-  // ⬇️ MEJORADO: Solo procesar cuando ticketReasonsBackend esté listo
+  }, []);
   useEffect(() => {
-    if (Object.keys(ticketReasonsBackend).length === 0 || !tickets.length) {
-      return;
-    }
-    const processedData = tickets.map(ticket => {
-      // ⬇️ VALIDACIÓN MÁS ROBUSTA
-      const reasonText = ticket.reason_label || ticket.reason && ticketReasonsBackend[ticket.reason] || "Motivo no disponible";
+    // console.log("ticketReasonsBackend", ticketReasonsBackend);
+    // console.log("ticket", tickets);
+    // if (Object.keys(ticketReasonsBackend).length === 0) return; // Espera a que el backend cargue
+
+    setData(tickets.map(ticket => {
       return {
         id: ticket.id,
-        ticket_number: ticket.ticket_number || "-",
-        phone: ticket.phone || "-",
-        reason: reasonText,
+        ticket_number: ticket.ticket_number,
+        phone: ticket.phone,
+        reason: ticket.reason_label,
         reason_key: ticket.reason,
-        priority: ticketPriorities[ticket.priority] || "NORMAL",
+        priority: ticketPriorities[ticket.priority],
         module_name: ticket.module?.name || "",
-        status: ticket.status || "PENDING",
-        statusView: ticketStatus[ticket.status] || "PENDIENTE",
+        status: ticket.status,
+        statusView: ticketStatus[ticket.status],
         statusColor: ticketStatusColors[ticket.status],
         step: ticketStatusSteps[ticket.status],
         created_at: ticket.created_at,
@@ -175,38 +155,29 @@ export const TicketTable = () => {
         module_id: ticket.module_id,
         patient: ticket.patient
       };
-    });
-    setData(processedData);
+    }));
   }, [tickets, ticketReasonsBackend]);
 
-  // ⬇️ MEJORADO: Filtrar y ordenar datos
+  // useEffect(() => {
+  //   console.log("loggeduser", loggedUser);
+  //   console.log("data", data);
+  //   setFilteredData(
+  //     data.filter((item) => {
+  //       return (
+  //         item.status == "PENDING" ||
+  //         (item.status == "CALLED" &&
+  //           item.module_id == loggedUser?.today_module_id)
+  //       );
+  //     })
+  //   );
+  // }, [data, loggedUser]);
+
   useEffect(() => {
-    if (!data.length || !loggedUser || !Array.isArray(loggedUser.availabilities)) {
-      setFilteredData([]);
-      return;
-    }
-    const filteredAndSorted = data.filter(item => {
-      if (!item.status || !item.reason_key && !item.reason) {
-        console.warn("Item inválido omitido:", item);
-        return false;
-      }
+    setFilteredData(data.filter(item => {
       const statusMatch = item.status === "PENDING" || item.status === "CALLED";
-      const reasonMatch = loggedUser.availabilities.some(availability => {
-        const allowed = availability?.module?.allowed_reasons || [];
-        return item.reason_key && allowed.includes(item.reason_key);
-      });
+      const reasonMatch = Array.isArray(item.module?.allowed_reasons) && item.module.allowed_reasons.includes(item.reason_key);
       return statusMatch && reasonMatch;
-    }).sort((a, b) => {
-      const priorities = ["PREGNANT", "SENIOR", "DISABILITY", "CHILDREN_BABY"];
-      const priorityA = priorities.indexOf(a.priority);
-      const priorityB = priorities.indexOf(b.priority);
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
-      }
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    });
-    console.log("Datos filtrados y ordenados:", filteredAndSorted.length);
-    setFilteredData(filteredAndSorted);
+    }));
   }, [data, loggedUser]);
   const updateStatus = async (id, status) => {
     await ticketService.update(id, {
@@ -219,9 +190,35 @@ export const TicketTable = () => {
       statusView: ticketStatus[status]
     } : item));
   };
+
+  // const callTicket = async (data: any) => {
+  //   console.log("callticket",data);
+  //   const status = "CALLED";
+  //   const user = await userService.getByExternalId(getJWTPayload().sub);
+  //   await ticketService.update(data.id, {
+  //     status,
+  //     module_id: user?.today_module_id,
+  //   });
+
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.id === data.id
+  //         ? {
+  //             ...item,
+  //             step: ticketStatusSteps[status],
+  //             status,
+  //             statusView: ticketStatus[status],
+  //           }
+  //         : item
+  //     )
+  //   );
+  //   await sendMessageWhatsapp(data);
+  // };
+
   const callTicket = async ticket => {
-    console.log("ticket", ticket);
     const user = await userService.getByExternalId(getJWTPayload().sub);
+
+    // Bloqueo: ya hay un turno en curso en este módulo
     const hasActiveTicket = data.some(t => t.status === "CALLED" && t.module_id === user?.today_module_id);
     if (hasActiveTicket) {
       toast.current?.show({
@@ -268,23 +265,71 @@ export const TicketTable = () => {
       console.error("Error:", error);
     }
   }, [sendMessageTickets]);
+
+  // const slots = {
+  //   3: (cell, data: TicketTableItemDto) => (
+  //     <span
+  //       className={`badge badge-phoenix badge-phoenix-${
+  //         ticketStatusColors[data.status]
+  //       }`}
+  //     >
+  //       {data.statusView}
+  //     </span>
+  //   ),
+  //   4: (cell, data: TicketTableItemDto) => (
+  //     <>
+  //       <button
+  //         className={`btn btn-primary ${data.step === 1 ? "" : "d-none"}`}
+  //         onClick={() => callTicket(data)}
+  //       >
+  //         <i className="fas fa-phone"></i>
+  //       </button>
+  //       <div
+  //         className={`d-flex flex-wrap gap-1 ${
+  //           data.step === 2 ? "" : "d-none"
+  //         }`}
+  //       >
+  //         <button
+  //           className={`btn btn-success`}
+  //           onClick={() => updateStatus(data.id, "COMPLETED")}
+  //         >
+  //           <i className="fas fa-check"></i>
+  //         </button>
+  //         <button
+  //           className={`btn btn-danger`}
+  //           onClick={() => updateStatus(data.id, "MISSED")}
+  //         >
+  //           <i className="fas fa-times"></i>
+  //         </button>
+  //       </div>
+  //     </>
+  //   ),
+  // };
+
   const slots = {
     3: (cell, data) => /*#__PURE__*/React.createElement("span", {
-      className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status] || "secondary"}`
-    }, data.statusView || "PENDIENTE"),
+      className: `badge badge-phoenix badge-phoenix-${ticketStatusColors[data.status]}`
+    }, data.statusView),
     4: (cell, data) => {
-      const ticketIndex = filteredData.findIndex(t => t.id === data.id);
-      const firstPendingIndex = filteredData.findIndex(t => t.status === "PENDING");
+      // Validar si ya hay un turno en curso en este módulo
       const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
-      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-        className: `d-flex flex-wrap gap-1 ${data.status === "CALLED" ? "" : "d-none"}`
+
+      // Validar si este turno es el siguiente en la cola
+      const nextTicket = filteredData.find(t => t.status === "PENDING");
+      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+        className: `btn btn-primary ${data.step === 1 && nextTicket?.id === data.id && !hasActiveTicket ? "" : "d-none"}`,
+        onClick: () => callTicket(data)
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-phone"
+      })), /*#__PURE__*/React.createElement("div", {
+        className: `d-flex flex-wrap gap-1 ${data.step === 2 ? "" : "d-none"}`
       }, /*#__PURE__*/React.createElement("button", {
-        className: "btn btn-success",
+        className: `btn btn-success`,
         onClick: () => updateStatus(data.id, "COMPLETED")
       }, /*#__PURE__*/React.createElement("i", {
         className: "fas fa-check"
       })), /*#__PURE__*/React.createElement("button", {
-        className: "btn btn-danger",
+        className: `btn btn-danger`,
         onClick: () => updateStatus(data.id, "MISSED")
       }, /*#__PURE__*/React.createElement("i", {
         className: "fas fa-times"
@@ -305,30 +350,14 @@ export const TicketTable = () => {
     className: "d-flex flex-wrap gap-2 mb-4"
   }, /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-warning"
-  }, "Pendientes: ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
+  }, "Pendientes:", " ", data.filter(item => item.status === "PENDING").length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-success"
-  }, "Completados: ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
+  }, "Completados:", " ", data.filter(item => item.status === "COMPLETED" && item.module_id == loggedUser?.today_module_id).length), /*#__PURE__*/React.createElement("span", {
     className: "badge badge-phoenix badge-phoenix-danger"
-  }, "Perdidos: ", data.filter(item => item.status === "MISSED").length)), !dataReady ? /*#__PURE__*/React.createElement("div", {
-    className: "text-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "spinner-border",
-    role: "status"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "visually-hidden"
-  }, "Cargando...")), /*#__PURE__*/React.createElement("p", null, "Cargando turnos...")) : /*#__PURE__*/React.createElement(CustomDataTable, {
-    key: tableKey,
+  }, "Perdidos:", " ", data.filter(item => item.status === "MISSED").length)), /*#__PURE__*/React.createElement(CustomDataTable, {
     data: filteredData,
     slots: slots,
-    columns: columns,
-    customOptions: {
-      ordering: false,
-      searching: false,
-      info: false,
-      deferRender: true,
-      responsive: true,
-      autoWidth: false
-    }
+    columns: columns
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     className: "border-top custom-th"
   }, "Turno"), /*#__PURE__*/React.createElement("th", {
@@ -355,22 +384,11 @@ export const TicketTable = () => {
         });
         return;
       }
-      const hasActiveTicket = filteredData.some(t => t.status === "CALLED" && t.module_id === loggedUser?.today_module_id);
-      if (hasActiveTicket) {
-        toast.current?.show({
-          severity: "warn",
-          summary: "Turno en curso",
-          detail: "Ya hay un turno en curso en este módulo.",
-          life: 4000
-        });
-        return;
-      }
       callTicket(nextTicket);
-    },
-    disabled: !dataReady || loading
+    }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-arrow-right me-2"
-  }), !dataReady || loading ? "Cargando..." : "Llamar siguiente turno"), /*#__PURE__*/React.createElement("div", {
+  }), "Llamar siguiente turno"), /*#__PURE__*/React.createElement("div", {
     className: "card d-flex flex-grow-1"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
@@ -385,8 +403,7 @@ export const TicketTable = () => {
     className: "card-text"
   }, "Prioridad: ", ticket.priority), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-primary",
-    onClick: () => callTicket(ticket),
-    disabled: !dataReady || loading
+    onClick: () => callTicket(ticket)
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-phone me-2"
   }), "Llamar nuevamente"))) : /*#__PURE__*/React.createElement("p", {

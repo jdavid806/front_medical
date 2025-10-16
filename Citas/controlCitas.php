@@ -20,11 +20,7 @@ include "../header.php";
             </ol>
         </nav>
         <div class="main-content">
-            <div class="component-container">
-                <div class="d-flex align-items-center justify-content-between"> 
-                    <h2>Citas</h2>
-                    <div id="appointmentCreateFormModalButtonReact"></div>
-                </div>    
+            <div class="component-container">   
                 <div id="appointmentsTableReact"></div>
             </div>
         </div>

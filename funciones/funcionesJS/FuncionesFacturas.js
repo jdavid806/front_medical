@@ -23,6 +23,8 @@ async function obtenerNombreProducto(id) {
 }
 
 async function generateInvoice(idCita, generarDescarga = false) {
+  console.log('idCitaaaa', idCita);
+
   try {
     let url =
       obtenerRutaPrincipal() + `/medical/admissions/by-appointment/${idCita}`;
@@ -33,7 +35,7 @@ async function generateInvoice(idCita, generarDescarga = false) {
     const response = await fetch(url);
     const data = await response.json();
     console.log(" data", data);
-    let entidad = await obtenerDatosPorId("entities", data.admission.entity_id);
+
     // console.log("entidad", entidad);
     if (!data || !data.admission) {
       console.error("Datos no encontrados");
@@ -60,7 +62,7 @@ async function generateInvoice(idCita, generarDescarga = false) {
       total: factura.total_amount,
       descuento: factura.discount,
       facturador: facturador,
-      entidad: entidad.name,
+      entidad: data.admission.entity.name,
       monto_autorizado: data.admission.entity_authorized_amount,
       id: factura.id,
     };
@@ -382,5 +384,115 @@ async function getAdmissionFormatData(idCita) {
 
   } catch (error) {
     console.error("Error factura admision", error)
+  }
+}
+
+async function generateInvoiceFromInvoice(invoiceData, userData, patientData, generarDescarga = false) {
+
+  try {
+    let datosEmpresa = await consultarDatosEmpresa();
+
+    let factura = invoiceData;
+    let user = userData;
+
+    let facturador = [
+      user?.first_name,
+      user?.middle_name,
+      user?.last_name,
+      user?.second_last_name,
+    ].filter(Boolean).join(" ");
+
+    let datosFactura = {
+      numero_comprobante: factura.invoice_code,
+      numero_autorizacion: "--",
+      fecha_autorizacion: factura.created_at,
+      fecha_factura: factura.created_at,
+      subtotal: factura.subtotal,
+      iva: factura.iva,
+      total: factura.total_amount,
+      descuento: factura.discount,
+      facturador: facturador,
+      entidad: "--",
+      monto_autorizado: "--",
+      id: factura.id,
+    };
+
+    let paciente = patientData;
+
+    let nombre = [
+      paciente.first_name,
+      paciente.middle_name,
+      paciente.last_name,
+      paciente.second_last_name,
+    ];
+
+    let datosPaciente = {
+      paciente_nombre: nombre,
+      paciente_documento:
+        paciente.document_type + "-" + paciente.document_number,
+      paciente_direccion: paciente.address,
+      paciente_telefono: paciente.whatsapp,
+    };
+
+    let metodosPago = await Promise.all(
+      factura.payments.map(async (pago) => {
+        const metodoNombre = await obtenerNombreMetodoPago(
+          pago.payment_method_id
+        );
+        return {
+          metodo: metodoNombre,
+          fecha: pago.payment_date,
+          monto: parseFloat(pago.amount),
+          notas: pago.notes,
+          referencia: pago.credit_card_or_check_number || "N/A",
+          banco: pago.credit_card_or_bank || "N/A",
+        };
+      })
+    );
+
+    let totalPagado = metodosPago.reduce(
+      (total, pago) => total + pago.monto,
+      0
+    );
+
+    let detallesFactura = await Promise.all(
+      factura.details.map(async (detalle) => {
+        const productoNombre = await obtenerNombreProducto(detalle.product_id);
+        return {
+          producto: productoNombre,
+          cantidad: detalle.quantity,
+          precio_unitario: parseFloat(detalle.unit_price),
+          subtotal: parseFloat(detalle.subtotal),
+          descuento: parseFloat(detalle.discount),
+          total: parseFloat(detalle.amount),
+        };
+      })
+    );
+
+    const payload = {
+      empresa: datosEmpresa,
+      factura: datosFactura,
+      paciente: datosPaciente,
+      metodos_pago: metodosPago,
+      total_pagado: totalPagado.toFixed(2),
+      detalles: detallesFactura,
+      descargar: generarDescarga,
+    };
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "../funciones/CrearTicketFactura.php";
+    form.target = "_blank";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "data";
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  } catch (error) {
+    console.error("Error general:", error);
   }
 }

@@ -389,7 +389,7 @@ const AdmissionBilling = ({
     onHide: handleHide,
     header: "Nueva Factura",
     style: {
-      width: "100vw",
+      width: "75vw",
       maxWidth: "1600px"
     },
     maximizable: true

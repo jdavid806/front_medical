@@ -1,8 +1,8 @@
 import BaseApiService from "./baseApiService.js";
 
 export class FarmaciaService extends BaseApiService {
-  async getAllRecipes(status = "ALL") {
-    return await this.httpClient.get(`${this.microservice}/recipes?status=${status}`);
+  async getAllRecipes(status = "ALL", search = "") {
+    return await this.httpClient.get(`${this.microservice}/recipes?status=${status}&search=${search}`);
   }
   async getAllprescriptions() {
     return await this.httpClient.get(`${this.microservice}/prescriptions`);

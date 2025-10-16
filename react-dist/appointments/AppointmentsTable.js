@@ -20,6 +20,7 @@ import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { PrimeReactProvider } from "primereact/api";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { AppointmentCreateFormModalButton } from "./AppointmentCreateFormModalButton.js";
 export const AppointmentsTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState(null);
@@ -456,10 +457,15 @@ export const AppointmentsTable = () => {
       }
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center justify-content-end mb-1"
+  }, /*#__PURE__*/React.createElement(AppointmentCreateFormModalButton, null)), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row mb-3"
@@ -508,19 +514,8 @@ export const AppointmentsTable = () => {
     value: selectedDate,
     onChange: e => setSelectedDate(e.value),
     className: "w-100",
-    placeholder: "Seleccione un rango",
-    appendTo: "self",
-    panelStyle: {
-      zIndex: 100000
-    }
-  }))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+    placeholder: "Seleccione un rango"
+  }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,
     lazy: true,

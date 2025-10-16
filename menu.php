@@ -159,7 +159,7 @@ $_SESSION["ID"] = 1;
         }
 
         .breadcrumb-item a {
-            color: rgb(56 116 255 / 66%);
+            color: #1A99FB;
         }
 
         /* .dropdown-menu {
@@ -373,14 +373,15 @@ $_SESSION["ID"] = 1;
       "primereact/breadcrumb": "https://esm.sh/primereact/breadcrumb?dev",
       "primereact/menubar" : "https://esm.sh/primereact/menubar?dev",
       "primereact/avatar" : "https://esm.sh/primereact/avatar?dev",
-      "primereact/inputotp" : "https://esm.sh/primereact/avatar?dev",
+      "primereact/inputotp" : "https://esm.sh/primereact/inputotp?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
       "react-dom/server": "https://esm.sh/react-dom/server?dev",
       "primereact/splitter" : "https://esm.sh/primereact/splitter?dev",
       "primereact/tree": "https://esm.sh/primereact/tree?dev",
       "primereact/treenode": "https://esm.sh/primereact/treenode?dev",
-      "primereact/colorpicker": "https://esm.sh/primereact/colorpicker?dev"
+      "primereact/colorpicker": "https://esm.sh/primereact/colorpicker?dev",
+      "primereact/galleria": "https://esm.sh/primereact/galleria?dev"
     }
   }
 </script>

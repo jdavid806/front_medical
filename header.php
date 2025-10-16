@@ -55,14 +55,14 @@
             <a class="navbar-brand me-1 me-sm-3" href="/Dashboard">
                 <div class="d-flex align-items-center">
                     <div class="d-flex align-items-center" id=""><img src="assets/img/logos/FullColor.svg" alt="phoenix"
-                            width="125" />
+                            width="95" />
 
                     </div>
                 </div>
             </a>
         </div>
 
-        <div className="d-flex flex-grow-1" style="width: 100%;">
+        <div className="d-flex flex-grow-1 mb-4" style="width: 100%;">
             <div id="NavbarHeader"></div>
         </div>
 

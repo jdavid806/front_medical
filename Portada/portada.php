@@ -79,10 +79,11 @@ $baner = "";
     width: 250px;
     height: 235px;
     border-radius: 10%;
-    background-color: var(--fc-button-active-border-color) !important;
+    background-color: var(--secondary-color) !important;
     color: #f8f9fa !important;
     display: flex;
     flex-direction: column;
+    margin-top: 20px ! important;
   }
   
   .dashboard-card .card-body {
@@ -153,7 +154,7 @@ $baner = "";
     width: 250px !important;
     height: 235px !important;
     border-radius: 10% !important;
-    background-color: var(--fc-button-active-border-color) !important;
+    background-color: var(--secondary-color) !important;
     color: #f8f9fa !important;
     display: flex !important;
     flex-direction: column !important;

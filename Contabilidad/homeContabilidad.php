@@ -3,75 +3,278 @@ include "../menu.php";
 include "../header.php";
 
 $tabs = [
-    ['icono' => 'toolbox', 'titulo' => 'Cuentas Contables', 'texto' => 'Ver y configurar las cuentas contables', 'url' => 'CuentasContables'],
-    ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturación', 'texto' => 'Genera facturaras x Entidad y de venta', 'url' => 'FE_FCE'],
-    ['icono' => 'building-columns', 'titulo' => 'Bancos', 'texto' => 'Visualiza saldos y transacciones bancarias', 'url' => 'BancosContables'],
-    ['icono' => 'file-invoice', 'titulo' => 'Comprobantes Contables', 'texto' => 'Genera Comprobantes contables', 'url' => 'ComprobantesContables'],
-    ['icono' => 'file-contract', 'titulo' => 'Recibos de Caja', 'texto' => 'Contabiliza los recibidos cajas y realizados', 'url' => 'RecibosDeCajas'],
-    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Visualiza reporte de facturas con sus vencimientos', 'url' => 'CuentasCobrarPagar'],
-    ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Generar el cierre de Caja', 'url' => 'controlCaja'],
-    ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Auditoria de cierres de caja', 'url' => 'reporteCaja'],
-    ['icono' => 'chart-simple', 'titulo' => 'Reportes Contables', 'texto' => 'Visualiza reportes financieros', 'url' => 'ReportesContables'],
-    ['icono' => 'receipt', 'titulo' => 'Cierres Contables', 'texto' => 'Visualiza saldos de cierres contables', 'url' => 'CierresContables'],
-    ['icono' => 'check-double', 'titulo' => 'Auditoria Contable', 'texto' => 'Visualiza historico de registros y acciones del sistema', 'url' => 'FE_ContabilidadNueva'],
-    ['icono' => 'users', 'titulo' => 'Gestión de Terceros', 'texto' => 'Consulta y administra el registro de terceros, incluyendo su creación y modificación', 'url' => 'GestionarTerceros'],
-    ['icono' => 'toolbox', 'titulo' => 'Configuración Contable', 'texto' => 'Configura Métodos de pago, Impuestos y Centros de Costo', 'url' => 'configContabilidad'],
-    ['icono' => 'warehouse', 'titulo' => 'Gestión de Activos', 'texto' => 'Administra el inventario y estado de todos los activos de las cuentas', 'url' => 'ActivosFijos'],
+    ['icono' => 'toolbox', 'titulo' => 'Cuentas Contables', 'texto' => 'Configura y consulta el catálogo de cuentas contables.', 'url' => 'CuentasContables'],
+    ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturación', 'texto' => 'Genera facturas de venta, compra y facturación por entidad.', 'url' => 'FE_FCE'],
+    ['icono' => 'building-columns', 'titulo' => 'Bancos', 'texto' => 'Consulta saldos y movimientos de tus cuentas bancarias.', 'url' => 'BancosContables'],
+    ['icono' => 'file-invoice', 'titulo' => 'Comprobantes Contables', 'texto' => 'Crea y registra comprobantes de contabilidad.', 'url' => 'ComprobantesContables'],
+    ['icono' => 'file-contract', 'titulo' => 'Recibos de Caja', 'texto' => 'Registra y contabiliza los recibos de caja generados.', 'url' => 'RecibosDeCajas'],
+    ['icono' => 'chart-pie', 'titulo' => 'Cuentas x Cobrar y Pagar', 'texto' => 'Consulta facturas pendientes y sus fechas de vencimiento.', 'url' => 'CuentasCobrarPagar'],
+    ['icono' => 'cash-register', 'titulo' => 'Cierre de Caja', 'texto' => 'Realiza el cuadre y cierre diario de caja.', 'url' => 'controlCaja'],
+    ['icono' => 'file-invoice-dollar', 'titulo' => 'Control Cierre de Caja', 'texto' => 'Revisa y audita los cierres de caja realizados.', 'url' => 'reporteCaja'],
+    ['icono' => 'chart-simple', 'titulo' => 'Reportes Contables', 'texto' => 'Genera reportes financieros y estados contables.', 'url' => 'ReportesContables'],
+    ['icono' => 'receipt', 'titulo' => 'Cierres Contables', 'texto' => 'Consulta los saldos y cierres de períodos contables.', 'url' => 'CierresContables'],
+    ['icono' => 'check-double', 'titulo' => 'Auditoría Contable', 'texto' => 'Consulta el historial de movimientos y cambios del sistema.', 'url' => 'FE_ContabilidadNueva'],
+    ['icono' => 'users', 'titulo' => 'Gestión de Terceros', 'texto' => 'Administra clientes, proveedores y otros terceros.', 'url' => 'GestionarTerceros'],
+    ['icono' => 'toolbox', 'titulo' => 'Configuración Contable', 'texto' => 'Configura métodos de pago, impuestos y centros de costo.', 'url' => 'configContabilidad'],
+    ['icono' => 'warehouse', 'titulo' => 'Gestión de Activos', 'texto' => 'Administra el inventario de activos fijos y depreciaciones.', 'url' => 'ActivosFijos'],
 ];
-
 ?>
+<link rel="stylesheet" href="./assets/css/styles.css">
+<style>
+    .componente {
+        padding: 1rem 0;
+    }
+    
+    .container-small {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+    
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .btn-primary{
+            color: #ffffff !important;
+    background: #1A99FB !important;
+    border: 1px solid #1A99FB;
+    padding: 0.5rem 0.75rem;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+    border-radius: 0.5rem !important;
+    font-family: 'Inter', sans-serif !important;
+    box-shadow: 0 7px 8px gray;
 
-<style type="text/css">
-    .custom-btn {
-        width: 150px;
-        height: 40px;
+    }
+    .dashboard-card .btn:hover{
+        box-shadow: none !important; 
+    }
+
+    
+    .dashboard-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        height: 100%;
         display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        position: relative;
+    }
+    
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #29F6C1;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .dashboard-card .card-body {
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
         text-align: center;
-        margin-bottom: 5px;
+        flex-grow: 1;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .dashboard-card .card-icon {
+        margin-bottom: 1.2rem;
+        color: #4a6cf7;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
     }
 
-    .custom-btn i {
-        margin-right: 5px;
+    
+
+    .dashboard-card .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #2d3748;
+        line-height: 1.3;
     }
+    
+    .dashboard-card .card-text {
+        color: #718096;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+        line-height: 1.6;
+        max-width: 90%;
+    }
+    
+    .dashboard-card .btn {
+        background: #132030 ;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .dashboard-card .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .dashboard-card .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(74, 108, 247, 0.4);
+        background: linear-gradient(120deg, #1A99FB);
+    }
+    
+    .dashboard-card .btn:hover::before {
+        left: 100%;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .dashboard-card .card-body {
+            padding: 1.5rem 1.25rem;
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: 1rem;
+            width: 80px;
+            height: 80px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        .dashboard-card .card-title {
+            font-size: 1.2rem;
+        }
+        
+        .dashboard-card .card-text {
+            font-size: 0.9rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 1.25rem;
+        }
+        
+        .dashboard-card .card-body {
+            padding: 1.25rem 1rem;
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: 1rem;
+            width: 70px;
+            height: 70px;
+        }
+    }
+    
+    /* Estilos para el tema oscuro */
+    html[data-bs-theme="dark"] .dashboard-card {
+        background: linear-gradient(135deg, #2d3748, #1a202c);
+        border-color: #4a5568;
+    }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-title {
+        color: #f7fafc;
+    }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-text {
+        color: #cbd5e0;
+    }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-icon {
+        background: linear-gradient(135deg, rgba(74, 108, 247, 0.2), rgba(108, 142, 255, 0.1));
+    }
+    
+    /* Estilos para el breadcrumb */
+    .breadcrumb {
+        font-size: 0.9rem;
+        padding: 1rem 1.5rem;
+        margin: -1rem -1.5rem 2rem -1.5rem;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 8px;
+    }
+    
+    html[data-bs-theme="dark"] .breadcrumb {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
 </style>
-<div class="componete">
+
+
+<div class="componente">
     <div class="content">
-        <nav class="mb-3" aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
-                <li class="breadcrumb-item active" onclick="location.reload()">Modulos Contables</li>
-            </ol>
-        </nav>
-        <div class="row g-0 g-md-4 g-xl-6 p-5 justify-content-center">
-            <div class="col-md-9">
-                <div class="row row-cols-1 row-cols-md-3 g-3 mb-3 mt-2">
-                    <?php foreach ($tabs as $tab) { ?>
-                        <div class="col">
-                            <div class="card text-center" style="min-height: 15em;">
-                                <div class="card-body d-flex flex-column justify-content-between align-items-center"
-                                    style="height: 100%;">
-                                    <!-- Icono en la parte superior -->
-                                    <div class="mb-2">
-                                        <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
-                                    </div>
-                                    <!-- Título -->
-                                    <h5 class="card-title"><?= $tab['titulo'] ?></h5>
-                                    <!-- Texto -->
-                                    <p class="card-text fs-9 text-center">
-                                        <?= $tab['texto'] ?>
-                                    </p>
-                                    <!-- Botón -->
-                                    <a href="<?= $tab['url'] ?>" class="btn btn-primary mt-auto">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </div>
+        <div class="container-small">
+            <nav class="mb-4" aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="homeContabilidad">Contabilidad</a></li>
+                    <li class="breadcrumb-item active" onclick="location.reload()">Modulos Contables</li>
+                </ol>
+            </nav>
+            
+            <div class="cards-grid">
+                <?php foreach ($tabs as $tab) { ?>
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <div class="card-icon">
+                                <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
                             </div>
+                            <h5 class="card-title"><?= $tab['titulo'] ?></h5>
+                            <p class="card-text"><?= $tab['texto'] ?></p>
+                            <a href="<?= $tab['url'] ?>" class="btn btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
                         </div>
-                    <?php } ?>
-                </div>
+                    </div>
+                <?php } ?>
             </div>
         </div>
     </div>

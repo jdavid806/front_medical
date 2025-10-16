@@ -1,25 +1,27 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { formatDate } from "../../services/utilidades.js";
-import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
-import { SwalManager } from "../../services/alertManagerImported.js";
-import { cancelConsultationClaim } from "../../services/koneksiService.js";
+import React, { useState, useEffect, useRef } from "react";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
+import { MultiSelect } from 'primereact/multiselect';
+import { AutoComplete } from "primereact/autocomplete";
+import { Accordion, AccordionTab } from 'primereact/accordion';
+import { useDebounce } from "primereact/hooks";
+import { CustomPRTable } from "../components/CustomPRTable.js";
+import { CustomFormModal } from "../components/CustomFormModal.js";
+import { CustomModal } from "../components/CustomModal.js";
+import { UpdateAdmissionAuthorizationForm } from "./UpdateAdmissionAuthorizationForm.js";
+import { KoneksiUploadAndVisualizeExamResultsModal } from "./KoneksiUploadAndVisualizeExamResultsModal.js";
+import { formatDate } from "../../services/utilidades.js";
+import { SwalManager } from "../../services/alertManagerImported.js";
+import { cancelConsultationClaim } from "../../services/koneksiService.js";
+import { admissionService, patientService, inventoryService } from "../../services/api/index.js";
+import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { useUsers } from "../users/hooks/useUsers.js";
 import { useEntities } from "../entities/hooks/useEntities.js";
-import { CustomFormModal } from "../components/CustomFormModal.js";
-import { UpdateAdmissionAuthorizationForm } from "./UpdateAdmissionAuthorizationForm.js";
-import { CustomModal } from "../components/CustomModal.js";
-import { admissionService, patientService, inventoryService } from "../../services/api/index.js";
-import { CustomPRTable } from "../components/CustomPRTable.js";
-import { AutoComplete } from "primereact/autocomplete";
-import { useDebounce } from "primereact/hooks";
-import { RequestCancellationTableAction } from "../components/table-actions/RequestCancellationTableAction.js";
 import { clinicalRecordStateColors, clinicalRecordStates } from "../../services/commons.js";
-import { KoneksiUploadAndVisualizeExamResultsModal } from "./KoneksiUploadAndVisualizeExamResultsModal.js";
-import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
-import { MultiSelect } from 'primereact/multiselect';
 export const AdmissionTable = ({
   items,
   onReload,
@@ -52,6 +54,7 @@ export const AdmissionTable = ({
   const [showAttachFileModal, setShowAttachFileModal] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const toast = useRef(null);
   const onFilter = () => {
     const filterValues = {
       selectedAdmittedBy,
@@ -80,9 +83,9 @@ export const AdmissionTable = ({
         authorizedAmount: item.entity_authorized_amount || "0.00",
         originalItem: item,
         status: item.status,
-        invoiceCode: item?.invoice?.invoice_code,
-        invoiceId: item?.invoice?.id,
-        products: item?.invoice?.details.map(detail => detail.product.name).join(', ')
+        invoiceCode: item?.invoice?.invoice_code || "",
+        invoiceId: item?.invoice?.id || "",
+        products: item?.invoice?.details?.map(detail => detail.product.name).join(', ') || ""
       };
     });
     setTableItems(mappedItems);
@@ -91,136 +94,226 @@ export const AdmissionTable = ({
     const response = await inventoryService.getAll();
     setProducts(response.data);
   }
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete
+  }) => {
+    const menu = useRef(null);
+    const handleEdit = () => {
+      console.log("Editando admisión con ID:", rowData.id);
+      onEdit(rowData.id);
+    };
+    const handleDelete = () => {
+      console.log("Solicitando eliminar admisión con ID:", rowData.id);
+      onDelete(rowData);
+    };
+    const handleUpdateAuthorization = () => {
+      openUpdateAuthorizationModal(rowData.originalItem.id);
+    };
+    const handlePrintInvoice = async () => {
+      await generateInvoice(rowData.originalItem.appointment_id, false);
+    };
+    const handleDownloadInvoice = async () => {
+      //@ts-ignore
+      await generateInvoice(rowData.originalItem.appointment_id, true);
+    };
+    const handleAttachDocument = () => {
+      openAttachDocumentModal(rowData.originalItem.id);
+    };
+    const handleViewDocument = () => {
+      seeDocument(rowData.originalItem.document_minio_id);
+    };
+    const handleUploadResults = () => {
+      openUploadAndVisualizeResultsModal(rowData.id);
+    };
+    const handleCancelClaim = () => {
+      cancelClaim(rowData.koneksiClaimId);
+    };
+    const handleCancelAdmission = () => {
+      onCancelItem && onCancelItem(rowData.originalItem.id);
+    };
+    const menuItems = [{
+      label: "Actualizar información de autorización",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-pencil me-2"
+      }),
+      command: handleUpdateAuthorization
+    }, {
+      label: "Imprimir factura",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-receipt me-2"
+      }),
+      command: () => handlePrintInvoice()
+    }, {
+      label: "Descargar factura",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-receipt me-2"
+      }),
+      command: handleDownloadInvoice
+    }, ...(!rowData.originalItem.document_minio_id ? [{
+      label: "Adjuntar documento",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-file-pdf me-2"
+      }),
+      command: handleAttachDocument
+    }] : []), ...(rowData.originalItem.document_minio_id ? [{
+      label: "Ver documento adjunto",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-file-pdf me-2"
+      }),
+      command: handleViewDocument
+    }] : []), ...(rowData.koneksiClaimId ? [{
+      label: "Cargar y visualizar resultados de examenes",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-file-medical me-2"
+      }),
+      command: handleUploadResults
+    }, {
+      label: "Anular reclamación",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-ban me-2"
+      }),
+      command: handleCancelClaim
+    }] : []), {
+      label: "Solicitar cancelación",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-times me-2"
+      }),
+      command: handleCancelAdmission
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: () => openUpdateAuthorizationModal(rowData.originalItem.id),
+      onDelete: () => confirmDelete(rowData)
+    }));
+  };
   const columns = [{
     header: "Admisionado el",
-    field: "createdAt"
+    field: "createdAt",
+    sortable: true
   }, {
     header: "Admisionado por",
-    field: "admittedBy"
+    field: "admittedBy",
+    sortable: true
   }, {
     header: "Paciente",
-    field: "patientName"
+    field: "patientName",
+    sortable: true
   }, {
     header: "Número de identificación",
-    field: "patientDNI"
+    field: "patientDNI",
+    sortable: true
   }, {
     header: "Entidad",
-    field: "entityName"
+    field: "entityName",
+    sortable: true
   }, {
     header: "Número de autorización",
-    field: "authorizationNumber"
+    field: "authorizationNumber",
+    sortable: true
   }, {
     header: "Monto autorizado",
-    field: "authorizedAmount"
+    field: "authorizedAmount",
+    sortable: true
   }, {
     header: "Codigo de factura",
-    field: "invoiceCode"
+    field: "invoiceCode",
+    sortable: true
   }, {
     header: "Id",
-    field: "invoiceId"
+    field: "invoiceId",
+    sortable: true
   }, {
     header: "Productos",
-    field: "products"
+    field: "products",
+    sortable: true
   }, {
     field: "status",
     header: "Estado",
     body: data => {
       const color = clinicalRecordStateColors[data.status] || "secondary";
       const text = clinicalRecordStates[data.status] || "SIN ESTADO";
-      return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+      return /*#__PURE__*/React.createElement("span", {
         className: `badge badge-phoenix badge-phoenix-${color}`
-      }, text));
-    }
+      }, text);
+    },
+    sortable: true
   }, {
-    header: "",
-    field: "",
-    body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(TableActionsWrapper, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => openUpdateAuthorizationModal(data.originalItem.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-pencil",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Actualizar informaci\xF3n de autorizaci\xF3n")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: async () => {
-        //@ts-ignore
-        await generateInvoice(data.originalItem.appointment_id, false);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-receipt",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Imprimir factura")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: async () => {
-        //@ts-ignore
-        await generateInvoice(data.originalItem.appointment_id, true);
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-receipt",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Descargar factura")))), !data.originalItem.document_minio_id && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => openAttachDocumentModal(data.originalItem.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-pdf",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Adjuntar documento")))), data.originalItem.document_minio_id && /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => seeDocument(data.originalItem.document_minio_id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-pdf",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Ver documento adjunto")))), data.koneksiClaimId && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => openUploadAndVisualizeResultsModal(data.id)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-medical",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Cargar y visualizar resultados de examenes")))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-      className: "dropdown-item",
-      href: "#",
-      onClick: () => cancelClaim(data.koneksiClaimId)
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-2 align-items-center"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-ban",
-      style: {
-        width: "20px"
-      }
-    }), /*#__PURE__*/React.createElement("span", null, "Anular reclamaci\xF3n"))))), /*#__PURE__*/React.createElement(RequestCancellationTableAction, {
-      onTrigger: () => onCancelItem && onCancelItem(data.originalItem.id)
-    })))
+    header: "Acciones",
+    field: "actions",
+    body: actionBodyTemplate,
+    exportable: false
   }];
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [admissionToDelete, setAdmissionToDelete] = useState(null);
+  const confirmDelete = admission => {
+    setAdmissionToDelete(admission);
+    setDeleteDialogVisible(true);
+  };
+  const deleteAdmission = async () => {
+    if (admissionToDelete && onCancelItem) {
+      try {
+        onCancelItem(admissionToDelete.id);
+        SwalManager.success({
+          title: "Admisión Cancelada"
+        });
+        if (onReload) {
+          await onReload();
+        }
+      } catch (error) {
+        console.error("Error al cancelar admisión:", error);
+        SwalManager.error({
+          title: "Error",
+          text: "No se pudo cancelar la admisión"
+        });
+      }
+    }
+    setDeleteDialogVisible(false);
+    setAdmissionToDelete(null);
+  };
+  const deleteDialogFooter = /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-end gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    icon: "pi pi-times",
+    className: "p-button-text",
+    onClick: () => setDeleteDialogVisible(false)
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Eliminar",
+    icon: "pi pi-check",
+    className: "p-button-danger",
+    onClick: deleteAdmission
+  }));
   const cancelClaim = claimId => {
     SwalManager.confirmCancel(async () => {
       try {
@@ -295,26 +388,49 @@ export const AdmissionTable = ({
   useEffect(() => {
     onFilter();
   }, [selectedAdmittedBy, selectedPatient, selectedEntity, selectedDate, selectedProduct]);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "accordion mb-3"
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    visible: deleteDialogVisible,
+    style: {
+      width: "450px"
+    },
+    header: "Confirmar",
+    modal: true,
+    footer: deleteDialogFooter,
+    onHide: () => setDeleteDialogVisible(false)
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-item"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "accordion-header",
-    id: "filters"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "accordion-button collapsed",
-    type: "button",
-    "data-bs-toggle": "collapse",
-    "data-bs-target": "#filtersCollapse",
-    "aria-expanded": "false",
-    "aria-controls": "filtersCollapse"
-  }, "Filtrar admisiones")), /*#__PURE__*/React.createElement("div", {
-    id: "filtersCollapse",
-    className: "accordion-collapse collapse",
-    "aria-labelledby": "filters"
+    className: "flex align-items-center justify-content-center"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-exclamation-triangle mr-3",
+    style: {
+      fontSize: "2rem",
+      color: "#F8BB86"
+    }
+  }), admissionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas cancelar la admisi\xF3n del paciente ", /*#__PURE__*/React.createElement("b", null, admissionToDelete.patientName), "?"))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "accordion-body"
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary me-2",
+    onClick: () => {
+      exportToExcel({
+        data: tableItems,
+        fileName: `Admisiones`,
+        excludeColumns: ["id"]
+      });
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-file-excel me-2"
+  }), "Exportar a Excel")), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtrar admisiones"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement("div", {
@@ -412,31 +528,10 @@ export const AdmissionTable = ({
       setSelectedProduct(e.value);
     },
     showClear: true
-  }))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end mb-3"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary me-2",
-    onClick: () => {
-      exportToExcel({
-        data: tableItems,
-        // Pasamos la factura como un array de un elemento
-        fileName: `Admisiones`,
-        excludeColumns: ["id"] // Excluimos campos que no queremos mostrar
-      });
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-file-excel me-2"
-  }), "Exportar a Excel")), /*#__PURE__*/React.createElement(CustomPRTable, {
+  }))))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: tableItems,
-    lazy: true,
+    lazy: lazy,
     first: first,
     rows: rows,
     totalRecords: totalRecords,

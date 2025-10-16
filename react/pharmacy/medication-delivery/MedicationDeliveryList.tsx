@@ -14,14 +14,16 @@ import { useConvenioRecipes } from "../../convenios/hooks/useConvenioRecipes";
 
 interface MedicationDeliveryListProps {
     onDeliverySelect: (delivery: PrescriptionDto) => void;
+    onDeliverySelectConvenio: (delivery: PrescriptionDto) => void;
 }
 
-export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryListProps) => {
+export const MedicationDeliveryList = ({ onDeliverySelect, onDeliverySelectConvenio }: MedicationDeliveryListProps) => {
 
     const { fetchAllRecipes, recipes } = useAllRecipes();
     const { convenios } = useActiveTenantConvenios();
     const { fetchConvenioRecipes, recipes: convenioRecipes } = useConvenioRecipes();
 
+    const [search, setSearch] = useState('');
     const [selectedConvenio, setSelectedConvenio] = useState<any>(null);
 
     const statusItems: MenuItem[] = [
@@ -34,21 +36,30 @@ export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryL
 
     const finalRecipes = selectedConvenio ? convenioRecipes : recipes;
 
-    useEffect(() => {
-        fetchRecipes("PENDING");
-    }, [selectedConvenio]);
+    // useEffect(() => {
+    //     fetchRecipes("PENDING");
+    // }, [selectedConvenio]);
 
     const fetchRecipes = (status: string) => {
+        if (search.length < 3) {
+            return;
+        }
         if (!selectedConvenio) {
-            fetchAllRecipes(status);
+            fetchAllRecipes(status, search);
         } else {
             fetchConvenioRecipes({
                 tenantId: selectedConvenio.tenant_b_id,
                 apiKey: selectedConvenio.api_keys.find((apiKey: any) => apiKey.module === "farmacia").key,
-                module: "farmacia"
+                module: "farmacia",
+                search,
+                status
             });
         }
     };
+
+    useEffect(() => {
+        fetchRecipes("PENDING");
+    }, [search]);
 
     return (
         <>
@@ -72,7 +83,11 @@ export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryL
                     placeholder="Convenio"
                     className="w-100"
                     value={selectedConvenio}
-                    onChange={(e) => setSelectedConvenio(e.value)}
+                    onChange={(e) => {
+                        console.log(e.value)
+                        setSelectedConvenio(e.value)
+                        onDeliverySelectConvenio(e.value)
+                    }}
                 />
             </div>
 
@@ -81,6 +96,8 @@ export const MedicationDeliveryList = ({ onDeliverySelect }: MedicationDeliveryL
                     placeholder="Buscar por # o nombre..."
                     id="searchOrder"
                     className="w-100"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 

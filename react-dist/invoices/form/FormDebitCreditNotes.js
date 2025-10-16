@@ -4,9 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Button, InputText, Dropdown, Calendar, DataTable, Column, Toast, InputNumber } from "primereact";
 import { useThirdParties } from "../../billing/third-parties/hooks/useThirdParties.js";
 import { useCentresCosts } from "../../centres-cost/hooks/useCentresCosts.js";
-import { productService, invoiceService } from "../../../services/api/index.js";
+import { productService, invoiceService, paymentMethodService } from "../../../services/api/index.js";
 import { useTaxes } from "../hooks/useTaxes.js";
-import { useBillingByType } from "../../billing/hooks/useBillingByType.js"; // Definición de tipos
+import { useBillingByType } from "../../billing/hooks/useBillingByType.js";
+import { PaymentMethodsSection } from "../../components/billing/CustomPaymentMethods.js"; // Definición de tipos
 export const FormDebitCreditNotes = ({
   initialData,
   onSuccess
@@ -53,9 +54,20 @@ export const FormDebitCreditNotes = ({
     tax: 0,
     totalValue: 0
   }]);
+  const [paymentMethodsArray, setPaymentMethodsArray] = useState([{
+    id: generateId(),
+    method: "",
+    authorizationNumber: "",
+    value: ""
+  }]);
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState([]);
+  const handlePaymentMethodsChange = paymentMethods => {
+    setPaymentMethodsArray(paymentMethods);
+  };
   const noteType = watch("noteType");
   useEffect(() => {
     if (invoices.length && initialData) {
+      loadPaymentMethods();
       const invoice = invoices.filter(invoice => invoice.id === Number(initialData.id))[0];
       if (invoice) {
         setSelectedInvoice(invoice);
@@ -78,6 +90,16 @@ export const FormDebitCreditNotes = ({
     loadInvoices();
     loadProducts();
   }, []);
+  const loadPaymentMethods = async () => {
+    const methods = await paymentMethodService.getAll();
+    let methodsFiltered = [];
+    if (initialData.noteType.id === "DEBIT") {
+      methodsFiltered = methods.filter(method => method.payment_type === "sale");
+    } else {
+      methodsFiltered = methods.filter(method => method.payment_type === "purchase");
+    }
+    setAvailablePaymentMethods(methodsFiltered);
+  };
   async function loadInvoices() {
     const invoices = await invoiceService.getTogenerateNotes();
     setInvoices(invoices);
@@ -135,6 +157,26 @@ export const FormDebitCreditNotes = ({
     return billingItems.reduce((total, item) => {
       return total + calculateLineTotal(item);
     }, 0);
+  };
+  const calculateAdjustmentDifference = () => {
+    const currentTotal = calculateTotal(); // Total actual con los ajustes
+
+    // Calcular el total original basado en los valores originales de la factura
+    const originalTotal = billingItems.reduce((total, item) => {
+      const originalQuantity = item.originalQuantity || 0;
+      const originalUnitPrice = item.originalUnitPrice || 0;
+      const discount = Number(item.discount) || 0;
+      const taxRate = typeof item.tax === "object" ? item.tax.percentage : Number(item.tax) || 0;
+      const subtotal = originalQuantity * originalUnitPrice;
+      const discountAmount = subtotal * (discount / 100);
+      const subtotalAfterDiscount = subtotal - discountAmount;
+      const taxAmount = subtotalAfterDiscount * (taxRate / 100);
+      return total + (subtotalAfterDiscount + taxAmount);
+    }, 0);
+
+    // La diferencia es el total actual menos el total original
+    const difference = currentTotal - originalTotal;
+    return parseFloat(difference.toFixed(2));
   };
 
   // Funciones para manejar items de facturación
@@ -212,7 +254,14 @@ export const FormDebitCreditNotes = ({
           price_adjustment: priceAdjustment
         };
       }),
-      billing: billing.data
+      billing: billing.data,
+      payments: paymentMethodsArray.map(payment => {
+        return {
+          payment_method_id: payment.method,
+          payment_date: new Date(),
+          amount: payment.value
+        };
+      })
     };
     if (!validateForm) {
       switch (noteType?.id) {
@@ -720,7 +769,26 @@ export const FormDebitCreditNotes = ({
     currency: "DOP",
     locale: "es-DO",
     readOnly: true
-  })))))), /*#__PURE__*/React.createElement("div", {
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-fixed"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, noteType?.id === "DEBIT" ? "Ajuste a Favor" : "Ajuste en Contra"), /*#__PURE__*/React.createElement(InputNumber, {
+    value: calculateAdjustmentDifference(),
+    className: "w-100 font-weight-bold",
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    readOnly: true
+  })))))), /*#__PURE__*/React.createElement(PaymentMethodsSection, {
+    totalInvoice: calculateAdjustmentDifference(),
+    paymentMethods: paymentMethodsArray,
+    availablePaymentMethods: availablePaymentMethods,
+    onPaymentMethodsChange: handlePaymentMethodsChange,
+    labelTotal: "Total ajuste"
+  }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",

@@ -1,4 +1,4 @@
-import { ProductDto } from "../../../models/models";
+import { ProductDto, UserDto } from "../../../models/models";
 
 export interface SuppliesDeliveryFormModalProps {
     visible: boolean;
@@ -71,6 +71,7 @@ export interface MedicalSupply {
     updated_at: string;
     products: RequestedProduct[];
     requested_by: string;
+    requested_by_user: UserDto;
 }
 
 export interface MedicalSupplyResponse {

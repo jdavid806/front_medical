@@ -23358,19 +23358,18 @@ fieldset:disabled .table-list .page,
 }
 
 .btn-outline-primary {
-  --phoenix-btn-color: #3874ff;
-  --phoenix-btn-border-color: #3874ff;
+  --phoenix-btn-color: #1A99FB;
+  --phoenix-btn-border-color: #1A99FB;
   --phoenix-btn-hover-color: #fff;
-  --phoenix-btn-hover-bg: #3874ff;
-  --phoenix-btn-hover-border-color: #3874ff;
+  --phoenix-btn-hover-border-color: #1A99FB;
   --phoenix-btn-focus-shadow-rgb: 56, 116, 255;
   --phoenix-btn-active-color: #fff;
-  --phoenix-btn-active-bg: #3874ff;
-  --phoenix-btn-active-border-color: #3874ff;
+  --phoenix-btn-active-bg: #1A99FB;
+  --phoenix-btn-active-border-color: #1A99FB;
   --phoenix-btn-active-shadow: initial;
-  --phoenix-btn-disabled-color: #3874ff;
+  --phoenix-btn-disabled-color: #1A99FB;
   --phoenix-btn-disabled-bg: transparent;
-  --phoenix-btn-disabled-border-color: #3874ff;
+  --phoenix-btn-disabled-border-color: #1A99FB;
   --phoenix-gradient: none;
 }
 

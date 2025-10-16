@@ -4,6 +4,7 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
 import { useDebounce } from 'primereact/hooks';
+import { Button } from "primereact/button";
 export const CustomPRTable = ({
   data,
   columns,
@@ -56,9 +57,9 @@ export const CustomPRTable = ({
   const header = () => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between"
-    }, !disableReload && /*#__PURE__*/React.createElement("button", {
+    }, !disableReload && /*#__PURE__*/React.createElement(Button, {
       type: "button",
-      className: "btn btn-outline-primary me-2",
+      className: "p-button-primary me-2",
       onClick: onReload
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-sync"

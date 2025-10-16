@@ -5,11 +5,11 @@ export const useConvenioRecipes = () => {
 
     const [recipes, setRecipes] = useState<any[]>([]);
 
-    const fetchConvenioRecipes = async (params: { tenantId: string, apiKey: string, module: string }) => {
-        const { tenantId, apiKey, module } = params;
+    const fetchConvenioRecipes = async (params: { tenantId: string, apiKey: string, module: string, search: string, status: string }) => {
+        const { tenantId, apiKey, module, search, status } = params;
         try {
             const response = await convenioTenantService.getFarmaciasWithRecetasConvenio(
-                { module },
+                { module, search, status },
                 tenantId,
                 apiKey
             );

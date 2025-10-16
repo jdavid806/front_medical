@@ -9,6 +9,7 @@ import { usePaymentMethodById } from "./hooks/usePaymentMethodConfigByIdTable.js
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { usePaymentMethodDelete } from "./hooks/usePaymentMethodDeleteTable.js";
 import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccounts.js";
+import { Button } from 'primereact/button';
 export const PaymentMethodsConfig = ({
   onConfigurationComplete
 }) => {
@@ -141,19 +142,7 @@ export const PaymentMethodsConfig = ({
         overlay: 100000
       }
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement("h4", {
-    className: "mb-1"
-  }, "Configuraci\xF3n de M\xE9todos de Pago"), /*#__PURE__*/React.createElement("div", {
-    className: "text-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'))), error && /*#__PURE__*/React.createElement("div", {
+  }, error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
   }, error), /*#__PURE__*/React.createElement("div", {
@@ -163,7 +152,15 @@ export const PaymentMethodsConfig = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(PaymentMethodsConfigTable, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método')), /*#__PURE__*/React.createElement(PaymentMethodsConfigTable, {
     onEditItem: handleTableEdit,
     paymentMethods: enrichedPaymentMethods,
     onDeleteItem: handleDeleteMethod,

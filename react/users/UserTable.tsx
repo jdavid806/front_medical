@@ -1,16 +1,17 @@
-import React, { useState, useRef } from "react";
-import { Toast } from 'primereact/toast';
-import { ConfigColumns } from "datatables.net-bs5";
-import CustomDataTable from "../components/CustomDataTable.js";
+import React, { useState, useEffect, useRef } from "react";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 import { UserTableItem } from "../models/models.js";
-import TableActionsWrapper from "../components/table-actions/TableActionsWrapper.js";
-import { EditTableAction } from "../components/table-actions/EditTableAction.js";
-import { DeleteTableAction } from "../components/table-actions/DeleteTableAction.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
 import { UserAssistantForm, UserAssistantFormInputs } from "./UserAssistantForm.js";
 import { useUserAssistantBulkCreate } from "./hooks/useUserAssistantBulkCreate.js";
 import { userAssistantService } from "../../services/api/index.js";
-import { GoogleCalendarModal } from './components/GoogleCalendarModal.jsx';
+import { CustomPRTable, CustomPRTableColumnProps } from "../components/CustomPRTable.js";
+import { GoogleCalendarModal } from "./components/GoogleCalendarModal.js";
 
 interface UserTableProps {
   users: UserTableItem[];
@@ -21,9 +22,10 @@ interface UserTableProps {
   onDeleteSignature?: (id: string) => void;
   onDeleteStamp?: (id: string) => void;
   onReload?: () => void;
+  loading?: boolean;
 }
 
-const UserTable: React.FC<UserTableProps> = ({
+export const UserTable: React.FC<UserTableProps> = ({
   users,
   onEditItem,
   onDeleteItem,
@@ -31,22 +33,121 @@ const UserTable: React.FC<UserTableProps> = ({
   onAddStamp,
   onDeleteSignature,
   onDeleteStamp,
-  onReload
+  onReload,
+  loading = false
 }) => {
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserTableItem | null>(null);
+  const [filteredUsers, setFilteredUsers] = useState<UserTableItem[]>([]);
+  const [filtros, setFiltros] = useState({
+    fullName: "",
+    role: "",
+    city: "",
+    email: "",
+  });
+
   const [showAssistantsModal, setShowAssistantsModal] = useState(false);
   const [assistantsFormInitialData, setAssistantsFormInitialData] = useState<UserAssistantFormInputs | undefined>();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentEmail, setCurrentEmail] = useState<string | null>(null);
-  const [actionType, setActionType] = useState<"signature" | "stamp" | null>(
-    null
-  );
+  const [actionType, setActionType] = useState<"signature" | "stamp" | null>(null);
   const toast = useRef<Toast>(null);
   const [showGoogleCalendarModal, setShowGoogleCalendarModal] = useState(false);
 
   const { createUserAssistantBulk } = useUserAssistantBulkCreate();
 
+  const syncFilteredData = () => {
+    let result = [...users];
+
+    if (filtros.fullName) {
+      result = result.filter((user) =>
+        user.fullName.toLowerCase().includes(filtros.fullName.toLowerCase())
+      );
+    }
+
+    if (filtros.role) {
+      result = result.filter((user) =>
+        user.role.toLowerCase().includes(filtros.role.toLowerCase())
+      );
+    }
+
+    setFilteredUsers(result);
+  };
+
+  useEffect(() => {
+    syncFilteredData();
+  }, [users, filtros]);
+
+  const handleFilterChange = (field: string, value: any) => {
+    setFiltros((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSearchChange = (searchValue: string) => {
+    console.log("Search value:", searchValue);
+  };
+
+  const limpiarFiltros = () => {
+    setFiltros({
+      fullName: "",
+      role: "",
+      city: "",
+      email: "",
+    });
+  };
+
+  const handleRefresh = async () => {
+    limpiarFiltros();
+
+    if (onReload) {
+      await onReload();
+    }
+  };
+
+  const showToast = (severity: any, summary: string, detail: string) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
+
+  const confirmDelete = (user: UserTableItem) => {
+    setUserToDelete(user);
+    setDeleteDialogVisible(true);
+  };
+
+  const deleteUser = async () => {
+    if (userToDelete && onDeleteItem) {
+      await onDeleteItem(userToDelete.id);
+      showToast("success", "Éxito", `Usuario ${userToDelete.fullName} eliminado`);
+
+      if (onReload) {
+        await onReload();
+      }
+    }
+    setDeleteDialogVisible(false);
+    setUserToDelete(null);
+  };
+
+  const deleteDialogFooter = (
+    <div className="flex justify-content-end gap-2">
+      <Button
+        label="Cancelar"
+        icon="pi pi-times"
+        className="p-button-text"
+        onClick={() => setDeleteDialogVisible(false)}
+      />
+      <Button
+        label="Eliminar"
+        icon="pi pi-check"
+        className="p-button-danger"
+        onClick={deleteUser}
+      />
+    </div>
+  );
+
+  // Funciones existentes (sin cambios)
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     type: "signature" | "stamp"
@@ -81,7 +182,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setActionType(null);
   };
 
-  function saveSignature(signatureId, userId) {
+  function saveSignature(signatureId: any, userId: string) {
     //@ts-ignore
     let urlUser = obtenerRutaPrincipal() + `/medical/users/` + userId;
     let jsonData = {
@@ -91,7 +192,7 @@ const UserTable: React.FC<UserTableProps> = ({
     actualizarDatos(urlUser, jsonData);
   }
 
-  function saveStamp(stamp, userId) {
+  function saveStamp(stamp: any, userId: string) {
     //@ts-ignore
     let urlUser = obtenerRutaPrincipal() + `/medical/users/` + userId;
     let jsonData = {
@@ -102,19 +203,17 @@ const UserTable: React.FC<UserTableProps> = ({
   }
 
   const openAssistantsModal = async (userId: string) => {
-
     setCurrentUserId(userId);
     setShowAssistantsModal(true);
 
     const assistants = await userAssistantService.getAssistantsByUserId(userId);
 
     setAssistantsFormInitialData({
-      assistants: assistants.data.map((assistant) => assistant.id),
+      assistants: assistants.data.map((assistant: any) => assistant.id),
     });
   };
 
   const handleAssistantsSubmit = async (data: UserAssistantFormInputs) => {
-
     await createUserAssistantBulk(currentUserId!, data.assistants).then(() => {
       setShowAssistantsModal(false);
       onReload && onReload();
@@ -127,126 +226,235 @@ const UserTable: React.FC<UserTableProps> = ({
     setShowGoogleCalendarModal(true);
   };
 
-  const columns: ConfigColumns[] = [
-    { data: "fullName" },
-    { data: "role" },
-    { data: "city" },
-    { data: "phone" },
-    { data: "email" },
-    { orderable: false, searchable: false },
-  ];
+  const TableMenu: React.FC<{
+    rowData: UserTableItem,
+    onEdit: (id: string) => void,
+    onDelete: (user: UserTableItem) => void
+  }> = ({ rowData, onEdit, onDelete }) => {
 
-  const slots = {
-    5: (cell, data: UserTableItem) => (
-      <TableActionsWrapper>
-        <li style={{ marginBottom: "8px" }}>
-          <EditTableAction
-            onTrigger={() => onEditItem && onEditItem(data.id)}
-          />
-        </li>
-        <li style={{ marginBottom: "8px" }}>
-          <DeleteTableAction
-            onTrigger={() => onDeleteItem && onDeleteItem(data.id)}
-          />
-        </li>
-        {data.roleGroup === "DOCTOR" && (
-          <>
-            <li style={{ marginBottom: "8px" }}>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => {
-                  setCurrentUserId(data.id);
-                  setActionType("signature");
-                  document.getElementById("fileInput")?.click();
-                }}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <i
-                    className="fas fa-file-signature"
-                    style={{ width: "20px" }}
-                  ></i>
-                  <span>
-                    {data.signatureMinioUrl ? "Actualizar firma" : "Añadir firma"}
-                  </span>
-                </div>
-              </a>
-            </li>
-            <li style={{ marginBottom: "8px" }}>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => {
-                  setCurrentUserId(data.id);
-                  setActionType("stamp");
-                  document.getElementById("fileInput")?.click();
-                }}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <i className="fas fa-stamp" style={{ width: "20px" }}></i>
-                  <span>
-                    {data.imageMinioUrl ? "Actualizar sello" : "Añadir sello"}
-                  </span>
-                </div>
-              </a>
-            </li>
-            <li style={{ marginBottom: "8px" }}>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => openGoogleCalendarModal(data)}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <i className="fas fa-calendar-alt" style={{ width: "20px" }}></i>
-                  <span>Configurar Google Calendar</span>
-                </div>
-              </a>
-            </li>
-            <li style={{ marginBottom: "8px" }}>
-              <a
-                className="dropdown-item"
-                href="#"
-                onClick={() => openAssistantsModal(data.id)}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <i
-                    className="fas fa-user-nurse"
-                    style={{ width: "20px" }}
-                  ></i>
-                  <span>Gestionar asistentes</span>
-                </div>
-              </a>
-            </li>
-          </>
-        )}
-      </TableActionsWrapper>
-    ),
+    const menu = useRef<Menu>(null);
+
+    const handleEdit = () => {
+      console.log("Editando usuario con ID:", rowData.id);
+      onEdit(rowData.id);
+    };
+
+    const handleDelete = () => {
+      console.log("Solicitando eliminar usuario con ID:", rowData.id);
+      onDelete(rowData);
+    };
+
+    const handleSignature = () => {
+      setCurrentUserId(rowData.id);
+      setActionType("signature");
+      document.getElementById("fileInput")?.click();
+    };
+
+    const handleStamp = () => {
+      setCurrentUserId(rowData.id);
+      setActionType("stamp");
+      document.getElementById("fileInput")?.click();
+    };
+
+    const handleGoogleCalendar = () => {
+      openGoogleCalendarModal(rowData);
+    };
+
+    const handleAssistants = () => {
+      openAssistantsModal(rowData.id);
+    };
+
+    const menuItems = [
+      {
+        label: "Editar",
+        icon: <i className="fas fa-edit me-2"></i>,
+        command: handleEdit,
+      },
+      {
+        label: "Eliminar",
+        icon: <i className="fas fa-trash me-2"></i>,
+        command: handleDelete,
+      }
+    ];
+
+    // Agregar items específicos para DOCTOR
+    if (rowData.roleGroup === "DOCTOR") {
+      menuItems.push(
+        {
+          label: rowData.signatureMinioUrl ? "Actualizar firma" : "Añadir firma",
+          icon: <i className="fas fa-file-signature me-2"></i>,
+          command: handleSignature,
+        },
+        {
+          label: rowData.imageMinioUrl ? "Actualizar sello" : "Añadir sello",
+          icon: <i className="fas fa-stamp me-2"></i>,
+          command: handleStamp,
+        },
+        {
+          label: "Configurar Google Calendar",
+          icon: <i className="fas fa-calendar-alt me-2"></i>,
+          command: handleGoogleCalendar,
+        },
+        {
+          label: "Gestionar asistentes",
+          icon: <i className="fas fa-user-nurse me-2"></i>,
+          command: handleAssistants,
+        }
+      );
+    }
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="btn-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fas fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={menuItems}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
+      </div>
+    );
   };
 
+  const actionBodyTemplate = (rowData: UserTableItem) => {
+    return (
+      <div
+        className="flex align-items-center justify-content-center"
+        style={{ gap: "0.5rem", minWidth: "120px" }}
+      >
+        <TableMenu
+          rowData={rowData}
+          onEdit={onEditItem ? onEditItem : () => { }}
+          onDelete={confirmDelete}
+        />
+      </div>
+    );
+  };
+
+  // Mapear los datos para la tabla
+  const tableItems = filteredUsers.map(user => ({
+    id: user.id,
+    fullName: user.fullName,
+    role: user.role,
+    city: user.city,
+    phone: user.phone,
+    email: user.email,
+    actions: user
+  }));
+
+  const columns: CustomPRTableColumnProps[] = [
+    {
+      field: 'fullName',
+      header: 'Nombre',
+      sortable: true
+    },
+    {
+      field: 'role',
+      header: 'Rol',
+      sortable: true
+    },
+    {
+      field: 'city',
+      header: 'Ciudad',
+      sortable: true
+    },
+    {
+      field: 'phone',
+      header: 'Número de contacto',
+      sortable: true
+    },
+    {
+      field: 'email',
+      header: 'Correo',
+      sortable: true
+    },
+    {
+      field: 'actions',
+      header: 'Acciones',
+      body: (rowData: any) => actionBodyTemplate(rowData.actions),
+      exportable: false
+    }
+  ];
+
   return (
-    <>
+    <div className="w-100">
       <Toast ref={toast} />
+
+      {/* Diálogo de confirmación de eliminación */}
+      <Dialog
+        visible={deleteDialogVisible}
+        style={{ width: "450px" }}
+        header="Confirmar"
+        modal
+        footer={deleteDialogFooter}
+        onHide={() => setDeleteDialogVisible(false)}
+      >
+        <div className="flex align-items-center justify-content-center">
+          <i
+            className="fas fa-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem", color: "#F8BB86" }}
+          />
+          {userToDelete && (
+            <span>
+              ¿Estás seguro que deseas eliminar al usuario <b>{userToDelete.fullName}</b>?
+            </span>
+          )}
+        </div>
+      </Dialog>
+
       <div className="card mb-3">
         <div className="card-body">
-          <CustomDataTable data={users} slots={slots} columns={columns}>
-            <thead>
-              <tr>
-                <th className="border-top custom-th">Nombre</th>
-                <th className="border-top custom-th">Rol</th>
-                <th className="border-top custom-th">Ciudad</th>
-                <th className="border-top custom-th">Número de contacto</th>
-                <th className="border-top custom-th">Correo</th>
-                <th
-                  className="text-end align-middle pe-0 border-top mb-2"
-                  scope="col"
-                ></th>
-              </tr>
-            </thead>
-          </CustomDataTable>
+          <Accordion>
+            <AccordionTab header="Filtros">
+              <div className="row">
+                <div className="col-md-6 col-lg-3">
+                  <label className="form-label">
+                    Nombre
+                  </label>
+                  <InputText
+                    value={filtros.fullName}
+                    onChange={(e) => handleFilterChange("fullName", e.target.value)}
+                    placeholder="Buscar por nombre"
+                    className="w-100"
+                  />
+                </div>
+                <div className="col-md-6 col-lg-3">
+                  <label className="form-label">
+                    Rol
+                  </label>
+                  <InputText
+                    value={filtros.role}
+                    onChange={(e) => handleFilterChange("role", e.target.value)}
+                    placeholder="Buscar por rol"
+                    className="w-100"
+                  />
+                </div>
+
+              </div>
+
+            </AccordionTab>
+          </Accordion>
+
+          <CustomPRTable
+            columns={columns}
+            data={tableItems}
+            loading={false}
+            onSearch={handleSearchChange}
+            onReload={handleRefresh}
+          />
         </div>
       </div>
 
-      {/* Input de archivo (oculto) */}
       <input
         id="fileInput"
         type="file"
@@ -261,7 +469,6 @@ const UserTable: React.FC<UserTableProps> = ({
         }}
       />
 
-      {/* Modal para previsualización */}
       {previewUrl && (
         <div
           className="modal fade show"
@@ -314,10 +521,10 @@ const UserTable: React.FC<UserTableProps> = ({
                     }}
                   >
                     {actionType === "signature" &&
-                      users.find((user) => user.id === currentUserId)?.signature
+                      users.find((user) => user.id === currentUserId)?.signatureMinioUrl
                       ? "Eliminar firma"
                       : actionType === "stamp" &&
-                        users.find((user) => user.id === currentUserId)?.stamp
+                        users.find((user) => user.id === currentUserId)?.imageMinioUrl
                         ? "Eliminar sello"
                         : "Eliminar"}
                   </button>
@@ -329,10 +536,10 @@ const UserTable: React.FC<UserTableProps> = ({
                   onClick={handleConfirm}
                 >
                   {actionType === "signature" &&
-                    users.find((user) => user.id === currentUserId)?.signature
+                    users.find((user) => user.id === currentUserId)?.signatureMinioUrl
                     ? "Actualizar firma"
                     : actionType === "stamp" &&
-                      users.find((user) => user.id === currentUserId)?.stamp
+                      users.find((user) => user.id === currentUserId)?.imageMinioUrl
                       ? "Actualizar sello"
                       : "Confirmar"}
                 </button>
@@ -354,17 +561,18 @@ const UserTable: React.FC<UserTableProps> = ({
           initialData={assistantsFormInitialData}
         />
       </CustomFormModal>
-        <GoogleCalendarModal
-          show={showGoogleCalendarModal}
-          userId={currentUserId || ''}
-          userEmail={currentEmail || ''}
-          onHide={() => setShowGoogleCalendarModal(false)}
-          onSuccess={() => {
-            onReload && onReload();
-          }}
-          toast={toast.current}
-        />
-    </>
+
+      <GoogleCalendarModal
+        show={showGoogleCalendarModal}
+        userId={currentUserId || ''}
+        userEmail={currentEmail || ''}
+        onHide={() => setShowGoogleCalendarModal(false)}
+        onSuccess={() => {
+          onReload && onReload();
+        }}
+        toast={toast.current}
+      />
+    </div>
   );
 };
 

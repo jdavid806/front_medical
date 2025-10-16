@@ -96,7 +96,7 @@ export const ReasonTicket = () => {
       value={{ appendTo: "self", zIndex: { overlay: 100000 } }}
     >
       <Toast ref={toast} />
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center">
         <h4 className="mb-1">Motivos de Consulta</h4>
         <div className="text-end mb-2">
           <button className="btn btn-primary" onClick={onCreate}>

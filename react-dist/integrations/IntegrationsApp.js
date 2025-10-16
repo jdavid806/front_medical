@@ -3,6 +3,10 @@ import { LabplusIntegrationConfig } from "./forms/LabplusIntegrationConfig.js";
 import { IntegrationsTabs } from "./components/IntegrationsTabs.js";
 import { useIntegrationConfigs } from "./hooks/useIntegrationConfigs.js";
 import { DGIIIntegrationConfig } from "./forms/DGIIIntegrationConfig.js";
+import { SISPROIntegrationConfig } from "./forms/SISPROIntegrationConfig.js";
+import { OpenAIIntegrationConfig } from "./forms/OpenAIIntegrationConfig.js";
+import { CarnetIntegrationConfig } from "./forms/CarnetIntegrationConfig.js";
+import { GeminiIntegrationConfig } from "./forms/GeminiIntegrationConfig.js";
 export const IntegrationsApp = () => {
   const {
     configs
@@ -22,20 +26,33 @@ export const IntegrationsApp = () => {
       configs: configs
     })
   }, {
-    id: "representante-tab",
-    label: "Representante",
+    id: "sispro-tab",
+    label: "SISPRO",
     icon: "fa-solid fa-address-book",
-    content: /*#__PURE__*/React.createElement("div", null, "Contenido del tab Representante")
+    content: /*#__PURE__*/React.createElement(SISPROIntegrationConfig, {
+      configs: configs
+    })
   }, {
-    id: "comunicacion-tab",
-    label: "Comunicaciones",
+    id: "carnet-tab",
+    label: "Carnet",
     icon: "fa-solid fa-envelopes-bulk",
-    content: /*#__PURE__*/React.createElement("div", null, "Contenido del tab Comunicaciones")
+    content: /*#__PURE__*/React.createElement(CarnetIntegrationConfig, {
+      configs: configs
+    })
   }, {
-    id: "sedes-tab",
-    label: "Sedes",
-    icon: "fa-solid fa-location-dot",
-    content: /*#__PURE__*/React.createElement("div", null, "Contenido del tab Sedes")
+    id: "openai-tab",
+    label: "OpenAI",
+    icon: "fa-solid fa-brain",
+    content: /*#__PURE__*/React.createElement(OpenAIIntegrationConfig, {
+      configs: configs
+    })
+  }, {
+    id: "gemini-tab",
+    label: "Gemini",
+    icon: "fa-solid fa-brain",
+    content: /*#__PURE__*/React.createElement(GeminiIntegrationConfig, {
+      configs: configs
+    })
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(IntegrationsTabs, {
     tabs: tabs

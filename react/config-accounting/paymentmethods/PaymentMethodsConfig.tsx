@@ -11,6 +11,7 @@ import { SwalManager } from '../../../services/alertManagerImported';
 import { CreatePaymentMethodDTO } from './interfaces/PaymentMethodDTO';
 import { usePaymentMethodDelete } from './hooks/usePaymentMethodDeleteTable';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
+import { Button } from 'primereact/button';
 
 export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
@@ -139,19 +140,6 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                 },
             }}
         >
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h4 className="mb-1">Configuración de Métodos de Pago</h4>
-                <div className="text-end">
-                    <button
-                        className="btn btn-primary d-flex align-items-center"
-                        onClick={onCreate}
-                        disabled={createLoading || updateLoading || deleteLoading}
-                    >
-                        <i className="fas fa-plus me-2"></i>
-                        {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'}
-                    </button>
-                </div>
-            </div>
 
             {
                 error && (
@@ -166,7 +154,16 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                 style={{ minHeight: "400px" }}
             >
                 <div className="card-body h-100 w-100 d-flex flex-column">
-
+                    <div className="text-end pt-3 mb-2">
+                        <Button
+                            className="p-button-primary"
+                            onClick={onCreate}
+                            disabled={createLoading || updateLoading || deleteLoading}
+                        >
+                            <i className="fas fa-plus me-2"></i>
+                            {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'}
+                        </Button>
+                    </div>
                     <PaymentMethodsConfigTable
                         onEditItem={handleTableEdit}
                         paymentMethods={enrichedPaymentMethods}

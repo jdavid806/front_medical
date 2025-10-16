@@ -11,7 +11,6 @@ $arraytest = [
         "Entidad" => "Entidad 1",
         "Estado" => "Pendiente"
     ],
-
 ];
 
 // Datos de ejemplo
@@ -39,7 +38,6 @@ foreach ($estados as $estado) {
     $consultasPorEstado[$estado] = array_filter($consultas, fn($consulta) => $consulta['estado'] === $estado);
 }
 
-
 $tabs = [
     ['icono' => 'file-invoice-dollar', 'titulo' => 'Facturación', 'texto' => 'Crear facturas para admisionar al paciente', 'url' => 'facturacionAdmisiones'],
     ['icono' => 'person-walking-arrow-right', 'titulo' => 'Pacientes', 'texto' => 'Visualiza los pacientes y accede a su información', 'url' => 'pacientescontrol'],
@@ -53,137 +51,262 @@ $tabs = [
 ?>
 
 <link rel="stylesheet" href="./assets/css/styles.css">
+
 <style>
-    .board {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
+    .componente {
+        padding: 1rem 0;
+    }
+    
+    .container-small {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .btn-primary{
+            color: #ffffff !important;
+    background: #1A99FB !important;
+    border: 1px solid #1A99FB;
+    padding: 0.5rem 0.75rem;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+    border-radius: 0.5rem !important;
+    font-family: 'Inter', sans-serif !important;
+    box-shadow: 0 7px 8px gray;
+
+    }
+    .dashboard-card .btn:hover{
+        box-shadow: none !important; 
     }
 
-    .column-wrapper {
+    
+    .dashboard-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        position: relative;
+    }
+    
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #29F6C1;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-card:hover::before {
+        transform: scaleX(1);
+    }
+    
+    .dashboard-card .card-body {
+        padding: 2rem 1.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .column-title {
-        font-size: 18px;
-        margin-bottom: 10px;
         text-align: center;
+        flex-grow: 1;
+        position: relative;
+        z-index: 1;
     }
-
-    .column {
-        width: 250px;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        flex-shrink: 0;
+    
+    .dashboard-card .card-icon {
+        margin-bottom: 1.2rem;
+        color: #4a6cf7;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-        min-height: 20em;
-    }
-
-    .task {
-        border-radius: 5px;
-        padding: 10px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        /* cursor: grab; */
-        display: flex;
-        flex-direction: column;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
-        text-align: center;
+        position: relative;
+        overflow: hidden;
     }
 
-    .task strong {
-        display: block;
-    }
+    
 
-    .task p {
-        margin: 5px 0;
+    .dashboard-card .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #2d3748;
+        line-height: 1.3;
     }
-
-    .view-patient-btn {
-        margin-top: 10px;
-        padding: 5px 10px;
+    
+    .dashboard-card .card-text {
+        color: #718096;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+        line-height: 1.6;
+        max-width: 90%;
+    }
+    
+    .dashboard-card .btn {
+        background: #132030 ;
         border: none;
-        border-radius: 5px;
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-        text-align: center;
-        display: block;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
     }
-
-    .view-patient-btn:hover {
-        background-color: #0056b3;
+    
+    .dashboard-card .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
     }
-
-    /* Estilos por estado */
-    .column[data-status="1"] .task {
-        background-color: #d3d3d3;
+    
+    .dashboard-card .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(74, 108, 247, 0.4);
+        background: linear-gradient(120deg, #1A99FB);
     }
-
-    .column[data-status="2"] .task {
-        background-color: #add8e6;
+    
+    .dashboard-card .btn:hover::before {
+        left: 100%;
     }
-
-    .column[data-status="3"] .task {
-        background-color: #90ee90;
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .dashboard-card .card-body {
+            padding: 1.5rem 1.25rem;
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: 1rem;
+            width: 80px;
+            height: 80px;
+        }
     }
-
-    .column[data-status="4"] .task {
-        background-color: #32cd32;
+    
+    @media (max-width: 768px) {
+        .cards-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        .dashboard-card .card-title {
+            font-size: 1.2rem;
+        }
+        
+        .dashboard-card .card-text {
+            font-size: 0.9rem;
+        }
     }
-
-    .column[data-status="Pre admisión"] .task {
-        background-color: rgb(220, 94, 153);
+    
+    @media (max-width: 576px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 1.25rem;
+        }
+        
+        .dashboard-card .card-body {
+            padding: 1.25rem 1rem;
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: 1rem;
+            width: 70px;
+            height: 70px;
+        }
     }
-
-    /* Tema oscuro */
-    html[data-bs-theme="dark"] .task {
-        color: #000;
+    
+    /* Estilos para el tema oscuro */
+    html[data-bs-theme="dark"] .dashboard-card {
+        background: linear-gradient(135deg, #2d3748, #1a202c);
+        border-color: #4a5568;
     }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-title {
+        color: #f7fafc;
+    }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-text {
+        color: #cbd5e0;
+    }
+    
+    html[data-bs-theme="dark"] .dashboard-card .card-icon {
+        background: linear-gradient(135deg, rgba(74, 108, 247, 0.2), rgba(108, 142, 255, 0.1));
+    }
+    
+    /* Estilos para el breadcrumb */
+    .breadcrumb {
+        font-size: 0.9rem;
+        padding: 1rem 1.5rem;
+        margin: -1rem -1.5rem 2rem -1.5rem;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 8px;
+    }
+    
+    html[data-bs-theme="dark"] .breadcrumb {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+ 
+    
 </style>
+
 
 <div class="componente">
     <div class="content">
         <div class="container-small">
-            <nav class="mb-3" aria-label="breadcrumb">
+            <nav class="mb-4" aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                     <li class="breadcrumb-item active" onclick="location.reload()">Control de citas</li>
                 </ol>
             </nav>
-            <div class="row g-0 g-md-4 g-xl-6 p-5 justify-content-center">
-                <div class="col-md-9">
-                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-3 mt-2">
-                        <?php foreach ($tabs as $tab) { ?>
-                            <div class="col">
-                                <div class="card text-center" style="min-height: 15em;">
-                                    <div class="card-body d-flex flex-column justify-content-between align-items-center"
-                                        style="height: 100%;">
-                                        <!-- Icono en la parte superior -->
-                                        <div class="mb-2">
-                                            <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
-                                        </div>
-                                        <!-- Título -->
-                                        <h5 class="card-title"><?= $tab['titulo'] ?></h5>
-                                        <!-- Texto -->
-                                        <p class="card-text fs-9 text-center">
-                                            <?= $tab['texto'] ?>
-                                        </p>
-                                        <!-- Botón -->
-                                        <a href="<?= $tab['url'] ?>" class="btn btn-primary mt-auto">
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </div>
-                                </div>
+            
+            <div class="cards-grid">
+                <?php foreach ($tabs as $tab) { ?>
+                    <div class="dashboard-card">
+                        <div class="card-body">
+                            <div class="card-icon">
+                                <i class="fas fa-<?= $tab['icono'] ?> fa-2x"></i>
                             </div>
-                        <?php } ?>
+                            <h5 class="card-titles"><?= $tab['titulo'] ?></h5>
+                            <p class="card-text"><?= $tab['texto'] ?></p>
+                            <a href="<?= $tab['url'] ?>" class="btn btn-primary">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                <?php } ?>
             </div>
         </div>
     </div>

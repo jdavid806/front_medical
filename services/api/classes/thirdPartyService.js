@@ -10,4 +10,11 @@ export class ThirdPartyService extends BaseApiService {
             `api/v1/admin/third-parties/external/${externalId}/${externalType}`
         );
     }
+
+    async verifyAndStore(data) {
+        return await this.httpClient.post(
+            `api/v1/admin/third-parties/verify/store`,
+            data
+        );
+    }
 }

@@ -18,6 +18,7 @@ import {
   CustomPRTableColumnProps,
 } from "../components/CustomPRTable";
 import { PrimeReactProvider } from "primereact/api";
+import { Accordion, AccordionTab } from 'primereact/accordion';
 
 export const AppointmentsFinishedTable: React.FC = () => {
   const patientId =
@@ -149,26 +150,15 @@ export const AppointmentsFinishedTable: React.FC = () => {
           },
         }}
       >
-        <div className="accordion mb-3">
-          <div className="accordion-item">
-            <h2 className="accordion-header" id="filters">
-              <button
-                className="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#filtersCollapse"
-                aria-expanded="false"
-                aria-controls="filtersCollapse"
-              >
-                Filtrar citas
-              </button>
-            </h2>
-            <div
-              id="filtersCollapse"
-              className="accordion-collapse collapse"
-              aria-labelledby="filters"
-            >
-              <div className="accordion-body">
+
+
+        <div
+          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "400px" }}
+        >
+          <div className="card-body h-100 w-100 d-flex flex-column">
+            <Accordion>
+              <AccordionTab header="Filtrar citas">
                 <div className="d-flex gap-2">
                   <div className="flex-grow-1">
                     <div className="row g-3">
@@ -195,18 +185,8 @@ export const AppointmentsFinishedTable: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-          style={{ minHeight: "400px" }}
-        >
-
-          <div className="card-body h-100 w-100 d-flex flex-column">
-
-
+              </AccordionTab>
+            </Accordion>
             <CustomPRTable
               columns={columns}
               data={appointments}
@@ -221,6 +201,7 @@ export const AppointmentsFinishedTable: React.FC = () => {
             ></CustomPRTable>
           </div>
         </div>
+
         {showPdfModal && (
           <div
             className="modal fade show"
@@ -292,6 +273,7 @@ export const AppointmentsFinishedTable: React.FC = () => {
             </div>
           </div>
         )}
+
         <CustomFormModal
           formId={"createPreadmission"}
           show={showFormModal.isShow}
@@ -305,6 +287,7 @@ export const AppointmentsFinishedTable: React.FC = () => {
             formId="createPreadmission"
           ></PreadmissionForm>
         </CustomFormModal>
+
         <CustomFormModal
           formId={"loadExamResultsFile"}
           show={showLoadExamResultsFileModal}

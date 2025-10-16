@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Divider } from "primereact/divider";
 import { InputText } from "primereact/inputtext";
 import { useSuppliesDeliveries } from "../supplies/hooks/useSuppliesDeliveries";
 import { formatDateDMY } from "../../../services/utilidades";
 import { MedicalSupply } from "../supplies/interfaces";
 import { MedicalSupplyManager } from "../../helpers/MedicalSupplyManager";
+import { Menu } from "primereact/menu";
+import { Button } from "primereact/button";
 
 interface ProductDeliveryListProps {
     onDeliverySelect: (delivery: MedicalSupply) => void;
 }
 
 export const ProductDeliveryList = ({ onDeliverySelect }: ProductDeliveryListProps) => {
-    const { suppliesDeliveries } = useSuppliesDeliveries();
+    const { suppliesDeliveries, fetchSuppliesDeliveries } = useSuppliesDeliveries();
+
+    const [search, setSearch] = useState('');
     const [expandedObservations, setExpandedObservations] = useState<number | null>(null);
+
+    const statusMenu = React.useRef<Menu>(null);
+    const statusItems = [
+        { label: 'Todos', command: () => fetchDeliveries("ALL") },
+        { label: 'Pendiente', command: () => fetchDeliveries("pendiente") },
+        { label: 'Entregado', command: () => fetchDeliveries("entregado") },
+    ];
 
     const toggleObservations = (deliveryId: number, event: React.MouseEvent) => {
         event.stopPropagation();
@@ -34,15 +45,41 @@ export const ProductDeliveryList = ({ onDeliverySelect }: ProductDeliveryListPro
         return lines.slice(maxLines).join('\n');
     };
 
+    const fetchDeliveries = (status: string) => {
+        if (search.length < 3) {
+            return;
+        }
+        fetchSuppliesDeliveries({
+            search,
+            status
+        });
+    };
+
+    useEffect(() => {
+        fetchDeliveries("ALL");
+    }, [search]);
+
     return (
         <>
             <h5 className="card-title mb-4">Pedidos Pendientes</h5>
+
+            <div className="d-flex flex-wrap justify-content-between gap-2 align-items-center mb-3">
+                <Button
+                    icon={<i className="fa fa-filter me-2"></i>}
+                    label="Filtrar por estado"
+                    onClick={(event) => statusMenu.current?.toggle(event)}
+                    className="btn btn-sm btn-outline-secondary"
+                />
+                <Menu model={statusItems} popup ref={statusMenu} />
+            </div>
 
             <div className="input-group mb-4">
                 <InputText
                     placeholder="Buscar por # o nombre..."
                     id="searchOrder"
                     className="w-100"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
@@ -123,7 +160,7 @@ export const ProductDeliveryList = ({ onDeliverySelect }: ProductDeliveryListPro
 
                                 {/* Información adicional */}
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <div className="d-flex gap-3">
+                                    <div className="d-flex flex-column gap-2">
                                         <div className="d-flex align-items-center gap-1">
                                             <small className="fw-semibold text-muted fs-7">
                                                 Fecha solicitud:

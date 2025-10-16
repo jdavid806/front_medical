@@ -3,10 +3,16 @@ import { suppliesService } from "../../../../services/api/index.js";
 export const useSuppliesDeliveries = () => {
   const [suppliesDeliveries, setSuppliesDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
-  const fetchSuppliesDeliveries = async () => {
+  const fetchSuppliesDeliveries = async ({
+    search,
+    status
+  }) => {
     setLoading(true);
     try {
-      const response = await suppliesService.getAllSupplies();
+      const response = await suppliesService.filterSupplies({
+        search,
+        status
+      });
       setSuppliesDeliveries(response.data);
     } catch (error) {
       console.error(error);
@@ -15,7 +21,7 @@ export const useSuppliesDeliveries = () => {
     }
   };
   useEffect(() => {
-    fetchSuppliesDeliveries();
+    fetchSuppliesDeliveries({});
   }, []);
   return {
     suppliesDeliveries,

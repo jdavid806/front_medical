@@ -3,7 +3,7 @@ import { Toast } from 'primereact/toast';
 import Swal from 'sweetalert2';
 import { userService } from '../../../services/api';
 import { useConfigurationProgress } from '../../config/general-configuration/hooks/useConfigurationProgress';
-import { getJWTPayloadByToken } from '../../../services/utilidades';
+import { decryptAES, encryptAES, getJWTPayload, getJWTPayloadByToken } from '../../../services/utilidades';
 
 export const useAuth = () => {
     const [loading, setLoading] = useState(false);
@@ -88,6 +88,10 @@ export const useAuth = () => {
                     };
                     setLoginData(tempLoginData);
 
+                    const username = await encryptAES(credentials.username, 'medicalsoft');
+
+                    localStorage.setItem('username', username);
+
                     if (data.data.otp === true) {
                         setOtpStep(true);
                         showToast('success', 'Éxito', 'Credenciales válidas. Por favor ingresa el OTP.');
@@ -113,6 +117,7 @@ export const useAuth = () => {
                             requiresOtp: false
                         };
                     }
+
                 } else {
                     throw new Error('No se recibió un token válido');
                 }
@@ -121,6 +126,7 @@ export const useAuth = () => {
             }
         } catch (error: any) {
             Swal.fire('Error', error.message || 'Ocurrió un error en la solicitud', 'error');
+            localStorage.removeItem('username');
             return { success: false, error: error.message };
         } finally {
             setLoading(false);
@@ -209,15 +215,25 @@ export const useAuth = () => {
         }
     };
 
-    const resendOtp = async () => {
+    const verifyOtpBasic = async (otpCode: string, email: string, phone: string) => {
         setLoading(true);
 
         try {
+            // Convertir OTP a número
+            const otpNumber = parseInt(otpCode, 10);
 
+            if (isNaN(otpNumber)) {
+                throw new Error('El código OTP debe ser un número válido');
+            }
+            const emailOtp = email
 
-            const apiUrl = `${window.location.origin}/api/auth/resend-otp`;
+            const apiUrl = `${window.location.origin}/api/auth/otp/validate-otp`;
 
-            const emailOtp = sessionStorage.getItem('email')
+            console.log('Enviando OTP validation:', {
+                email: emailOtp,
+                otp: otpNumber
+            });
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -225,7 +241,84 @@ export const useAuth = () => {
                     'X-Domain': window.location.hostname
                 },
                 body: JSON.stringify({
-                    email: emailOtp
+                    email: emailOtp,
+                    otp: otpNumber,
+                    phone: phone
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.status !== 200) {
+                throw new Error(data.message || 'Error en la verificación OTP');
+            }
+
+            return data;
+        } catch (error: any) {
+            console.error('Error en verifyOtp:', error);
+            showToast('error', 'Error', error.message || 'Error en la verificación OTP');
+            return { success: false, error: error.message };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const sendOtp = async () => {
+        const username = localStorage.getItem('username')
+        if (!username) return;
+        const decodedUsername = await decryptAES(username, 'medicalsoft');
+        console.log(decodedUsername);
+
+        setLoading(true);
+
+        try {
+
+
+            const apiUrl = `${window.location.origin}/api/auth/otp/send-otp`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Domain': window.location.hostname
+                },
+                body: JSON.stringify({
+                    nombre_usuario: decodedUsername
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 200) {
+                showToast('success', 'Éxito', 'Código OTP enviado');
+                return { success: true };
+            } else {
+                throw new Error(data.message || 'Error al enviar OTP');
+            }
+        } catch (error: any) {
+            showToast('error', 'Error', error.message || 'Error al enviar OTP');
+            return { success: false, error: error.message };
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const resendOtp = async (email: string = sessionStorage.getItem('email') || '') => {
+        setLoading(true);
+
+        try {
+
+
+            const apiUrl = `${window.location.origin}/api/auth/otp/resend-otp`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Domain': window.location.hostname
+                },
+                body: JSON.stringify({
+                    email: email
                 })
             });
 
@@ -255,6 +348,8 @@ export const useAuth = () => {
     return {
         login,
         verifyOtp,
+        verifyOtpBasic,
+        sendOtp,
         resendOtp,
         resetOtpFlow,
         loading,

@@ -14,6 +14,10 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { useInvoicePurchase } from "../../billing/purchase_billing/hooks/usePurchaseBilling";
 import { SwalManager } from "../../../services/alertManagerImported";
+import { Dialog } from "primereact/dialog";
+import { OTPModal } from "../../login/modal/OTPModal";
+import { useAuth } from "../../login/hooks/useAuth";
+import { Toast } from "primereact/toast";
 
 interface ProductDeposit {
     product_id: string;
@@ -43,9 +47,21 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
     const { verifyAndSaveProductDelivery } = useVerifyAndSaveProductDelivery();
 
     const {
+        verifyOtp,
+        verifyOtpBasic,
+        resendOtp,
+        sendOtp,
+        Toast: toastRef
+    } = useAuth()
+
+    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+    const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
+
+    const {
         control,
         handleSubmit,
         setValue,
+        getValues,
         formState: { errors },
     } = useForm<ProductDeliveryDetailFormInputs>({
         defaultValues: {
@@ -113,13 +129,22 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
     const handleVerifyAndSaveProductDelivery = async (data: ProductDeliveryDetailFormInputs) => {
         if (!delivery || !deliveryManager) return;
 
+        setShowVerifyDialog(true);
+        await sendOtp()
+    };
+
+    const handleUserVerificationSuccess = async () => {
+        setShowVerifyDialog(false);
+
+        const data = getValues();
+
         const productsDepositsFormated = data.productsDeposits.reduce((obj, product) => {
             obj[product.product_id] = product.deposit_id;
             return obj;
         }, {});
 
         try {
-            const response = await verifyAndSaveProductDelivery(delivery.id.toString(), {
+            const response = await verifyAndSaveProductDelivery(delivery!.id.toString(), {
                 productsDeposits: productsDepositsFormated
             });
 
@@ -144,8 +169,25 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
         );
     };
 
+    const handleVerifyOtp = async () => {
+        const otpCode = otp.join('')
+        if (otpCode.length === 6 && deliveryManager?.requestedBy?.email) {
+            const result = await verifyOtpBasic(otpCode, deliveryManager?.requestedBy?.email, deliveryManager?.requestedBy?.phone)
+            if (result.status === 200) {
+                console.log("OTP verificado exitosamente")
+                setOtp(['', '', '', '', '', '']) // Reset OTP
+                handleUserVerificationSuccess()
+            }
+        }
+    }
+
+    const handleResendOtp = async () => {
+        await resendOtp(deliveryManager?.requestedBy?.email)
+    }
+
     return (
         <>
+            <Toast ref={toastRef} />
             <form onSubmit={handleSubmit(handleVerifyAndSaveProductDelivery)}>
 
                 <div className="d-flex flex-column gap-2">
@@ -278,6 +320,38 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
                 />
 
             </form>
+
+            <Dialog
+                visible={showVerifyDialog}
+                onHide={() => setShowVerifyDialog(false)}
+                header="Verificación de usuario"
+                footer={
+                    <div className="d-flex justify-content-end">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="btn btn-sm btn-outline-secondary me-2"
+                            onClick={() => setShowVerifyDialog(false)}
+                        />
+                        <Button
+                            label="Verificar"
+                            icon="pi pi-check"
+                            className="btn btn-sm btn-primary"
+                            onClick={handleVerifyOtp}
+                        />
+                    </div>
+                }
+            >
+                {deliveryManager?.requestedBy?.email && deliveryManager?.requestedBy?.phone && (
+                    <OTPModal
+                        otp={otp}
+                        setOtp={setOtp}
+                        onResendOTP={handleResendOtp}
+                        email={deliveryManager?.requestedBy?.email}
+                        phone={deliveryManager?.requestedBy?.phone}
+                    />
+                )}
+            </Dialog>
         </>
     );
 };

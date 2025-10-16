@@ -185,7 +185,7 @@ export const LoginApp: React.FC = () => {
 
 
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light p-4 overflow-hidden">
+        <div className=" d-flex align-items-center justify-content-center bg-light p-4 overflow-hidden">
             <Toast ref={toastRef} />
             <ConfirmDialog />
 

@@ -108,7 +108,7 @@ export const UserAvailabilityApp = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
   }), isComplete ? 'Horarios configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de Horarios para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
+    className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Horarios de Atenci\xF3n"), /*#__PURE__*/React.createElement("div", {

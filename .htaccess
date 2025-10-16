@@ -208,6 +208,7 @@ RewriteRule ^solicitud-anulacion-recetas$  Consultas/solicitudesAnulacionReceta.
 
 RewriteRule ^admisiones-anulacion-pendiente$  Citas/admisionesAnulacionesPendientes.php
 RewriteRule ^general-requests$  Auditoria/generalRequests.php
+RewriteRule ^preadmisionControl$  Citas/preadmisionControl.php
 
 RewriteRule ^historiaMedica$  Consultas/nuevaConsulta.php
 
@@ -277,8 +278,7 @@ RewriteRule ^homeFarmacia$  Farmacia/homeFarmacia.php
 RewriteRule ^caja$  Caja/caja.php
 RewriteRule ^cajaPrueba$  Caja/cajaPrueba.php
 
-RewriteRule ^farmacia$  Farmacia/entregaMedicamentos.php
-RewriteRule ^insumos$  Insumos/entregaInsumos.php
+RewriteRule ^insumos$  Insumos/reactTest/entregaInsumosReact.php
 
 RewriteRule ^pharmacyInvoices$  Farmacia/pharmacyInvoices.php
 
@@ -295,6 +295,7 @@ RewriteRule ^noAutorizado$ Pagesphp/unauthorized.php
 RewriteRule ^homeMarketing$ Marketing/homeMarketing.php
 
 RewriteRule ^preadmisiones$ Citas/HistoryPreadmission.php
+RewriteRule ^admisiones-anulacion-pendiente$  Citas/admisionesAnulacionesPendientes.php
 
 RewriteRule ^homeAuditoria$ Auditoria/homeAuditoria.php
 
@@ -389,6 +390,6 @@ RewriteRule ^seePatientInfoButtonTest$ Pacientes/seePatientInfoButtonTest.php
 RewriteRule ^prescriptionPackagesApp$ Paquetes/prescriptionPackagesApp.php
 RewriteRule ^webCreatorApp$ CreadorPaginas/creadorPaginas.php
 RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
-RewriteRule ^entregaMedicamentosReact$ Farmacia/reactTest/entregaMedicamentosReact.php
+RewriteRule ^farmacia$ Farmacia/reactTest/entregaMedicamentosReact.php
 RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
 

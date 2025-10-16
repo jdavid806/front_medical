@@ -12,10 +12,7 @@ include "../header.php";
             </ol>
         </nav>
         <div class="main-content">
-            <div class="component-container">
-                <div class="d-flex align-items-center justify-content-between mb-3"> 
-                    <h2>Admisiones</h2>
-                </div>        
+            <div class="component-container">      
                 <div id="admissionAppReact"></div>
             </div>
         </div>

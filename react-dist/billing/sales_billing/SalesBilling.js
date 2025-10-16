@@ -74,6 +74,7 @@ export const SalesBilling = ({
     quantity: 0,
     price: 0,
     discount: 0,
+    discountType: "percentage",
     iva: 0
   }]);
   const [retentions, setRetentions] = useState([{
@@ -158,6 +159,7 @@ export const SalesBilling = ({
           quantity: Number(item.quantity),
           price: Number(item.price),
           discount: discount,
+          discountType: "percentage",
           iva: percentageTax || 0,
           taxAmount: item.total_taxes,
           depositId: item.deposit_id || null,
@@ -174,7 +176,12 @@ export const SalesBilling = ({
     const discount = Number(product.discount) || 0;
     const ivaRate = product.iva || 0;
     const subtotal = quantity * price;
-    const discountAmount = subtotal * (discount / 100);
+    let discountAmount = 0;
+    if (product.discountType === "percentage") {
+      discountAmount = subtotal * (discount / 100);
+    } else {
+      discountAmount = discount; // Valor fijo
+    }
     const subtotalAfterDiscount = subtotal - discountAmount;
     const taxAmount = subtotalAfterDiscount * (ivaRate / 100);
     const lineTotal = subtotalAfterDiscount + taxAmount;
@@ -191,13 +198,23 @@ export const SalesBilling = ({
     return productsArray.reduce((total, product) => {
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
       const discount = Number(product.discount) || 0;
-      return total + subtotal * (discount / 100);
+      if (product.discountType === "percentage") {
+        return total + subtotal * (discount / 100);
+      } else {
+        return total + discount;
+      }
     }, 0);
   };
   const calculateTotalTax = () => {
     return productsArray.reduce((total, product) => {
       const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
-      const discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
+      const discount = Number(product.discount) || 0;
+      let discountAmount = 0;
+      if (product.discountType === "percentage") {
+        discountAmount = subtotal * (discount / 100);
+      } else {
+        discountAmount = discount; // Valor fijo
+      }
       const subtotalAfterDiscount = subtotal - discountAmount;
       const ivaRate = product.iva || 0;
       return total + subtotalAfterDiscount * (ivaRate / 100);
@@ -235,6 +252,7 @@ export const SalesBilling = ({
       quantity: 0,
       price: 0,
       discount: 0,
+      discountType: "percentage",
       iva: 0
     }]);
   };
@@ -395,12 +413,22 @@ export const SalesBilling = ({
         billing: billing
       },
       invoice_detail: productsArray.map(product => {
+        const subtotal = Number(product.quantity) * Number(product.price);
+        let discountAmount = 0;
+        if (product.discountType === "percentage") {
+          // Descuento porcentual
+          discountAmount = subtotal * Number(product.discount) / 100;
+        } else {
+          // Descuento en valor fijo
+          discountAmount = Number(product.discount) || 0;
+        }
         return {
           product_id: Number(product.product),
+          type_product: product.typeProduct,
           deposit_id: product.depositId,
           quantity: product.quantity,
           unit_price: product.price,
-          discount: product.discount,
+          discount: discountAmount,
           tax_product: product.taxAmount || product.iva || 0,
           tax_accounting_account_id: product.taxAccountingAccountId || null,
           tax_charge_id: product.taxChargeId || null
@@ -723,7 +751,9 @@ export const SalesBilling = ({
     className: "p-2"
   }, /*#__PURE__*/React.createElement(DiscountColumnBody, {
     onChange: value => handleProductChange(product.id, "discount", value || 0),
+    onTypeChange: type => handleProductChange(product.id, "discountType", type),
     value: product.discount,
+    discountType: product.discountType || "percentage",
     disabled: disabledInpputs
   })), /*#__PURE__*/React.createElement("td", {
     className: "p-2"
@@ -767,7 +797,8 @@ export const SalesBilling = ({
     subtotal: calculateSubtotal(),
     totalDiscount: calculateTotalDiscount(),
     retentions: retentions,
-    onRetentionsChange: setRetentions
+    onRetentionsChange: setRetentions,
+    productsArray: productsArray
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
@@ -834,7 +865,7 @@ export const SalesBilling = ({
     onClick: () => copyTotalToPayment(payment.id),
     tooltip: "Copiar valor total restante",
     tooltipOptions: {
-      position: 'top'
+      position: "top"
     }
   })))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-2 text-md-end text-center"
@@ -844,7 +875,7 @@ export const SalesBilling = ({
     disabled: paymentMethodsArray.length <= 1,
     tooltip: "Eliminar m\xE9todo",
     tooltipOptions: {
-      position: 'top'
+      position: "top"
     }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
@@ -1309,28 +1340,64 @@ const PriceColumnBody = ({
 };
 const DiscountColumnBody = ({
   onChange,
+  onTypeChange,
   value,
+  discountType,
   disabled
 }) => {
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(InputNumber, {
-    value: value,
-    placeholder: "Descuento",
-    className: "w-100",
+  const [localDiscountType, setLocalDiscountType] = useState(discountType || "percentage");
+  useEffect(() => {
+    if (discountType && discountType !== localDiscountType) {
+      setLocalDiscountType(discountType);
+    }
+  }, [discountType]);
+  const handleTypeChange = type => {
+    setLocalDiscountType(type);
+    onTypeChange(type);
+    if (type !== (discountType || "percentage")) {
+      onChange(0);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-1 align-items-center"
+  }, /*#__PURE__*/React.createElement(Dropdown, {
+    value: discountType,
+    options: [{
+      label: "%",
+      value: "percentage"
+    }, {
+      label: "$",
+      value: "fixed"
+    }],
+    optionLabel: "label",
+    optionValue: "value",
     style: {
-      maxWidth: "200px"
+      width: "50px"
     },
-    suffix: "%",
+    onChange: e => {
+      handleTypeChange(e.value);
+    },
+    disabled: disabled,
+    showClear: true
+  }), /*#__PURE__*/React.createElement(InputNumber, {
+    value: value,
+    placeholder: discountType === "percentage" ? "Descuento %" : "Descuento $",
+    className: "flex-grow-1",
+    style: {
+      minWidth: "100px"
+    },
+    suffix: discountType === "percentage" ? "%" : "",
+    prefix: discountType === "fixed" ? "$ " : "",
+    mode: localDiscountType === "fixed" ? "currency" : "decimal",
+    currency: localDiscountType === "fixed" ? "DOP" : undefined,
+    locale: "es-DO",
     min: 0,
-    max: 100,
+    max: discountType === "percentage" ? 100 : undefined,
     onValueChange: e => {
       onChange(e.value);
     },
     disabled: disabled,
-    inputClassName: "form-control",
-    mode: "decimal",
-    minFractionDigits: 0,
-    maxFractionDigits: 2,
-    useGrouping: false
+    inputClassName: "form-control"
   }));
 };
 const IvaColumnBody = ({
@@ -1354,7 +1421,6 @@ const IvaColumnBody = ({
     placeholder: "Seleccione IVA",
     className: "w-100",
     onChange: e => {
-      // Manejar el caso cuando se limpia con showClear
       if (e.value === null) {
         onChange(null);
       } else {

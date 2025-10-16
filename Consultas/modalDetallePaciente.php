@@ -155,11 +155,14 @@ $consultas = [
     }
 
     .card-text {
+        font-family: 'Inter', sans-serif ;
         overflow: hidden;
         text-overflow: ellipsis;
         max-height: 3em;
         /* Limita el texto */
         line-height: 1.5;
+     
+
     }
 
     .timeline {

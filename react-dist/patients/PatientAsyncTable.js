@@ -129,21 +129,22 @@ export const PatientAsyncTable = () => {
     }
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Nuevo Paciente ",
-    className: "btn btn-primary",
-    onClick: () => setShowPatientModal(true)
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus"
-  }))), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
       minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end align-items-center mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Nuevo Paciente ",
+    className: "p-button-primary",
+    onClick: () => setShowPatientModal(true),
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-plus me-2"
+    })
+  })), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: tableItems,
     sortField: "createdAt",
@@ -188,13 +189,15 @@ const TableMenu = ({
 }) => {
   const menu = useRef(null);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
-    className: "btn-primary flex items-center gap-2",
+    label: "Acciones",
+    className: "p-button-primary flex items-center",
     onClick: e => menu.current?.toggle(e),
     "aria-controls": `popup_menu_${patientId}`,
-    "aria-haspopup": true
-  }, "Acciones", /*#__PURE__*/React.createElement("i", {
-    className: "fa fa-cog ml-2"
-  })), /*#__PURE__*/React.createElement(Menu, {
+    "aria-haspopup": true,
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fa fa-cog me-2"
+    })
+  }), /*#__PURE__*/React.createElement(Menu, {
     model: [{
       label: "Ver más",
       icon: /*#__PURE__*/React.createElement("i", {

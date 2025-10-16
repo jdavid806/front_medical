@@ -8,7 +8,7 @@ import { SwalManager } from "../../services/alertManagerImported";
 import { useCommission } from "./hooks/useCommission";
 
 export const ComissionApp = () => {
-    const { commission, setCommission, fetchCommissionsHook } = useCommission();
+  const { commission, setCommission, fetchCommissionsHook } = useCommission();
   const [commissions, setCommissions] = useState<any[]>([]);
   const [showUserFormModal, setShowUserFormModal] = useState(false);
   const [initialData, setInitialData] = useState<
@@ -26,15 +26,15 @@ export const ComissionApp = () => {
       );
       setInitialData({
         users: [commission.user.id],
-        attention_type: commission.attention_type,
-        application_type: commission.application_type,
-        commission_type: commission.commission_type,
+        attention_type: commission?.attention_type,
+        application_type: commission?.application_type,
+        commission_type: commission?.commission_type,
         services: productsIds,
-        commission_value: commission.commission_value,
-        percentage_base: commission.percentage_base,
-        percentage_value: commission.percentage_value,
-        retention_type: commission.retention_type,
-        value_retention: commission.value_retention,
+        commission_value: commission?.commission_value,
+        percentage_base: commission?.percentage_base,
+        percentage_value: commission?.percentage_value,
+        retention_type: commission?.retention_type,
+        value_retention: commission?.value_retention,
         isEditing: true,
         id: commission.id,
       });
@@ -78,7 +78,7 @@ export const ComissionApp = () => {
 
   const handleTableEdit = (id: string) => {
     fetchCommissionsHook(id);
-    
+
     setShowUserFormModal(true);
   };
 
@@ -104,9 +104,8 @@ export const ComissionApp = () => {
             ? item.percentage_value
             : " - - - ",
           commission_value: item.commission_value,
-          fullName: `${item.user.first_name || ""} ${
-            item.user.middle_name || ""
-          } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
+          fullName: `${item.user.first_name || ""} ${item.user.middle_name || ""
+            } ${item.user.last_name || ""} ${item.user.second_last_name || ""}`,
         }));
         setCommissions(dataMapped);
       }
@@ -125,7 +124,7 @@ export const ComissionApp = () => {
           },
         }}
       >
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center">
           <h4 className="mb-1">Comisiones</h4>
           <div className="text-end mb-2">
             <button

@@ -14,6 +14,10 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Dropdown } from "primereact/dropdown";
 import { useInvoicePurchase } from "../../billing/purchase_billing/hooks/usePurchaseBilling.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
+import { Dialog } from "primereact/dialog";
+import { OTPModal } from "../../login/modal/OTPModal.js";
+import { useAuth } from "../../login/hooks/useAuth.js";
+import { Toast } from "primereact/toast";
 export const ProductDeliveryDetail = ({
   deliveryId
 }) => {
@@ -31,9 +35,19 @@ export const ProductDeliveryDetail = ({
     verifyAndSaveProductDelivery
   } = useVerifyAndSaveProductDelivery();
   const {
+    verifyOtp,
+    verifyOtpBasic,
+    resendOtp,
+    sendOtp,
+    Toast: toastRef
+  } = useAuth();
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const {
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: {
       errors
     }
@@ -98,6 +112,12 @@ export const ProductDeliveryDetail = ({
   };
   const handleVerifyAndSaveProductDelivery = async data => {
     if (!delivery || !deliveryManager) return;
+    setShowVerifyDialog(true);
+    await sendOtp();
+  };
+  const handleUserVerificationSuccess = async () => {
+    setShowVerifyDialog(false);
+    const data = getValues();
     const productsDepositsFormated = data.productsDeposits.reduce((obj, product) => {
       obj[product.product_id] = product.deposit_id;
       return obj;
@@ -122,7 +142,23 @@ export const ProductDeliveryDetail = ({
       className: "p-error"
     }, errors[name].message || errors[name].root?.message);
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("form", {
+  const handleVerifyOtp = async () => {
+    const otpCode = otp.join('');
+    if (otpCode.length === 6 && deliveryManager?.requestedBy?.email) {
+      const result = await verifyOtpBasic(otpCode, deliveryManager?.requestedBy?.email, deliveryManager?.requestedBy?.phone);
+      if (result.status === 200) {
+        console.log("OTP verificado exitosamente");
+        setOtp(['', '', '', '', '', '']); // Reset OTP
+        handleUserVerificationSuccess();
+      }
+    }
+  };
+  const handleResendOtp = async () => {
+    await resendOtp(deliveryManager?.requestedBy?.email);
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toastRef
+  }), /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit(handleVerifyAndSaveProductDelivery)
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-2"
@@ -225,6 +261,29 @@ export const ProductDeliveryDetail = ({
     visible: dialogVisible,
     onHide: () => setDialogVisible(false),
     delivery: delivery
+  })), /*#__PURE__*/React.createElement(Dialog, {
+    visible: showVerifyDialog,
+    onHide: () => setShowVerifyDialog(false),
+    header: "Verificaci\xF3n de usuario",
+    footer: /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-end"
+    }, /*#__PURE__*/React.createElement(Button, {
+      label: "Cancelar",
+      icon: "pi pi-times",
+      className: "btn btn-sm btn-outline-secondary me-2",
+      onClick: () => setShowVerifyDialog(false)
+    }), /*#__PURE__*/React.createElement(Button, {
+      label: "Verificar",
+      icon: "pi pi-check",
+      className: "btn btn-sm btn-primary",
+      onClick: handleVerifyOtp
+    }))
+  }, deliveryManager?.requestedBy?.email && deliveryManager?.requestedBy?.phone && /*#__PURE__*/React.createElement(OTPModal, {
+    otp: otp,
+    setOtp: setOtp,
+    onResendOTP: handleResendOtp,
+    email: deliveryManager?.requestedBy?.email,
+    phone: deliveryManager?.requestedBy?.phone
   })));
 };
 const SupplyDeliveryDepositColumn = props => {

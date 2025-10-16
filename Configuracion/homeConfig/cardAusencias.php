@@ -2,6 +2,19 @@
 include "../../menu.php";
 include "../../header.php";
 ?>
+<style>
+    .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .content{
+        padding: calc(var(--phoenix-navbar-top-height) + 0.4rem) 1.5rem 6.375rem 1.5rem;
+    }
+</style>
+
 
 <div class="content">
     <div class="container-small">
@@ -14,9 +27,6 @@ include "../../header.php";
         </nav>
         <div class="main-content">
             <div class="component-container">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h2>Configuración de Ausencias</h2>
-                </div>
                 <?php include "../tabs/tab_userAbsencesConfiguration.php";?>
             </div>
         </div>

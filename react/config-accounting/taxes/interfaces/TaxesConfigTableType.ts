@@ -1,10 +1,10 @@
 export interface Account {
-  id: string; 
+  id: string;
   name: string;
 }
 
 export interface Tax {
-  id: string; 
+  id: string;
   name: string;
   percentage: number;
   account: Account | null;
@@ -15,7 +15,7 @@ export interface Tax {
 export interface Filtros {
   name: string;
   percentage: number | null;
-  account: string | null; 
+  account: string | null;
 }
 
 export interface TaxesConfigTableProps {
@@ -23,6 +23,8 @@ export interface TaxesConfigTableProps {
   onEditItem: (id: string) => void;
   onDeleteItem?: (id: string) => void;
   loading?: boolean;
+  onReload: () => void;
+
 }
 
 export type ToastSeverity = 'success' | 'info' | 'warn' | 'error';

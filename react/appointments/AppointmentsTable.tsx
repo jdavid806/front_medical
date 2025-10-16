@@ -43,6 +43,7 @@ import {
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded";
 import { PrimeReactProvider } from "primereact/api";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { AppointmentCreateFormModalButton } from "./AppointmentCreateFormModalButton";
 
 export const AppointmentsTable: React.FC = () => {
   const patientId =
@@ -584,8 +585,14 @@ export const AppointmentsTable: React.FC = () => {
           },
         }}
       >
-        <div className="card mb-3">
-          <div className="card-body">
+        <div
+          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "400px" }}
+        >
+          <div className="card-body h-100 w-100 d-flex flex-column">
+            <div className="d-flex align-items-center justify-content-end mb-1">
+              <AppointmentCreateFormModalButton />
+            </div>
             <Accordion>
               <AccordionTab header="Filtros">
                 <div className="row mb-3">
@@ -636,21 +643,11 @@ export const AppointmentsTable: React.FC = () => {
                       onChange={(e) => setSelectedDate(e.value)}
                       className="w-100"
                       placeholder="Seleccione un rango"
-                      appendTo={"self"}
-                      panelStyle={{ zIndex: 100000 }}
                     />
                   </div>
                 </div>
               </AccordionTab>
             </Accordion>
-          </div>
-        </div>
-
-        <div
-          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-          style={{ minHeight: "400px" }}
-        >
-          <div className="card-body h-100 w-100 d-flex flex-column">
             <CustomPRTable
               columns={columns}
               data={appointments}

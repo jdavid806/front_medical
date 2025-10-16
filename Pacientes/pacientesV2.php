@@ -4,12 +4,31 @@ include "../header.php";
 ?>
 
 <style type="text/css">
-        .container-small {
-        max-width: 100% !important;
-        width: 100%;
-        padding: 0;
-        margin: 0;
+
+       .breadcrumb {
+        font-size: 0.9rem;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0 2rem 0;
+        background: rgba(0, 0, 0, 0.02);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
     }
+ 
+    .container-small {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .content {
+        padding: calc(var(--phoenix-navbar-top-height) + 0.2rem) 1.5rem 6.375rem 1.5rem; 
+   }
+
+    html[data-bs-theme="dark"] .breadcrumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
     .custom-btn {
         width: 150px;
         height: 40px;
@@ -117,19 +136,12 @@ include "../header.php";
 <div class="componente">
     <div class="content">
         <div class="container-small">
-            <nav class="mb-3" aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
+            <nav class="mb-6" aria-label="breadcrumb">
+                <ol class="breadcrumb mb-3">
                     <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
                     <li class="breadcrumb-item active" onclick="location.reload()">Consultas</li>
                 </ol>
             </nav>
-
-            <div class="row align-items-center justify-content-between mb-4">
-                <div class="col-md-6">
-                    <h2 class="mb-0">Consultas</h2>
-                </div>
-            </div>
-
             <div id="patientConsultationListReact"></div>
         </div>
     </div>

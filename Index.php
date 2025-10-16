@@ -154,7 +154,7 @@ $_SESSION["ID"] = 1;
     }
 
     .breadcrumb-item a {
-      color: rgb(56 116 255 / 66%);
+      color: #1A99FB !important;
     }
 
     /* Asegurar que el main ocupe toda la altura */
@@ -166,7 +166,71 @@ $_SESSION["ID"] = 1;
     .content {
       position: relative;
       z-index: 2;
+      padding: 0 !important;
     }
+    .container-small{
+      max-width: 48vw !important;
+      margin-top: 50px !important;
+    }
+    html{
+      overflow: clip !important;
+    }
+
+    @media (max-width: 1024px) {
+  .container-small {
+    max-width: 90vw !important;
+    margin-top: 200px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-small {
+    max-width: 95vw !important;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+    padding: 0 10px !important;
+  }
+  
+  /* Asegurar que el contenido del login se vea bien en móviles */
+  #LoginApp {
+    width: 100% !important;
+    margin-top: 90px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .container-small {
+    max-width: 100vw !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    padding: 0 5px !important;
+  }
+  
+  /* Reducir partículas en móviles para mejor rendimiento */
+  #particles-js-container {
+    transform: scale(0.8);
+  }
+}
+
+/* Asegurar que el body no tenga scroll en todos los dispositivos */
+html, body {
+  overflow: clip !important;
+  height: 100%;
+}
+
+/* Mantener el contenedor principal centrado */
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.content {
+  width: 100%;
+}
+
   </style>
 
   <!-- SWEET ALERT -->
@@ -205,17 +269,19 @@ $_SESSION["ID"] = 1;
       color: #000000 !important
     }
 
-    * {
-      font-family: "Open Sans" !important;
-    }
+    body,html,td,span{
+    font-family: 'Inter', sans-serif !important;
 
+    }
+    
     h1,
     h2,
     h3,
     h4,
     li,
-    button {
-      font-weight: normal !important;
+    button,label,th {
+    font-family: 'Grift', sans-serif !important;
+
     }
 
     /* Para navegadores basados en Webkit (Chrome, Edge, Safari) */
@@ -236,6 +302,10 @@ $_SESSION["ID"] = 1;
 
     body::-webkit-scrollbar-thumb:hover {
       background-color: #555;
+    }
+    .content{
+      display:flex;
+      justify-content: space-around;
     }
   </style>
 </head>
@@ -260,6 +330,31 @@ $_SESSION["ID"] = 1;
       background: #fff;
       z-index: 100000;
     }
+        /* Establece la fuente y el color de fondo para que los tonos turquesa brillen */
+            body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1721; /* Un azul oscuro/negro profundo para contraste */
+            color: #FFFFFF;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Oculta barras de desplazamiento */
+        }
+        /* El contenedor de las partículas debe ocupar toda la pantalla */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        /* Contenido de ejemplo sobre las partículas */
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding-top: 20vh;
+        }
   </style>
 
   <script type="importmap">
@@ -330,6 +425,7 @@ $_SESSION["ID"] = 1;
       "primereact/menubar" : "https://esm.sh/primereact/menubar?dev",
       "primereact/avatar" : "https://esm.sh/primereact/avatar?dev",
       "primereact/inputotp" : "https://esm.sh/primereact/inputotp?dev",
+      "primereact/galleria" : "https://esm.sh/primereact/galleria?dev",
       "jspdf": "https://esm.sh/jspdf?dev",
       "jspdf-autotable": "https://esm.sh/jspdf-autotable?dev",
       "react-dom/server": "https://esm.sh/react-dom/server?dev"
@@ -344,103 +440,99 @@ $_SESSION["ID"] = 1;
       </div>
     </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const particlesConfig = {
-          particles: {
-            number: {
-              value: 80,
-              density: {
-                enable: true,
-                value_area: 800
-              }
-            },
-            color: {
-              value: "#132030"
-            },
-            shape: {
-              type: "circle",
-              stroke: {
-                width: 0,
-                color: "#000000"
-              }
-            },
-            opacity: {
-              value: 0.5,
-              random: false,
-              anim: {
-                enable: false,
-                speed: 1,
-                opacity_min: 0.1,
-                sync: false
-              }
-            },
-            size: {
-              value: 3,
-              random: true,
-              anim: {
-                enable: false,
-                speed: 40,
-                size_min: 0.1,
-                sync: false
-              }
-            },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: "#132030",
-              opacity: 0.4,
-              width: 1
-            },
-            move: {
-              enable: true,
-              speed: 2,
-              direction: "none",
-              random: false,
-              straight: false,
-              out_mode: "out",
-              bounce: false,
-              attract: {
-                enable: false,
-                rotateX: 600,
-                rotateY: 1200
-              }
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Paleta de colores de tu marca
+            const brandColors = ["#244255", "#29F6C1", "#1A99FB", "#24D7DE"];
+            // Configuración de particles.js
+            const particlesConfig = {
+                particles: {
+                    number: {
+                        value: 150, // ¡Aumentado a 150 para mayor densidad!
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: brandColors // Usa la matriz de colores para que las partículas sean aleatorias
+                    },
+                    shape: {
+                        type: "circle",
+                        stroke: {
+                            width: 0,
+                            color: "#000000"
+                        }
+                    },
+                    opacity: {
+                        value: 0.6, // Ligeramente más opaco para que destaquen
+                        random: true,
+                        anim: {
+                            enable: false,
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: false,
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 140,
+                        color: "#244255", // Usamos Azul Profundo para las líneas
+                        opacity: 0.5,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2.5, // Ligeramente más rápido
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 160, // Distancia de agarre un poco mayor
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            };
+            // Inicializa particles.js si la librería está cargada
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', particlesConfig);
+            } else {
+                console.error("particles.js no está cargado.");
             }
-          },
-          interactivity: {
-            detect_on: "canvas",
-            events: {
-              onhover: {
-                enable: true,
-                mode: "grab"
-              },
-              onclick: {
-                enable: true,
-                mode: "push"
-              },
-              resize: true
-            },
-            modes: {
-              grab: {
-                distance: 140,
-                line_linked: {
-                  opacity: 1
-                }
-              },
-              push: {
-                particles_nb: 4
-              }
-            }
-          },
-          retina_detect: true
-        };
-
-        if (typeof particlesJS !== 'undefined') {
-          particlesJS('particles-js', particlesConfig);
-        }
-      });
+        });
     </script>
-
     <script type="module">
       import React from "react";
       import ReactDOMClient from "react-dom/client";

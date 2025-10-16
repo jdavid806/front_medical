@@ -43,6 +43,8 @@ export const OTPModal: React.FC<OTPStepProps> = ({
                     integerOnly
                     className="justify-center"
                     mask
+                    autoComplete='off'
+                    type='number'
                 />
             </div>
 

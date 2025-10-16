@@ -155,19 +155,7 @@ export const RetentionConfig = ({
         overlay: 100000
       }
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement("h4", {
-    className: "mb-1"
-  }, "Configuraci\xF3n de Retenciones"), /*#__PURE__*/React.createElement("div", {
-    className: "text-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? "Procesando..." : "Nueva Retención"))), error && /*#__PURE__*/React.createElement("div", {
+  }, error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
   }, error), /*#__PURE__*/React.createElement("div", {
@@ -177,11 +165,20 @@ export const RetentionConfig = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(RetentionConfigTable, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? "Procesando..." : "Nueva Retención")), /*#__PURE__*/React.createElement(RetentionConfigTable, {
     retentions: enrichedRetentions,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteRetention,
-    loading: loading || isLoadingAccounts
+    loading: loading || isLoadingAccounts,
+    onReload: refreshRetentions
   }))), /*#__PURE__*/React.createElement(RetentionModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,

@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Menu } from "primereact/menu";
-import { classNames } from "primereact/utils";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { CustomPRTable } from "../../../components/CustomPRTable.js";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts.js";
 export const RetentionConfigTable = ({
-  retentions,
+  retentions = [],
   onEditItem,
   onDeleteItem,
-  loading = false
+  loading = false,
+  onReload
 }) => {
   const toast = useRef(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -22,32 +21,18 @@ export const RetentionConfigTable = ({
   const [filteredRetentions, setFilteredRetentions] = useState([]);
   const [filtros, setFiltros] = useState({
     name: "",
-    percentage: null,
     account: null
   });
   const {
     accounts: accountingAccounts,
     isLoading: isLoadingAccounts
   } = useAccountingAccounts();
-  const renderAccount = account => {
-    if (!account) return "No asignada";
-    if (account.name && !account.name.startsWith("Cuenta ")) {
-      return account.name;
-    }
-    const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id || acc.account_code?.toString() === account.id);
-    return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
-  };
-  useEffect(() => {
-    setFilteredRetentions(retentions);
-  }, [retentions]);
-  const handleFilterChange = (field, value) => {
-    setFiltros(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-  const aplicarFiltros = () => {
+
+  // Función para sincronizar los datos filtrados
+  const syncFilteredData = () => {
     let result = [...retentions];
+
+    // Aplicar filtros actuales
     if (filtros.name) {
       result = result.filter(ret => ret.name.toLowerCase().includes(filtros.name.toLowerCase()));
     }
@@ -56,13 +41,39 @@ export const RetentionConfigTable = ({
     }
     setFilteredRetentions(result);
   };
+
+  // Sincroniza cuando cambian los retentions o los filtros
+  useEffect(() => {
+    syncFilteredData();
+  }, [retentions, filtros]);
+  const renderAccount = account => {
+    if (!account) return "No asignada";
+    if (account.name && !account.name.startsWith("Cuenta ")) {
+      return account.name;
+    }
+    const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id || acc.account_code?.toString() === account.id);
+    return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
+  };
+  const handleFilterChange = (field, value) => {
+    setFiltros(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+  const handleSearchChange = searchValue => {
+    console.log("Search value:", searchValue);
+  };
   const limpiarFiltros = () => {
     setFiltros({
       name: "",
-      account: null,
-      percentage: null
+      account: null
     });
-    setFilteredRetentions(retentions);
+  };
+  const handleRefresh = async () => {
+    limpiarFiltros();
+    if (onReload) {
+      await onReload();
+    }
   };
   const showToast = (severity, summary, detail) => {
     toast.current?.show({
@@ -76,10 +87,15 @@ export const RetentionConfigTable = ({
     setRetentionToDelete(retention);
     setDeleteDialogVisible(true);
   };
-  const deleteRetention = () => {
+  const deleteRetention = async () => {
     if (retentionToDelete && onDeleteItem) {
-      onDeleteItem(retentionToDelete.id.toString());
+      await onDeleteItem(retentionToDelete.id.toString());
       showToast("success", "Éxito", `Retención ${retentionToDelete.name} eliminada`);
+
+      // Refrescar después de eliminar
+      if (onReload) {
+        await onReload();
+      }
     }
     setDeleteDialogVisible(false);
     setRetentionToDelete(null);
@@ -116,7 +132,7 @@ export const RetentionConfigTable = ({
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "btn-primary flex items-center gap-2",
+      className: "p-button-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true
@@ -165,37 +181,48 @@ export const RetentionConfigTable = ({
       value: account.id.toString()
     }));
   };
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px"
-    },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333"
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600
-    },
-    tableCell: {
-      padding: "0.75rem 1rem"
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block"
-    }
-  };
+
+  // Mapear los datos para la tabla
+  const tableItems = filteredRetentions.map(retention => ({
+    id: retention.id,
+    name: retention.name,
+    percentage: `${retention.percentage}%`,
+    account: renderAccount(retention.account),
+    returnAccount: renderAccount(retention.returnAccount),
+    description: retention.description,
+    actions: retention
+  }));
+  const columns = [{
+    field: 'name',
+    header: 'Nombre de Retención',
+    sortable: true
+  }, {
+    field: 'percentage',
+    header: 'Porcentaje (%)',
+    sortable: true
+  }, {
+    field: 'account',
+    header: 'Cuenta Contable',
+    sortable: true
+  }, {
+    field: 'returnAccount',
+    header: 'Cuenta Contable Reversa',
+    sortable: true
+  }, {
+    field: 'description',
+    header: 'Descripción',
+    body: rowData => /*#__PURE__*/React.createElement("span", {
+      title: rowData.description
+    }, rowData.description && rowData.description.length > 30 ? `${rowData.description.substring(0, 30)}...` : rowData.description || "N/A")
+  }, {
+    field: 'actions',
+    header: 'Acciones',
+    body: rowData => actionBodyTemplate(rowData.actions),
+    exportable: false,
+    width: "120px"
+  }];
   return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid mt-4",
-    style: {
-      width: "100%",
-      padding: "0 15px"
-    }
+    className: "w-100"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement(Dialog, {
@@ -210,105 +237,49 @@ export const RetentionConfigTable = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex align-items-center justify-content-center"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-exclamation-triangle mr-3",
+    className: "fas fa-exclamation-triangle mr-3",
     style: {
       fontSize: "2rem",
-      color: "#f8bb86"
+      color: "#F8BB86"
     }
-  }), retentionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar la retenci\xF3n", " ", /*#__PURE__*/React.createElement("b", null, retentionToDelete.name), "? Esta acci\xF3n no se puede deshacer."))), /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    style: styles.card
+  }), retentionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar la retenci\xF3n ", /*#__PURE__*/React.createElement("b", null, retentionToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
+    className: "card-body"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-4"
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Nombre de Retenci\xF3n"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.name,
     onChange: e => handleFilterChange("name", e.target.value),
     placeholder: "Buscar por nombre",
-    className: classNames("w-100")
+    className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-4"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Cuenta contable"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.account,
     options: getAccountOptions(),
     onChange: e => handleFilterChange("account", e.value),
     optionLabel: "label",
     placeholder: isLoadingAccounts ? "Cargando cuentas..." : "Seleccione cuenta",
-    className: classNames("w-100"),
+    className: "w-100",
     filter: true,
     filterBy: "label",
     showClear: true,
     disabled: isLoadingAccounts,
     loading: isLoadingAccounts
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Limpiar",
-    icon: "pi pi-trash",
-    className: "btn btn-phoenix-secondary",
-    onClick: limpiarFiltros
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Aplicar Filtros",
-    icon: "pi pi-filter",
-    className: "btn btn-primary",
-    onClick: aplicarFiltros,
-    loading: loading
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Configuraci\xF3n de Retenciones",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: filteredRetentions,
-    paginator: true,
-    rows: 10,
-    rowsPerPageOptions: [5, 10, 25, 50],
+  }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
     loading: loading,
-    className: "p-datatable-striped p-datatable-gridlines",
-    emptyMessage: "No se encontraron retenciones",
-    responsiveLayout: "scroll",
-    tableStyle: {
-      minWidth: "50rem"
-    }
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "name",
-    header: "Nombre de Retenci\xF3n",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "percentage",
-    header: "Porcentaje (%)",
-    sortable: true,
-    body: rowData => `${rowData.percentage}%`,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "account",
-    header: "Cuenta Contable",
-    sortable: true,
-    body: rowData => renderAccount(rowData.account),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "returnAccount",
-    header: "Cuenta Contable Reversa",
-    sortable: true,
-    body: rowData => renderAccount(rowData.returnAccount),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "description",
-    header: "Descripci\xF3n",
-    style: styles.tableCell,
-    body: rowData => /*#__PURE__*/React.createElement("span", {
-      title: rowData.description || ""
-    }, rowData.description && rowData.description.length > 30 ? `${rowData.description.substring(0, 30)}...` : rowData.description || "N/A")
-  }), /*#__PURE__*/React.createElement(Column, {
-    body: actionBodyTemplate,
-    header: "Acciones",
-    style: {
-      width: "120px"
-    },
-    exportable: false
+    onSearch: handleSearchChange,
+    onReload: handleRefresh
   }))));
 };

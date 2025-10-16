@@ -11,6 +11,7 @@ import { useTaxesDeleteTable } from './hooks/useTaxesDeleteTable';
 import { useTaxesUpdateTable } from './hooks/useTaxesUpdteTable';
 import { TaxesMapperCreate, TaxesMapperUpdate } from './mapper/mappedTaxes';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
+import { Button } from 'primereact/button';
 
 export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
@@ -146,19 +147,7 @@ export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComple
                 },
             }}
         >
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h4 className="mb-1">Configuración de Impuestos</h4>
-                <div className="text-end">
-                    <button
-                        className="btn btn-primary d-flex align-items-center"
-                        onClick={onCreate}
-                        disabled={createLoading || updateLoading || deleteLoading}
-                    >
-                        <i className="fas fa-plus me-2"></i>
-                        {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto'}
-                    </button>
-                </div>
-            </div>
+
 
             {error && (
                 <div className="alert alert-danger" role="alert">
@@ -171,15 +160,26 @@ export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComple
                 style={{ minHeight: "400px" }}
             >
                 <div className="card-body h-100 w-100 d-flex flex-column">
+                    <div className="text-end pt-3 mb-2">
+                        <Button
+                            className="p-button-primary"
+                            onClick={onCreate}
+                            disabled={createLoading || updateLoading || deleteLoading}
+                        >
+                            <i className="fas fa-plus me-2"></i>
+                            {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto'}
+                        </Button>
+                    </div>
                     <TaxesConfigTable
                         taxes={enrichedTaxes}
                         onEditItem={handleTableEdit}
                         onDeleteItem={handleDeleteTax}
                         loading={loading || isLoadingAccounts}
+                        onReload={refreshTaxes}
+
                     />
                 </div>
             </div>
-
             <TaxConfigModal
                 isVisible={showFormModal}
                 onSave={handleSubmit}
@@ -193,6 +193,6 @@ export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComple
                 accounts={accounts}
                 loading={createLoading || updateLoading || deleteLoading}
             />
-        </PrimeReactProvider>
+        </PrimeReactProvider >
     );
 };

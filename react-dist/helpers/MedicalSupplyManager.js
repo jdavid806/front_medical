@@ -17,10 +17,12 @@ export class MedicalSupplyManager {
     return this.data.products;
   }
   get requestedBy() {
-    return this.requestedBy_;
-  }
-  set requestedBy(value) {
-    this.requestedBy_ = value;
+    return {
+      name: `${this.data.requested_by_user?.first_name || ''} ${this.data.requested_by_user?.middle_name || ''} ${this.data.requested_by_user?.last_name || ''} ${this.data.requested_by_user?.second_last_name || ''}`,
+      email: this.data.requested_by_user?.email || '--',
+      phone: this.data.requested_by_user?.phone || '--',
+      address: this.data.requested_by_user?.address || '--'
+    };
   }
   get statusLabel() {
     const statusMap = {

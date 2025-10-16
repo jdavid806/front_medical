@@ -99,7 +99,7 @@ export const UserRoleApp = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
   }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
+    className: "d-flex justify-content-between align-items-center"
   }, /*#__PURE__*/React.createElement("h4", {
     className: "mb-1"
   }, "Roles de Usuario"), /*#__PURE__*/React.createElement("div", {

@@ -133,6 +133,8 @@ export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationC
             onEditItem={handleTableEdit}
             onDeleteItem={handleDeleteCostCenter}
             loading={loading}
+            onReload={refreshCostCenters}
+
           />
         </div>
       </div>

@@ -12,6 +12,7 @@ import {
   PaymentMethodsConfigTableProps,
   ToastSeverity,
 } from "../interfaces/PaymentMethodsConfigTableTypes";
+
 export const PaymentMethodsConfigTable: React.FC<
   PaymentMethodsConfigTableProps
 > = ({ onEditItem, paymentMethods = [], loading = false, onDeleteItem, onReload }) => {
@@ -23,32 +24,19 @@ export const PaymentMethodsConfigTable: React.FC<
     name: "",
     category: null as string | null,
   });
+
   const categories = [
     { label: "Transaccional", value: "transactional" },
-    { label: "Vencimiento Proveedores", value: "card" },
-    { label: "Transferencia", value: "supplier_expiration" },
+    { label: "Vencimiento Proveedores", value: "supplier_expiration" },
+    // { label: "Transferencia", value: "supplier_expiration" },
     { label: "Vencimiento Clientes", value: "customer_expiration" },
     { label: "Anticipo Clientes", value: "customer_advance" },
     { label: "Anticipo Proveedores", value: "supplier_advance" },
   ];
-  const getCategoryLabel = (categoryValue: string) => {
-    const category = categories.find(cat => cat.value === categoryValue);
-    return category ? category.label : categoryValue;
-  };
-  // Inicializar los datos filtrados
-  useEffect(() => {
-    setFilteredPaymentMethods(paymentMethods);
-  }, [paymentMethods]);
-  const handleFilterChange = (field: string, value: any) => {
-    setFiltros((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-  // Aplicar filtros manualmente (igual que en el código que funciona)
-  const aplicarFiltros = () => {
+
+  const syncFilteredData = () => {
     let result = [...paymentMethods];
-    // Aplicar filtros específicos
+
     if (filtros.name) {
       result = result.filter((method) =>
         method.name.toLowerCase().includes(filtros.name.toLowerCase())
@@ -57,30 +45,46 @@ export const PaymentMethodsConfigTable: React.FC<
     if (filtros.category) {
       result = result.filter((method) => method.category === filtros.category);
     }
+
     setFilteredPaymentMethods(result);
   };
-  // Función de búsqueda para CustomPRTable
+
+  useEffect(() => {
+    syncFilteredData();
+  }, [paymentMethods, filtros]);
+
+  const getCategoryLabel = (categoryValue: string) => {
+    const category = categories.find(cat => cat.value === categoryValue);
+    return category ? category.label : categoryValue;
+  };
+
+  const handleFilterChange = (field: string, value: any) => {
+    setFiltros((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+
   const handleSearchChange = (searchValue: string) => {
-    // Si necesitas búsqueda global, puedes implementarla aquí
     console.log("Search value:", searchValue);
   };
+
   const limpiarFiltros = () => {
     setFiltros({
       name: "",
       category: null,
     });
-    setFilteredPaymentMethods(paymentMethods); // Resetear a todos los métodos
   };
-  const handleRefresh = () => {
-    console.log(":flechas_en_sentido_antihorario: Refresh button clicked");
-    // Limpiar filtros locales
+
+  const handleRefresh = async () => {
     limpiarFiltros();
-    // Llamar a onReload para obtener datos frescos
+
     if (onReload) {
-      onReload();
+      await onReload();
     }
-    showToast("info", "Actualizando", "Recargando datos...");
   };
+
   const showToast = (
     severity: ToastSeverity,
     summary: string,
@@ -88,24 +92,26 @@ export const PaymentMethodsConfigTable: React.FC<
   ) => {
     toast.current?.show({ severity, summary, detail, life: 3000 });
   };
+
   const confirmDelete = (method: PaymentMethod) => {
     setMethodToDelete(method);
     setDeleteDialogVisible(true);
   };
-  const deleteMethod = () => {
+
+  const deleteMethod = async () => {
     if (methodToDelete && onDeleteItem) {
-      onDeleteItem(methodToDelete.id.toString());
+      await onDeleteItem(methodToDelete.id.toString());
       showToast("success", "Éxito", `Método ${methodToDelete.name} eliminado`);
-      // Refrescar automáticamente después de eliminar
-      setTimeout(() => {
-        if (onReload) {
-          onReload();
-        }
-      }, 1000);
+
+      // Refrescar después de eliminar
+      if (onReload) {
+        await onReload();
+      }
     }
     setDeleteDialogVisible(false);
     setMethodToDelete(null);
   };
+
   const deleteDialogFooter = (
     <div className="flex justify-content-end gap-2">
       <Button
@@ -122,6 +128,7 @@ export const PaymentMethodsConfigTable: React.FC<
       />
     </div>
   );
+
   const TableMenu: React.FC<{
     rowData: PaymentMethod,
     onEdit: (id: string) => void,
@@ -137,7 +144,7 @@ export const PaymentMethodsConfigTable: React.FC<
     return (
       <div style={{ position: "relative" }}>
         <Button
-          className="btn-primary flex items-center gap-2"
+          className="p-button-primary flex items-center gap-2"
           onClick={(e) => menu.current?.toggle(e)}
           aria-controls={`popup_menu_${rowData.id}`}
           aria-haspopup
@@ -167,6 +174,7 @@ export const PaymentMethodsConfigTable: React.FC<
       </div>
     );
   };
+
   const actionBodyTemplate = (rowData: PaymentMethod) => {
     return (
       <div
@@ -181,6 +189,7 @@ export const PaymentMethodsConfigTable: React.FC<
       </div>
     );
   };
+
   // Mapear los datos para la tabla
   const tableItems = filteredPaymentMethods.map(method => ({
     id: method.id,
@@ -190,6 +199,7 @@ export const PaymentMethodsConfigTable: React.FC<
     additionalDetails: method.additionalDetails,
     actions: method
   }));
+
   const columns: CustomPRTableColumnProps[] = [
     {
       field: 'name',
@@ -221,9 +231,11 @@ export const PaymentMethodsConfigTable: React.FC<
       field: 'actions',
       header: 'Acciones',
       body: (rowData: any) => actionBodyTemplate(rowData.actions),
-      exportable: false
+      exportable: false,
+      width: "120px"
     }
   ];
+
   return (
     <div className="w-100">
       <Toast ref={toast} />
@@ -275,23 +287,6 @@ export const PaymentMethodsConfigTable: React.FC<
                     placeholder="Seleccione categoría"
                     className="w-100"
                     showClear
-                  />
-                </div>
-              </div>
-              <div className="row mt-3">
-                <div className="col-12 d-flex justify-content-end gap-2">
-                  <Button
-                    label="Limpiar"
-                    icon="fas fa-broom"
-                    className="p-button-secondary"
-                    onClick={limpiarFiltros}
-                  />
-                  <Button
-                    label="Aplicar Filtros"
-                    icon="fas fa-filter"
-                    className="p-button-primary"
-                    onClick={aplicarFiltros}
-                    loading={loading}
                   />
                 </div>
               </div>

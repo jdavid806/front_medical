@@ -1,7 +1,7 @@
 import { Retention } from "./RetentionFormConfigType";
 
 export interface Account {
-  id: string; 
+  id: string;
   name: string;
 }
 
@@ -9,7 +9,7 @@ export interface Account {
 export interface Filtros {
   name: string;
   percentage: number | null;
-  account: string | null; 
+  account: string | null;
 }
 
 export interface RetentionConfigTableProps {
@@ -17,6 +17,8 @@ export interface RetentionConfigTableProps {
   onEditItem: (id: string) => void;
   onDeleteItem?: (id: string) => void;
   loading?: boolean;
+  onReload: () => void;
+
 }
 
 export type ToastSeverity = 'success' | 'info' | 'warn' | 'error';
