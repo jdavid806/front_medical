@@ -1,15 +1,15 @@
 // CompanyConfiguration.tsx
-import React, { useState } from 'react';
-import { TabView, TabPanel } from 'primereact/tabview';
-import { Card } from 'primereact/card';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { Message } from 'primereact/message';
+import React, { useState } from "react";
+import { TabView, TabPanel } from "primereact/tabview";
+import { Card } from "primereact/card";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { Message } from "primereact/message";
 import GeneralInfoTab from "./components/GeneralInfoTab.js";
 import CommunicationsTab from "./components/CommunicationsTab.js";
 import BranchesTab from "./components/BranchesTab.js";
 import RepresentativeTab from "./components/RepresentativeTab.js";
 import { useCompanyGeneral } from "./hooks/useCompanyGeneral.js";
-import { Button } from 'primereact/button';
+import { Button } from "primereact/button";
 import { useTabValidation } from "../general-configuration/hooks/useTabValidation.js";
 export const CompanyConfiguration = ({
   onComplete
@@ -31,7 +31,9 @@ export const CompanyConfiguration = ({
     getEnabledTabs
   } = useTabValidation(company);
   const handleCompanyUpdate = updatedCompany => {
+    console.log("Company updated:", updatedCompany);
     refetch();
+    console.log("company:", company);
   };
   const handleTabChange = index => {
     const enabledTabs = getEnabledTabs();
@@ -51,13 +53,13 @@ export const CompanyConfiguration = ({
       return "Módulo bloqueado";
     };
     return /*#__PURE__*/React.createElement("div", {
-      className: `flex align-items-center gap-2 ${!enabled ? 'opacity-50' : ''}`
+      className: `flex align-items-center gap-2 ${!enabled ? "opacity-50" : ""}`
     }, /*#__PURE__*/React.createElement("i", {
       className: icon
     }), /*#__PURE__*/React.createElement("span", null, label), !enabled && /*#__PURE__*/React.createElement("i", {
       className: "pi pi-lock text-muted ml-2",
       style: {
-        fontSize: '0.8rem'
+        fontSize: "0.8rem"
       },
       title: getDisabledReason()
     }));
@@ -68,7 +70,7 @@ export const CompanyConfiguration = ({
     }, /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-center align-items-center",
       style: {
-        height: '400px'
+        height: "400px"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null)));
   }
@@ -100,13 +102,13 @@ export const CompanyConfiguration = ({
   }, /*#__PURE__*/React.createElement(GeneralInfoTab, {
     company: company,
     onUpdate: handleCompanyUpdate,
-    onValidationChange: isValid => updateValidation('generalInfo', isValid)
+    onValidationChange: isValid => updateValidation("generalInfo", isValid)
   })), /*#__PURE__*/React.createElement(TabPanel, {
     header: getTabHeader(1, "fa-solid fa-address-book", "Representante"),
     disabled: !isTabEnabled(1)
   }, /*#__PURE__*/React.createElement(RepresentativeTab, {
     companyId: company?.id,
-    onValidationChange: isValid => updateValidation('representative', isValid)
+    onValidationChange: isValid => updateValidation("representative", isValid)
   })), /*#__PURE__*/React.createElement(TabPanel, {
     header: getTabHeader(2, "fa-solid fa-envelopes-bulk", "Comunicaciones"),
     disabled: !isTabEnabled(2)
@@ -118,7 +120,7 @@ export const CompanyConfiguration = ({
     disabled: !isTabEnabled(3)
   }, /*#__PURE__*/React.createElement(BranchesTab, {
     companyId: company?.id,
-    onValidationChange: isValid => updateValidation('branches', isValid)
+    onValidationChange: isValid => updateValidation("branches", isValid)
   }))), allTabsCompleted && /*#__PURE__*/React.createElement("div", {
     className: "mt-4 p-3 border-top"
   }, /*#__PURE__*/React.createElement("div", {

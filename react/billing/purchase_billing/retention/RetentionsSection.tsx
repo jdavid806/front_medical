@@ -55,32 +55,41 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
 
   const calculateRetentionValue = (retention: any) => {
     const base = calculateBaseAmount();
+    let productsFiltered: any =
+      productsArray.filter(
+        (item: any) => item.taxChargeId == retention?.tax?.id
+      ) || 0;
 
-    if (retention != 0 && retention?.tax_id !== null) {
-      const productsFiltered = productsArray
-        .filter((item: any) => item.taxChargeId == retention.tax.id)
-        .reduce((total, product: any) => {
-          const subtotal = product.quantity * product.price;
+    if (productsFiltered.length && retention?.tax_id !== null) {
+      productsFiltered = productsFiltered.reduce((total: any, product: any) => {
+        const actualQuantity = ["medications", "vaccines"].includes(
+          product.typeProduct
+        )
+          ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+          : Number(product.quantity) || 0;
 
-          let discount = 0;
+        const subtotal = actualQuantity * product.price;
 
-          if (product.discountType === "percentage") {
-            discount = subtotal * (product.discount / 100);
-          } else {
-            discount = product.discount;
-          }
+        let discount = 0;
 
-          const subtotalAfterDiscount = subtotal - discount;
+        if (product.discountType === "percentage") {
+          discount = subtotal * (product.discount / 100);
+        } else {
+          discount = product.discount;
+        }
 
-          const taxValue = (subtotalAfterDiscount * (product.tax || product.iva)) / 100;
+        const subtotalAfterDiscount = subtotal - discount;
 
-          return total + taxValue;
-        }, 0);
+        const taxValue =
+          (subtotalAfterDiscount * (product.tax || product.iva)) / 100;
+
+        return total + taxValue;
+      }, 0);
 
       return (productsFiltered * (retention.percentage || 0)) / 100;
+    } else {
+      return (base * (retention.percentage || 0)) / 100;
     }
-
-    return (base * (retention.percentage || 0)) / 100;
   };
 
   const handleAddRetention = () => {

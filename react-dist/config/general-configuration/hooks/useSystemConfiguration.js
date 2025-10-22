@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useConfigurationProgress } from "./useConfigurationProgress.js";
 export const useSystemConfiguration = ({
   steps,
@@ -22,13 +22,11 @@ export const useSystemConfiguration = ({
     onProgressLoaded: config => {
       if (isInitializingRef.current) return;
       isInitializingRef.current = true;
-      console.log('📊 Configuración recibida:', config);
 
       // Extraer la configuración parseada
       const configData = config?.config_tenants || config;
       if (configData && configData.step_index !== undefined && configData.step_index !== null) {
         const savedStepIndex = configData.step_index;
-        console.log('🎯 Intentando restaurar paso:', savedStepIndex);
         if (savedStepIndex >= 0 && savedStepIndex < steps.length) {
           // FORZAR el cambio al paso guardado
           setActiveIndex(savedStepIndex);
@@ -37,30 +35,22 @@ export const useSystemConfiguration = ({
             stepId: steps[savedStepIndex].id,
             stepIndex: savedStepIndex
           };
-          console.log('🔄 ✅ Paso RESTAURADO exitosamente:', {
-            index: savedStepIndex,
-            step: steps[savedStepIndex].id,
-            config: configData
-          });
         } else {
-          console.warn('❌ Índice de paso guardado inválido:', savedStepIndex);
+          console.warn("❌ Índice de paso guardado inválido:", savedStepIndex);
           setActiveIndex(initialStep);
           setHasSavedProgress(false);
         }
       } else {
-        console.log('ℹ️ No hay progreso guardado, comenzando desde paso inicial:', initialStep);
         setActiveIndex(initialStep);
         setHasSavedProgress(false);
       }
       setIsInitialized(true);
-      console.log('🚀 Inicialización completada');
     }
   });
 
   // Cargar progreso solo una vez al montar
   useEffect(() => {
     if (!isInitialized && !isLoading) {
-      console.log('🎬 Iniciando carga de progreso...');
       loadProgress();
     }
   }, [isInitialized, isLoading, loadProgress]);
@@ -76,58 +66,37 @@ export const useSystemConfiguration = ({
 
     // Solo guardar si realmente cambió el paso
     if (lastSavedStepRef.current.stepId !== currentStepInfo.stepId || lastSavedStepRef.current.stepIndex !== currentStepInfo.stepIndex) {
-      console.log('💾 Guardando cambio de paso:', currentStepInfo);
       saveProgress(currentStep.id, activeIndex).then(() => {
         lastSavedStepRef.current = currentStepInfo;
       }).catch(console.error);
     }
   }, [activeIndex, isInitialized, isLoading, saveProgress, steps]);
   const goToNext = useCallback(() => {
-    console.log('➡️ Intentando ir al siguiente paso desde:', activeIndex);
     setActiveIndex(prevIndex => {
       const nextIndex = prevIndex + 1;
       if (nextIndex >= steps.length) {
-        console.log('🚫 Último paso alcanzado');
         return prevIndex;
       }
-      console.log('✅ Siguiente paso:', {
-        from: steps[prevIndex].id,
-        to: steps[nextIndex].id,
-        index: nextIndex
-      });
       return nextIndex;
     });
   }, [activeIndex, steps]);
   const goToPrevious = useCallback(() => {
-    console.log('⬅️ Intentando ir al paso anterior desde:', activeIndex);
     setActiveIndex(prevIndex => {
       const prevIndexNew = prevIndex - 1;
       if (prevIndexNew < 0) {
-        console.log('🚫 Primer paso alcanzado');
         return prevIndex;
       }
-      console.log('✅ Paso anterior:', {
-        from: steps[prevIndex].id,
-        to: steps[prevIndexNew].id,
-        index: prevIndexNew
-      });
       return prevIndexNew;
     });
   }, [activeIndex, steps]);
   const goToStep = useCallback(index => {
-    console.log('🎯 Intentando ir al paso:', index);
     if (index >= 0 && index < steps.length) {
       setActiveIndex(index);
-      console.log('✅ Navegación directa exitosa:', {
-        index: index,
-        step: steps[index].id
-      });
     } else {
-      console.warn('❌ Índice de paso inválido:', index);
+      console.warn("❌ Índice de paso inválido:", index);
     }
   }, [steps.length, steps]);
   const resetToInitial = useCallback(() => {
-    console.log('🔄 Reiniciando a paso inicial:', initialStep);
     setActiveIndex(initialStep);
     setHasSavedProgress(false);
     lastSavedStepRef.current = {
@@ -137,17 +106,18 @@ export const useSystemConfiguration = ({
   }, [initialStep]);
 
   // Debug: mostrar estado actual
-  useEffect(() => {
-    if (isInitialized) {
-      console.log('📈 Estado actual:', {
-        activeIndex,
-        currentStep: steps[activeIndex]?.id,
-        hasSavedProgress,
-        isInitialized,
-        isLoading
-      });
-    }
-  }, [activeIndex, hasSavedProgress, isInitialized, isLoading, steps]);
+  // useEffect(() => {
+  //     if (isInitialized) {
+  //         console.log('📈 Estado actual:', {
+  //             activeIndex,
+  //             currentStep: steps[activeIndex]?.id,
+  //             hasSavedProgress,
+  //             isInitialized,
+  //             isLoading
+  //         });
+  //     }
+  // }, [activeIndex, hasSavedProgress, isInitialized, isLoading, steps]);
+
   return {
     activeIndex,
     goToNext,

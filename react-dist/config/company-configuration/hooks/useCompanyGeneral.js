@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { companyService } from "../../../../services/api/index.js";
 export const useCompanyGeneral = () => {
   const [company, setCompany] = useState(null);
@@ -30,12 +30,11 @@ export const useCompanyGeneral = () => {
           created_at: companyData.created_at,
           updated_at: companyData.updated_at
         };
-        console.log("holisss", mappedCompany);
         setCompany(mappedCompany);
       }
     } catch (err) {
-      console.error('Error fetching company data:', err);
-      setError('Error al cargar los datos de la compañía');
+      console.error("Error fetching company data:", err);
+      setError("Error al cargar los datos de la compañía");
     } finally {
       setLoading(false);
     }

@@ -27,9 +27,11 @@ export const RetentionsSection = ({
   };
   const calculateRetentionValue = retention => {
     const base = calculateBaseAmount();
-    if (retention != 0 && retention?.tax_id !== null) {
-      const productsFiltered = productsArray.filter(item => item.taxChargeId == retention.tax.id).reduce((total, product) => {
-        const subtotal = product.quantity * product.price;
+    let productsFiltered = productsArray.filter(item => item.taxChargeId == retention?.tax?.id) || 0;
+    if (productsFiltered.length && retention?.tax_id !== null) {
+      productsFiltered = productsFiltered.reduce((total, product) => {
+        const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
+        const subtotal = actualQuantity * product.price;
         let discount = 0;
         if (product.discountType === "percentage") {
           discount = subtotal * (product.discount / 100);
@@ -41,8 +43,9 @@ export const RetentionsSection = ({
         return total + taxValue;
       }, 0);
       return productsFiltered * (retention.percentage || 0) / 100;
+    } else {
+      return base * (retention.percentage || 0) / 100;
     }
-    return base * (retention.percentage || 0) / 100;
   };
   const handleAddRetention = () => {
     const newRetention = {

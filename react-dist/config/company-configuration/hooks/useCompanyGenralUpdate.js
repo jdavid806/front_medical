@@ -5,15 +5,18 @@ export const useCompany = () => {
   const companyMutation = useCompanyMutation();
   const guardarInformacionGeneral = async (formData, logoFile, marcaAguaFile) => {
     const companyId = companyData.company?.id;
-    const result = await companyMutation.guardarInformacionGeneral(formData, logoFile, marcaAguaFile, companyId);
-    if (result) {
-      console.log("✅ Guardado exitoso, recargando datos...");
-      setTimeout(() => {
-        companyData.refetch();
-        console.log("🔄 Datos recargados");
-      }, 2000);
+    try {
+      const result = await companyMutation.guardarInformacionGeneral(formData, logoFile, marcaAguaFile, companyId);
+      return {
+        success: true,
+        data: result
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error
+      };
     }
-    return result;
   };
   return {
     company: companyData.company,

@@ -1,5 +1,5 @@
 // hooks/useCompanyMutation.ts
-import { useState } from 'react';
+import { useState } from "react";
 import { companyService } from "../../../../services/api/index.js";
 export const useCompanyMutation = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -8,23 +8,14 @@ export const useCompanyMutation = () => {
   const uploadFile = async (file, companyId, fileType) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const modelType = fileType === 'logo' ? 'App\\Models\\logoFile' : 'App\\Models\\waterMark';
+        const modelType = fileType === "logo" ? "App\\Models\\logoFile" : "App\\Models\\waterMark";
         let formData = new FormData();
         formData.append("file", file);
         formData.append("model_type", modelType);
         formData.append("model_id", companyId.toString());
-        console.log("Subiendo archivo:", {
-          modelType,
-          companyId,
-          fileName: file.name,
-          fileType: file.type,
-          fileSize: file.size
-        });
 
         // @ts-ignore - Usar la función global guardarArchivo
         guardarArchivo(formData, true).then(async response => {
-          console.log("✅ Archivo subido exitosamente:", response);
-
           // @ts-ignore - Usar la función global getUrlImage
           const file_url = await getUrlImage(response.file.file_url.replaceAll("\\", "/"), true);
           resolve({
@@ -48,13 +39,11 @@ export const useCompanyMutation = () => {
       setIsLoading(true);
       setError(null);
       setIsSuccess(false);
-      console.log("🚀 Iniciando proceso de guardado...");
       let finalCompanyId = companyId;
       let response;
 
       // Si es una compañía nueva, primero crearla para obtener el ID
       if (!companyId) {
-        console.log("📝 Creando nueva compañía primero...");
         const infoGeneralBasica = {
           legal_name: formData.legal_name,
           document_type: formData.document_type,
@@ -83,7 +72,7 @@ export const useCompanyMutation = () => {
       let watermarkUrl = null;
       if (logoFile) {
         try {
-          const uploadedLogo = await uploadFile(logoFile, finalCompanyId, 'logo');
+          const uploadedLogo = await uploadFile(logoFile, finalCompanyId, "logo");
           logoUrl = uploadedLogo.file_url;
         } catch (fileError) {
           throw new Error(`Error al subir el logo: ${fileError}`);
@@ -91,7 +80,7 @@ export const useCompanyMutation = () => {
       }
       if (marcaAguaFile) {
         try {
-          const uploadedWatermark = await uploadFile(marcaAguaFile, finalCompanyId, 'watermark');
+          const uploadedWatermark = await uploadFile(marcaAguaFile, finalCompanyId, "watermark");
           watermarkUrl = uploadedWatermark.file_url;
         } catch (fileError) {
           throw new Error(`Error al subir la marca de agua: ${fileError}`);
@@ -110,25 +99,23 @@ export const useCompanyMutation = () => {
 
       // Solo incluir logo y watermark si se subieron archivos
       if (logoUrl) {
-        infoGeneralCompleta.logo = `App\\Models\\logoFile/${logoUrl.split('/').pop()}`;
+        infoGeneralCompleta.logo = `App\\Models\\logoFile/${logoUrl.split("/").pop()}`;
       }
       if (watermarkUrl) {
-        infoGeneralCompleta.watermark = `App\\Models\\waterMark/${watermarkUrl.split('/').pop()}`;
+        infoGeneralCompleta.watermark = `App\\Models\\waterMark/${watermarkUrl.split("/").pop()}`;
       }
-      console.log("📦 Payload final para actualizar:", infoGeneralCompleta);
       if (companyId) {
         // Actualizar compañía existente
         response = await companyService.updateCompany(finalCompanyId, infoGeneralCompleta);
       } else {
         response = await companyService.updateCompany(finalCompanyId, infoGeneralCompleta);
       }
-      console.log("🎉 Proceso completado exitosamente");
       setIsSuccess(true);
       return response;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al guardar la información general';
+      const errorMessage = err instanceof Error ? err.message : "Error al guardar la información general";
       setError(errorMessage);
-      console.error('❌ Error en guardarInformacionGeneral:', err);
+      console.error("❌ Error en guardarInformacionGeneral:", err);
       throw err;
     } finally {
       setIsLoading(false);

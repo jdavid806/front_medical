@@ -1,41 +1,47 @@
-import { useCompanyGeneral } from './useCompanyGeneral';
-import { useCompanyMutation } from './useCompanyMutation';
+import { useCompanyGeneral } from "./useCompanyGeneral";
+import { useCompanyMutation } from "./useCompanyMutation";
 
 export const useCompany = () => {
-    const companyData = useCompanyGeneral();
-    const companyMutation = useCompanyMutation();
+  const companyData = useCompanyGeneral();
+  const companyMutation = useCompanyMutation();
 
-    const guardarInformacionGeneral = async (formData: any, logoFile?: File, marcaAguaFile?: File) => {
-        const companyId = companyData.company?.id;
+  const guardarInformacionGeneral = async (
+    formData: any,
+    logoFile?: File,
+    marcaAguaFile?: File
+  ) => {
+    const companyId = companyData.company?.id;
 
-        const result = await companyMutation.guardarInformacionGeneral(
-            formData,
-            logoFile,
-            marcaAguaFile,
-            companyId
-        );
+    try {
+      const result = await companyMutation.guardarInformacionGeneral(
+        formData,
+        logoFile,
+        marcaAguaFile,
+        companyId
+      );
 
-        if (result) {
-            console.log("✅ Guardado exitoso, recargando datos...");
-            setTimeout(() => {
-                companyData.refetch();
-                console.log("🔄 Datos recargados");
-            }, 2000);
-        }
+      return {
+        success: true,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error,
+      };
+    }
+  };
 
-        return result;
-    };
+  return {
+    company: companyData.company,
+    loading: companyData.loading,
+    error: companyData.error,
+    refetch: companyData.refetch,
 
-    return {
-        company: companyData.company,
-        loading: companyData.loading,
-        error: companyData.error,
-        refetch: companyData.refetch,
-
-        guardarInformacionGeneral,
-        mutationLoading: companyMutation.isLoading,
-        mutationError: companyMutation.error,
-        mutationSuccess: companyMutation.isSuccess,
-        resetMutation: companyMutation.reset
-    };
+    guardarInformacionGeneral,
+    mutationLoading: companyMutation.isLoading,
+    mutationError: companyMutation.error,
+    mutationSuccess: companyMutation.isSuccess,
+    resetMutation: companyMutation.reset,
+  };
 };

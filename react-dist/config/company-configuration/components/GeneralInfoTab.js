@@ -1,10 +1,10 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-import React, { useRef, useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
-import { Message } from 'primereact/message';
+import React, { useRef, useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import { Button } from "primereact/button";
+import { Message } from "primereact/message";
 import { useCompany } from "../hooks/useCompanyGenralUpdate.js";
 import { SwalManager } from "../../../../services/alertManagerImported.js";
 const GeneralInfoTab = ({
@@ -37,21 +37,21 @@ const GeneralInfoTab = ({
     watch
   } = useForm({
     defaultValues: company || {
-      legal_name: '',
-      document_type: '',
-      document_number: '',
-      phone: '',
-      email: '',
-      address: '',
-      country: '',
-      city: '',
-      logo: '',
-      watermark: ''
+      legal_name: "",
+      document_type: "",
+      document_number: "",
+      phone: "",
+      email: "",
+      address: "",
+      country: "",
+      city: "",
+      logo: "",
+      watermark: ""
     },
-    mode: 'onChange'
+    mode: "onChange"
   });
-  const logoValue = watch('logo');
-  const watermarkValue = watch('watermark');
+  const logoValue = watch("logo");
+  const watermarkValue = watch("watermark");
   const formValues = watch();
 
   // Validar campos requeridos para habilitar siguiente tab
@@ -63,38 +63,38 @@ const GeneralInfoTab = ({
     if (company) {
       reset(company);
       if (company.logo) {
-        loadImagePreview(company.logo, 'logo');
+        loadImagePreview(company.logo, "logo");
       }
       if (company.watermark) {
-        loadImagePreview(company.watermark, 'watermark');
+        loadImagePreview(company.watermark, "watermark");
       }
     }
   }, [company, reset]);
   useEffect(() => {
     if (logoValue && !newLogoFile) {
-      loadImagePreview(logoValue, 'logo');
+      loadImagePreview(logoValue, "logo");
     }
   }, [logoValue, newLogoFile]);
   useEffect(() => {
     if (watermarkValue && !newWatermarkFile) {
-      loadImagePreview(watermarkValue, 'watermark');
+      loadImagePreview(watermarkValue, "watermark");
     }
   }, [watermarkValue, newWatermarkFile]);
   const loadImagePreview = async (imagePath, type) => {
     try {
       // @ts-ignore - Usar la función global getUrlImage si existe
-      if (typeof getUrlImage === 'function') {
+      if (typeof getUrlImage === "function") {
         // @ts-ignore
         const imageUrl = await getUrlImage(imagePath.replaceAll("\\", "/"), true);
-        if (type === 'logo') {
+        if (type === "logo") {
           setLogoPreview(imageUrl);
         } else {
           setWatermarkPreview(imageUrl);
         }
       } else {
-        const baseUrl = 'https://dev.monaros.co';
+        const baseUrl = "https://dev.monaros.co";
         const imageUrl = `${baseUrl}/storage/${imagePath.replaceAll("\\", "/")}`;
-        if (type === 'logo') {
+        if (type === "logo") {
           setLogoPreview(imageUrl);
         } else {
           setWatermarkPreview(imageUrl);
@@ -116,7 +116,7 @@ const GeneralInfoTab = ({
     } else {
       setNewLogoFile(null);
       if (logoValue) {
-        loadImagePreview(logoValue, 'logo');
+        loadImagePreview(logoValue, "logo");
       } else {
         setLogoPreview(null);
       }
@@ -134,7 +134,7 @@ const GeneralInfoTab = ({
     } else {
       setNewWatermarkFile(null);
       if (watermarkValue) {
-        loadImagePreview(watermarkValue, 'watermark');
+        loadImagePreview(watermarkValue, "watermark");
       } else {
         setWatermarkPreview(null);
       }
@@ -144,62 +144,55 @@ const GeneralInfoTab = ({
     setNewLogoFile(null);
     setLogoPreview(null);
     if (logoFileRef.current) {
-      logoFileRef.current.value = '';
+      logoFileRef.current.value = "";
     }
   };
   const removeWatermark = () => {
     setNewWatermarkFile(null);
     setWatermarkPreview(null);
     if (watermarkFileRef.current) {
-      watermarkFileRef.current.value = '';
+      watermarkFileRef.current.value = "";
     }
   };
   const documentTypes = [{
-    label: 'Rnc',
-    value: 'RNC'
+    label: "Rnc",
+    value: "RNC"
   }, {
-    label: 'Cedula De Entidad',
-    value: 'CC'
+    label: "Cedula De Entidad",
+    value: "CC"
   }, {
-    label: 'Pasaporte',
-    value: 'PASSPORT'
+    label: "Pasaporte",
+    value: "PASSPORT"
   }];
   const countries = [{
-    label: 'República Dominicana',
-    value: 'RD'
+    label: "República Dominicana",
+    value: "RD"
   }, {
-    label: 'Colombia',
-    value: 'CO'
+    label: "Colombia",
+    value: "CO"
   }, {
-    label: 'México',
-    value: 'MX'
+    label: "México",
+    value: "MX"
   }, {
-    label: 'Argentina',
-    value: 'AR'
+    label: "Argentina",
+    value: "AR"
   }, {
-    label: 'Chile',
-    value: 'CL'
+    label: "Chile",
+    value: "CL"
   }, {
-    label: 'Perú',
-    value: 'PE'
+    label: "Perú",
+    value: "PE"
   }];
   const onSubmit = async data => {
     try {
-      resetMutation();
-      await guardarInformacionGeneral(data, newLogoFile || undefined, newWatermarkFile || undefined);
-      SwalManager.success('Informacion General se actualizo correctamente');
-      if (mutationSuccess) {
-        window["toast"].show({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: "Se Actualizo informacion General",
-          life: 5000
-        });
+      const response = await guardarInformacionGeneral(data, newLogoFile || undefined, newWatermarkFile || undefined);
+      if (response.success) {
         onUpdate(data);
         setNewLogoFile(null);
         setNewWatermarkFile(null);
-        if (logoFileRef.current) logoFileRef.current.value = '';
-        if (watermarkFileRef.current) watermarkFileRef.current.value = '';
+        if (logoFileRef.current) logoFileRef.current.value = "";
+        if (watermarkFileRef.current) watermarkFileRef.current.value = "";
+        SwalManager.success("Informacion General se actualizo correctamente");
       }
     } catch (error) {
       window["toast"].show({
@@ -247,13 +240,13 @@ const GeneralInfoTab = ({
     name: "legal_name",
     control: control,
     rules: {
-      required: 'El nombre del Consultorio no puede estar vacío'
+      required: "El nombre del Consultorio no puede estar vacío"
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "legal_name",
-      className: `form-control ${errors.legal_name ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.legal_name ? "is-invalid" : ""}`,
       placeholder: "Nombre Consultorio"
     }))
   }), errors.legal_name && /*#__PURE__*/React.createElement("div", {
@@ -269,13 +262,13 @@ const GeneralInfoTab = ({
     name: "address",
     control: control,
     rules: {
-      required: 'Ingrese una dirección válida'
+      required: "Ingrese una dirección válida"
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "address",
-      className: `form-control ${errors.address ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.address ? "is-invalid" : ""}`,
       placeholder: "Ej: Calle 123 #45-67, Bogot\xE1"
     }))
   }), errors.address && /*#__PURE__*/React.createElement("div", {
@@ -291,7 +284,7 @@ const GeneralInfoTab = ({
     name: "document_type",
     control: control,
     rules: {
-      required: 'Seleccione un Tipo de Documento'
+      required: "Seleccione un Tipo de Documento"
     },
     render: ({
       field
@@ -299,7 +292,7 @@ const GeneralInfoTab = ({
       id: "document_type",
       options: documentTypes,
       placeholder: "Seleccione un tipo de documento",
-      className: `w-100 ${errors.document_type ? 'is-invalid' : ''}`
+      className: `w-100 ${errors.document_type ? "is-invalid" : ""}`
     }))
   }), errors.document_type && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback d-block"
@@ -314,13 +307,13 @@ const GeneralInfoTab = ({
     name: "document_number",
     control: control,
     rules: {
-      required: 'El Documento no puede estar vacío'
+      required: "El Documento no puede estar vacío"
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "document_number",
-      className: `form-control ${errors.document_number ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.document_number ? "is-invalid" : ""}`,
       placeholder: "123456789"
     }))
   }), errors.document_number && /*#__PURE__*/React.createElement("div", {
@@ -342,17 +335,17 @@ const GeneralInfoTab = ({
     name: "phone",
     control: control,
     rules: {
-      required: 'Ingrese un número de WhatsApp válido',
+      required: "Ingrese un número de WhatsApp válido",
       pattern: {
         value: /^\+?[\d\s\-\(\)]+$/,
-        message: 'Formato de teléfono inválido'
+        message: "Formato de teléfono inválido"
       }
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "phone",
-      className: `form-control ${errors.phone ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.phone ? "is-invalid" : ""}`,
       placeholder: "+57 300 123 4567"
     }))
   }), errors.phone && /*#__PURE__*/React.createElement("div", {
@@ -368,17 +361,17 @@ const GeneralInfoTab = ({
     name: "email",
     control: control,
     rules: {
-      required: 'Ingrese un correo electrónico válido',
+      required: "Ingrese un correo electrónico válido",
       pattern: {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-        message: 'Formato de email inválido'
+        message: "Formato de email inválido"
       }
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "email",
-      className: `form-control ${errors.email ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.email ? "is-invalid" : ""}`,
       placeholder: "ejemplo@correo.com"
     }))
   }), errors.email && /*#__PURE__*/React.createElement("div", {
@@ -394,7 +387,7 @@ const GeneralInfoTab = ({
     name: "country",
     control: control,
     rules: {
-      required: 'Seleccione un país'
+      required: "Seleccione un país"
     },
     render: ({
       field
@@ -402,7 +395,7 @@ const GeneralInfoTab = ({
       id: "country",
       options: countries,
       placeholder: "Seleccione un pa\xEDs",
-      className: `w-100 ${errors.country ? 'is-invalid' : ''}`
+      className: `w-100 ${errors.country ? "is-invalid" : ""}`
     }))
   }), errors.country && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback d-block"
@@ -417,13 +410,13 @@ const GeneralInfoTab = ({
     name: "city",
     control: control,
     rules: {
-      required: 'Ingrese una ciudad válida'
+      required: "Ingrese una ciudad válida"
     },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       id: "city",
-      className: `form-control ${errors.city ? 'is-invalid' : ''}`,
+      className: `form-control ${errors.city ? "is-invalid" : ""}`,
       placeholder: "Ej: Medell\xEDn"
     }))
   }), errors.city && /*#__PURE__*/React.createElement("div", {
@@ -442,9 +435,9 @@ const GeneralInfoTab = ({
     alt: "Logo preview",
     className: "img-thumbnail",
     style: {
-      width: '200px',
-      height: '200px',
-      objectFit: 'contain'
+      width: "200px",
+      height: "200px",
+      objectFit: "contain"
     }
   }), /*#__PURE__*/React.createElement(Button, {
     type: "button",
@@ -455,7 +448,7 @@ const GeneralInfoTab = ({
     className: "fa-solid fa-trash"
   }))), /*#__PURE__*/React.createElement("small", {
     className: "text-muted"
-  }, newLogoFile ? 'Nueva imagen seleccionada' : 'Imagen actual')), /*#__PURE__*/React.createElement("input", {
+  }, newLogoFile ? "Nueva imagen seleccionada" : "Imagen actual")), /*#__PURE__*/React.createElement("input", {
     ref: logoFileRef,
     type: "file",
     id: "logo",
@@ -478,9 +471,9 @@ const GeneralInfoTab = ({
     alt: "Watermark preview",
     className: "img-thumbnail",
     style: {
-      width: '200px',
-      height: '200px',
-      objectFit: 'contain'
+      width: "200px",
+      height: "200px",
+      objectFit: "contain"
     }
   }), /*#__PURE__*/React.createElement(Button, {
     type: "button",
@@ -491,7 +484,7 @@ const GeneralInfoTab = ({
     className: "fa-solid fa-trash"
   }), " ")), /*#__PURE__*/React.createElement("small", {
     className: "text-muted"
-  }, newWatermarkFile ? 'Nueva imagen seleccionada' : 'Imagen actual')), /*#__PURE__*/React.createElement("input", {
+  }, newWatermarkFile ? "Nueva imagen seleccionada" : "Imagen actual")), /*#__PURE__*/React.createElement("input", {
     ref: watermarkFileRef,
     type: "file",
     id: "watermark",
