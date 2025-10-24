@@ -1,26 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import { userRolesService } from "../../../services/api/index.js";
 import { ErrorHandler } from "../../../services/errorHandler.js";
-export const useRoles = () => {
+export const useUserRoles = () => {
   const [userRoles, setUserRoles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const fetchUserRoles = async () => {
+  const [error, setError] = useState(null);
+  const fetchUserRoles = useCallback(async () => {
     try {
-      const data = await userRolesService.active();
-      console.log('Roles:', data);
-      setUserRoles(data);
+      setLoading(true);
+      setError(null);
+      const userRolesData = await userRolesService.getAll();
+      setUserRoles(userRolesData.map(role => ({
+        id: role.id,
+        name: role.name,
+        group: role.group
+      })));
     } catch (err) {
+      const errorMessage = "Error al cargar los roles de usuario";
+      setError(errorMessage);
       ErrorHandler.generic(err);
+      console.error("Error fetching user roles:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+  const refreshUserRoles = useCallback(async () => {
+    await fetchUserRoles();
+  }, [fetchUserRoles]);
   useEffect(() => {
     fetchUserRoles();
-  }, []);
+  }, [fetchUserRoles]);
   return {
     userRoles,
+    loading,
+    error,
     fetchUserRoles,
-    loading
+    refreshUserRoles
   };
 };

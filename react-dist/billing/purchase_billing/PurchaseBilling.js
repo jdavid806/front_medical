@@ -27,6 +27,7 @@ import { useAccountingAccountsByCategory } from "../../accounting/hooks/useAccou
 import ExpirationLotForm from "../../inventory/lote/ExpirationLotForm.js";
 import ExpirationLotModal from "../../inventory/lote/ExpirationLotModal.js";
 import { RetentionsSection } from "./retention/RetentionsSection.js";
+import { CustomTaxes } from "../../components/billing/CustomTaxes.js";
 import FixedAssetsForm from "../../accounting/fixedAssets/form/FixedAssetsForm.js";
 import { useAssetCategories } from "../../accounting/fixedAssets/hooks/useAssetCategories.js";
 import { useTaxes } from "../../invoices/hooks/useTaxes.js";
@@ -51,6 +52,12 @@ export const PurchaseBilling = ({
     }
   } = useForm();
   const toast = useRef(null);
+  const [taxes, setTaxes] = useState([]);
+  const {
+    taxes: availableTaxes,
+    loading: loadingTaxes,
+    fetchTaxes
+  } = useTaxes();
   const [productsArray, setProductsArray] = useState([{
     id: generateId(),
     typeProduct: null,
@@ -140,6 +147,7 @@ export const PurchaseBilling = ({
   const [supplierId, setSupplierId] = useState(null);
   const [disabledInputs, setDisabledInputs] = useState(false);
   const [showBrandFormModal, setShowBrandFormModal] = useState(false);
+  const [editingLot, setEditingLot] = useState(null);
   useEffect(() => {
     if (purchaseOrder || supplierId) {
       fetchAdvancePayments(purchaseOrder?.third_id || supplierId, "provider");
@@ -256,11 +264,11 @@ export const PurchaseBilling = ({
     });
   };
   const calculateLineTotal = product => {
-    const quantity = Number(product.quantity) || 0;
+    const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
     const taxRate = typeof product.tax === "object" && product.tax !== null ? Number(product.tax.percentage) : Number(product.tax) || 0;
-    const subtotal = quantity * price;
+    const subtotal = actualQuantity * price;
     let discountAmount = 0;
     if (product.discountType === "percentage") {
       discountAmount = subtotal * (discount / 100);
@@ -276,21 +284,23 @@ export const PurchaseBilling = ({
   const calculateTotal = () => {
     const subtotal = calculateSubtotal() || 0;
     const totalDiscount = calculateTotalDiscount() || 0;
-    const totalTax = calculateTotalTax() || 0;
+    const allTaxes = calculateAllTaxes() || 0; // ← Cambia aquí
     const totalRetentions = retentions.reduce((sum, r) => sum + (r.value || 0), 0);
-    const total = subtotal - totalDiscount + totalTax - totalRetentions;
+    const total = subtotal - totalDiscount + allTaxes - totalRetentions;
     return parseFloat(total.toFixed(2));
   };
   const calculateSubtotal = () => {
     return productsArray.reduce((total, product) => {
-      const quantity = Number(product.quantity) || 0;
+      const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
-      return total + quantity * price;
+      return total + actualQuantity * price;
     }, 0);
   };
   const calculateTotalDiscount = () => {
     return productsArray.reduce((total, product) => {
-      const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
+      const price = Number(product.price) || 0;
+      const subtotal = actualQuantity * price;
       const discount = Number(product.discount) || 0;
       if (product.discountType === "percentage") {
         return total + subtotal * (discount / 100);
@@ -301,7 +311,9 @@ export const PurchaseBilling = ({
   };
   const calculateTotalTax = () => {
     return productsArray.reduce((total, product) => {
-      const subtotal = (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
+      const price = Number(product.price) || 0;
+      const subtotal = actualQuantity * price;
       let discountAmount = 0;
       if (product.discountType === "percentage") {
         discountAmount = subtotal * ((Number(product.discount) || 0) / 100);
@@ -312,6 +324,11 @@ export const PurchaseBilling = ({
       const taxValue = subtotalAfterDiscount * (product.tax / 100);
       return total + taxValue;
     }, 0);
+  };
+  const calculateAllTaxes = () => {
+    const productTaxes = calculateTotalTax();
+    const additionalTaxes = taxes.reduce((sum, t) => sum + (t.value || 0), 0);
+    return productTaxes + additionalTaxes;
   };
   const calculateTotalPayments = () => {
     return paymentMethodsArray.reduce((total, payment) => {
@@ -332,6 +349,7 @@ export const PurchaseBilling = ({
       quantity: 0,
       price: 0,
       discount: 0,
+      discountType: "percentage",
       tax: 0,
       lotInfo: [],
       showLotForm: false,
@@ -366,6 +384,77 @@ export const PurchaseBilling = ({
         severity: "warn",
         summary: "Advertencia",
         detail: "Debe tener al menos un método de pago",
+        life: 3000
+      });
+    }
+  };
+  const handleRemoveLot = (productId, lotIndex) => {
+    setProductsArray(prev => prev.map(product => {
+      if (product.id === productId) {
+        const updatedLotInfo = [...product.lotInfo];
+        updatedLotInfo.splice(lotIndex, 1);
+        return {
+          ...product,
+          lotInfo: updatedLotInfo
+        };
+      }
+      return product;
+    }));
+  };
+
+  // Función para editar un lote
+  const handleEditLot = (productId, lotIndex) => {
+    const product = productsArray.find(p => p.id === productId);
+    if (product && product.lotInfo[lotIndex]) {
+      setEditingLot({
+        productId,
+        lotIndex,
+        lotData: product.lotInfo[lotIndex]
+      });
+
+      // Pre-cargar el formulario con los datos del lote a editar
+      setProductsArray(prev => prev.map(p => {
+        if (p.id === productId) {
+          return {
+            ...p,
+            lotFormData: product.lotInfo[lotIndex]
+          };
+        }
+        return p;
+      }));
+    }
+  };
+
+  // Función para guardar la edición de un lote
+  const handleSaveEditedLot = (productId, data) => {
+    if (editingLot) {
+      setProductsArray(prev => prev.map(product => {
+        if (product.id === productId) {
+          const updatedLotInfo = [...product.lotInfo];
+          updatedLotInfo[editingLot.lotIndex] = {
+            lotNumber: data.lotNumber,
+            expirationDate: data.expirationDate,
+            deposit: data.deposit,
+            quantity: data.quantity || 0
+          };
+          return {
+            ...product,
+            lotInfo: updatedLotInfo,
+            lotFormData: {
+              lotNumber: "",
+              expirationDate: null,
+              deposit: "",
+              quantity: 0
+            }
+          };
+        }
+        return product;
+      }));
+      setEditingLot(null);
+      toast.current?.show({
+        severity: "success",
+        summary: "Lote actualizado",
+        detail: "La información del lote se ha actualizado correctamente",
         life: 3000
       });
     }
@@ -525,10 +614,33 @@ export const PurchaseBilling = ({
       }
     }, [product.fixedAssetInfo]);
     const handleLotSubmit = (productId, data) => {
-      setProductsArray(prev => prev.map(p => p.id === productId ? {
-        ...p,
-        lotInfo: [...p.lotInfo, data]
-      } : p));
+      if (editingLot && editingLot.productId === productId) {
+        // Si está en modo edición, guardar los cambios
+        handleSaveEditedLot(productId, data);
+      } else {
+        // Si no está en modo edición, agregar nuevo lote
+        setProductsArray(prev => prev.map(p => {
+          if (p.id === productId) {
+            const newLotInfo = {
+              lotNumber: data.lotNumber,
+              expirationDate: data.expirationDate,
+              deposit: data.deposit,
+              quantity: data.quantity || 0
+            };
+            return {
+              ...p,
+              lotInfo: [...p.lotInfo, newLotInfo],
+              lotFormData: {
+                lotNumber: "",
+                expirationDate: null,
+                deposit: "",
+                quantity: 0
+              }
+            };
+          }
+          return p;
+        }));
+      }
     };
     const shouldShowFixedAssetForm = product.typeProduct === "assets" && product.isExpanded;
     const shouldShowLotForm = (product.typeProduct === "medications" || product.typeProduct === "vaccines") && product.isExpanded;
@@ -594,9 +706,25 @@ export const PurchaseBilling = ({
       className: "table table-bordered table-hover"
     }, /*#__PURE__*/React.createElement("thead", {
       className: "table-light"
-    }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Lote"), /*#__PURE__*/React.createElement("th", null, "Fecha Caducidad"), /*#__PURE__*/React.createElement("th", null, "Dep\xF3sito"), /*#__PURE__*/React.createElement("th", null, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, product.lotInfo.map((lot, index) => /*#__PURE__*/React.createElement("tr", {
+    }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Lote"), /*#__PURE__*/React.createElement("th", null, "Fecha Caducidad"), /*#__PURE__*/React.createElement("th", null, "Dep\xF3sito"), /*#__PURE__*/React.createElement("th", null, "Cantidad"), " ", /*#__PURE__*/React.createElement("th", null, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, product.lotInfo.map((lot, index) => /*#__PURE__*/React.createElement("tr", {
       key: `lot-${index}`
-    }, /*#__PURE__*/React.createElement("td", null, lot.lotNumber), /*#__PURE__*/React.createElement("td", null, lot.expirationDate?.toLocaleDateString() || "N/A"), /*#__PURE__*/React.createElement("td", null, formattedDeposits.find(d => d.id === lot.deposit)?.name))))))), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("td", null, lot.lotNumber), /*#__PURE__*/React.createElement("td", null, lot.expirationDate?.toLocaleDateString() || "N/A"), /*#__PURE__*/React.createElement("td", null, formattedDeposits.find(d => d.id === lot.deposit)?.name), /*#__PURE__*/React.createElement("td", null, lot.quantity), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-1"
+    }, /*#__PURE__*/React.createElement(Button, {
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-pencil"
+      }),
+      className: "p-button-info p-button-text",
+      onClick: () => handleEditLot(product.id, index),
+      tooltip: "Editar lote"
+    }), /*#__PURE__*/React.createElement(Button, {
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-trash"
+      }),
+      className: "p-button-danger p-button-text",
+      onClick: () => handleRemoveLot(product.id, index),
+      tooltip: "Eliminar lote"
+    }))))))))), /*#__PURE__*/React.createElement("div", {
       style: {
         overflowAnchor: "none",
         contain: "paint"
@@ -608,7 +736,11 @@ export const PurchaseBilling = ({
       deposits: formattedDeposits,
       productName: product.description,
       onSubmit: data => handleLotSubmit(product.id, data),
-      onCancel: () => toggleProductAccordion(product.id)
+      onCancel: () => {
+        toggleProductAccordion(product.id);
+        setEditingLot(null);
+      },
+      isEditing: !!editingLot && editingLot.productId === product.id
     }))), /*#__PURE__*/React.createElement("div", {
       className: "card-boyd mt-4"
     }, shouldShowFixedAssetForm && /*#__PURE__*/React.createElement("div", {
@@ -667,6 +799,9 @@ export const PurchaseBilling = ({
     setProductForExpiration(null);
   };
   const buildInvoiceData = async formData => {
+    console.log("Building invoice data with formData:", formData);
+    console.log("Products Array:", productsArray);
+    console.log("taxes", taxes);
     const purchaseIdValue = purchaseOrderId ? {
       purchase_order_id: purchaseOrderId
     } : {};
@@ -684,13 +819,17 @@ export const PurchaseBilling = ({
       invoice_detail: productsArray.map(product => {
         let infoLot = null;
         if (product.lotInfo && product.lotInfo.length) {
-          infoLot = {
-            lot_number: product.lotInfo[0].lotNumber || "",
-            expiration_date: product.lotInfo?.[0].expirationDate ? product.lotInfo[0].expirationDate.toISOString().split("T")[0] : "",
-            deposit_id: product.lotInfo[0].deposit || 0
-          };
+          infoLot = product.lotInfo.map(lot => {
+            return {
+              lot_number: lot.lotNumber || "",
+              expiration_date: lot.expirationDate ? lot.expirationDate.toISOString().split("T")[0] : "",
+              deposit_id: lot.deposit || 0,
+              quantity: lot.quantity
+            };
+          });
         }
-        const subtotal = Number(product.quantity) * Number(product.price);
+        const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
+        const subtotal = Number(actualQuantity) * Number(product.price);
         let discountAmount = 0;
         if (product.discountType === "percentage") {
           // Descuento porcentual
@@ -708,25 +847,20 @@ export const PurchaseBilling = ({
           asset_category_id: Number(product.fixedAssetInfo.asset_category_id) || null,
           accounting_account_id: product.accountingAccount.id
         } : {};
-        const formLot = infoLot ? {
-          expiration_date: infoLot?.expiration_date || null,
-          deposit_id: infoLot?.deposit_id || null,
-          lot_number: infoLot?.lot_number || ""
-        } : {
-          deposit_id: product.depositId || null
-        };
+        const formLot = infoLot?.length ? infoLot : [];
         return {
           product_id: product.typeProduct === "assets" || product.typeProduct === "spent" ? null : Number(product.product),
-          product_type: product.typeProduct,
+          type_product: product.typeProduct,
           quantity: product.quantity,
+          deposit_id: product.depositId,
           unit_price: product.price,
           discount: discountAmount,
           discount_type: product.discountType,
           tax_product: product.tax,
           tax_charge_id: product.taxChargeId || null,
           accounting_account_id: product.accountingAccount.id,
-          ...formLot,
-          ...formAssets
+          formLot: formLot,
+          formAssets: formAssets
         };
       }),
       retentions: retentions.map(retention => retention.percentage.id).filter(Boolean),
@@ -735,7 +869,8 @@ export const PurchaseBilling = ({
         payment_date: formData.elaborationDate.toISOString().split("T")[0],
         amount: payment.value,
         notes: payment.authorizationNumber || "Pago"
-      }))
+      })),
+      taxes: taxes
     };
   };
   function hasInvalidLots() {
@@ -796,6 +931,7 @@ export const PurchaseBilling = ({
       return;
     }
     const invoiceData = await buildInvoiceData(formData);
+    console.log("Datos de la factura a guardar:", invoiceData);
     invoiceService.storePurcharseInvoice(invoiceData).then(response => {
       if (purchaseOrderId) {
         onClose();
@@ -806,9 +942,9 @@ export const PurchaseBilling = ({
         detail: "Factura de compra guardada correctamente",
         life: 3000
       });
-      setTimeout(() => {
-        window.location.href = `FE_FCE`;
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.href = `FE_FCE`;
+      // }, 2000);
     }).catch(error => {
       console.error("Error al guardar la factura de compra:", error);
       toast.current?.show({
@@ -1241,6 +1377,15 @@ export const PurchaseBilling = ({
     productsArray: productsArray
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 mb-md-4 shadow-sm"
+  }, /*#__PURE__*/React.createElement(CustomTaxes, {
+    subtotal: calculateSubtotal(),
+    totalDiscount: calculateTotalDiscount(),
+    taxes: taxes,
+    onTaxesChange: setTaxes,
+    productsArray: productsArray,
+    taxOptions: availableTaxes
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 mb-md-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header bg-light p-3"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1387,8 +1532,16 @@ export const PurchaseBilling = ({
     value: calculateTotalDiscount() || 0,
     highlight: true
   }, {
-    label: "Impuestos",
+    label: "Impuestos productos",
     value: calculateTotalTax() || 0,
+    highlight: true
+  }, {
+    label: "Impuestos adicionales",
+    value: taxes.reduce((sum, t) => sum + t.value, 0),
+    highlight: false
+  }, {
+    label: "Impuestos totales",
+    value: calculateAllTaxes() || 0,
     highlight: true
   }, {
     label: "Retenciones",
@@ -1798,12 +1951,15 @@ const QuantityColumnBody = ({
   onChange,
   disabled
 }) => {
+  const isLotProduct = ["medications", "vaccines"].includes(rowData.typeProduct);
+  const quantityValue = isLotProduct ? rowData.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0) : rowData.quantity;
   return /*#__PURE__*/React.createElement(InputNumber, {
-    value: rowData.quantity,
+    value: quantityValue,
     placeholder: "Cantidad",
     className: "w-100",
     min: 0,
-    onValueChange: e => onChange(e.value),
+    readOnly: isLotProduct,
+    onValueChange: isLotProduct ? undefined : e => onChange(e.value),
     disabled: disabled
   });
 };

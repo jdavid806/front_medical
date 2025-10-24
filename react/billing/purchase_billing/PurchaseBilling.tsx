@@ -51,6 +51,7 @@ import {
   RetentionItem,
   RetentionsSection,
 } from "./retention/RetentionsSection";
+import { CustomTaxes, TaxItem } from "../../components/billing/CustomTaxes";
 import { Deposit, PurchaseBillingProps } from "./types/MappedPurchase";
 import FixedAssetsModal from "../../accounting/fixedAssets/modal/FixedAssetsModal";
 import { FixedAssetsFormInputs } from "../../accounting/fixedAssets/interfaces/FixedAssetsFormTypes";
@@ -86,6 +87,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     formState: { errors },
   } = useForm();
   const toast = useRef<Toast>(null);
+
+  const [taxes, setTaxes] = useState<TaxItem[]>([]);
+  const {
+    taxes: availableTaxes,
+    loading: loadingTaxes,
+    fetchTaxes,
+  } = useTaxes();
 
   const [productsArray, setProductsArray] = useState<any[]>([
     {
@@ -184,6 +192,12 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const [supplierId, setSupplierId] = useState<number | null>(null);
   const [disabledInputs, setDisabledInputs] = useState(false);
   const [showBrandFormModal, setShowBrandFormModal] = useState(false);
+
+  const [editingLot, setEditingLot] = useState<{
+    productId: string;
+    lotIndex: number;
+    lotData: any;
+  } | null>(null);
 
   useEffect(() => {
     if (purchaseOrder || supplierId) {
@@ -339,7 +353,12 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     });
   };
   const calculateLineTotal = (product: InvoiceProduct): number => {
-    const quantity = Number(product.quantity) || 0;
+    const actualQuantity = ["medications", "vaccines"].includes(
+      product.typeProduct
+    )
+      ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+      : Number(product.quantity) || 0;
+
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
 
@@ -348,7 +367,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         ? Number(product.tax.percentage)
         : Number(product.tax) || 0;
 
-    const subtotal = quantity * price;
+    const subtotal = actualQuantity * price;
 
     let discountAmount = 0;
     if (product.discountType === "percentage") {
@@ -369,28 +388,38 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const calculateTotal = (): number => {
     const subtotal = calculateSubtotal() || 0;
     const totalDiscount = calculateTotalDiscount() || 0;
-    const totalTax = calculateTotalTax() || 0;
+    const allTaxes = calculateAllTaxes() || 0; // ← Cambia aquí
     const totalRetentions = retentions.reduce(
       (sum, r) => sum + (r.value || 0),
       0
     );
 
-    const total = subtotal - totalDiscount + totalTax - totalRetentions;
+    const total = subtotal - totalDiscount + allTaxes - totalRetentions;
     return parseFloat(total.toFixed(2));
   };
 
   const calculateSubtotal = (): number => {
     return productsArray.reduce((total, product) => {
-      const quantity = Number(product.quantity) || 0;
+      const actualQuantity = ["medications", "vaccines"].includes(
+        product.typeProduct
+      )
+        ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+        : Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
-      return total + quantity * price;
+      return total + actualQuantity * price;
     }, 0);
   };
 
   const calculateTotalDiscount = (): number => {
     return productsArray.reduce((total, product) => {
-      const subtotal =
-        (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      const actualQuantity = ["medications", "vaccines"].includes(
+        product.typeProduct
+      )
+        ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+        : Number(product.quantity) || 0;
+      const price = Number(product.price) || 0;
+
+      const subtotal = actualQuantity * price;
       const discount = Number(product.discount) || 0;
 
       if (product.discountType === "percentage") {
@@ -403,8 +432,14 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
   const calculateTotalTax = (): number => {
     return productsArray.reduce((total, product) => {
-      const subtotal =
-        (Number(product.quantity) || 0) * (Number(product.price) || 0);
+      const actualQuantity = ["medications", "vaccines"].includes(
+        product.typeProduct
+      )
+        ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+        : Number(product.quantity) || 0;
+      const price = Number(product.price) || 0;
+
+      const subtotal = actualQuantity * price;
       let discountAmount = 0;
 
       if (product.discountType === "percentage") {
@@ -418,6 +453,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
       return total + taxValue;
     }, 0);
+  };
+
+  const calculateAllTaxes = (): number => {
+    const productTaxes = calculateTotalTax();
+    const additionalTaxes = taxes.reduce((sum, t) => sum + (t.value || 0), 0);
+
+    return productTaxes + additionalTaxes;
   };
 
   const calculateTotalPayments = (): number => {
@@ -443,6 +485,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         quantity: 0,
         price: 0,
         discount: 0,
+        discountType: "percentage",
         tax: 0,
         lotInfo: [],
         showLotForm: false,
@@ -485,6 +528,91 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         severity: "warn",
         summary: "Advertencia",
         detail: "Debe tener al menos un método de pago",
+        life: 3000,
+      });
+    }
+  };
+
+  const handleRemoveLot = (productId: string, lotIndex: number) => {
+    setProductsArray((prev) =>
+      prev.map((product) => {
+        if (product.id === productId) {
+          const updatedLotInfo = [...product.lotInfo];
+          updatedLotInfo.splice(lotIndex, 1);
+
+          return {
+            ...product,
+            lotInfo: updatedLotInfo,
+          };
+        }
+        return product;
+      })
+    );
+  };
+
+  // Función para editar un lote
+  const handleEditLot = (productId: string, lotIndex: number) => {
+    const product = productsArray.find((p) => p.id === productId);
+    if (product && product.lotInfo[lotIndex]) {
+      setEditingLot({
+        productId,
+        lotIndex,
+        lotData: product.lotInfo[lotIndex],
+      });
+
+      // Pre-cargar el formulario con los datos del lote a editar
+      setProductsArray((prev) =>
+        prev.map((p) => {
+          if (p.id === productId) {
+            return {
+              ...p,
+              lotFormData: product.lotInfo[lotIndex],
+            };
+          }
+          return p;
+        })
+      );
+    }
+  };
+
+  // Función para guardar la edición de un lote
+  const handleSaveEditedLot = (
+    productId: string,
+    data: ExpirationLotFormInputs
+  ) => {
+    if (editingLot) {
+      setProductsArray((prev) =>
+        prev.map((product) => {
+          if (product.id === productId) {
+            const updatedLotInfo = [...product.lotInfo];
+            updatedLotInfo[editingLot.lotIndex] = {
+              lotNumber: data.lotNumber,
+              expirationDate: data.expirationDate,
+              deposit: data.deposit,
+              quantity: data.quantity || 0,
+            };
+
+            return {
+              ...product,
+              lotInfo: updatedLotInfo,
+              lotFormData: {
+                lotNumber: "",
+                expirationDate: null,
+                deposit: "",
+                quantity: 0,
+              },
+            };
+          }
+          return product;
+        })
+      );
+
+      setEditingLot(null);
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Lote actualizado",
+        detail: "La información del lote se ha actualizado correctamente",
         life: 3000,
       });
     }
@@ -702,16 +830,36 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         productId: string,
         data: ExpirationLotFormInputs
       ) => {
-        setProductsArray((prev) =>
-          prev.map((p) =>
-            p.id === productId
-              ? {
+        if (editingLot && editingLot.productId === productId) {
+          // Si está en modo edición, guardar los cambios
+          handleSaveEditedLot(productId, data);
+        } else {
+          // Si no está en modo edición, agregar nuevo lote
+          setProductsArray((prev) =>
+            prev.map((p) => {
+              if (p.id === productId) {
+                const newLotInfo = {
+                  lotNumber: data.lotNumber,
+                  expirationDate: data.expirationDate,
+                  deposit: data.deposit,
+                  quantity: data.quantity || 0,
+                };
+
+                return {
                   ...p,
-                  lotInfo: [...p.lotInfo, data],
-                }
-              : p
-          )
-        );
+                  lotInfo: [...p.lotInfo, newLotInfo],
+                  lotFormData: {
+                    lotNumber: "",
+                    expirationDate: null,
+                    deposit: "",
+                    quantity: 0,
+                  },
+                };
+              }
+              return p;
+            })
+          );
+        }
       };
 
       const shouldShowFixedAssetForm =
@@ -812,6 +960,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               <th>Lote</th>
                               <th>Fecha Caducidad</th>
                               <th>Depósito</th>
+                              <th>Cantidad</th> {/* Nueva columna */}
                               <th>Acciones</th>
                             </tr>
                           </thead>
@@ -829,6 +978,31 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                                       (d) => d.id === lot.deposit
                                     )?.name
                                   }
+                                </td>
+                                <td>{lot.quantity}</td>
+                                <td>
+                                  <div className="d-flex gap-1">
+                                    <Button
+                                      icon={
+                                        <i className="fa-solid fa-pencil"></i>
+                                      }
+                                      className="p-button-info p-button-text"
+                                      onClick={() =>
+                                        handleEditLot(product.id, index)
+                                      }
+                                      tooltip="Editar lote"
+                                    />
+                                    <Button
+                                      icon={
+                                        <i className="fa-solid fa-trash"></i>
+                                      }
+                                      className="p-button-danger p-button-text"
+                                      onClick={() =>
+                                        handleRemoveLot(product.id, index)
+                                      }
+                                      tooltip="Eliminar lote"
+                                    />
+                                  </div>
                                 </td>
                               </tr>
                             ))}
@@ -849,7 +1023,13 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                         deposits={formattedDeposits}
                         productName={product.description}
                         onSubmit={(data) => handleLotSubmit(product.id, data)}
-                        onCancel={() => toggleProductAccordion(product.id)}
+                        onCancel={() => {
+                          toggleProductAccordion(product.id);
+                          setEditingLot(null);
+                        }}
+                        isEditing={
+                          !!editingLot && editingLot.productId === product.id
+                        }
                       />
                     }
                   </div>
@@ -942,6 +1122,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   };
 
   const buildInvoiceData = async (formData: any) => {
+    console.log("Building invoice data with formData:", formData);
+    console.log("Products Array:", productsArray);
+    console.log("taxes", taxes);
     const purchaseIdValue = purchaseOrderId
       ? {
           purchase_order_id: purchaseOrderId,
@@ -964,16 +1147,25 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       invoice_detail: productsArray.map((product) => {
         let infoLot: any = null;
         if (product.lotInfo && product.lotInfo.length) {
-          infoLot = {
-            lot_number: product.lotInfo[0].lotNumber || "",
-            expiration_date: product.lotInfo?.[0].expirationDate
-              ? product.lotInfo[0].expirationDate.toISOString().split("T")[0]
-              : "",
-            deposit_id: product.lotInfo[0].deposit || 0,
-          };
+          infoLot = product.lotInfo.map((lot: any) => {
+            return {
+              lot_number: lot.lotNumber || "",
+              expiration_date: lot.expirationDate
+                ? lot.expirationDate.toISOString().split("T")[0]
+                : "",
+              deposit_id: lot.deposit || 0,
+              quantity: lot.quantity,
+            };
+          });
         }
 
-        const subtotal = Number(product.quantity) * Number(product.price);
+        const actualQuantity = ["medications", "vaccines"].includes(
+          product.typeProduct
+        )
+          ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+          : Number(product.quantity) || 0;
+
+        const subtotal = Number(actualQuantity) * Number(product.price);
 
         let discountAmount = 0;
         if (product.discountType === "percentage") {
@@ -997,31 +1189,24 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             }
           : {};
 
-        const formLot = infoLot
-          ? {
-              expiration_date: infoLot?.expiration_date || null,
-              deposit_id: infoLot?.deposit_id || null,
-              lot_number: infoLot?.lot_number || "",
-            }
-          : {
-              deposit_id: product.depositId || null,
-            };
+        const formLot = infoLot?.length ? infoLot : [];
 
         return {
           product_id:
             product.typeProduct === "assets" || product.typeProduct === "spent"
               ? null
               : Number(product.product),
-          product_type: product.typeProduct,
+          type_product: product.typeProduct,
           quantity: product.quantity,
+          deposit_id: product.depositId,
           unit_price: product.price,
           discount: discountAmount,
           discount_type: product.discountType,
           tax_product: product.tax,
           tax_charge_id: product.taxChargeId || null,
           accounting_account_id: product.accountingAccount.id,
-          ...formLot,
-          ...formAssets,
+          formLot: formLot,
+          formAssets: formAssets,
         };
       }),
 
@@ -1035,6 +1220,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         amount: payment.value,
         notes: payment.authorizationNumber || "Pago",
       })),
+      taxes: taxes,
     };
   };
 
@@ -1118,6 +1304,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
     const invoiceData = await buildInvoiceData(formData);
 
+    console.log("Datos de la factura a guardar:", invoiceData);
     invoiceService
       .storePurcharseInvoice(invoiceData)
       .then((response) => {
@@ -1130,9 +1317,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           detail: "Factura de compra guardada correctamente",
           life: 3000,
         });
-        setTimeout(() => {
-          window.location.href = `FE_FCE`;
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.href = `FE_FCE`;
+        // }, 2000);
       })
       .catch((error) => {
         console.error("Error al guardar la factura de compra:", error);
@@ -1648,6 +1835,17 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               />
             </div>
 
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <CustomTaxes
+                subtotal={calculateSubtotal()}
+                totalDiscount={calculateTotalDiscount()}
+                taxes={taxes}
+                onTaxesChange={setTaxes}
+                productsArray={productsArray}
+                taxOptions={availableTaxes}
+              />
+            </div>
+
             {/* Payment Methods Section - Mejorado para mobile */}
             <div className="card mb-3 mb-md-4 shadow-sm">
               <div className="card-header bg-light p-3">
@@ -1847,8 +2045,18 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                       highlight: true,
                     },
                     {
-                      label: "Impuestos",
+                      label: "Impuestos productos",
                       value: calculateTotalTax() || 0,
+                      highlight: true,
+                    },
+                    {
+                      label: "Impuestos adicionales",
+                      value: taxes.reduce((sum, t) => sum + t.value, 0),
+                      highlight: false,
+                    },
+                    {
+                      label: "Impuestos totales",
+                      value: calculateAllTaxes() || 0,
                       highlight: true,
                     },
                     {
@@ -2354,13 +2562,22 @@ const QuantityColumnBody = ({
   onChange: (value: number | null) => void;
   disabled?: boolean;
 }) => {
+  const isLotProduct = ["medications", "vaccines"].includes(
+    rowData.typeProduct
+  );
+
+  const quantityValue = isLotProduct
+    ? rowData.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
+    : rowData.quantity;
+
   return (
     <InputNumber
-      value={rowData.quantity}
+      value={quantityValue}
       placeholder="Cantidad"
       className="w-100"
       min={0}
-      onValueChange={(e: any) => onChange(e.value)}
+      readOnly={isLotProduct}
+      onValueChange={isLotProduct ? undefined : (e: any) => onChange(e.value)}
       disabled={disabled}
     />
   );
