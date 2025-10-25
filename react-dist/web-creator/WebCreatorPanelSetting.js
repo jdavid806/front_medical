@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { WebCreatorPanelStyleSettings } from "./WebCreatorPanelStyleSettings.js";
+import { Dropdown } from "primereact/dropdown";
 export const WebCreatorPanelSetting = ({
   panel,
   addSiblingAbove,
@@ -15,7 +16,28 @@ export const WebCreatorPanelSetting = ({
 }) => {
   return /*#__PURE__*/React.createElement("div", {
     className: "d-flex flex-column gap-3"
-  }, /*#__PURE__*/React.createElement("h4", null, "Configuraci\xF3n del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement(WebCreatorPanelStyleSettings, {
+  }, /*#__PURE__*/React.createElement("h4", null, "Configuraci\xF3n del Panel"), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column gap-2"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "wrapperType",
+    className: "form-label"
+  }, "Tipo de Wrapper"), /*#__PURE__*/React.createElement(Dropdown, {
+    options: [{
+      label: 'Panel',
+      value: 'default'
+    }, {
+      label: 'Tabs',
+      value: 'tabs'
+    }, {
+      label: 'Form',
+      value: 'form'
+    }],
+    value: panel.wrapperType,
+    onChange: e => onPanelStyleChange({
+      ...panel,
+      wrapperType: e.value
+    })
+  })), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement(WebCreatorPanelStyleSettings, {
     panel: panel,
     onStyleChange: onPanelStyleChange
   }), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("p", null, "A\xF1adir panel"), /*#__PURE__*/React.createElement("div", {

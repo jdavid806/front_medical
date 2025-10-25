@@ -1,0 +1,83 @@
+
+
+/* Clase responsive para botones - Empieza */
+.botones-responsive {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: -30px;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn.btn-sm.btn-outline-primary {
+    background: var(--primary-color) !important;
+}
+.btn-outline-success {
+    background-color: var(--phoenix-btn-color) !important;
+    border-color: var(--phoenix-btn-color) !important;
+    color: white !important;
+}
+
+.btn-outline-danger {
+    background-color: var(--phoenix-btn-color) !important;
+    border-color: var(--phoenix-btn-color) !important;
+    color: white !important;
+}
+
+/* Para tablets */
+@media (max-width: 1024px) {
+    .botones-responsive {
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: -20px;
+    }
+    
+    .botones-responsive .p-button {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Para móviles */
+@media (max-width: 768px) {
+    .botones-responsive {
+        justify-content: space-between;
+        gap: 0.25rem;
+        margin-top: -15px;
+        margin-bottom: 1rem;
+    }
+    
+    .botones-responsive .p-button {
+        flex: 1;
+        min-width: auto;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .botones-responsive .p-button .p-button-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .botones-responsive .svg-inline--fa {
+        margin-right: 0.25rem !important;
+    }
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+    .botones-responsive {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: -10px;
+    }
+    
+    .botones-responsive .p-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Clase responsive para botones - Termina */

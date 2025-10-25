@@ -5,6 +5,7 @@ import { WebCreatorLogo } from './components/WebCreatorLogo';
 import { WebCreatorMenuBar } from './components/WebCreatorMenuBar';
 import { WebCreatorButton } from './components/WebCreatorButton';
 import { WebCreatorInput } from './components/WebCreatorInput';
+import { WebCreatorPanelView } from './WebCreatorPanelView';
 
 export interface WebCreatorPanel {
     uuid: string;
@@ -685,6 +686,16 @@ export const WebCreatorSplitterEditor = React.forwardRef<WebCreatorSplitterEdito
     };
 
     return (<>
-        {renderPanel(rootPanel)}
+        {/* {renderPanel(rootPanel)} */}
+        <WebCreatorPanelView
+            panel={rootPanel}
+            updatePanelCols={updatePanelCols}
+            selectedPanel={selectedPanel}
+            selectedComponent={selectedComponent}
+            hoveredPanel={hoveredPanel}
+            handlePanelClick={handlePanelClick}
+            handleComponentClick={handleComponentClick}
+            setHoveredPanel={setHoveredPanel}
+        />
     </>);
 });

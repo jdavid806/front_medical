@@ -3,11 +3,13 @@ import { PrimeReactProvider } from 'primereact/api';
 import { UserRoleFormInputs } from './components/UserRoleForm';
 import { useUserRole } from './hooks/useUserRole';
 import { useUserRoleDelete } from './hooks/useUserRoleDelete';
-import { useRoles } from './hooks/useUserRoles';
+import { useUserRoles } from './hooks/useUserRoles';
 import { UserRoleTable } from './components/UserRoleTable';
 import { UserRoleFormModal } from './components/UserRoleFormModal';
-import { useUserRoleCreate } from './hooks/useUserRoleUpdate';
-import { useUserRoleUpdate } from './hooks/useUserRoleCreate';
+import { useUserRoleCreate } from './hooks/useUserRoleCreate';
+import { useUserRoleUpdate } from './hooks/useUserRoleUpdate';
+import { userRolesService } from '../../services/api';
+import { SwalManager } from '../../services/alertManagerImported';
 
 interface UserRoleAppProps {
     onConfigurationComplete?: (isComplete: boolean) => void;
@@ -20,14 +22,14 @@ export const UserRoleApp = ({
 }: UserRoleAppProps) => {
     const [showFormModal, setShowFormModal] = useState(false)
     const [initialData, setInitialData] = useState<UserRoleFormInputs | undefined>(undefined)
+    const [editingRoleId, setEditingRoleId] = useState<number | undefined>(undefined)
 
-    const { userRoles, fetchUserRoles } = useRoles();
+    const { userRoles, fetchUserRoles } = useUserRoles();
     const { createUserRole } = useUserRoleCreate();
     const { updateUserRole } = useUserRoleUpdate();
     const { deleteUserRole } = useUserRoleDelete();
     const { userRole, fetchUserRole, setUserRole } = useUserRole();
 
-    // Determinar si está completo
     const isComplete = userRoles && userRoles.length > 0;
     const showValidations = isConfigurationContext;
 
@@ -37,22 +39,44 @@ export const UserRoleApp = ({
 
     const onCreate = () => {
         setInitialData(undefined)
+        setEditingRoleId(undefined)
         setShowFormModal(true)
     }
 
     const handleSubmit = async (data: UserRoleFormInputs) => {
+        console.log("Datos del formulario:", data)
+
         try {
             if (userRole) {
-                // Actualizar rol existente (incluye menús y permisos)
+                console.log("Editando rol existente:", userRole.id);
+
                 await updateUserRole(userRole.id, data);
+
+                const payload = {
+                    "group": data.group,
+                    "is_active": true
+                }
+                await userRolesService.updateGroupRole(userRole.id, payload);
+
             } else {
-                // Crear nuevo rol (incluye menús y permisos)
-                await createUserRole(data);
+                console.log("Creando nuevo rol");
+
+                const createPayload = {
+                    "name": data.name,
+                    "group": data.group,
+                    "is_active": true
+                };
+
+                await userRolesService.createRoleUserMenu(createPayload);
+                SwalManager.success()
+                console.log("Rol básico creado exitosamente");
             }
 
             fetchUserRoles();
             setShowFormModal(false);
             setUserRole(null);
+            setEditingRoleId(undefined);
+
         } catch (error) {
             console.error('Error al guardar rol:', error);
         }
@@ -60,12 +84,16 @@ export const UserRoleApp = ({
 
     const handleTableEdit = (id: string) => {
         fetchUserRole(id);
+        setEditingRoleId(Number(id));
         setShowFormModal(true);
     };
 
     const handleTableDelete = async (id: string) => {
         const confirmed = await deleteUserRole(id)
-        if (confirmed) fetchUserRoles()
+        if (confirmed) {
+            SwalManager.success()
+            fetchUserRoles()
+        }
     };
 
     useEffect(() => {
@@ -96,7 +124,6 @@ export const UserRoleApp = ({
                     overlay: 100000
                 }
             }}>
-                {/* Mostrar validaciones solo en contexto de configuración */}
                 {showValidations && (
                     <div className="validation-section mb-3">
                         <div className={`alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`}>
@@ -109,24 +136,14 @@ export const UserRoleApp = ({
                     </div>
                 )}
 
-                <div className="d-flex justify-content-between align-items-center">
-                    <h4 className="mb-1">Roles de Usuario</h4>
-                    <div className="text-end mb-2">
-                        <button
-                            className="btn btn-primary"
-                            onClick={onCreate}
-                        >
-                            <i className="fas fa-plus"></i> Nuevo
-                        </button>
-                    </div>
-                </div>
-
                 <UserRoleTable
                     userRoles={userRoles}
                     onEditItem={handleTableEdit}
                     onDeleteItem={handleTableDelete}
-                >
-                </UserRoleTable>
+                    onReload={fetchUserRoles}
+                    onCreateRole={onCreate}
+                    loading={false}
+                />
 
                 <UserRoleFormModal
                     title={userRole ? 'Editar rol de Usuario' : 'Crear rol de Usuario'}
@@ -135,8 +152,10 @@ export const UserRoleApp = ({
                     onHide={() => {
                         setShowFormModal(false)
                         setUserRole(null)
+                        setEditingRoleId(undefined)
                     }}
                     initialData={initialData}
+                    roleId={editingRoleId}
                 ></UserRoleFormModal>
             </PrimeReactProvider>
         </>

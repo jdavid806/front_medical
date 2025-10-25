@@ -97,7 +97,7 @@ $_SESSION["ID"] = 1;
     <link href="assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">
     <link href="assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">
     <link href="assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
-    <link href="assets/css/bootstrap4pr/theme.css" type="text/css" rel="stylesheet" id="user-style-pr-default">
+    <link href="assets/css/styles/theme.css" type="text/css" rel="stylesheet" id="user-style-pr-default">
     <script>
         var phoenixIsRTL = window.config.config.phoenixIsRTL;
         if (phoenixIsRTL) {
@@ -381,7 +381,8 @@ $_SESSION["ID"] = 1;
       "primereact/tree": "https://esm.sh/primereact/tree?dev",
       "primereact/treenode": "https://esm.sh/primereact/treenode?dev",
       "primereact/colorpicker": "https://esm.sh/primereact/colorpicker?dev",
-      "primereact/galleria": "https://esm.sh/primereact/galleria?dev"
+      "primereact/galleria": "https://esm.sh/primereact/galleria?dev",
+      "primereact/skeleton": "https://esm.sh/primereact/skeleton?dev"
     }
   }
 </script>

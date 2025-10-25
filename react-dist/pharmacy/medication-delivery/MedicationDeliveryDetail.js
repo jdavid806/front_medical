@@ -513,6 +513,9 @@ export const MedicationDeliveryDetail = ({
     }
     return null;
   };
+  const delivered = () => {
+    return ["DELIVERED"].includes(finalPrescription?.status || '');
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement("form", {
@@ -559,7 +562,7 @@ export const MedicationDeliveryDetail = ({
     className: "mb-2"
   }, /*#__PURE__*/React.createElement("strong", null, "Tel\xE9fono: "), /*#__PURE__*/React.createElement("span", null, medicationPrescriptionManager?.prescriber?.phone || '--')), /*#__PURE__*/React.createElement("div", {
     className: "mb-2"
-  }, /*#__PURE__*/React.createElement("strong", null, "Direcci\xF3n: "), /*#__PURE__*/React.createElement("span", null, medicationPrescriptionManager?.prescriber?.address || '--')))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+  }, /*#__PURE__*/React.createElement("strong", null, "Direcci\xF3n: "), /*#__PURE__*/React.createElement("span", null, medicationPrescriptionManager?.prescriber?.address || '--')))))), !delivered() && /*#__PURE__*/React.createElement(CustomPRTable, {
     data: medications,
     columns: [{
       field: 'product_name_concentration',
@@ -657,7 +660,19 @@ export const MedicationDeliveryDetail = ({
     disablePaginator: true,
     disableSearch: true,
     onReload: handleReload
-  }), getFormErrorMessage("medications"), /*#__PURE__*/React.createElement("div", {
+  }), delivered() && /*#__PURE__*/React.createElement(CustomPRTable, {
+    data: medications,
+    columns: [{
+      field: 'product_name_concentration',
+      header: 'Medicamentos'
+    }, {
+      field: 'quantity',
+      header: 'Cantidad'
+    }],
+    disablePaginator: true,
+    disableSearch: true,
+    onReload: handleReload
+  }), getFormErrorMessage("medications"), !delivered() && /*#__PURE__*/React.createElement("div", {
     className: "card mt-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header"
@@ -711,6 +726,10 @@ export const MedicationDeliveryDetail = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column flex-grow-1"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-file-prescription text-primary me-2 fs-4"
@@ -732,7 +751,58 @@ export const MedicationDeliveryDetail = ({
     onClick: handlePrint
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-print me-1"
-  }), " Imprimir")))), /*#__PURE__*/React.createElement("div", {
+  }), " Imprimir")))))), /*#__PURE__*/React.createElement("div", {
+    className: "text-center py-6 px-4 bg-light rounded-3 shadow-sm",
+    style: {
+      maxWidth: '600px',
+      margin: '0 auto'
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-check-circle text-6xl text-success mb-4"
+  }), /*#__PURE__*/React.createElement("h2", {
+    className: "mb-3 fw-bold"
+  }, "\xA1Entrega Generada Exitosamente!"), /*#__PURE__*/React.createElement("p", {
+    className: "text-muted mb-4"
+  }, "La entrega ha sido creada y guardada en el sistema."), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-center gap-3 flex-wrap"
+  }, /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    label: "Enviar por WhatsApp",
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-whatsapp"
+    }),
+    className: "p-button-success p-button-lg",
+    onClick: handleSendWhatsApp,
+    loading: sendingWhatsApp,
+    disabled: sendingWhatsApp
+  }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    label: "Imprimir Factura",
+    className: "p-button-primary p-button-lg",
+    icon: "pi pi-print",
+    onClick: async () => {
+      const user = await userService.getLoggedUser();
+      await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, false);
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    label: "Descargar Factura",
+    icon: "pi pi-download",
+    className: "p-button-help p-button-lg",
+    onClick: async () => {
+      const user = await userService.getLoggedUser();
+      await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, true);
+    }
+  }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    label: "Cerrar",
+    className: "p-button-secondary p-button-lg",
+    onClick: () => setFinishDialogVisible(false)
+  })), sendingWhatsApp && /*#__PURE__*/React.createElement("div", {
+    className: "mt-3 text-sm text-muted"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-spin pi-spinner mr-2"
+  }), "Enviando mensaje por WhatsApp...")), !delivered() && /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mt-4"
   }, /*#__PURE__*/React.createElement(Button, {
     type: "button",
@@ -769,6 +839,7 @@ export const MedicationDeliveryDetail = ({
   }, "La entrega ha sido creada y guardada en el sistema."), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-center gap-3 flex-wrap"
   }, /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     label: "Enviar por WhatsApp",
     icon: /*#__PURE__*/React.createElement("i", {
       className: "fas fa-whatsapp"
@@ -778,6 +849,7 @@ export const MedicationDeliveryDetail = ({
     loading: sendingWhatsApp,
     disabled: sendingWhatsApp
   }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     label: "Imprimir Factura",
     className: "p-button-primary p-button-lg",
     icon: "pi pi-print",
@@ -786,6 +858,7 @@ export const MedicationDeliveryDetail = ({
       await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, false);
     }
   }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     label: "Descargar Factura",
     icon: "pi pi-download",
     className: "p-button-help p-button-lg",
@@ -794,6 +867,7 @@ export const MedicationDeliveryDetail = ({
       await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, true);
     }
   }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
     label: "Cerrar",
     className: "p-button-secondary p-button-lg",
     onClick: () => setFinishDialogVisible(false)

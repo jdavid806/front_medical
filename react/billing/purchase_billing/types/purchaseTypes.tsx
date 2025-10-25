@@ -42,6 +42,7 @@ export interface LotInfo {
   lotNumber: string;
   expirationDate: Date | null;
   deposit: string;
+  quantity: number;
 }
 
 export type InvoiceProduct = {

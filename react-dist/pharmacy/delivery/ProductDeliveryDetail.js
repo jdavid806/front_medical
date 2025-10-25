@@ -18,6 +18,10 @@ import { Dialog } from "primereact/dialog";
 import { OTPModal } from "../../login/modal/OTPModal.js";
 import { useAuth } from "../../login/hooks/useAuth.js";
 import { Toast } from "primereact/toast";
+import { Panel } from "primereact/panel";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Badge } from "primereact/badge";
 export const ProductDeliveryDetail = ({
   deliveryId
 }) => {
@@ -97,7 +101,7 @@ export const ProductDeliveryDetail = ({
       appendProductDeposit(deliveryManager.products.map(product => ({
         product_id: product.product.id,
         product_name: product.product.name,
-        quantity: product.quantity,
+        quantity: product.pending_quantity,
         deposit_id: null
       })));
     }
@@ -113,7 +117,8 @@ export const ProductDeliveryDetail = ({
   const handleVerifyAndSaveProductDelivery = async data => {
     if (!delivery || !deliveryManager) return;
     setShowVerifyDialog(true);
-    await sendOtp();
+    if (!deliveryManager.requestedBy?.external_id) return;
+    await sendOtp(deliveryManager.requestedBy?.external_id);
   };
   const handleUserVerificationSuccess = async () => {
     setShowVerifyDialog(false);
@@ -133,6 +138,7 @@ export const ProductDeliveryDetail = ({
           text: apiMessage
         });
       }
+      getDelivery(deliveryId);
     } catch (error) {
       console.error(error);
     }
@@ -155,6 +161,12 @@ export const ProductDeliveryDetail = ({
   };
   const handleResendOtp = async () => {
     await resendOtp(deliveryManager?.requestedBy?.email);
+  };
+  const delivered = () => {
+    return ["entregado"].includes(delivery?.status || '');
+  };
+  const hasProductDeliveries = () => {
+    return delivery?.products?.some(product => product.delivery_details?.length > 0);
   };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toastRef
@@ -202,7 +214,9 @@ export const ProductDeliveryDetail = ({
     className: "mb-2"
   }, /*#__PURE__*/React.createElement("strong", null, "Tel\xE9fono: "), /*#__PURE__*/React.createElement("span", null, loggedUser?.phone)), /*#__PURE__*/React.createElement("div", {
     className: "mb-2"
-  }, /*#__PURE__*/React.createElement("strong", null, "Direcci\xF3n: "), /*#__PURE__*/React.createElement("span", null, loggedUser?.address)))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+  }, /*#__PURE__*/React.createElement("strong", null, "Direcci\xF3n: "), /*#__PURE__*/React.createElement("span", null, loggedUser?.address)))))), hasProductDeliveries() && /*#__PURE__*/React.createElement(DeliveryDetailsTable, {
+    data: delivery?.products
+  }), !delivered() && /*#__PURE__*/React.createElement(CustomPRTable, {
     data: productsDeposits,
     columns: [{
       field: 'product_name',
@@ -227,6 +241,10 @@ export const ProductDeliveryDetail = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column flex-grow-1"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-file-prescription text-primary me-2 fs-4"
@@ -248,7 +266,13 @@ export const ProductDeliveryDetail = ({
     onClick: handlePrint
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-print me-1"
-  }), " Imprimir")))), /*#__PURE__*/React.createElement("div", {
+  }), " Imprimir"))), delivered() && /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-grow-1"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-muted small"
+  }, "Observaciones: ", delivery?.observations || '--')))))), !delivered() && /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end align-items-center"
   }, /*#__PURE__*/React.createElement(Button, {
     icon: /*#__PURE__*/React.createElement("i", {
@@ -327,4 +351,194 @@ const SupplyDeliveryDepositColumn = props => {
       });
     }
   }));
+};
+const DeliveryDetailsTable = ({
+  data
+}) => {
+  // Agrupar los datos por producto
+  const groupedByProduct = data.reduce((acc, item) => {
+    const productId = item.product_id;
+    if (!acc[productId]) {
+      acc[productId] = {
+        product: item.product,
+        deliveries: []
+      };
+    }
+    acc[productId].deliveries.push(item);
+    return acc;
+  }, {});
+
+  // Función para obtener la severidad según el estado
+  const getStatusSeverity = status => {
+    switch (status) {
+      case 'entregado':
+        return 'success';
+      case 'pendiente':
+        return 'warning';
+      case 'parcialmente_entregado':
+        return 'warning';
+      case 'cancelado':
+        return 'danger';
+      default:
+        return 'info';
+    }
+  };
+  const getStatusLabel = status => {
+    switch (status) {
+      case 'entregado':
+        return 'Entregado';
+      case 'pendiente':
+        return 'Pendiente';
+      case 'parcialmente_entregado':
+        return 'Parcialmente entregado';
+      case 'cancelado':
+        return 'Cancelado';
+      default:
+        return 'Info';
+    }
+  };
+
+  // Función para formatear la fecha
+  const formatDate = dateString => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Template para el estado
+  const statusBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement(Tag, {
+      value: getStatusLabel(rowData.status),
+      severity: getStatusSeverity(rowData.status),
+      className: "p-tag-rounded"
+    });
+  };
+
+  // Template para cantidades con badges
+  const quantityBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-2 align-items-center"
+    }, /*#__PURE__*/React.createElement(Badge, {
+      value: rowData.quantity,
+      className: "p-badge-primary"
+    }));
+  };
+
+  // Template para cantidades entregadas
+  const deliveredBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement(Badge, {
+      value: rowData.delivered_quantity,
+      severity: "success"
+    });
+  };
+
+  // Template para cantidades pendientes
+  const pendingBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement(Badge, {
+      value: rowData.pending_quantity,
+      severity: "warning"
+    });
+  };
+
+  // Header del panel con información del producto
+  const productPanelHeader = (product, deliveries) => {
+    const totalQuantity = deliveries.reduce((sum, delivery) => sum + delivery.quantity, 0);
+    const totalDelivered = deliveries.reduce((sum, delivery) => sum + delivery.delivered_quantity, 0);
+    const totalPending = deliveries.reduce((sum, delivery) => sum + delivery.pending_quantity, 0);
+    return /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-between align-items-center w-100 gap-3"
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h5", {
+      className: "mb-0 text-primary"
+    }, product.name), /*#__PURE__*/React.createElement("small", {
+      className: "text-muted"
+    }, product.category_product?.name, " \u2022 ", product.product_type?.name)), /*#__PURE__*/React.createElement("div", {
+      className: "d-flex gap-3"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fw-bold"
+    }, deliveries.length), /*#__PURE__*/React.createElement("small", {
+      className: "text-muted"
+    }, "Entregas")), /*#__PURE__*/React.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fw-bold text-success"
+    }, totalDelivered), /*#__PURE__*/React.createElement("small", {
+      className: "text-muted"
+    }, "Entregado")), /*#__PURE__*/React.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fw-bold text-warning"
+    }, totalPending), /*#__PURE__*/React.createElement("small", {
+      className: "text-muted"
+    }, "Pendiente"))));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "container-fluid"
+  }, Object.entries(groupedByProduct).map(([productId, {
+    product,
+    deliveries
+  }]) => /*#__PURE__*/React.createElement(Panel, {
+    key: productId,
+    header: productPanelHeader(product, deliveries),
+    className: "mb-4 shadow-sm",
+    toggleable: true
+  }, /*#__PURE__*/React.createElement(DataTable, {
+    value: deliveries,
+    responsiveLayout: "scroll",
+    className: "p-datatable-sm",
+    stripedRows: true,
+    showGridlines: true
+  }, /*#__PURE__*/React.createElement(Column, {
+    field: "id",
+    header: "ID Entrega",
+    sortable: true,
+    style: {
+      width: '100px'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "quantity",
+    header: "Cantidad",
+    body: quantityBodyTemplate,
+    sortable: true,
+    style: {
+      width: '120px'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "delivered_quantity",
+    header: "Entregado",
+    body: deliveredBodyTemplate,
+    sortable: true,
+    style: {
+      width: '120px'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "pending_quantity",
+    header: "Pendiente",
+    body: pendingBodyTemplate,
+    sortable: true,
+    style: {
+      width: '120px'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "status",
+    header: "Estado",
+    body: statusBodyTemplate,
+    sortable: true,
+    style: {
+      width: '130px'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "created_at",
+    header: "Fecha de entrega",
+    body: rowData => formatDate(rowData.created_at),
+    sortable: true,
+    style: {
+      width: '180px'
+    }
+  })))));
 };

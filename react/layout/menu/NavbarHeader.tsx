@@ -5,8 +5,7 @@ import { useMenuItems } from './hooks/useMenuItems';
 
 const NavbarHeader = () => {
     const { menuItems: menuItemsFromHook, loading } = useMenuItems();
-    
-    console.log("Menu items procesados:", menuItemsFromHook);
+
 
     const iconTemplate = (iconClass) => {
         return iconClass ? <i className={iconClass}></i> : null;

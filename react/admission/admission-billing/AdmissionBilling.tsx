@@ -182,11 +182,9 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         }
 
         const replacements = {
-          NOMBRE_PACIENTE: `${
-            admissionData.admission_data.patient.first_name ?? ""
-          } ${admissionData.admission_data.patient.middle_name ?? ""} ${
-            admissionData.admission_data.patient.last_name ?? ""
-          } ${admissionData.admission_data.patient.second_last_name ?? ""}`,
+          NOMBRE_PACIENTE: `${admissionData.admission_data.patient.first_name ?? ""
+            } ${admissionData.admission_data.patient.middle_name ?? ""} ${admissionData.admission_data.patient.last_name ?? ""
+            } ${admissionData.admission_data.patient.second_last_name ?? ""}`,
           NUMERO_FACTURA:
             admissionData.data.invoice_code ||
             admissionData.data.invoice_reminder,
@@ -207,7 +205,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
           channel: "whatsapp",
           recipients: [
             getIndicativeByCountry(formData.patient.country) +
-              formData.patient.whatsapp,
+            formData.patient.whatsapp,
           ],
           message_type: "media",
           message: templateFormatted,
@@ -310,34 +308,34 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
       const initialProducts =
         productsToInvoice.length > 0
           ? productsToInvoice.map((product) => {
-              const price = formData.billing.facturacionEntidad
-                ? product.copayment
-                : product.sale_price;
-              return {
-                uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random()
-                  .toString(36)
-                  .slice(2, 8)}`,
-                id: product.id,
-                code: product.code || `PROD-${product.id}`,
-                description:
-                  product.name || product.description || "Producto sin nombre",
-                price: product.sale_price,
-                copayment: product.copayment,
-                currentPrice: price,
-                quantity: 1,
-                tax: product.tax || 0,
-                discount: 0,
-                total: (price || 0) * (1 + (product.tax || 0) / 100),
-                entities: product.entities || [],
-                matchProductByEntity:
-                  product.entities?.find(
-                    (item: any) =>
-                      item?.entity_id === patient?.social_security?.entity_id &&
-                      item?.negotation_type.toLowerCase() ===
-                        patient?.social_security?.affiliate_type.toLowerCase()
-                  ) || null,
-              };
-            })
+            const price = formData.billing.facturacionEntidad
+              ? product.copayment
+              : product.sale_price;
+            return {
+              uuid: `${Math.random().toString(36).slice(2, 8)}${Math.random()
+                .toString(36)
+                .slice(2, 8)}`,
+              id: product.id,
+              code: product.code || `PROD-${product.id}`,
+              description:
+                product.name || product.description || "Producto sin nombre",
+              price: product.sale_price,
+              copayment: product.copayment,
+              currentPrice: price,
+              quantity: 1,
+              tax: product.tax || 0,
+              discount: 0,
+              total: (price || 0) * (1 + (product.tax || 0) / 100),
+              entities: product.entities || [],
+              matchProductByEntity:
+                product.entities?.find(
+                  (item: any) =>
+                    item?.entity_id === patient?.social_security?.entity_id &&
+                    item?.negotation_type?.toLowerCase() ===
+                    patient?.social_security?.affiliate_type.toLowerCase()
+                ) || null,
+            };
+          })
           : [];
 
       // Verificar montaje antes de actualizar estado
@@ -353,9 +351,8 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
             middleName: patient.middle_name || "",
             lastName: patient.last_name || "",
             secondLastName: patient.second_last_name || "",
-            nameComplet: `${patient.first_name || ""} ${
-              patient.middle_name || ""
-            } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
+            nameComplet: `${patient.first_name || ""} ${patient.middle_name || ""
+              } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
             birthDate: patient.date_of_birth
               ? new Date(patient.date_of_birth)
               : null,

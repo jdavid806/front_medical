@@ -3,10 +3,12 @@ import { userService } from "../../services/api";
 import { UserDto } from "../models/models";
 
 interface MedicalSupplyRequestedBy {
+    id: string;
     name: string;
     email: string;
     phone: string;
     address: string;
+    external_id: string;
 }
 
 export class MedicalSupplyManager {
@@ -33,10 +35,12 @@ export class MedicalSupplyManager {
 
     get requestedBy(): MedicalSupplyRequestedBy | null {
         return {
+            id: this.data.requested_by_user?.id || '--',
             name: `${this.data.requested_by_user?.first_name || ''} ${this.data.requested_by_user?.middle_name || ''} ${this.data.requested_by_user?.last_name || ''} ${this.data.requested_by_user?.second_last_name || ''}`,
             email: this.data.requested_by_user?.email || '--',
             phone: this.data.requested_by_user?.phone || '--',
-            address: this.data.requested_by_user?.address || '--'
+            address: this.data.requested_by_user?.address || '--',
+            external_id: this.data.requested_by_user?.external_id || '--'
         };
     }
 

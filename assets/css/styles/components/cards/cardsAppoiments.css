@@ -1,0 +1,70 @@
+/* Estilos para las cards de citas */
+.appointment-card {
+  border-left: 4px solid #007bff !important; /* Línea azul a la izquierda */
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.15);
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.appointment-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.appointment-card.appointment-success {
+  border: 1px solid #28a745 !important; 
+  border-left: 4px solid var(--primary-color)!important; 
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.15);
+}
+
+.appointment-card.appointment-success:hover {
+  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.25);
+}
+
+.appointment-card.appointment-error {
+  border: 1px solid #dc3545 !important; 
+  border-left: 4px solid var(--primary-color)!important; 
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.15);
+}
+
+.appointment-card.appointment-error:hover {
+  box-shadow: 0 6px 12px rgba(220, 53, 69, 0.25);
+}
+
+.appointment-info {
+  flex: 1;
+}
+
+.appointment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid #e9ecef;
+  margin-top: auto;
+}
+
+/* Asegurar que el card-body use flexbox correctamente */
+.appointment-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem;
+}
+
+/* Estilos para los botones si necesitas ajustarlos */
+.appointment-actions .p-button {
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .appointment-actions {
+    justify-content: center;
+  }
+  
+  .appointment-card .card-body {
+    padding: 1rem;
+  }
+}

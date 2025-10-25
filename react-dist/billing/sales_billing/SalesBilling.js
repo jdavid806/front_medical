@@ -798,7 +798,8 @@ export const SalesBilling = ({
     totalDiscount: calculateTotalDiscount(),
     retentions: retentions,
     onRetentionsChange: setRetentions,
-    productsArray: productsArray
+    productsArray: productsArray,
+    type: "sale"
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {

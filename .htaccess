@@ -393,3 +393,4 @@ RewriteRule ^entregaInsumosReact$ Insumos/reactTest/entregaInsumosReact.php
 RewriteRule ^farmacia$ Farmacia/reactTest/entregaMedicamentosReact.php
 RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
 
+RewriteRule ^reporteInsumosUsuarios$ Reportes/reporteInsumosUsuarios.php

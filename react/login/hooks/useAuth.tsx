@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import Swal from 'sweetalert2';
-import { userService } from '../../../services/api';
+import { authService, userService } from '../../../services/api';
 import { useConfigurationProgress } from '../../config/general-configuration/hooks/useConfigurationProgress';
 import { decryptAES, encryptAES, getJWTPayload, getJWTPayloadByToken } from '../../../services/utilidades';
 
@@ -263,17 +263,13 @@ export const useAuth = () => {
         }
     };
 
-    const sendOtp = async () => {
-        const username = localStorage.getItem('username')
-        if (!username) return;
-        const decodedUsername = await decryptAES(username, 'medicalsoft');
-        console.log(decodedUsername);
+    const sendOtp = async (externalId: string) => {
+
+        const userAuth = await authService.checkUserByExternalId(externalId)
 
         setLoading(true);
 
         try {
-
-
             const apiUrl = `${window.location.origin}/api/auth/otp/send-otp`;
 
             const response = await fetch(apiUrl, {
@@ -283,7 +279,7 @@ export const useAuth = () => {
                     'X-Domain': window.location.hostname
                 },
                 body: JSON.stringify({
-                    nombre_usuario: decodedUsername
+                    nombre_usuario: userAuth.data.user.username
                 })
             });
 

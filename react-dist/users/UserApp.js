@@ -44,14 +44,12 @@ export const UserApp = ({
   // Validar si hay al menos un usuario configurado
   useEffect(() => {
     const hasUsers = users && users.length > 0;
-    console.log('🔍 Validando usuarios:', {
-      totalUsuarios: users?.length,
-      hasUsers
-    });
     onConfigurationComplete?.(hasUsers);
   }, [users, onConfigurationComplete]);
   const isComplete = users && users.length > 0;
   const showValidations = isConfigurationContext;
+
+  // ✅ AGREGAR ESTA FUNCIÓN FALTANTE
   const onCreate = () => {
     setInitialData(undefined);
     setUserFormConfig(initialUserFormConfig);
@@ -74,7 +72,6 @@ export const UserApp = ({
       if (user) {
         //@ts-ignore
         let minioUrl = await guardarArchivoUsuario("uploadImageConfigUsers", user.id);
-        console.log("minioUrl", minioUrl);
         await updateUser(user.id, {
           ...finalData,
           minio_url: minioUrl
@@ -82,8 +79,8 @@ export const UserApp = ({
       } else {
         const res = await createUser(finalData);
         //@ts-ignore
-        let minioUrl = await guardarArchivoUsuario("uploadImageConfigUsers", res.id);
-        await updateUser(res.id, {
+        let minioUrl = await guardarArchivoUsuario("uploadImageConfigUsers", res.data.id);
+        await updateUser(res.data.id, {
           minio_url: minioUrl
         });
       }
@@ -142,29 +139,18 @@ export const UserApp = ({
   }, showValidations && /*#__PURE__*/React.createElement("div", {
     className: "validation-section mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `alert ${isComplete ? 'alert-success' : 'alert-info'} p-3`
+    className: `alert ${isComplete ? "alert-success" : "alert-info"} p-3`
   }, /*#__PURE__*/React.createElement("i", {
-    className: `${isComplete ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
-  }), isComplete ? '¡Roles configurados correctamente! Puede continuar al siguiente módulo.' : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), error && /*#__PURE__*/React.createElement("div", {
+    className: `${isComplete ? "pi pi-check-circle" : "pi pi-info-circle"} me-2`
+  }), isComplete ? "¡Roles configurados correctamente! Puede continuar al siguiente módulo." : 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"')), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center"
-  }, /*#__PURE__*/React.createElement("h4", {
-    className: "mb-1"
-  }, "Configuraci\xF3n Usuarios"), /*#__PURE__*/React.createElement("div", {
-    className: "text-end mb-2"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate,
-    disabled: loading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), loading ? 'Cargando...' : 'Nuevo'))), /*#__PURE__*/React.createElement(UserTable, {
+  }, error), /*#__PURE__*/React.createElement(UserTable, {
     users: users,
     onReload: refreshUsers,
     onEditItem: handleTableEdit,
-    loading: loading
+    loading: loading,
+    onCreateUser: onCreate
   }), /*#__PURE__*/React.createElement(UserFormModal, {
     title: "Crear usuario",
     show: showUserFormModal,

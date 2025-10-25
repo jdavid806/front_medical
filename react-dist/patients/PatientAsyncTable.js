@@ -9,6 +9,7 @@ import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { Dialog } from "primereact/dialog";
 import { PatientInfoContainer } from "./PatientInfoContainer.js";
+import { patientService } from "../../services/api/index.js";
 export const PatientAsyncTable = () => {
   const [tableItems, setTableItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,10 +64,10 @@ export const PatientAsyncTable = () => {
     page: currentPage,
     search: search ?? ""
   });
-  const handleEditarPaciente = patientId => {
-    const patientToEdit = patients.find(p => p.id.toString() === patientId);
-    if (patientToEdit) {
-      setEditingPatient(patientToEdit);
+  const handleEditarPaciente = async patientId => {
+    const patient = await patientService.get(patientId);
+    if (patient) {
+      setEditingPatient(patient);
       setShowEditModal(true);
     }
   };

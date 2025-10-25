@@ -30,6 +30,7 @@ interface UserRoleFormProps {
     formId: string
     onHandleSubmit: (data: UserRoleFormInputs) => void;
     initialData?: UserRoleFormInputs;
+    roleId?: number;
 }
 
 export interface UserRoleFormInputs {
@@ -204,7 +205,8 @@ const MenuAccordion: React.FC<{
 export const UserRoleForm: React.FC<UserRoleFormProps> = ({
     formId,
     onHandleSubmit,
-    initialData
+    initialData,
+    roleId
 }) => {
     const {
         register,
@@ -230,17 +232,76 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
     const [selectedMenuIds, setSelectedMenuIds] = useState<number[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Determinar si es modo creación o edición
+    const isEditMode = !!roleId;
+
+    // Función recursiva para extraer todos los IDs de menús que tienen is_active = true
+    const extractActiveMenuIds = (menus: Menu[]): number[] => {
+        const activeIds: number[] = [];
+        
+        const traverse = (menuList: Menu[]) => {
+            menuList.forEach(menu => {
+                // Si el menú está activo, agregar su ID
+                if (menu.is_active) {
+                    activeIds.push(menu.id);
+                }
+                // Recorrer hijos recursivamente
+                if (menu.items && menu.items.length > 0) {
+                    traverse(menu.items);
+                }
+            });
+        };
+        
+        traverse(menus);
+        return activeIds;
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
+                console.log("rolessssssss", roleId);
                 
-                const menusData: Menu[] = await menuService.getAllMenuByRole();
-                console.log("Menús jerárquicos del API:", menusData);
-                setAllMenus(menusData);
+                // SOLO cargar menús si estamos en modo edición
+                if (roleId) {
+                    const menusData: Menu[] = await menuService.getAllMenuByRolePermissions(roleId);
+                    console.log("Menús jerárquicos del API:", menusData);
+                    
+                    // Extraer los IDs de menús activos
+                    const activeMenuIds = extractActiveMenuIds(menusData);
+                    console.log("IDs de menús activos automáticamente seleccionados:", activeMenuIds);
+                    
+                    setAllMenus(menusData);
+                    setSelectedMenuIds(activeMenuIds);
+                } else {
+                    // En modo creación, no cargar menús
+                    setAllMenus([]);
+                    setSelectedMenuIds([]);
+                }
 
-                const permissionsData: PermissionCategory[] = await permissionService.getAll();
-                setPermissionCategories(permissionsData);
+                // Reset del formulario con los datos correspondientes
+                if (initialData) {
+                    reset({
+                        name: initialData.name,
+                        group: initialData.group,
+                    });
+                    setSelectedPermissions(initialData.permissions || []);
+                } else {
+                    reset({
+                        name: '',
+                        group: '',
+                    });
+                    setSelectedPermissions([]);
+                    setSelectedMenuIds([]);
+                }
+
+                // SOLO cargar permisos si estamos en modo edición
+                if (roleId) {
+                    const permissionsData: PermissionCategory[] = await permissionService.getAll();
+                    setPermissionCategories(permissionsData);
+                } else {
+                    setPermissionCategories([]);
+                }
                 
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -249,35 +310,7 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
             }
         };
         fetchData();
-    }, []);
-
-    useEffect(() => {
-        if (initialData) {
-            console.log('Initial data received:', initialData);
-
-            reset({
-                name: initialData.name,
-                group: initialData.group,
-            });
-
-            setSelectedPermissions(initialData.permissions || []);
-
-            const activeMenuIds = initialData.menuIds || 
-                initialData.menus
-                    ?.filter(menu => menu.is_active)
-                    .map(menu => menu.id) || [];
-            
-            setSelectedMenuIds(activeMenuIds);
-            console.log('Active menu IDs:', activeMenuIds);
-        } else {
-            reset({
-                name: '',
-                group: '',
-            });
-            setSelectedPermissions([]);
-            setSelectedMenuIds([]);
-        }
-    }, [initialData, reset]);
+    }, [roleId, initialData, reset]);
 
     const handleMenuChange = (menuId: number, checked: boolean) => {
         setSelectedMenuIds(prev =>
@@ -353,102 +386,109 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
                     {errors.group && <div className="invalid-feedback">{errors.group.message}</div>}
                 </div>
                 
-                <div className="row">
-                    <div className="col-6">
-                        <div className="card">
-                            <div className="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 className="mb-0">Menús</h5>
-                                    <small className="text-muted">
-                                        {selectedMenuIds.length} de {getAllMenuIdsFromTree(allMenus).length} seleccionados
-                                    </small>
-                                </div>
-                            </div>
-                            <div className="card-body" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-                                {allMenus.length === 0 ? (
-                                    <div className="alert alert-warning text-center">
-                                        No hay menús disponibles
+                {/* SOLO MOSTRAR MENÚS Y PERMISOS EN MODO EDICIÓN */}
+                {isEditMode ? (
+                    <div className="row">
+                        <div className="col-6">
+                            <div className="card">
+                                <div className="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 className="mb-0">Menús</h5>
+                                        <small className="text-muted">
+                                            {selectedMenuIds.length} de {getAllMenuIdsFromTree(allMenus).length} seleccionados
+                                        </small>
                                     </div>
-                                ) : (
-                                    <MenuAccordion
-                                        menus={allMenus}
-                                        selectedMenuIds={selectedMenuIds}
-                                        onMenuChange={handleMenuChange}
-                                    />
-                                )}
-                                
-                                <div className="mt-4 border-top pt-3">
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <small className="text-muted">Selección global:</small>
-                                        <div className="btn-group btn-group-sm">
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-success"
-                                                onClick={() => {
-                                                    const allIds = getAllMenuIdsFromTree(allMenus);
-                                                    setSelectedMenuIds(allIds);
-                                                }}
-                                            >
-                                                <i className="fas fa-check-double me-1"></i> Todos
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-danger"
-                                                onClick={() => setSelectedMenuIds([])}
-                                            >
-                                                <i className="fas fa-times me-1"></i> Ninguno
-                                            </button>
+                                </div>
+                                <div className="card-body" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                                    {allMenus.length === 0 ? (
+                                        <div className="alert alert-warning text-center">
+                                            No hay menús disponibles
+                                        </div>
+                                    ) : (
+                                        <MenuAccordion
+                                            menus={allMenus}
+                                            selectedMenuIds={selectedMenuIds}
+                                            onMenuChange={handleMenuChange}
+                                        />
+                                    )}
+                                    
+                                    <div className="mt-4 border-top pt-3">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <small className="text-muted">Selección global:</small>
+                                            <div className="btn-group btn-group-sm">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-success"
+                                                    onClick={() => {
+                                                        const allIds = getAllMenuIdsFromTree(allMenus);
+                                                        setSelectedMenuIds(allIds);
+                                                    }}
+                                                >
+                                                    <i className="fas fa-check-double me-1"></i> Todos
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger"
+                                                    onClick={() => setSelectedMenuIds([])}
+                                                >
+                                                    <i className="fas fa-times me-1"></i> Ninguno
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div className="col-6">
-                        <div className="card">
-                            <div className="card-header">
-                                <h5 className="mb-0">Permisos</h5>
-                            </div>
-                            <div className="card-body" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-                                {permissionCategories.length === 0 ? (
-                                    <div className="text-center text-muted py-3">
-                                        No hay categorías de permisos cargadas
-                                    </div>
-                                ) : (
-                                    permissionCategories.map((category, index) => (
-                                        <div key={index} className="mb-4">
-                                            <h6 className="fw-bold text-primary border-bottom pb-2">
-                                                <i className="fas fa-shield-alt me-2"></i>
-                                                {category.name}
-                                            </h6>
-                                            {category.permissions.map(permission => (
-                                                <div key={permission.key_} className="form-check form-switch mb-3">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id={permission.key_}
-                                                        checked={selectedPermissions.includes(permission.key_)}
-                                                        onChange={(e) =>
-                                                            handlePermissionChange(permission.key_, e.target.checked)
-                                                        }
-                                                    />
-                                                    <label className="form-check-label" htmlFor={permission.key_}>
-                                                        {permission.name}
-                                                    </label>
-                                                </div>
-                                            ))}
-                                            {index < permissionCategories.length - 1 && <hr />}
+                        
+                        <div className="col-6">
+                            <div className="card">
+                                <div className="card-header">
+                                    <h5 className="mb-0">Permisos</h5>
+                                </div>
+                                <div className="card-body" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                                    {permissionCategories.length === 0 ? (
+                                        <div className="text-center text-muted py-3">
+                                            No hay categorías de permisos cargadas
                                         </div>
-                                    ))
-                                )}
+                                    ) : (
+                                        permissionCategories.map((category, index) => (
+                                            <div key={index} className="mb-4">
+                                                <h6 className="fw-bold text-primary border-bottom pb-2">
+                                                    <i className="fas fa-shield-alt me-2"></i>
+                                                    {category.name}
+                                                </h6>
+                                                {category.permissions.map(permission => (
+                                                    <div key={permission.key_} className="form-check form-switch mb-3">
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id={permission.key_}
+                                                            checked={selectedPermissions.includes(permission.key_)}
+                                                            onChange={(e) =>
+                                                                handlePermissionChange(permission.key_, e.target.checked)
+                                                            }
+                                                        />
+                                                        <label className="form-check-label" htmlFor={permission.key_}>
+                                                            {permission.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                                {index < permissionCategories.length - 1 && <hr />}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    // MENSAJE INFORMATIVO PARA MODO CREACIÓN
+                    <div className="alert alert-info mt-3">
+                        <i className="fas fa-info-circle me-2"></i>
+                        <strong>Información:</strong> Podrás editar los permisos y menús después de crear el rol.
+                    </div>
+                )}
             </form>
         </PrimeReactProvider>
     );
 };
-
-export default UserRoleForm;

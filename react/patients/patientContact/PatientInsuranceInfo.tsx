@@ -19,7 +19,7 @@ const PatientInsuranceInfo: React.FC<PatientInsuranceInfoProps> = ({
       <div className="row gx-1 gy-1">
         <div className="col-md-8 d-flex">
           <span className="fw-bold small me-1 mt-1">Aseguradora:</span>
-          <span>{patient.social_security.entity.name || "No especificada"}</span>
+          <span>{patient.social_security?.entity?.name || "No especificada"}</span>
         </div>
 
         <div className="col-md-6 d-flex">

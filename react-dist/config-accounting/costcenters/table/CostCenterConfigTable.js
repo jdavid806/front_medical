@@ -118,7 +118,7 @@ export const CostCenterConfigTable = ({
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "btn-primary flex items-center gap-2",
+      className: "p-button-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true

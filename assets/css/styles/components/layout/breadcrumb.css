@@ -1,0 +1,155 @@
+ /*Breadcrumb estilos  Empieza*/
+.breadcrumb {
+    font-size: 0.90rem !important;
+    font-weight: bold !important;
+    letter-spacing: -0.01em;
+    padding: 1rem 1.5rem;
+      margin: 1rem 0 2rem 0;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);  
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 4px 24px -2px rgba(0, 0, 0, 0.08),
+        0 2px 8px -1px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.breadcrumb .breadcrumb-item{
+  font-weight: bold !important;
+}
+
+.breadcrumb .breadcrumb-item a {
+    position: relative;
+    text-decoration: none;
+}
+
+.breadcrumb .breadcrumb-item a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+    transition: width 0.3s ease;
+}
+
+.breadcrumb .breadcrumb-item:hover {
+    color: rgba(30, 41, 59, 1);
+    transform: translateY(-1px);
+}
+
+.breadcrumb .breadcrumb-item:hover a::after {
+    width: 100%;
+}
+.breadcrumb::before { 
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.8) 50%, 
+        transparent 100%);
+    z-index: 2;
+}
+
+/* Mejora para los items del breadcrumb */
+.breadcrumb-item {
+    color: rgba(30, 41, 59, 0.8);
+    transition: all 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+    color: rgba(30, 41, 59, 1);
+}
+
+.breadcrumb-item.active {
+    color: rgba(59, 130, 246, 1);
+    font-weight: 500;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(148, 163, 184, 0.6);
+    content: "›";
+    font-weight: 300;
+    font-size: 1.1em;
+}
+
+/* Versión dark mode mejorada */
+html[data-bs-theme="dark"] .breadcrumb {
+    background: linear-gradient(135deg, 
+        rgba(30, 41, 59, 0.85) 0%,
+        rgba(15, 23, 42, 0.90) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+        0 4px 32px -2px rgba(0, 0, 0, 0.32),
+        0 2px 12px -1px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+html[data-bs-theme="dark"] .breadcrumb::before {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.15) 50%, 
+        transparent 100%);
+}
+
+html[data-bs-theme="dark"] .breadcrumb-item {
+    color: rgba(226, 232, 240, 0.8);
+}
+
+html[data-bs-theme="dark"] .breadcrumb-item:hover {
+    color: rgba(226, 232, 240, 1);
+}
+
+html[data-bs-theme="dark"] .breadcrumb-item.active {
+    color: rgba(96, 165, 250, 1);
+}
+
+html[data-bs-theme="dark"] .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(100, 116, 139, 0.7);
+}
+/* Efectos de transición suaves */
+.breadcrumb,
+.breadcrumb-item,
+.content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mejora de legibilidad y espaciado */
+.breadcrumb {
+    line-height: 1.5;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .breadcrumb {
+        padding: 1rem 1.25rem;
+        margin: 1rem 0 2rem 0;
+        border-radius: 12px;
+    }
+    
+    .content {
+        padding: calc(var(--phoenix-navbar-top-height) + 0.3rem) 1.25rem 4rem 1.25rem;
+    }
+}
+
+ html[data-bs-theme="dark"] .breadcrumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+
+
+
+ /*Breadcrumb estilos  Termina*/

@@ -14,30 +14,27 @@ export const usePurchaseOrders = (getCustomFilters?: () => any) => {
     const [sortOrder, setSortOrder] = useState<0 | 1 | -1 | null | undefined>(null);
 
     const fetchPurchaseOrders = async (perPage: number, page = 1, _search: string | null = null) => {
+        try {
+            setLoadingPurchaseOrders(true);
 
-        if (getCustomFilters?.().thirdId && getCustomFilters?.()np.type) {
-            try {
-                setLoadingPurchaseOrders(true);
+            const service = new PurchaseOrderService()
+            const data = await service.filter({
+                per_page: perPage,
+                page: page,
+                search: _search || "",
+                ...getCustomFilters?.(),
+                ...getSort()
+            });
 
-                const service = new PurchaseOrderService()
-                const data = await service.filter({
-                    per_page: perPage,
-                    page: page,
-                    search: _search || "",
-                    ...getCustomFilters?.(),
-                    ...getSort()
-                });
-
-                setPurchaseOrders(
-                    data.data
-                );
-                setTotalRecords(data.total);
-            } catch (error) {
-                console.error(error);
-            }
-            finally {
-                setLoadingPurchaseOrders(false);
-            }
+            setPurchaseOrders(
+                data.data
+            );
+            setTotalRecords(data.total);
+        } catch (error) {
+            console.error(error);
+        }
+        finally {
+            setLoadingPurchaseOrders(false);
         }
     };
 
@@ -68,8 +65,6 @@ export const usePurchaseOrders = (getCustomFilters?: () => any) => {
     const refresh = () => fetchPurchaseOrders(perPage, currentPage, search);
 
     useEffect(() => {
-        console.log('sortField', sortField, 'sortOrder', sortOrder, 'search', search, 'perPage', perPage, 'currentPage', currentPage);
-
         fetchPurchaseOrders(perPage, currentPage, search);
     }, [perPage, currentPage, search, sortField, sortOrder]);
 

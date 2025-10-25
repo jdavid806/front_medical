@@ -7,7 +7,21 @@ export class UserRoleService extends BaseApiService {
     async updateMenusPermissions(id, data) {
         return await this.httpClient.put(`${this.microservice}/${this.endpoint}/menus/permissions/${id}`, data);
     }
-    async saveRoleMenus(roleId, menus) {
+    async saveRoleMenus(roleId, menusPayload) {
+    try {
+        console.log('Payload recibido en saveRoleMenus:', menusPayload);
+        
+        return await this.httpClient.put(
+            `${this.microservice}/user-roles/${roleId}/menus`,
+            { menus: menusPayload }
+        );
+    } catch (error) {
+        console.error('Error saving role menus:', error);
+        throw error;
+    }
+}
+
+    async updateRoleMenus(roleId, menus) {
         console.log(menus, "menusserviceeeeeee")
         try {
             const activeMenus = menus.filter(menu => menu.is_active);
@@ -29,5 +43,37 @@ export class UserRoleService extends BaseApiService {
             console.error('Error saving role menus:', error);
             throw error;
         }
+    }
+
+    async updateRolePermissions(id, data) {
+        return await this.httpClient.put(`${this.microservice}/${this.endpoint}/user-roles/${id}`, data);
+    }
+
+    async updateGroupRole(roleId, payload) {
+        try {
+            const response = await this.httpClient.put(`medical/user-roles/${roleId}`, payload);
+            console.log(response)
+            return response.menus || [];
+
+        } catch (error) {
+            console.error("Error fetching menu by permission:", error);
+            throw error;
+        }
+    }
+
+    async createRoleUserMenu(payload) {
+        try {
+            const response = await this.httpClient.post('medical/user-roles', payload);
+            console.log(response)
+            return response.menus || [];
+
+        } catch (error) {
+            console.error("Error fetching menu by permission:", error);
+            throw error;
+        }
+    }
+
+    async deleteRole(id) {
+        return await this.httpClient.delete(`medical/menus/user-roles/${id}`)
     }
 }

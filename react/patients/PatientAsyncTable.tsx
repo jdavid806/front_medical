@@ -12,6 +12,7 @@ import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { Dialog } from "primereact/dialog";
 import { PatientInfoContainer } from "./PatientInfoContainer";
+import { patientService } from "../../services/api";
 
 type PatientAsyncTableItem = {
   id: string;
@@ -81,10 +82,10 @@ export const PatientAsyncTable: React.FC = () => {
       search: search ?? "",
     });
 
-  const handleEditarPaciente = (patientId: string) => {
-    const patientToEdit = patients.find(p => p.id.toString() === patientId);
-    if (patientToEdit) {
-      setEditingPatient(patientToEdit);
+  const handleEditarPaciente = async (patientId: string) => {
+    const patient = await patientService.get(patientId);
+    if (patient) {
+      setEditingPatient(patient);
       setShowEditModal(true);
     }
   };

@@ -11,24 +11,22 @@ export const usePurchaseOrders = getCustomFilters => {
   const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
   const fetchPurchaseOrders = async (perPage, page = 1, _search = null) => {
-    if (getCustomFilters?.().thirdId && getCustomFilters?.().type) {
-      try {
-        setLoadingPurchaseOrders(true);
-        const service = new PurchaseOrderService();
-        const data = await service.filter({
-          per_page: perPage,
-          page: page,
-          search: _search || "",
-          ...getCustomFilters?.(),
-          ...getSort()
-        });
-        setPurchaseOrders(data.data);
-        setTotalRecords(data.total);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoadingPurchaseOrders(false);
-      }
+    try {
+      setLoadingPurchaseOrders(true);
+      const service = new PurchaseOrderService();
+      const data = await service.filter({
+        per_page: perPage,
+        page: page,
+        search: _search || "",
+        ...getCustomFilters?.(),
+        ...getSort()
+      });
+      setPurchaseOrders(data.data);
+      setTotalRecords(data.total);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingPurchaseOrders(false);
     }
   };
   const getSort = () => {
@@ -53,7 +51,6 @@ export const usePurchaseOrders = getCustomFilters => {
   };
   const refresh = () => fetchPurchaseOrders(perPage, currentPage, search);
   useEffect(() => {
-    console.log('sortField', sortField, 'sortOrder', sortOrder, 'search', search, 'perPage', perPage, 'currentPage', currentPage);
     fetchPurchaseOrders(perPage, currentPage, search);
   }, [perPage, currentPage, search, sortField, sortOrder]);
   return {

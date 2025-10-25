@@ -18,6 +18,10 @@ import { Dialog } from "primereact/dialog";
 import { OTPModal } from "../../login/modal/OTPModal";
 import { useAuth } from "../../login/hooks/useAuth";
 import { Toast } from "primereact/toast";
+import { Panel } from "primereact/panel";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Badge } from "primereact/badge";
 
 interface ProductDeposit {
     product_id: string;
@@ -111,7 +115,7 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
             appendProductDeposit(deliveryManager.products.map((product) => ({
                 product_id: product.product.id,
                 product_name: product.product.name,
-                quantity: product.quantity,
+                quantity: product.pending_quantity,
                 deposit_id: null
             })));
         }
@@ -130,7 +134,9 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
         if (!delivery || !deliveryManager) return;
 
         setShowVerifyDialog(true);
-        await sendOtp()
+
+        if (!deliveryManager.requestedBy?.external_id) return;
+        await sendOtp(deliveryManager.requestedBy?.external_id)
     };
 
     const handleUserVerificationSuccess = async () => {
@@ -156,6 +162,7 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
                     text: apiMessage
                 });
             }
+            getDelivery(deliveryId);
         } catch (error) {
             console.error(error)
         }
@@ -183,6 +190,15 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
 
     const handleResendOtp = async () => {
         await resendOtp(deliveryManager?.requestedBy?.email)
+    }
+
+    const delivered = () => {
+        return ["entregado"].includes(delivery?.status || '')
+    }
+
+    const hasProductDeliveries = () => {
+        return delivery?.products?.some((product: any) => product.delivery_details
+            ?.length > 0);
     }
 
     return (
@@ -256,61 +272,79 @@ export const ProductDeliveryDetail = ({ deliveryId }: ProductDeliveryDetailProps
                             </div>
                         </div>
                     </div>
-                    <CustomPRTable
-                        data={productsDeposits}
-                        columns={[
-                            { field: 'product_name', header: 'Insumos' },
-                            { field: 'quantity', header: 'Cantidad' },
-                            {
-                                field: 'deposit.name', header: 'Depósito', body: (deposit) => <>
-                                    <SupplyDeliveryDepositColumn
-                                        productsDeposits={productsDeposits}
-                                        deposit={deposit}
-                                        onUpdateProductDeposit={(index, deposit) => updateProductDeposit(index, deposit)}
-                                    />
-                                </>
-                            },
-                        ]}
-                        disablePaginator
-                        disableReload
-                        disableSearch
-                    />
+                    {hasProductDeliveries() && (
+                        <DeliveryDetailsTable data={delivery?.products} />
+                    )}
+                    {!delivered() && (
+                        <CustomPRTable
+                            data={productsDeposits}
+                            columns={[
+                                { field: 'product_name', header: 'Insumos' },
+                                { field: 'quantity', header: 'Cantidad' },
+                                {
+                                    field: 'deposit.name', header: 'Depósito', body: (deposit) => <>
+                                        <SupplyDeliveryDepositColumn
+                                            productsDeposits={productsDeposits}
+                                            deposit={deposit}
+                                            onUpdateProductDeposit={(index, deposit) => updateProductDeposit(index, deposit)}
+                                        />
+                                    </>
+                                },
+                            ]}
+                            disablePaginator
+                            disableReload
+                            disableSearch
+                        />
+                    )}
                     {getFormErrorMessage("productsDeposits")}
                     <div className="card">
                         <div className="card-body">
-                            <div className="d-flex align-items-center mb-3">
-                                <i className="fas fa-file-prescription text-primary me-2 fs-4"></i>
-                                <div>
-                                    <div className="fw-medium">Solicitud #{delivery?.id}</div>
-                                    <div className="text-muted small">{deliveryManager?.requestedBy?.name || '--'} - {formatDateDMY(delivery?.created_at)}</div>
+                            <div className="d-flex gap-2">
+                                <div className="d-flex flex-column flex-grow-1">
+                                    <div className="d-flex align-items-center mb-3">
+                                        <i className="fas fa-file-prescription text-primary me-2 fs-4"></i>
+                                        <div>
+                                            <div className="fw-medium">Solicitud #{delivery?.id}</div>
+                                            <div className="text-muted small">{deliveryManager?.requestedBy?.name || '--'} - {formatDateDMY(delivery?.created_at)}</div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-primary me-2"
+                                            onClick={() => setDialogVisible(true)}
+                                        >
+                                            <i className="fas fa-eye me-1"></i> Ver solicitud
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-secondary"
+                                            onClick={handlePrint}
+                                        >
+                                            <i className="fas fa-print me-1"></i> Imprimir
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="d-flex">
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-primary me-2"
-                                    onClick={() => setDialogVisible(true)}
-                                >
-                                    <i className="fas fa-eye me-1"></i> Ver solicitud
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={handlePrint}
-                                >
-                                    <i className="fas fa-print me-1"></i> Imprimir
-                                </button>
+                                {delivered() && (
+                                    <div className="d-flex flex-grow-1">
+                                        <div className="d-flex flex-column">
+                                            <div className="text-muted small">Observaciones: {delivery?.observations || '--'}</div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div className="d-flex justify-content-end align-items-center">
-                        <Button
-                            icon={<i className="fas fa-check me-2"></i>}
-                            label="Entregar Productos"
-                            className="btn btn-sm btn-primary"
-                            type="submit"
-                        />
-                    </div>
+                    {!delivered() && (
+                        <div className="d-flex justify-content-end align-items-center">
+                            <Button
+                                icon={<i className="fas fa-check me-2"></i>}
+                                label="Entregar Productos"
+                                className="btn btn-sm btn-primary"
+                                type="submit"
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <ProductDeliveryDetailDialog
@@ -379,7 +413,7 @@ const SupplyDeliveryDepositColumn = (props: ProductDeliveryDepositColumnProps) =
             try {
                 const depositsData = await getAllDeposits();
                 console.log("depositsData", depositsData)
-                const formatted = depositsData.map((deposit) => ({
+                const formatted = depositsData.map((deposit: any) => ({
                     id: deposit.id,
                     name: deposit.attributes.name,
                     originalData: deposit,
@@ -407,4 +441,187 @@ const SupplyDeliveryDepositColumn = (props: ProductDeliveryDepositColumnProps) =
             }}
         />
     </>);
+};
+
+
+const DeliveryDetailsTable = ({ data }: { data: any }) => {
+    // Agrupar los datos por producto
+    const groupedByProduct = data.reduce((acc: any, item: any) => {
+        const productId = item.product_id;
+        if (!acc[productId]) {
+            acc[productId] = {
+                product: item.product,
+                deliveries: []
+            };
+        }
+        acc[productId].deliveries.push(item);
+        return acc;
+    }, {});
+
+    // Función para obtener la severidad según el estado
+    const getStatusSeverity = (status: string) => {
+        switch (status) {
+            case 'entregado':
+                return 'success';
+            case 'pendiente':
+                return 'warning';
+            case 'parcialmente_entregado':
+                return 'warning';
+            case 'cancelado':
+                return 'danger';
+            default:
+                return 'info';
+        }
+    };
+
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'entregado':
+                return 'Entregado';
+            case 'pendiente':
+                return 'Pendiente';
+            case 'parcialmente_entregado':
+                return 'Parcialmente entregado';
+            case 'cancelado':
+                return 'Cancelado';
+            default:
+                return 'Info';
+        }
+    };
+
+    // Función para formatear la fecha
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    // Template para el estado
+    const statusBodyTemplate = (rowData: any) => {
+        return (
+            <Tag
+                value={getStatusLabel(rowData.status)}
+                severity={getStatusSeverity(rowData.status)}
+                className="p-tag-rounded"
+            />
+        );
+    };
+
+    // Template para cantidades con badges
+    const quantityBodyTemplate = (rowData: any) => {
+        return (
+            <div className="d-flex gap-2 align-items-center">
+                <Badge value={rowData.quantity} className="p-badge-primary" />
+            </div>
+        );
+    };
+
+    // Template para cantidades entregadas
+    const deliveredBodyTemplate = (rowData: any) => {
+        return (
+            <Badge value={rowData.delivered_quantity} severity="success" />
+        );
+    };
+
+    // Template para cantidades pendientes
+    const pendingBodyTemplate = (rowData: any) => {
+        return (
+            <Badge value={rowData.pending_quantity} severity="warning" />
+        );
+    };
+
+    // Header del panel con información del producto
+    const productPanelHeader = (product: any, deliveries: any) => {
+        const totalQuantity = deliveries.reduce((sum: any, delivery: any) => sum + delivery.quantity, 0);
+        const totalDelivered = deliveries.reduce((sum: any, delivery: any) => sum + delivery.delivered_quantity, 0);
+        const totalPending = deliveries.reduce((sum: any, delivery: any) => sum + delivery.pending_quantity, 0);
+
+        return (
+            <div className="d-flex justify-content-between align-items-center w-100 gap-3">
+                <div>
+                    <h5 className="mb-0 text-primary">{product.name}</h5>
+                    <small className="text-muted">
+                        {product.category_product?.name} • {product.product_type?.name}
+                    </small>
+                </div>
+                <div className="d-flex gap-3">
+                    <div className="text-center">
+                        <div className="fw-bold">{deliveries.length}</div>
+                        <small className="text-muted">Entregas</small>
+                    </div>
+                    <div className="text-center">
+                        <div className="fw-bold text-success">{totalDelivered}</div>
+                        <small className="text-muted">Entregado</small>
+                    </div>
+                    <div className="text-center">
+                        <div className="fw-bold text-warning">{totalPending}</div>
+                        <small className="text-muted">Pendiente</small>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="container-fluid">
+            {Object.entries(groupedByProduct).map(([productId, { product, deliveries }]) => (
+                <Panel
+                    key={productId}
+                    header={productPanelHeader(product, deliveries)}
+                    className="mb-4 shadow-sm"
+                    toggleable
+                >
+
+                    <DataTable
+                        value={deliveries}
+                        responsiveLayout="scroll"
+                        className="p-datatable-sm"
+                        stripedRows
+                        showGridlines
+                    >
+                        <Column field="id" header="ID Entrega" sortable style={{ width: '100px' }} />
+                        <Column
+                            field="quantity"
+                            header="Cantidad"
+                            body={quantityBodyTemplate}
+                            sortable
+                            style={{ width: '120px' }}
+                        />
+                        <Column
+                            field="delivered_quantity"
+                            header="Entregado"
+                            body={deliveredBodyTemplate}
+                            sortable
+                            style={{ width: '120px' }}
+                        />
+                        <Column
+                            field="pending_quantity"
+                            header="Pendiente"
+                            body={pendingBodyTemplate}
+                            sortable
+                            style={{ width: '120px' }}
+                        />
+                        <Column
+                            field="status"
+                            header="Estado"
+                            body={statusBodyTemplate}
+                            sortable
+                            style={{ width: '130px' }}
+                        />
+                        <Column
+                            field="created_at"
+                            header="Fecha de entrega"
+                            body={(rowData) => formatDate(rowData.created_at)}
+                            sortable
+                            style={{ width: '180px' }}
+                        />
+                    </DataTable>
+                </Panel>
+            ))}
+        </div>
+    );
 };

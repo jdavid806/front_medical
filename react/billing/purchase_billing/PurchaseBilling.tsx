@@ -1832,6 +1832,18 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                 retentions={retentions}
                 onRetentionsChange={setRetentions}
                 productsArray={productsArray}
+                type="purchase"
+              />
+            </div>
+
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <CustomTaxes
+                subtotal={calculateSubtotal()}
+                totalDiscount={calculateTotalDiscount()}
+                taxes={taxes}
+                onTaxesChange={setTaxes}
+                productsArray={productsArray}
+                taxOptions={availableTaxes}
               />
             </div>
 

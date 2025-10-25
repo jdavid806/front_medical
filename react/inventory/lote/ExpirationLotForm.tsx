@@ -4,12 +4,14 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { InputNumber } from "primereact/inputnumber";
 import { Nullable } from "primereact/ts-helpers";
 
 export type ExpirationLotFormInputs = {
   expirationDate: Nullable<Date>;
   lotNumber: string;
   deposit: string;
+  quantity: any;
 };
 
 interface ExpirationLotFormProps {
@@ -21,6 +23,8 @@ interface ExpirationLotFormProps {
   deposits: { id: string; name: string }[];
   showCancelButton?: boolean;
   onChange?: (field: keyof ExpirationLotFormInputs, value: any) => void;
+  availableQuantity?: number;
+  isEditing?: boolean;
 }
 
 const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
@@ -29,12 +33,14 @@ const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
   initialData,
   deposits,
   productName,
+  isEditing,
 }) => {
   const [localFormData, setLocalFormData] = useState<ExpirationLotFormInputs>(
     initialData || {
       expirationDate: null,
       lotNumber: "",
       deposit: "",
+      quantity: "", // Valor inicial
     }
   );
 
@@ -43,6 +49,7 @@ const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors, isValid },
   } = useForm<ExpirationLotFormInputs>({
     defaultValues: localFormData,
@@ -56,7 +63,7 @@ const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
   }, [initialData, reset]);
 
   const handleFormSubmit = (data: ExpirationLotFormInputs) => {
-    onSubmit(data); // Envía TODOS los datos al padre
+    onSubmit(data);
   };
 
   const renderLotNumber = ({ field }: { field: any }) => (
@@ -109,17 +116,35 @@ const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
     </>
   );
 
+  // NUEVO: Render para el campo de cantidad
+  const renderQuantity = ({ field }: { field: any }) => (
+    <>
+      <label htmlFor={field.name} className="form-label">
+        Cantidad *
+      </label>
+      <InputNumber
+        value={field.value || 0} // Forzar valor numérico
+        placeholder="Cantidad"
+        className="w-100"
+        min={0}
+        onValueChange={(e) => {
+          console.log("Value changed:", e.value); // Para debug
+          field.onChange(e.value);
+        }}
+      />
+    </>
+  );
+
   return (
     <div className="card shadow-sm">
       <div className="card-header bg-light">
         <h5 className="h5 mb-0">
           <i className="pi pi-box me-2 text-primary"></i>
-          {productName ? `Lote - ${productName}` : "Agregar Lote"}
+          {isEditing ? `Editar Lote - ${productName}` : `Agregar Lote - ${productName}`}
         </h5>
       </div>
       <div className="card-body">
         <form id={formId} onSubmit={handleSubmit(handleFormSubmit)}>
-          {/* Campos del formulario usando los renderers modificados */}
           <div className="row g-3">
             <div className="col-md-6">
               <Controller
@@ -137,12 +162,23 @@ const ExpirationLotForm: React.FC<ExpirationLotFormProps> = ({
                 render={renderExpirationDate}
               />
             </div>
-            <div className="col-md-12">
+            <div className="col-md-6">
               <Controller
                 name="deposit"
                 control={control}
                 rules={{ required: "Campo obligatorio" }}
                 render={renderDeposit}
+              />
+            </div>
+            <div className="col-md-6">
+              <Controller
+                name="quantity"
+                control={control}
+                rules={{
+                  required: "Campo obligatorio",
+                  min: { value: 1, message: "La cantidad debe ser mayor a 0" },
+                }}
+                render={renderQuantity}
               />
             </div>
           </div>

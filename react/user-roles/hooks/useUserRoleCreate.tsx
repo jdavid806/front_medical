@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
-import { userRolesService } from "../../../services/api/index";
-import { ErrorHandler } from "../../../services/errorHandler";
-import { SwalManager } from '../../../services/alertManagerImported';
-import { UserRoleFormInputs } from '../components/UserRoleForm';
+import { useState } from 'react'
+import { ErrorHandler } from '../../../services/errorHandler'
+import { SwalManager } from '../../../services/alertManagerImported'
+import { UserRoleFormInputs } from '../components/UserRoleForm'
+import { userRolesService } from '../../../services/api'
 
-export const useUserRoleUpdate = () => {
-    const [loading, setLoading] = useState(true);
+export const useUserRoleCreate = () => {
+    const [loading, setLoading] = useState<boolean>(false)
 
-    const updateUserRole = async (id: string, data: UserRoleFormInputs) => {
-        setLoading(true);
+    const createUserRole = async (userRoleData: Omit<UserRoleFormInputs, 'id'>) => {
+        setLoading(true)
         try {
-
-            await userRolesService.saveRoleMenus(id, data?.menus);
+            await userRolesService.saveRoleMenus(userRoleData)
             SwalManager.success()
         } catch (error) {
-            ErrorHandler.generic(error);
+            ErrorHandler.generic(error)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
-    return {
-        updateUserRole,
-        loading
-    };
-};
+    return { loading, createUserRole }
+}

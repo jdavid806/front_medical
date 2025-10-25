@@ -1,0 +1,482 @@
+/* Estilos para tabla con bordes redondeados - Diseño profesional */
+.p-datatable {
+  border-radius: var(--border-radius) !important;
+  box-shadow: var(--shadow) !important;
+  border: none !important;
+  background-color: white !important;
+}
+
+.p-datatable-wrapper {
+  border-radius: 0 0 var(--border-radius) var(--border-radius) !important;
+  border: none !important;
+  background-color: white !important;
+}
+
+
+.p-datatable .p-datatable-header{
+background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 50% rgba(255, 255, 255, 0.25) 100% ) !important; 
+}
+
+
+.p-datatable-table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  border: none !important;
+  width: 100% !important;
+  background-color: white !important;
+}
+
+/* HEADER PROFESIONAL CON COLOR PRIMARY */
+.p-datatable-thead {
+  background-color: var(--primary-color) !important;
+  border: none !important;
+}
+
+.p-sortable-column-icon {
+    color: white !important;
+    fill: white !important;
+}
+
+.p-datatable-thead th {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 1rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.5px !important;
+}
+
+.p-datatable-thead th:last-child {
+  border-right: none !important;
+}
+
+/* ESQUINAS SUPERIORES PERFECTAS */
+.p-datatable-thead tr:first-child th:first-child {
+  border-top-left-radius: var(--border-radius) !important;
+}
+
+.p-datatable-thead tr:first-child th:last-child {
+  border-top-right-radius: var(--border-radius) !important;
+}
+
+/* CUERPO DE LA TABLA CON LÍNEAS GRISES VISIBLES */
+.p-datatable-tbody {
+  border: none !important;
+  background-color: white !important;
+}
+
+.p-datatable-tbody tr {
+  transition: var(--transition) !important;
+  background-color: white !important;
+  border: none !important;
+}
+
+.p-datatable-tbody tr:nth-child(even) {
+  background-color: #f8f9fa !important;
+}
+
+.p-datatable-tbody tr:hover {
+  background-color: #e8f4fc !important;
+  transform: translateY(-1px) !important;
+}
+
+.p-datatable-tbody td {
+  padding: 1rem !important;
+  border: none !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-right: 1px solid #f0f0f0 !important;
+  font-size: 0.9rem !important;
+  color: #555 !important;
+  background-color: inherit !important;
+}
+
+.p-datatable-tbody td:last-child {
+  border-right: none !important;
+}
+
+/* Esquinas inferiores redondeadas */
+.p-datatable-tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+.p-datatable-tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--border-radius) !important;
+}
+
+.p-datatable-tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--border-radius) !important;
+}
+
+/* HEADER SUPERIOR */
+.p-datatable-header {
+  background-color: white !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-top-left-radius: var(--border-radius) !important;
+  border-top-right-radius: var(--border-radius) !important;
+  padding: 1.5rem !important;
+  border: none !important;
+}
+
+/* PAGINADOR COMPACTO Y ELEGANTE */
+.p-paginator {
+  background-color: white !important;
+  border-top: 1px solid #e0e0e0 !important;
+  border-bottom-left-radius: var(--border-radius) !important;
+  border-bottom-right-radius: var(--border-radius) !important;
+  padding: 1rem 1.5rem !important;
+  min-height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  flex-wrap: wrap !important;
+  border: none !important;
+}
+
+.p-paginator-bottom {
+  width: 100% !important;
+}
+
+.p-paginator-element {
+  border-radius: 6px !important;
+  transition: var(--transition) !important;
+  padding: 0.5rem 0.7rem !important;
+  border: 1px solid #d0d0d0 !important;
+  min-width: 40px !important;
+  background-color: white !important;
+  color: #666 !important;
+}
+
+.p-paginator-element:hover:not(.p-disabled) {
+  background-color: #f5f5f5 !important;
+  border-color: #b0b0b0 !important;
+}
+
+.p-paginator-page {
+  border-radius: 6px !important;
+  transition: var(--transition) !important;
+  padding: 0.5rem 0.8rem !important;
+  border: 1px solid #d0d0d0 !important;
+  min-width: 40px !important;
+  margin: 0 2px !important;
+  background-color: white !important;
+  color: #666 !important;
+}
+
+.p-paginator-page.p-highlight {
+  background: var(--secondary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.p-paginator-current {
+  margin: 0 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  color: #666 !important;
+}
+
+/* DROPDOWN ELEGANTE */
+.p-paginator .p-dropdown {
+  gap: 2px;
+  min-width: 80px !important;
+  background-color: white !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 6px !important;
+  margin: 0 0.5rem !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-label {
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 0.8rem !important;
+  font-size: 0.9rem !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-trigger {
+  background-color: var(--secondary-color) !important;
+  color: #666 !important;
+  width: 2rem !important;
+}
+
+.p-paginator .p-dropdown .p-dropdown-trigger .p-dropdown-trigger-icon {
+  color: #666 !important;
+}
+
+.p-paginator .p-dropdown:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #b0b0b0 !important;
+}
+
+
+.p-button-primary:hover {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+}
+
+.p-inputtext {
+  transition: var(--transition) !important;
+}
+
+.p-inputtext:focus {
+  border-color: var(--secondary-color) !important;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1) !important;
+  outline: none !important;
+}
+
+/* ENLACES ELEGANTES */
+.p-datatable-tbody a {
+  color: var(--primary-color) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: var(--transition) !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+}
+
+.p-datatable-tbody a:hover {
+  color: var(--primary-color) !important;
+  text-decoration: underline !important;
+  background-color: rgba(52, 152, 219, 0.1) !important;
+}
+
+/* BOTÓN DE ACCIONES ELEGANTE */
+.p-button-primaryflex {
+  border-radius: 6px !important;
+  transition: var(--transition) !important;
+  font-weight: 500 !important;
+}
+
+.p-button-primaryflex:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ELIMINAR CUALQUIER ESTILO RESIDUAL NO DESEADO */
+.p-datatable .p-datatable-thead > tr > th,
+.p-datatable .p-datatable-tbody > tr > td {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* RESPONSIVE TABLE DESKTOP/MOBILE/TABLET */
+@media (max-width: 768px) {
+  .p-datatable-header {
+    padding: 1rem !important;
+  }
+  
+  .p-datatable-thead th,
+  .p-datatable-tbody td {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .p-paginator {
+    padding: 0.75rem 1rem !important;
+    min-height: 50px !important;
+    gap: 0.25rem !important;
+  }
+  
+  .p-paginator-current {
+    font-size: 0.8rem !important;
+    margin: 0 0.25rem !important;
+  }
+  
+  .p-paginator-page {
+    padding: 0.4rem 0.6rem !important;
+    min-width: 35px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .p-paginator .p-dropdown {
+    min-width: 70px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .p-paginator {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding: 1rem !important;
+    min-height: auto !important;
+  }
+  
+  .p-paginator-current {
+    order: -1 !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .p-datatable-thead th,
+  .p-datatable-tbody td {
+    padding: 0.6rem 0.4rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .p-datatable-thead th {
+    font-size: 0.8rem !important;
+    padding: 0.8rem 0.4rem !important;
+  }
+}
+
+.p-datatable-header .p-inputtext {
+    min-width: 150px;
+}
+
+/* Para Mobiles */
+
+@media (max-width: 768px) {
+    .p-datatable-header {
+        padding: 0.5rem !important;
+    }
+    
+    .p-datatable-header .p-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .p-datatable-header .p-inputtext {
+        width: 100%;
+    }
+}
+
+
+/* Para tablets */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .p-datatable-header .p-inputtext {
+        min-width: 200px;
+    }
+}
+
+
+
+/* PAGINACIÓN MINIMALISTA PARA MOBILE */
+@media (max-width: 480px) {
+  .p-paginator {
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    min-height: 60px !important;
+    gap: 0.5rem !important;
+    background: white !important;
+    border-top: 1px solid #e0e0e0 !important;
+  }
+  
+  /* Ocultar números de página en mobile */
+  .p-paginator-pages {
+    display: none !important;
+  }
+  
+  /* Información minimalista */
+  .p-paginator-current {
+    order: 0 !important;
+    margin: 0 !important;
+    font-size: 0.85rem !important;
+    color: #666 !important;
+    font-weight: 500 !important;
+    flex-grow: 1 !important;
+    text-align: center !important;
+  }
+  
+  /* Botones de navegación simplificados */
+  .p-paginator-prev,
+  .p-paginator-next {
+    background: var(--secondary-color) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.7rem !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .p-paginator-prev:hover:not(.p-disabled),
+  .p-paginator-next:hover:not(.p-disabled) {
+    background: var(--primary-color) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  .p-paginator-prev .p-paginator-icon,
+  .p-paginator-next .p-paginator-icon {
+    color: white !important;
+  }
+  
+  /* Ocultar first/last buttons */
+  .p-paginator-first,
+  .p-paginator-last {
+    display: none !important;
+  }
+  
+  /* Dropdown minimalista */
+  .p-paginator-rpp-options {
+    display: none !important; /* O puedes mantenerlo si es necesario */
+  }
+  
+  /* Estados deshabilitados */
+  .p-paginator .p-disabled {
+    background: #867f7f  !important;
+    color: #999 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+}
+
+/* ALTERNATIVA: Versión ultra minimalista con solo texto */
+@media (max-width: 480px) {
+  .p-paginator-minimal {
+    justify-content: center !important;
+    gap: 1.5rem !important;
+  }
+  
+  .p-paginator-minimal .p-paginator-current {
+    flex-grow: 0 !important;
+    font-size: 0.9rem !important;
+    color: #333 !important;
+  }
+  
+  .p-paginator-minimal .p-paginator-prev,
+  .p-paginator-minimal .p-paginator-next {
+    background: transparent !important;
+    border: 1px solid #d0d0d0 !important;
+    color: #666 !important;
+  }
+  
+  .p-paginator-minimal .p-paginator-prev .p-paginator-icon,
+  .p-paginator-minimal .p-paginator-next .p-paginator-icon {
+    color: #666 !important;
+  }
+  
+  .p-paginator-minimal .p-paginator-prev:hover:not(.p-disabled),
+  .p-paginator-minimal .p-paginator-next:hover:not(.p-disabled) {
+    background: #f8f9fa !important;
+    border-color: #999 !important;
+  }
+}
+
+/* OPCIÓN 3: Solo flechas con contador en medio (como apps modernas) */
+@media (max-width: 480px) {
+  .p-paginator-modern {
+    justify-content: center !important;
+    gap: 1rem !important;
+  }
+  
+  .p-paginator-modern .p-paginator-current {
+    flex-grow: 0 !important;
+    background: var(--secondary-color) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    min-width: 80px !important;
+  }
+}
+ /*tables primereact   Finaliza*/

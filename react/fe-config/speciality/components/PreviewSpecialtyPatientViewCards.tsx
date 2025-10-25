@@ -276,21 +276,21 @@ export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientV
         }
     }
 
-    console.log("finalAvailableCardsIds", finalAvailableCardsIds)
+console.log("finalAvailableCardsIds", finalAvailableCardsIds)
 
     return <>
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2">
-            {cards.filter(card => finalAvailableCardsIds?.includes(card.id)).map(card => <>
-                <div className="col">
-                    <div className="card text-center" style={{ maxWidth: "15rem", minHeight: "15em" }}>
-                        <div className="card-body d-flex flex-column justify-content-between align-items-center h-100">
-                            <div className="mb-2">
+        <div className="patient-cards-container">
+            <div className="patient-cards-grid">
+                {cards.filter(card => finalAvailableCardsIds?.includes(card.id)).map(card => (
+                    <div className="patient-card" key={card.id}>
+                        <div className="card-body">
+                            <div className="card-icon">
                                 <i className={`fas fa-${card.icono} fa-2x`}></i>
                             </div>
                             <h5 className="card-title">{card.titulo}</h5>
-                            <p className="card-text fs-9 text-center">{card.texto}</p>
+                            <p className="card-text">{card.texto}</p>
                             <button
-                                className="btn btn-primary btn-icon mt-auto btn-tab"
+                                className="btn btn-primary btn-icon mt-auto"
                                 onClick={() => handleCardClick(card)}
                                 disabled={disableRedirects}
                             >
@@ -298,8 +298,8 @@ export const PreviewSpecialtyPatientViewCards = (props: PreviewSpecialtyPatientV
                             </button>
                         </div>
                     </div>
-                </div>
-            </>)}
+                ))}
+            </div>
         </div>
     </>
 }

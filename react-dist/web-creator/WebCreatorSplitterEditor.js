@@ -3,7 +3,8 @@ import { generateUUID } from "../../services/utilidades.js";
 import { WebCreatorLogo } from "./components/WebCreatorLogo.js";
 import { WebCreatorMenuBar } from "./components/WebCreatorMenuBar.js";
 import { WebCreatorButton } from "./components/WebCreatorButton.js";
-import { WebCreatorInput } from "./components/WebCreatorInput.js"; // NUEVA interfaz para configuración de tabs
+import { WebCreatorInput } from "./components/WebCreatorInput.js";
+import { WebCreatorPanelView } from "./WebCreatorPanelView.js"; // NUEVA interfaz para configuración de tabs
 export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
   onPanelClick,
   onComponentClick
@@ -601,5 +602,14 @@ export const WebCreatorSplitterEditor = /*#__PURE__*/React.forwardRef(({
       }, "Panel vac\xEDo"));
     }
   };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, renderPanel(rootPanel));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(WebCreatorPanelView, {
+    panel: rootPanel,
+    updatePanelCols: updatePanelCols,
+    selectedPanel: selectedPanel,
+    selectedComponent: selectedComponent,
+    hoveredPanel: hoveredPanel,
+    handlePanelClick: handlePanelClick,
+    handleComponentClick: handleComponentClick,
+    setHoveredPanel: setHoveredPanel
+  }));
 });

@@ -609,6 +609,10 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
         return null;
     };
 
+    const delivered = () => {
+        return ["DELIVERED"].includes(finalPrescription?.status || '')
+    }
+
     return (
         <>
             <Toast ref={toast} />
@@ -681,83 +685,25 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
                         </div>
                     </div>
 
-                    <CustomPRTable
-                        data={medications}
-                        columns={[
-                            { field: 'product_name_concentration', header: 'Medicamentos' },
-                            { field: 'quantity', header: 'Cantidad' },
-                            {
-                                field: 'sale_price', header: 'Precio', body: (deposit: MedicationDelivery) => deposit.sale_price?.currency()
-                            },
-                            {
-                                field: 'status', header: 'Estado', body: (deposit: MedicationDelivery) => <>
-                                    <div className="mb-2">
-                                        {getDeliveryStatusBadges(deposit)}
-                                    </div>
-                                    <div className="mb-3">
-                                        {deposit.verification_description || "--"}
-                                    </div>
-                                    {deposit.verification_status === 'STOCK_NOT_ENOUGH' && <>
-                                        <div className="d-flex flex-column gap-2">
-                                            <label htmlFor="quantity" className="form-label">Cantidad a entregar</label>
-                                            <InputNumber
-                                                value={deposit.quantity_to_deliver}
-                                                max={deposit.available_stock}
-                                                min={1}
-                                                onValueChange={(e) => {
-                                                    console.log(e.value, deposit.available_stock)
-                                                    if (e.value && deposit.available_stock && e.value > deposit.available_stock) {
-                                                        updateMedication(medications.indexOf(deposit) || 0, { ...deposit, quantity_to_deliver: deposit.available_stock });
-                                                    } else {
-                                                        updateMedication(medications.indexOf(deposit) || 0, { ...deposit, quantity_to_deliver: e.value || 0 });
-                                                    }
-                                                }}
-                                            />
+                    {!delivered() && (
+                        <CustomPRTable
+                            data={medications}
+                            columns={[
+                                { field: 'product_name_concentration', header: 'Medicamentos' },
+                                { field: 'quantity', header: 'Cantidad' },
+                                {
+                                    field: 'sale_price', header: 'Precio', body: (deposit: MedicationDelivery) => deposit.sale_price?.currency()
+                                },
+                                {
+                                    field: 'status', header: 'Estado', body: (deposit: MedicationDelivery) => <>
+                                        <div className="mb-2">
+                                            {getDeliveryStatusBadges(deposit)}
                                         </div>
-                                    </>}
-                                    {deposit.verification_status === 'PRODUCT_NOT_FOUND' && <>
-                                        <Dropdown
-                                            options={productsWithAvailableStock}
-                                            optionLabel="name"
-                                            value={deposit.product}
-                                            onChange={(e) => {
-                                                if (e.value) {
-                                                    console.log(e.value)
-                                                    updateMedication(
-                                                        medications.indexOf(deposit) || 0,
-                                                        {
-                                                            ...deposit,
-                                                            product: e.value,
-                                                            product_id: e.value.id,
-                                                            sale_price: e.value.sale_price,
-                                                            quantity_to_deliver: Math.min(e.value.pharmacy_product_stock, deposit.quantity)
-                                                        }
-                                                    );
-                                                } else {
-                                                    updateMedication(
-                                                        medications.indexOf(deposit) || 0,
-                                                        {
-                                                            ...deposit,
-                                                            product: null,
-                                                            product_id: null,
-                                                            sale_price: 0,
-                                                            quantity_to_deliver: 0
-                                                        }
-                                                    );
-                                                }
-                                            }}
-                                            showClear
-                                            filter
-                                            placeholder="Seleccione del inventario"
-                                            className="w-100"
-                                        />
-
-                                        {deposit.product && deposit.product.pharmacy_product_stock < deposit.quantity && <>
-                                            <Divider />
-                                            <p>
-                                                No hay stock suficiente para la cantidad solicitada. Solo hay {deposit.product.pharmacy_product_stock} unidades disponibles. Si desea hacer una entrega parcial, por favor ingrese la cantidad a entregar.
-                                            </p>
-                                            <div className="mb-2">
+                                        <div className="mb-3">
+                                            {deposit.verification_description || "--"}
+                                        </div>
+                                        {deposit.verification_status === 'STOCK_NOT_ENOUGH' && <>
+                                            <div className="d-flex flex-column gap-2">
                                                 <label htmlFor="quantity" className="form-label">Cantidad a entregar</label>
                                                 <InputNumber
                                                     value={deposit.quantity_to_deliver}
@@ -774,136 +720,271 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
                                                 />
                                             </div>
                                         </>}
-                                    </>}
-                                </>
-                            }
-                        ]}
-                        disablePaginator
-                        disableSearch
-                        onReload={handleReload}
-                    />
+                                        {deposit.verification_status === 'PRODUCT_NOT_FOUND' && <>
+                                            <Dropdown
+                                                options={productsWithAvailableStock}
+                                                optionLabel="name"
+                                                value={deposit.product}
+                                                onChange={(e) => {
+                                                    if (e.value) {
+                                                        console.log(e.value)
+                                                        updateMedication(
+                                                            medications.indexOf(deposit) || 0,
+                                                            {
+                                                                ...deposit,
+                                                                product: e.value,
+                                                                product_id: e.value.id,
+                                                                sale_price: e.value.sale_price,
+                                                                quantity_to_deliver: Math.min(e.value.pharmacy_product_stock, deposit.quantity)
+                                                            }
+                                                        );
+                                                    } else {
+                                                        updateMedication(
+                                                            medications.indexOf(deposit) || 0,
+                                                            {
+                                                                ...deposit,
+                                                                product: null,
+                                                                product_id: null,
+                                                                sale_price: 0,
+                                                                quantity_to_deliver: 0
+                                                            }
+                                                        );
+                                                    }
+                                                }}
+                                                showClear
+                                                filter
+                                                placeholder="Seleccione del inventario"
+                                                className="w-100"
+                                            />
+
+                                            {deposit.product && deposit.product.pharmacy_product_stock < deposit.quantity && <>
+                                                <Divider />
+                                                <p>
+                                                    No hay stock suficiente para la cantidad solicitada. Solo hay {deposit.product.pharmacy_product_stock} unidades disponibles. Si desea hacer una entrega parcial, por favor ingrese la cantidad a entregar.
+                                                </p>
+                                                <div className="mb-2">
+                                                    <label htmlFor="quantity" className="form-label">Cantidad a entregar</label>
+                                                    <InputNumber
+                                                        value={deposit.quantity_to_deliver}
+                                                        max={deposit.available_stock}
+                                                        min={1}
+                                                        onValueChange={(e) => {
+                                                            console.log(e.value, deposit.available_stock)
+                                                            if (e.value && deposit.available_stock && e.value > deposit.available_stock) {
+                                                                updateMedication(medications.indexOf(deposit) || 0, { ...deposit, quantity_to_deliver: deposit.available_stock });
+                                                            } else {
+                                                                updateMedication(medications.indexOf(deposit) || 0, { ...deposit, quantity_to_deliver: e.value || 0 });
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>}
+                                        </>}
+                                    </>
+                                }
+                            ]}
+                            disablePaginator
+                            disableSearch
+                            onReload={handleReload}
+                        />
+                    )}
+
+                    {delivered() && (
+                        <CustomPRTable
+                            data={medications}
+                            columns={[
+                                { field: 'product_name_concentration', header: 'Medicamentos' },
+                                { field: 'quantity', header: 'Cantidad' }
+                            ]}
+                            disablePaginator
+                            disableSearch
+                            onReload={handleReload}
+                        />
+                    )}
 
                     {getFormErrorMessage("medications")}
 
                     {/* SECCIÓN DE RESUMEN Y PAGO - Similar al modal PHP */}
-                    <div className="card mt-4">
-                        <div className="card-header">
-                            <h5 className="card-title mb-0">Resumen de Entrega - Pedido #{finalPrescription?.id}</h5>
-                        </div>
-                        <div className="card-body">
-                            {/* Tabla resumen: muestra detalle con precios por unidad, cantidad y subtotal */}
-                            <div className="table-responsive mb-3">
-                                <table className="table align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Medicamento</th>
-                                            <th>Cantidad</th>
-                                            <th>Precio unitario</th>
-                                            <th>Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {verifiedProductsForDelivery.map((med, index) => (
-                                            <tr key={med.identifier}>
-                                                <td>{med.product_name_concentration}</td>
-                                                <td>{med.quantity_to_deliver}</td>
-                                                <td>{(med.sale_price || 0).currency()}</td>
-                                                <td>{((med.sale_price || 0) * (med.quantity_to_deliver || 0)).currency()}</td>
-                                            </tr>
-                                        ))}
-                                        {verifiedProductsForDelivery.length === 0 && (
+                    {!delivered() && (
+                        <div className="card mt-4">
+                            <div className="card-header">
+                                <h5 className="card-title mb-0">Resumen de Entrega - Pedido #{finalPrescription?.id}</h5>
+                            </div>
+                            <div className="card-body">
+                                {/* Tabla resumen: muestra detalle con precios por unidad, cantidad y subtotal */}
+                                <div className="table-responsive mb-3">
+                                    <table className="table align-middle">
+                                        <thead>
                                             <tr>
-                                                <td colSpan={4} className="text-center text-muted">
-                                                    No hay productos verificados para entrega
-                                                </td>
+                                                <th>Medicamento</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio unitario</th>
+                                                <th>Subtotal</th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {verifiedProductsForDelivery.map((med, index) => (
+                                                <tr key={med.identifier}>
+                                                    <td>{med.product_name_concentration}</td>
+                                                    <td>{med.quantity_to_deliver}</td>
+                                                    <td>{(med.sale_price || 0).currency()}</td>
+                                                    <td>{((med.sale_price || 0) * (med.quantity_to_deliver || 0)).currency()}</td>
+                                                </tr>
+                                            ))}
+                                            {verifiedProductsForDelivery.length === 0 && (
+                                                <tr>
+                                                    <td colSpan={4} className="text-center text-muted">
+                                                        No hay productos verificados para entrega
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                            {/* Total general calculado */}
-                            <div className="text-end mb-4">
-                                <h5>Total: <span className="text-primary">{totalAmount.currency()}</span></h5>
-                            </div>
+                                {/* Total general calculado */}
+                                <div className="text-end mb-4">
+                                    <h5>Total: <span className="text-primary">{totalAmount.currency()}</span></h5>
+                                </div>
 
-                            {/* Select para método de pago */}
-                            <div className="mb-3">
-                                <label htmlFor="paymentMethod" className="form-label">Método de pago *</label>
-                                <Dropdown
-                                    id="paymentMethod"
-                                    value={selectedPaymentMethod}
-                                    options={finalPaymentMethods}
-                                    onChange={(e) => setSelectedPaymentMethod(e.value)}
-                                    optionLabel="method"
-                                    optionValue="id"
-                                    placeholder="Seleccione un método de pago"
-                                    className="w-100"
-                                    disabled={processing}
-                                />
-                            </div>
+                                {/* Select para método de pago */}
+                                <div className="mb-3">
+                                    <label htmlFor="paymentMethod" className="form-label">Método de pago *</label>
+                                    <Dropdown
+                                        id="paymentMethod"
+                                        value={selectedPaymentMethod}
+                                        options={finalPaymentMethods}
+                                        onChange={(e) => setSelectedPaymentMethod(e.value)}
+                                        optionLabel="method"
+                                        optionValue="id"
+                                        placeholder="Seleccione un método de pago"
+                                        className="w-100"
+                                        disabled={processing}
+                                    />
+                                </div>
 
-                            {/* Notas o comentarios adicionales */}
-                            <div className="mb-3">
-                                <label htmlFor="deliveryNotes" className="form-label">Notas de entrega</label>
-                                <InputTextarea
-                                    id="deliveryNotes"
-                                    value={deliveryNotes}
-                                    onChange={(e) => setDeliveryNotes(e.target.value)}
-                                    rows={2}
-                                    placeholder="Observaciones o comentarios adicionales..."
-                                    className="w-100"
-                                    disabled={processing}
-                                />
+                                {/* Notas o comentarios adicionales */}
+                                <div className="mb-3">
+                                    <label htmlFor="deliveryNotes" className="form-label">Notas de entrega</label>
+                                    <InputTextarea
+                                        id="deliveryNotes"
+                                        value={deliveryNotes}
+                                        onChange={(e) => setDeliveryNotes(e.target.value)}
+                                        rows={2}
+                                        placeholder="Observaciones o comentarios adicionales..."
+                                        className="w-100"
+                                        disabled={processing}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="card">
                         <div className="card-body">
-                            <div className="d-flex align-items-center mb-3">
-                                <i className="fas fa-file-prescription text-primary me-2 fs-4"></i>
-                                <div>
-                                    <div className="fw-medium">Receta #{finalPrescription?.id}</div>
-                                    <div className="text-muted small">{medicationPrescriptionManager?.patient?.name || '--'} - {formatDateDMY(finalPrescription?.created_at)}</div>
+                            <div className="d-flex gap-2">
+                                <div className="d-flex flex-column flex-grow-1">
+                                    <div className="d-flex align-items-center mb-3">
+                                        <i className="fas fa-file-prescription text-primary me-2 fs-4"></i>
+                                        <div>
+                                            <div className="fw-medium">Receta #{finalPrescription?.id}</div>
+                                            <div className="text-muted small">{medicationPrescriptionManager?.patient?.name || '--'} - {formatDateDMY(finalPrescription?.created_at)}</div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-primary me-2"
+                                            onClick={() => setDialogVisible(true)}
+                                        >
+                                            <i className="fas fa-eye me-1"></i> Ver receta
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-secondary"
+                                            onClick={handlePrint}
+                                        >
+                                            <i className="fas fa-print me-1"></i> Imprimir
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="d-flex">
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-primary me-2"
-                                    onClick={() => setDialogVisible(true)}
-                                >
-                                    <i className="fas fa-eye me-1"></i> Ver receta
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={handlePrint}
-                                >
-                                    <i className="fas fa-print me-1"></i> Imprimir
-                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="d-flex justify-content-between align-items-center mt-4">
-                        <Button
-                            type="button"
-                            icon="pi pi-times"
-                            label="Cancelar"
-                            className="p-button-secondary"
-                            onClick={() => window.history.back()}
-                            disabled={processing}
-                        />
-                        <Button
-                            icon={processing ? "pi pi-spin pi-spinner" : "pi pi-check"}
-                            label={processing ? "Procesando..." : "Entregar Pedido"}
-                            className="btn btn-primary"
-                            type="submit"
-                            disabled={processing || verifiedProductsForDelivery.length === 0 || !selectedPaymentMethod}
-                        />
+                    <div className="text-center py-6 px-4 bg-light rounded-3 shadow-sm" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                        <i className="pi pi-check-circle text-6xl text-success mb-4"></i>
+                        <h2 className="mb-3 fw-bold">¡Entrega Generada Exitosamente!</h2>
+                        <p className="text-muted mb-4">La entrega ha sido creada y guardada en el sistema.</p>
+
+                        <div className="d-flex justify-content-center gap-3 flex-wrap">
+                            <Button
+                                type="button"
+                                label="Enviar por WhatsApp"
+                                icon={<i className="fas fa-whatsapp"></i>}
+                                className="p-button-success p-button-lg"
+                                onClick={handleSendWhatsApp}
+                                loading={sendingWhatsApp}
+                                disabled={sendingWhatsApp}
+                            />
+
+                            <Button
+                                type="button"
+                                label="Imprimir Factura"
+                                className="p-button-primary p-button-lg"
+                                icon="pi pi-print"
+                                onClick={async () => {
+                                    const user = await userService.getLoggedUser();
+                                    await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, false);
+                                }}
+                            />
+
+                            <Button
+                                type="button"
+                                label="Descargar Factura"
+                                icon="pi pi-download"
+                                className="p-button-help p-button-lg"
+                                onClick={async () => {
+                                    const user = await userService.getLoggedUser();
+                                    await generateInvoiceFromInvoice(responseInvoice.invoice, user, finalPrescription?.patient, true);
+                                }}
+                            />
+
+                            <Button
+                                type="button"
+                                label="Cerrar"
+                                className="p-button-secondary p-button-lg"
+                                onClick={() => setFinishDialogVisible(false)}
+                            />
+                        </div>
+
+                        {sendingWhatsApp && (
+                            <div className="mt-3 text-sm text-muted">
+                                <i className="pi pi-spin pi-spinner mr-2"></i>
+                                Enviando mensaje por WhatsApp...
+                            </div>
+                        )}
                     </div>
+
+                    {!delivered() && (
+                        <div className="d-flex justify-content-between align-items-center mt-4">
+                            <Button
+                                type="button"
+                                icon="pi pi-times"
+                                label="Cancelar"
+                                className="p-button-secondary"
+                                onClick={() => window.history.back()}
+                                disabled={processing}
+                            />
+                            <Button
+                                icon={processing ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                                label={processing ? "Procesando..." : "Entregar Pedido"}
+                                className="btn btn-primary"
+                                type="submit"
+                                disabled={processing || verifiedProductsForDelivery.length === 0 || !selectedPaymentMethod}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <MedicationDeliveryDetailDialog
@@ -925,6 +1006,7 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
 
                     <div className="d-flex justify-content-center gap-3 flex-wrap">
                         <Button
+                            type="button"
                             label="Enviar por WhatsApp"
                             icon={<i className="fas fa-whatsapp"></i>}
                             className="p-button-success p-button-lg"
@@ -934,6 +1016,7 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
                         />
 
                         <Button
+                            type="button"
                             label="Imprimir Factura"
                             className="p-button-primary p-button-lg"
                             icon="pi pi-print"
@@ -944,6 +1027,7 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
                         />
 
                         <Button
+                            type="button"
                             label="Descargar Factura"
                             icon="pi pi-download"
                             className="p-button-help p-button-lg"
@@ -954,6 +1038,7 @@ export const MedicationDeliveryDetail = ({ deliveryId, selectedConvenio }: Medic
                         />
 
                         <Button
+                            type="button"
                             label="Cerrar"
                             className="p-button-secondary p-button-lg"
                             onClick={() => setFinishDialogVisible(false)}

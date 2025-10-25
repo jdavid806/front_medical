@@ -25,6 +25,9 @@ export const ProductDeliveryList = ({
   }, {
     label: 'Entregado',
     command: () => fetchDeliveries("entregado")
+  }, {
+    label: 'Entrega parcial',
+    command: () => fetchDeliveries("entrega parcial")
   }];
   const toggleObservations = (deliveryId, event) => {
     event.stopPropagation();

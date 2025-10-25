@@ -217,30 +217,27 @@ export const PreviewSpecialtyPatientViewCards = props => {
   };
   console.log("finalAvailableCardsIds", finalAvailableCardsIds);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "row row-cols-1 row-cols-sm-2 row-cols-xl-3 row-cols-xxl-4 g-3 mb-3 mt-2"
-  }, cards.filter(card => finalAvailableCardsIds?.includes(card.id)).map(card => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "col"
+    className: "patient-cards-container"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card text-center",
-    style: {
-      maxWidth: "15rem",
-      minHeight: "15em"
-    }
+    className: "patient-cards-grid"
+  }, cards.filter(card => finalAvailableCardsIds?.includes(card.id)).map(card => /*#__PURE__*/React.createElement("div", {
+    className: "patient-card",
+    key: card.id
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body d-flex flex-column justify-content-between align-items-center h-100"
+    className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "mb-2"
+    className: "card-icon"
   }, /*#__PURE__*/React.createElement("i", {
     className: `fas fa-${card.icono} fa-2x`
   })), /*#__PURE__*/React.createElement("h5", {
     className: "card-title"
   }, card.titulo), /*#__PURE__*/React.createElement("p", {
-    className: "card-text fs-9 text-center"
+    className: "card-text"
   }, card.texto), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary btn-icon mt-auto btn-tab",
+    className: "btn btn-primary btn-icon mt-auto",
     onClick: () => handleCardClick(card),
     disabled: disableRedirects
   }, /*#__PURE__*/React.createElement("span", {
     className: "fa-solid fa-chevron-right"
-  })))))))));
+  }))))))));
 };

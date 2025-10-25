@@ -5,23 +5,27 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
+import { InputNumber } from "primereact/inputnumber";
 const ExpirationLotForm = ({
   formId,
   onSubmit,
   initialData,
   deposits,
-  productName
+  productName,
+  isEditing
 }) => {
   const [localFormData, setLocalFormData] = useState(initialData || {
     expirationDate: null,
     lotNumber: "",
-    deposit: ""
+    deposit: "",
+    quantity: "" // Valor inicial
   });
   const {
     control,
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: {
       errors,
       isValid
@@ -36,7 +40,7 @@ const ExpirationLotForm = ({
     }
   }, [initialData, reset]);
   const handleFormSubmit = data => {
-    onSubmit(data); // Envía TODOS los datos al padre
+    onSubmit(data);
   };
   const renderLotNumber = ({
     field
@@ -77,6 +81,24 @@ const ExpirationLotForm = ({
     filter: true,
     className: "w-100"
   })));
+
+  // NUEVO: Render para el campo de cantidad
+  const renderQuantity = ({
+    field
+  }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+    htmlFor: field.name,
+    className: "form-label"
+  }, "Cantidad *"), /*#__PURE__*/React.createElement(InputNumber, {
+    value: field.value || 0 // Forzar valor numérico
+    ,
+    placeholder: "Cantidad",
+    className: "w-100",
+    min: 0,
+    onValueChange: e => {
+      console.log("Value changed:", e.value); // Para debug
+      field.onChange(e.value);
+    }
+  }));
   return /*#__PURE__*/React.createElement("div", {
     className: "card shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
@@ -85,7 +107,7 @@ const ExpirationLotForm = ({
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-box me-2 text-primary"
-  }), productName ? `Lote - ${productName}` : "Agregar Lote")), /*#__PURE__*/React.createElement("div", {
+  }), isEditing ? `Editar Lote - ${productName}` : `Agregar Lote - ${productName}`)), /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("form", {
     id: formId,
@@ -111,7 +133,7 @@ const ExpirationLotForm = ({
     },
     render: renderExpirationDate
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "deposit",
     control: control,
@@ -119,6 +141,19 @@ const ExpirationLotForm = ({
       required: "Campo obligatorio"
     },
     render: renderDeposit
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "quantity",
+    control: control,
+    rules: {
+      required: "Campo obligatorio",
+      min: {
+        value: 1,
+        message: "La cantidad debe ser mayor a 0"
+      }
+    },
+    render: renderQuantity
   }))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2 mt-4"
   }, /*#__PURE__*/React.createElement(Button, {

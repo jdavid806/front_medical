@@ -1,0 +1,46 @@
+/*Megamenu primereact padres React  Empieza*/
+.custom-responsive-megamenu .p-menuitem-link {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.custom-responsive-megamenu .p-menuitem-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.custom-responsive-megamenu .p-menuitem-link:hover {
+    transform: translateY(-2px);
+}
+
+.custom-responsive-megamenu .p-menuitem-link:hover::after {
+    width: 80%;
+}
+
+.custom-responsive-megamenu .p-menuitem-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-responsive-megamenu .p-menuitem-link {
+    border-bottom: none !important;
+    text-decoration: none !important;
+}
+
+/* También asegurar que no haya bordes en los estados normales */
+.custom-responsive-megamenu .p-menuitem-link,
+.custom-responsive-megamenu .p-menuitem-link:focus,
+.custom-responsive-megamenu .p-menuitem-link:active {
+    border-bottom: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+ /*Megamenu primereact padres React  Finaliza*/

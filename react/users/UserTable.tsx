@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Menu } from "primereact/menu";
-import { Accordion, AccordionTab } from "primereact/accordion";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { UserTableItem } from "../models/models.js";
 import { CustomFormModal } from "../components/CustomFormModal.js";
@@ -22,6 +20,7 @@ interface UserTableProps {
   onDeleteSignature?: (id: string) => void;
   onDeleteStamp?: (id: string) => void;
   onReload?: () => void;
+  onCreateUser?: () => void;
   loading?: boolean;
 }
 
@@ -34,6 +33,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onDeleteSignature,
   onDeleteStamp,
   onReload,
+  onCreateUser,
   loading = false
 }) => {
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -306,7 +306,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     return (
       <div style={{ position: "relative" }}>
         <Button
-          className="btn-primary flex items-center gap-2"
+          className="p-button-primary flex items-center gap-2"
           onClick={(e) => menu.current?.toggle(e)}
           aria-controls={`popup_menu_${rowData.id}`}
           aria-haspopup
@@ -387,192 +387,178 @@ export const UserTable: React.FC<UserTableProps> = ({
   ];
 
   return (
-    <div className="w-100">
-      <Toast ref={toast} />
-
-      {/* Diálogo de confirmación de eliminación */}
-      <Dialog
-        visible={deleteDialogVisible}
-        style={{ width: "450px" }}
-        header="Confirmar"
-        modal
-        footer={deleteDialogFooter}
-        onHide={() => setDeleteDialogVisible(false)}
-      >
-        <div className="flex align-items-center justify-content-center">
-          <i
-            className="fas fa-exclamation-triangle mr-3"
-            style={{ fontSize: "2rem", color: "#F8BB86" }}
-          />
-          {userToDelete && (
-            <span>
-              ¿Estás seguro que deseas eliminar al usuario <b>{userToDelete.fullName}</b>?
-            </span>
-          )}
-        </div>
-      </Dialog>
-
-      <div className="card mb-3">
-        <div className="card-body">
-          <Accordion>
-            <AccordionTab header="Filtros">
-              <div className="row">
-                <div className="col-md-6 col-lg-3">
-                  <label className="form-label">
-                    Nombre
-                  </label>
-                  <InputText
-                    value={filtros.fullName}
-                    onChange={(e) => handleFilterChange("fullName", e.target.value)}
-                    placeholder="Buscar por nombre"
-                    className="w-100"
-                  />
-                </div>
-                <div className="col-md-6 col-lg-3">
-                  <label className="form-label">
-                    Rol
-                  </label>
-                  <InputText
-                    value={filtros.role}
-                    onChange={(e) => handleFilterChange("role", e.target.value)}
-                    placeholder="Buscar por rol"
-                    className="w-100"
-                  />
-                </div>
-
-              </div>
-
-            </AccordionTab>
-          </Accordion>
-
-          <CustomPRTable
-            columns={columns}
-            data={tableItems}
-            loading={false}
-            onSearch={handleSearchChange}
-            onReload={handleRefresh}
-          />
-        </div>
-      </div>
-
-      <input
-        id="fileInput"
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          if (actionType === "signature") {
-            handleFileChange(e, "signature");
-          } else if (actionType === "stamp") {
-            handleFileChange(e, "stamp");
-          }
-        }}
-      />
-
-      {previewUrl && (
+    <>
+      <div className="w-100">
         <div
-          className="modal fade show"
-          style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+          style={{ minHeight: "400px" }}
         >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Previsualización</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => {
-                    setPreviewUrl(null);
-                    setSelectedFile(null);
-                  }}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <img
-                  src={previewUrl}
-                  alt="Previsualización"
-                  style={{ width: "100%" }}
-                />
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setPreviewUrl(null);
-                    setSelectedFile(null);
-                  }}
-                >
-                  Cancelar
-                </button>
-                {/* Botón de Eliminar */}
-                {currentUserId && (
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => {
-                      if (actionType === "signature" && onDeleteSignature) {
-                        onDeleteSignature(currentUserId);
-                      } else if (actionType === "stamp" && onDeleteStamp) {
-                        onDeleteStamp(currentUserId);
-                      }
-                      setPreviewUrl(null);
-                      setSelectedFile(null);
-                    }}
-                  >
-                    {actionType === "signature" &&
-                      users.find((user) => user.id === currentUserId)?.signatureMinioUrl
-                      ? "Eliminar firma"
-                      : actionType === "stamp" &&
-                        users.find((user) => user.id === currentUserId)?.imageMinioUrl
-                        ? "Eliminar sello"
-                        : "Eliminar"}
-                  </button>
-                )}
-                {/* Botón de Confirmar/Actualizar */}
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleConfirm}
-                >
-                  {actionType === "signature" &&
-                    users.find((user) => user.id === currentUserId)?.signatureMinioUrl
-                    ? "Actualizar firma"
-                    : actionType === "stamp" &&
-                      users.find((user) => user.id === currentUserId)?.imageMinioUrl
-                      ? "Actualizar sello"
-                      : "Confirmar"}
-                </button>
-              </div>
+          <div className="card-body h-100 w-100 d-flex flex-column">
+            <div className="d-flex justify-content-end mb-3">
+              <Button
+                className="p-button-primary d-flex align-items-center"
+                onClick={onCreateUser}
+                disabled={loading}
+              >
+                <i className="fas fa-plus me-2"></i>
+                {loading ? 'Cargando...' : 'Nuevo Usuario'}
+              </Button>
             </div>
+
+            <CustomPRTable
+              columns={columns}
+              data={tableItems}
+              loading={false}
+              onSearch={handleSearchChange}
+              onReload={handleRefresh}
+            />
           </div>
         </div>
-      )}
 
-      <CustomFormModal
-        show={showAssistantsModal}
-        formId="assistantsForm"
-        title="Gestionar asistentes"
-        onHide={() => setShowAssistantsModal(false)}
-      >
-        <UserAssistantForm
-          formId="assistantsForm"
-          onHandleSubmit={handleAssistantsSubmit}
-          initialData={assistantsFormInitialData}
+        <Toast ref={toast} />
+
+        <Dialog
+          visible={deleteDialogVisible}
+          style={{ width: "450px" }}
+          header="Confirmar"
+          modal
+          footer={deleteDialogFooter}
+          onHide={() => setDeleteDialogVisible(false)}
+        >
+          <div className="flex align-items-center justify-content-center">
+            <i
+              className="fas fa-exclamation-triangle mr-3"
+              style={{ fontSize: "2rem", color: "#F8BB86" }}
+            />
+            {userToDelete && (
+              <span>
+                ¿Estás seguro que deseas eliminar al usuario <b>{userToDelete.fullName}</b>?
+              </span>
+            )}
+          </div>
+        </Dialog>
+
+        <input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            if (actionType === "signature") {
+              handleFileChange(e, "signature");
+            } else if (actionType === "stamp") {
+              handleFileChange(e, "stamp");
+            }
+          }}
         />
-      </CustomFormModal>
 
-      <GoogleCalendarModal
-        show={showGoogleCalendarModal}
-        userId={currentUserId || ''}
-        userEmail={currentEmail || ''}
-        onHide={() => setShowGoogleCalendarModal(false)}
-        onSuccess={() => {
-          onReload && onReload();
-        }}
-        toast={toast.current}
-      />
-    </div>
+        {
+          previewUrl && (
+            <div
+              className="modal fade show"
+              style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title">Previsualización</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => {
+                        setPreviewUrl(null);
+                        setSelectedFile(null);
+                      }}
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <img
+                      src={previewUrl}
+                      alt="Previsualización"
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        setPreviewUrl(null);
+                        setSelectedFile(null);
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                    {/* Botón de Eliminar */}
+                    {currentUserId && (
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => {
+                          if (actionType === "signature" && onDeleteSignature) {
+                            onDeleteSignature(currentUserId);
+                          } else if (actionType === "stamp" && onDeleteStamp) {
+                            onDeleteStamp(currentUserId);
+                          }
+                          setPreviewUrl(null);
+                          setSelectedFile(null);
+                        }}
+                      >
+                        {actionType === "signature" &&
+                          users.find((user) => user.id === currentUserId)?.signatureMinioUrl
+                          ? "Eliminar firma"
+                          : actionType === "stamp" &&
+                            users.find((user) => user.id === currentUserId)?.imageMinioUrl
+                            ? "Eliminar sello"
+                            : "Eliminar"}
+                      </button>
+                    )}
+                    {/* Botón de Confirmar/Actualizar */}
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleConfirm}
+                    >
+                      {actionType === "signature" &&
+                        users.find((user) => user.id === currentUserId)?.signatureMinioUrl
+                        ? "Actualizar firma"
+                        : actionType === "stamp" &&
+                          users.find((user) => user.id === currentUserId)?.imageMinioUrl
+                          ? "Actualizar sello"
+                          : "Confirmar"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        <CustomFormModal
+          show={showAssistantsModal}
+          formId="assistantsForm"
+          title="Gestionar asistentes"
+          onHide={() => setShowAssistantsModal(false)}
+        >
+          <UserAssistantForm
+            formId="assistantsForm"
+            onHandleSubmit={handleAssistantsSubmit}
+            initialData={assistantsFormInitialData}
+          />
+        </CustomFormModal>
+
+        <GoogleCalendarModal
+          show={showGoogleCalendarModal}
+          userId={currentUserId || ''}
+          userEmail={currentEmail || ''}
+          onHide={() => setShowGoogleCalendarModal(false)}
+          onSuccess={() => {
+            onReload && onReload();
+          }}
+          toast={toast.current}
+        />
+      </div>
+    </>
   );
 };
 

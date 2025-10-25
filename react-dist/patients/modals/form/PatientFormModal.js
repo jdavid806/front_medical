@@ -172,16 +172,16 @@ const PatientFormModal = ({
   }];
   const regimeOptions = [{
     label: "Subsidiado",
-    value: "subsidiado"
+    value: "Subsidiado"
   }, {
     label: "Contributivo",
-    value: "contributivo"
+    value: "Contributivo"
   }, {
     label: "Pensionado",
-    value: "pensionado"
+    value: "Pensionado"
   }, {
     label: "Privado",
-    value: "privado"
+    value: "Privado"
   }];
   const stepValidations = {
     0: ["patient.document_type", "patient.document_number", "patient.first_name", "patient.last_name", "patient.gender", "patient.date_of_birth", "patient.whatsapp", "patient.email", "patient.blood_type"],
@@ -190,8 +190,8 @@ const PatientFormModal = ({
   };
   const toast = useRef(null);
   useEffect(() => {
-    loadCountries();
     if (patientData) {
+      console.log("patientData", patientData);
       setValue("patient.document_type", patientData.document_type);
       setValue("patient.document_number", patientData.document_number);
       setValue("patient.first_name", patientData.first_name);
@@ -232,6 +232,7 @@ const PatientFormModal = ({
           email: comp.email || ""
         })));
       }
+      loadCountries();
       if (patientData.country_id) {
         handleCountryChange(patientData.country_id);
       }
@@ -264,12 +265,6 @@ const PatientFormModal = ({
         }
       } catch (error) {
         console.error("Error inicializando datos:", error);
-        toast.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail: "Error al inicializar los datos del formulario",
-          life: 5000
-        });
       }
     };
     initializeData();
@@ -398,12 +393,6 @@ const PatientFormModal = ({
         }
       }
     } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message || "Error al cargar departamentos",
-        life: 5000
-      });
       setDepartments([]);
     } finally {
       setIsLoading(false);
@@ -422,6 +411,7 @@ const PatientFormModal = ({
         }
       };
       reader.readAsDataURL(file);
+      console.log(file);
     }
   };
   const handleAddCompanion = companion => {
@@ -608,6 +598,7 @@ const PatientFormModal = ({
           });
         }
       }
+      console.log("Respuesta del servidor:", response);
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
@@ -626,6 +617,7 @@ const PatientFormModal = ({
       console.error("Error completo:", error);
       let errorMessage = patientData ? "Error al actualizar el paciente" : "Error al crear el paciente";
       if (error.response) {
+        // Error de API
         if (error.response.data?.message) {
           errorMessage = error.response.data.message;
         } else if (error.response.data?.errors) {
@@ -658,8 +650,11 @@ const PatientFormModal = ({
   };
   const validateAndNext = async () => {
     const currentStep = stepperRef.current?.getActiveStep();
+    console.log("currentStep", currentStep);
+    console.log("stepperRef", stepperRef);
     if (currentStep === undefined) return;
     const isValid = await validateStep(currentStep);
+    console.log("isValid", isValid);
     if (isValid && stepperRef.current) {
       if (currentStep < Object.keys(stepValidations).length - 1) {
         stepperRef.current.nextCallback();
@@ -700,6 +695,7 @@ const PatientFormModal = ({
       field,
       fieldState
     }) => {
+      console.log("Valor actual de document_type:", field.value);
       return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
         className: "form-label"
       }, "Tipo de documento *"), /*#__PURE__*/React.createElement(Dropdown, {
@@ -713,6 +709,7 @@ const PatientFormModal = ({
         }),
         value: field.value || "",
         onChange: e => {
+          console.log("Nuevo valor seleccionado:", e.value);
           field.onChange(e.value);
         }
       }), getFormErrorMessage(field.name));
@@ -770,23 +767,43 @@ const PatientFormModal = ({
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.middle_name",
     control: control,
+    rules: {
+      required: "Segundo nombre es requerido",
+      minLength: {
+        value: 2,
+        message: "El segundo nombre debe tener al menos 2 caracteres"
+      }
+    },
     render: ({
-      field
+      field,
+      fieldState
     }) => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
     }, "Segundo Nombre *"), /*#__PURE__*/React.createElement(InputText, _extends({
-      className: classNames("w-100")
-    }, field)))
+      className: classNames("w-100", {
+        "is-invalid": fieldState.error
+      })
+    }, field)), getFormErrorMessage(field.name))
   }), /*#__PURE__*/React.createElement(Controller, {
     name: "patient.second_last_name",
     control: control,
+    rules: {
+      required: "Segundo apellido es requerido",
+      minLength: {
+        value: 2,
+        message: "El segundo apellido debe tener al menos 2 caracteres"
+      }
+    },
     render: ({
-      field
+      field,
+      fieldState
     }) => /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
       className: "form-label"
     }, "Segundo apellido *"), /*#__PURE__*/React.createElement(InputText, _extends({
-      className: classNames("w-100")
-    }, field)))
+      className: classNames("w-100", {
+        "is-invalid": fieldState.error
+      })
+    }, field)), getFormErrorMessage(field.name))
   })))), /*#__PURE__*/React.createElement(Card, {
     title: "Informaci\xF3n Adicional"
   }, /*#__PURE__*/React.createElement("div", {

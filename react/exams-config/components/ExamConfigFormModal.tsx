@@ -1,6 +1,7 @@
 import React from 'react';
 import { CustomFormModal } from '../../components/CustomFormModal';
 import { ExamConfigForm, ExamTypeInputs } from './ExamConfigForm';
+import { Dialog } from 'primereact/dialog';
 
 interface UserFormModalProps {
     title?: string
@@ -14,17 +15,37 @@ export const ExamConfigFormModal: React.FC<UserFormModalProps> = ({ title = 'Cre
 
     const formId = 'createExamType';
 
+    const footer = (
+        <>
+            <button
+                className="btn btn-link text-danger px-3 my-0"
+                aria-label="Close"
+                onClick={onHide}>
+                <i className="fas fa-arrow-left"></i> Cerrar
+            </button>
+            <button
+                type='submit'
+                form={formId}
+                className="btn btn-primary my-0"
+            >
+                <i className="fas fa-bookmark"></i> Guardar
+            </button>
+        </>
+    )
+
     return (
-        <CustomFormModal
-            show={show}
-            onHide={onHide}
-            formId={formId}
-            title={title}>
+        <Dialog
+            visible={show}
+            onHide={() => { onHide?.() }}
+            header={title}
+            footer={footer}
+            style={{ width: "70vw" }}
+        >
             <ExamConfigForm
                 formId={formId}
                 onHandleSubmit={handleSubmit}
                 initialData={initialData}
             ></ExamConfigForm>
-        </CustomFormModal>
+        </Dialog>
     );
 };

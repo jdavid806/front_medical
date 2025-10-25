@@ -2688,7 +2688,6 @@
     border: 1px solid;
   }
   .p-button.p-button-danger.p-button-text, .p-button-group.p-button-danger > .p-button.p-button-text, .p-splitbutton.p-button-danger > .p-button.p-button-text, .p-fileupload-choose.p-button-danger.p-button-text {
-    background-color: transparent;
     color: #f19ea6;
     border-color: transparent;
   }
@@ -2990,17 +2989,14 @@
     border-color: transparent;
   }
   .p-splitbutton.p-button-help.p-button-text > .p-button:not(:disabled):hover {
-    background: rgba(183, 162, 224, 0.04);
     border-color: transparent;
     color: #b7a2e0;
   }
   .p-splitbutton.p-button-help.p-button-text > .p-button:not(:disabled):active {
-    background: rgba(183, 162, 224, 0.16);
     border-color: transparent;
     color: #b7a2e0;
   }
   .p-splitbutton.p-button-danger.p-button-outlined > .p-button {
-    background-color: transparent;
     color: #f19ea6;
     border: 1px solid;
   }
@@ -3009,21 +3005,17 @@
     color: #f19ea6;
   }
   .p-splitbutton.p-button-danger.p-button-outlined > .p-button:not(:disabled):active {
-    background: rgba(241, 158, 166, 0.16);
     color: #f19ea6;
   }
   .p-splitbutton.p-button-danger.p-button-text > .p-button {
-    background-color: transparent;
     color: #f19ea6;
     border-color: transparent;
   }
   .p-splitbutton.p-button-danger.p-button-text > .p-button:not(:disabled):hover {
-    background: rgba(241, 158, 166, 0.04);
     border-color: transparent;
     color: #f19ea6;
   }
   .p-splitbutton.p-button-danger.p-button-text > .p-button:not(:disabled):active {
-    background: rgba(241, 158, 166, 0.16);
     border-color: transparent;
     color: #f19ea6;
   }

@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
 import { useCountries } from "../countries/hooks/useCountries.js";
 import { genders } from "../../services/commons.js";
-import { useRoles } from "../user-roles/hooks/useUserRoles.js";
+import { useUserRoles } from "../user-roles/hooks/useUserRoles.js";
 import { useUserSpecialties } from "../user-specialties/hooks/useUserSpecialties.js";
 import { Divider } from "primereact/divider";
 import { Password } from "primereact/password";
@@ -19,7 +19,6 @@ const UserForm = ({
   initialData,
   config
 }) => {
-  console.log('initialData en UserForm:', initialData);
   const [profileUrl, setProfileUrl] = useState("../assets/img/profile/profile_default.jpg");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -162,7 +161,7 @@ const UserForm = ({
   } = useCitiesByCountry();
   const {
     userRoles
-  } = useRoles();
+  } = useUserRoles();
   const {
     userSpecialties
   } = useUserSpecialties();
@@ -177,13 +176,7 @@ const UserForm = ({
   const watchEmail = watch("email");
 
   // Debug para ver los valores actuales
-  useEffect(() => {
-    console.log('Valores actuales del formulario:', {
-      otp_enabled: watchOtpEnabled,
-      email: watchEmail,
-      user_role_id: watchUserRoleId
-    });
-  }, [watchOtpEnabled, watchEmail, watchUserRoleId]);
+  useEffect(() => {}, [watchOtpEnabled, watchEmail, watchUserRoleId]);
   useEffect(() => {
     if (initialData && initialData.country_id) {
       fetchCitiesByCountryName(initialData.country_id);
@@ -660,7 +653,7 @@ const UserForm = ({
     }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
       htmlFor: field.name,
       className: "form-label"
-    }, "Contrase\xF1a ", !initialData && /*#__PURE__*/React.createElement("span", {
+    }, "Contrase\xF1a", " ", !initialData && /*#__PURE__*/React.createElement("span", {
       className: "text-primary"
     }, "*")), /*#__PURE__*/React.createElement(Password, _extends({}, field, {
       header: passwordHeader,

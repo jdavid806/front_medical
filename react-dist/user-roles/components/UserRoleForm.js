@@ -137,7 +137,8 @@ const MenuAccordion = ({
 export const UserRoleForm = ({
   formId,
   onHandleSubmit,
-  initialData
+  initialData,
+  roleId
 }) => {
   const {
     register,
@@ -162,15 +163,73 @@ export const UserRoleForm = ({
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Determinar si es modo creación o edición
+  const isEditMode = !!roleId;
+
+  // Función recursiva para extraer todos los IDs de menús que tienen is_active = true
+  const extractActiveMenuIds = menus => {
+    const activeIds = [];
+    const traverse = menuList => {
+      menuList.forEach(menu => {
+        // Si el menú está activo, agregar su ID
+        if (menu.is_active) {
+          activeIds.push(menu.id);
+        }
+        // Recorrer hijos recursivamente
+        if (menu.items && menu.items.length > 0) {
+          traverse(menu.items);
+        }
+      });
+    };
+    traverse(menus);
+    return activeIds;
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const menusData = await menuService.getAllMenuByRole();
-        console.log("Menús jerárquicos del API:", menusData);
-        setAllMenus(menusData);
-        const permissionsData = await permissionService.getAll();
-        setPermissionCategories(permissionsData);
+        console.log("rolessssssss", roleId);
+
+        // SOLO cargar menús si estamos en modo edición
+        if (roleId) {
+          const menusData = await menuService.getAllMenuByRolePermissions(roleId);
+          console.log("Menús jerárquicos del API:", menusData);
+
+          // Extraer los IDs de menús activos
+          const activeMenuIds = extractActiveMenuIds(menusData);
+          console.log("IDs de menús activos automáticamente seleccionados:", activeMenuIds);
+          setAllMenus(menusData);
+          setSelectedMenuIds(activeMenuIds);
+        } else {
+          // En modo creación, no cargar menús
+          setAllMenus([]);
+          setSelectedMenuIds([]);
+        }
+
+        // Reset del formulario con los datos correspondientes
+        if (initialData) {
+          reset({
+            name: initialData.name,
+            group: initialData.group
+          });
+          setSelectedPermissions(initialData.permissions || []);
+        } else {
+          reset({
+            name: '',
+            group: ''
+          });
+          setSelectedPermissions([]);
+          setSelectedMenuIds([]);
+        }
+
+        // SOLO cargar permisos si estamos en modo edición
+        if (roleId) {
+          const permissionsData = await permissionService.getAll();
+          setPermissionCategories(permissionsData);
+        } else {
+          setPermissionCategories([]);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -178,27 +237,7 @@ export const UserRoleForm = ({
       }
     };
     fetchData();
-  }, []);
-  useEffect(() => {
-    if (initialData) {
-      console.log('Initial data received:', initialData);
-      reset({
-        name: initialData.name,
-        group: initialData.group
-      });
-      setSelectedPermissions(initialData.permissions || []);
-      const activeMenuIds = initialData.menuIds || initialData.menus?.filter(menu => menu.is_active).map(menu => menu.id) || [];
-      setSelectedMenuIds(activeMenuIds);
-      console.log('Active menu IDs:', activeMenuIds);
-    } else {
-      reset({
-        name: '',
-        group: ''
-      });
-      setSelectedPermissions([]);
-      setSelectedMenuIds([]);
-    }
-  }, [initialData, reset]);
+  }, [roleId, initialData, reset]);
   const handleMenuChange = (menuId, checked) => {
     setSelectedMenuIds(prev => checked ? [...prev, menuId] : prev.filter(id => id !== menuId));
   };
@@ -276,7 +315,7 @@ export const UserRoleForm = ({
     }))
   }), errors.group && /*#__PURE__*/React.createElement("div", {
     className: "invalid-feedback"
-  }, errors.group.message)), /*#__PURE__*/React.createElement("div", {
+  }, errors.group.message)), isEditMode ? /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-6"
@@ -358,6 +397,12 @@ export const UserRoleForm = ({
   }), /*#__PURE__*/React.createElement("label", {
     className: "form-check-label",
     htmlFor: permission.key_
-  }, permission.name))), index < permissionCategories.length - 1 && /*#__PURE__*/React.createElement("hr", null)))))))));
+  }, permission.name))), index < permissionCategories.length - 1 && /*#__PURE__*/React.createElement("hr", null))))))) :
+  /*#__PURE__*/
+  // MENSAJE INFORMATIVO PARA MODO CREACIÓN
+  React.createElement("div", {
+    className: "alert alert-info mt-3"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-info-circle me-2"
+  }), /*#__PURE__*/React.createElement("strong", null, "Informaci\xF3n:"), " Podr\xE1s editar los permisos y men\xFAs despu\xE9s de crear el rol.")));
 };
-export default UserRoleForm;

@@ -162,7 +162,7 @@ export const TodayAppointmentsTable: React.FC<
         style={{ minHeight: "400px", marginTop: "-20px" }}
       >
         <div className="card-body h-100 w-100 d-flex flex-column">
-          <div className="d-flex justify-content-end gap-3 mb-2" style={{ marginTop: "-30px" }}>
+          <div className="d-flex justify-content-end gap-3 mb-2 botones-responsive" style={{ marginTop: "-30px" }}>
             <Button
               label="Control de turnos"
               icon={<i className="fa-solid fa-clock me-2">‌</i>}

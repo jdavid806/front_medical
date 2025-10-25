@@ -72,6 +72,17 @@ export const BranchApp = ({
     fetchBranchHook(id);
     setShowBranchFormModal(true);
   };
+  const handleDeleteItem = async id => {
+    try {
+      await branchService.delete(id);
+      SwalManager.success({
+        title: "Sede eliminada"
+      });
+      await fetchBranches();
+    } catch (error) {
+      console.error("Error deleting branch: ", error);
+    }
+  };
   async function fetchBranches() {
     try {
       const response = await branchService.getAll();
@@ -109,7 +120,8 @@ export const BranchApp = ({
     className: "fas fa-plus me-2"
   }), "Nueva Sede"))), /*#__PURE__*/React.createElement(BranchTable, {
     branches: branches,
-    onEditItem: handleTableEdit
+    onEditItem: handleTableEdit,
+    onDeleteItem: handleDeleteItem
   }), /*#__PURE__*/React.createElement(BranchFormModal, {
     title: branch ? "Editar Sede" : "Crear Sede",
     show: showBranchFormModal,

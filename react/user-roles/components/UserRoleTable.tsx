@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { Menu } from "primereact/menu";
-import { Accordion, AccordionTab } from "primereact/accordion";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { CustomPRTable, CustomPRTableColumnProps } from "../../components/CustomPRTable";
 import { UserRoleDto } from "../../models/models";
@@ -17,16 +15,18 @@ type UserRoleTableProps = {
     userRoles: UserRoleDto[];
     onEditItem: (id: string) => void;
     onDeleteItem: (id: string) => void;
-    loading?: boolean;
     onReload?: () => void;
+    onCreateRole?: () => void;
+    loading?: boolean;
 }
 
 export const UserRoleTable: React.FC<UserRoleTableProps> = ({
     userRoles,
     onEditItem,
     onDeleteItem,
-    loading = false,
-    onReload
+    onReload,
+    onCreateRole,
+    loading = false
 }) => {
     const [tableUserRoles, setTableUserRoles] = useState<UserRoleTableItem[]>([]);
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -47,7 +47,6 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
         setTableUserRoles(mappedUserRoles);
     }, [userRoles]);
 
-    // Función para sincronizar los datos filtrados
     const syncFilteredData = () => {
         let result = [...tableUserRoles];
 
@@ -60,7 +59,6 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
         setFilteredUserRoles(result);
     };
 
-    // Sincroniza cuando cambian los userRoles o los filtros
     useEffect(() => {
         syncFilteredData();
     }, [tableUserRoles, filtros]);
@@ -104,7 +102,6 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
             await onDeleteItem(roleToDelete.id);
             showToast("success", "Éxito", `Rol ${roleToDelete.name} eliminado`);
 
-            // Refrescar después de eliminar
             if (onReload) {
                 await onReload();
             }
@@ -150,7 +147,7 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
         return (
             <div style={{ position: "relative" }}>
                 <Button
-                    className="btn-primary flex items-center gap-2"
+                    className="p-button-primary flex items-center gap-2"
                     onClick={(e) => menu.current?.toggle(e)}
                     aria-controls={`popup_menu_${rowData.id}`}
                     aria-haspopup
@@ -219,9 +216,35 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
 
     return (
         <div className="w-100">
+            <div
+                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                style={{ minHeight: "400px" }}
+            >
+                <div className="card-body h-100 w-100 d-flex flex-column">
+                    {/* ✅ Botón "Nuevo" alineado a la derecha */}
+                    <div className="d-flex justify-content-end mb-3">
+                        <Button
+                            className="p-button-primary d-flex align-items-center"
+                            onClick={onCreateRole}
+                            disabled={loading}
+                        >
+                            <i className="fas fa-plus me-2"></i>
+                            {loading ? 'Cargando...' : 'Nuevo Rol'}
+                        </Button>
+                    </div>
+
+                    <CustomPRTable
+                        columns={columns}
+                        data={tableItems}
+                        loading={loading}
+                        onSearch={handleSearchChange}
+                        onReload={handleRefresh}
+                    />
+                </div>
+            </div>
+
             <Toast ref={toast} />
 
-            {/* Diálogo de confirmación de eliminación */}
             <Dialog
                 visible={deleteDialogVisible}
                 style={{ width: "450px" }}
@@ -242,18 +265,6 @@ export const UserRoleTable: React.FC<UserRoleTableProps> = ({
                     )}
                 </div>
             </Dialog>
-
-            <div className="card mb-3">
-                <div className="card-body">
-                    <CustomPRTable
-                        columns={columns}
-                        data={tableItems}
-                        loading={loading}
-                        onSearch={handleSearchChange}
-                        onReload={handleRefresh}
-                    />
-                </div>
-            </div>
         </div>
     );
 };

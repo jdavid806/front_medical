@@ -31,6 +31,7 @@ import { Toast } from "primereact/toast";
 import { InputSwitch } from "primereact/inputswitch";
 import { useAppointmentBulkCreateGroup } from "./hooks/useAppointmentBulkCreateGroup.js";
 import { useGoogleCalendarConfig } from "./hooks/useGoogleCalendarConfig.js";
+import { Button } from "primereact/button";
 export const AppointmentFormModal = ({
   isOpen,
   onClose,
@@ -1334,26 +1335,26 @@ export const AppointmentFormModal = ({
     const hasErrors = Object.keys(appointment.errors).length > 0;
     return /*#__PURE__*/React.createElement("div", {
       key: `${appointment.uuid}-${Object.keys(appointment.errors).length}`,
-      className: `card ${hasErrors ? "border-danger" : "border-success"}`
+      className: `appointment-card card ${hasErrors ? "appointment-error border-danger" : "appointment-success border-success"}`
     }, /*#__PURE__*/React.createElement("div", {
-      className: "card-body"
+      className: "card-body d-flex flex-column"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "mb-2"
+      className: "appointment-info flex-grow-1"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-between"
+      className: "d-flex justify-content-between align-items-start mb-2"
     }, /*#__PURE__*/React.createElement("div", {
       className: "w-100"
     }, /*#__PURE__*/React.createElement("small", {
       className: "fw-bold"
-    }, "Fecha:"), " ", /*#__PURE__*/React.createElement("small", null, appointment.appointment_date?.toLocaleDateString())), hasErrors && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(AppointmentErrorIndicator, {
+    }, "Fecha:"), " ", /*#__PURE__*/React.createElement("small", null, appointment.appointment_date?.toLocaleDateString())), hasErrors && /*#__PURE__*/React.createElement(AppointmentErrorIndicator, {
       appointmentId: appointment.uuid,
       errors: appointment.errors
-    }))), /*#__PURE__*/React.createElement("div", {
-      className: "w-100"
+    })), /*#__PURE__*/React.createElement("div", {
+      className: "w-100 mb-1"
     }, /*#__PURE__*/React.createElement("small", {
       className: "fw-bold"
     }, "Hora:"), " ", /*#__PURE__*/React.createElement("small", null, appointment.appointment_time)), /*#__PURE__*/React.createElement("div", {
-      className: "w-100"
+      className: "w-100 mb-1"
     }, /*#__PURE__*/React.createElement("small", {
       className: "fw-bold"
     }, "Profesional:"), " ", /*#__PURE__*/React.createElement("small", null, getProfessional(appointment)?.professional_name || "--")), /*#__PURE__*/React.createElement("div", {
@@ -1361,36 +1362,30 @@ export const AppointmentFormModal = ({
     }, /*#__PURE__*/React.createElement("small", {
       className: "fw-bold"
     }, "Especialidad:"), " ", /*#__PURE__*/React.createElement("small", null, getProfessional(appointment)?.specialty_name || "--"))), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-end gap-2"
-    }, /*#__PURE__*/React.createElement("button", {
+      className: "appointment-actions mt-3 pt-2"
+    }, /*#__PURE__*/React.createElement(Button, {
       type: "button",
-      className: "btn btn-sm btn-outline-primary",
-      onClick: () => handleEdit(appointment)
+      severity: "secondary",
+      onClick: () => handleEdit(appointment),
+      text: true
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-pencil-alt"
-    })), /*#__PURE__*/React.createElement("button", {
+    })), /*#__PURE__*/React.createElement(Button, {
       type: "button",
-      className: "btn btn-sm btn-outline-primary",
-      onClick: () => handleCopy(appointment)
+      severity: "info",
+      onClick: () => handleCopy(appointment),
+      text: true
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-copy"
-    })), /*#__PURE__*/React.createElement("button", {
+    })), /*#__PURE__*/React.createElement(Button, {
       type: "button",
-      className: "btn btn-sm btn-outline-danger",
-      onClick: () => handleRemove(appointment.uuid)
+      severity: "danger",
+      onClick: () => handleRemove(appointment.uuid),
+      text: true
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-trash-alt"
     })))));
-  }), hasValidationErrors() && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    type: "button",
-    className: "btn btn-sm btn-primary",
-    onClick: async () => {
-      const validated = await validateAppointments(appointments);
-      setAppointments(validated);
-    }
-  }, "Validar citas")))))))), /*#__PURE__*/React.createElement("div", {
+  })))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2"
   }, /*#__PURE__*/React.createElement("button", {
     className: "btn btn-link text-danger px-3 my-0",

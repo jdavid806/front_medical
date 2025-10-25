@@ -12,6 +12,7 @@ import { Card } from "primereact/card";
 import { Badge } from "primereact/badge";
 import { useBillings } from "../../billing/hooks/useBillings.js";
 import { stringToDate } from "../../../services/utilidades.js";
+import { billingService } from "../../../services/api/index.js";
 const BillingConfigTab = ({
   onValidationChange,
   onConfigurationComplete
@@ -31,8 +32,8 @@ const BillingConfigTab = ({
       setIsMobile(window.innerWidth < 768);
     };
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
   const {
     register: registerFiscal,
@@ -107,31 +108,31 @@ const BillingConfigTab = ({
   }, {
     id: "consumidor",
     nombre: "Factura Consumidor",
-    icono: "pi pi-receipt",
+    icono: "fa-solid fa-receipt",
     apiType: "consumer",
     shortName: "Consumidor"
   }, {
     id: "gubernamental",
     nombre: "Factura Gubernamental",
-    icono: "pi pi-building",
+    icono: "fa-solid fa-building-user",
     apiType: "government_invoice",
     shortName: "Gubernamental"
   }, {
     id: "notaCredito",
     nombre: "Notas de Crédito",
-    icono: "pi pi-file-edit",
+    icono: "fa-solid fa-pen-nib",
     apiType: "credit_note",
     shortName: "N. Crédito"
   }, {
     id: "notaDebito",
     nombre: "Notas de Débito",
-    icono: "pi pi-file-edit",
+    icono: "fa-solid fa-credit-card",
     apiType: "debit_note",
     shortName: "N. Débito"
   }, {
     id: "compra",
     nombre: "Factura de Compra",
-    icono: "pi pi-shopping-cart",
+    icono: "fa-solid fa-cedi-sign",
     apiType: "purchase_invoice",
     shortName: "Compra"
   }];
@@ -141,7 +142,7 @@ const BillingConfigTab = ({
     const requiredTypes = ["tax_invoice", "consumer", "government_invoice", "credit_note", "debit_note", "purchase_invoice"];
     const existingTypes = billings?.map(billing => billing.type) || [];
     const hasAllConfigs = requiredTypes.every(type => existingTypes.includes(type));
-    console.log('🔍 Verificando configuraciones completas:', {
+    console.log("🔍 Verificando configuraciones completas:", {
       requiredTypes,
       existingTypes,
       hasAllConfigs
@@ -153,7 +154,7 @@ const BillingConfigTab = ({
   useEffect(() => {
     const hasExistingConfigs = billings && billings.length > 0;
     const allComplete = checkAllConfigurationsComplete();
-    console.log('📊 Estado de configuraciones:', {
+    console.log("📊 Estado de configuraciones:", {
       totalBillings: billings?.length,
       hasExistingConfigs,
       allComplete
@@ -165,7 +166,7 @@ const BillingConfigTab = ({
   // Cargar datos existentes
   useEffect(() => {
     if (billings.length > 0) {
-      console.log('🔄 Cargando configuraciones existentes:', billings);
+      console.log("🔄 Cargando configuraciones existentes:", billings);
       billings.forEach(billing => {
         const resolutionDate = billing.resolution_date ? stringToDate(billing.resolution_date) : null;
         const expirationDate = billing.expiration_date ? stringToDate(billing.expiration_date) : null;
@@ -248,15 +249,11 @@ const BillingConfigTab = ({
         throw new Error("Tipo de factura no válido");
       }
       const tipoApi = tipoConfig.apiType;
-
-      // Format dates for API
       const formatDate = date => {
         if (!date) return null;
         if (typeof date === "string") return date;
         return date.toISOString().split("T")[0];
       };
-
-      // Prepare payload
       const payload = {
         dian_prefix: data.dian_prefix,
         accounting_account: data.accounting_account?.toString(),
@@ -267,29 +264,11 @@ const BillingConfigTab = ({
         expiration_date: formatDate(data.expiration_date),
         type: tipoApi
       };
-
-      // Add reverse account for specific invoice types
       if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
         payload.accounting_account_reverse_id = data.accounting_account_reverse_id;
       }
-      const url = "/medical/companies/1/billings";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Error HTTP: ${response.status}`);
-      }
-      const result = await response.json();
-
-      // Marcar como guardado y verificar estado completo
+      await billingService.saveBillingConfiguration(payload);
       setSavedConfigs(prev => new Set(prev).add(tipoApi));
-
-      // Recargar billings para verificar estado actual
       await fetchBillings();
       Swal.fire({
         icon: "success",
@@ -298,16 +277,15 @@ const BillingConfigTab = ({
         timer: 2000,
         showConfirmButton: false
       });
-
-      // Verificar si ya puede avanzar después de guardar
       const allComplete = checkAllConfigurationsComplete();
       onConfigurationComplete?.(allComplete);
     } catch (error) {
       console.error(`Error al guardar ${tipo}:`, error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al guardar la configuración";
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error instanceof Error ? error.message : "Error al guardar la configuración"
+        text: errorMessage
       });
     } finally {
       setLoading(prev => ({
@@ -333,15 +311,15 @@ const BillingConfigTab = ({
       className: `${tipo.icono} ms-1`,
       style: {
         color: "#132030",
-        fontSize: isMobile ? '0.8rem' : '1rem'
+        fontSize: isMobile ? "0.8rem" : "1rem"
       }
     }), isSaved && /*#__PURE__*/React.createElement(Badge, {
       value: "",
       className: "p-badge-success ms-1",
       style: {
-        width: '8px',
-        height: '8px',
-        minWidth: '8px'
+        width: "8px",
+        height: "8px",
+        minWidth: "8px"
       }
     }));
   };
@@ -349,18 +327,21 @@ const BillingConfigTab = ({
     const cuentasFiltradas = filtrarCuentas();
     const accountingAccount = watch("accounting_account");
     const accountingAccountReverse = watch("accounting_account_reverse_id");
-    const showReverseAccount = ["fiscal", "consumidor", "gubernamental"].includes(tipo);
+    const showReverseAccount = ["fiscal", "consumidor", "gubernamental", "notaCredito", "notaDebito", "compra"].includes(tipo);
     const tipoConfig = tiposFacturacion.find(t => t.id === tipo);
     const isSaved = tipoConfig && savedConfigs.has(tipoConfig.apiType);
-    return /*#__PURE__*/React.createElement("div", {
-      className: "grid p-fluid"
+    return /*#__PURE__*/React.createElement("form", {
+      onSubmit: tipo === "fiscal" ? handleFiscal(onSubmitFiscal) : tipo === "consumidor" ? handleConsumidor(onSubmitConsumidor) : tipo === "gubernamental" ? handleGubernamental(onSubmitGubernamental) : tipo === "notaCredito" ? handleNotaCredito(onSubmitNotaCredito) : tipo === "notaDebito" ? handleNotaDebito(onSubmitNotaDebito) : handleCompra(onSubmitCompra),
+      className: "p-fluid"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "col-12 md:col-6"
+      className: "row"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "col-md-6"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `dian_prefix_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Prefijo DGII ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(InputText, _extends({
@@ -369,69 +350,68 @@ const BillingConfigTab = ({
       required: true
     }), {
       className: `w-full ${errors?.dian_prefix ? "p-invalid" : ""}`,
-      placeholder: "Ej: ABC",
-      size: "small"
+      placeholder: "Ej: ABC"
     })), errors?.dian_prefix && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
-    }, "Favor ingrese el prefijo DGII.")), !["compra"].includes(tipo) && /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+    }, "Favor ingrese el prefijo DGII.")), /*#__PURE__*/React.createElement("div", {
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Cuenta Contable ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(Dropdown, {
       id: `accounting_account_${tipo}`,
       options: cuentasFiltradas.map(cuenta => ({
         label: `${cuenta.account_code} - ${cuenta.account_name}`,
-        value: cuenta.id
+        value: cuenta.id,
+        account_code: cuenta.account_code,
+        account_name: cuenta.account_name
       })),
       value: accountingAccount,
       onChange: e => setValue("accounting_account", e.value),
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_name,account_code,label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
       className: `w-full ${errors?.accounting_account ? "p-invalid" : ""}`,
       loading: loading.cuentas,
       placeholder: "Seleccione una cuenta",
-      panelStyle: {
-        maxWidth: isMobile ? '90vw' : 'auto'
-      }
+      appendTo: "self"
     }), errors?.accounting_account && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Favor seleccione una cuenta contable.")), showReverseAccount && /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `accounting_account_reverse_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Cuenta Contable Reversa ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(Dropdown, {
       id: `accounting_account_reverse_${tipo}`,
       options: cuentasFiltradas.map(cuenta => ({
         label: `${cuenta.account_code} - ${cuenta.account_name}`,
-        value: cuenta.id
+        value: cuenta.id,
+        account_code: cuenta.account_code,
+        account_name: cuenta.account_name
       })),
       value: accountingAccountReverse,
       onChange: e => setValue("accounting_account_reverse_id", e.value),
       filter: true,
-      filterBy: "account_name,account_code",
+      filterBy: "account_name,account_code,label",
       showClear: true,
       filterPlaceholder: "Buscar cuenta...",
       className: `w-full ${errors?.accounting_account_reverse_id ? "p-invalid" : ""}`,
       loading: loading.cuentas,
       placeholder: "Seleccione una cuenta",
-      panelStyle: {
-        maxWidth: isMobile ? '90vw' : 'auto'
-      }
+      appendTo: "self"
     }), errors?.accounting_account_reverse_id && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Favor seleccione una cuenta contable reversa.")), /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `resolution_number_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "N\xFAmero Resoluci\xF3n ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(InputText, _extends({
@@ -440,17 +420,16 @@ const BillingConfigTab = ({
       required: true
     }), {
       className: `w-full ${errors?.resolution_number ? "p-invalid" : ""}`,
-      placeholder: "Ej: 1234567890",
-      size: "small"
+      placeholder: "Ej: 1234567890"
     })), errors?.resolution_number && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Favor ingrese el n\xFAmero de resoluci\xF3n."))), /*#__PURE__*/React.createElement("div", {
-      className: "col-12 md:col-6"
+      className: "col-md-6"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `invoice_from_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Facturas Desde ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(InputNumber, {
@@ -467,10 +446,10 @@ const BillingConfigTab = ({
     }), errors?.invoice_from && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Ingrese el n\xFAmero inicial de facturas.")), /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `invoice_to_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Facturas Hasta ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(InputNumber, {
@@ -487,10 +466,10 @@ const BillingConfigTab = ({
     }), errors?.invoice_to && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Ingrese el n\xFAmero final de facturas.")), /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `resolution_date_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Fecha Resoluci\xF3n ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(Calendar, {
@@ -502,14 +481,17 @@ const BillingConfigTab = ({
       placeholder: "Seleccione la fecha",
       className: `w-full ${errors?.resolution_date ? "p-invalid" : ""}`,
       readOnlyInput: true,
-      icon: "pi pi-calendar"
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-calendar"
+      }),
+      appendTo: "self"
     }), errors?.resolution_date && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
     }, "Seleccione la fecha de resoluci\xF3n.")), /*#__PURE__*/React.createElement("div", {
-      className: "field mb-3"
+      className: "field mb-4"
     }, /*#__PURE__*/React.createElement("label", {
       htmlFor: `expiration_date_${tipo}`,
-      className: "block text-900 font-medium mb-1"
+      className: "font-medium block mb-2"
     }, "Fecha Vencimiento ", /*#__PURE__*/React.createElement("span", {
       className: "text-danger"
     }, "*")), /*#__PURE__*/React.createElement(Calendar, {
@@ -521,29 +503,36 @@ const BillingConfigTab = ({
       placeholder: "Seleccione la fecha",
       className: `w-full ${errors?.expiration_date ? "p-invalid" : ""}`,
       readOnlyInput: true,
-      icon: "pi pi-calendar"
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fa fa-calendar"
+      }),
+      appendTo: "self"
     }), errors?.expiration_date && /*#__PURE__*/React.createElement("small", {
       className: "p-error"
-    }, "Seleccione la fecha de vencimiento."))), /*#__PURE__*/React.createElement("div", {
+    }, "Seleccione la fecha de vencimiento.")))), /*#__PURE__*/React.createElement("div", {
+      className: "row"
+    }, /*#__PURE__*/React.createElement("div", {
       className: "col-12"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "flex justify-content-center mt-3"
+      className: "d-flex justify-content-center mt-4"
     }, /*#__PURE__*/React.createElement(Button, {
       type: "submit",
       label: isSaved ? "Actualizar Configuración" : "Guardar Configuración",
-      className: "p-button-sm w-full md:w-auto",
+      className: "p-button-sm",
       loading: loading.saving,
-      icon: "pi pi-save"
-    }))));
+      icon: "pi pi-save",
+      style: {
+        padding: "0 40px",
+        width: "250px",
+        height: "45px"
+      }
+    })))));
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "p-2 p-md-4"
   }, /*#__PURE__*/React.createElement(Card, {
     title: "Configuraci\xF3n de Facturaci\xF3n",
-    className: "shadow-2",
-    style: {
-      overflow: 'hidden'
-    }
+    className: "shadow-2"
   }, /*#__PURE__*/React.createElement("div", {
     className: "billing-tabs-responsive"
   }, /*#__PURE__*/React.createElement(TabView, {
@@ -557,10 +546,7 @@ const BillingConfigTab = ({
     headerClassName: "p-tab-header-responsive"
   }, /*#__PURE__*/React.createElement("div", {
     className: "tab-content-responsive p-2 p-md-3"
-  }, /*#__PURE__*/React.createElement("form", {
-    onSubmit: tipo.id === "fiscal" ? handleFiscal(onSubmitFiscal) : tipo.id === "consumidor" ? handleConsumidor(onSubmitConsumidor) : tipo.id === "gubernamental" ? handleGubernamental(onSubmitGubernamental) : tipo.id === "notaCredito" ? handleNotaCredito(onSubmitNotaCredito) : tipo.id === "notaDebito" ? handleNotaDebito(onSubmitNotaDebito) : handleCompra(onSubmitCompra),
-    className: "w-full"
-  }, renderFormFields(tipo.id, tipo.id === "fiscal" ? registerFiscal : tipo.id === "consumidor" ? registerConsumidor : tipo.id === "gubernamental" ? registerGubernamental : tipo.id === "notaCredito" ? registerNotaCredito : tipo.id === "notaDebito" ? registerNotaDebito : registerCompra, tipo.id === "fiscal" ? errorsFiscal : tipo.id === "consumidor" ? errorsConsumidor : tipo.id === "gubernamental" ? errorsGubernamental : tipo.id === "notaCredito" ? errorsNotaCredito : tipo.id === "notaDebito" ? errorsNotaDebito : errorsCompra, tipo.id === "fiscal" ? setValueFiscal : tipo.id === "consumidor" ? setValueConsumidor : tipo.id === "gubernamental" ? setValueGubernamental : tipo.id === "notaCredito" ? setValueNotaCredito : tipo.id === "notaDebito" ? setValueNotaDebito : setValueCompra, tipo.id === "fiscal" ? watchFiscal : tipo.id === "consumidor" ? watchConsumidor : tipo.id === "gubernamental" ? watchGubernamental : tipo.id === "notaCredito" ? watchNotaCredito : tipo.id === "notaDebito" ? watchNotaDebito : watchCompra))))))), isMobile && /*#__PURE__*/React.createElement("div", {
+  }, renderFormFields(tipo.id, tipo.id === "fiscal" ? registerFiscal : tipo.id === "consumidor" ? registerConsumidor : tipo.id === "gubernamental" ? registerGubernamental : tipo.id === "notaCredito" ? registerNotaCredito : tipo.id === "notaDebito" ? registerNotaDebito : registerCompra, tipo.id === "fiscal" ? errorsFiscal : tipo.id === "consumidor" ? errorsConsumidor : tipo.id === "gubernamental" ? errorsGubernamental : tipo.id === "notaCredito" ? errorsNotaCredito : tipo.id === "notaDebito" ? errorsNotaDebito : errorsCompra, tipo.id === "fiscal" ? setValueFiscal : tipo.id === "consumidor" ? setValueConsumidor : tipo.id === "gubernamental" ? setValueGubernamental : tipo.id === "notaCredito" ? setValueNotaCredito : tipo.id === "notaDebito" ? setValueNotaDebito : setValueCompra, tipo.id === "fiscal" ? watchFiscal : tipo.id === "consumidor" ? watchConsumidor : tipo.id === "gubernamental" ? watchGubernamental : tipo.id === "notaCredito" ? watchNotaCredito : tipo.id === "notaDebito" ? watchNotaDebito : watchCompra)))))), isMobile && /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between mt-3"
   }, /*#__PURE__*/React.createElement(Button, {
     icon: "pi pi-chevron-left",
@@ -593,11 +579,17 @@ const BillingConfigTab = ({
         }
         
         .tab-content-responsive {
-          max-height: 60vh;
-          overflow-y: auto;
+          max-height: 100vh;
         }
         
-        /* Mejoras para móviles */
+        .field {
+          margin-bottom: 1.5rem;
+        }
+        
+        .p-inputtext, .p-dropdown, .p-calendar, .p-inputnumber {
+          width: 100% !important;
+        }
+        
         @media (max-width: 767px) {
           .p-tabview-nav {
             font-size: 0.75rem;

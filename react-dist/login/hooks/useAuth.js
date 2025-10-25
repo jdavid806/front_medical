@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
-import { userService } from "../../../services/api/index.js";
+import { authService, userService } from "../../../services/api/index.js";
 import { useConfigurationProgress } from "../../config/general-configuration/hooks/useConfigurationProgress.js";
-import { decryptAES, encryptAES, getJWTPayloadByToken } from "../../../services/utilidades.js";
+import { encryptAES, getJWTPayloadByToken } from "../../../services/utilidades.js";
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
@@ -28,7 +28,7 @@ export const useAuth = () => {
     if (currentConfig?.config_tenants?.finished_configuration) {
       window.location.href = "/Dashboard";
     } else {
-      window.location.href = "/configuracionesGenerales";
+      window.location.href = "/ConfiguracionGeneral";
     }
   };
   const saveUserData = userInfo => {
@@ -229,11 +229,8 @@ export const useAuth = () => {
       setLoading(false);
     }
   };
-  const sendOtp = async () => {
-    const username = localStorage.getItem('username');
-    if (!username) return;
-    const decodedUsername = await decryptAES(username, 'medicalsoft');
-    console.log(decodedUsername);
+  const sendOtp = async externalId => {
+    const userAuth = await authService.checkUserByExternalId(externalId);
     setLoading(true);
     try {
       const apiUrl = `${window.location.origin}/api/auth/otp/send-otp`;
@@ -244,7 +241,7 @@ export const useAuth = () => {
           'X-Domain': window.location.hostname
         },
         body: JSON.stringify({
-          nombre_usuario: decodedUsername
+          nombre_usuario: userAuth.data.user.username
         })
       });
       const data = await response.json();

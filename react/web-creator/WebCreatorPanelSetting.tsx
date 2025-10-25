@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { WebCreatorPanel } from "./WebCreatorSplitterEditor";
 import { WebCreatorPanelStyleSettings } from "./WebCreatorPanelStyleSettings";
+import { Dropdown } from "primereact/dropdown";
 
 interface WebCreatorPanelSettingProps {
     panel: WebCreatorPanel;
@@ -30,6 +31,20 @@ export const WebCreatorPanelSetting = ({
     return (
         <div className="d-flex flex-column gap-3">
             <h4>Configuración del Panel</h4>
+
+            <Divider />
+            <div className="d-flex flex-column gap-2">
+                <label htmlFor="wrapperType" className="form-label">Tipo de Wrapper</label>
+                <Dropdown
+                    options={[
+                        { label: 'Panel', value: 'default' },
+                        { label: 'Tabs', value: 'tabs' },
+                        { label: 'Form', value: 'form' }
+                    ]}
+                    value={panel.wrapperType}
+                    onChange={(e) => onPanelStyleChange({ ...panel, wrapperType: e.value })}
+                />
+            </div>
             <Divider />
 
             {/* Configuración de estilos */}

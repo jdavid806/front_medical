@@ -1374,7 +1374,17 @@ export const PurchaseBilling = ({
     totalDiscount: calculateTotalDiscount(),
     retentions: retentions,
     onRetentionsChange: setRetentions,
-    productsArray: productsArray
+    productsArray: productsArray,
+    type: "purchase"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 mb-md-4 shadow-sm"
+  }, /*#__PURE__*/React.createElement(CustomTaxes, {
+    subtotal: calculateSubtotal(),
+    totalDiscount: calculateTotalDiscount(),
+    taxes: taxes,
+    onTaxesChange: setTaxes,
+    productsArray: productsArray,
+    taxOptions: availableTaxes
   })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 mb-md-4 shadow-sm"
   }, /*#__PURE__*/React.createElement(CustomTaxes, {

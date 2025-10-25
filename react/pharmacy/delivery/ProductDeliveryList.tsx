@@ -23,6 +23,7 @@ export const ProductDeliveryList = ({ onDeliverySelect }: ProductDeliveryListPro
         { label: 'Todos', command: () => fetchDeliveries("ALL") },
         { label: 'Pendiente', command: () => fetchDeliveries("pendiente") },
         { label: 'Entregado', command: () => fetchDeliveries("entregado") },
+        { label: 'Entrega parcial', command: () => fetchDeliveries("entrega parcial") },
     ];
 
     const toggleObservations = (deliveryId: number, event: React.MouseEvent) => {

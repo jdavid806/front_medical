@@ -7,7 +7,6 @@ const NavbarHeader = () => {
     menuItems: menuItemsFromHook,
     loading
   } = useMenuItems();
-  console.log("Menu items procesados:", menuItemsFromHook);
   const iconTemplate = iconClass => {
     return iconClass ? /*#__PURE__*/React.createElement("i", {
       className: iconClass

@@ -3,12 +3,17 @@ import { menuService } from "../../../../services/api";
 import { items } from "../dataMenu";
 
 const transformBackendMenu = (backendItems) => {
-  return backendItems.map(item => ({
-    label: item.name,
-    icon: item.icon,
-    url: item.route,
-    items: item.children && item.children.length > 0 ? transformBackendMenu(item.children) : undefined
-  })).filter(item => item.label);
+  return backendItems
+    .map((item) => ({
+      label: item.name,
+      icon: item.icon,
+      url: item.route,
+      items:
+        item.children && item.children.length > 0
+          ? transformBackendMenu(item.children)
+          : undefined,
+    }))
+    .filter((item) => item.label);
 };
 
 const removeEmptySections = (menu) => {
@@ -36,22 +41,15 @@ export const useMenuItems = () => {
 
   useEffect(() => {
     const loadMenu = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-        try {
-          const allMenus = await menuService.getAllMenu();
-          console.log('menusssService', allMenus)
-          // const transformedMenus = transformBackendMenu(allMenus.menus);
-          // const cleanedMenus = removeEmptySections(transformedMenus);
-          setMenuItems(allMenus.menus);
-        } catch (error) {
-          console.log('error', error)
-          // setMenuItems(allMenus);
-        }
+        const allMenus = await menuService.getAllMenu();
+        // const transformedMenus = transformBackendMenu(allMenus.menus);
+        // const cleanedMenus = removeEmptySections(transformedMenus);
+        setMenuItems(allMenus.menus);
       } catch (error) {
-        console.log('catch2')
-
-        // setMenuItems(items);
+        console.error("error fetching menu", error);
+        // setMenuItems(allMenus);
       } finally {
         setLoading(false);
       }

@@ -17,7 +17,7 @@ const PatientInsuranceInfo = ({
   className: "col-md-8 d-flex"
 }, /*#__PURE__*/React.createElement("span", {
   className: "fw-bold small me-1 mt-1"
-}, "Aseguradora:"), /*#__PURE__*/React.createElement("span", null, patient.social_security.entity.name || "No especificada")), /*#__PURE__*/React.createElement("div", {
+}, "Aseguradora:"), /*#__PURE__*/React.createElement("span", null, patient.social_security?.entity?.name || "No especificada")), /*#__PURE__*/React.createElement("div", {
   className: "col-md-6 d-flex"
 }, /*#__PURE__*/React.createElement("span", {
   className: "fw-bold small me-1 mt-1"

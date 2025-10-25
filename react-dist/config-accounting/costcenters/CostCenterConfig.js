@@ -9,6 +9,7 @@ import { useCostCentersDelete } from "./hooks/useCostCentersDelete.js";
 import { CostCentersMapperCreate, CostCentersMapperUpdate } from "./mapper/mappedCostCenters.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTable.js";
+import { Button } from "primereact/button";
 export const CostCenterConfig = ({
   onConfigurationComplete
 }) => {
@@ -108,19 +109,7 @@ export const CostCenterConfig = ({
         overlay: 100000
       }
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-4"
-  }, /*#__PURE__*/React.createElement("h4", {
-    className: "mb-1"
-  }, "Configuraci\xF3n de Centros de Costo"), /*#__PURE__*/React.createElement("div", {
-    className: "text-end"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-primary d-flex align-items-center",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo'))), error && /*#__PURE__*/React.createElement("div", {
+  }, error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
   }, error), /*#__PURE__*/React.createElement("div", {
@@ -130,7 +119,17 @@ export const CostCenterConfig = ({
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement(CostCenterConfigTable, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end align-items-center mb-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary d-flex align-items-center",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo'))), /*#__PURE__*/React.createElement(CostCenterConfigTable, {
     costCenters: costCenters,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteCostCenter,

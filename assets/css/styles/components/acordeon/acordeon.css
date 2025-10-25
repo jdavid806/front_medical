@@ -1,0 +1,97 @@
+/* Efecto hover para este acordeón - Empieza */
+.p-accordion-header-link {
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.p-accordion-header-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.p-accordion-header-link:hover {
+    transform: translateY(-2px);
+    background-color: red;
+}
+
+.p-accordion-header-link:hover::after {
+    width: 80%;
+}
+
+/* Efecto para modo oscuro */
+.p-dark .p-accordion-header-link:hover {
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* Transiciones suaves */
+.p-accordion-header-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto hover para este acordeón - Termina */
+
+
+/* Quitar línea azul del link y aplicar efecto hover - Empieza */
+.p-accordion-header-link {
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    text-decoration: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+/* Quitar todos los estilos por defecto del link */
+.p-accordion-header-link,
+.p-accordion-header-link:focus,
+.p-accordion-header-link:active,
+.p-accordion-header-link:visited {
+    text-decoration: none !important;
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Efecto hover personalizado */
+.p-accordion-header-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.p-accordion-header-link:hover {
+    transform: translateY(-2px);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.p-accordion-header-link:hover::after {
+    width: 80%;
+}
+
+/* Efecto para modo oscuro */
+.p-dark .p-accordion-header-link:hover {
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* Transiciones suaves */
+.p-accordion-header-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Quitar línea azul del link y aplicar efecto hover - Termina */

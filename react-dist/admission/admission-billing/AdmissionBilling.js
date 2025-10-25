@@ -243,7 +243,7 @@ const AdmissionBilling = ({
           discount: 0,
           total: (price || 0) * (1 + (product.tax || 0) / 100),
           entities: product.entities || [],
-          matchProductByEntity: product.entities?.find(item => item?.entity_id === patient?.social_security?.entity_id && item?.negotation_type.toLowerCase() === patient?.social_security?.affiliate_type.toLowerCase()) || null
+          matchProductByEntity: product.entities?.find(item => item?.entity_id === patient?.social_security?.entity_id && item?.negotation_type?.toLowerCase() === patient?.social_security?.affiliate_type.toLowerCase()) || null
         };
       }) : [];
 

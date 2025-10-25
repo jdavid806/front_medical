@@ -6,7 +6,8 @@ export const UserRoleFormModal = ({
   show,
   handleSubmit,
   onHide,
-  initialData
+  initialData,
+  roleId
 }) => {
   const formId = 'createExamType';
   return /*#__PURE__*/React.createElement(CustomFormModal, {
@@ -18,6 +19,7 @@ export const UserRoleFormModal = ({
   }, /*#__PURE__*/React.createElement(UserRoleForm, {
     formId: formId,
     onHandleSubmit: handleSubmit,
-    initialData: initialData
+    initialData: initialData,
+    roleId: roleId
   }));
 };

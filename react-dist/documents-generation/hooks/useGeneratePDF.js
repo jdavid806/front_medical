@@ -8,7 +8,7 @@ export const useGeneratePDF = () => {
     html,
     pdfName,
     type,
-    orientation = 'portrait'
+    orientation = "portrait"
   }) {
     generatePDFFromHTML(html, company, {
       name: pdfName,

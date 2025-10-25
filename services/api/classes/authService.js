@@ -38,6 +38,13 @@ export class AuthService extends BaseApiService {
             "tenant_id": url.split('.')[0],
         })
     }
+
+    async checkUserByExternalId(externalId) {
+        return await this.httpClient.post(`${this.microservice}/check-user-by-external`, {
+            "external_id": externalId,
+            "tenant_id": url.split('.')[0],
+        })
+    }
 }
 
 export default AuthService;

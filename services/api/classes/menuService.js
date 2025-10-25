@@ -1,5 +1,4 @@
 import BaseApiService from "./baseApiService";
-import { UserService } from "./userService";
 
 export class MenuService extends BaseApiService {
 
@@ -44,6 +43,19 @@ export class MenuService extends BaseApiService {
         }
     }
 
+    async getAllMenuByRolePermissions(roleId) {
+        try {
+            const response = await this.httpClient.get(`medical/roles/${roleId}/menus`);
+            console.log(response)
+            return response.menus || [];
+
+        } catch (error) {
+            console.error("Error fetching menu by permission:", error);
+            throw error;
+        }
+    }
+
+
     async getAllMenuByRole() {
         try {
             const response = await this.httpClient.get(`${this.microservice}medical/menus/submenus`);
@@ -57,12 +69,11 @@ export class MenuService extends BaseApiService {
     }
 
     async getAllMenu() {
-        const dataUser = localStorage.getItem("userData")
-        const user = JSON.parse(dataUser)
-        const role_id = user?.user_role_id;
+        const { userService } = await import("../index");
+        const dataUser = await userService.getLoggedUser();
 
         try {
-            return await this.httpClient.get(`medical/menus/permissions/${role_id}`);
+            return await this.httpClient.get(`medical/menus/permissions/${dataUser.user_role_id}`);
         } catch (error) {
             console.error("Error fetching all menus:", error);
             throw error;

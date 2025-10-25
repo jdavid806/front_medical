@@ -8,8 +8,9 @@ export const UserRoleTable = ({
   userRoles,
   onEditItem,
   onDeleteItem,
-  loading = false,
-  onReload
+  onReload,
+  onCreateRole,
+  loading = false
 }) => {
   const [tableUserRoles, setTableUserRoles] = useState([]);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -28,8 +29,6 @@ export const UserRoleTable = ({
     });
     setTableUserRoles(mappedUserRoles);
   }, [userRoles]);
-
-  // Función para sincronizar los datos filtrados
   const syncFilteredData = () => {
     let result = [...tableUserRoles];
     if (filtros.name) {
@@ -37,8 +36,6 @@ export const UserRoleTable = ({
     }
     setFilteredUserRoles(result);
   };
-
-  // Sincroniza cuando cambian los userRoles o los filtros
   useEffect(() => {
     syncFilteredData();
   }, [tableUserRoles, filtros]);
@@ -78,8 +75,6 @@ export const UserRoleTable = ({
     if (roleToDelete && onDeleteItem) {
       await onDeleteItem(roleToDelete.id);
       showToast("success", "Éxito", `Rol ${roleToDelete.name} eliminado`);
-
-      // Refrescar después de eliminar
       if (onReload) {
         await onReload();
       }
@@ -119,7 +114,7 @@ export const UserRoleTable = ({
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "btn-primary flex items-center gap-2",
+      className: "p-button-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true
@@ -179,7 +174,28 @@ export const UserRoleTable = ({
   }];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-100"
-  }, /*#__PURE__*/React.createElement(Toast, {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end mb-3"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary d-flex align-items-center",
+    onClick: onCreateRole,
+    disabled: loading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), loading ? 'Cargando...' : 'Nuevo Rol')), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
+    loading: loading,
+    onSearch: handleSearchChange,
+    onReload: handleRefresh
+  }))), /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement(Dialog, {
     visible: deleteDialogVisible,
@@ -198,15 +214,5 @@ export const UserRoleTable = ({
       fontSize: "2rem",
       color: "#F8BB86"
     }
-  }), roleToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar el rol ", /*#__PURE__*/React.createElement("b", null, roleToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement(CustomPRTable, {
-    columns: columns,
-    data: tableItems,
-    loading: loading,
-    onSearch: handleSearchChange,
-    onReload: handleRefresh
-  }))));
+  }), roleToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar el rol ", /*#__PURE__*/React.createElement("b", null, roleToDelete.name), "?"))));
 };

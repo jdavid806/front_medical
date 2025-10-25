@@ -8,9 +8,10 @@ interface UserRoleFormModalProps {
     handleSubmit: (data: UserRoleFormInputs) => void
     initialData?: UserRoleFormInputs;
     onHide?: () => void;
+    roleId?: number;
 }
 
-export const UserRoleFormModal: React.FC<UserRoleFormModalProps> = ({ title = 'Crear examen', show, handleSubmit, onHide, initialData }) => {
+export const UserRoleFormModal: React.FC<UserRoleFormModalProps> = ({ title = 'Crear examen', show, handleSubmit, onHide, initialData, roleId }) => {
 
     const formId = 'createExamType';
 
@@ -26,6 +27,7 @@ export const UserRoleFormModal: React.FC<UserRoleFormModalProps> = ({ title = 'C
                 formId={formId}
                 onHandleSubmit={handleSubmit}
                 initialData={initialData}
+                roleId={roleId}
             ></UserRoleForm>
         </CustomFormModal>
     );

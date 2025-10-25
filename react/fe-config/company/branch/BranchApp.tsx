@@ -78,6 +78,18 @@ export const BranchApp: React.FC<BranchAppProps> = ({ onValidationChange }) => {
     setShowBranchFormModal(true);
   };
 
+  const handleDeleteItem = async (id: string) => {
+    try {
+      await branchService.delete(id);
+      SwalManager.success({
+        title: "Sede eliminada",
+      });
+      await fetchBranches();
+    } catch (error) {
+      console.error("Error deleting branch: ", error);
+    }
+  };
+
   async function fetchBranches() {
     try {
       const response = await branchService.getAll();
@@ -123,6 +135,7 @@ export const BranchApp: React.FC<BranchAppProps> = ({ onValidationChange }) => {
         <BranchTable
           branches={branches}
           onEditItem={handleTableEdit}
+          onDeleteItem={handleDeleteItem}
         ></BranchTable>
 
         <BranchFormModal

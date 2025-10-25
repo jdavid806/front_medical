@@ -12,7 +12,7 @@ export const useUserRoleDelete = () => {
             await SwalManager.confirmDelete(
                 async () => {
                     setLoading(true);
-                    await userRolesService.delete(id);
+                    await userRolesService.deleteRole(id);
                     confirmed = true;
                 }
             );

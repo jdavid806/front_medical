@@ -991,6 +991,7 @@ export const SalesBilling: React.FC<any> = ({
                 retentions={retentions}
                 onRetentionsChange={setRetentions}
                 productsArray={productsArray}
+                type="sale"
               />
             </div>
 

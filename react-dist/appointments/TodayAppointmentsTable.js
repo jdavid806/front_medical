@@ -144,7 +144,7 @@ export const TodayAppointmentsTable = () => {
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-body h-100 w-100 d-flex flex-column"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-3 mb-2",
+    className: "d-flex justify-content-end gap-3 mb-2 botones-responsive",
     style: {
       marginTop: "-30px"
     }

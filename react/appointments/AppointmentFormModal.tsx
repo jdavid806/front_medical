@@ -52,6 +52,7 @@ import { Toast } from "primereact/toast";
 import { InputSwitch } from "primereact/inputswitch";
 import { useAppointmentBulkCreateGroup } from "./hooks/useAppointmentBulkCreateGroup";
 import { useGoogleCalendarConfig } from './hooks/useGoogleCalendarConfig';
+import { Button } from "primereact/button";
 
 export interface AppointmentFormInputs {
   uuid: string;
@@ -337,18 +338,18 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
         );
       }
 
-    for (const appointment of appointments) {
-      const googleCalendarPayload = {
-        user_id: appointment.assigned_user_availability?.user?.id || "12",
-        nombre: `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim(),
-        fecha: appointment.appointment_date?.toISOString().split('T')[0] || '',
-        hora: `${appointment.appointment_time}:00` || '',
-        hora_final: calcularHoraFinal(appointment.appointment_time, appointment.assigned_user_availability?.appointment_duration),
-        motivo: appointment.consultation_purpose || 'Consulta médica'
-      };
-      
-      await createGoogleCalendarConfig(googleCalendarPayload);
-    }
+      for (const appointment of appointments) {
+        const googleCalendarPayload = {
+          user_id: appointment.assigned_user_availability?.user?.id || "12",
+          nombre: `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim(),
+          fecha: appointment.appointment_date?.toISOString().split('T')[0] || '',
+          hora: `${appointment.appointment_time}:00` || '',
+          hora_final: calcularHoraFinal(appointment.appointment_time, appointment.assigned_user_availability?.appointment_duration),
+          motivo: appointment.consultation_purpose || 'Consulta médica'
+        };
+
+        await createGoogleCalendarConfig(googleCalendarPayload);
+      }
 
       showSuccessToast();
       if (onAppointmentCreated) {
@@ -384,7 +385,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
     const fecha = new Date();
     fecha.setHours(horas, minutos, 0, 0);
     fecha.setMinutes(fecha.getMinutes() + duracionMinutos);
-    
+
     return `${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}:00`;
   };
 
@@ -1722,19 +1723,16 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                   ) : (
                     <div className="d-flex flex-column gap-3">
                       {appointments.map((appointment) => {
-                        const hasErrors =
-                          Object.keys(appointment.errors).length > 0;
+                        const hasErrors = Object.keys(appointment.errors).length > 0;
 
                         return (
                           <div
-                            key={`${appointment.uuid}-${Object.keys(appointment.errors).length
-                              }`}
-                            className={`card ${hasErrors ? "border-danger" : "border-success"
-                              }`}
+                            key={`${appointment.uuid}-${Object.keys(appointment.errors).length}`}
+                            className={`appointment-card card ${hasErrors ? "appointment-error border-danger" : "appointment-success border-success"}`}
                           >
-                            <div className="card-body">
-                              <div className="mb-2">
-                                <div className="d-flex justify-content-between">
+                            <div className="card-body d-flex flex-column">
+                              <div className="appointment-info flex-grow-1">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
                                   <div className="w-100">
                                     <small className="fw-bold">Fecha:</small>{" "}
                                     <small>
@@ -1742,83 +1740,59 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                                     </small>
                                   </div>
                                   {hasErrors && (
-                                    <>
-                                      <AppointmentErrorIndicator
-                                        appointmentId={appointment.uuid}
-                                        errors={appointment.errors}
-                                      />
-                                    </>
+                                    <AppointmentErrorIndicator
+                                      appointmentId={appointment.uuid}
+                                      errors={appointment.errors}
+                                    />
                                   )}
                                 </div>
-                                <div className="w-100">
+                                <div className="w-100 mb-1">
                                   <small className="fw-bold">Hora:</small>{" "}
                                   <small>{appointment.appointment_time}</small>
                                 </div>
-                                <div className="w-100">
-                                  <small className="fw-bold">
-                                    Profesional:
-                                  </small>{" "}
+                                <div className="w-100 mb-1">
+                                  <small className="fw-bold">Profesional:</small>{" "}
                                   <small>
-                                    {getProfessional(appointment)
-                                      ?.professional_name || "--"}
+                                    {getProfessional(appointment)?.professional_name || "--"}
                                   </small>
                                 </div>
                                 <div className="w-100">
-                                  <small className="fw-bold">
-                                    Especialidad:
-                                  </small>{" "}
+                                  <small className="fw-bold">Especialidad:</small>{" "}
                                   <small>
-                                    {getProfessional(appointment)
-                                      ?.specialty_name || "--"}
+                                    {getProfessional(appointment)?.specialty_name || "--"}
                                   </small>
                                 </div>
                               </div>
-                              <div className="d-flex justify-content-end gap-2">
-                                <button
+                              <div className="appointment-actions mt-3 pt-2">
+                                <Button
                                   type="button"
-                                  className="btn btn-sm btn-outline-primary"
+                                  severity="secondary"
                                   onClick={() => handleEdit(appointment)}
+                                  text
                                 >
                                   <i className="fas fa-pencil-alt"></i>
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   type="button"
-                                  className="btn btn-sm btn-outline-primary"
+                                  severity="info"
                                   onClick={() => handleCopy(appointment)}
+                                  text
                                 >
                                   <i className="fas fa-copy"></i>
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   type="button"
-                                  className="btn btn-sm btn-outline-danger"
+                                  severity="danger"
                                   onClick={() => handleRemove(appointment.uuid)}
+                                  text
                                 >
                                   <i className="fas fa-trash-alt"></i>
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           </div>
                         );
                       })}
-
-                      {hasValidationErrors() && (
-                        <>
-                          <div className="d-flex justify-content-end">
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-primary"
-                              onClick={async () => {
-                                const validated = await validateAppointments(
-                                  appointments
-                                );
-                                setAppointments(validated);
-                              }}
-                            >
-                              Validar citas
-                            </button>
-                          </div>
-                        </>
-                      )}
                     </div>
                   )}
                 </div>
