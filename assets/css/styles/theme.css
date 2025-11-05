@@ -10,6 +10,8 @@
 @import url('./components/cards/cardsPatients.css');
 @import url('./components/buttons/calendar.css');
 @import url('./components/tabs/tabsReportFacturacion.css');
+@import url('./components/steppers/admisionBillingStepper.css');
+
 
 @import url('../variable.css');
 

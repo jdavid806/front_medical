@@ -26,26 +26,39 @@ export const useGoogleCalendarConfig = (toast: Toast | null) => {
         motivo: config.motivo.trim()
       };
 
+      try {
+        const userConfig = await googleCalendarService.getConfig(config.user_id.toString());
+        
+        if (!userConfig.data || !userConfig.data.data) {
+          console.log('Usuario no tiene calendario configurado, omitiendo creación de evento');
+          return { success: true, skipped: true, message: 'Calendario no configurado' };
+        }
+      } catch (error) {
+        console.log('No se pudo verificar configuración de calendario, omitiendo evento');
+        return { success: true, skipped: true, message: 'No se pudo verificar calendario' };
+      }
+
       const response = await googleCalendarService.createConfig(payload);
-      console.log("response cita", response)
+      console.log("Evento de Google Calendar creado:", response);
       
       toast?.show({
         severity: 'success',
         summary: 'Éxito',
-        detail: 'Configuración de Google Calendar guardada correctamente',
+        detail: 'Evento agregado al calendario',
         life: 3000
       });
       
-      return response;
+      return { ...response, success: true, skipped: false };
     } catch (error) {
       console.error('Error saving Google Calendar config:', error);
-      toast?.show({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'No se pudo guardar la configuración de Google Calendar',
-        life: 3000
-      });
-      throw error;
+      
+      console.warn('No se pudo crear el evento en Google Calendar, pero la cita se creará normalmente');
+      
+      return { 
+        success: true, 
+        skipped: true, 
+        message: 'Cita creada sin evento en calendario' 
+      };
     } finally {
       setLoading(false);
     }

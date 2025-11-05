@@ -264,12 +264,16 @@ export const FormAccoutingVouchers = ({
     })
   }, {
     field: "type",
+    width: "300px",
     header: "Tipo",
     body: rowData => /*#__PURE__*/React.createElement(Dropdown, {
       value: rowData.type,
       options: transactionTypeOptions,
       placeholder: "Seleccione tipo",
-      className: "w-full",
+      className: "w-100 dropdown-accounting-voucher",
+      style: {
+        width: "100vw"
+      },
       onChange: e => handleTransactionChange(rowData.id, "type", e.value)
     })
   }, {
@@ -279,7 +283,10 @@ export const FormAccoutingVouchers = ({
       value: rowData.thirdPartyType,
       options: thirdPartyTypeOptions,
       placeholder: "Seleccione tipo",
-      className: "w-full",
+      className: "w-100",
+      style: {
+        width: "100vw"
+      },
       onChange: e => {
         handleTransactionChange(rowData.id, "thirdPartyType", e.value);
       }
@@ -404,26 +411,35 @@ export const FormAccoutingVouchers = ({
     type: "button",
     onClick: addTransaction
   })), /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body p-0"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "table-responsive"
+    className: "table-responsive",
+    style: {
+      overflowX: 'auto'
+    }
   }, /*#__PURE__*/React.createElement(DataTable, {
     value: transactions,
     responsiveLayout: "scroll",
     emptyMessage: "Por favor agrega transacciones",
     className: "p-datatable-sm",
     showGridlines: true,
-    stripedRows: true
+    stripedRows: true,
+    scrollable: true,
+    scrollHeight: "flex",
+    style: {
+      minWidth: '100%',
+      width: '100%'
+    }
   }, transactionColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
     key: i,
     field: col.field,
     header: col.header,
     body: col.body,
     style: {
-      minWidth: "150px"
+      minWidth: "200px"
     }
   })))), /*#__PURE__*/React.createElement("div", {
-    className: "row mt-3"
+    className: "row mt-3 p-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("div", {
@@ -493,13 +509,7 @@ export const FormAccoutingVouchers = ({
     className: "btn-info",
     type: "submit",
     disabled: !isBalanced()
-  }))))), /*#__PURE__*/React.createElement("style", null, `
-          .p-component-overlay {
-            position: absolute !important;
-            z-index: 1030 !important;
-            height: fit-content !important;
-          }
-        `), /*#__PURE__*/React.createElement(Toast, {
+  }))))), /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }));
 };
@@ -534,8 +544,11 @@ const AccountingAccountField = ({
     onChange: e => onChange(e.value),
     filter: true,
     showClear: true,
-    appendTo: document.body,
-    className: "w-full"
+    className: "w-100",
+    style: {
+      width: "100vw"
+    },
+    appendTo: document.body
   }));
 };
 const ThirdPartyField = ({

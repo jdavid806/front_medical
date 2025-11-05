@@ -53,9 +53,8 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
         middleName: patient.middle_name || "",
         lastName: patient.last_name || "",
         secondLastName: patient.second_last_name || "",
-        nameComplet: `${patient.first_name || ""} ${
-          patient.middle_name || ""
-        } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
+        nameComplet: `${patient.first_name || ""} ${patient.middle_name || ""
+          } ${patient.last_name || ""} ${patient.second_last_name || ""}`,
         birthDate: patient.date_of_birth
           ? new Date(patient.date_of_birth)
           : null,
@@ -367,7 +366,7 @@ const PatientStepPreview: React.FC<PatientStepProps> = ({
           icon={<i className="fas fa-arrow-right me-2"></i>}
           iconPos="right"
           onClick={handleNext}
-          className="btn btn-primary btn-sm"
+          className="p-button-primary"
         />
       </div>
       <PatientFormModal

@@ -5,6 +5,7 @@ import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import { Badge } from "primereact/badge";
+import { Button } from 'primereact/button';
 import PatientStep from "./steps/PatientStep.js";
 import ProductsPaymentStep from "./steps/ProductsPaymentStep.js";
 import PreviewDoneStep from "./steps/PreviewDoneStep.js";
@@ -77,6 +78,7 @@ const AdmissionBilling = ({
   const isMounted = useRef(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const appointmentId = appointmentData?.id;
   const {
     products: productsToInvoice,
@@ -222,6 +224,7 @@ const AdmissionBilling = ({
       setCompletedSteps([]);
       setInternalVisible(false);
       setIsSuccess(false);
+      setSidebarExpanded(true);
       if (isSuccess && onSuccess) {
         onSuccess();
       }
@@ -352,6 +355,9 @@ const AdmissionBilling = ({
     const prevIndex = activeIndex - 1;
     setActiveIndex(prevIndex);
   };
+  const toggleSidebar = () => {
+    setSidebarExpanded(!sidebarExpanded);
+  };
   const billingSteps = [{
     id: 'patient',
     label: "Datos del Paciente",
@@ -440,17 +446,25 @@ const AdmissionBilling = ({
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-0"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-lg-3 col-md-4 border-end"
+    className: `${sidebarExpanded ? 'col-lg-3 col-md-4' : 'col-lg-1 col-md-2'} border-end transition-all transition-duration-300`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "p-3 h-100 bg-light"
+    className: "p-3 h-100 bg-light position-relative"
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-3"
-  }, /*#__PURE__*/React.createElement("h6", {
+  }, sidebarExpanded && /*#__PURE__*/React.createElement("h6", {
     className: "text-primary mb-0 fw-bold"
-  }, "Pasos de Facturaci\xF3n"), /*#__PURE__*/React.createElement(Badge, {
+  }, "Pasos de Facturaci\xF3n"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center gap-2"
+  }, sidebarExpanded && /*#__PURE__*/React.createElement(Badge, {
     value: `${activeIndex + 1}/${billingSteps.length}`,
     severity: "info"
-  })), /*#__PURE__*/React.createElement(Stepper, {
+  }), /*#__PURE__*/React.createElement(Button, {
+    onClick: toggleSidebar,
+    className: "p-button-primary",
+    title: sidebarExpanded ? "Contraer panel" : "Expandir panel"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: sidebarExpanded ? "fas fa-chevron-left" : "fas fa-chevron-right"
+  })))), sidebarExpanded ? /*#__PURE__*/React.createElement(Stepper, {
     activeStep: activeIndex,
     orientation: "vertical",
     linear: false,
@@ -462,8 +476,23 @@ const AdmissionBilling = ({
     icon: /*#__PURE__*/React.createElement("i", {
       className: step.icon
     })
-  }))))), /*#__PURE__*/React.createElement("div", {
-    className: "col-lg-9 col-md-8"
+  }))) : /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement(Badge, {
+    value: activeIndex + 1,
+    severity: "info",
+    className: "mb-2",
+    style: {
+      fontSize: '1.2rem',
+      minWidth: '30px',
+      height: '30px'
+    }
+  }), /*#__PURE__*/React.createElement("small", {
+    className: "text-muted d-block"
+  }, "Paso ", activeIndex + 1), /*#__PURE__*/React.createElement("small", {
+    className: "text-muted d-block"
+  }, "de ", billingSteps.length)))), /*#__PURE__*/React.createElement("div", {
+    className: `${sidebarExpanded ? 'col-lg-9 col-md-8' : 'col-lg-11 col-md-10'} transition-all transition-duration-300`
   }, /*#__PURE__*/React.createElement("div", {
     className: "configuration-content p-4 card border-0"
   }, /*#__PURE__*/React.createElement("div", {
@@ -483,53 +512,6 @@ const AdmissionBilling = ({
     }
   })), /*#__PURE__*/React.createElement("div", {
     className: "content-body mb-4"
-  }, renderCurrentComponent())))))))), /*#__PURE__*/React.createElement("style", null, `
-          .admission-billing-dialog .p-dialog-header {
-            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
-            color: white;
-          }
-          
-          .admission-billing-dialog .p-dialog-title {
-            color: white;
-            font-weight: 600;
-          }
-          
-          .admission-billing-dialog .p-dialog-header-close {
-            color: white !important;
-          }
-          
-          .admission-billing-dialog .p-dialog-header-close:hover {
-            background: rgba(255,255,255,0.1) !important;
-          }
-          
-          .admission-billing-card .p-card-body {
-            padding: 0;
-          }
-          
-          .admission-billing-card .p-card-content {
-            padding: 0;
-          }
-          
-          .vertical-stepper {
-            max-height: 400px;
-          }
-          
-          .vertical-stepper .p-stepper-panel {
-            margin-bottom: 0.5rem;
-          }
-          
-          /* Deshabilitar completamente los clicks en el stepper */
-          .vertical-stepper .p-stepper-panel .p-stepper-action {
-            cursor: default !important;
-            pointer-events: none !important;
-          }
-          
-          @media (max-width: 768px) {
-            .border-end {
-              border-right: none !important;
-              border-bottom: 1px solid var(--surface-300);
-            }
-          }
-        `)));
+  }, renderCurrentComponent()))))))))));
 };
 export default AdmissionBilling;

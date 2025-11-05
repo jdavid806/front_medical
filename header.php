@@ -180,6 +180,8 @@
     </div>
 </nav>
 
+<script src="./funciones/funcionesJS/utils.js"></script>
+
 <script type="module">
     import React from "react"
     import ReactDOMClient from "react-dom/client"

@@ -330,13 +330,15 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
     },
     {
       field: "type",
+      width: "300px",
       header: "Tipo",
       body: (rowData: Transaction) => (
         <Dropdown
           value={rowData.type}
           options={transactionTypeOptions}
           placeholder="Seleccione tipo"
-          className="w-full"
+          className="w-100 dropdown-accounting-voucher"
+          style={{ width: "100vw" }}
           onChange={(e) => handleTransactionChange(rowData.id, "type", e.value)}
         />
       ),
@@ -349,7 +351,8 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
           value={rowData.thirdPartyType}
           options={thirdPartyTypeOptions}
           placeholder="Seleccione tipo"
-          className="w-full"
+          className="w-100"
+          style={{ width: "100vw" }}
           onChange={(e) => {
             handleTransactionChange(rowData.id, "thirdPartyType", e.value);
           }}
@@ -497,8 +500,8 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
                   onClick={addTransaction}
                 />
               </div>
-              <div className="card-body">
-                <div className="table-responsive">
+              <div className="card-body p-0">
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
                   <DataTable
                     value={transactions}
                     responsiveLayout="scroll"
@@ -506,6 +509,9 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
                     className="p-datatable-sm"
                     showGridlines
                     stripedRows
+                    scrollable
+                    scrollHeight="flex"
+                    style={{ minWidth: '100%', width: '100%' }}
                   >
                     {transactionColumns.map((col, i) => (
                       <Column
@@ -513,13 +519,13 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
                         field={col.field}
                         header={col.header}
                         body={col.body}
-                        style={{ minWidth: "150px" }}
+                        style={{ minWidth: "200px" }}
                       />
                     ))}
                   </DataTable>
                 </div>
 
-                <div className="row mt-3">
+                <div className="row mt-3 p-3">
                   <div className="col-md-6">
                     <div
                       className="alert alert-info"
@@ -621,16 +627,6 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
         </div>
       </div>
 
-      <style>
-        {`
-          .p-component-overlay {
-            position: absolute !important;
-            z-index: 1030 !important;
-            height: fit-content !important;
-          }
-        `}
-      </style>
-
       <Toast ref={toast} />
     </div>
   );
@@ -671,8 +667,9 @@ useEffect(() => {
       onChange={(e) => onChange(e.value)}
       filter
       showClear
+      className="w-100"
+      style={{ width: "100vw" }}
       appendTo={document.body}
-      className="w-full"
     />
   </>
 }

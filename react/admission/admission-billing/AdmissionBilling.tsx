@@ -104,6 +104,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   const isMounted = useRef(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   const appointmentId = appointmentData?.id;
   const { products: productsToInvoice, loading: productsLoading } =
@@ -296,6 +297,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
       setCompletedSteps([]);
       setInternalVisible(false);
       setIsSuccess(false);
+      setSidebarExpanded(true);
 
       if (isSuccess && onSuccess) {
         onSuccess();
@@ -480,6 +482,10 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
     setActiveIndex(prevIndex);
   };
 
+  const toggleSidebar = () => {
+    setSidebarExpanded(!sidebarExpanded);
+  };
+
   const billingSteps = [
     {
       id: 'patient',
@@ -572,37 +578,67 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
             <div className="col-12">
               <Card className="shadow-sm admission-billing-card">
                 <div className="row g-0">
-                  {/* Panel lateral con stepper */}
-                  <div className="col-lg-3 col-md-4 border-end">
-                    <div className="p-3 h-100 bg-light">
+                  {/* Panel lateral con stepper - Expandible */}
+                  <div className={`${sidebarExpanded ? 'col-lg-3 col-md-4' : 'col-lg-1 col-md-2'} border-end transition-all transition-duration-300`}>
+                    <div className="p-3 h-100 bg-light position-relative">
                       <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h6 className="text-primary mb-0 fw-bold">Pasos de Facturación</h6>
-                        <Badge
-                          value={`${activeIndex + 1}/${billingSteps.length}`}
-                          severity="info"
-                        />
+                        {sidebarExpanded && (
+                          <h6 className="text-primary mb-0 fw-bold">Pasos de Facturación</h6>
+                        )}
+                        <div className="d-flex align-items-center gap-2">
+                          {sidebarExpanded && (
+                            <Badge
+                              value={`${activeIndex + 1}/${billingSteps.length}`}
+                              severity="info"
+                            />
+                          )}
+                          <Button
+                            onClick={toggleSidebar}
+                            className="p-button-primary"
+                            title={sidebarExpanded ? "Contraer panel" : "Expandir panel"}
+                          >
+                            <i className={sidebarExpanded ? "fas fa-chevron-left" : "fas fa-chevron-right"} />
+                          </Button>
+                        </div>
                       </div>
 
-                      <Stepper
-                        activeStep={activeIndex}
-                        orientation="vertical"
-                        linear={false}
-                        className="vertical-stepper overflow-auto"
-                        readOnly={true}
-                      >
-                        {billingSteps.map((step, index) => (
-                          <StepperPanel
-                            key={step.id}
-                            header={step.label}
-                            icon={<i className={step.icon}></i>}
+                      {sidebarExpanded ? (
+                        <Stepper
+                          activeStep={activeIndex}
+                          orientation="vertical"
+                          linear={false}
+                          className="vertical-stepper overflow-auto"
+                          readOnly={true}
+                        >
+                          {billingSteps.map((step, index) => (
+                            <StepperPanel
+                              key={step.id}
+                              header={step.label}
+                              icon={<i className={step.icon}></i>}
+                            />
+                          ))}
+                        </Stepper>
+                      ) : (
+                        <div className="text-center">
+                          <Badge
+                            value={activeIndex + 1}
+                            severity="info"
+                            className="mb-2"
+                            style={{ fontSize: '1.2rem', minWidth: '30px', height: '30px' }}
                           />
-                        ))}
-                      </Stepper>
+                          <small className="text-muted d-block">
+                            Paso {activeIndex + 1}
+                          </small>
+                          <small className="text-muted d-block">
+                            de {billingSteps.length}
+                          </small>
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {/* Contenido Principal */}
-                  <div className="col-lg-9 col-md-8">
+                  <div className={`${sidebarExpanded ? 'col-lg-9 col-md-8' : 'col-lg-11 col-md-10'} transition-all transition-duration-300`}>
                     <div className="configuration-content p-4 card border-0">
                       {/* Barra de progreso */}
                       <div className="progress-section mb-4">
@@ -625,7 +661,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
                       <div className="content-body mb-4">
                         {renderCurrentComponent()}
                       </div>
-
 
                     </div>
                   </div>

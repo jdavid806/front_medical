@@ -44,6 +44,10 @@ async function obtenerDatos(apiUrl) {
   }
 }
 
+function getDomain() {
+  return window.location.hostname.split(".")[0];
+}
+
 async function guardarDatos(url, datos) {
   try {
     const respuesta = await fetch(url, {
@@ -412,6 +416,8 @@ async function logoutBack() {
 
 function cerrarSesion() {
   let botonSalir = document.getElementById("btn-logout");
+  console.log("botonSalirrr", botonSalir);
+  
 
   if (botonSalir) {
     botonSalir.addEventListener("click", () => {
@@ -719,8 +725,4 @@ function getJWTPayload() {
   }
 
   return null;
-}
-
-function getDomain() {
-  return window.location.hostname.split(".")[0];
 }

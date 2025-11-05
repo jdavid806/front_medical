@@ -91,6 +91,14 @@
 
 /*Dropdown Facturas de Ventas Fin */
 
+/*Dropdown Comprobantes Contables Inicia*/
+
+.dropdown-accounting-voucher{
+    width: 100vw;
+    height: 100vh;
+}
+/*Dropdown Comprobantes Contables Fin */
+
 /*Dropdown Citas Inicia*/
 
 .dropdown-appointment.p-dropdown .p-dropdown-trigger {

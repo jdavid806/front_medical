@@ -316,12 +316,7 @@ export const AccountingVouchers = () => {
   }, /*#__PURE__*/React.createElement("i", {
     className: `pi ${option.icon} mr-2`
   }), /*#__PURE__*/React.createElement("span", null, option.label));
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid mt-4",
-    style: {
-      padding: "0 15px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("h2", null, "Movimientos Contables"), /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
@@ -450,10 +445,12 @@ export const AccountingVouchers = () => {
     header: "Editar Comprobante",
     onHide: () => setEditModalVisible(false),
     style: {
-      width: "90vw"
+      width: "80vw",
+      height: "100vh",
+      maxHeight: "100vh"
     },
-    contentClassName: "overflow-hidden",
-    maximizable: true
+    modal: true,
+    closable: true
   }, /*#__PURE__*/React.createElement(FormAccoutingVouchers, {
     voucherId: selectedVoucher?.id.toString() || "",
     initialData: initialData,

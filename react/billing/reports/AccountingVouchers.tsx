@@ -360,7 +360,7 @@ export const AccountingVouchers: React.FC = () => {
   );
 
   return (
-    <div className="container-fluid mt-4" style={{ padding: "0 15px" }}>
+    <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Movimientos Contables</h2>
         <div className="d-flex gap-2">
@@ -502,16 +502,13 @@ export const AccountingVouchers: React.FC = () => {
           </>
         )}
       </Card>
-
       <Dialog
         visible={editModalVisible}
         header="Editar Comprobante"
         onHide={() => setEditModalVisible(false)}
-        style={{
-          width: "90vw"
-        }}
-        contentClassName="overflow-hidden"
-        maximizable
+        style={{ width: "80vw", height: "100vh", maxHeight: "100vh" }}
+        modal
+        closable={true}
       >
         <FormAccoutingVouchers
           voucherId={selectedVoucher?.id.toString() || ""}
@@ -521,9 +518,10 @@ export const AccountingVouchers: React.FC = () => {
             loadData(page);
             setEditModalVisible(false)
           }}
-        >
-        </FormAccoutingVouchers>
+
+        />
+
       </Dialog>
-    </div>
+    </>
   );
 };
