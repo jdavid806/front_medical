@@ -439,7 +439,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                 body={(rowData) => (
                   <Button
                     icon={<i className="fas fa-trash"></i>}
-                    className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
+                    className="p-button-danger p-button-rounded  p-button-sm"
                     onClick={() => handleRemoveProduct(rowData.uuid)}
                     tooltip="Eliminar"
                     tooltipOptions={{ position: "top" }}
@@ -526,7 +526,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                     body={(rowData) => (
                       <Button
                         icon={<i className="fas fa-trash"></i>}
-                        className="p-button-danger p-button-rounded p-button-outlined p-button-sm"
+                        className="p-button-danger p-button-rounded  p-button-sm"
                         onClick={() => handleRemovePayment(rowData.id)}
                         tooltip="Eliminar"
                         tooltipOptions={{ position: "top" }}
@@ -541,7 +541,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
             <div className="surface-card px-4 pb-4 border-round-lg border-1 surface-border shadow-2 col-12 col-md-6">
               <div className="d-flex align-items-center mb-4 gap-3">
                 <h3 className="m-0 text-700 text-right">
-                  <i className="fas fa-credit-card mr-3 text-xl text-primary"></i>
+                  <i className="fas fa-credit-card me-3 text-xl text-primary"></i>
                   Agregar Nuevo Pago
                 </h3>
               </div>
@@ -554,7 +554,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                         htmlFor="paymentMethod"
                         className="block font-medium mb-2"
                       >
-                        <i className="fas fa-money-check-alt mr-2"></i>Método de
+                        <i className="fas fa-money-check-alt me-2"></i>Método de
                         pago
                       </label>
                       <Dropdown
@@ -586,7 +586,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                             htmlFor="remainingAmount"
                             className="block font-medium mb-2"
                           >
-                            <i className="fas fa-receipt mr-2"></i>Total
+                            <i className="fas fa-receipt me-2"></i>Total
                             Pendiente
                           </label>
                           <InputNumber
@@ -606,7 +606,7 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                             htmlFor="cashAmount"
                             className="block font-medium mb-2"
                           >
-                            <i className="fas fa-hand-holding-usd mr-2"></i>
+                            <i className="fas fa-hand-holding-usd me-2"></i>
                             Monto Recibido
                           </label>
                           <InputNumber
@@ -639,9 +639,8 @@ const ProductsPaymentStep: React.FC<ProductsPaymentStep> = ({
                             currency="DOP"
                             locale="es-DO"
                             readOnly
-                            className={`w-full ${
-                              modalChange > 0 ? "bg-green-100 font-bold" : ""
-                            }`}
+                            className={`w-full ${modalChange > 0 ? "bg-green-100 font-bold" : ""
+                              }`}
                             inputClassName={
                               modalChange > 0 ? "text-green-700" : ""
                             }

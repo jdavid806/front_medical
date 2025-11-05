@@ -3,6 +3,7 @@ import { useLoadUserPatientViewCards } from "../hooks/useLoadUserPatientViewCard
 import { appointmentService, infoCompanyService, patientService, templateService, ticketService } from "../../../../services/api/index.js";
 import { formatWhatsAppMessage, getIndicativeByCountry } from "../../../../services/utilidades.js";
 import { createMassMessaging } from "../../../../funciones/funcionesJS/massMessage.js";
+import { useLoggedUser } from "../../../users/hooks/useLoggedUser.js";
 export const PreviewSpecialtyPatientViewCards = props => {
   const urlParams = new URLSearchParams(window.location.search);
   const {
@@ -15,6 +16,9 @@ export const PreviewSpecialtyPatientViewCards = props => {
     patientViewCards,
     fetchUserPatientViewCards
   } = useLoadUserPatientViewCards();
+  const {
+    loggedUser
+  } = useLoggedUser();
   const [finalAvailableCardsIds, setFinalAvailableCardsIds] = useState();
   const [messaging, setMessaging] = useState(null);
   const [template, setTemplate] = useState(null);
@@ -205,10 +209,15 @@ export const PreviewSpecialtyPatientViewCards = props => {
       }
     });
   };
-  const handleCardClick = card => {
+  const handleCardClick = async card => {
     switch (card.id) {
       case "llamar-paciente":
+        if (!patientId) return;
         llamarPaciente(patientId);
+        break;
+      case 'consulta':
+        if (!patientId) return;
+        window.location.href = `historialConsultasEspecialidad?patient_id=${patientId}&especialidad=${loggedUser?.specialty?.name}`;
         break;
       default:
         window.location.href = card.url;

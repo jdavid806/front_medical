@@ -1,0 +1,46 @@
+ .admission-billing-dialog .p-dialog-header {
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+            color: white;
+          }
+          
+          .admission-billing-dialog .p-dialog-title {
+            color: white;
+            font-weight: 600;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close {
+            color: white !important;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close:hover {
+            background: rgba(255,255,255,0.1) !important;
+          }
+          
+          .admission-billing-card .p-card-body {
+            padding: 0;
+          }
+          
+          .admission-billing-card .p-card-content {
+            padding: 0;
+          }
+          
+          .vertical-stepper {
+            max-height: 400px;
+          }
+          
+          .vertical-stepper .p-stepper-panel {
+            margin-bottom: 0.5rem;
+          }
+          
+          /* Deshabilitar completamente los clicks en el stepper */
+          .vertical-stepper .p-stepper-panel .p-stepper-action {
+            cursor: default !important;
+            pointer-events: none !important;
+          }
+          
+          @media (max-width: 768px) {
+            .border-end {
+              border-right: none !important;
+              border-bottom: 1px solid var(--surface-300);
+            }
+          }

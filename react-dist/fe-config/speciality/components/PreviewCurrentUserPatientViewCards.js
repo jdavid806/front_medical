@@ -5,8 +5,7 @@ export const PreviewCurrentUserPatientViewCards = () => {
   const {
     loggedUser
   } = useLoggedUser();
-  console.log("loggedUser", loggedUser);
-  return /*#__PURE__*/React.createElement("div", null, loggedUser?.id && /*#__PURE__*/React.createElement(PreviewSpecialtyPatientViewCards, {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(PreviewSpecialtyPatientViewCards, {
     userId: loggedUser?.id
   }));
 };

@@ -485,58 +485,20 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
       id: 'patient',
       label: "Datos del Paciente",
       icon: "pi pi-user",
-      description: "Información personal del paciente"
     },
     {
       id: 'products-payments',
       label: "Productos y Pagos",
       icon: "pi pi-shopping-cart",
-      description: "Servicios y métodos de pago"
     },
     {
       id: 'confirmation',
       label: "Confirmación",
       icon: "pi pi-check-circle",
-      description: "Revisar y finalizar factura"
     }
   ];
 
   const progressValue = ((activeIndex + 1) / billingSteps.length) * 100;
-
-  const getStepSpecificMessage = () => {
-    switch (activeIndex) {
-      case 0:
-        return validatePatientStep(formData.billing, toast)
-          ? '¡Datos del paciente completados correctamente! Puede continuar al siguiente paso.'
-          : 'Complete todos los datos del paciente para habilitar el botón "Siguiente"';
-      case 1:
-        const productsValid = validateProductsStep(formData.products, toast);
-        const paymentsValid = validatePaymentStep(
-          formData.payments,
-          calculateTotal(formData.products, formData.billing.facturacionEntidad),
-          toast
-        );
-        return productsValid && paymentsValid
-          ? '¡Productos y pagos configurados correctamente! Puede continuar al siguiente paso.'
-          : 'Complete la configuración de productos y pagos para habilitar el botón "Siguiente"';
-      case 2:
-        return 'Revise toda la información antes de finalizar la factura';
-      default:
-        return 'Complete la configuración de este paso antes de continuar';
-    }
-  };
-
-  const shouldShowSuccessAlert = () => {
-    switch (activeIndex) {
-      case 0:
-        return validatePatientStep(formData.billing, toast);
-      case 1:
-        return validateProductsStep(formData.products, toast) &&
-          validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
-      default:
-        return false;
-    }
-  };
 
   const renderCurrentComponent = () => {
     switch (activeIndex) {
@@ -590,15 +552,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
   };
 
   const isNextDisabled = () => {
-    switch (activeIndex) {
-      case 0:
-        return !validatePatientStep(formData.billing, toast);
-      case 1:
-        return !validateProductsStep(formData.products, toast) ||
-          !validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
-      default:
-        return false;
-    }
+    return !validateCurrentStep(activeIndex);
   };
 
   return (
@@ -634,24 +588,13 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
                         orientation="vertical"
                         linear={false}
                         className="vertical-stepper overflow-auto"
+                        readOnly={true}
                       >
                         {billingSteps.map((step, index) => (
                           <StepperPanel
                             key={step.id}
                             header={step.label}
                             icon={<i className={step.icon}></i>}
-                            onClick={() => {
-                              if (index <= activeIndex || validateCurrentStep(index - 1)) {
-                                setActiveIndex(index);
-                              } else {
-                                toast.current?.show({
-                                  severity: "warn",
-                                  summary: "Paso no disponible",
-                                  detail: "Complete los pasos anteriores primero",
-                                  life: 3000,
-                                });
-                              }
-                            }}
                           />
                         ))}
                       </Stepper>
@@ -674,38 +617,8 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
                         <ProgressBar
                           value={progressValue}
                           showValue={false}
-                          style={{ height: '8px', borderRadius: '4px' }}
-                          className="mb-3"
+                          style={{ height: '10px', borderRadius: '5px' }}
                         />
-                      </div>
-
-                      {/* Encabezado del contenido */}
-                      <div className="content-header mb-4">
-                        <h3 className="text-primary mb-2">
-                          <i className={`${billingSteps[activeIndex].icon} me-3`}></i>
-                          {billingSteps[activeIndex].label}
-                        </h3>
-                        <p className="text-muted mb-0">
-                          {billingSteps[activeIndex].description}
-                        </p>
-
-                        {shouldShowSuccessAlert() && (
-                          <div className="alert alert-success mt-2 p-2">
-                            <small>
-                              <i className="pi pi-check-circle me-2"></i>
-                              {getStepSpecificMessage()}
-                            </small>
-                          </div>
-                        )}
-
-                        {!shouldShowSuccessAlert() && activeIndex !== 2 && (
-                          <div className="alert alert-info mt-2 p-2">
-                            <small>
-                              <i className="pi pi-info-circle me-2"></i>
-                              {getStepSpecificMessage()}
-                            </small>
-                          </div>
-                        )}
                       </div>
 
                       {/* Contenido del paso actual */}
@@ -713,46 +626,7 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
                         {renderCurrentComponent()}
                       </div>
 
-                      {/* Navegación */}
-                      <div className="navigation-section pt-3 border-top">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <Button
-                            label="Anterior"
-                            icon="pi pi-arrow-left"
-                            onClick={prevStep}
-                            disabled={activeIndex === 0}
-                            className="p-button-outlined p-button-secondary"
-                          />
 
-                          <div className="d-flex gap-2">
-                            <Button
-                              label="Cancelar"
-                              icon="pi pi-times"
-                              onClick={handleHide}
-                              className="p-button-outlined p-button-danger"
-                            />
-
-                            {activeIndex < billingSteps.length - 1 ? (
-                              <Button
-                                label="Siguiente"
-                                icon="pi pi-arrow-right"
-                                iconPos="right"
-                                onClick={nextStep}
-                                disabled={isNextDisabled()}
-                                className="p-button-primary"
-                              />
-                            ) : (
-                              <Button
-                                label="Generar Factura"
-                                icon="pi pi-check"
-                                onClick={handleSubmitInvoice}
-                                loading={sendingWhatsApp}
-                                className="p-button-success"
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -760,49 +634,6 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
             </div>
           </div>
         </div>
-
-        <style>{`
-          .admission-billing-dialog .p-dialog-header {
-            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
-            color: white;
-          }
-          
-          .admission-billing-dialog .p-dialog-title {
-            color: white;
-            font-weight: 600;
-          }
-          
-          .admission-billing-dialog .p-dialog-header-close {
-            color: white !important;
-          }
-          
-          .admission-billing-dialog .p-dialog-header-close:hover {
-            background: rgba(255,255,255,0.1) !important;
-          }
-          
-          .admission-billing-card .p-card-body {
-            padding: 0;
-          }
-          
-          .admission-billing-card .p-card-content {
-            padding: 0;
-          }
-          
-          .vertical-stepper {
-            max-height: 400px;
-          }
-          
-          .vertical-stepper .p-stepper-panel {
-            margin-bottom: 0.5rem;
-          }
-          
-          @media (max-width: 768px) {
-            .border-end {
-              border-right: none !important;
-              border-bottom: 1px solid var(--surface-300);
-            }
-          }
-        `}</style>
       </Dialog>
     </>
   );

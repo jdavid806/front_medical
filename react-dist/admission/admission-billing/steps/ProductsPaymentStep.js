@@ -350,7 +350,7 @@ const ProductsPaymentStep = ({
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fas fa-trash"
       }),
-      className: "p-button-danger p-button-rounded p-button-outlined p-button-sm",
+      className: "p-button-danger p-button-rounded  p-button-sm",
       onClick: () => handleRemoveProduct(rowData.uuid),
       tooltip: "Eliminar",
       tooltipOptions: {
@@ -427,7 +427,7 @@ const ProductsPaymentStep = ({
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fas fa-trash"
       }),
-      className: "p-button-danger p-button-rounded p-button-outlined p-button-sm",
+      className: "p-button-danger p-button-rounded  p-button-sm",
       onClick: () => handleRemovePayment(rowData.id),
       tooltip: "Eliminar",
       tooltipOptions: {
@@ -444,7 +444,7 @@ const ProductsPaymentStep = ({
   }, /*#__PURE__*/React.createElement("h3", {
     className: "m-0 text-700 text-right"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-credit-card mr-3 text-xl text-primary"
+    className: "fas fa-credit-card me-3 text-xl text-primary"
   }), "Agregar Nuevo Pago")), /*#__PURE__*/React.createElement(Card, {
     className: "border-round-lg shadow-1 mb-4"
   }, /*#__PURE__*/React.createElement("div", {
@@ -457,7 +457,7 @@ const ProductsPaymentStep = ({
     htmlFor: "paymentMethod",
     className: "block font-medium mb-2"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-money-check-alt mr-2"
+    className: "fas fa-money-check-alt me-2"
   }), "M\xE9todo de pago"), /*#__PURE__*/React.createElement(Dropdown, {
     inputId: "paymentMethod",
     options: filteredPaymentMethods,
@@ -482,7 +482,7 @@ const ProductsPaymentStep = ({
     htmlFor: "remainingAmount",
     className: "block font-medium mb-2"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-receipt mr-2"
+    className: "fas fa-receipt me-2"
   }), "Total Pendiente"), /*#__PURE__*/React.createElement(InputNumber, {
     id: "remainingAmount",
     value: remaining,
@@ -498,7 +498,7 @@ const ProductsPaymentStep = ({
     htmlFor: "cashAmount",
     className: "block font-medium mb-2"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-hand-holding-usd mr-2"
+    className: "fas fa-hand-holding-usd me-2"
   }), "Monto Recibido"), /*#__PURE__*/React.createElement(InputNumber, {
     id: "cashAmount",
     value: modalAmount,

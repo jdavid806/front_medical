@@ -4,35 +4,46 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { StepperPanel } from 'primereact/stepperpanel';
 import { ProgressBar } from 'primereact/progressbar';
+import { Badge } from 'primereact/badge';
 import BillingConfigTab from "../../../config-accounting/billing/BilingConfigTab.js";
 import { PaymentMethodsConfig } from "../../../config-accounting/paymentmethods/PaymentMethodsConfig.js";
 import { TaxesConfig } from "../../../config-accounting/taxes/TaxesConfig.js";
 import { RetentionConfig } from "../../../config-accounting/retention/RetentionConfig.js";
 import { CostCenterConfig } from "../../../config-accounting/costcenters/CostCenterConfig.js"; // Componentes envueltos con props de validación
 const MetodosPago = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  showValidation
 }) => /*#__PURE__*/React.createElement(PaymentMethodsConfig, {
-  onConfigurationComplete: onConfigurationComplete
+  onConfigurationComplete: onConfigurationComplete,
+  showValidation: showValidation
 });
 const ImpuestosConfig = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  showValidation
 }) => /*#__PURE__*/React.createElement(TaxesConfig, {
-  onConfigurationComplete: onConfigurationComplete
+  onConfigurationComplete: onConfigurationComplete,
+  showValidation: showValidation
 });
 const RetencionesConfig = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  showValidation
 }) => /*#__PURE__*/React.createElement(RetentionConfig, {
-  onConfigurationComplete: onConfigurationComplete
+  onConfigurationComplete: onConfigurationComplete,
+  showValidation: showValidation
 });
 const CentrosCostoConfig = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  showValidation
 }) => /*#__PURE__*/React.createElement(CostCenterConfig, {
-  onConfigurationComplete: onConfigurationComplete
+  onConfigurationComplete: onConfigurationComplete,
+  showValidation: showValidation
 });
 const FacturacionConfig = ({
-  onConfigurationComplete
+  onConfigurationComplete,
+  showValidation
 }) => /*#__PURE__*/React.createElement(BillingConfigTab, {
-  onConfigurationComplete: onConfigurationComplete
+  onConfigurationComplete: onConfigurationComplete,
+  showValidation: showValidation
 });
 export const ContabilidadConfig = ({
   onConfigurationComplete
@@ -40,26 +51,35 @@ export const ContabilidadConfig = ({
   const [activeSubStep, setActiveSubStep] = useState(0);
   const [subStepCompletion, setSubStepCompletion] = useState([false, false, false, false, false]);
   const [canProceed, setCanProceed] = useState(false);
+  const [stepProgress, setStepProgress] = useState({
+    completed: 0,
+    total: 0
+  });
   const subSteps = [{
     label: 'Métodos de Pago',
     component: MetodosPago,
-    description: 'Configure al menos un método de pago'
+    description: 'Configure al menos un método de pago',
+    validationText: 'métodos de pago configurados'
   }, {
     label: 'Impuestos',
     component: ImpuestosConfig,
-    description: 'Configure al menos un impuesto'
+    description: 'Configure al menos un impuesto',
+    validationText: 'impuestos configurados'
   }, {
     label: 'Retenciones',
     component: RetencionesConfig,
-    description: 'Configure al menos una retención'
+    description: 'Configure al menos una retención',
+    validationText: 'retenciones configuradas'
   }, {
     label: 'Centros de Costo',
     component: CentrosCostoConfig,
-    description: 'Configure al menos un centro de costo'
+    description: 'Configure al menos un centro de costo',
+    validationText: 'centros de costo configurados'
   }, {
     label: 'Facturación',
     component: FacturacionConfig,
-    description: 'Complete todas las configuraciones de facturación'
+    description: 'Complete todas las configuraciones de facturación',
+    validationText: 'configuraciones de facturación completadas'
   }];
 
   // Actualizar estado de completitud del paso actual
@@ -76,6 +96,15 @@ export const ContabilidadConfig = ({
     });
   };
 
+  // Calcular progreso general
+  useEffect(() => {
+    const completedSteps = subStepCompletion.filter(Boolean).length;
+    setStepProgress({
+      completed: completedSteps,
+      total: subSteps.length
+    });
+  }, [subStepCompletion]);
+
   // Verificar si puede proceder al siguiente paso
   useEffect(() => {
     const currentStepComplete = subStepCompletion[activeSubStep];
@@ -87,7 +116,7 @@ export const ContabilidadConfig = ({
     setCanProceed(currentStepComplete);
   }, [activeSubStep, subStepCompletion]);
 
-  // ENVIAR EL ESTADO COMPLETO AL PADRE CADA VEZ QUE CAMBIE
+  // Enviar el estado completo al padre cada vez que cambie
   useEffect(() => {
     console.log('📤 Enviando estado completo al padre:', subStepCompletion);
     onConfigurationComplete?.(subStepCompletion);
@@ -99,10 +128,7 @@ export const ContabilidadConfig = ({
   const handlePrevSubStep = () => {
     setActiveSubStep(prev => Math.max(prev - 1, 0));
   };
-
-  // Calcular progreso general
-  const completedSteps = subStepCompletion.filter(Boolean).length;
-  const progressValue = completedSteps / subSteps.length * 100;
+  const progressValue = stepProgress.completed / stepProgress.total * 100;
   const CurrentComponent = subSteps[activeSubStep].component;
   return /*#__PURE__*/React.createElement("div", {
     className: "contabilidad-configuration"
@@ -121,7 +147,7 @@ export const ContabilidadConfig = ({
     className: "text-muted"
   }, "Progreso general"), /*#__PURE__*/React.createElement("small", {
     className: "text-primary fw-bold"
-  }, completedSteps, " de ", subSteps.length)), /*#__PURE__*/React.createElement(ProgressBar, {
+  }, stepProgress.completed, " de ", stepProgress.total)), /*#__PURE__*/React.createElement(ProgressBar, {
     value: progressValue,
     showValue: false,
     style: {
@@ -142,30 +168,46 @@ export const ContabilidadConfig = ({
     className: "substep-content"
   }, /*#__PURE__*/React.createElement("div", {
     className: "content-header mb-4"
-  }, /*#__PURE__*/React.createElement("h4", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-start mb-3"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h4", {
     className: "text-primary mb-2"
-  }, subSteps[activeSubStep].label)), /*#__PURE__*/React.createElement(CurrentComponent, {
-    onConfigurationComplete: handleSubStepComplete
+  }, subSteps[activeSubStep].label), /*#__PURE__*/React.createElement("p", {
+    className: "text-muted mb-0"
+  }, subSteps[activeSubStep].description)), /*#__PURE__*/React.createElement(Badge, {
+    value: subStepCompletion[activeSubStep] ? "✅ Completado" : "⏳ Pendiente",
+    severity: subStepCompletion[activeSubStep] ? "success" : "warning",
+    className: "ms-2"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: `alert ${subStepCompletion[activeSubStep] ? 'alert-success' : 'alert-info'} p-3`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${subStepCompletion[activeSubStep] ? 'pi pi-check-circle' : 'pi pi-info-circle'} me-2`
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "small"
+  }, subStepCompletion[activeSubStep] ? `✅ ${subSteps[activeSubStep].label} configurado correctamente. Puedes continuar al siguiente submódulo.` : `ℹ️ ${subSteps[activeSubStep].description}`)))), /*#__PURE__*/React.createElement(CurrentComponent, {
+    onConfigurationComplete: handleSubStepComplete,
+    showValidation: false // Prop para ocultar validaciones internas
   }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between mt-4 pt-3 border-top"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("small", {
     className: "text-muted"
-  }, "Subm\xF3dulo ", /*#__PURE__*/React.createElement("strong", null, activeSubStep + 1), " de ", /*#__PURE__*/React.createElement("strong", null, subSteps.length))), /*#__PURE__*/React.createElement("div", {
+  }, "Subm\xF3dulo ", /*#__PURE__*/React.createElement("strong", null, activeSubStep + 1), " de ", /*#__PURE__*/React.createElement("strong", null, subSteps.length)), !canProceed && /*#__PURE__*/React.createElement("small", {
+    className: "text-warning d-block mt-1"
+  }, "\u26A0\uFE0F Complete este subm\xF3dulo para continuar")), /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Subm\xF3dulo Anterior",
+    icon: "pi pi-arrow-left",
     className: "p-button-outlined",
     disabled: activeSubStep === 0,
     onClick: handlePrevSubStep,
     severity: "secondary"
-  }, /*#__PURE__*/React.createElement("i", {
-    style: {
-      marginLeft: '10px'
-    },
-    className: "fa-solid fa-arrow-left"
-  })), /*#__PURE__*/React.createElement(Button, {
-    iconPos: "right",
+  }), /*#__PURE__*/React.createElement(Button, {
     label: "Siguiente Subm\xF3dulo",
+    icon: "pi pi-arrow-right",
+    iconPos: "right",
     className: "p-button-success",
     disabled: !canProceed,
     onClick: handleNextSubStep,
@@ -173,10 +215,5 @@ export const ContabilidadConfig = ({
     tooltipOptions: {
       position: 'top'
     }
-  }, /*#__PURE__*/React.createElement("i", {
-    style: {
-      marginLeft: '10px'
-    },
-    className: "fa-solid fa-arrow-right"
-  }))))))));
+  })))))));
 };
