@@ -1,7 +1,32 @@
+const getJWTPayloadByToken = (token) => {
+  if (!token) return null;
+  const payloadBase64 = token.split(".")[1];
+  return JSON.parse(atob(payloadBase64));
+}
+
+const getJWTPayload = () => {
+  const token = sessionStorage.getItem("auth_token");
+  return getJWTPayloadByToken(token);
+};
+
+const getHeaders = () => {
+  const token = sessionStorage.getItem("auth_token");
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-DOMAIN": obtenerRutaPrincipal().split('.')[0],
+    "X-External-ID": getJWTPayload()?.sub,
+    "X-TENANT-ID": localStorage.getItem('tenantId'),
+    ...(token && { "Authorization": `Bearer ${token}` }),
+  };
+}
+
 async function obtenerNombreMetodoPago(id) {
   try {
     let url = obtenerRutaPrincipal() + `/api/v1/admin/payment-methods/${id}`;
-    let metodoPago = await fetch(url);
+    let metodoPago = await fetch(url, {
+      headers: getHeaders(),
+    });
     let data = await metodoPago.json();
     return data.method || "Desconocido";
   } catch (error) {
@@ -13,7 +38,9 @@ async function obtenerNombreMetodoPago(id) {
 async function obtenerNombreProducto(id) {
   try {
     let url = obtenerRutaPrincipal() + `/api/v1/admin/products/${id}`;
-    let producto = await fetch(url);
+    let producto = await fetch(url, {
+      headers: getHeaders(),
+    });
     let data = await producto.json();
     return data.name || "Producto desconocido";
   } catch (error) {
@@ -431,7 +458,7 @@ async function generateInvoiceFromInvoice(invoiceData, userData, patientData, ge
       paciente_documento:
         paciente.document_type + "-" + paciente.document_number,
       paciente_direccion: paciente.address,
-      paciente_telefono: paciente.whatsapp,
+      paciente_telefono: paciente.whatsapp || paciente.phone || "--",
     };
 
     let metodosPago = await Promise.all(

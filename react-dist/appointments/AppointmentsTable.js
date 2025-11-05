@@ -12,15 +12,14 @@ import { SwalManager } from "../../services/alertManagerImported.js";
 import { RescheduleAppointmentModalV2 } from "./RescheduleAppointmentModalV2.js";
 import { getUserLogged } from "../../services/utilidades.js";
 import { useMassMessaging } from "../hooks/useMassMessaging.js";
-import { getIndicativeByCountry } from "../../services/utilidades.js";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useTemplateBuilded } from "../hooks/useTemplateBuilded.js";
 import { PrimeReactProvider } from "primereact/api";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { AppointmentCreateFormModalButton } from "./AppointmentCreateFormModalButton.js"; // Importaciones nuevas para el menú
 import { Toast } from "primereact/toast";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
+import { AppointmentCreateFormModalButton } from "./AppointmentCreateFormModalButton.js";
 export const AppointmentsTable = () => {
   const patientId = new URLSearchParams(window.location.search).get("patient_id") || null;
   const [selectedBranch, setSelectedBranch] = React.useState(null);
@@ -138,8 +137,6 @@ export const AppointmentsTable = () => {
       name: typeName || "No definido"
     };
   };
-
-  // Componente de menú para las acciones
   const TableMenu = ({
     rowData
   }) => {
@@ -150,11 +147,11 @@ export const AppointmentsTable = () => {
         data: rowData
       });
     };
-    const handleMakeConsultation = () => {
-      handleMakeClinicalRecord(rowData.patientId, rowData.id);
+    const handleMakeClinicalRecord = () => {
+      handleMakeClinicalRecordAction(rowData.patientId, rowData.id);
     };
-    const handleMakeExam = () => {
-      handleLoadExamResults(rowData.id, rowData.patientId, rowData.productId);
+    const handleLoadExamResults = () => {
+      handleLoadExamResultsAction(rowData.id, rowData.patientId, rowData.productId);
     };
     const handleUploadExam = () => {
       setSelectedAppointment(rowData);
@@ -162,7 +159,7 @@ export const AppointmentsTable = () => {
       setSelectedExamOrder(rowData.orders[0]);
       setShowPdfModal(true);
     };
-    const handleReschedule = () => {
+    const handleRescheduleAppointment = () => {
       openRescheduleAppointmentModal(rowData.id);
     };
     const handleCancelAppointment = () => {
@@ -200,83 +197,117 @@ export const AppointmentsTable = () => {
       //@ts-ignore
       sendInvoice(rowData.id, rowData.patientId);
     };
-    const menuItems = [{
+
+    // Construir los items del menú manteniendo la misma lógica condicional
+    const menuItems = [];
+
+    // Siempre agregar Generar preadmision
+    menuItems.push({
       label: "Generar preadmision",
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fa-solid far fa-hospital me-2"
       }),
       command: handleGeneratePreadmission
-    }, ...((rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "CONSULTATION" && patientId ? [{
-      label: "Realizar consulta",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-stethoscope me-2"
-      }),
-      command: handleMakeConsultation
-    }] : []), ...((rowData.stateId === "2" || rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "PROCEDURE" && patientId ? [{
-      label: "Realizar examen",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-stethoscope me-2"
-      }),
-      command: handleMakeExam
-    }, {
-      label: "Subir Examen",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-file-pdf me-2"
-      }),
-      command: handleUploadExam
-    }] : []), ...(rowData.stateId === "1" || rowData.stateKey === "pending" ? [{
-      label: "Reagendar cita",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-calendar-alt me-2"
-      }),
-      command: handleReschedule
-    }, {
-      label: "Cancelar cita",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-ban me-2"
-      }),
-      command: handleCancelAppointment
-    }] : []), {
+    });
+
+    // Agregar Realizar consulta si cumple condiciones
+    if ((rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "CONSULTATION" && patientId) {
+      menuItems.push({
+        label: "Realizar consulta",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-stethoscope me-2"
+        }),
+        command: handleMakeClinicalRecord
+      });
+    }
+
+    // Agregar acciones de examen si cumple condiciones
+    if ((rowData.stateId === "2" || rowData.stateKey === "pending_consultation" || rowData.stateKey === "called" || rowData.stateKey === "in_consultation") && rowData.attentionType === "PROCEDURE" && patientId) {
+      menuItems.push({
+        label: "Realizar examen",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-stethoscope me-2"
+        }),
+        command: handleLoadExamResults
+      }, {
+        label: "Subir Examen",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-file-pdf me-2"
+        }),
+        command: handleUploadExam
+      });
+    }
+
+    // Agregar acciones de reagendar y cancelar si cumple condiciones
+    if (rowData.stateId === "1" || rowData.stateKey === "pending") {
+      menuItems.push({
+        label: "Reagendar cita",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-calendar-alt me-2"
+        }),
+        command: handleRescheduleAppointment
+      }, {
+        label: "Cancelar cita",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-ban me-2"
+        }),
+        command: handleCancelAppointment
+      });
+    }
+
+    // Agregar separador y sección de Cita
+    menuItems.push({
       separator: true
-    }, {
-      label: "Compartir cita",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-brands fa-whatsapp me-2"
-      }),
-      command: handleShareAppointment
-    }, {
+    });
+    menuItems.push({
+      label: "Cita",
+      items: [{
+        label: "Compartir cita",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-brands fa-whatsapp me-2"
+        }),
+        command: handleShareAppointment
+      }]
+    });
+
+    // Agregar separador y sección de Factura
+    menuItems.push({
       separator: true
-    }, {
-      label: "Imprimir factura",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-print me-2"
-      }),
-      command: handlePrintInvoice
-    }, {
-      label: "Descargar factura",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-download me-2"
-      }),
-      command: handleDownloadInvoice
-    }, {
-      label: "Compartir factura por WhatsApp",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-brands fa-whatsapp me-2"
-      }),
-      command: handleShareInvoiceWhatsapp
-    }, {
-      label: "Compartir factura por Email",
-      icon: /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-envelope me-2"
-      }),
-      command: handleShareInvoiceEmail
-    }];
+    });
+    menuItems.push({
+      label: "Factura",
+      items: [{
+        label: "Imprimir factura",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-print me-2"
+        }),
+        command: handlePrintInvoice
+      }, {
+        label: "Descargar factura",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-download me-2"
+        }),
+        command: handleDownloadInvoice
+      }, {
+        label: "Compartir por WhatsApp",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-brands fa-whatsapp me-2"
+        }),
+        command: handleShareInvoiceWhatsapp
+      }, {
+        label: "Compartir por Email",
+        icon: /*#__PURE__*/React.createElement("i", {
+          className: "fa-solid fa-envelope me-2"
+        }),
+        command: handleShareInvoiceEmail
+      }]
+    });
     return /*#__PURE__*/React.createElement("div", {
       style: {
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-primary flex items-center gap-2",
+      className: "btn-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true
@@ -295,7 +326,7 @@ export const AppointmentsTable = () => {
   };
   const actionBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center justify-content-center",
+      className: "flex align-items-center justify-content-end",
       style: {
         gap: "0.5rem",
         minWidth: "120px"
@@ -307,24 +338,30 @@ export const AppointmentsTable = () => {
   const columns = [{
     header: "Paciente",
     field: "patientName",
-    body: data => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
+    body: data => /*#__PURE__*/React.createElement("a", {
       href: `verPaciente?id=${data.patientId}`
-    }, data.patientName))
+    }, data.patientName),
+    sortable: true
   }, {
     header: "Número de documento",
-    field: "patientDNI"
+    field: "patientDNI",
+    sortable: true
   }, {
     header: "Fecha Consulta",
-    field: "date"
+    field: "date",
+    sortable: true
   }, {
     header: "Hora Consulta",
-    field: "time"
+    field: "time",
+    sortable: true
   }, {
     header: "Profesional asignado",
-    field: "doctorName"
+    field: "doctorName",
+    sortable: true
   }, {
     header: "Entidad",
-    field: "entity"
+    field: "entity",
+    sortable: true
   }, {
     header: "Tipo de Cita",
     field: "appointmentType",
@@ -333,7 +370,8 @@ export const AppointmentsTable = () => {
       return /*#__PURE__*/React.createElement("span", {
         className: "d-flex align-items-center gap-2"
       }, /*#__PURE__*/React.createElement("span", null, typeInfo.name));
-    }
+    },
+    sortable: true
   }, {
     header: "Estado",
     field: "status",
@@ -343,7 +381,8 @@ export const AppointmentsTable = () => {
       return /*#__PURE__*/React.createElement("span", {
         className: `badge badge-phoenix badge-phoenix-${color}`
       }, text);
-    }
+    },
+    sortable: true
   }, {
     header: "Acciones",
     field: "actions",
@@ -389,7 +428,7 @@ export const AppointmentsTable = () => {
   useEffect(() => {
     refresh();
   }, [selectedBranch, selectedDate, selectedAppointmentType]);
-  const handleMakeClinicalRecord = (patientId, appointmentId) => {
+  const handleMakeClinicalRecordAction = (patientId, appointmentId) => {
     UserManager.onAuthChange((isAuthenticated, user) => {
       if (user) {
         window.location.href = `consultas-especialidad?patient_id=${patientId}&especialidad=${user.specialty.name}&appointment_id=${appointmentId}`;
@@ -403,7 +442,7 @@ export const AppointmentsTable = () => {
     }));
   };
   const handleCancelAppointmentAction = async data => {
-    SwalManager.confirmCancel(async data => {
+    SwalManager.confirmCancel(async () => {
       await appointmentService.changeStatus(Number(data.id), "cancelled");
       const dataTemplate = {
         tenantId: tenant,
@@ -454,13 +493,12 @@ export const AppointmentsTable = () => {
       data: {}
     });
   };
-  const handleLoadExamResults = (appointmentId, patientId, productId) => {
+  const handleLoadExamResultsAction = (appointmentId, patientId, productId) => {
     window.location.href = `cargarResultadosExamen?patient_id=${patientId}&product_id=${productId}&appointment_id=${appointmentId}`;
   };
-  const handleLoadExamResultsFile = () => {
-    setShowLoadExamResultsFileModal(true);
-  };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PrimeReactProvider, {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement(PrimeReactProvider, {
     value: {
       appendTo: "self",
       zIndex: {
@@ -475,10 +513,15 @@ export const AppointmentsTable = () => {
       minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-25px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center justify-content-end mb-1"
-  }, /*#__PURE__*/React.createElement(AppointmentCreateFormModalButton, null)), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    className: "d-flex align-items-center justify-content-end mb-2"
+  }, /*#__PURE__*/React.createElement(AppointmentCreateFormModalButton, null)), /*#__PURE__*/React.createElement(Accordion, {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row mb-3"
@@ -527,11 +570,7 @@ export const AppointmentsTable = () => {
     value: selectedDate,
     onChange: e => setSelectedDate(e.value),
     className: "w-100",
-    placeholder: "Seleccione un rango",
-    appendTo: "self",
-    panelStyle: {
-      zIndex: 100000
-    }
+    placeholder: "Seleccione un rango"
   }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: appointments,

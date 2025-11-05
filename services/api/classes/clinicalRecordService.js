@@ -8,6 +8,13 @@ export class ClinicalRecordService extends OneToManyService {
     );
   }
 
+  async clinicalRecordsParamsStoreFromApprovedReview(patientId, data) {
+    return await this.httpClient.post(
+      `${this.microservice}/clinical-records-params-from-approved-review/${patientId}`,
+      data
+    );
+  }
+
   async lastByPatient(patientId) {
     return await this.httpClient.get(
       `medical/clinical-records/last-by-patient/${patientId}`

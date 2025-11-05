@@ -40,6 +40,7 @@ RewriteRule ^ConfiguracionGeneral$ generalConfiguration.php
 RewriteRule ^Landing$ Portada/portadaTest.php
 
 # Configuración[INICIO]
+RewriteRule ^HomeReportes$ Reportes/homeReportes.php
 RewriteRule ^RIPS_Report$ Reportes/ReportesRIPS.php
 RewriteRule ^Menu_reports$ Reportes/Menu_reports_v2.php
 RewriteRule ^Registered_patients$ Reportes/Report_details/Registered_patient_report.php
@@ -97,6 +98,7 @@ RewriteRule ^ReporteControlCaja$ ContabilidadNueva/reportes/tablas/ControlCaja.p
 # ContabilidadNueva [FIN]
 
 # Facturacion [INICIO]
+RewriteRule ^FacturacionPrueba$ Facturacion/FacturacionPrueba.php
 RewriteRule ^FE_FCE$ Facturacion/FE_Facturacion.php
 RewriteRule ^EntidadModalCopy$ Facturacion/includes/modals/EntidadModalCopy.php
 RewriteRule ^Facturacion_Ventas$ Facturacion/Facturacion_ventas.php
@@ -314,6 +316,7 @@ RewriteRule ^detalleConsulta$  Consultas/detalleConsulta.php
 
 RewriteRule ^plantillasMensajes$  Marketing/plantillasMensajes.php
 RewriteRule ^configMensajes$  Marketing/configMensajes.php
+RewriteRule ^MassMessage$  Marketing/MassMessage/massMessage.php
 
 RewriteRule ^controlCaja$ ControlCaja/controlCajaForm.php
 
@@ -394,3 +397,10 @@ RewriteRule ^farmacia$ Farmacia/reactTest/entregaMedicamentosReact.php
 RewriteRule ^consultasRevisionPendiente$ Consultas/consultasRevisionPendiente.php
 
 RewriteRule ^reporteInsumosUsuarios$ Reportes/reporteInsumosUsuarios.php
+RewriteRule ^chatInterno$ Chat/Chat.php
+RewriteRule ^specialtyPastMedicalHistoryFormReactTest$ Consultas/specialtyPastMedicalHistoryFormReactTest.php
+RewriteRule ^specialtyPastMedicalHistoryDetailReactTest$ Consultas/specialtyPastMedicalHistoryDetailReactTest.php
+RewriteRule ^clinicalRecordReviewReactTest$ Consultas/clinicalRecordReviewReactTest.php
+RewriteRule ^cajaReact$ Caja/react/cajaPruebaReact.php
+RewriteRule ^basicPatientFormReactTest$ Pacientes/basicPatientFormReactTest.php
+RewriteRule ^systemConfigReactTest$ Configuracion/react/systemConfigReactTest.php

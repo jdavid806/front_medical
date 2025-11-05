@@ -130,12 +130,15 @@ export const PatientAsyncTable = () => {
     }
   }];
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    className: "card card-content-main text-body-emphasis rounded-3  w-100 w-md-100 w-lg-100 mx-auto",
     style: {
       minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-15px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end align-items-center mb-2"
   }, /*#__PURE__*/React.createElement(Button, {

@@ -20,6 +20,19 @@ const mapInvoiceData = (response) => {
       withholding_tax: parseFloat(attr.withholdings),
       discuount: parseFloat(attr.discount),
       tax: parseFloat(attr.iva),
+      notes: attr.notes || [],
+      adjustedType:
+        attr?.notes && attr.notes.length
+          ? attr.notes
+              .map((note: any) => {
+                note.name = "";
+                note.type == "debit"
+                  ? (note.name = "Débito")
+                  : (note.name = "Crédito");
+                return `${note.name}`;
+              })
+              .join(", ")
+          : "Sin ajuste",
       detalles: item?.details.map((d: any) => {
         const tax = Number(d.subtotal) * (Number(d.tax_product) / 100);
         const total = Number(d.subtotal) + tax;

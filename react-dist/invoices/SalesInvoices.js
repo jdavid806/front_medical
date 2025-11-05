@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
-import { Button } from "primereact/button";
-import { Card } from "primereact/card";
-import { Tag } from "primereact/tag";
-import { SplitButton } from "primereact/splitbutton";
 import { Toast } from "primereact/toast";
-import { classNames } from "primereact/utils";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { Tag } from "primereact/tag";
+import { CustomPRTable } from "../components/CustomPRTable.js";
 import { useThirdParties } from "../billing/third-parties/hooks/useThirdParties.js";
 import { InvoiceService } from "../../services/api/classes/invoiceService.js";
 import { cleanJsonObject } from "../../services/utilidades.js";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
 import { FormDebitCreditNotes } from "../invoices/form/FormDebitCreditNotes.js";
-import { Dialog } from "primereact/dialog";
 import { useSaleInvoicesFormat } from "../documents-generation/hooks/billing/invoices/useSaleInvoiceFormat.js";
 export const SalesInvoices = () => {
   const {
@@ -25,16 +24,17 @@ export const SalesInvoices = () => {
   // Estado para los datos de la tabla
   const [facturas, setFacturas] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
   const [showReciboModal, setShowReciboModal] = useState(false);
   const [facturaParaRecibo, setFacturaParaRecibo] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [invoiceToNote, setInvoiceToNote] = useState(null);
-  const [lazyState, setLazyState] = useState({
-    first: 0,
-    rows: 10,
-    page: 1
-  });
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  // Pagination state
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
   const {
     generateFormatSaleInvoices
   } = useSaleInvoicesFormat();
@@ -78,22 +78,15 @@ export const SalesInvoices = () => {
       [field]: value
     }));
   };
-  const onPage = event => {
-    setLazyState({
-      ...lazyState,
-      first: event.first,
-      rows: event.rows,
-      page: event.page + 1
-    });
+  const onPageChange = event => {
+    setFirst(event.first);
+    setRows(event.rows);
     aplicarFiltros(event.page + 1, event.rows);
-  };
-  const handlePageChange = page => {
-    aplicarFiltros(page.page + 1, page.rows);
   };
 
   // Función para aplicar filtros
   const aplicarFiltros = async (page = 1, per_page = 10) => {
-    setLoading(true);
+    setTableLoading(true);
 
     // Procesar el rango de fechas
     let dateFrom = null;
@@ -120,7 +113,7 @@ export const SalesInvoices = () => {
     } catch (error) {
       console.error("Error al obtener facturas:", error);
     } finally {
-      setLoading(false);
+      setTableLoading(false);
     }
   };
   function mapInvoiceResponseToUI(response) {
@@ -165,7 +158,7 @@ export const SalesInvoices = () => {
       montoMaximo: null
     });
     // Volver a cargar los datos sin filtros
-    aplicarFiltros(1, lazyState.rows);
+    aplicarFiltros(1, rows);
   };
 
   // Formatear número para montos en pesos dominicanos (DOP)
@@ -223,16 +216,6 @@ export const SalesInvoices = () => {
     setInvoiceToNote(invoice);
     setShowModal(true);
   }
-  const createActionTemplate = (icon, label, colorClass = "") => {
-    return () => /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2 p-2 point",
-      style: {
-        cursor: "pointer"
-      } // Agrega el cursor pointer aquí
-    }, /*#__PURE__*/React.createElement("i", {
-      className: `fas fa-${icon} ${colorClass}`
-    }), /*#__PURE__*/React.createElement("span", null, label));
-  };
   function handleNoteSuccess() {
     toast.current?.show({
       severity: "success",
@@ -242,53 +225,102 @@ export const SalesInvoices = () => {
     });
     setTimeout(() => {
       setShowModal(false);
-      aplicarFiltros(lazyState.page, lazyState.rows);
+      aplicarFiltros(Math.floor(first / rows) + 1, rows);
     }, 1000);
   }
-
-  // Acciones para cada fila
-
-  const actionBodyTemplate = rowData => {
-    const items = [{
+  const TableMenu = ({
+    rowData
+  }) => {
+    const menu = useRef(null);
+    const handleGenerateReceipt = () => {
+      generateReceipt(rowData);
+    };
+    const handleGenerateDebitNote = () => {
+      generateDebitNote(rowData);
+    };
+    const handleGenerateCreditNote = () => {
+      generateCreditNote(rowData);
+    };
+    const handleDownloadExcel = () => {
+      downloadExcel(rowData);
+    };
+    const handlePrintInvoice = () => {
+      printInvoice(rowData);
+    };
+    const handleDownloadPdf = () => {
+      downloadPdf(rowData);
+    };
+    const menuItems = [{
       label: "Generar Recibo",
-      template: createActionTemplate("receipt", "Generar Recibo", "text-green-500"),
-      command: () => generateReceipt(rowData)
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-receipt me-2"
+      }),
+      command: handleGenerateReceipt
     }, {
-      label: "Generar Nota Debito",
-      template: createActionTemplate("money-bill-transfer", "Generar Nota Debito", "text-green-500"),
-      command: () => generateDebitNote(rowData),
-      visible: rowData.notes.length ? false : true
+      label: "Generar Nota Débito",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-invoice-dollar me-2"
+      }),
+      command: handleGenerateDebitNote,
+      disabled: rowData.notes.length > 0
     }, {
-      label: "Generar Nota credito",
-      template: createActionTemplate("money-bill-transfer", "Generar Nota Credito", "text-green-500"),
-      command: () => generateCreditNote(rowData),
-      visible: rowData.notes.length ? false : true
+      label: "Generar Nota Crédito",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-invoice me-2"
+      }),
+      command: handleGenerateCreditNote,
+      disabled: rowData.notes.length > 0
     }, {
       label: "Descargar Excel",
-      template: createActionTemplate("file-excel", "Descargar Excel", "text-green-600"),
-      command: () => downloadExcel(rowData)
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-excel me-2"
+      }),
+      command: handleDownloadExcel
     }, {
       label: "Imprimir",
-      template: createActionTemplate("print", "Imprimir", "text-blue-500"),
-      command: () => printInvoice(rowData)
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-print me-2"
+      }),
+      command: handlePrintInvoice
     }, {
       label: "Descargar PDF",
-      template: createActionTemplate("file-pdf", "Descargar PDF", "text-red-500"),
-      command: () => downloadPdf(rowData)
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-pdf me-2"
+      }),
+      command: handleDownloadPdf
     }];
-    return /*#__PURE__*/React.createElement(SplitButton, {
-      label: "Acciones",
-      icon: "pi pi-cog",
-      model: items,
-      severity: "contrast",
-      className: "p-button-sm point",
-      buttonClassName: "p-button-sm",
-      menuButtonClassName: "p-button-sm point",
-      menuStyle: {
-        minWidth: "220px",
-        cursor: "pointer"
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
       }
-    });
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData
+    }));
   };
   const showToast = (severity, summary, detail) => {
     toast.current?.show({
@@ -332,72 +364,119 @@ export const SalesInvoices = () => {
     }
   };
 
-  // Estilos integrados
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px"
-    },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333"
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600
-    },
-    tableCell: {
-      padding: "0.75rem 1rem"
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block"
-    }
+  // Mapear los datos para la tabla
+  const tableItems = facturas.map(factura => ({
+    id: factura.id,
+    numeroFactura: factura.numeroFactura,
+    fecha: factura.fecha,
+    cliente: factura.cliente,
+    paid: factura.paid,
+    remainingAmount: factura.remainingAmount,
+    monto: factura.monto,
+    adjustedType: factura.adjustedType,
+    estado: factura.estado,
+    actions: factura
+  }));
+  const columns = [{
+    field: 'numeroFactura',
+    header: 'Factura',
+    sortable: true
+  }, {
+    field: 'fecha',
+    header: 'Fecha',
+    sortable: true,
+    body: rowData => formatDate(rowData.fecha)
+  }, {
+    field: 'cliente',
+    header: 'Cliente',
+    sortable: true
+  }, {
+    field: 'paid',
+    header: 'Pagado',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.paid)
+  }, {
+    field: 'remainingAmount',
+    header: 'Restante',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.remainingAmount)
+  }, {
+    field: 'monto',
+    header: 'Monto',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.monto)
+  }, {
+    field: 'adjustedType',
+    header: 'Ajuste',
+    sortable: true
+  }, {
+    field: 'estado',
+    header: 'Estado',
+    sortable: true,
+    body: rowData => /*#__PURE__*/React.createElement(Tag, {
+      value: getEstadoLabel(rowData.estado),
+      severity: getEstadoSeverity(rowData.estado)
+    })
+  }, {
+    field: 'actions',
+    header: 'Acciones',
+    body: rowData => actionBodyTemplate(rowData.actions),
+    exportable: false,
+    width: "120px"
+  }];
+  const handleSearchChange = searchValue => {
+    setGlobalFilter(searchValue);
+  };
+  const handleRefresh = async () => {
+    limpiarFiltros();
+    await aplicarFiltros(1, rows);
   };
   useEffect(() => {
-    aplicarFiltros(lazyState.page, lazyState.rows);
-  }, [lazyState.page, lazyState.rows]);
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid mt-4",
-    style: {
-      width: "100%",
-      padding: "0 15px"
-    }
+    aplicarFiltros(1, rows);
+  }, []);
+  return /*#__PURE__*/React.createElement("main", {
+    className: "main w-100",
+    id: "top"
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
-  }), /*#__PURE__*/React.createElement("div", {
+  }), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-center align-items-center",
     style: {
-      display: "flex",
-      justifyContent: "flex-end",
-      margin: "10px"
+      height: "50vh",
+      marginLeft: "900px",
+      marginTop: "300px"
     }
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: " h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-30px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
   }, /*#__PURE__*/React.createElement(Button, {
-    label: "Nuevo Facturaci\xF3n Venta",
-    icon: "pi pi-file-edit",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: () => window.location.href = "Facturacion_Ventas"
-  })), /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    style: styles.card
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-file-edit me-2"
+  }), "Nueva Facturaci\xF3n Venta")), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros de B\xFAsqueda"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
+    className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "N\xFAmero de factura"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.numeroFactura,
     onChange: e => handleFilterChange("numeroFactura", e.target.value),
     placeholder: "B01-001-0000001",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Cliente"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.cliente,
     onChange: e => handleFilterChange("cliente", e.target.value),
@@ -405,11 +484,11 @@ export const SalesInvoices = () => {
     optionLabel: "name",
     optionValue: "id",
     placeholder: "Seleccione un proveedor",
-    className: classNames("w-100")
+    className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
     value: filtros.fechaRango,
     onChange: e => handleFilterChange("fechaRango", e.value),
@@ -417,12 +496,12 @@ export const SalesInvoices = () => {
     readOnlyInput: true,
     dateFormat: "dd/mm/yy",
     placeholder: "Seleccione un rango",
-    className: classNames("w-100"),
+    className: "w-100",
     showIcon: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Estado"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.estado,
     options: estadosFactura,
@@ -435,91 +514,28 @@ export const SalesInvoices = () => {
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Limpiar",
     icon: "pi pi-trash",
-    className: "btn btn-phoenix-secondary",
+    className: "p-button-secondary",
     onClick: limpiarFiltros
   }), /*#__PURE__*/React.createElement(Button, {
     label: "Aplicar Filtros",
     icon: "pi pi-filter",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: () => aplicarFiltros(),
-    loading: loading
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Facturas de Venta",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: facturas,
-    lazy: true,
+    loading: tableLoading
+  }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
+    loading: tableLoading,
+    onSearch: handleSearchChange,
+    onReload: handleRefresh,
     paginator: true,
-    first: lazyState.first,
-    rows: lazyState.rows,
+    rows: rows,
+    first: first,
+    onPage: onPageChange,
     totalRecords: totalRecords,
-    onPage: onPage,
     rowsPerPageOptions: [5, 10, 25, 50],
-    loading: loading,
-    className: "p-datatable-striped p-datatable-gridlines",
-    emptyMessage: "No se encontraron facturas",
-    responsiveLayout: "scroll",
-    tableStyle: {
-      minWidth: "10rem",
-      width: "100%"
-    }
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "numeroFactura",
-    header: "Factura",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "fecha",
-    header: "Fecha",
-    sortable: true,
-    body: rowData => formatDate(rowData.fecha),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "cliente",
-    header: "Cliente",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "paid",
-    header: "Pagado",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.paid),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "remainingAmount",
-    header: "Restante",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.remainingAmount),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "monto",
-    header: "Monto",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.monto),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "adjustedType",
-    header: "Ajuste",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "estado",
-    header: "Estado",
-    sortable: true,
-    body: rowData => /*#__PURE__*/React.createElement(Tag, {
-      value: getEstadoLabel(rowData.estado),
-      severity: getEstadoSeverity(rowData.estado)
-    }),
-    style: {
-      width: "100px"
-    }
-  }), /*#__PURE__*/React.createElement(Column, {
-    body: actionBodyTemplate,
-    header: "Acciones",
-    style: {
-      width: "100px"
-    },
-    exportable: false
+    currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} facturas",
+    emptyMessage: "No se encontraron facturas"
   }))), /*#__PURE__*/React.createElement(NewReceiptBoxModal, {
     visible: showReciboModal,
     onHide: () => {

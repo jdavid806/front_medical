@@ -217,9 +217,6 @@ const RetentionFormConfig = ({
   }, "Impuesto *"), /*#__PURE__*/React.createElement(Controller, {
     name: "tax_id",
     control: control,
-    rules: {
-      required: "La cuenta contable de compras es requerida"
-    },
     render: ({
       field,
       fieldState

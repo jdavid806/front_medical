@@ -24,8 +24,6 @@ export const DynamicForm: React.FC<DynamicFormProps> = forwardRef(({ form }, ref
     }, [form]);
 
     const initializeForm = (formData: any) => {
-        console.log(formData);
-
         const initialFormValues: any = {};
         const initializedTabs = formData.tabs.map((tab: any) => ({
             ...tab,
@@ -37,7 +35,6 @@ export const DynamicForm: React.FC<DynamicFormProps> = forwardRef(({ form }, ref
                     fields: card.fields.map((field: any) => {
                         if (formData.values?.[field.id]) {
                             initialFormValues[field.id] = formData.values[field.id];
-                            console.log(initialFormValues[field.id]);
                         } else {
                             initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
                         }
@@ -46,6 +43,8 @@ export const DynamicForm: React.FC<DynamicFormProps> = forwardRef(({ form }, ref
                             field.toggleFields.forEach((subField: any) => {
                                 if (!formData.values?.[subField.id]) {
                                     initialFormValues[subField.id] = '';
+                                } else {
+                                    initialFormValues[subField.id] = formData.values[subField.id];
                                 }
                             });
                         }

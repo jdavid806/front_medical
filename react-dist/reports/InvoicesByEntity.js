@@ -3,10 +3,11 @@ import { MultiSelect } from "primereact/multiselect";
 import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
-import { TreeTable } from "primereact/treetable";
+import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js"; // Import your services
@@ -30,8 +31,8 @@ export const InvoicesByEntity = () => {
 
   // State for report data
   const [reportData, setReportData] = useState([]);
-  const [activeTab, setActiveTab] = useState("byEntity-tab");
-  const [treeData, setTreeData] = useState([]);
+  const [tableData, setTableData] = useState([]);
+  const [activeTab, setActiveTab] = useState("byEntity");
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
@@ -40,6 +41,10 @@ export const InvoicesByEntity = () => {
     setCompany,
     fetchCompany
   } = useCompany();
+
+  // Pagination state
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
   useEffect(() => {
     const initializeData = async () => {
       try {
@@ -60,7 +65,7 @@ export const InvoicesByEntity = () => {
   }, []);
   useEffect(() => {
     if (reportData.length > 0) {
-      prepareTreeData();
+      prepareTableData();
     }
   }, [reportData]);
   const loadData = async (filterParams = {
@@ -135,6 +140,7 @@ export const InvoicesByEntity = () => {
       if (selectedSpecialists && selectedSpecialists.length > 0) filterParams.user_ids = selectedSpecialists;
       if (selectedEntity) filterParams.entity_id = selectedEntity;
       await loadData(filterParams);
+      setFirst(0); // Reset to first page when filtering
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -154,134 +160,65 @@ export const InvoicesByEntity = () => {
     }).format(value);
     return formatted;
   };
-  const prepareTreeData = () => {
-    const groupedByEntity = {};
+  const prepareTableData = () => {
+    const flatData = [];
     reportData.forEach(item => {
       const entity = item.admission?.patient?.social_security?.entity;
-      const entityKey = entity?.id || "sin-entidad";
       const entityName = entity?.name || "Sin entidad";
-      if (!groupedByEntity[entityKey]) {
-        groupedByEntity[entityKey] = {
-          key: `entity_${entityKey}`,
-          data: {
-            entidad: entityName,
-            facturador: "",
-            paciente: ` 0`,
-            // Inicializar contador
-            producto: ` 0`,
-            // Inicializar contador
-            numeroAutorizacion: "",
-            montoPagado: 0,
-            fechaVencimiento: ""
-          },
-          children: [],
-          totalPacientes: 0,
-          totalProductos: 0
-        };
-      }
       const facturador = item.user ? `${item.user.first_name} ${item.user.last_name}` : "-";
       const paciente = item.admission?.patient ? `${item.admission.patient.first_name} ${item.admission.patient.last_name}` : "-";
       const producto = item.admission?.appointment?.product?.name || "-";
       const montoPagado = parseFloat(item.admission.entity_authorized_amount) || 0;
-
-      // Agregar factura como hijo
-      groupedByEntity[entityKey].children.push({
-        key: `invoice_${item.invoice.id}_${item.admission.id}`,
-        data: {
-          entidad: "",
-          facturador: facturador,
-          paciente: paciente,
-          producto: producto,
-          numeroAutorizacion: item.admission.authorization_number || "-",
-          montoPagado: montoPagado,
-          fechaVencimiento: item.invoice.due_date || "-",
-          invoiceCode: item.invoice.invoice_code || "-",
-          id: item.invoice.id || "-"
-        }
+      flatData.push({
+        id: item.invoice.id,
+        entidad: entityName,
+        facturador: facturador,
+        paciente: paciente,
+        producto: producto,
+        numeroAutorizacion: item.admission.authorization_number || "-",
+        montoPagado: montoPagado,
+        fechaVencimiento: item.invoice.due_date || "-",
+        invoiceCode: item.invoice.invoice_code || "-"
       });
-
-      // Actualizar totales
-      groupedByEntity[entityKey].totalPacientes++;
-      groupedByEntity[entityKey].totalProductos++;
-      groupedByEntity[entityKey].data.montoPagado += montoPagado;
-
-      // Actualizar texto en nodo padre
-      groupedByEntity[entityKey].data.paciente = ` ${groupedByEntity[entityKey].totalPacientes}`;
-      groupedByEntity[entityKey].data.producto = ` ${groupedByEntity[entityKey].totalProductos}`;
     });
-    const treeData = Object.values(groupedByEntity).sort((a, b) => a.data.entidad.localeCompare(b.data.entidad));
-    setTreeData(treeData);
+
+    // Ordenar por entidad
+    const sortedData = flatData.sort((a, b) => a.entidad.localeCompare(b.entidad));
+    setTableData(sortedData);
   };
-  const amountBodyTemplate = node => {
+  const amountBodyTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
       style: {
         fontWeight: "bold"
       }
-    }, formatCurrency(node.data.montoPagado));
+    }, formatCurrency(rowData.montoPagado));
   };
-  const header = /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-content-end"
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "p-input-icon-left"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-search"
-  }), /*#__PURE__*/React.createElement(InputText, {
-    type: "search",
-    onInput: e => setGlobalFilter(e.currentTarget.value),
-    placeholder: "Buscar..."
-  })));
+  const onPageChange = event => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
 
-  //Exportar excel
-  const exportButtonTemplate = node => {
-    if (node.children && node.children.length > 0) {
-      return /*#__PURE__*/React.createElement("div", {
-        className: "d-flex gap-2"
-      }, /*#__PURE__*/React.createElement(Button, {
-        className: "p-button-rounded p-button-success p-button-sm",
-        onClick: e => {
-          e.stopPropagation();
-          handleExportEntity(node);
-        },
-        tooltip: "Exportar a Excel",
-        tooltipOptions: {
-          position: "top"
-        }
-      }, /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-file-excel"
-      })), /*#__PURE__*/React.createElement(Button, {
-        className: "p-button-rounded p-button-secondary p-button-sm",
-        onClick: e => {
-          e.stopPropagation();
-          handleExportPDF(node);
-        },
-        tooltip: "Exportar a PDF",
-        tooltipOptions: {
-          position: "top"
-        }
-      }, /*#__PURE__*/React.createElement("i", {
-        className: "fa-solid fa-file-pdf"
-      })));
-    }
-    return null;
-  };
-  const handleExportEntity = node => {
-    const entityData = node.children.map(child => ({
-      Entidad: node.data.entidad,
-      Facturador: child.data.facturador,
-      Paciente: child.data.paciente,
-      Producto: child.data.producto,
-      "Número Autorización": child.data.numeroAutorizacion,
-      "codigo de factura": child.data.invoiceCode,
-      "id": child.data.id,
-      "Monto Pagado": child.data.montoPagado,
-      "Fecha Vencimiento": child.data.fechaVencimiento
+  //Exportar excel para toda la entidad
+  const handleExportEntity = () => {
+    const entityData = tableData.map(item => ({
+      Entidad: item.entidad,
+      Facturador: item.facturador,
+      Paciente: item.paciente,
+      Producto: item.producto,
+      "Número Autorización": item.numeroAutorizacion,
+      "Código de factura": item.invoiceCode,
+      "ID": item.id,
+      "Monto Pagado": item.montoPagado,
+      "Fecha Vencimiento": item.fechaVencimiento
     }));
     exportToExcel({
       data: entityData,
-      fileName: `Facturas_${node.data.entidad.replace(/[^a-zA-Z0-9]/g, "_")}`
+      fileName: `Facturas_por_Entidad`
     });
   };
-  function handleExportPDF(node) {
+
+  //Exportar PDF para toda la entidad
+  function handleExportPDF() {
     const table = `
     <style>
     table { 
@@ -306,46 +243,42 @@ export const InvoicesByEntity = () => {
     <table>
       <thead>
         <tr>
+          <th>Entidad</th>
           <th>Facturador</th>
           <th>Paciente</th>
           <th>Producto</th>
           <th>Número Autorización</th>
-          <th>codigo de factura</th>
-          <th>id</th>
+          <th>Código de factura</th>
+          <th>ID</th>
           <th>Monto Pagado</th>
           <th>Fecha Vencimiento</th>
         </tr>
       </thead>
       <tbody>
-        ${node.children.reduce((acc, child) => acc + `
+        ${tableData.reduce((acc, item) => acc + `
           <tr>
-            <td>${child.data.facturador}</td>
-            <td>${child.data.paciente}</td>
-            <td>${child.data.producto}</td>
-            <td>${child.data.numeroAutorizacion}</td>
-            <td>${child.data.invoiceCode}</td>
-            <td>${child.data.id}</td>
-            <td>${child.data.montoPagado}</td>
-            <td>${child.data.fechaVencimiento}</td>
+            <td>${item.entidad}</td>
+            <td>${item.facturador}</td>
+            <td>${item.paciente}</td>
+            <td>${item.producto}</td>
+            <td>${item.numeroAutorizacion}</td>
+            <td>${item.invoiceCode}</td>
+            <td>${item.id}</td>
+            <td>${item.montoPagado}</td>
+            <td>${item.fechaVencimiento}</td>
           </tr>
         `, "")}
       </tbody>
     </table>`;
     const configPDF = {
-      name: node.data.entidad
+      name: "Facturas_por_Entidad"
     };
     generatePDFFromHTML(table, company, configPDF);
   }
   return /*#__PURE__*/React.createElement("main", {
     className: "main",
     id: "top"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "content"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "pb-9"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "mb-4"
-  }, "Facturas por Entidad"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, loading ? /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
     style: {
       height: "50vh",
@@ -356,39 +289,20 @@ export const InvoicesByEntity = () => {
     className: "row g-3 justify-content-between align-items-start mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "range-dates-tab" ? "active" : ""}`,
-    id: "range-dates-tab",
-    onClick: () => setActiveTab("range-dates-tab"),
-    role: "tab"
-  }, "Filtros"))), /*#__PURE__*/React.createElement("div", {
-    className: "tab-content mt-3",
-    id: "myTabContent"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "tab-pane fade show active",
-    id: "tab-range-dates",
-    role: "tabpanel",
-    "aria-labelledby": "range-dates-tab"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex"
-  }, /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      width: "100%"
+      minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-40px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card border border-light"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "tabs-professional-container mt-4"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
@@ -460,37 +374,47 @@ export const InvoicesByEntity = () => {
     placeholder: "Seleccione entidad",
     filter: true,
     className: "w-100"
-  }))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end m-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Filtrar",
     icon: "pi pi-filter",
     onClick: handleFilter,
     className: "p-button-primary"
-  })))))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "row gy-5"
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-header"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "byEntity" ? "active" : ""}`,
+    onClick: () => setActiveTab("byEntity")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-building"
+  }), "Entidad")), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-content"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "byEntity-tab" ? "active" : ""}`,
-    id: "byEntity-tab",
-    onClick: () => setActiveTab("byEntity-tab"),
-    role: "tab"
-  }, "Entidad"))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12 tab-content mt-3",
-    id: "myTabContent"
+    className: `tab-panel ${activeTab === "byEntity" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "byEntity-tab" ? "show active" : ""}`,
-    id: "tab-byEntity",
-    role: "tabpanel",
-    "aria-labelledby": "byEntity-tab"
-  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end gap-2 mb-4"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-success",
+    onClick: handleExportEntity,
+    tooltip: "Exportar a Excel",
+    tooltipOptions: {
+      position: "top"
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-file-excel me-2"
+  }), "Excel"), /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-secondary",
+    onClick: handleExportPDF,
+    tooltip: "Exportar a PDF",
+    tooltipOptions: {
+      position: "top"
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-file-pdf me-2"
+  }), "PDF")), /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, tableLoading ? /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
@@ -499,38 +423,64 @@ export const InvoicesByEntity = () => {
       marginLeft: "950px",
       marginTop: "100px"
     }
-  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(TreeTable, {
-    value: treeData,
-    header: header,
-    globalFilter: globalFilter,
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
+    value: tableData,
+    loading: tableLoading,
     scrollable: true,
     scrollHeight: "400px",
-    className: "p-treetable-sm",
-    loading: tableLoading,
     showGridlines: true,
-    stripedRows: true
+    stripedRows: true,
+    size: "small",
+    tableStyle: {
+      minWidth: "100%"
+    },
+    className: "p-datatable-sm",
+    paginator: true,
+    rows: rows,
+    first: first,
+    onPage: onPageChange,
+    rowsPerPageOptions: [5, 10, 25, 50],
+    paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
+    currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+    globalFilter: globalFilter,
+    header: /*#__PURE__*/React.createElement("div", {
+      className: "flex justify-content-between align-items-center"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xl font-semibold"
+    }, "Facturas por Entidad"), /*#__PURE__*/React.createElement("span", {
+      className: "p-input-icon-left"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "pi pi-search"
+    }), /*#__PURE__*/React.createElement(InputText, {
+      type: "search",
+      onInput: e => setGlobalFilter(e.currentTarget.value),
+      placeholder: "Buscar..."
+    })))
   }, /*#__PURE__*/React.createElement(Column, {
     field: "entidad",
     header: "Entidad",
-    expander: true,
+    sortable: true,
     style: {
       minWidth: "200px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "facturador",
     header: "Facturador",
+    sortable: true,
     style: {
       minWidth: "200px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "paciente",
     header: "Paciente",
+    sortable: true,
     style: {
       minWidth: "150px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "producto",
     header: "Producto",
+    sortable: true,
     style: {
       minWidth: "200px"
     }
@@ -542,13 +492,13 @@ export const InvoicesByEntity = () => {
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "invoiceCode",
-    header: "Codigo de factura",
+    header: "C\xF3digo de factura",
     style: {
       minWidth: "150px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "id",
-    header: "Id",
+    header: "ID",
     style: {
       minWidth: "150px"
     }
@@ -556,6 +506,7 @@ export const InvoicesByEntity = () => {
     field: "montoPagado",
     header: "Monto pagado",
     body: amountBodyTemplate,
+    sortable: true,
     style: {
       minWidth: "150px"
     }
@@ -565,11 +516,5 @@ export const InvoicesByEntity = () => {
     style: {
       minWidth: "150px"
     }
-  }), /*#__PURE__*/React.createElement(Column, {
-    body: exportButtonTemplate,
-    header: "Exportar",
-    style: {
-      width: "100px"
-    }
-  })))))))))));
+  }))))))))))));
 };

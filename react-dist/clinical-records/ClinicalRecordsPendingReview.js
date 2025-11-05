@@ -3,11 +3,13 @@ import { CustomPRTable } from "../components/CustomPRTable.js";
 import { formatDate } from "../../services/utilidades.js";
 import { Dialog } from "primereact/dialog";
 import { useClinicalRecordsPendingReview } from "./hooks/useClinicalRecordsPendingReview.js";
-import { ResolveClinicalRecordReviewRequestForm } from "../general-request/components/ResolveClinicalRecordReviewRequestForm.js";
-import { VerifySupervisorForm } from "../users/VerifySupervisorForm.js";
 import { usePRToast } from "../hooks/usePRToast.js";
 import { Toast } from "primereact/toast";
-import { Divider } from "primereact/divider";
+import { Button } from "primereact/button";
+import { OTPModal } from "../login/modal/OTPModal.js";
+import { useLoggedUser } from "../users/hooks/useLoggedUser.js";
+import { useAuth } from "../login/hooks/useAuth.js";
+import { ClinicalRecordReview } from "./ClinicalRecordReview.js";
 export const ClinicalRecordsPendingReview = () => {
   const {
     clinicalRecords,
@@ -19,6 +21,17 @@ export const ClinicalRecordsPendingReview = () => {
     showErrorToast,
     toast
   } = usePRToast();
+  const {
+    loggedUser
+  } = useLoggedUser();
+  const {
+    verifyOtp,
+    verifyOtpBasic,
+    resendOtp,
+    sendOtp,
+    Toast: toastRef
+  } = useAuth();
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [mappedClinicalRecords, setMappedClinicalRecords] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [first, setFirst] = useState(0);
@@ -26,7 +39,7 @@ export const ClinicalRecordsPendingReview = () => {
   const [search, setSearch] = useState(null);
   const [showResolveRequestModal, setShowResolveRequestModal] = useState(false);
   const [showVerifySupervisorModal, setShowVerifySupervisorModal] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
   useEffect(() => {
     setMappedClinicalRecords(clinicalRecords.map(item => {
       const requestedBy = item.latest_pending_review_request?.requested_by;
@@ -82,9 +95,13 @@ export const ClinicalRecordsPendingReview = () => {
     //@ts-ignore
     crearDocumento(requestableId, "Impresion", "Consulta", "Completa", "Historia Clinica");
   };
-  const openVerifySupervisorModal = requestId => {
-    setSelectedRequestId(requestId);
-    setShowVerifySupervisorModal(true);
+  const openVerifySupervisorModal = async item => {
+    setSelectedItem(item);
+    setShowResolveRequestModal(true);
+    // setShowVerifySupervisorModal(true);
+    // console.log(loggedUser);
+    // if (!loggedUser?.external_id) return;
+    // await sendOtp(loggedUser?.external_id)
   };
   const columns = [{
     field: "clinicalRecordName",
@@ -112,7 +129,7 @@ export const ClinicalRecordsPendingReview = () => {
       title: "Ver historia clinica"
     })), /*#__PURE__*/React.createElement("button", {
       className: "btn btn-link",
-      onClick: () => openVerifySupervisorModal(rowData.requestId)
+      onClick: () => openVerifySupervisorModal(rowData)
     }, /*#__PURE__*/React.createElement("i", {
       className: "fs-7 fa-solid fa-file-signature cursor-pointer",
       title: "Resolver solicitud"
@@ -129,7 +146,23 @@ export const ClinicalRecordsPendingReview = () => {
     setShowVerifySupervisorModal(false);
     setShowResolveRequestModal(true);
   };
+  const handleVerifyOtp = async () => {
+    const otpCode = otp.join('');
+    if (otpCode.length === 6 && loggedUser?.email) {
+      const result = await verifyOtpBasic(otpCode, loggedUser?.email, loggedUser?.phone);
+      if (result.status === 200) {
+        console.log("OTP verificado exitosamente");
+        setOtp(['', '', '', '', '', '']); // Reset OTP
+        handleVerifySupervisor(true);
+      }
+    }
+  };
+  const handleResendOtp = async () => {
+    await resendOtp(loggedUser?.email);
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
+    ref: toastRef
+  }), /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement("div", {
     className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
@@ -152,15 +185,33 @@ export const ClinicalRecordsPendingReview = () => {
   }))), /*#__PURE__*/React.createElement(Dialog, {
     visible: showVerifySupervisorModal,
     onHide: () => setShowVerifySupervisorModal(false),
-    header: "Verificar supervisor"
-  }, /*#__PURE__*/React.createElement(VerifySupervisorForm, {
-    onVerify: handleVerifySupervisor
+    header: "Verificaci\xF3n de usuario",
+    footer: /*#__PURE__*/React.createElement("div", {
+      className: "d-flex justify-content-end"
+    }, /*#__PURE__*/React.createElement(Button, {
+      label: "Cancelar",
+      icon: "pi pi-times",
+      className: "btn btn-sm btn-outline-secondary me-2",
+      onClick: () => setShowVerifySupervisorModal(false)
+    }), /*#__PURE__*/React.createElement(Button, {
+      label: "Verificar",
+      icon: "pi pi-check",
+      className: "btn btn-sm btn-primary",
+      onClick: handleVerifyOtp
+    }))
+  }, loggedUser?.email && loggedUser?.phone && /*#__PURE__*/React.createElement(OTPModal, {
+    otp: otp,
+    setOtp: setOtp,
+    onResendOTP: handleResendOtp,
+    email: loggedUser.email,
+    phone: loggedUser.phone
   })), /*#__PURE__*/React.createElement(Dialog, {
     visible: showResolveRequestModal,
     onHide: () => setShowResolveRequestModal(false),
     header: "Resolver solicitud"
-  }, /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement(ResolveClinicalRecordReviewRequestForm, {
-    requestId: selectedRequestId,
+  }, /*#__PURE__*/React.createElement(ClinicalRecordReview, {
+    clinicalRecordId: selectedItem?.id || "",
+    requestId: selectedItem?.requestId || "",
     onSave: handleSave
   })));
 };

@@ -651,10 +651,13 @@ export interface AccountingVoucherDto {
 
 export interface ThirdPartyDto {
   id: number;
+  name: string;
   first_name: string;
   second_name: string;
   middle_name: string;
   last_name: string;
+  document_type: string;
+  document_number: string;
   ruc: string;
   address: string;
   phone: string;

@@ -372,7 +372,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     const billing = await fetchBillingByType(billingTypeMap[noteType?.id]);
     const noteData = {
       invoice_id: selectedInvoice?.id,
-      amount: calculateTotal(),
+      amount:  Math.abs(calculateAdjustmentDifference()),
       reason: "Ajuste por error en la facturación",
       details: billingItems.map((item: any) => {
         const priceAdjustment = item.unitPrice - Number(item.originalUnitPrice);
@@ -445,7 +445,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
     save(formData);
   };
 
-  function handleProductsOfInvoice(invoice) {
+  function handleProductsOfInvoice(invoice: any) {
     setSelectedInvoice(invoice);
     setBillingItems([]);
     if (invoice.third_party) {
@@ -478,7 +478,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
         unitPrice: product.unit_price,
         originalUnitPrice: product.unit_price,
         discount: rateDiscunt,
-        taxId: product?.tax_charge?.id || 0,
+        taxId: product?.tax_charge_id || 0,
         totalValue: 0,
         fromInvoice: true,
       };
@@ -1035,6 +1035,7 @@ export const FormDebitCreditNotes: React.FC<any> = ({
               availablePaymentMethods={availablePaymentMethods}
               onPaymentMethodsChange={handlePaymentMethodsChange}
               labelTotal="Total ajuste"
+              isNote={true}
             />
 
             {/* Botones de Acción */}

@@ -680,3 +680,11 @@ export async function decryptAES(encryptedData, password) {
         throw new Error('Error al desencriptar: contraseña incorrecta o datos corruptos');
     }
 }
+
+export const formatPrice = (price, minimumFractionDigits = 2) => {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: minimumFractionDigits
+    }).format(price);
+};

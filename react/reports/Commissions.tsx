@@ -7,12 +7,15 @@ import {
 } from "../../services/api/index.js";
 import { MultiSelect } from "primereact/multiselect";
 import { Calendar } from "primereact/calendar";
-import { TreeTable } from "primereact/treetable";
+import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
-import { Button } from "primereact/button";
 import { formatDate } from "../../services/utilidades.js";
 import { useServicesFormat } from "../documents-generation/hooks/reports-medical/commissions/useServicesFormat";
 import { useOrdersFormat } from "../documents-generation/hooks/reports-medical/commissions/useOrdersFormat";
@@ -26,16 +29,22 @@ export const Commissions = () => {
   const [selectedEspecialistas, setSelectedEspecialistas] = useState([]);
   const [dateRange, setDateRange] = useState<any>([fiveDaysAgo, today]);
   const [comissionData, setComissionData] = useState([]);
-  const [treeNodes, setTreeNodes] = useState([]);
-  const [expandedKeys, setExpandedKeys] = useState({});
+  const [servicesData, setServicesData] = useState<any[]>([]);
+  const [ordersData, setOrdersData] = useState<any[]>([]);
   const [especialistasOptions, setEspecialistasOptions] = useState([]);
   const [proceduresOptions, setProceduresOptions] = useState([]);
   const [entitiesOptions, setEntitiesOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("tab-commissions");
+  const [tableLoading, setTableLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("services");
+  const [globalFilter, setGlobalFilter] = useState("");
   const { company, setCompany, fetchCompany } = useCompany();
   const { generateFormatServices } = useServicesFormat();
   const { generateFormatOrders } = useOrdersFormat();
+
+  // Pagination state
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -45,7 +54,7 @@ export const Commissions = () => {
         await cargarEspecialistas();
         await createSelectEntities();
         const filterParams = await obtenerFiltros();
-        await handleTabChange("tab-commissions", filterParams);
+        await handleTabChange("services", filterParams);
       } catch (error) {
         console.error("Error initializing data:", error);
       } finally {
@@ -58,29 +67,32 @@ export const Commissions = () => {
 
   const handleTabChange = async (tabId: string, filterParams: any) => {
     setActiveTab(tabId);
-    setLoading(true);
+    setTableLoading(true);
 
     try {
       switch (tabId) {
-        case "tab-commissions":
-          const data = await comissionConfig.comissionReportServices(
-            filterParams
-          );
-          setComissionData(data);
-          formatDataToTreeNodes(data, "admissions_by_doctor");
+        case "services":
+          if (servicesData.length === 0) {
+            const data = await comissionConfig.comissionReportServices(filterParams);
+            setComissionData(data);
+            const formattedData = formatDataToTable(data, "admissions_by_doctor");
+            setServicesData(formattedData);
+          }
           break;
-        case "tab-orders":
-          const dataToOrders = await comissionConfig.comissionReportByOrders(
-            filterParams
-          );
-          formatDataToTreeNodes(dataToOrders, "admissions_prescriber_doctor");
+        case "orders":
+          if (ordersData.length === 0) {
+            const dataToOrders = await comissionConfig.comissionReportByOrders(filterParams);
+            const formattedData = formatDataToTable(dataToOrders, "admissions_prescriber_doctor");
+            setOrdersData(formattedData);
+          }
+          break;
         default:
           console.warn(`Tab no reconocido: ${tabId}`);
       }
     } catch (error) {
       console.error(`Error cargando datos para ${tabId}:`, error);
     } finally {
-      setLoading(false);
+      setTableLoading(false);
     }
   };
 
@@ -118,9 +130,8 @@ export const Commissions = () => {
       setEspecialistasOptions(
         especialistas.map((especialista) => ({
           value: especialista.id,
-          label: `${especialista.first_name} ${especialista.last_name} - ${
-            especialista.specialty?.name || "Sin especialidad"
-          }`,
+          label: `${especialista.first_name} ${especialista.last_name} - ${especialista.specialty?.name || "Sin especialidad"
+            }`,
         }))
       );
     } catch (error) {
@@ -132,96 +143,72 @@ export const Commissions = () => {
     await handleTabChange(activeTab, filterParams);
   };
 
-  const formatDataToTreeNodes = (users: any[], nodeKey: string) => {
-    const nodes: any = users.map((user, userIndex) => {
+  const formatDataToTable = (users: any[], nodeKey: string) => {
+    const flatData: any[] = [];
+
+    users.forEach((user, userIndex) => {
       const nombre = `${user.first_name || ""} ${user.last_name || ""}`.trim();
-      const sumAmountTotal = user[nodeKey].reduce((total, admission) => {
-        if (admission?.invoice?.sub_type === "entity") {
-          const amount = parseFloat(admission.entity_authorized_amount) || 0;
-          return total + amount;
-        } else {
-          const details = admission?.invoice?.details || [];
-          const amountByPublic = details.reduce((totalDetail, detail) => {
-            return totalDetail + (parseFloat(detail.amount) || 0);
-          }, 0);
-          return total + amountByPublic;
-        }
-      }, 0);
 
-      let baseCalculationUser = 0;
-      let commissionCalculatedUser = 0;
-      let retentionCalculatedUser: any = 0;
-      let netAmount = 0;
+      // Calcular totales para el profesional
+      let totalMonto = 0;
+      let totalBase = 0;
+      let totalComision = 0;
+      let totalRetencion = 0;
+      let totalNetAmount = 0;
 
-      const children =
-        user[nodeKey]?.flatMap((admission, admissionIndex) => {
-          admission.dataChild = null;
-          const baseCalculation =
-            (calculateBase(admission) *
-              admission?.invoice?.commission?.percentage_value) /
-              100 || 0;
-          baseCalculationUser += baseCalculation;
-          const commissionCalculation =
-            calculateCommission(baseCalculation, admission) || 0;
-          commissionCalculatedUser += commissionCalculation;
-          const retention: any =
-            calculatedRetention(commissionCalculation, admission) || 0;
-          retentionCalculatedUser += retention;
-          const netAmountCalculated = commissionCalculation - retention;
-          netAmount += netAmountCalculated;
+      // Procesar cada admisión del profesional
+      user[nodeKey]?.forEach((admission, admissionIndex) => {
+        const baseCalculation = calculateBase(admission);
+        const commissionCalculation = calculateCommission(baseCalculation, admission);
+        const retention = calculatedRetention(commissionCalculation, admission);
+        const netAmountCalculated = commissionCalculation - retention;
 
-          admission.dataChild = {
-            monto:
-              admission?.invoice?.sub_type == "entity"
-                ? parseInt(admission.entity_authorized_amount)
-                : parseInt(admission?.invoice?.total_amount),
-            base: baseCalculation,
-            comision: commissionCalculation,
-            retencion: retention,
-            netAmount: netAmountCalculated,
-          };
+        // Acumular totales
+        totalMonto += admission?.invoice?.sub_type == "entity"
+          ? parseFloat(admission.entity_authorized_amount || 0)
+          : parseFloat(admission?.invoice?.total_amount || 0);
+        totalBase += baseCalculation;
+        totalComision += commissionCalculation;
+        totalRetencion += retention;
+        totalNetAmount += netAmountCalculated;
 
-          return {
-            key: `${userIndex}-${admissionIndex}`,
-            data: {
-              totalServices: "",
-              monto:
-                admission?.invoice?.sub_type == "entity"
-                  ? admission.entity_authorized_amount
-                  : admission?.invoice?.total_amount,
-              base: baseCalculation,
-              comision: commissionCalculation,
-              retencion: retention,
-              netAmount: netAmountCalculated,
-              invoiceCode: admission?.invoice?.invoice_code,
-              id: admission?.invoice?.id,
-              isLeaf: true,
-            },
-          };
-        }) || [];
-
-      return {
-        key: userIndex.toString(),
-        data: {
+        // Agregar fila de admisión
+        flatData.push({
+          id: `admission_${userIndex}_${admissionIndex}`,
           profesional: nombre,
-          monto: parseFloat(sumAmountTotal.toFixed(2)),
-          base: parseFloat(baseCalculationUser.toFixed(2)),
-          comision: parseFloat(commissionCalculatedUser.toFixed(2)),
-          retencion: parseFloat(retentionCalculatedUser.toFixed(2)),
-          netAmount: parseFloat(netAmount.toFixed(2)),
-          isLeaf: false,
-          rawData: user[nodeKey],
-        },
-        children: children,
-      };
+          monto: parseFloat(admission?.invoice?.sub_type == "entity"
+            ? admission.entity_authorized_amount
+            : admission?.invoice?.total_amount || 0),
+          base: parseFloat(baseCalculation.toFixed(2)),
+          comision: parseFloat(commissionCalculation.toFixed(2)),
+          retencion: parseFloat(retention.toFixed(2)),
+          netAmount: parseFloat(netAmountCalculated.toFixed(2)),
+          invoiceCode: admission?.invoice?.invoice_code || "",
+          invoiceId: admission?.invoice?.id || "",
+          isProfessional: false,
+          rawData: [admission]
+        });
+      });
+
+      // Agregar fila de total del profesional (solo si tiene admisiones)
+      if (user[nodeKey]?.length > 0) {
+        flatData.push({
+          id: `professional_${userIndex}`,
+          profesional: nombre,
+          monto: parseFloat(totalMonto.toFixed(2)),
+          base: parseFloat(totalBase.toFixed(2)),
+          comision: parseFloat(totalComision.toFixed(2)),
+          retencion: parseFloat(totalRetencion.toFixed(2)),
+          netAmount: parseFloat(totalNetAmount.toFixed(2)),
+          invoiceCode: "TOTAL",
+          invoiceId: "",
+          isProfessional: true,
+          rawData: user[nodeKey]
+        });
+      }
     });
 
-    setTreeNodes(nodes);
-    const keys = nodes.reduce((acc, node) => {
-      acc[node.key] = true;
-      return acc;
-    }, {});
-    setExpandedKeys(keys);
+    return flatData;
   };
 
   function calculateBase(admission) {
@@ -285,24 +272,24 @@ export const Commissions = () => {
 
   function exportToPDF(data: any[], mainNode: any) {
     switch (activeTab) {
-      case "tab-commissions":
+      case "services":
         return generateFormatServices(data, mainNode, dateRange, "Impresion");
-        case "tab-orders":
+      case "orders":
         return generateFormatOrders(data, mainNode, dateRange, "Impresion");
     }
   }
 
-  const exportButtonTemplate = (node: any) => {
-    if (!node.data.isLeaf) {
+  const exportButtonTemplate = (rowData: any) => {
+    if (rowData.isProfessional) {
       return (
         <div className="d-flex gap-2">
           <Button
             tooltip="Exportar a Excel"
             tooltipOptions={{ position: "top" }}
-            className="p-button-success d-flex justify-content-center"
+            className="p-button-success p-button-sm"
             onClick={(e) => {
               e.stopPropagation();
-              handleDescargarExcel(node.data.rawData);
+              handleDescargarExcel(rowData.rawData);
             }}
           >
             <i className="fa-solid fa-file-excel"></i>
@@ -310,10 +297,10 @@ export const Commissions = () => {
           <Button
             tooltip="Exportar a PDF"
             tooltipOptions={{ position: "top" }}
-            className="p-button-secondary d-flex justify-content-center"
+            className="p-button-secondary p-button-sm"
             onClick={(e) => {
               e.stopPropagation();
-              exportToPDF(node.data.rawData, node);
+              exportToPDF(rowData.rawData, rowData);
             }}
           >
             <i className="fa-solid fa-file-pdf"></i>
@@ -337,8 +324,12 @@ export const Commissions = () => {
   };
 
   const handleFilterClick = async () => {
+    // Limpiar datos para forzar recarga
+    setServicesData([]);
+    setOrdersData([]);
     const paramsFilter = await obtenerFiltros();
     await obtenerDatos(paramsFilter);
+    setFirst(0); // Reset to first page when filtering
   };
 
   const formatCurrency = (value: number) => {
@@ -363,11 +354,9 @@ export const Commissions = () => {
   function handleDataExport(commission) {
     const data = commission.map((item: any) => {
       return {
-        paciente: `${item.patient.first_name ?? " "} ${
-          item.patient.middle_name ?? " "
-        }${item.patient.last_name ?? " "}${
-          item.patient.second_last_name ?? " "
-        }`,
+        paciente: `${item.patient.first_name ?? " "} ${item.patient.middle_name ?? " "
+          }${item.patient.last_name ?? " "}${item.patient.second_last_name ?? " "
+          }`,
         numero_documento: item.patient.document_number,
         fecha: formatDate(item.created_at, true),
         producto: item.appointment.product.attributes.name,
@@ -381,141 +370,365 @@ export const Commissions = () => {
     return data;
   }
 
-  const amountTemplate = (node: any) => formatCurrency(node.data.monto);
-  const invoiceCodeTemplate = (node: any) => node.data.invoiceCode;
-  const idTemplate = (node: any) => node.data.id;
-  const baseTemplate = (node: any) => formatCurrency(node.data.base);
-  const commissionTemplate = (node: any) => formatCurrency(node.data.comision);
-  const retentionTemplate = (node: any) => formatCurrency(node.data.retencion);
-  const netAmountTemplate = (node: any) => formatCurrency(node.data.netAmount);
-  const profesionalTemplate = (node: any) =>
-    node.data.isLeaf ? (
-      <span style={{ paddingLeft: "30px" }}>{node.data.profesional}</span>
+  const amountTemplate = (rowData: any) => formatCurrency(rowData.monto);
+  const invoiceCodeTemplate = (rowData: any) => rowData.invoiceCode;
+  const idTemplate = (rowData: any) => rowData.invoiceId;
+  const baseTemplate = (rowData: any) => formatCurrency(rowData.base);
+  const commissionTemplate = (rowData: any) => formatCurrency(rowData.comision);
+  const retentionTemplate = (rowData: any) => formatCurrency(rowData.retencion);
+  const netAmountTemplate = (rowData: any) => formatCurrency(rowData.netAmount);
+  const profesionalTemplate = (rowData: any) =>
+    rowData.isProfessional ? (
+      <strong>{rowData.profesional}</strong>
     ) : (
-      <strong>{node.data.profesional}</strong>
+      <span style={{ paddingLeft: "20px" }}>{rowData.profesional}</span>
     );
+
+  const onPageChange = (event: any) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
+
+  const rowClassName = (data: any) => {
+    return data.isProfessional ? 'font-bold bg-blue-50' : '';
+  };
+
+  const getCurrentData = () => {
+    return activeTab === "services" ? servicesData : ordersData;
+  };
+
+  const getProfessionalCount = () => {
+    const data = getCurrentData();
+    return data.filter(item => item.isProfessional).length;
+  };
 
   return (
     <main className="main" id="top">
-      <div className="content">
-        <div className="pb-9">
-          <h2 className="mb-4">Comisiones por Profesional</h2>
-          <div className="row g-3 justify-content-between align-items-start mb-4">
-            <div className="col-12">
-              <ul className="nav nav-underline fs-9" id="myTab" role="tablist">
-                <li className="nav-item">
-                  <a
-                    className="nav-link active"
-                    id="range-dates-tab"
-                    data-bs-toggle="tab"
-                    href="#tab-range-dates"
-                    role="tab"
-                    aria-controls="tab-range-dates"
-                    aria-selected="true"
-                  >
-                    Filtros
-                  </a>
-                </li>
-              </ul>
-              <div className="tab-content mt-3" id="myTabContent">
+      <div className="pb-9">
+        {loading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{
+              height: "50vh",
+              marginLeft: "900px",
+              marginTop: "300px",
+            }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <>
+            <div className="row g-3 justify-content-between align-items-start mb-4">
+              <div className="col-12">
                 <div
-                  className="tab-pane fade show active"
-                  id="tab-range-dates"
-                  role="tabpanel"
-                  aria-labelledby="range-dates-tab"
+                  className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                  style={{ minHeight: "400px" }}
                 >
-                  <div className="d-flex">
-                    <div style={{ width: "100%" }}>
-                      <div className="row">
-                        <div className="col-12 mb-3">
-                          <div className="card border border-light">
-                            <div className="card-body">
-                              <div className="row">
-                                <div className="col-12 col-md-6 mb-3">
-                                  <label
-                                    className="form-label"
-                                    htmlFor="dateRange"
-                                  >
-                                    Fecha inicio - fin Procedimiento
-                                  </label>
-                                  <Calendar
-                                    id="dateRange"
-                                    value={dateRange}
-                                    onChange={(e: any) => setDateRange(e.value)}
-                                    selectionMode="range"
-                                    readOnlyInput
-                                    dateFormat="dd/mm/yy"
-                                    placeholder="Seleccione un rango de fechas"
-                                    className="w-100"
-                                  />
-                                </div>
-                                <div className="col-12 col-md-6 mb-3">
-                                  <label className="form-label">
-                                    Profesional
-                                  </label>
-                                  <MultiSelect
-                                    value={selectedEspecialistas}
-                                    options={especialistasOptions}
-                                    onChange={(e) =>
-                                      setSelectedEspecialistas(e.value)
-                                    }
-                                    optionLabel="label"
-                                    placeholder="Seleccione profesionales"
-                                    className="w-100"
-                                    filter
-                                    display="chip"
-                                  />
-                                </div>
-                                <div className="col-12 col-md-6 mb-3">
-                                  <label className="form-label">
-                                    Servicios
-                                  </label>
-                                  <MultiSelect
-                                    value={selectedProcedures}
-                                    options={proceduresOptions}
-                                    onChange={(e) =>
-                                      setSelectedProcedures(e.value)
-                                    }
-                                    optionLabel="label"
-                                    placeholder="Seleccione procedimientos"
-                                    className="w-100"
-                                    display="chip"
-                                  />
-                                </div>
-                                <div className="col-12 col-md-6 mb-3">
-                                  <label className="form-label">
-                                    Entidades
-                                  </label>
-                                  <MultiSelect
-                                    value={selectedEntities}
-                                    options={entitiesOptions}
-                                    onChange={(e) =>
-                                      setSelectedEntities(e.value)
-                                    }
-                                    optionLabel="label"
-                                    placeholder="Seleccione entidades"
-                                    className="w-100"
-                                    display="chip"
-                                  />
-                                </div>
-                              </div>
+                  <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-40px" }}>
+                    <div className="tabs-professional-container mt-4">
+                      <Accordion>
+                        <AccordionTab header="Filtros">
+                          <div className="row">
+                            <div className="col-12 col-md-6 mb-3">
+                              <label
+                                className="form-label"
+                                htmlFor="dateRange"
+                              >
+                                Fecha inicio - fin Procedimiento
+                              </label>
+                              <Calendar
+                                id="dateRange"
+                                value={dateRange}
+                                onChange={(e: any) => setDateRange(e.value)}
+                                selectionMode="range"
+                                readOnlyInput
+                                dateFormat="dd/mm/yy"
+                                placeholder="Seleccione un rango de fechas"
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label className="form-label">
+                                Profesional
+                              </label>
+                              <MultiSelect
+                                value={selectedEspecialistas}
+                                options={especialistasOptions}
+                                onChange={(e) =>
+                                  setSelectedEspecialistas(e.value)
+                                }
+                                optionLabel="label"
+                                placeholder="Seleccione profesionales"
+                                className="w-100"
+                                filter
+                                display="chip"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label className="form-label">
+                                Servicios
+                              </label>
+                              <MultiSelect
+                                value={selectedProcedures}
+                                options={proceduresOptions}
+                                onChange={(e) =>
+                                  setSelectedProcedures(e.value)
+                                }
+                                optionLabel="label"
+                                placeholder="Seleccione procedimientos"
+                                className="w-100"
+                                display="chip"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label className="form-label">
+                                Entidades
+                              </label>
+                              <MultiSelect
+                                value={selectedEntities}
+                                options={entitiesOptions}
+                                onChange={(e) =>
+                                  setSelectedEntities(e.value)
+                                }
+                                optionLabel="label"
+                                placeholder="Seleccione entidades"
+                                className="w-100"
+                                display="chip"
+                              />
+                            </div>
+                            <div className="col-12">
                               <div className="d-flex justify-content-end m-2">
-                                <button
-                                  type="button"
-                                  className="btn btn-primary"
+                                <Button
+                                  label="Filtrar"
+                                  icon="pi pi-filter"
                                   onClick={handleFilterClick}
-                                  disabled={loading}
-                                >
-                                  {loading ? (
-                                    <>
-                                      <i className="pi pi-spinner pi-spin me-2"></i>
-                                      Procesando...
-                                    </>
-                                  ) : (
-                                    "Filtrar"
-                                  )}
-                                </button>
+                                  className="p-button-primary"
+                                  loading={loading}
+                                />
                               </div>
+                            </div>
+                          </div>
+                        </AccordionTab>
+                      </Accordion>
+                      <div className="tabs-header">
+                        <button
+                          className={`tab-item ${activeTab === "services" ? "active" : ""}`}
+                          onClick={() => handleTabChange("services", obtenerFiltros())}
+                        >
+                          <i className="fas fa-stethoscope"></i>
+                          Servicios
+                        </button>
+                        <button
+                          className={`tab-item ${activeTab === "orders" ? "active" : ""}`}
+                          onClick={() => handleTabChange("orders", obtenerFiltros())}
+                        >
+                          <i className="fas fa-prescription"></i>
+                          Órdenes
+                        </button>
+                      </div>
+
+                      <div className="tabs-content">
+                        <div className={`tab-panel ${activeTab === "services" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-between align-items-center mb-4">
+                            <span className="text-xl font-semibold">Comisiones por Servicios</span>
+                          </div>
+
+                          <div className="card">
+                            {tableLoading ? (
+                              <div className="text-center p-5">
+                                <ProgressSpinner />
+                                <p className="mt-2">Cargando datos...</p>
+                              </div>
+                            ) : (
+                              <DataTable
+                                value={servicesData}
+                                loading={tableLoading}
+                                scrollable
+                                scrollHeight="600px"
+                                showGridlines
+                                stripedRows
+                                size="small"
+                                tableStyle={{ minWidth: "100%" }}
+                                className="p-datatable-sm"
+                                paginator
+                                rows={rows}
+                                first={first}
+                                onPage={onPageChange}
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                                currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+                                globalFilter={globalFilter}
+                                rowClassName={rowClassName}
+                                sortMode="multiple"
+                              >
+                                <Column
+                                  field="profesional"
+                                  header="Profesional"
+                                  body={profesionalTemplate}
+                                  sortable
+                                  style={{ minWidth: "250px" }}
+                                />
+                                <Column
+                                  field="invoiceId"
+                                  header="Id Factura"
+                                  body={idTemplate}
+                                  style={{ minWidth: "120px" }}
+                                />
+                                <Column
+                                  field="invoiceCode"
+                                  header="Código Factura"
+                                  body={invoiceCodeTemplate}
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="monto"
+                                  header="Monto"
+                                  body={amountTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="base"
+                                  header="Base Cálculo"
+                                  body={baseTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="comision"
+                                  header="Comisión"
+                                  body={commissionTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="retencion"
+                                  header="Retención"
+                                  body={retentionTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="netAmount"
+                                  header="Neto a pagar"
+                                  body={netAmountTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  body={exportButtonTemplate}
+                                  header="Exportar"
+                                  style={{ width: "120px" }}
+                                />
+                              </DataTable>
+                            )}
+                            <div className="p-3 border-top">
+                              <p className="mb-0 fw-semibold text-body">
+                                Mostrando {getProfessionalCount()} profesionales
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Panel de Órdenes */}
+                        <div className={`tab-panel ${activeTab === "orders" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-between align-items-center mb-4">
+                            <span className="text-xl font-semibold">Comisiones por Órdenes</span>
+                          </div>
+
+                          <div className="card">
+                            {tableLoading ? (
+                              <div className="text-center p-5">
+                                <ProgressSpinner />
+                                <p className="mt-2">Cargando datos...</p>
+                              </div>
+                            ) : (
+                              <DataTable
+                                value={ordersData}
+                                loading={tableLoading}
+                                scrollable
+                                scrollHeight="600px"
+                                showGridlines
+                                stripedRows
+                                size="small"
+                                tableStyle={{ minWidth: "100%" }}
+                                className="p-datatable-sm"
+                                paginator
+                                rows={rows}
+                                first={first}
+                                onPage={onPageChange}
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                                currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+                                globalFilter={globalFilter}
+                                rowClassName={rowClassName}
+                                sortMode="multiple"
+                              >
+                                <Column
+                                  field="profesional"
+                                  header="Profesional"
+                                  body={profesionalTemplate}
+                                  sortable
+                                  style={{ minWidth: "250px" }}
+                                />
+                                <Column
+                                  field="invoiceId"
+                                  header="Id Factura"
+                                  body={idTemplate}
+                                  style={{ minWidth: "120px" }}
+                                />
+                                <Column
+                                  field="invoiceCode"
+                                  header="Código Factura"
+                                  body={invoiceCodeTemplate}
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="monto"
+                                  header="Monto"
+                                  body={amountTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="base"
+                                  header="Base Cálculo"
+                                  body={baseTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="comision"
+                                  header="Comisión"
+                                  body={commissionTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="retencion"
+                                  header="Retención"
+                                  body={retentionTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  field="netAmount"
+                                  header="Neto a pagar"
+                                  body={netAmountTemplate}
+                                  sortable
+                                  style={{ minWidth: "150px" }}
+                                />
+                                <Column
+                                  body={exportButtonTemplate}
+                                  header="Exportar"
+                                  style={{ width: "120px" }}
+                                />
+                              </DataTable>
+                            )}
+                            <div className="p-3 border-top">
+                              <p className="mb-0 fw-semibold text-body">
+                                Mostrando {getProfessionalCount()} profesionales
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -525,231 +738,8 @@ export const Commissions = () => {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="row gy-5">
-            <div className="col-12 col-xxl-12">
-              <ul className="nav nav-underline fs-9" id="myTab" role="tablist">
-                <li className="nav-item">
-                  <a
-                    className={`nav-link ${
-                      activeTab === "tab-commissions" ? "active" : ""
-                    }`}
-                    id="commissions-tab"
-                    data-bs-toggle="tab"
-                    href="#tab-commissions"
-                    role="tab"
-                    aria-controls="tab-commissions"
-                    aria-selected={activeTab === "tab-commissions"}
-                    onClick={() =>
-                      handleTabChange("tab-commissions", obtenerFiltros())
-                    }
-                  >
-                    Servicios
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    className={`nav-link ${
-                      activeTab === "tab-orders" ? "active" : ""
-                    }`}
-                    id="orders-tab"
-                    data-bs-toggle="tab"
-                    href="#tab-orders"
-                    role="tab"
-                    aria-controls="tab-orders"
-                    aria-selected={activeTab === "tab-orders"}
-                    onClick={() =>
-                      handleTabChange("tab-orders", obtenerFiltros())
-                    }
-                  >
-                    Órdenes
-                  </a>
-                </li>
-              </ul>
-
-              <div className="col-12 tab-content mt-3" id="myTabContent">
-                <div
-                  className={`tab-pane fade ${
-                    activeTab === "tab-commissions" ? "show active" : ""
-                  }`}
-                  id="tab-commissions"
-                  role="tabpanel"
-                  aria-labelledby="commissions-tab"
-                >
-                  <div className="border-top border-translucent">
-                    {loading ? (
-                      <div className="text-center p-5">
-                        <i
-                          className="pi pi-spinner pi-spin"
-                          style={{ fontSize: "2rem" }}
-                        ></i>
-                        <p>Cargando datos...</p>
-                      </div>
-                    ) : (
-                      <div id="purchasersSellersTable">
-                        <div className="card">
-                          <TreeTable
-                            value={treeNodes}
-                            expandedKeys={expandedKeys}
-                            onToggle={(e) => setExpandedKeys(e.value)}
-                            scrollable
-                            scrollHeight="600px"
-                          >
-                            <Column
-                              field="profesional"
-                              header="Profesional"
-                              body={profesionalTemplate}
-                              expander
-                            />
-                            <Column
-                              field="id"
-                              header="Id Factura"
-                              body={idTemplate}
-                            />
-                            <Column
-                              field="invoiceCode"
-                              header="Codigo Factura"
-                              body={invoiceCodeTemplate}
-                            />
-                            <Column
-                              field="monto"
-                              header="Monto"
-                              body={amountTemplate}
-                            />
-                            <Column
-                              field="base"
-                              header="Base Cálculo"
-                              body={baseTemplate}
-                            />
-                            <Column
-                              field="comision"
-                              header="Comisión"
-                              body={commissionTemplate}
-                            />
-                            <Column
-                              field="retencion"
-                              header="Retención"
-                              body={retentionTemplate}
-                            />
-                            <Column
-                              field="netAmount"
-                              header="Neto a pagar"
-                              body={netAmountTemplate}
-                            />
-                            <Column
-                              field="entidad"
-                              header="Factura a Entidad"
-                            />
-                            <Column
-                              field="exportar"
-                              header="Exportar"
-                              body={exportButtonTemplate}
-                              style={{ width: "120px" }}
-                            />
-                          </TreeTable>
-                        </div>
-                        <div className="row align-items-center justify-content-between pe-0 fs-9 mt-3">
-                          <div className="col-auto d-flex">
-                            <p className="mb-0 d-none d-sm-block me-3 fw-semibold text-body">
-                              Mostrando {treeNodes.length} profesionales
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div
-                  className={`tab-pane fade ${
-                    activeTab === "tab-orders" ? "show active" : ""
-                  }`}
-                  id="tab-orders"
-                  role="tabpanel"
-                  aria-labelledby="orders-tab"
-                >
-                  <div className="border-top border-translucent">
-                    {loading ? (
-                      <div className="text-center p-5">
-                        <i
-                          className="pi pi-spinner pi-spin"
-                          style={{ fontSize: "2rem" }}
-                        ></i>
-                        <p>Cargando datos...</p>
-                      </div>
-                    ) : (
-                      <div id="purchasersSellersTable">
-                        <div className="card">
-                          <TreeTable
-                            value={treeNodes}
-                            expandedKeys={expandedKeys}
-                            onToggle={(e) => setExpandedKeys(e.value)}
-                            scrollable
-                            scrollHeight="600px"
-                          >
-                            <Column
-                              field="profesional"
-                              header="Profesional"
-                              body={profesionalTemplate}
-                              expander
-                            />
-                            <Column
-                              field="id"
-                              header="Id Factura"
-                              body={idTemplate}
-                            />
-                            <Column
-                              field="invoiceCode"
-                              header="Codigo Factura"
-                              body={invoiceCodeTemplate}
-                            />
-                            <Column
-                              field="monto"
-                              header="Monto"
-                              body={amountTemplate}
-                            />
-                            <Column
-                              field="base"
-                              header="Base Cálculo"
-                              body={baseTemplate}
-                            />
-                            <Column
-                              field="comision"
-                              header="Comisión"
-                              body={commissionTemplate}
-                            />
-                            <Column
-                              field="retencion"
-                              header="Retención"
-                              body={retentionTemplate}
-                            />
-                            <Column
-                              field="netAmount"
-                              header="Neto a pagar"
-                              body={netAmountTemplate}
-                            />
-                            <Column
-                              field="exportar"
-                              header="Exportar"
-                              body={exportButtonTemplate}
-                              style={{ width: "120px" }}
-                            />
-                          </TreeTable>
-                        </div>
-                        <div className="row align-items-center justify-content-between pe-0 fs-9 mt-3">
-                          <div className="col-auto d-flex">
-                            <p className="mb-0 d-none d-sm-block me-3 fw-semibold text-body">
-                              Mostrando {treeNodes.length} profesionales
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </main>
   );

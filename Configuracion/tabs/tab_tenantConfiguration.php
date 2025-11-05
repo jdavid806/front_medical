@@ -73,10 +73,17 @@
             <i class="fa-solid fa-location-dot"></i> Sedes
           </button>
         </li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system-tab-pane" type="button"
+            role="tab" aria-controls="system-tab-pane" aria-selected="false">
+            <i class="fa-solid fa-location-dot"></i> Configuración del sistema
+          </button>
+        </li>
       </ul>
 
       <!-- Contenido de los tabs -->
-      <div class="tab-content overflow-hidden" id="typeMessages-tabContent">
+      <div class="tab-content overflow-hidden w-100 p-2" id="typeMessages-tabContent">
 
         <input type="hidden" id="id_Empresa" value="">
         <div class="tab-pane fade show active" id="general-tab-pane" role="tabpanel"
@@ -542,9 +549,12 @@
         </div>
 
         <div class="tab-pane fade" id="sedes-tab-pane" role="tabpanel" aria-labelledby="sedes-tab">
-            <div id="branchComponent"></div>
+          <div id="branchComponent"></div>
         </div>
 
+        <div class="tab-pane fade" id="system-tab-pane" role="tabpanel" aria-labelledby="system-tab">
+          <div id="systemComponent"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -876,8 +886,12 @@
   import {
     BranchApp
   } from './react-dist/fe-config/company/branch/BranchApp.js';
+  import {
+    SystemConfigApp
+  } from './react-dist/config/system-config/SystemConfigApp.js';
 
   ReactDOMClient.createRoot(document.getElementById('branchComponent')).render(React.createElement(BranchApp));
+  ReactDOMClient.createRoot(document.getElementById('systemComponent')).render(React.createElement(SystemConfigApp));
 </script>
 
 <?php include "../../Configuracion/modales/ModalVincularWS.php"; ?>

@@ -152,7 +152,7 @@ $baner = "";
   #patientsSummaryCardReact .card,
   #consultationsSummaryCardReact .card {
     width: 250px !important;
-    height: 235px !important;
+    height: 235px;
     border-radius: 10% !important;
     background-color: var(--secondary-color) !important;
     color: #f8f9fa !important;

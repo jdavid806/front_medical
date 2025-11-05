@@ -22,6 +22,7 @@ export const useProductsByType = () => {
     };
 
     const fetchProductsByType = async (type: string) => {
+        setLoading(true);
         try {
             const promise = getPromise(type);
 

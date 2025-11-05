@@ -196,35 +196,19 @@ export const RetentionConfig = ({ onConfigurationComplete }: { onConfigurationCo
         </div>
       )}
 
-      <div
-        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-        style={{ minHeight: "400px" }}
-      >
-        <div className="card-body h-100 w-100 d-flex flex-column">
-          <div className="text-end pt-3 mb-2">
-            <Button
-              className="p-button-primary"
-              onClick={onCreate}
-              disabled={createLoading || updateLoading || deleteLoading}
-            >
-              <i className="fas fa-plus me-2"></i>
-              {createLoading || updateLoading
-                ? "Procesando..."
-                : "Nueva Retención"}
-            </Button>
-          </div>
+      <RetentionConfigTable
+        retentions={enrichedRetentions}
+        onEditItem={handleTableEdit}
+        onDeleteItem={handleDeleteRetention}
+        loading={loading || isLoadingAccounts}
+        onReload={refreshRetentions}
+        onCreate={onCreate}
+        createLoading={createLoading}
+        updateLoading={updateLoading}
+        deleteLoading={deleteLoading}
+      />
 
-          <RetentionConfigTable
-            retentions={enrichedRetentions}
-            onEditItem={handleTableEdit}
-            onDeleteItem={handleDeleteRetention}
-            loading={loading || isLoadingAccounts}
-            onReload={refreshRetentions}
 
-          />
-
-        </div>
-      </div>
       <RetentionModalConfig
         isVisible={showFormModal}
         onSave={handleSubmit}

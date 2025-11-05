@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Steps } from "primereact/steps";
+import { Stepper } from 'primereact/stepper';
+import { Card } from 'primereact/card';
+import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
+import { Badge } from "primereact/badge";
+import { Button } from 'primereact/button';
 import PatientStep from "./steps/PatientStep.js";
 import ProductsPaymentStep from "./steps/ProductsPaymentStep.js";
 import PreviewDoneStep from "./steps/PreviewDoneStep.js";
@@ -13,6 +17,7 @@ import { useMassMessaging } from "../../hooks/useMassMessaging.js";
 import { useTemplate } from "../../hooks/useTemplate.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF.js";
+import { StepperPanel } from "primereact/stepperpanel";
 const initialFormState = {
   patient: {
     id: "",
@@ -348,40 +353,101 @@ const AdmissionBilling = ({
     const prevIndex = activeIndex - 1;
     setActiveIndex(prevIndex);
   };
-  const items = [{
-    label: "Datos del paciente",
-    command: () => {
-      setActiveIndex(0);
-    }
+  const billingSteps = [{
+    id: 'patient',
+    label: "Datos del Paciente",
+    icon: "pi pi-user",
+    description: "Información personal del paciente"
   }, {
+    id: 'products-payments',
     label: "Productos y Pagos",
-    command: () => {
-      if (validateCurrentStep(0)) {
-        setActiveIndex(1);
-      } else {
-        toast.current?.show({
-          severity: "warn",
-          summary: "Paso no disponible",
-          detail: "Completa el paso actual primero",
-          life: 3000
-        });
-      }
-    }
+    icon: "pi pi-shopping-cart",
+    description: "Servicios y métodos de pago"
   }, {
+    id: 'confirmation',
     label: "Confirmación",
-    command: () => {
-      if (validateCurrentStep(1)) {
-        setActiveIndex(2);
-      } else {
-        toast.current?.show({
-          severity: "warn",
-          summary: "Paso no disponible",
-          detail: "Completa el paso actual primero",
-          life: 3000
-        });
-      }
-    }
+    icon: "pi pi-check-circle",
+    description: "Revisar y finalizar factura"
   }];
+  const progressValue = (activeIndex + 1) / billingSteps.length * 100;
+  const getStepSpecificMessage = () => {
+    switch (activeIndex) {
+      case 0:
+        return validatePatientStep(formData.billing, toast) ? '¡Datos del paciente completados correctamente! Puede continuar al siguiente paso.' : 'Complete todos los datos del paciente para habilitar el botón "Siguiente"';
+      case 1:
+        const productsValid = validateProductsStep(formData.products, toast);
+        const paymentsValid = validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+        return productsValid && paymentsValid ? '¡Productos y pagos configurados correctamente! Puede continuar al siguiente paso.' : 'Complete la configuración de productos y pagos para habilitar el botón "Siguiente"';
+      case 2:
+        return 'Revise toda la información antes de finalizar la factura';
+      default:
+        return 'Complete la configuración de este paso antes de continuar';
+    }
+  };
+  const shouldShowSuccessAlert = () => {
+    switch (activeIndex) {
+      case 0:
+        return validatePatientStep(formData.billing, toast);
+      case 1:
+        return validateProductsStep(formData.products, toast) && validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+      default:
+        return false;
+    }
+  };
+  const renderCurrentComponent = () => {
+    switch (activeIndex) {
+      case 0:
+        return /*#__PURE__*/React.createElement(PatientStep, {
+          formData: formData,
+          updateFormData: updateFormData,
+          updateBillingData: updateBillingData,
+          nextStep: nextStep,
+          toast: toast
+        });
+      case 1:
+        return /*#__PURE__*/React.createElement(ProductsPaymentStep, {
+          formData: formData,
+          updateFormData: updateFormData,
+          addPayment: addPayment,
+          removePayment: removePayment,
+          nextStep: nextStep,
+          prevStep: prevStep,
+          toast: toast,
+          productsToInvoice: productsToInvoice
+        });
+      case 2:
+        return /*#__PURE__*/React.createElement(PreviewDoneStep, {
+          formData: formData,
+          prevStep: prevStep,
+          onHide: handleHide,
+          onDownload: async () => {
+            //@ts-ignore
+            await generateInvoice(appointmentId, true);
+          },
+          onPrint: async () => {
+            //@ts-ignore
+            await generateInvoice(appointmentId, false);
+          },
+          onSubmit: handleSubmitInvoice,
+          isSuccess: isSuccess,
+          setIsSuccess: setIsSuccess,
+          onSendWhatsApp: handleSendWhatsApp,
+          sendingWhatsApp: sendingWhatsApp
+        });
+      default:
+        return null;
+    }
+  };
+  const isNextDisabled = () => {
+    switch (activeIndex) {
+      case 0:
+        return !validatePatientStep(formData.billing, toast);
+      case 1:
+        return !validateProductsStep(formData.products, toast) || !validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+      default:
+        return false;
+    }
+  };
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement(Dialog, {
@@ -389,55 +455,168 @@ const AdmissionBilling = ({
     onHide: handleHide,
     header: "Nueva Factura",
     style: {
-      width: "75vw",
-      maxWidth: "1600px"
+      width: "85vw",
+      maxWidth: "1400px"
     },
-    maximizable: true
-  }, /*#__PURE__*/React.createElement(Steps, {
-    model: items,
-    activeIndex: activeIndex,
-    readOnly: false,
-    className: "mb-4"
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "step-content"
+    maximizable: true,
+    className: "admission-billing-dialog",
+    breakpoints: {
+      '960px': '75vw',
+      '641px': '90vw'
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: activeIndex === 0 ? "" : "d-none"
-  }, /*#__PURE__*/React.createElement(PatientStep, {
-    formData: formData,
-    updateFormData: updateFormData,
-    updateBillingData: updateBillingData,
-    nextStep: nextStep,
-    toast: toast
-  })), /*#__PURE__*/React.createElement("div", {
-    className: activeIndex === 1 ? "" : "d-none"
-  }, /*#__PURE__*/React.createElement(ProductsPaymentStep, {
-    formData: formData,
-    updateFormData: updateFormData,
-    addPayment: addPayment,
-    removePayment: removePayment,
-    nextStep: nextStep,
-    prevStep: prevStep,
-    toast: toast,
-    productsToInvoice: productsToInvoice
-  })), /*#__PURE__*/React.createElement("div", {
-    className: activeIndex === 2 ? "" : "d-none"
-  }, /*#__PURE__*/React.createElement(PreviewDoneStep, {
-    formData: formData,
-    prevStep: prevStep,
-    onHide: handleHide,
-    onDownload: async () => {
-      //@ts-ignore
-      await generateInvoice(appointmentId, true);
+    className: "container-fluid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement(Card, {
+    className: "shadow-sm admission-billing-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row g-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-lg-3 col-md-4 border-end"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "p-3 h-100 bg-light"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-3"
+  }, /*#__PURE__*/React.createElement("h6", {
+    className: "text-primary mb-0 fw-bold"
+  }, "Pasos de Facturaci\xF3n"), /*#__PURE__*/React.createElement(Badge, {
+    value: `${activeIndex + 1}/${billingSteps.length}`,
+    severity: "info"
+  })), /*#__PURE__*/React.createElement(Stepper, {
+    activeStep: activeIndex,
+    orientation: "vertical",
+    linear: false,
+    className: "vertical-stepper overflow-auto"
+  }, billingSteps.map((step, index) => /*#__PURE__*/React.createElement(StepperPanel, {
+    key: step.id,
+    header: step.label,
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: step.icon
+    }),
+    onClick: () => {
+      if (index <= activeIndex || validateCurrentStep(index - 1)) {
+        setActiveIndex(index);
+      } else {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Paso no disponible",
+          detail: "Complete los pasos anteriores primero",
+          life: 3000
+        });
+      }
+    }
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "col-lg-9 col-md-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "configuration-content p-4 card border-0"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "progress-section mb-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-2"
+  }, /*#__PURE__*/React.createElement("small", {
+    className: "text-muted"
+  }, "Paso ", activeIndex + 1, " de ", billingSteps.length), /*#__PURE__*/React.createElement("small", {
+    className: "text-primary fw-bold"
+  }, Math.round(progressValue), "% completado")), /*#__PURE__*/React.createElement(ProgressBar, {
+    value: progressValue,
+    showValue: false,
+    style: {
+      height: '8px',
+      borderRadius: '4px'
     },
-    onPrint: async () => {
-      //@ts-ignore
-      await generateInvoice(appointmentId, false);
-    },
-    onSubmit: handleSubmitInvoice,
-    isSuccess: isSuccess,
-    setIsSuccess: setIsSuccess,
-    onSendWhatsApp: handleSendWhatsApp,
-    sendingWhatsApp: sendingWhatsApp
-  })))));
+    className: "mb-3"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "content-header mb-4"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-primary mb-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `${billingSteps[activeIndex].icon} me-3`
+  }), billingSteps[activeIndex].label), /*#__PURE__*/React.createElement("p", {
+    className: "text-muted mb-0"
+  }, billingSteps[activeIndex].description), shouldShowSuccessAlert() && /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-success mt-2 p-2"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-check-circle me-2"
+  }), getStepSpecificMessage())), !shouldShowSuccessAlert() && activeIndex !== 2 && /*#__PURE__*/React.createElement("div", {
+    className: "alert alert-info mt-2 p-2"
+  }, /*#__PURE__*/React.createElement("small", null, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-info-circle me-2"
+  }), getStepSpecificMessage()))), /*#__PURE__*/React.createElement("div", {
+    className: "content-body mb-4"
+  }, renderCurrentComponent()), /*#__PURE__*/React.createElement("div", {
+    className: "navigation-section pt-3 border-top"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Anterior",
+    icon: "pi pi-arrow-left",
+    onClick: prevStep,
+    disabled: activeIndex === 0,
+    className: "p-button-outlined p-button-secondary"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Cancelar",
+    icon: "pi pi-times",
+    onClick: handleHide,
+    className: "p-button-outlined p-button-danger"
+  }), activeIndex < billingSteps.length - 1 ? /*#__PURE__*/React.createElement(Button, {
+    label: "Siguiente",
+    icon: "pi pi-arrow-right",
+    iconPos: "right",
+    onClick: nextStep,
+    disabled: isNextDisabled(),
+    className: "p-button-primary"
+  }) : /*#__PURE__*/React.createElement(Button, {
+    label: "Generar Factura",
+    icon: "pi pi-check",
+    onClick: handleSubmitInvoice,
+    loading: sendingWhatsApp,
+    className: "p-button-success"
+  }))))))))))), /*#__PURE__*/React.createElement("style", null, `
+          .admission-billing-dialog .p-dialog-header {
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+            color: white;
+          }
+          
+          .admission-billing-dialog .p-dialog-title {
+            color: white;
+            font-weight: 600;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close {
+            color: white !important;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close:hover {
+            background: rgba(255,255,255,0.1) !important;
+          }
+          
+          .admission-billing-card .p-card-body {
+            padding: 0;
+          }
+          
+          .admission-billing-card .p-card-content {
+            padding: 0;
+          }
+          
+          .vertical-stepper {
+            max-height: 400px;
+          }
+          
+          .vertical-stepper .p-stepper-panel {
+            margin-bottom: 0.5rem;
+          }
+          
+          @media (max-width: 768px) {
+            .border-end {
+              border-right: none !important;
+              border-bottom: 1px solid var(--surface-300);
+            }
+          }
+        `)));
 };
 export default AdmissionBilling;

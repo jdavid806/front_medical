@@ -13,6 +13,8 @@ import { useSpecialty } from '../hooks/useSpecialty'
 export default function SpecialityModal({
   visible,
   selectedSpecialty,
+  selectedAntecedent,
+  onAntecedentChange,
   clinicalRecordTypes,
   specializableElements,
   selectedClinicalRecord,
@@ -48,7 +50,7 @@ export default function SpecialityModal({
         className="btn btn-primary my-0"
         onClick={onSave}
       >
-      Guardar
+        Guardar
       </Button>
     </>
   )
@@ -143,6 +145,26 @@ export default function SpecialityModal({
           >
             Agregar CIE-11
           </Button>
+        </div>
+
+        <div className="col-12 col-md-12 mt-3">
+          <h6 className="mb-3">Formato de Antecedentes</h6>
+          <div className="mb-3">
+            <label htmlFor="antecedent" className="form-label">Seleccione Formato de Antecedentes</label>
+            <Dropdown
+              id="antecedent"
+              value={selectedAntecedent}
+              options={clinicalRecordTypes}
+              onChange={(e) => onAntecedentChange?.(e.value)}
+              optionLabel="name"
+              placeholder="Seleccione un formato de antecedentes"
+              className="w-100"
+              filter
+              filterBy="name"
+              showClear
+              appendTo="self"
+            />
+          </div>
         </div>
       </div>
 

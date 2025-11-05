@@ -6,7 +6,8 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { TreeTable } from "primereact/treetable";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { InputText } from "primereact/inputtext";
 import {
   exportDoctorsProceduresToExcel,
   exportEntityPricesToExcel,
@@ -83,8 +84,7 @@ export const SpecialistsReport = () => {
   const [activeTab, setActiveTab] = useState("doctors-tab");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
-  const [treeNodes, setTreeNodes] = useState<any[]>([]);
-  const [keys, setKeys] = useState<any>({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -130,72 +130,6 @@ export const SpecialistsReport = () => {
     initializeData();
   }, []);
 
-  useEffect(() => {
-    if (activeTab === "productivity-tab" && reportData.length > 0) {
-      const newTreeNodes = reportData.map((user: any, userIndex) => {
-        let countAppointments = user.appointments.length;
-        let countProceduresInvoiced = 0;
-        const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${
-          user.last_name ?? ""
-        } ${user.second_name ?? ""}`;
-
-        const children = user.appointments.map(
-          (appointment, appointmentIndex) => {
-            let status = "unInvoiced";
-            if (
-              appointment.admission &&
-              appointment.admission.invoice &&
-              appointment?.admission?.invoice?.status !== "cancelled"
-            ) {
-              countProceduresInvoiced++;
-              status = "invoiced";
-            }
-
-            return {
-              key: `${userIndex}-${appointmentIndex}`,
-              data: {
-                doctor: "",
-                date: appointment.appointment_date,
-                countAppointments: appointment.exam_recipe.details
-                  .map((detail) => detail.exam_type.name)
-                  .join(", "),
-                counrProceduresInvoiced:
-                  appointment?.admission?.invoice?.details
-                    .map((detail) => detail.product.name)
-                    .join(", ") ?? "Sin factura",
-                average: status,
-                isLeaf: true,
-              },
-            };
-          }
-        );
-
-        return {
-          key: userIndex.toString(),
-          data: {
-            doctor: fullName,
-            date: "",
-            countAppointments: countAppointments,
-            counrProceduresInvoiced: countProceduresInvoiced,
-            average:
-              ((countProceduresInvoiced / countAppointments) * 100).toFixed(2) +
-              "%",
-            isLeaf: false,
-            rawData: user.appointments,
-          },
-          children: children,
-        };
-      });
-      setTreeNodes(newTreeNodes);
-      setKeys(
-        treeNodes.reduce((acc, node) => {
-          acc[node.key] = true;
-          return acc;
-        }, {})
-      );
-    }
-  }, [reportData, activeTab]);
-
   const loadData = async (filterParams = {}, tab = "") => {
     let data: any = [];
     try {
@@ -206,10 +140,10 @@ export const SpecialistsReport = () => {
         data = await billingService.getBillingReport(filterParams);
       }
       setReportData(data);
-      return data; // Retornamos los datos por si se necesitan
+      return data;
     } catch (error) {
       console.error("Error loading report data:", error);
-      throw error; // Relanzamos el error para manejarlo donde se llame
+      throw error;
     } finally {
       setTableLoading(false);
     }
@@ -281,9 +215,8 @@ export const SpecialistsReport = () => {
       const response = await userService.getAllUsers();
       setSpecialists(
         response.map((user) => ({
-          label: `${user.first_name} ${user.last_name} - ${
-            user.specialty?.name || ""
-          }`,
+          label: `${user.first_name} ${user.last_name} - ${user.specialty?.name || ""
+            }`,
           value: user.id,
         }))
       );
@@ -355,7 +288,7 @@ export const SpecialistsReport = () => {
       }
 
       await loadData(filterParams, activeTab);
-      setFirst(0); // Reset to first page when filtering
+      setFirst(0);
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -466,37 +399,37 @@ export const SpecialistsReport = () => {
             <thead>
               <tr>
                 ${Object.keys(headers)
-                  .map((header) => `<th>${header}</th>`)
-                  .join("")}
+        .map((header) => `<th>${header}</th>`)
+        .join("")}
                 <th>Total</th>
               </tr>
             </thead>
             <tbody>
               ${dataExport.reduce((acc: string, child: any, index: number) => {
-                let rowTotal = 0;
-                const formattedCells = Object.keys(headers).map((header) => {
-                  const value = child[header];
-                  const num = Number(value);
+          let rowTotal = 0;
+          const formattedCells = Object.keys(headers).map((header) => {
+            const value = child[header];
+            const num = Number(value);
 
-                  if (!isNaN(num)) {
-                    rowTotal += num;
-                    return `<td class="number-cell">${formatCurrency(
-                      num
-                    )}</td>`;
-                  }
-                  return `<td>${value}</td>`;
-                });
+            if (!isNaN(num)) {
+              rowTotal += num;
+              return `<td class="number-cell">${formatCurrency(
+                num
+              )}</td>`;
+            }
+            return `<td>${value}</td>`;
+          });
 
-                return (
-                  acc +
-                  `
+          return (
+            acc +
+            `
                     <tr>
                       ${formattedCells.join("")}
                       <td class="number-cell">${formatCurrency(rowTotal)}</td>
                     </tr>
                   `
-                );
-              }, "")}
+          );
+        }, "")}
             </tbody>
           </table>`;
     const configPDF = {
@@ -775,7 +708,7 @@ export const SpecialistsReport = () => {
         {tableLoading ? (
           <div
             className="flex justify-content-center align-items-center"
-            style={{ height: "200px", marginLeft: "800px" }}
+            style={{ height: "200px" }}
           >
             <ProgressSpinner />
           </div>
@@ -785,7 +718,7 @@ export const SpecialistsReport = () => {
             value={displayData}
             loading={tableLoading}
             scrollable
-            scrollHeight="flex"
+            scrollHeight="600px"
             showGridlines
             stripedRows
             size="small"
@@ -798,6 +731,7 @@ export const SpecialistsReport = () => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            globalFilter={globalFilter}
           >
             {procedureColumns.map((col, i) => {
               return (
@@ -1041,7 +975,7 @@ export const SpecialistsReport = () => {
         {tableLoading ? (
           <div
             className="flex justify-content-center align-items-center"
-            style={{ height: "200px", marginLeft: "800px" }}
+            style={{ height: "200px" }}
           >
             <ProgressSpinner />
           </div>
@@ -1051,7 +985,7 @@ export const SpecialistsReport = () => {
             value={displayData}
             loading={tableLoading}
             scrollable
-            scrollHeight="flex"
+            scrollHeight="600px"
             showGridlines
             stripedRows
             size="small"
@@ -1064,6 +998,7 @@ export const SpecialistsReport = () => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            globalFilter={globalFilter}
           >
             {procedureColumns.map((col, i) => {
               return (
@@ -1243,7 +1178,7 @@ export const SpecialistsReport = () => {
             value={tableData}
             loading={tableLoading}
             scrollable
-            scrollHeight="flex"
+            scrollHeight="600px"
             showGridlines
             stripedRows
             size="small"
@@ -1256,6 +1191,7 @@ export const SpecialistsReport = () => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            globalFilter={globalFilter}
           >
             {entityColumns.map((col, i) => (
               <Column
@@ -1455,7 +1391,7 @@ export const SpecialistsReport = () => {
             value={tableData}
             loading={tableLoading}
             scrollable
-            scrollHeight="flex"
+            scrollHeight="600px"
             showGridlines
             stripedRows
             size="small"
@@ -1468,6 +1404,7 @@ export const SpecialistsReport = () => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            globalFilter={globalFilter}
           >
             {countColumns.map((col, i) => (
               <Column
@@ -1689,7 +1626,7 @@ export const SpecialistsReport = () => {
             value={tableData}
             loading={tableLoading}
             scrollable
-            scrollHeight="flex"
+            scrollHeight="600px"
             showGridlines
             stripedRows
             size="small"
@@ -1702,6 +1639,7 @@ export const SpecialistsReport = () => {
             rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+            globalFilter={globalFilter}
           >
             {consultationColumns.map((col, i) => (
               <Column
@@ -1735,77 +1673,173 @@ export const SpecialistsReport = () => {
       return reportData;
     }
 
-    const doctorTemplate = (node: any) => <strong>{node.data.doctor}</strong>;
-    const ordersTemplate = (node: any) => (
-      <strong>{node.data.countAppointments}</strong>
-    );
-    const datesTemplate = (node: any) => <strong>{node.data.date}</strong>;
-    const proceduresInvoicedTemplate = (node: any) => (
-      <strong>{node.data.counrProceduresInvoiced}</strong>
-    );
-    const averageTemplate = (node: any) =>
-      node.data.isLeaf ? (
-        <span
-          style={{
-            paddingLeft: "30px",
-            color: node.data.average === "unInvoiced" ? "red" : "green",
-          }}
-        >
-          {node.data.average == "unInvoiced" ? "No facturado" : "Facturado"}
-        </span>
+    // Process productivity data for DataTable
+    const productivityData: any[] = [];
+
+    reportData.forEach((user: any, userIndex) => {
+      let countAppointments = user.appointments?.length;
+      let countProceduresInvoiced = 0;
+      const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""
+        } ${user.second_name ?? ""}`;
+
+      // Add professional summary row
+      productivityData.push({
+        id: `professional_${userIndex}`,
+        doctor: fullName,
+        date: "",
+        countAppointments: countAppointments,
+        proceduresInvoiced: countProceduresInvoiced,
+        average: countAppointments > 0
+          ? ((countProceduresInvoiced / countAppointments) * 100).toFixed(2) + "%"
+          : "0%",
+        isProfessional: true,
+        rawData: user.appointments
+      });
+
+      // Add appointment detail rows
+      user.appointments?.forEach((appointment, appointmentIndex) => {
+        let status = "unInvoiced";
+        if (
+          appointment.admission &&
+          appointment.admission.invoice &&
+          appointment?.admission?.invoice?.status !== "cancelled"
+        ) {
+          countProceduresInvoiced++;
+          status = "invoiced";
+        }
+
+        productivityData.push({
+          id: `appointment_${userIndex}_${appointmentIndex}`,
+          doctor: fullName,
+          date: appointment.appointment_date,
+          countAppointments: appointment.exam_recipe.details
+            .map((detail) => detail.exam_type.name)
+            .join(", "),
+          proceduresInvoiced: appointment?.admission?.invoice?.details
+            .map((detail) => detail.product.name)
+            .join(", ") ?? "Sin factura",
+          average: status,
+          isProfessional: false,
+          rawData: [appointment]
+        });
+      });
+    });
+
+    const doctorTemplate = (rowData: any) =>
+      rowData.isProfessional ? (
+        <strong>{rowData.doctor}</strong>
       ) : (
-        <strong>{node.data.average}</strong>
+        <span style={{ paddingLeft: "20px" }}>{rowData.doctor}</span>
       );
+
+    const ordersTemplate = (rowData: any) =>
+      rowData.isProfessional ? (
+        <strong>{rowData.countAppointments}</strong>
+      ) : (
+        <span>{rowData.countAppointments}</span>
+      );
+
+    const datesTemplate = (rowData: any) =>
+      rowData.isProfessional ? (
+        <strong>{rowData.date}</strong>
+      ) : (
+        <span>{rowData.date}</span>
+      );
+
+    const proceduresInvoicedTemplate = (rowData: any) =>
+      rowData.isProfessional ? (
+        <strong>{rowData.proceduresInvoiced}</strong>
+      ) : (
+        <span>{rowData.proceduresInvoiced}</span>
+      );
+
+    const averageTemplate = (rowData: any) => {
+      if (rowData.isProfessional) {
+        return <strong>{rowData.average}</strong>;
+      } else {
+        return (
+          <span
+            style={{
+              paddingLeft: "20px",
+              color: rowData.average === "unInvoiced" ? "red" : "green",
+            }}
+          >
+            {rowData.average == "unInvoiced" ? "No facturado" : "Facturado"}
+          </span>
+        );
+      }
+    };
+
+    const rowClassName = (data: any) => {
+      return data.isProfessional ? 'font-bold bg-blue-50' : '';
+    };
 
     return (
       <div className="border-top border-translucent">
         {loading ? (
           <div className="text-center p-5">
-            <i
-              className="pi pi-spinner pi-spin"
-              style={{ fontSize: "2rem" }}
-            ></i>
-            <p>Cargando datos...</p>
+            <ProgressSpinner />
+            <p className="mt-2">Cargando datos...</p>
           </div>
         ) : (
           <div id="purchasersSellersTable">
             <div className="card">
-              <TreeTable
-                value={treeNodes}
-                expandedKeys={keys}
+              <DataTable
+                value={productivityData}
                 loading={tableLoading}
-                onToggle={(e) => setKeys(e.value)}
                 scrollable
                 scrollHeight="600px"
+                showGridlines
+                stripedRows
+                size="small"
+                tableStyle={{ minWidth: "100%" }}
+                className="p-datatable-sm"
+                paginator
+                rows={rows}
+                first={first}
+                onPage={onPageChange}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+                globalFilter={globalFilter}
+                rowClassName={rowClassName}
               >
                 <Column
-                  field="profesional"
+                  field="doctor"
                   header="Profesional"
                   body={doctorTemplate}
-                  expander
+                  style={{ minWidth: "250px" }}
                 />
-                <Column field="date" header="Fecha cita" body={datesTemplate} />
+                <Column
+                  field="date"
+                  header="Fecha cita"
+                  body={datesTemplate}
+                  style={{ minWidth: "150px" }}
+                />
                 <Column
                   field="countAppointments"
                   header="Ordenes"
                   body={ordersTemplate}
+                  style={{ minWidth: "150px" }}
                 />
                 <Column
                   field="proceduresInvoiced"
-                  header="servicios facturados"
+                  header="Servicios facturados"
                   body={proceduresInvoicedTemplate}
+                  style={{ minWidth: "200px" }}
                 />
                 <Column
                   field="average"
                   header="Productividad %"
                   body={averageTemplate}
+                  style={{ minWidth: "150px" }}
                 />
-              </TreeTable>
+              </DataTable>
             </div>
             <div className="row align-items-center justify-content-between pe-0 fs-9 mt-3">
               <div className="col-auto d-flex">
                 <p className="mb-0 d-none d-sm-block me-3 fw-semibold text-body">
-                  Mostrando {treeNodes.length} Productividad
+                  Mostrando {productivityData.filter(item => item.isProfessional).length} Profesionales
                 </p>
               </div>
             </div>
@@ -1817,408 +1851,372 @@ export const SpecialistsReport = () => {
 
   return (
     <main className="main" id="top">
-      <div className="content">
-        <div className="pb-9">
-          <h2 className="mb-4">Especialistas</h2>
-
-          {loading ? (
-            <div
-              className="flex justify-content-center align-items-center"
-              style={{
-                height: "50vh",
-                marginLeft: "900px",
-                marginTop: "300px",
-              }}
-            >
-              <ProgressSpinner />
-            </div>
-          ) : (
-            <>
-              <div className="row g-3 justify-content-between align-items-start mb-4">
-                <div className="col-12">
-                  <ul
-                    className="nav nav-underline fs-9"
-                    id="myTab"
-                    role="tablist"
-                  >
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "range-dates-tab" ? "active" : ""
-                        }`}
-                        id="range-dates-tab"
-                        onClick={() => setActiveTab("range-dates-tab")}
-                        role="tab"
-                      >
-                        Filtros
-                      </a>
-                    </li>
-                  </ul>
-                  <div className="tab-content mt-3" id="myTabContent">
-                    <div
-                      className="tab-pane fade show active"
-                      id="tab-range-dates"
-                      role="tabpanel"
-                      aria-labelledby="range-dates-tab"
-                    >
-                      <div className="d-flex">
-                        <div style={{ width: "100%" }}>
-                          <div className="row">
-                            <div className="col-12 mb-3">
-                              <div className="card border border-light">
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="procedure"
-                                      >
-                                        Procedimientos
-                                      </label>
-                                      <MultiSelect
-                                        id="procedure"
-                                        value={selectedProcedures}
-                                        options={procedures}
-                                        onChange={(e) =>
-                                          setSelectedProcedures(e.value)
-                                        }
-                                        placeholder="Seleccione procedimientos"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="especialistas"
-                                      >
-                                        Especialistas
-                                      </label>
-                                      <MultiSelect
-                                        id="especialistas"
-                                        value={selectedSpecialists}
-                                        options={specialists}
-                                        onChange={(e) =>
-                                          setSelectedSpecialists(e.value)
-                                        }
-                                        placeholder="Seleccione especialistas"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="patients"
-                                      >
-                                        Pacientes
-                                      </label>
-                                      <MultiSelect
-                                        id="patients"
-                                        value={selectedPatients}
-                                        options={patients}
-                                        onChange={(e) =>
-                                          setSelectedPatients(e.value)
-                                        }
-                                        placeholder="Seleccione pacientes"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="fechasProcedimiento"
-                                      >
-                                        Fecha inicio - fin Procedimiento
-                                      </label>
-                                      <Calendar
-                                        id="fechasProcedimiento"
-                                        value={dateRange}
-                                        onChange={(e: any) =>
-                                          setDateRange(e.value)
-                                        }
-                                        selectionMode="range"
-                                        readOnlyInput
-                                        dateFormat="dd/mm/yy"
-                                        placeholder="dd/mm/yyyy - dd/mm/yyyy"
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="entity"
-                                      >
-                                        Entidad
-                                      </label>
-                                      <Dropdown
-                                        id="entity"
-                                        value={selectedEntity}
-                                        options={entities}
-                                        onChange={(e) =>
-                                          setSelectedEntity(e.value)
-                                        }
-                                        placeholder="Seleccione entidad"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="d-flex justify-content-end m-2">
-                                    <Button
-                                      label="Filtrar"
-                                      icon="pi pi-filter"
-                                      onClick={handleFilter}
-                                      className="p-button-primary"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
+      {loading ? (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{
+            height: "50vh",
+            marginLeft: "900px",
+            marginTop: "300px",
+          }}
+        >
+          <ProgressSpinner />
+        </div>
+      ) : (
+        <>
+          <div className="row g-3 justify-content-between align-items-start mb-4">
+            <div className="col-12">
+              <div
+                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                style={{ minHeight: "400px" }}
+              >
+                <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-40px" }}>
+                  <div className="tabs-professional-container mt-4">
+                    <Accordion>
+                      <AccordionTab header="Filtros">
+                        <div className="row">
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="procedure"
+                            >
+                              Procedimientos
+                            </label>
+                            <MultiSelect
+                              id="procedure"
+                              value={selectedProcedures}
+                              options={procedures}
+                              onChange={(e) =>
+                                setSelectedProcedures(e.value)
+                              }
+                              placeholder="Seleccione procedimientos"
+                              display="chip"
+                              filter
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="especialistas"
+                            >
+                              Especialistas
+                            </label>
+                            <MultiSelect
+                              id="especialistas"
+                              value={selectedSpecialists}
+                              options={specialists}
+                              onChange={(e) =>
+                                setSelectedSpecialists(e.value)
+                              }
+                              placeholder="Seleccione especialistas"
+                              display="chip"
+                              filter
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="patients"
+                            >
+                              Pacientes
+                            </label>
+                            <MultiSelect
+                              id="patients"
+                              value={selectedPatients}
+                              options={patients}
+                              onChange={(e) =>
+                                setSelectedPatients(e.value)
+                              }
+                              placeholder="Seleccione pacientes"
+                              display="chip"
+                              filter
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="fechasProcedimiento"
+                            >
+                              Fecha inicio - fin Procedimiento
+                            </label>
+                            <Calendar
+                              id="fechasProcedimiento"
+                              value={dateRange}
+                              onChange={(e: any) =>
+                                setDateRange(e.value)
+                              }
+                              selectionMode="range"
+                              readOnlyInput
+                              dateFormat="dd/mm/yy"
+                              placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="entity"
+                            >
+                              Entidad
+                            </label>
+                            <Dropdown
+                              id="entity"
+                              value={selectedEntity}
+                              options={entities}
+                              onChange={(e) =>
+                                setSelectedEntity(e.value)
+                              }
+                              placeholder="Seleccione entidad"
+                              filter
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12">
+                            <div className="d-flex justify-content-end m-2">
+                              <Button
+                                label="Filtrar"
+                                icon="pi pi-filter"
+                                onClick={handleFilter}
+                                className="p-button-primary"
+                              />
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                      </AccordionTab>
+                    </Accordion>
 
-              <div className="row gy-5">
-                <div className="col-12 col-xxl-12">
-                  <ul
-                    className="nav nav-underline fs-9"
-                    id="myTab"
-                    role="tablist"
-                  >
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "doctors-tab" ? "active" : ""
-                        }`}
-                        id="doctors-tab"
+                    <div className="tabs-header">
+                      <button
+                        className={`tab-item ${activeTab === "doctors-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("doctors-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-dollar-sign"></i>
                         Procedimientos $
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "doctors-count-tab" ? "active" : ""
-                        }`}
-                        id="doctors-count-tab"
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "doctors-count-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("doctors-count-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-hashtag"></i>
                         Procedimientos #
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "precios-entidad-tab" ? "active" : ""
-                        }`}
-                        id="precios-entidad-tab"
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "precios-entidad-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("precios-entidad-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-building"></i>
                         Entidades $
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "conteo-entidad-tab" ? "active" : ""
-                        }`}
-                        id="conteo-entidad-tab"
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "conteo-entidad-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("conteo-entidad-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-building"></i>
                         Entidades #
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "consultas-tab" ? "active" : ""
-                        }`}
-                        id="consultas-tab"
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "consultas-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("consultas-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-calendar-check"></i>
                         Consultas
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "productivity-tab" ? "active" : ""
-                        }`}
-                        id="productivity-tab"
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "productivity-tab" ? "active" : ""}`}
                         onClick={() => handleTabChange("productivity-tab")}
-                        role="tab"
                       >
+                        <i className="fas fa-chart-line"></i>
                         Productividad
-                      </a>
-                    </li>
-                  </ul>
+                      </button>
+                    </div>
 
-                  <div
-                    className="col-12 col-xxl-12 tab-content mt-3"
-                    id="myTabContent"
-                  >
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "doctors-tab" ? "show active" : ""
-                      }`}
-                      id="tab-doctors"
-                      role="tabpanel"
-                      aria-labelledby="doctors-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportProcedures}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("doctors-tab")}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+                    <div className="tabs-content">
+                      {/* Panel de Procedimientos $ */}
+                      <div className={`tab-panel ${activeTab === "doctors-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Procedimientos por Monto</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportProcedures}
+                              loading={exporting.procedures}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("doctors-tab")}
+                              loading={exporting.procedures}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateDoctorsTable()}
                       </div>
-                      {generateDoctorsTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "doctors-count-tab" ? "show active" : ""
-                      }`}
-                      id="tab-doctors-count"
-                      role="tabpanel"
-                      aria-labelledby="doctors-count-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportProceduresCount}
-                          loading={exporting.proceduresCount}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("doctors-count-tab")}
-                          loading={exporting.proceduresCount}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+
+                      {/* Panel de Procedimientos # */}
+                      <div className={`tab-panel ${activeTab === "doctors-count-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Procedimientos por Conteo</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportProceduresCount}
+                              loading={exporting.proceduresCount}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("doctors-count-tab")}
+                              loading={exporting.proceduresCount}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateDoctorsCountTable()}
                       </div>
-                      {generateDoctorsCountTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "precios-entidad-tab" ? "show active" : ""
-                      }`}
-                      id="tab-precios-entidad"
-                      role="tabpanel"
-                      aria-labelledby="precios-entidad-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportEntityPrices}
-                          loading={exporting.entityPrices}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some((item) => item.insurance)
-                          }
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("entities-tab")}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+
+                      {/* Panel de Entidades $ */}
+                      <div className={`tab-panel ${activeTab === "precios-entidad-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Entidades por Monto</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportEntityPrices}
+                              loading={exporting.entityPrices}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some((item) => item.insurance)
+                              }
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("precios-entidad-tab")}
+                              loading={exporting.entityPrices}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateEntityPricesTable()}
                       </div>
-                      {generateEntityPricesTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "conteo-entidad-tab" ? "show active" : ""
-                      }`}
-                      id="tab-conteo-entidad"
-                      role="tabpanel"
-                      aria-labelledby="conteo-entidad-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportEntityCounts}
-                          loading={exporting.entityCounts}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some((item) => item.insurance)
-                          }
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("conteo-entidad-tab")}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+
+                      {/* Panel de Entidades # */}
+                      <div className={`tab-panel ${activeTab === "conteo-entidad-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Entidades por Conteo</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportEntityCounts}
+                              loading={exporting.entityCounts}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some((item) => item.insurance)
+                              }
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("conteo-entidad-tab")}
+                              loading={exporting.entityCounts}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateEntityCountTable()}
                       </div>
-                      {generateEntityCountTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "consultas-tab" ? "show active" : ""
-                      }`}
-                      id="tab-consultas"
-                      role="tabpanel"
-                      aria-labelledby="consultas-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportConsultations}
-                          loading={exporting.consultations}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("consultation-tab")}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+
+                      {/* Panel de Consultas */}
+                      <div className={`tab-panel ${activeTab === "consultas-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Consultas por Profesional</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportConsultations}
+                              loading={exporting.consultations}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("consultas-tab")}
+                              loading={exporting.consultations}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateConsultationsTable()}
                       </div>
-                      {generateConsultationsTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "productivity-tab" ? "show active" : ""
-                      }`}
-                      id="tab-productivity"
-                      role="tabpanel"
-                      aria-labelledby="productivity-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-3">
-                        <ExportButtonExcel
-                          onClick={handleExportConsultations}
-                          loading={exporting.consultations}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToPDF("productivity-tab")}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
+
+                      {/* Panel de Productividad */}
+                      <div className={`tab-panel ${activeTab === "productivity-tab" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Productividad por Profesional</span>
+                          <div className="d-flex gap-2">
+                            <span className="p-input-icon-left">
+                              <i className="pi pi-search" />
+                              <InputText
+                                type="search"
+                                onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                                placeholder="Buscar..."
+                              />
+                            </span>
+                            <ExportButtonExcel
+                              onClick={handleExportConsultations}
+                              loading={exporting.consultations}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToPDF("productivity-tab")}
+                              loading={exporting.consultations}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                        </div>
+                        {generateTableProductivity()}
                       </div>
-                      {generateTableProductivity()}
                     </div>
                   </div>
                 </div>
               </div>
-            </>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 };

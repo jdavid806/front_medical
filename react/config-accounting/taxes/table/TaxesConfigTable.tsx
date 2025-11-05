@@ -19,7 +19,12 @@ export const TaxesConfigTable: React.FC<TaxesConfigTableProps> = ({
   onEditItem,
   onDeleteItem,
   loading = false,
-  onReload
+  onReload,
+  // Nuevas props para el botón
+  onCreate,
+  createLoading = false,
+  updateLoading = false,
+  deleteLoading = false
 }) => {
   const toast = useRef<Toast>(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -294,8 +299,24 @@ export const TaxesConfigTable: React.FC<TaxesConfigTableProps> = ({
           )}
         </div>
       </Dialog>
-      <div className="card mb-3">
-        <div className="card-body">
+
+
+
+      <div
+        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "400px" }}
+      >
+        <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-50px" }}>
+          <div className="text-end pt-3 mb-2">
+            <Button
+              className="p-button-primary"
+              onClick={onCreate}
+              disabled={createLoading || updateLoading || deleteLoading}
+            >
+              <i className="fas fa-plus me-2"></i>
+              {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto'}
+            </Button>
+          </div>
           <Accordion>
             <AccordionTab header="Filtros">
               <div className="row">

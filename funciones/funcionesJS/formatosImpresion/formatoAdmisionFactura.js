@@ -6,47 +6,50 @@ let companyData = {};
 let patientData = {};
 
 async function consultarData() {
-    const response = await consultarDatosEmpresa();
-    companyData = {
-        legal_name: response.nombre_consultorio,
-        document_number: response.datos_consultorio[0].RNC,
-        address: response.datos_consultorio[1].Dirección,
-        phone: response.datos_consultorio[2].Teléfono,
-        email: response.datos_consultorio[3].Correo,
-    };
+  const response = await consultarDatosEmpresa();
+  companyData = {
+    legal_name: response.nombre_consultorio,
+    document_number: response.datos_consultorio[0].RNC,
+    address: response.datos_consultorio[1].Dirección,
+    phone: response.datos_consultorio[2].Teléfono,
+    email: response.datos_consultorio[3].Correo,
+  };
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('es-CO', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(amount);
+  return new Intl.NumberFormat('es-CO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-CO', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-CO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 }
 
 export async function generarFormatoFactura(facturaData, tipo, inputId = null) {
-    await consultarData();
+  await consultarData();
 
-    // Determinar el tipo de factura
-    const tipoFactura = facturaData.admission_data.authorization_number && facturaData.data_invoice.invoice.total_amount == 0
-        ? "RECIBO DE CAJA"
-        : "FACTURA DE VENTA";
+  console.log("C");
 
-    // Construir HTML para los detalles de la factura
-    let detallesHTML = facturaData.data_invoice.invoice.details.map(detalle => {
-      const subtotal = Number(detalle.unit_price) * Number(detalle.quantity);
-      return `
+
+  // Determinar el tipo de factura
+  const tipoFactura = facturaData.admission_data.authorization_number && facturaData.data_invoice.invoice.total_amount == 0
+    ? "RECIBO DE CAJA"
+    : "FACTURA DE VENTA";
+
+  // Construir HTML para los detalles de la factura
+  let detallesHTML = facturaData.data_invoice.invoice.details.map(detalle => {
+    const subtotal = Number(detalle.unit_price) * Number(detalle.quantity);
+    return `
     <div style="border-bottom: 1px dashed #ccc; padding: 5px 0;">
       <strong>${detalle.product.name}</strong><br>
       Cantidad: ${detalle.quantity}<br>
@@ -58,9 +61,9 @@ export async function generarFormatoFactura(facturaData, tipo, inputId = null) {
       ` : ''}
     </div>
   `
-    }).join('');
+  }).join('');
 
-    let metodosPagoHTML = `
+  let metodosPagoHTML = `
     <table style="width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #000;">
       <tr>
         <th style="text-align: left; border-bottom: 1px solid #000; padding: 5px;">Método de Pago</th>
@@ -79,8 +82,8 @@ export async function generarFormatoFactura(facturaData, tipo, inputId = null) {
     </table>
   `;
 
-    // Construir el contenido HTML completo
-    const contenido = `
+  // Construir el contenido HTML completo
+  const contenido = `
     <div style="font-family: Arial, sans-serif; max-width: 235px; margin: 0 auto;">
       <div style="text-align: center; margin-bottom: 15px;">
         <h2 style="margin: 0; font-size: 18px;">${companyData.legal_name}</h2>
@@ -138,18 +141,18 @@ export async function generarFormatoFactura(facturaData, tipo, inputId = null) {
     </div>
   `;
 
-    let isDownload = false;
-    if (tipo === "Descarga") {
-        isDownload = true;
-    }
+  let isDownload = false;
+  if (tipo === "Descarga") {
+    isDownload = true;
+  }
 
-    const pdfConfig = {
-        name: `Recibo_caja`,
-        isDownload: isDownload,
-        dimensions: [0, 0, 226.77, 730],
-    };
+  const pdfConfig = {
+    name: `Recibo_caja`,
+    isDownload: isDownload,
+    dimensions: [0, 0, 226.77, 730],
+  };
 
-    await generatePDFReceipts(contenido, pdfConfig, inputId);
+  await generatePDFReceipts(contenido, pdfConfig, inputId);
 }
 
 export default generarFormatoFactura;

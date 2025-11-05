@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
 import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCashFormat";
@@ -72,7 +73,7 @@ export const InvoicesReport = () => {
 
   // State for report data
   const [reportData, setReportData] = useState<BillingReportData[]>([]);
-  const [activeTab, setActiveTab] = useState("procedures-tab");
+  const [activeTab, setActiveTab] = useState("procedures");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const { company, setCompany, fetchCompany } = useCompany();
@@ -158,9 +159,8 @@ export const InvoicesReport = () => {
       const response = await userService.getAllUsers();
       setSpecialists(
         response.map((user) => ({
-          label: `${user.first_name} ${user.last_name} - ${
-            user.specialty?.name || ""
-          }`,
+          label: `${user.first_name} ${user.last_name} - ${user.specialty?.name || ""
+            }`,
           value: user.id,
         }))
       );
@@ -240,20 +240,20 @@ export const InvoicesReport = () => {
     let dataExport: any = [];
 
     switch (tab) {
-      case "procedures-tab":
+      case "procedures":
         dataExport = generateProceduresTable(true);
         return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
-      case "procedures-count-tab":
+      case "procedures-count":
         dataExport = generateProceduresCountTable(true);
         return generateFormatProceduresCount(
           dataExport,
           dateRange,
           "Impresion"
         );
-      case "entities-tab":
+      case "entities":
         dataExport = generateEntitiesTable(true);
         return generateFormatEntities(dataExport, dateRange, "Impresion");
-      case "payments-methods-tab":
+      case "payments":
         dataExport = generatePaymentsTable(true);
         return generateFormatPayments(dataExport, dateRange, "Impresion");
     }
@@ -1386,371 +1386,271 @@ export const InvoicesReport = () => {
 
   return (
     <main className="main" id="top">
-      <div className="content">
-        <div className="pb-9">
-          <h2 className="mb-4">Facturas</h2>
-
-          {loading ? (
-            <div
-              className="flex justify-content-center align-items-center"
-              style={{
-                height: "50vh",
-                marginLeft: "900px",
-                marginTop: "300px",
-              }}
-            >
-              <ProgressSpinner />
-            </div>
-          ) : (
-            <>
-              <div className="row g-3 justify-content-between align-items-start mb-4">
-                <div className="col-12">
-                  <ul
-                    className="nav nav-underline fs-9"
-                    id="myTab"
-                    role="tablist"
-                  >
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "range-dates-tab" ? "active" : ""
-                        }`}
-                        id="range-dates-tab"
-                        onClick={() => setActiveTab("range-dates-tab")}
-                        role="tab"
-                      >
-                        Filtros
-                      </a>
-                    </li>
-                  </ul>
-                  <div className="tab-content mt-3" id="myTabContent">
-                    <div
-                      className="tab-pane fade show active"
-                      id="tab-range-dates"
-                      role="tabpanel"
-                      aria-labelledby="range-dates-tab"
-                    >
-                      <div className="d-flex">
-                        <div style={{ width: "100%" }}>
+      <div className="w-100">
+        {loading ? (
+          <div
+            className="flex justify-content-center align-items-center"
+            style={{
+              height: "50vh",
+              marginLeft: "900px",
+              marginTop: "300px",
+            }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <>
+            <div className="row g-3 justify-content-between align-items-start mb-4">
+              <div className="col-12">
+                <div
+                  className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                  style={{ minHeight: "400px" }}
+                >
+                  <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-40px" }}>
+                    <div className="tabs-professional-container mt-4">
+                      <Accordion className="report-invoices-accordion">
+                        <AccordionTab header="Filtros">
                           <div className="row">
-                            <div className="col-12 mb-3">
-                              <div className="card border border-light">
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="
-                                      "
-                                        htmlFor="procedure"
-                                      >
-                                        Procedimientos
-                                      </label>
-                                      <MultiSelect
-                                        id="procedure"
-                                        value={selectedProcedures}
-                                        options={procedures}
-                                        onChange={(e) =>
-                                          setSelectedProcedures(e.value)
-                                        }
-                                        placeholder="Seleccione procedimientos"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="especialistas"
-                                      >
-                                        Especialistas
-                                      </label>
-                                      <MultiSelect
-                                        id="especialistas"
-                                        value={selectedSpecialists}
-                                        options={specialists}
-                                        onChange={(e) =>
-                                          setSelectedSpecialists(e.value)
-                                        }
-                                        placeholder="Seleccione especialistas"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="patients"
-                                      >
-                                        Pacientes
-                                      </label>
-                                      <MultiSelect
-                                        id="patients"
-                                        value={selectedPatients}
-                                        options={patients}
-                                        onChange={(e) =>
-                                          setSelectedPatients(e.value)
-                                        }
-                                        placeholder="Seleccione pacientes"
-                                        display="chip"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="fechasProcedimiento"
-                                      >
-                                        Fecha inicio - fin Procedimiento
-                                      </label>
-                                      <Calendar
-                                        id="fechasProcedimiento"
-                                        value={dateRange}
-                                        onChange={(e: any) =>
-                                          setDateRange(e.value)
-                                        }
-                                        selectionMode="range"
-                                        readOnlyInput
-                                        dateFormat="dd/mm/yy"
-                                        placeholder="dd/mm/yyyy - dd/mm/yyyy"
-                                        className="w-100"
-                                      />
-                                    </div>
-                                    <div className="col-12 col-md-6 mb-3">
-                                      <label
-                                        className="form-label"
-                                        htmlFor="entity"
-                                      >
-                                        Entidad
-                                      </label>
-                                      <Dropdown
-                                        id="entity"
-                                        value={selectedEntity}
-                                        options={entities}
-                                        onChange={(e) =>
-                                          setSelectedEntity(e.value)
-                                        }
-                                        placeholder="Seleccione entidad"
-                                        filter
-                                        className="w-100"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="d-flex justify-content-end m-2">
-                                    <Button
-                                      label="Filtrar"
-                                      icon="pi pi-filter"
-                                      onClick={handleFilter}
-                                      className="p-button-primary"
-                                    />
-                                  </div>
-                                </div>
+                            <div className="col-12 col-md-6">
+                              <label
+                                className="form-label"
+                                htmlFor="procedure"
+                              >
+                                Procedimientos
+                              </label>
+                              <MultiSelect
+                                id="procedure"
+                                value={selectedProcedures}
+                                options={procedures}
+                                onChange={(e) =>
+                                  setSelectedProcedures(e.value)
+                                }
+                                placeholder="Seleccione procedimientos"
+                                display="chip"
+                                filter
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label
+                                className="form-label"
+                                htmlFor="especialistas"
+                              >
+                                Especialistas
+                              </label>
+                              <MultiSelect
+                                id="especialistas"
+                                value={selectedSpecialists}
+                                options={specialists}
+                                onChange={(e) =>
+                                  setSelectedSpecialists(e.value)
+                                }
+                                placeholder="Seleccione especialistas"
+                                display="chip"
+                                filter
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label
+                                className="form-label"
+                                htmlFor="patients"
+                              >
+                                Pacientes
+                              </label>
+                              <MultiSelect
+                                id="patients"
+                                value={selectedPatients}
+                                options={patients}
+                                onChange={(e) =>
+                                  setSelectedPatients(e.value)
+                                }
+                                placeholder="Seleccione pacientes"
+                                display="chip"
+                                filter
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label
+                                className="form-label"
+                                htmlFor="fechasProcedimiento"
+                              >
+                                Fecha inicio - fin Procedimiento
+                              </label>
+                              <Calendar
+                                id="fechasProcedimiento"
+                                value={dateRange}
+                                onChange={(e: any) =>
+                                  setDateRange(e.value)
+                                }
+                                selectionMode="range"
+                                readOnlyInput
+                                dateFormat="dd/mm/yy"
+                                placeholder="dd/mm/yyyy - dd/mm/yyyy"
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12 col-md-6 mb-3">
+                              <label
+                                className="form-label"
+                                htmlFor="entity"
+                              >
+                                Entidad
+                              </label>
+                              <Dropdown
+                                id="entity"
+                                value={selectedEntity}
+                                options={entities}
+                                onChange={(e) =>
+                                  setSelectedEntity(e.value)
+                                }
+                                placeholder="Seleccione entidad"
+                                filter
+                                className="w-100"
+                              />
+                            </div>
+                            <div className="col-12">
+                              <div className="d-flex justify-content-end m-2">
+                                <Button
+                                  label="Filtrar"
+                                  icon="pi pi-filter"
+                                  onClick={handleFilter}
+                                  className="p-button-primary"
+                                />
                               </div>
                             </div>
                           </div>
+                        </AccordionTab>
+                      </Accordion>
+                      <div className="tabs-header">
+                        <button
+                          className={`tab-item ${activeTab === "procedures" ? "active" : ""}`}
+                          onClick={() => setActiveTab("procedures")}
+                        >
+                          <i className="fas fa-chart-line"></i>
+                          Procedimientos $
+                        </button>
+                        <button
+                          className={`tab-item ${activeTab === "procedures-count" ? "active" : ""}`}
+                          onClick={() => setActiveTab("procedures-count")}
+                        >
+                          <i className="fas fa-hashtag"></i>
+                          Procedimientos #
+                        </button>
+                        <button
+                          className={`tab-item ${activeTab === "entities" ? "active" : ""}`}
+                          onClick={() => setActiveTab("entities")}
+                        >
+                          <i className="fas fa-building"></i>
+                          Entidades
+                        </button>
+                        <button
+                          className={`tab-item ${activeTab === "payments" ? "active" : ""}`}
+                          onClick={() => setActiveTab("payments")}
+                        >
+                          <i className="fas fa-credit-card"></i>
+                          Métodos de pago
+                        </button>
+                      </div>
+
+                      <div className="tabs-content">
+                        {/* Panel de Procedimientos $ */}
+                        <div className={`tab-panel ${activeTab === "procedures" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-end gap-2 mb-4">
+                            <ExportButtonExcel
+                              onClick={handleExportProcedures}
+                              loading={exporting.procedures}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToProceduresPDF("procedures")}
+                              loading={exporting.procedures}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                          {generateProceduresTable()}
+                        </div>
+
+                        {/* Panel de Procedimientos # */}
+                        <div className={`tab-panel ${activeTab === "procedures-count" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-end gap-2 mb-4">
+                            <ExportButtonPDF
+                              onClick={() => exportToProceduresPDF("procedures-count")}
+                              loading={exporting.procedures}
+                              disabled={!reportData || reportData.length === 0}
+                            />
+                          </div>
+                          {generateProceduresCountTable()}
+                        </div>
+
+                        {/* Panel de Entidades */}
+                        <div className={`tab-panel ${activeTab === "entities" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-end gap-2 mb-4">
+                            <ExportButtonExcel
+                              onClick={handleExportEntities}
+                              loading={exporting.entities}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some((item) => item.insurance)
+                              }
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToProceduresPDF("entities")}
+                              loading={exporting.entities}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some((item) => item.insurance)
+                              }
+                            />
+                          </div>
+                          {generateEntitiesTable()}
+                        </div>
+
+                        {/* Panel de Métodos de pago */}
+                        <div className={`tab-panel ${activeTab === "payments" ? "active" : ""}`}>
+                          <div className="d-flex justify-content-end gap-2 mb-4">
+                            <ExportButtonExcel
+                              onClick={handleExportPayments}
+                              loading={exporting.payments}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some(
+                                  (item) =>
+                                    item.payment_methods &&
+                                    item.payment_methods.length > 0
+                                )
+                              }
+                            />
+                            <ExportButtonPDF
+                              onClick={() => exportToProceduresPDF("payments")}
+                              loading={exporting.payments}
+                              disabled={
+                                !reportData ||
+                                reportData.length === 0 ||
+                                !reportData.some(
+                                  (item) =>
+                                    item.payment_methods &&
+                                    item.payment_methods.length > 0
+                                )
+                              }
+                            />
+                          </div>
+                          {generatePaymentsTable()}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="row gy-5">
-                <div className="col-12 col-xxl-12">
-                  <ul
-                    className="nav nav-underline fs-9"
-                    id="myTab"
-                    role="tablist"
-                  >
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "procedures-tab" ? "active" : ""
-                        }`}
-                        id="procedures-tab"
-                        onClick={() => setActiveTab("procedures-tab")}
-                        role="tab"
-                      >
-                        Procedimientos $
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "procedures-count-tab" ? "active" : ""
-                        }`}
-                        id="procedures-count-tab"
-                        onClick={() => setActiveTab("procedures-count-tab")}
-                        role="tab"
-                      >
-                        Procedimientos #
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "entities-tab" ? "active" : ""
-                        }`}
-                        id="entities-tab"
-                        onClick={() => setActiveTab("entities-tab")}
-                        role="tab"
-                      >
-                        Entidades
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className={`nav-link ${
-                          activeTab === "paymentsMethods-tab" ? "active" : ""
-                        }`}
-                        id="paymentsMethods-tab"
-                        onClick={() => setActiveTab("paymentsMethods-tab")}
-                        role="tab"
-                      >
-                        Métodos de pago
-                      </a>
-                    </li>
-                  </ul>
-
-                  <div
-                    className="col-12 col-xxl-12 tab-content mt-3"
-                    id="myTabContent"
-                  >
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "procedures-tab" ? "show active" : ""
-                      }`}
-                      id="tab-procedures"
-                      role="tabpanel"
-                      aria-labelledby="procedures-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-2">
-                        <ExportButtonExcel
-                          onClick={handleExportProcedures}
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                        <ExportButtonPDF
-                          onClick={() =>
-                            exportToProceduresPDF("procedures-tab")
-                          }
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                      </div>
-                      {generateProceduresTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "procedures-count-tab"
-                          ? "show active"
-                          : ""
-                      }`}
-                      id="tab-procedures-count"
-                      role="tabpanel"
-                      aria-labelledby="procedures-count-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-2">
-                        {/* <ExportButtonExcel
-                          onClick={() =>
-                            exportToExcel(
-                              generateProceduresCountTable(true),
-                              "procedimientos-conteo"
-                            )
-                          }
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        /> */}
-                        <ExportButtonPDF
-                          onClick={() =>
-                            exportToProceduresPDF("procedures-count-tab")
-                          }
-                          loading={exporting.procedures}
-                          disabled={!reportData || reportData.length === 0}
-                        />
-                      </div>
-                      {generateProceduresCountTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "entities-tab" ? "show active" : ""
-                      }`}
-                      id="tab-entities"
-                      role="tabpanel"
-                      aria-labelledby="entities-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-2">
-                        <ExportButtonExcel
-                          onClick={handleExportEntities}
-                          loading={exporting.entities}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some((item) => item.insurance)
-                          }
-                        />
-                        <ExportButtonPDF
-                          onClick={() => exportToProceduresPDF("entities-tab")}
-                          loading={exporting.entities}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some((item) => item.insurance)
-                          }
-                        />
-                      </div>
-                      {generateEntitiesTable()}
-                    </div>
-                    <div
-                      className={`tab-pane fade ${
-                        activeTab === "paymentsMethods-tab" ? "show active" : ""
-                      }`}
-                      id="tab-paymentsMethods"
-                      role="tabpanel"
-                      aria-labelledby="paymentsMethods-tab"
-                    >
-                      <div className="d-flex justify-content-end gap-2 mb-2">
-                        <ExportButtonExcel
-                          onClick={handleExportPayments}
-                          loading={exporting.payments}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some(
-                              (item) =>
-                                item.payment_methods &&
-                                item.payment_methods.length > 0
-                            )
-                          }
-                        />
-                        <ExportButtonPDF
-                          onClick={() =>
-                            exportToProceduresPDF("payments-methods-tab")
-                          }
-                          loading={exporting.payments}
-                          disabled={
-                            !reportData ||
-                            reportData.length === 0 ||
-                            !reportData.some(
-                              (item) =>
-                                item.payment_methods &&
-                                item.payment_methods.length > 0
-                            )
-                          }
-                        />
-                      </div>
-                      {generatePaymentsTable()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
-    </main>
+    </main >
   );
 };
 

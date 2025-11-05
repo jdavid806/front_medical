@@ -244,7 +244,7 @@ export const FormDebitCreditNotes = ({
     const billing = await fetchBillingByType(billingTypeMap[noteType?.id]);
     const noteData = {
       invoice_id: selectedInvoice?.id,
-      amount: calculateTotal(),
+      amount: Math.abs(calculateAdjustmentDifference()),
       reason: "Ajuste por error en la facturación",
       details: billingItems.map(item => {
         const priceAdjustment = item.unitPrice - Number(item.originalUnitPrice);
@@ -339,7 +339,7 @@ export const FormDebitCreditNotes = ({
         unitPrice: product.unit_price,
         originalUnitPrice: product.unit_price,
         discount: rateDiscunt,
-        taxId: product?.tax_charge?.id || 0,
+        taxId: product?.tax_charge_id || 0,
         totalValue: 0,
         fromInvoice: true
       };
@@ -787,7 +787,8 @@ export const FormDebitCreditNotes = ({
     paymentMethods: paymentMethodsArray,
     availablePaymentMethods: availablePaymentMethods,
     onPaymentMethodsChange: handlePaymentMethodsChange,
-    labelTotal: "Total ajuste"
+    labelTotal: "Total ajuste",
+    isNote: true
   }), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {

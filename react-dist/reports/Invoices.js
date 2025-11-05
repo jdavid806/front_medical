@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { useCompany } from "../hooks/useCompany.js";
 import { useProceduresCashFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCashFormat.js";
 import { useProceduresCountFormat } from "../documents-generation/hooks/reports-medical/invoices/useProceduresCountFormat.js";
@@ -34,7 +35,7 @@ export const InvoicesReport = () => {
 
   // State for report data
   const [reportData, setReportData] = useState([]);
-  const [activeTab, setActiveTab] = useState("procedures-tab");
+  const [activeTab, setActiveTab] = useState("procedures");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const {
@@ -193,16 +194,16 @@ export const InvoicesReport = () => {
   function exportToProceduresPDF(tab = "") {
     let dataExport = [];
     switch (tab) {
-      case "procedures-tab":
+      case "procedures":
         dataExport = generateProceduresTable(true);
         return generateFormatProceduresCash(dataExport, dateRange, "Impresion");
-      case "procedures-count-tab":
+      case "procedures-count":
         dataExport = generateProceduresCountTable(true);
         return generateFormatProceduresCount(dataExport, dateRange, "Impresion");
-      case "entities-tab":
+      case "entities":
         dataExport = generateEntitiesTable(true);
         return generateFormatEntities(dataExport, dateRange, "Impresion");
-      case "payments-methods-tab":
+      case "payments":
         dataExport = generatePaymentsTable(true);
         return generateFormatPayments(dataExport, dateRange, "Impresion");
     }
@@ -1114,12 +1115,8 @@ export const InvoicesReport = () => {
     className: "main",
     id: "top"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "content"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "pb-9"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "mb-4"
-  }, "Facturas"), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, loading ? /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
     style: {
       height: "50vh",
@@ -1130,45 +1127,28 @@ export const InvoicesReport = () => {
     className: "row g-3 justify-content-between align-items-start mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "range-dates-tab" ? "active" : ""}`,
-    id: "range-dates-tab",
-    onClick: () => setActiveTab("range-dates-tab"),
-    role: "tab"
-  }, "Filtros"))), /*#__PURE__*/React.createElement("div", {
-    className: "tab-content mt-3",
-    id: "myTabContent"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "tab-pane fade show active",
-    id: "tab-range-dates",
-    role: "tabpanel",
-    "aria-labelledby": "range-dates-tab"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex"
-  }, /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      width: "100%"
+      minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-40px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tabs-professional-container mt-4"
+  }, /*#__PURE__*/React.createElement(Accordion, {
+    className: "report-invoices-accordion"
+  }, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card border border-light"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 mb-3"
+    className: "col-12 col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "\r ",
+    className: "form-label",
     htmlFor: "procedure"
   }, "Procedimientos"), /*#__PURE__*/React.createElement(MultiSelect, {
     id: "procedure",
@@ -1234,109 +1214,84 @@ export const InvoicesReport = () => {
     placeholder: "Seleccione entidad",
     filter: true,
     className: "w-100"
-  }))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end m-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Filtrar",
     icon: "pi pi-filter",
     onClick: handleFilter,
     className: "p-button-primary"
-  })))))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "row gy-5"
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-header"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "procedures" ? "active" : ""}`,
+    onClick: () => setActiveTab("procedures")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-chart-line"
+  }), "Procedimientos $"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "procedures-count" ? "active" : ""}`,
+    onClick: () => setActiveTab("procedures-count")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-hashtag"
+  }), "Procedimientos #"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "entities" ? "active" : ""}`,
+    onClick: () => setActiveTab("entities")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-building"
+  }), "Entidades"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "payments" ? "active" : ""}`,
+    onClick: () => setActiveTab("payments")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-credit-card"
+  }), "M\xE9todos de pago")), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-content"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "procedures-tab" ? "active" : ""}`,
-    id: "procedures-tab",
-    onClick: () => setActiveTab("procedures-tab"),
-    role: "tab"
-  }, "Procedimientos $")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "procedures-count-tab" ? "active" : ""}`,
-    id: "procedures-count-tab",
-    onClick: () => setActiveTab("procedures-count-tab"),
-    role: "tab"
-  }, "Procedimientos #")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "entities-tab" ? "active" : ""}`,
-    id: "entities-tab",
-    onClick: () => setActiveTab("entities-tab"),
-    role: "tab"
-  }, "Entidades")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "paymentsMethods-tab" ? "active" : ""}`,
-    id: "paymentsMethods-tab",
-    onClick: () => setActiveTab("paymentsMethods-tab"),
-    role: "tab"
-  }, "M\xE9todos de pago"))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12 tab-content mt-3",
-    id: "myTabContent"
+    className: `tab-panel ${activeTab === "procedures" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "procedures-tab" ? "show active" : ""}`,
-    id: "tab-procedures",
-    role: "tabpanel",
-    "aria-labelledby": "procedures-tab"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-2"
+    className: "d-flex justify-content-end gap-2 mb-4"
   }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportProcedures,
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToProceduresPDF("procedures-tab"),
+    onClick: () => exportToProceduresPDF("procedures"),
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
   })), generateProceduresTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "procedures-count-tab" ? "show active" : ""}`,
-    id: "tab-procedures-count",
-    role: "tabpanel",
-    "aria-labelledby": "procedures-count-tab"
+    className: `tab-panel ${activeTab === "procedures-count" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-2"
+    className: "d-flex justify-content-end gap-2 mb-4"
   }, /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToProceduresPDF("procedures-count-tab"),
+    onClick: () => exportToProceduresPDF("procedures-count"),
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
   })), generateProceduresCountTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "entities-tab" ? "show active" : ""}`,
-    id: "tab-entities",
-    role: "tabpanel",
-    "aria-labelledby": "entities-tab"
+    className: `tab-panel ${activeTab === "entities" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-2"
+    className: "d-flex justify-content-end gap-2 mb-4"
   }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportEntities,
     loading: exporting.entities,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.insurance)
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToProceduresPDF("entities-tab"),
+    onClick: () => exportToProceduresPDF("entities"),
     loading: exporting.entities,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.insurance)
   })), generateEntitiesTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "paymentsMethods-tab" ? "show active" : ""}`,
-    id: "tab-paymentsMethods",
-    role: "tabpanel",
-    "aria-labelledby": "paymentsMethods-tab"
+    className: `tab-panel ${activeTab === "payments" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-2"
+    className: "d-flex justify-content-end gap-2 mb-4"
   }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportPayments,
     loading: exporting.payments,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.payment_methods && item.payment_methods.length > 0)
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToProceduresPDF("payments-methods-tab"),
+    onClick: () => exportToProceduresPDF("payments"),
     loading: exporting.payments,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.payment_methods && item.payment_methods.length > 0)
-  })), generatePaymentsTable()))))))));
+  })), generatePaymentsTable()))))))))));
 };
 const ExportButtonExcel = ({
   onClick,

@@ -992,7 +992,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
     };
   };
 
-  console.log(errors);
+
 
   return (
     <>
@@ -1007,8 +1007,8 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
         visible={isOpen}
         onHide={onClose}
         header="Crear cita"
-        style={{ width: "90vw", maxWidth: "1200px" }}
         appendTo={"self"}
+        style={{ width: "90vw", maxWidth: "1200px" }}
         maximizable
       >
         <Toast ref={toast} />
@@ -1049,13 +1049,14 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                           </div>
                         </div>
                         <div className="d-flex">
-                          <button
+                          <Button
                             type="button"
-                            className="btn btn-primary"
+                            label="Agregar Paciente"
+                            className="p-button-primary"
                             onClick={() => setShowPatientModal(true)}
                           >
                             <i className="fas fa-plus"></i>
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </>
@@ -1097,13 +1098,13 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                           </div>
                         </div>
                         <div className="d-flex">
-                          <button
+                          <Button
+                            label="Registrar Paciente"
                             type="button"
-                            className="btn btn-primary"
+                            className="p-button-primary"
                             onClick={() => setShowPatientModal(true)}
                           >
-                            <i className="fas fa-plus"></i>
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </>
@@ -1378,9 +1379,9 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                             className={classNames("w-100", {
                               "p-invalid": errors.appointment_date,
                             })}
-                            appendTo={"self"}
                             disabled={appointmentDateDisabled}
                             enabledDates={enabledDates}
+                            appendTo={"self"}
                             placeholder="Seleccione una fecha"
                           />
                         </>
@@ -1547,7 +1548,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                                 filter
                                 showClear
                                 placeholder="Seleccione una finalidad"
-                                className={classNames("w-100", {
+                                className={classNames("w-100 dropdown-appointment", {
                                   "p-invalid": errors.consultation_purpose,
                                 })}
                                 appendTo={"self"}
@@ -1579,7 +1580,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                                 filter
                                 showClear
                                 placeholder="Seleccione un tipo de consulta"
-                                className={classNames("w-100", {
+                                className={classNames("w-100 dropdown-appointment", {
                                   "p-invalid": errors.consultation_type,
                                 })}
                                 appendTo={"self"}
@@ -1615,7 +1616,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                                 filter
                                 showClear
                                 placeholder="Seleccione una causa externa"
-                                className={classNames("w-100")}
+                                className={classNames("w-100 dropdown-appointment")}
                                 appendTo={"self"}
                                 {...field}
                               ></Dropdown>
@@ -1692,23 +1693,23 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                   </div>
 
                   <div className="d-flex justify-content-between">
-                    <button
+                    <Button
                       type="button"
-                      className="btn btn-secondary"
+                      className="p-button-primary"
                       onClick={() => handleClear()}
                     >
                       Limpiar
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
-                      className="btn btn-primary"
+                      className="p-button-primary"
                       onClick={handleSubmit(addAppointments)}
                     >
                       {editingId &&
                         appointments.find((a) => a.uuid === editingId)
                         ? "Actualizar cita"
                         : "Agregar cita"}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -1721,7 +1722,7 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
                   {appointments.length === 0 ? (
                     <p className="text-muted">No hay citas programadas</p>
                   ) : (
-                    <div className="d-flex flex-column gap-3">
+                    <div className="d-flex flex-column gap-3 align-items-center">
                       {appointments.map((appointment) => {
                         const hasErrors = Object.keys(appointment.errors).length > 0;
 
@@ -1800,24 +1801,25 @@ export const AppointmentFormModal = ({ isOpen, onClose, onAppointmentCreated }) 
             </Card>
           </div>
           <div className="d-flex justify-content-end gap-2">
-            <button
+            <Button
               className="btn btn-link text-danger px-3 my-0"
               aria-label="Close"
               type="button"
               onClick={onClose}
             >
               <i className="fas fa-arrow-left"></i> Cerrar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="btn btn-primary my-0"
+              label="Guardar Cita"
+              className="p-button-primary"
               disabled={!formValid || hasValidationErrors()}
             >
-              <i className="fas fa-bookmark"></i> Guardar
-            </button>
+              <i className="fas fa-bookmark" style={{ marginLeft: "5px" }}></i>
+            </Button>
           </div>
         </form>
-      </Dialog>
+      </Dialog >
     </>
   );
 };

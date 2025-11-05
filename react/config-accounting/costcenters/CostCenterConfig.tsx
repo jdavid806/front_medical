@@ -67,13 +67,13 @@ export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationC
       const success = await deleteCostCenter(id);
       if (success) {
         await refreshCostCenters();
-        SwalManager.success('Retention eliminado correctamente');
+        SwalManager.success('Centro de costo eliminado correctamente');
       } else {
-        SwalManager.error('No se pudo eliminar Retention');
+        SwalManager.error('No se pudo eliminar el centro de costo');
       }
     } catch (error) {
       console.error("Error en eliminación:", error);
-      SwalManager.error('Error al eliminar el Retention');
+      SwalManager.error('Error al eliminar el centro de costo');
     }
   };
 
@@ -105,16 +105,6 @@ export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationC
     >
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="mb-1">Configuración de Centros de Costo</h4>
-        <div className="text-end">
-          <button
-            className="btn btn-primary d-flex align-items-center"
-            onClick={onCreate}
-            disabled={createLoading || updateLoading || deleteLoading}
-          >
-            <i className="fas fa-plus me-2"></i>
-            {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo'}
-          </button>
-        </div>
       </div>
 
       {error && (
@@ -123,21 +113,19 @@ export const CostCenterConfig = ({ onConfigurationComplete }: { onConfigurationC
         </div>
       )}
 
-      <div
-        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-        style={{ minHeight: "400px" }}
-      >
-        <div className="card-body h-100 w-100 d-flex flex-column">
-          <CostCenterConfigTable
-            costCenters={costCenters}
-            onEditItem={handleTableEdit}
-            onDeleteItem={handleDeleteCostCenter}
-            loading={loading}
-            onReload={refreshCostCenters}
 
-          />
-        </div>
-      </div>
+      <CostCenterConfigTable
+        costCenters={costCenters}
+        onEditItem={handleTableEdit}
+        onDeleteItem={handleDeleteCostCenter}
+        loading={loading}
+        onReload={refreshCostCenters}
+        onCreate={onCreate}
+        createLoading={createLoading}
+        updateLoading={updateLoading}
+        deleteLoading={deleteLoading}
+      />
+
       <CostCenterModalConfig
         isVisible={showFormModal}
         onSave={handleSubmit}

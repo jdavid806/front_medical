@@ -39,7 +39,9 @@ export default function SpecialityApp({
     resetModalForm,
     onGlobalFilterChange,
     onActiveSpecialty,
-    onDeactiveSpecialty
+    onDeactiveSpecialty,
+    selectedAntecedent,
+    setSelectedAntecedent
   } = useSpecialty();
 
   // Lógica para determinar si está completo
@@ -97,6 +99,8 @@ export default function SpecialityApp({
     onAddCie11Code: addCie11Code,
     onRemoveElement: removeSpecializableElement,
     onClinicalRecordChange: setSelectedClinicalRecord,
-    onCie11CodeChange: setCie11Code
+    onCie11CodeChange: setCie11Code,
+    selectedAntecedent: selectedAntecedent,
+    onAntecedentChange: setSelectedAntecedent
   }));
 }

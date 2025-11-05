@@ -8,7 +8,7 @@ include "../../header.php";
 
         <nav class="mb-3" aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="Dashboard">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="HomeReportes">Reportes</a></li>
                 <li class="breadcrumb-item active" onclick="location.reload()">Bonificaciones</li>
             </ol>
         </nav>

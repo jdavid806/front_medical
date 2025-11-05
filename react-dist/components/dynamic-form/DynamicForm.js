@@ -17,7 +17,6 @@ export const DynamicForm = /*#__PURE__*/forwardRef(({
     }
   }, [form]);
   const initializeForm = formData => {
-    console.log(formData);
     const initialFormValues = {};
     const initializedTabs = formData.tabs.map(tab => ({
       ...tab,
@@ -28,7 +27,6 @@ export const DynamicForm = /*#__PURE__*/forwardRef(({
         fields: card.fields.map(field => {
           if (formData.values?.[field.id]) {
             initialFormValues[field.id] = formData.values[field.id];
-            console.log(initialFormValues[field.id]);
           } else {
             initialFormValues[field.id] = field.type === 'checkbox' ? false : '';
           }
@@ -36,6 +34,8 @@ export const DynamicForm = /*#__PURE__*/forwardRef(({
             field.toggleFields.forEach(subField => {
               if (!formData.values?.[subField.id]) {
                 initialFormValues[subField.id] = '';
+              } else {
+                initialFormValues[subField.id] = formData.values[subField.id];
               }
             });
           }

@@ -9,6 +9,7 @@ import { generarFormatoRecetaOptometria } from "./formatosImpresion/formatoRecet
 import { generarFormatoCita } from "./formatosImpresion/formatoCita.js";
 import { generarFormatoFactura } from "./formatosImpresion/formatoAdmisionFactura.js";
 import { generarFormatoRemision } from "./formatosImpresion/formatoRemision.js";
+import { generarFormatoFacturaFactura } from "./formatosImpresion/formatoFacturaFactura.js";
 
 export async function generarFormato(
   name,
@@ -17,6 +18,12 @@ export async function generarFormato(
   inputId = "",
   configDefault = false
 ) {
+  console.log("name", name);
+  console.log("object", object);
+  console.log("tipo", tipo);
+  console.log("inputId", inputId);
+  console.log("configDefault", configDefault);
+
   switch (name) {
     case "Incapacidad":
       await generarFormatoIncapacidad(object, tipo, inputId);
@@ -50,6 +57,9 @@ export async function generarFormato(
       break;
     case "Factura":
       await generarFormatoFactura(object, tipo, inputId);
+      break;
+    case 'FacturaFactura':
+      await generarFormatoFacturaFactura(object, tipo, inputId);
       break;
     default:
       break;

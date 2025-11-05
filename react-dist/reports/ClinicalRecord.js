@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Calendar } from "primereact/calendar";
 import { MultiSelect } from "primereact/multiselect";
 import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { TabView, TabPanel } from "primereact/tabview";
+import { AutoComplete } from "primereact/autocomplete";
 import { clinicalRecordService, userService, userSpecialtyService, clinicalRecordTypeService, cie11Service } from "../../services/api/index.js";
 import { formatDate as formatDateUtils, getAge } from "../../services/utilidades.js";
 import { genders } from "../../services/commons.js";
@@ -14,7 +15,6 @@ import { useAverageBySpecialistFormat } from "../documents-generation/hooks/repo
 import { useDiagnosisGroupedByPatientFormat } from "../documents-generation/hooks/reports-medical/clinicalRecords/useDiagnosisGroupedByPatient.js";
 import { useDiagnosisFormat } from "../documents-generation/hooks/reports-medical/clinicalRecords/useDiagnosisFormat.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
-import { AutoComplete } from "primereact/autocomplete";
 export const ClinicalRecord = () => {
   const today = new Date();
   const fiveDaysAgo = new Date();
@@ -25,23 +25,24 @@ export const ClinicalRecord = () => {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("productivity");
   const [loadedTabs, setLoadedTabs] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   // Estados para datos de cada tab
-  const [tab1Data, setTab1Data] = useState([]);
-  const [tab2Data, setTab2Data] = useState([]);
-  const [tab3Data, setTab3Data] = useState([]);
+  const [productivityData, setProductivityData] = useState([]);
+  const [diagnosisData, setDiagnosisData] = useState([]);
+  const [diagnosisGroupedData, setDiagnosisGroupedData] = useState([]);
 
-  // Estados para filtros (puedes personalizar según necesites)
+  // Estados para filtros
   const [clinicalRecordTypes, setClinicalRecordTypes] = useState([]);
   const [userSpecialists, setUserSpecialists] = useState([]);
   const [specialties, setSpecialties] = useState([]);
+  const [cie11, setCie11] = useState([]);
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
   const [selectedSpecialists, setSelectedSpecialists] = useState([]);
   const [selectedClinicalRecordTypes, setSelectedClinicalRecordTypes] = useState([]);
   const [selectedCie11, setSelectedCie11] = useState([]);
-  const [cie11, setCie11] = useState([]);
   const {
     generateFormatAverageBySpecialist
   } = useAverageBySpecialistFormat();
@@ -52,15 +53,14 @@ export const ClinicalRecord = () => {
     generateFormatDiagnosis
   } = useDiagnosisFormat();
   useEffect(() => {
-    // Cargar datos cuando se cambia de tab (lazy loading)
-    if (activeTabIndex === 0) {
-      loadTab1Data();
-    } else if (activeTabIndex === 1) {
-      loadTab2Data();
-    } else if (activeTabIndex === 2) {
-      loadTab3Data();
+    if (activeTab === "productivity" && !loadedTabs.includes("productivity")) {
+      loadProductivityData();
+    } else if (activeTab === "diagnosis" && !loadedTabs.includes("diagnosis")) {
+      loadDiagnosisData();
+    } else if (activeTab === "diagnosisGrouped" && !loadedTabs.includes("diagnosisGrouped")) {
+      loadDiagnosisGroupedData();
     }
-  }, [activeTabIndex]);
+  }, [activeTab]);
   useEffect(() => {
     fetchClinicalRecordTypes();
     fetchSpecialists();
@@ -69,16 +69,17 @@ export const ClinicalRecord = () => {
   async function fetchClinicalRecordTypes() {
     try {
       const response = await clinicalRecordTypeService.getAll();
-      setClinicalRecordTypes(response);
+      setClinicalRecordTypes(response || []);
     } catch (error) {
       console.error("Error fetching clinical record types:", error);
+      setClinicalRecordTypes([]);
     }
   }
   async function fetchSpecialists() {
     try {
       const response = await userService.getAll();
-      const dataFiltered = response.filter(user => user.role.group === "DOCTOR").map(user => {
-        const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_last_name ?? ""}`;
+      const dataFiltered = (response || []).filter(user => user?.role?.group === "DOCTOR").map(user => {
+        const fullName = `${user?.first_name ?? ""} ${user?.middle_name ?? ""} ${user?.last_name ?? ""} ${user?.second_last_name ?? ""}`;
         return {
           ...user,
           fullName
@@ -87,70 +88,69 @@ export const ClinicalRecord = () => {
       setUserSpecialists(dataFiltered);
     } catch (error) {
       console.error("Error fetching specialists:", error);
+      setUserSpecialists([]);
     }
   }
   async function fetchSpecialties() {
     try {
       const response = await userSpecialtyService.getAll();
-      setSpecialties(response);
+      setSpecialties(response || []);
     } catch (error) {
       console.error("Error fetching specialties:", error);
+      setSpecialties([]);
     }
   }
-  const loadTab1Data = async (filterParams = {
+  const loadProductivityData = async (filterParams = {
     start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
     end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
   }) => {
     setTableLoading(true);
     try {
       const response = await clinicalRecordService.reportToAverage(filterParams);
-      const data = response.data || response;
-      setTab1Data(data);
-
-      // Marcar tab como cargado
-      if (!loadedTabs.includes(0)) {
-        setLoadedTabs([...loadedTabs, 0]);
+      const data = response?.data || response || [];
+      setProductivityData(data);
+      if (!loadedTabs.includes("productivity")) {
+        setLoadedTabs([...loadedTabs, "productivity"]);
       }
     } catch (error) {
-      console.error("Error loading Tab 1 data:", error);
+      console.error("Error loading productivity data:", error);
+      setProductivityData([]);
     } finally {
       setTableLoading(false);
     }
   };
-  const loadTab2Data = async (filterParams = {
+  const loadDiagnosisData = async (filterParams = {
     start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
     end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
   }) => {
     setTableLoading(true);
     try {
       const response = await clinicalRecordService.reportOfDiagnosis(filterParams);
-      setTab2Data(response);
-
-      // Marcar tab como cargado
-      if (!loadedTabs.includes(1)) {
-        setLoadedTabs([...loadedTabs, 1]);
+      setDiagnosisData(response || []);
+      if (!loadedTabs.includes("diagnosis")) {
+        setLoadedTabs([...loadedTabs, "diagnosis"]);
       }
     } catch (error) {
-      console.error("Error loading Tab 2 data:", error);
+      console.error("Error loading diagnosis data:", error);
+      setDiagnosisData([]);
     } finally {
       setTableLoading(false);
     }
   };
-  const loadTab3Data = async (filterParams = {
+  const loadDiagnosisGroupedData = async (filterParams = {
     start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
     end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
   }) => {
     setTableLoading(true);
     try {
       const response = await clinicalRecordService.reportOfDiagnosisPatientsGrouped(filterParams);
-      setTab3Data(response);
-
-      // Marcar tab como cargado
-      if (!loadedTabs.includes(2)) {
-        setLoadedTabs([...loadedTabs, 2]);
+      setDiagnosisGroupedData(response || []);
+      if (!loadedTabs.includes("diagnosisGrouped")) {
+        setLoadedTabs([...loadedTabs, "diagnosisGrouped"]);
       }
     } catch (error) {
-      console.error("Error loading Tab 3 data:", error);
+      console.error("Error loading diagnosis grouped data:", error);
+      setDiagnosisGroupedData([]);
     } finally {
       setTableLoading(false);
     }
@@ -160,28 +160,27 @@ export const ClinicalRecord = () => {
       const filterParams = {
         start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
         end_date: dateRange[1] ? formatDate(dateRange[1]) : ""
-        // Agregar más parámetros según necesites
       };
       if (selectedClinicalRecordTypes.length > 0) {
-        filterParams.clinical_record_type_ids = selectedClinicalRecordTypes.map(clinicalRecordType => clinicalRecordType.id);
+        filterParams.clinical_record_type_ids = selectedClinicalRecordTypes.map(clinicalRecordType => clinicalRecordType?.id).filter(Boolean);
       }
       if (selectedSpecialists.length > 0) {
-        filterParams.user_ids = selectedSpecialists.map(doctor => doctor.id);
+        filterParams.user_ids = selectedSpecialists.map(doctor => doctor?.id).filter(Boolean);
       }
       if (selectedSpecialties.length > 0) {
-        filterParams.specialty_ids = selectedSpecialties.map(specialty => specialty.id);
+        filterParams.specialty_ids = selectedSpecialties.map(specialty => specialty?.id).filter(Boolean);
       }
       if (selectedCie11.length > 0) {
-        filterParams.cie11 = selectedCie11.map(cie11 => cie11.codigo);
+        filterParams.cie11 = selectedCie11.map(cie11 => cie11?.codigo).filter(Boolean);
       }
 
       // Cargar datos para el tab activo
-      if (activeTabIndex === 0) {
-        await loadTab1Data(filterParams);
-      } else if (activeTabIndex === 1) {
-        await loadTab2Data(filterParams);
-      } else if (activeTabIndex === 2) {
-        await loadTab3Data(filterParams);
+      if (activeTab === "productivity") {
+        await loadProductivityData(filterParams);
+      } else if (activeTab === "diagnosis") {
+        await loadDiagnosisData(filterParams);
+      } else if (activeTab === "diagnosisGrouped") {
+        await loadDiagnosisGroupedData(filterParams);
       }
     } catch (error) {
       console.error("Error filtering data:", error);
@@ -193,11 +192,10 @@ export const ClinicalRecord = () => {
   };
   const search = async event => {
     try {
-      // Ejecutar endpoint con el término de búsqueda
       const response = await cie11Service.getCie11ByCode(event.query);
-      setCie11(response);
+      setCie11(response || []);
     } catch (error) {
-      console.error("Error buscando países:", error);
+      console.error("Error buscando CIE11:", error);
       setCie11([]);
     }
   };
@@ -206,9 +204,9 @@ export const ClinicalRecord = () => {
       className: "flex align-items-center"
     }, /*#__PURE__*/React.createElement("span", {
       className: "ml-2 text-sm text-gray-500"
-    }, item.codigo), /*#__PURE__*/React.createElement("span", {
+    }, item?.codigo || ""), /*#__PURE__*/React.createElement("span", {
       className: "font-bold"
-    }, " - " + item.descripcion.toLowerCase()));
+    }, " - " + (item?.descripcion?.toLowerCase() || "")));
   };
   const handleExportPDF = (mainNode, data, tab) => {
     switch (tab) {
@@ -218,6 +216,8 @@ export const ClinicalRecord = () => {
         return generateFormatDiagnosis(data, dateRange, "Impresion");
       case "diagnosisGroupedByPatient":
         return generateFormatDiagnosisGroupedByPatient(data, mainNode, dateRange, "Impresion");
+      default:
+        return null;
     }
   };
   const handleExportExcel = (mainNode, data, tab) => {
@@ -237,31 +237,31 @@ export const ClinicalRecord = () => {
     }
     exportToExcel({
       data: dataToExport,
-      fileName: `${fileName}_${mainNode.full_name.replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
+      fileName: `${fileName}_${(mainNode?.full_name || "sin_nombre").replace(/ /g, "_")}_${new Date().toISOString().slice(0, 10)}`
     });
   };
   const mappedDataReportAverage = data => {
-    return data.map(item => {
+    return (data || []).map(item => {
       return {
-        Paciente: `${item.appointment?.patient?.full_name.toLowerCase() ?? "Sin nombre"}`,
-        Documento: item?.appointment?.patient?.document_number,
-        "Fecha y hora cita": item?.appointment?.appointment_date + ", " + item?.appointment?.appointment_time,
+        Paciente: `${item?.appointment?.patient?.full_name?.toLowerCase() ?? "Sin nombre"}`,
+        Documento: item?.appointment?.patient?.document_number ?? "Sin documento",
+        "Fecha y hora cita": (item?.appointment?.appointment_date ?? "") + ", " + (item?.appointment?.appointment_time ?? ""),
         "Inicio consulta": item?.start_time ? formatDateUtils(item.start_time) : "Sin inicio",
-        "Fin consulta": item?.created_at_formatted,
+        "Fin consulta": item?.created_at_formatted ?? "Sin fin",
         "Duración consulta": item?.consultation_duration ?? "00:00:00",
         Tipo: item?.clinical_record_type?.name ?? "Sin tipo"
       };
     });
   };
   const mappedDataToDiagnosisGrouped = data => {
-    return data.map(item => {
+    return (data || []).map(item => {
       return {
         Paciente: `${item?.appointment?.patient?.first_name ?? ""} ${item?.appointment?.patient?.middle_name ?? ""} ${item?.appointment?.patient?.last_name ?? ""} ${item?.appointment?.patient?.second_last_name ?? ""}`,
-        Documento: item?.appointment?.patient?.document_number,
+        Documento: item?.appointment?.patient?.document_number ?? "Sin documento",
         Edad: getAge(item?.appointment?.patient?.date_of_birth) || "--",
-        Genero: genders[item?.appointment?.patient?.gender],
+        Genero: genders[item?.appointment?.patient?.gender] || "--",
         "Motivo cita": item?.appointment?.consultation_type || "--",
-        "Fecha - cita": item?.appointment?.appointment_date + ", " + item?.appointment?.appointment_time || "--",
+        "Fecha - cita": (item?.appointment?.appointment_date ?? "") + ", " + (item?.appointment?.appointment_time ?? "") || "--",
         Especialista: `${item?.created_by_user?.first_name ?? ""} ${item?.created_by_user?.middle_name ?? ""} ${item?.created_by_user?.last_name ?? ""} ${item?.created_by_user?.second_last_name ?? ""}`,
         Especialidad: item?.created_by_user?.specialty?.name || "--",
         "Tipo consulta": item?.clinical_record_type?.name || "--",
@@ -272,7 +272,7 @@ export const ClinicalRecord = () => {
   const headerTemplate = (mainNode, data, tab) => {
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex justify-content-between align-items-center w-full p-4"
-    }, /*#__PURE__*/React.createElement("div", null, tab === "average" ? /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, mainNode.full_name), " - Promedio:", `${mainNode.average_consultation_duration.hours}:${mainNode.average_consultation_duration.minutes}:${mainNode.average_consultation_duration.seconds}`) : /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, mainNode.full_name.toLowerCase()), " - Consultas:", " ", `${data.length}`)), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("div", null, tab === "average" ? /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, mainNode?.full_name || "Sin nombre"), " - Promedio:", `${mainNode?.average_consultation_duration?.hours || "00"}:${mainNode?.average_consultation_duration?.minutes || "00"}:${mainNode?.average_consultation_duration?.seconds || "00"}`) : /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("strong", null, (mainNode?.full_name || "sin nombre").toLowerCase()), " - Consultas:", " ", `${data?.length || 0}`)), /*#__PURE__*/React.createElement("div", {
       className: "d-flex gap-2"
     }, /*#__PURE__*/React.createElement(Button, {
       className: "p-button-rounded p-button-success p-button-sm",
@@ -302,7 +302,7 @@ export const ClinicalRecord = () => {
       className: "fa-solid fa-file-pdf"
     }))));
   };
-  const renderTab1Content = () => {
+  const renderProductivityTable = () => {
     if (tableLoading) {
       return /*#__PURE__*/React.createElement("div", {
         className: "flex justify-content-center align-items-center",
@@ -311,71 +311,101 @@ export const ClinicalRecord = () => {
         }
       }, /*#__PURE__*/React.createElement(ProgressSpinner, null));
     }
-    if (tab1Data.length === 0) {
+    if (!productivityData || productivityData.length === 0) {
       return /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar");
     }
-
-    // TODO: Implementar renderizado específico para Tab 1
     return /*#__PURE__*/React.createElement(Accordion, {
       activeIndex: activeIndex,
       onTabChange: e => setActiveIndex(e.index)
-    }, tab1Data.map((specialist, index) => {
+    }, productivityData.map((specialist, index) => {
+      if (!specialist) return null;
       return /*#__PURE__*/React.createElement(AccordionTab, {
-        key: specialist.id || index,
-        header: headerTemplate(specialist, specialist.clinical_records || [], "average")
+        key: specialist?.id || index,
+        header: headerTemplate(specialist, specialist?.clinical_records || [], "average")
       }, /*#__PURE__*/React.createElement(DataTable, {
-        value: specialist.clinical_records,
+        value: specialist?.clinical_records || [],
         emptyMessage: `No hay citas`,
         className: "p-datatable-sm",
         showGridlines: true,
         paginator: true,
         rows: 10,
         rowsPerPageOptions: [5, 10, 25],
-        sortMode: "multiple"
+        sortMode: "multiple",
+        scrollable: true,
+        scrollHeight: "400px",
+        globalFilter: globalFilter
       }, /*#__PURE__*/React.createElement(Column, {
         field: "patient",
         header: "Paciente",
         body: rowData => {
-          return rowData?.appointment?.patient?.full_name.toLowerCase() || "Sin nombre";
+          return rowData?.appointment?.patient?.full_name?.toLowerCase() || "Sin nombre";
+        },
+        sortable: true,
+        style: {
+          minWidth: "200px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "patient.id",
         header: "N\xB0 Documento",
         body: rowData => {
-          return rowData?.appointment?.patient.document_number ?? "No agendada";
+          return rowData?.appointment?.patient?.document_number ?? "No agendada";
+        },
+        sortable: true,
+        style: {
+          minWidth: "150px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "date",
         header: "Fecha y hora - Cita",
-        body: rowData => rowData?.appointment?.appointment_date + ", " + rowData?.appointment?.appointment_time || "No agendada"
+        body: rowData => (rowData?.appointment?.appointment_date || "") + ", " + (rowData?.appointment?.appointment_time || "") || "No agendada",
+        sortable: true,
+        style: {
+          minWidth: "180px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "start_time",
         header: "Inicio consulta",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, rowData.start_time ? formatDateUtils(rowData.start_time) : "Sin inicio")
+        }, rowData?.start_time ? formatDateUtils(rowData.start_time) : "Sin inicio"),
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "created_at",
         header: "Fin consulta",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, rowData.created_at_formatted)
+        }, rowData?.created_at_formatted || "Sin fin"),
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "consultation_duration",
         header: "Duraci\xF3n consulta",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, rowData.consultation_duration ?? "00:00:00")
+        }, rowData?.consultation_duration ?? "00:00:00"),
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
-        field: "consultation_duration",
+        field: "clinical_record_type",
         header: "Tipo",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, rowData.clinical_record_type.name ?? "Sin tipo")
+        }, rowData?.clinical_record_type?.name ?? "Sin tipo"),
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       })));
     }));
   };
-  const renderTab2Content = () => {
+  const renderDiagnosisTable = () => {
     if (tableLoading) {
       return /*#__PURE__*/React.createElement("div", {
         className: "flex justify-content-center align-items-center",
@@ -384,21 +414,19 @@ export const ClinicalRecord = () => {
         }
       }, /*#__PURE__*/React.createElement(ProgressSpinner, null));
     }
-    if (tab2Data.length === 0) {
+    if (!diagnosisData || diagnosisData.length === 0) {
       return /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar");
     }
-
-    // TODO: Implementar renderizado específico para Tab 2
     return /*#__PURE__*/React.createElement("div", {
       className: "d-flex flex-column gap-2"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-end align-items-center"
+      className: "d-flex justify-content-end align-items-center mb-3"
     }, /*#__PURE__*/React.createElement(Button, {
       className: "p-button-rounded p-button-secondary p-button-sm",
       onClick: e => {
         e.stopPropagation();
         e.preventDefault();
-        handleExportPDF(tab2Data, tab2Data, "diagnosis");
+        handleExportPDF(diagnosisData, diagnosisData, "diagnosis");
       },
       tooltip: `Exportar a PDF`,
       tooltipOptions: {
@@ -407,70 +435,109 @@ export const ClinicalRecord = () => {
     }, /*#__PURE__*/React.createElement("i", {
       className: "fa-solid fa-file-pdf"
     }))), /*#__PURE__*/React.createElement(DataTable, {
-      value: tab2Data,
+      value: diagnosisData,
       emptyMessage: `No hay citas`,
       className: "p-datatable-sm",
       showGridlines: true,
       paginator: true,
       rows: 10,
-      rowsPerPageOptions: [5, 10, 25]
+      rowsPerPageOptions: [5, 10, 25],
+      scrollable: true,
+      scrollHeight: "400px",
+      globalFilter: globalFilter
     }, /*#__PURE__*/React.createElement(Column, {
       field: "patient",
       header: "Paciente",
       body: rowData => {
         const patientFullName = `${rowData?.appointment?.patient?.first_name ?? ""} ${rowData?.appointment?.patient?.middle_name ?? ""} ${rowData?.appointment?.patient?.last_name ?? ""} ${rowData?.appointment?.patient?.second_last_name ?? ""}`;
         return patientFullName.toLowerCase() || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "200px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "documentNumber",
       header: "N\xB0 Documento",
-      body: rowData => rowData?.appointment?.patient?.document_number || "--"
+      body: rowData => rowData?.appointment?.patient?.document_number || "--",
+      sortable: true,
+      style: {
+        minWidth: "150px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "age",
       header: "Edad",
       body: rowData => {
         return getAge(rowData?.appointment?.patient?.date_of_birth) || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "100px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "gender",
       header: "Genero",
       body: rowData => {
-        return genders[rowData?.appointment?.patient?.gender];
+        return genders[rowData?.appointment?.patient?.gender] || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "120px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "consultationType",
       header: "Motivo de cita",
       body: rowData => {
         return rowData?.appointment?.consultation_type || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "150px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "appointmentDate",
       header: "Fecha - cita",
       body: rowData => {
-        return rowData?.appointment?.appointment_date + ", " + rowData?.appointment?.appointment_time || "--";
+        return (rowData?.appointment?.appointment_date || "") + ", " + (rowData?.appointment?.appointment_time || "") || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "180px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "specialist",
       header: "Especialista",
       body: rowData => {
         const doctorFullName = `${rowData?.created_by_user?.first_name ?? ""} ${rowData?.created_by_user?.middle_name ?? ""} ${rowData?.created_by_user?.last_name ?? ""} ${rowData?.created_by_user?.second_last_name ?? ""}`;
-        return doctorFullName;
+        return doctorFullName || "--";
+      },
+      sortable: true,
+      style: {
+        minWidth: "200px"
       }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "specialty",
       header: "Especialidad",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         className: "font-bold"
-      }, rowData?.created_by_user?.specialty?.name)
+      }, rowData?.created_by_user?.specialty?.name || "--"),
+      sortable: true,
+      style: {
+        minWidth: "150px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "diagnosis",
       header: "Diagnostico",
       body: rowData => /*#__PURE__*/React.createElement("span", {
         className: "font-bold"
-      }, (rowData?.diagnosis_main ?? "-") + "-" + (rowData?.cie11_description?.toLowerCase() ?? "-") || "--")
+      }, (rowData?.diagnosis_main ?? "-") + "-" + (rowData?.cie11_description?.toLowerCase() ?? "-") || "--"),
+      sortable: true,
+      style: {
+        minWidth: "200px"
+      }
     })));
   };
-  const renderTab3Content = () => {
+  const renderDiagnosisGroupedTable = () => {
     if (tableLoading) {
       return /*#__PURE__*/React.createElement("div", {
         className: "flex justify-content-center align-items-center",
@@ -479,79 +546,119 @@ export const ClinicalRecord = () => {
         }
       }, /*#__PURE__*/React.createElement(ProgressSpinner, null));
     }
-    if (tab3Data.length === 0) {
-      return /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar en el Tab 3");
+    if (!diagnosisGroupedData || diagnosisGroupedData.length === 0) {
+      return /*#__PURE__*/React.createElement("p", null, "No hay datos para mostrar");
     }
     return /*#__PURE__*/React.createElement(Accordion, {
       activeIndex: activeIndex,
       onTabChange: e => setActiveIndex(e.index)
-    }, tab3Data.map((patient, index) => {
+    }, diagnosisGroupedData.map((patient, index) => {
+      if (!patient) return null;
       return /*#__PURE__*/React.createElement(AccordionTab, {
-        key: patient.id || index,
-        header: headerTemplate(patient, patient.clinical_records || [], "diagnosisGroupedByPatient")
+        key: patient?.id || index,
+        header: headerTemplate(patient, patient?.clinical_records || [], "diagnosisGroupedByPatient")
       }, /*#__PURE__*/React.createElement(DataTable, {
-        value: patient.clinical_records,
+        value: patient?.clinical_records || [],
         emptyMessage: `No hay citas`,
         className: "p-datatable-sm",
         showGridlines: true,
         paginator: true,
         rows: 10,
         rowsPerPageOptions: [5, 10, 25],
-        sortMode: "multiple"
+        sortMode: "multiple",
+        scrollable: true,
+        scrollHeight: "400px",
+        globalFilter: globalFilter
       }, /*#__PURE__*/React.createElement(Column, {
         field: "patient",
         header: "Paciente",
         body: rowData => {
           const patientFullName = `${rowData?.appointment?.patient?.first_name ?? ""} ${rowData?.appointment?.patient?.middle_name ?? ""} ${rowData?.appointment?.patient?.last_name ?? ""} ${rowData?.appointment?.patient?.second_last_name ?? ""}`;
           return patientFullName.toLowerCase() || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "200px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "documentNumber",
         header: "N\xB0 Documento",
-        body: rowData => rowData?.appointment?.patient?.document_number || "--"
+        body: rowData => rowData?.appointment?.patient?.document_number || "--",
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "age",
         header: "Edad",
         body: rowData => {
           return getAge(rowData?.appointment?.patient?.date_of_birth) || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "100px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "gender",
         header: "Genero",
         body: rowData => {
-          return genders[rowData?.appointment?.patient?.gender];
+          return genders[rowData?.appointment?.patient?.gender] || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "120px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "consultationType",
         header: "Motivo de cita",
         body: rowData => {
           return rowData?.appointment?.consultation_type || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "150px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "appointmentDate",
         header: "Fecha - cita",
         body: rowData => {
-          return rowData?.appointment?.appointment_date + ", " + rowData?.appointment?.appointment_time || "--";
+          return (rowData?.appointment?.appointment_date || "") + ", " + (rowData?.appointment?.appointment_time || "") || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "180px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
-        field: "consultationType",
+        field: "specialist",
         header: "Especialista",
         body: rowData => {
           const doctorFullName = `${rowData?.created_by_user?.first_name ?? ""} ${rowData?.created_by_user?.middle_name ?? ""} ${rowData?.created_by_user?.last_name ?? ""} ${rowData?.created_by_user?.second_last_name ?? ""}`;
-          return doctorFullName;
+          return doctorFullName || "--";
+        },
+        sortable: true,
+        style: {
+          minWidth: "200px"
         }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "specialty",
         header: "Especialidad",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, rowData?.created_by_user?.specialty?.name)
+        }, rowData?.created_by_user?.specialty?.name || "--"),
+        sortable: true,
+        style: {
+          minWidth: "150px"
+        }
       }), /*#__PURE__*/React.createElement(Column, {
         field: "diagnosis",
         header: "Diagnostico",
         body: rowData => /*#__PURE__*/React.createElement("span", {
           className: "font-bold"
-        }, (rowData?.diagnosis_main ?? "-") + "-" + (rowData?.cie11_description?.toLowerCase() ?? "-") || "--")
+        }, (rowData?.diagnosis_main ?? "-") + "-" + (rowData?.cie11_description?.toLowerCase() ?? "-") || "--"),
+        sortable: true,
+        style: {
+          minWidth: "200px"
+        }
       })));
     }));
   };
@@ -566,22 +673,38 @@ export const ClinicalRecord = () => {
   return /*#__PURE__*/React.createElement("main", {
     className: "main",
     id: "top"
+  }, loading ? /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-center align-items-center",
+    style: {
+      height: "50vh",
+      marginLeft: "900px",
+      marginTop: "300px"
+    }
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "row g-3 justify-content-between align-items-start mb-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "content"
+    className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "pb-9"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "mb-4"
-  }, "Reporte Consultas"), /*#__PURE__*/React.createElement("div", {
-    className: "card border border-light mb-4"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-40px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "grid p-fluid row"
+    className: "tabs-professional-container mt-4"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-6 md:col-6"
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
+    className: "form-label",
+    htmlFor: "dateRange"
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
     value: dateRange,
     onChange: e => setDateRange(e.value),
@@ -589,24 +712,23 @@ export const ClinicalRecord = () => {
     readOnlyInput: true,
     dateFormat: "dd/mm/yy",
     placeholder: "Seleccione un rango",
-    className: "w-full",
+    className: "w-100",
     showIcon: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-6 md:col-6"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "Tipo de consulta "), /*#__PURE__*/React.createElement(MultiSelect, {
+  }, "Tipo de consulta"), /*#__PURE__*/React.createElement(MultiSelect, {
     value: selectedClinicalRecordTypes,
     onChange: e => setSelectedClinicalRecordTypes(e.value),
-    options: clinicalRecordTypes // TODO: Poblar con opciones
-    ,
+    options: clinicalRecordTypes,
     optionLabel: "name",
     filter: true,
     placeholder: "Seleccione tipo de historia",
     maxSelectedLabels: 3,
-    className: "w-full"
+    className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-6 md:col-6"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Especialista"), /*#__PURE__*/React.createElement(MultiSelect, {
@@ -617,9 +739,9 @@ export const ClinicalRecord = () => {
     filter: true,
     placeholder: "Seleccione especialista",
     maxSelectedLabels: 3,
-    className: "w-full"
+    className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-6 md:col-6"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Especialidad"), /*#__PURE__*/React.createElement(MultiSelect, {
@@ -630,39 +752,92 @@ export const ClinicalRecord = () => {
     filter: true,
     placeholder: "Seleccione especialidad",
     maxSelectedLabels: 3,
-    className: "w-full"
-  })), activeTabIndex === 1 || activeTabIndex === 2 ? /*#__PURE__*/React.createElement("div", {
-    className: "col-6 md:col-6"
+    className: "w-100"
+  })), (activeTab === "diagnosis" || activeTab === "diagnosisGrouped") && /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "Cie11"), /*#__PURE__*/React.createElement(AutoComplete, {
+  }, "CIE-11"), /*#__PURE__*/React.createElement(AutoComplete, {
     field: "codigo",
     multiple: true,
     value: selectedCie11,
     suggestions: cie11,
     completeMethod: search,
-    placeholder: "Escribe para buscar el cie11 por su c\xF3digo",
+    placeholder: "Escribe para buscar el CIE-11 por su c\xF3digo",
     onChange: e => setSelectedCie11(e.value),
     itemTemplate: itemTemplate,
-    delay: 300
-  })) : ""), /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-content-end mt-3"
+    delay: 300,
+    className: "w-100"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-end m-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Filtrar",
     icon: "pi pi-filter",
     onClick: handleFilter,
     loading: tableLoading,
     className: "p-button-primary"
-  })))), /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement(TabView, {
-    activeIndex: activeTabIndex,
-    onTabChange: e => setActiveTabIndex(e.index)
-  }, /*#__PURE__*/React.createElement(TabPanel, {
-    header: "Productividad Promedio - Especialista"
-  }, renderTab1Content()), /*#__PURE__*/React.createElement(TabPanel, {
-    header: "Diagnosticos"
-  }, renderTab2Content()), /*#__PURE__*/React.createElement(TabPanel, {
-    header: "Diagnosticos agrupado - Pacientes"
-  }, renderTab3Content()))))));
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-header"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "productivity" ? "active" : ""}`,
+    onClick: () => setActiveTab("productivity")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-chart-line"
+  }), "Productividad"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "diagnosis" ? "active" : ""}`,
+    onClick: () => setActiveTab("diagnosis")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-stethoscope"
+  }), "Diagnosticos"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "diagnosisGrouped" ? "active" : ""}`,
+    onClick: () => setActiveTab("diagnosisGrouped")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-users"
+  }), "Diagnosticos Agrupados")), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "productivity" ? "active" : ""}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Productividad Promedio - Especialista"), /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  }))), renderProductivityTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "diagnosis" ? "active" : ""}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Diagnosticos"), /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  }))), renderDiagnosisTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "diagnosisGrouped" ? "active" : ""}`
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Diagnosticos Agrupados - Pacientes"), /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  }))), renderDiagnosisGroupedTable())))))))));
 };

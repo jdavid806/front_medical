@@ -7,6 +7,8 @@ import { InputTextarea } from "primereact/inputtextarea";
 
 // Definimos los tipos de datos del formulario
 import { DepositFormInputs, DepositFormProps } from "../ts/depositFormType";
+import { Dropdown } from "primereact/dropdown";
+import { depositTypes } from "../ts/consts";
 
 const DepositForm: React.FC<DepositFormProps> = ({
   formId,
@@ -22,9 +24,15 @@ const DepositForm: React.FC<DepositFormProps> = ({
   } = useForm<DepositFormInputs>({
     defaultValues: initialData || {
       name: "",
+      type: null,
       notes: "",
     },
   });
+
+  const depositTypeOptions = Object.entries(depositTypes).map(([key, value]) => ({
+    label: value,
+    value: key,
+  }));
 
   const onFormSubmit: SubmitHandler<DepositFormInputs> = (data) =>
     onSubmit(data);
@@ -58,6 +66,32 @@ const DepositForm: React.FC<DepositFormProps> = ({
           )}
         />
         {getFormErrorMessage("name")}
+      </div>
+
+      <div className="mb-3">
+        <Controller
+          name="type"
+          control={control}
+          rules={{ required: "El tipo del depósito es requerido" }}
+          render={({ field }) => (
+            <>
+              <label htmlFor={field.name} className="form-label">
+                Tipo del Depósito *
+              </label>
+              <Dropdown
+                id={field.name}
+                className={classNames("w-100", {
+                  "p-invalid": errors.type,
+                })}
+                {...field}
+                options={depositTypeOptions}
+                optionLabel="label"
+                optionValue="value"
+              />
+            </>
+          )}
+        />
+        {getFormErrorMessage("type")}
       </div>
 
       <div className="mb-3">

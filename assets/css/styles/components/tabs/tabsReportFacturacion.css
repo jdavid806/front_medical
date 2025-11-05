@@ -1,0 +1,310 @@
+/* Contenedor principal de tabs profesional */
+.tabs-professional-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+/* Header de las tabs */
+.tabs-header {
+  display: flex;
+  background: linear-gradient(135deg, #fafbff 0%, #f8f9fe 100%);
+  border-bottom: 1px solid #e8ecef;
+  padding: 8px 8px 0;
+  position: relative;
+}
+
+.tabs-header::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    #e8ecef 20%, 
+    #e8ecef 80%, 
+    transparent 100%);
+}
+
+/* Items de las tabs */
+.tab-item {
+  position: relative;
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  margin: 0 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+/* Efecto hover */
+.tab-item:hover {
+  color: #475569;
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+}
+
+/* Indicador activo */
+.tab-item::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1A99FB, #29F6C1);
+  border-radius: 3px 3px 0 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+
+.tab-item:hover::after {
+  width: 40%;
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+}
+
+/* Estado activo */
+.tab-item.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #76c0f8 0%, #75f3d2 100%);
+  box-shadow: 0 8px 25px linear-gradient(90deg, #1A99FB, #29F6C1);
+  transform: translateY(-2px);
+}
+
+.tab-item.active::after {
+  width: 100%;
+  background: #ffffff;
+  height: 4px;
+  bottom: -1px;
+}
+
+/* Iconos en las tabs */
+.tab-item i {
+  font-size: 16px;
+  transition: all 0.3s ease;
+  opacity: 0.9;
+}
+
+.tab-item:hover i {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+.tab-item.active i {
+  transform: scale(1.15);
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+/* Contenido de las tabs */
+.tabs-content {
+  background: #ffffff;
+  padding: 0;
+  position: relative;
+}
+
+.tab-panel {
+  padding: 32px;
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+
+/* Efecto de brillo en hover */
+.tab-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0) 100%);
+    
+  border-radius: 12px 12px 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tab-item:hover::before {
+  opacity: 1;
+}
+
+.tab-item.active::before {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.1) 100%);
+  opacity: 1;
+}
+
+/* Badge para contadores (opcional) */
+.tab-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #64748b;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 6px;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active .tab-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.tab-item:hover .tab-badge {
+    background: linear-gradient(90deg, #1A99FB, #29F6C1);
+  color: linear-gradient(90deg, #1A99FB, #29F6C1);
+}
+
+/* Responsive */
+
+/* Tablet Normal (480px) */
+
+@media (max-width: 480px) {
+
+.tabs-professional-container{
+  width: 88vw !important;
+  margin-left: -38px !important;
+  }
+  .report-invoices-accordion .p-accordion-tab .p-accordion-header{
+    width: 80vw !important;
+    margin-left: 10px;
+    margin-top: 40px;
+  }
+}
+
+/* Tablet pequeña (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+   .tabs-professional-container{
+    width: 80vw !important;
+    margin-left: 10px;
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tabs-professional-container {
+    border-radius: 12px;
+    margin: 16px 0;
+  }
+  
+  .tabs-header {
+    flex-direction: column;
+    padding: 12px 12px 0;
+    gap: 4px;
+  }
+  
+  .tab-item {
+    border-radius: 8px;
+    margin: 2px 0;
+    padding: 14px 20px;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .tab-item::after {
+    display: none;
+  }
+  
+  .tab-item.active {
+    border-radius: 8px;
+    transform: none;
+  }
+  
+  .tab-panel {
+    padding: 24px 20px;
+  }
+}
+
+/* Efectos de profundidad para el contenedor */
+.tabs-professional-container {
+  position: relative;
+}
+
+.tabs-professional-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(99, 102, 241, 0.1) 50%, 
+    transparent 100%);
+}
+
+/* Estados de carga */
+.tab-item.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-item.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.4), 
+    transparent);
+  animation: loadingShimmer 1.5s infinite;
+}
+
+@keyframes loadingShimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

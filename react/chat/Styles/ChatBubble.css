@@ -1,0 +1,141 @@
+/* Botón flotante */
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #2563EB;
+  color: white;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* Ventana de chat */
+.chat-window {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 360px;
+  height: 600px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  transform: scale(0);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.chat-window.open {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Header */
+.chat-header {
+  padding: 12px;
+  background-color: #2563EB;
+  color: white;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-button, .close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Lista de contactos */
+.chat-contacts {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.contact-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.contact-item:hover {
+  background-color: #f3f3f3;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Mensajes */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.message-row {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.message-row.user { justify-content: flex-end; }
+.message-row.contact { justify-content: flex-start; }
+
+.message-bubble {
+  padding: 8px 12px;
+  border-radius: 16px;
+  max-width: 75%;
+}
+
+.message-row.user .message-bubble {
+  background-color: #2563EB;
+  color: white;
+}
+
+.message-row.contact .message-bubble {
+  background-color: #E5E7EB;
+  color: black;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #6B7280;
+  align-self: flex-end;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.typing {
+  font-style: italic;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+/* Input */
+.chat-input-area {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid #ccc;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+}

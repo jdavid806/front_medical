@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Steps } from "primereact/steps";
+import { Stepper } from 'primereact/stepper';
+import { Card } from 'primereact/card';
+import { ProgressBar } from 'primereact/progressbar';
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
+import { Badge } from "primereact/badge";
+import { Button } from 'primereact/button';
 import PatientStep from "./steps/PatientStep";
 import ProductsPaymentStep from "./steps/ProductsPaymentStep";
 import PreviewDoneStep from "./steps/PreviewDoneStep";
@@ -27,6 +31,7 @@ import { useMassMessaging } from "../../hooks/useMassMessaging";
 import { useTemplate } from "../../hooks/useTemplate";
 import { SwalManager } from "../../../services/alertManagerImported";
 import { generarFormato } from "../../../funciones/funcionesJS/generarPDF";
+import { StepperPanel } from "primereact/stepperpanel";
 
 interface AdmissionBillingProps {
   visible: boolean;
@@ -475,44 +480,126 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
     setActiveIndex(prevIndex);
   };
 
-  const items = [
+  const billingSteps = [
     {
-      label: "Datos del paciente",
-      command: () => {
-        setActiveIndex(0);
-      },
+      id: 'patient',
+      label: "Datos del Paciente",
+      icon: "pi pi-user",
+      description: "Información personal del paciente"
     },
     {
+      id: 'products-payments',
       label: "Productos y Pagos",
-      command: () => {
-        if (validateCurrentStep(0)) {
-          setActiveIndex(1);
-        } else {
-          toast.current?.show({
-            severity: "warn",
-            summary: "Paso no disponible",
-            detail: "Completa el paso actual primero",
-            life: 3000,
-          });
-        }
-      },
+      icon: "pi pi-shopping-cart",
+      description: "Servicios y métodos de pago"
     },
     {
+      id: 'confirmation',
       label: "Confirmación",
-      command: () => {
-        if (validateCurrentStep(1)) {
-          setActiveIndex(2);
-        } else {
-          toast.current?.show({
-            severity: "warn",
-            summary: "Paso no disponible",
-            detail: "Completa el paso actual primero",
-            life: 3000,
-          });
-        }
-      },
-    },
+      icon: "pi pi-check-circle",
+      description: "Revisar y finalizar factura"
+    }
   ];
+
+  const progressValue = ((activeIndex + 1) / billingSteps.length) * 100;
+
+  const getStepSpecificMessage = () => {
+    switch (activeIndex) {
+      case 0:
+        return validatePatientStep(formData.billing, toast)
+          ? '¡Datos del paciente completados correctamente! Puede continuar al siguiente paso.'
+          : 'Complete todos los datos del paciente para habilitar el botón "Siguiente"';
+      case 1:
+        const productsValid = validateProductsStep(formData.products, toast);
+        const paymentsValid = validatePaymentStep(
+          formData.payments,
+          calculateTotal(formData.products, formData.billing.facturacionEntidad),
+          toast
+        );
+        return productsValid && paymentsValid
+          ? '¡Productos y pagos configurados correctamente! Puede continuar al siguiente paso.'
+          : 'Complete la configuración de productos y pagos para habilitar el botón "Siguiente"';
+      case 2:
+        return 'Revise toda la información antes de finalizar la factura';
+      default:
+        return 'Complete la configuración de este paso antes de continuar';
+    }
+  };
+
+  const shouldShowSuccessAlert = () => {
+    switch (activeIndex) {
+      case 0:
+        return validatePatientStep(formData.billing, toast);
+      case 1:
+        return validateProductsStep(formData.products, toast) &&
+          validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+      default:
+        return false;
+    }
+  };
+
+  const renderCurrentComponent = () => {
+    switch (activeIndex) {
+      case 0:
+        return (
+          <PatientStep
+            formData={formData}
+            updateFormData={updateFormData}
+            updateBillingData={updateBillingData}
+            nextStep={nextStep}
+            toast={toast}
+          />
+        );
+      case 1:
+        return (
+          <ProductsPaymentStep
+            formData={formData}
+            updateFormData={updateFormData}
+            addPayment={addPayment}
+            removePayment={removePayment}
+            nextStep={nextStep}
+            prevStep={prevStep}
+            toast={toast}
+            productsToInvoice={productsToInvoice}
+          />
+        );
+      case 2:
+        return (
+          <PreviewDoneStep
+            formData={formData}
+            prevStep={prevStep}
+            onHide={handleHide}
+            onDownload={async () => {
+              //@ts-ignore
+              await generateInvoice(appointmentId, true);
+            }}
+            onPrint={async () => {
+              //@ts-ignore
+              await generateInvoice(appointmentId, false);
+            }}
+            onSubmit={handleSubmitInvoice}
+            isSuccess={isSuccess}
+            setIsSuccess={setIsSuccess}
+            onSendWhatsApp={handleSendWhatsApp}
+            sendingWhatsApp={sendingWhatsApp}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const isNextDisabled = () => {
+    switch (activeIndex) {
+      case 0:
+        return !validatePatientStep(formData.billing, toast);
+      case 1:
+        return !validateProductsStep(formData.products, toast) ||
+          !validatePaymentStep(formData.payments, calculateTotal(formData.products, formData.billing.facturacionEntidad), toast);
+      default:
+        return false;
+    }
+  };
 
   return (
     <>
@@ -521,61 +608,201 @@ const AdmissionBilling: React.FC<AdmissionBillingProps> = ({
         visible={internalVisible}
         onHide={handleHide}
         header="Nueva Factura"
-        style={{ width: "75vw", maxWidth: "1600px" }}
+        style={{ width: "85vw", maxWidth: "1400px" }}
         maximizable
+        className="admission-billing-dialog"
+        breakpoints={{ '960px': '75vw', '641px': '90vw' }}
       >
-        <Steps
-          model={items}
-          activeIndex={activeIndex}
-          readOnly={false}
-          className="mb-4"
-        />
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <Card className="shadow-sm admission-billing-card">
+                <div className="row g-0">
+                  {/* Panel lateral con stepper */}
+                  <div className="col-lg-3 col-md-4 border-end">
+                    <div className="p-3 h-100 bg-light">
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h6 className="text-primary mb-0 fw-bold">Pasos de Facturación</h6>
+                        <Badge
+                          value={`${activeIndex + 1}/${billingSteps.length}`}
+                          severity="info"
+                        />
+                      </div>
 
-        <div className="step-content">
-          <div className={activeIndex === 0 ? "" : "d-none"}>
-            <PatientStep
-              formData={formData}
-              updateFormData={updateFormData}
-              updateBillingData={updateBillingData}
-              nextStep={nextStep}
-              toast={toast}
-            />
-          </div>
+                      <Stepper
+                        activeStep={activeIndex}
+                        orientation="vertical"
+                        linear={false}
+                        className="vertical-stepper overflow-auto"
+                      >
+                        {billingSteps.map((step, index) => (
+                          <StepperPanel
+                            key={step.id}
+                            header={step.label}
+                            icon={<i className={step.icon}></i>}
+                            onClick={() => {
+                              if (index <= activeIndex || validateCurrentStep(index - 1)) {
+                                setActiveIndex(index);
+                              } else {
+                                toast.current?.show({
+                                  severity: "warn",
+                                  summary: "Paso no disponible",
+                                  detail: "Complete los pasos anteriores primero",
+                                  life: 3000,
+                                });
+                              }
+                            }}
+                          />
+                        ))}
+                      </Stepper>
+                    </div>
+                  </div>
 
-          <div className={activeIndex === 1 ? "" : "d-none"}>
-            <ProductsPaymentStep
-              formData={formData}
-              updateFormData={updateFormData}
-              addPayment={addPayment}
-              removePayment={removePayment}
-              nextStep={nextStep}
-              prevStep={prevStep}
-              toast={toast}
-              productsToInvoice={productsToInvoice}
-            />
-          </div>
+                  {/* Contenido Principal */}
+                  <div className="col-lg-9 col-md-8">
+                    <div className="configuration-content p-4 card border-0">
+                      {/* Barra de progreso */}
+                      <div className="progress-section mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <small className="text-muted">
+                            Paso {activeIndex + 1} de {billingSteps.length}
+                          </small>
+                          <small className="text-primary fw-bold">
+                            {Math.round(progressValue)}% completado
+                          </small>
+                        </div>
+                        <ProgressBar
+                          value={progressValue}
+                          showValue={false}
+                          style={{ height: '8px', borderRadius: '4px' }}
+                          className="mb-3"
+                        />
+                      </div>
 
-          <div className={activeIndex === 2 ? "" : "d-none"}>
-            <PreviewDoneStep
-              formData={formData}
-              prevStep={prevStep}
-              onHide={handleHide}
-              onDownload={async () => {
-                //@ts-ignore
-                await generateInvoice(appointmentId, true);
-              }}
-              onPrint={async () => {
-                //@ts-ignore
-                await generateInvoice(appointmentId, false);
-              }}
-              onSubmit={handleSubmitInvoice}
-              isSuccess={isSuccess}
-              setIsSuccess={setIsSuccess}
-              onSendWhatsApp={handleSendWhatsApp}
-              sendingWhatsApp={sendingWhatsApp}
-            />
+                      {/* Encabezado del contenido */}
+                      <div className="content-header mb-4">
+                        <h3 className="text-primary mb-2">
+                          <i className={`${billingSteps[activeIndex].icon} me-3`}></i>
+                          {billingSteps[activeIndex].label}
+                        </h3>
+                        <p className="text-muted mb-0">
+                          {billingSteps[activeIndex].description}
+                        </p>
+
+                        {shouldShowSuccessAlert() && (
+                          <div className="alert alert-success mt-2 p-2">
+                            <small>
+                              <i className="pi pi-check-circle me-2"></i>
+                              {getStepSpecificMessage()}
+                            </small>
+                          </div>
+                        )}
+
+                        {!shouldShowSuccessAlert() && activeIndex !== 2 && (
+                          <div className="alert alert-info mt-2 p-2">
+                            <small>
+                              <i className="pi pi-info-circle me-2"></i>
+                              {getStepSpecificMessage()}
+                            </small>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Contenido del paso actual */}
+                      <div className="content-body mb-4">
+                        {renderCurrentComponent()}
+                      </div>
+
+                      {/* Navegación */}
+                      <div className="navigation-section pt-3 border-top">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <Button
+                            label="Anterior"
+                            icon="pi pi-arrow-left"
+                            onClick={prevStep}
+                            disabled={activeIndex === 0}
+                            className="p-button-outlined p-button-secondary"
+                          />
+
+                          <div className="d-flex gap-2">
+                            <Button
+                              label="Cancelar"
+                              icon="pi pi-times"
+                              onClick={handleHide}
+                              className="p-button-outlined p-button-danger"
+                            />
+
+                            {activeIndex < billingSteps.length - 1 ? (
+                              <Button
+                                label="Siguiente"
+                                icon="pi pi-arrow-right"
+                                iconPos="right"
+                                onClick={nextStep}
+                                disabled={isNextDisabled()}
+                                className="p-button-primary"
+                              />
+                            ) : (
+                              <Button
+                                label="Generar Factura"
+                                icon="pi pi-check"
+                                onClick={handleSubmitInvoice}
+                                loading={sendingWhatsApp}
+                                className="p-button-success"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
+
+        <style>{`
+          .admission-billing-dialog .p-dialog-header {
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+            color: white;
+          }
+          
+          .admission-billing-dialog .p-dialog-title {
+            color: white;
+            font-weight: 600;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close {
+            color: white !important;
+          }
+          
+          .admission-billing-dialog .p-dialog-header-close:hover {
+            background: rgba(255,255,255,0.1) !important;
+          }
+          
+          .admission-billing-card .p-card-body {
+            padding: 0;
+          }
+          
+          .admission-billing-card .p-card-content {
+            padding: 0;
+          }
+          
+          .vertical-stepper {
+            max-height: 400px;
+          }
+          
+          .vertical-stepper .p-stepper-panel {
+            margin-bottom: 0.5rem;
+          }
+          
+          @media (max-width: 768px) {
+            .border-end {
+              border-right: none !important;
+              border-bottom: 1px solid var(--surface-300);
+            }
+          }
+        `}</style>
       </Dialog>
     </>
   );

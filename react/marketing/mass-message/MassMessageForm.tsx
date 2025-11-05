@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Steps } from "primereact/steps";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
@@ -10,6 +10,10 @@ import { Dialog } from "primereact/dialog";
 import { Checkbox } from "primereact/checkbox";
 import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
+import { countryService, patientService } from "../../../services/api";
+import { useDataPagination } from "../../hooks/useDataPagination";
+import { CustomPRTable } from "../../components/CustomPRTable";
+import { genders } from "../../../services/commons";
 
 interface MassMessageFormProps {
   formId: string;
@@ -35,27 +39,111 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
   const [selectedEmailFiles, setSelectedEmailFiles] = useState<File[]>([]);
   const [previewImage, setPreviewImage] = useState("");
   const [showImageModal, setShowImageModal] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, string>
-  >({});
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    {}
+  );
+  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [countries, setCountries] = useState<any[]>([]);
+  const [selectedPatientsSegmentation, setSelectedPatientsSegmentation] =
+    useState<any[]>([]);
 
   const { control, handleSubmit } = useForm();
 
-  const filterOptions = {
-    "Rango de edad": ["18-25", "26-35", "36-45", "46+"],
-    Sexo: ["Masculino", "Femenino", "Otro"],
-    Pais: ["Colombia", "México", "Argentina", "España"],
-    "Última consulta": ["Última semana", "Último mes", "Últimos 6 meses"],
-    Citas: ["1-3 citas", "4-6 citas", "7+ citas"],
-    "Citas desde": ["Última semana", "Último mes", "Último año"],
-    "Estado civil": ["Soltero", "Casado", "Divorciado", "Viudo"],
-    "Grupo sanguíneo": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  const fetchPatientsWithFilters = async (paginationParams: any) => {
+    try {
+      const { per_page, page, search, ...filters } = paginationParams;
+
+      // Transformar los filtros al formato del backend
+      const backendFilters = transformFiltersForBackend(selectedFilters);
+
+      // Combinar parámetros de paginación con filtros
+      const params = {
+        per_page: 500,
+        page,
+        search,
+        ...backendFilters,
+      };
+
+      const response = await patientService.getWithFilters(params);
+
+      return {
+        data: response.data || response, // Ajusta según la estructura de tu API
+        total: response.total || response.count || 0,
+      };
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+      return {
+        data: [],
+        total: 0,
+      };
+    }
   };
+
+  const {
+    data: patientsData,
+    loading: loadingPatients,
+    first,
+    perPage,
+    totalRecords,
+    handlePageChange,
+    handleSearchChange,
+    refresh: refreshPatients,
+  } = useDataPagination({
+    fetchFunction: fetchPatientsWithFilters,
+    defaultPerPage: 10,
+    getCustomFilters: () => selectedFilters,
+  });
+
+  const bloodTypes = [
+    { label: "Seleccione", value: "" },
+    { label: "A+", value: "A_POSITIVE" },
+    { label: "A-", value: "A_NEGATIVE" },
+    { label: "B+", value: "B_POSITIVE" },
+    { label: "B-", value: "B_NEGATIVE" },
+    { label: "AB+", value: "AB_POSITIVE" },
+    { label: "AB-", value: "AB_NEGATIVE" },
+    { label: "O+", value: "O_POSITIVE" },
+    { label: "O-", value: "O_NEGATIVE" },
+  ];
+
+  const marital_status = [
+    { label: "Seleccione", value: "" },
+    { label: "Soltero", value: "SINGLE" },
+    { label: "Casado", value: "MARRIED" },
+    { label: "Divorciado", value: "DIVORCED" },
+    { label: "Viudo", value: "WIDOWED" },
+  ];
 
   const steps = [
     { label: "Segmentación" },
+    { label: "Pacientes" },
     { label: "Formato de envío" },
     { label: "Vista previa" },
+  ];
+
+  const appointmentCounts = [
+    { label: "Seleccione", value: "" },
+    { label: "1-3 citas", value: "1-3 citas" },
+    { label: "4-6 citas", value: "4-6 citas" },
+    { label: "7+ citas", value: "7+ citas" },
+  ];
+
+  const genderOptions = [
+    { label: "Seleccione", value: "" },
+    { label: "Masculino", value: "MALE" },
+    { label: "Femenino", value: "FEMALE" },
+    { label: "Otro", value: "OTHER" },
+    { label: "Indeterminado", value: "INDETERMINATE" },
+  ];
+
+  const ageOptiones = [
+    { label: "Seleccione", value: "" },
+    { label: "18-25", value: "18-25" },
+    { label: "26-35", value: "26-35" },
+    { label: "36-45", value: "36-45" },
+    { label: "46+", value: "46+" },
   ];
 
   const filterGroups = [
@@ -77,17 +165,72 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
     { label: "Correo electrónico", value: "email" },
   ];
 
+  const patientColumns = [
+    {
+      field: "name",
+      header: "Nombre",
+      body: (rowData: any) =>
+        `${rowData.first_name ?? ""} ${rowData.middle_name ?? ""} ${
+          rowData.last_name
+        } ${rowData.second_last_name ?? ""}`,
+    },
+    {
+      field: "email",
+      header: "Email",
+    },
+    {
+      field: "whatsapp",
+      header: "Teléfono",
+    },
+    {
+      field: "gender",
+      header: "Género",
+      body: (rowData: any) => {
+        const genderKey = rowData.gender as keyof typeof genders;
+        return genders[genderKey] || rowData.gender;
+      },
+    },
+    {
+      field: "age",
+      header: "Edad",
+    },
+    {
+      field: "country_id",
+      header: "País",
+    },
+  ];
+
+  const loadCountries = async () => {
+    const response = await countryService.getAll();
+    const responseMapped = response.data.map((country: any) => ({
+      label: country.name,
+      value: country,
+    }));
+    setCountries(responseMapped);
+  };
+
+  useEffect(() => {
+    loadCountries();
+  }, []);
+
   const handleFilterToggle = (filterType: string, checked: boolean) => {
-    if (checked) {
-      setSelectedFilters((prev) => ({ ...prev, [filterType]: "" }));
-    } else {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [filterType]: checked,
+    }));
+
+    if (!checked) {
+      // Si se desactiva el check, elimina el valor del filtro
       const newFilters = { ...selectedFilters };
       delete newFilters[filterType];
       setSelectedFilters(newFilters);
+    } else {
+      // Si se activa el check, inicializa con valor vacío
+      setSelectedFilters((prev) => ({ ...prev, [filterType]: "" }));
     }
   };
 
-  const handleFilterSelection = (filterType: string, value: string) => {
+  const handleFilterSelection = (filterType: string, value: any) => {
     setSelectedFilters((prev) => ({
       ...prev,
       [filterType]: value,
@@ -113,6 +256,10 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
 
   const nextStep = () => {
     if (activeIndex < steps.length - 1) {
+      // Si vamos al paso 2 (índice 1), ejecutar la función
+      if (activeIndex === 0) {
+        handlePatientsSegmentation(); // Esta función se ejecutará al pasar del paso 1 al 2
+      }
       setActiveIndex(activeIndex + 1);
     }
   };
@@ -121,6 +268,71 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
     if (activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
     }
+  };
+
+  const handlePatientsSegmentation = async () => {
+    await refreshPatients();
+  };
+
+  const transformFiltersForBackend = (filters: Record<string, any>) => {
+    const transformed: any = {};
+
+    // Rango de edad
+    if (filters["age"]) {
+      transformed.age = filters["age"];
+    }
+
+    if (filters["gender"]) {
+      transformed.gender = [filters["gender"]];
+    }
+
+    if (filters["country"]) {
+      transformed.country = [filters["country"].name];
+    }
+
+    if (
+      filters["clinical_record_dates"] &&
+      filters["clinical_record_dates"].startDate &&
+      filters["clinical_record_dates"].endDate
+    ) {
+      transformed.last_clinical_record = {
+        from: new Date(filters["clinical_record_dates"].startDate)
+          .toISOString()
+          .split("T")[0],
+        to: new Date(filters["clinical_record_dates"].endDate)
+          .toISOString()
+          .split("T")[0],
+      };
+    }
+
+    if (
+      filters["appointments_date"] &&
+      filters["appointments_date"].startDate &&
+      filters["appointments_date"].endDate
+    ) {
+      transformed.date_appointment = {
+        from: new Date(filters["appointments_date"].startDate)
+          .toISOString()
+          .split("T")[0],
+        to: new Date(filters["appointments_date"].endDate)
+          .toISOString()
+          .split("T")[0],
+      };
+    }
+
+    if (filters["marital_status"]) {
+      transformed.marital_status = [filters["marital_status"]];
+    }
+
+    if (filters["blood_type"]) {
+      transformed.blood_type = [filters["blood_type"]];
+    }
+
+    if (filters["appointments_count"]) {
+      transformed.appointments_count = filters["appointments_count"];
+    }
+
+    return transformed;
   };
 
   const onSubmit = (data: any) => {
@@ -172,7 +384,7 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
             />
           </div>
 
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label className="form-label">Filtros personalizados</label>
             <Controller
               name="filterCustom"
@@ -186,8 +398,7 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
                 />
               )}
             />
-          </div>
-
+          </div> */}
           <div className="mb-3">
             <a
               href="#"
@@ -202,46 +413,314 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
 
             {showFilters && (
               <div className="mt-2 p-3 border rounded">
-                {Object.keys(filterOptions).map((filterType) => (
-                  <div key={filterType} className="mb-2">
-                    <Checkbox
-                      inputId={filterType}
-                      onChange={(e) =>
-                        handleFilterToggle(filterType, e.checked || false)
-                      }
-                      checked={!!selectedFilters[filterType]}
-                      className="me-2"
-                    />
-                    <label htmlFor={filterType}>
-                      {filterType.replace("-", " ")}
-                    </label>
+                {/* Filtro Rango de edad */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="rango-edad"
+                    onChange={(e) =>
+                      handleFilterToggle("age", e.checked || false)
+                    }
+                    checked={!!activeFilters["age"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="rango-edad">Rango de edad</label>
 
-                    {selectedFilters[filterType] !== undefined && (
-                      <Dropdown
-                        value={selectedFilters[filterType]}
-                        options={[
-                          { label: "Seleccione", value: "" },
-                          ...filterOptions[filterType].map((opt) => ({
-                            label: opt,
-                            value: opt,
-                          })),
-                        ]}
-                        placeholder={`Seleccione ${filterType}`}
-                        className="w-100 mt-1"
-                        onChange={(e) =>
-                          handleFilterSelection(filterType, e.value)
-                        }
-                      />
-                    )}
-                  </div>
-                ))}
+                  {selectedFilters["age"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["age"]}
+                      options={ageOptiones}
+                      placeholder="Seleccione rango de edad"
+                      className="w-100 mt-1"
+                      onChange={(e) => handleFilterSelection("age", e.value)}
+                    />
+                  )}
+                </div>
+
+                {/* Filtro Sexo */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="sexo"
+                    onChange={(e) =>
+                      handleFilterToggle("gender", e.checked || false)
+                    }
+                    checked={!!activeFilters["gender"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="gender">Sexo</label>
+
+                  {selectedFilters["gender"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["gender"]}
+                      options={genderOptions}
+                      placeholder="Seleccione sexo"
+                      className="w-100 mt-1"
+                      onChange={(e) => handleFilterSelection("gender", e.value)}
+                    />
+                  )}
+                </div>
+
+                {/* Filtro Pais */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="pais"
+                    onChange={(e) =>
+                      handleFilterToggle("country", e.checked || false)
+                    }
+                    checked={!!activeFilters["country"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="country">Pais</label>
+
+                  {selectedFilters["country"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["country"]}
+                      options={countries}
+                      placeholder="Seleccione Pais"
+                      className="w-100 mt-1"
+                      onChange={(e) => {
+                        handleFilterSelection("country", e.value);
+                      }}
+                      filter
+                    />
+                  )}
+                </div>
+
+                {/* Filtro Última consulta */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="ultima-consulta"
+                    onChange={(e) =>
+                      handleFilterToggle(
+                        "clinical_record_dates",
+                        e.checked || false
+                      )
+                    }
+                    checked={!!activeFilters["clinical_record_dates"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="ultima-consulta">Consultas desde</label>
+
+                  {selectedFilters["clinical_record_dates"] !== undefined && (
+                    <div className="row">
+                      <div className="col-md-6">
+                        <label className="form-label small">Fecha inicio</label>
+                        <Calendar
+                          value={
+                            selectedFilters["clinical_record_dates"]?.startDate
+                              ? new Date(
+                                  selectedFilters[
+                                    "clinical_record_dates"
+                                  ].startDate
+                                )
+                              : null
+                          }
+                          onChange={(e) => {
+                            handleFilterSelection("clinical_record_dates", {
+                              ...selectedFilters["clinical_record_dates"],
+                              startDate: e.value ? e.value.toISOString() : "",
+                            });
+                          }}
+                          placeholder="Fecha inicio"
+                          className="w-100"
+                          dateFormat="dd/mm/yy"
+                          showIcon
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label small">Fecha fin</label>
+                        <Calendar
+                          value={
+                            selectedFilters["clinical_record_dates"]?.endDate
+                              ? new Date(
+                                  selectedFilters[
+                                    "clinical_record_dates"
+                                  ].endDate
+                                )
+                              : null
+                          }
+                          onChange={(e) => {
+                            handleFilterSelection("clinical_record_dates", {
+                              ...selectedFilters["clinical_record_dates"],
+                              endDate: e.value ? e.value.toISOString() : "",
+                            });
+                          }}
+                          placeholder="Fecha fin"
+                          className="w-100"
+                          dateFormat="dd/mm/yy"
+                          showIcon
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Filtro Citas */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="citas"
+                    onChange={(e) =>
+                      handleFilterToggle(
+                        "appointments_count",
+                        e.checked || false
+                      )
+                    }
+                    checked={!!activeFilters["appointments_count"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="appointments_count">Citas</label>
+
+                  {selectedFilters["appointments_count"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["appointments_count"]}
+                      options={appointmentCounts}
+                      placeholder="Seleccione citas"
+                      className="w-100 mt-1"
+                      onChange={(e) =>
+                        handleFilterSelection("appointments_count", e.value)
+                      }
+                    />
+                  )}
+                </div>
+
+                {/* Filtro Citas desde */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="citas-desde"
+                    onChange={(e) =>
+                      handleFilterToggle(
+                        "appointments_date",
+                        e.checked || false
+                      )
+                    }
+                    checked={!!activeFilters["appointments_date"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="citas-desde">Citas desde</label>
+
+                  {activeFilters["appointments_date"] && (
+                    <div className="row">
+                      <div className="col-md-6">
+                        <label className="form-label small">Fecha inicio</label>
+                        <Calendar
+                          value={
+                            selectedFilters["appointments_date"]?.startDate
+                              ? new Date(
+                                  selectedFilters["appointments_date"].startDate
+                                )
+                              : null
+                          }
+                          onChange={(e) => {
+                            handleFilterSelection("appointments_date", {
+                              ...selectedFilters["appointments_date"],
+                              startDate: e.value ? e.value.toISOString() : "",
+                            });
+                          }}
+                          placeholder="Fecha inicio"
+                          className="w-100"
+                          dateFormat="dd/mm/yy"
+                          showIcon={true}
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label small">Fecha fin</label>
+                        <Calendar
+                          value={
+                            selectedFilters["appointments_date"]?.endDate
+                              ? new Date(
+                                  selectedFilters["appointments_date"].endDate
+                                )
+                              : null
+                          }
+                          onChange={(e) => {
+                            handleFilterSelection("appointments_date", {
+                              ...selectedFilters["appointments_date"],
+                              endDate: e.value ? e.value.toISOString() : "",
+                            });
+                          }}
+                          placeholder="Fecha fin"
+                          className="w-100"
+                          dateFormat="dd/mm/yy"
+                          showIcon
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Filtro Estado civil */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="estado-civil"
+                    onChange={(e) =>
+                      handleFilterToggle("marital_status", e.checked || false)
+                    }
+                    checked={!!activeFilters["marital_status"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="estado-civil">Estado civil</label>
+
+                  {selectedFilters["marital_status"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["marital_status"]}
+                      options={marital_status}
+                      placeholder="Seleccione estado civil"
+                      className="w-100 mt-1"
+                      onChange={(e) =>
+                        handleFilterSelection("marital_status", e.value)
+                      }
+                    />
+                  )}
+                </div>
+
+                {/* Filtro Grupo sanguíneo */}
+                <div className="mb-2">
+                  <Checkbox
+                    inputId="grupo-sanguineo"
+                    onChange={(e) =>
+                      handleFilterToggle("blood_type", e.checked || false)
+                    }
+                    checked={!!activeFilters["blood_type"]}
+                    className="me-2"
+                  />
+                  <label htmlFor="grupo-sanguineo">grupo sanguineo</label>
+
+                  {selectedFilters["blood_type"] !== undefined && (
+                    <Dropdown
+                      value={selectedFilters["blood_type"]}
+                      options={bloodTypes}
+                      placeholder="Seleccione grupo sanguineo"
+                      className="w-100 mt-1"
+                      onChange={(e) =>
+                        handleFilterSelection("blood_type", e.value)
+                      }
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Paso 2: Formato de envío */}
+        {/* Paso 2: Pacientes */}
         <div className={classNames({ "d-none": activeIndex !== 1 })}>
+          <Card title="Pacientes Segmentados" className="shadow-2">
+            <CustomPRTable
+              columns={patientColumns}
+              data={patientsData}
+              lazy
+              first={first}
+              rows={perPage}
+              totalRecords={totalRecords}
+              loading={loadingPatients}
+              onPage={handlePageChange}
+              onSearch={handleSearchChange}
+              onReload={refreshPatients}
+            />
+          </Card>
+        </div>
+
+        {/* Paso 3: Formato de envío */}
+        <div className={classNames({ "d-none": activeIndex !== 2 })}>
           <div className="mb-3">
             <label className="form-label">Selecciona el método de envío:</label>
             <Dropdown
@@ -340,7 +819,7 @@ export const MassMessageForm: React.FC<MassMessageFormProps> = ({
         </div>
 
         {/* Paso 3: Vista previa */}
-        <div className={classNames({ "d-none": activeIndex !== 2 })}>
+        <div className={classNames({ "d-none": activeIndex !== 3 })}>
           {selectedMethod === "whatsapp" && (
             <div className="d-flex justify-content-center">
               <Card className="p-2 w-75">

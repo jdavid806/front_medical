@@ -30,6 +30,10 @@ export class DepositService extends BaseApiService {
       `${this.microservice}/${this.endpoint}/${id}`
     );
   }
+
+  async getPOSBoxDeposit() {
+    return await this.httpClient.get(`${this.microservice}/${this.endpoint}/first/pos-box-deposit`);
+  }
 }
 
 export default DepositService;

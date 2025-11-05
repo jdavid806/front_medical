@@ -94,4 +94,12 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+@media (max-width: 480px) {
+.p-accordion-header{
+     width: 80vw;
+    margin-left: -20px;
+}
+
+}
+
 /* Quitar línea azul del link y aplicar efecto hover - Termina */

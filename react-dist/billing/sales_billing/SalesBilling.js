@@ -3,7 +3,9 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
-import { Dropdown } from "primereact";
+import { Dropdown } from "primereact/dropdown";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { classNames } from "primereact/utils";
@@ -75,7 +77,8 @@ export const SalesBilling = ({
     price: 0,
     discount: 0,
     discountType: "percentage",
-    iva: 0
+    iva: 0,
+    tax: null
   }]);
   const [retentions, setRetentions] = useState([{
     id: generateId(),
@@ -161,6 +164,7 @@ export const SalesBilling = ({
           discount: discount,
           discountType: "percentage",
           iva: percentageTax || 0,
+          tax: item.tax || null,
           taxAmount: item.total_taxes,
           depositId: item.deposit_id || null,
           taxAccountingAccountId: item.tax_accounting_account_id || null
@@ -343,6 +347,133 @@ export const SalesBilling = ({
       });
     }
   };
+  const getProductColumns = () => {
+    return [{
+      field: "typeProduct",
+      header: "Tipo",
+      body: rowData => /*#__PURE__*/React.createElement(TypeColumnBody, {
+        rowData: rowData,
+        onChange: newType => {
+          handleProductChange(rowData.id, "typeProduct", newType);
+          handleProductChange(rowData.id, "product", null);
+        },
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "220px"
+      }
+    }, {
+      field: "product",
+      header: "Producto",
+      body: rowData => /*#__PURE__*/React.createElement(ProductColumnBody, {
+        rowData: rowData,
+        type: rowData.typeProduct,
+        onChange: value => {
+          handleProductChange(rowData.id, "product", value);
+        },
+        handleProductChange: handleProductChange,
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "180px"
+      }
+    }, {
+      field: "quantity",
+      header: "Cantidad",
+      body: rowData => /*#__PURE__*/React.createElement(QuantityColumnBody, {
+        onChange: value => handleProductChange(rowData.id, "quantity", value || 0),
+        value: rowData.quantity,
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "50px"
+      }
+    }, {
+      field: "price",
+      header: "Valor unitario",
+      body: rowData => /*#__PURE__*/React.createElement(PriceColumnBody, {
+        onChange: value => handleProductChange(rowData.id, "price", value || 0),
+        value: rowData.price,
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "discount",
+      header: "Descuento",
+      body: rowData => /*#__PURE__*/React.createElement(DiscountColumnBody, {
+        onChange: value => handleProductChange(rowData.id, "discount", value || 0),
+        onTypeChange: type => handleProductChange(rowData.id, "discountType", type),
+        value: rowData.discount,
+        discountType: rowData.discountType || "percentage",
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "iva",
+      header: "Impuestos",
+      body: rowData => /*#__PURE__*/React.createElement(IvaColumnBody, {
+        onChange: value => {
+          handleProductChange(rowData.id, "iva", value?.percentage || 0);
+          handleProductChange(rowData.id, "tax", value); // ← NUEVA LINEA: guardar objeto completo
+          handleProductChange(rowData.id, "taxAccountingAccountId", value?.accounting_account_id || null);
+          handleProductChange(rowData.id, "taxChargeId", value?.id || null);
+        },
+        value: rowData.tax // ← Cambiar para usar el objeto tax
+        ,
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "depositId",
+      header: "Depósito",
+      body: rowData => /*#__PURE__*/React.createElement(DepositColumnBody, {
+        onChange: value => handleProductChange(rowData.id, "depositId", value),
+        value: rowData.depositId,
+        disabled: disabledInpputs
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "total",
+      header: "Valor total",
+      body: rowData => /*#__PURE__*/React.createElement(InputNumber, {
+        value: calculateLineTotal(rowData),
+        mode: "currency",
+        currency: "DOP",
+        locale: "es-DO",
+        readOnly: true,
+        inputClassName: "form-control bg-light",
+        style: {
+          minWidth: "200px"
+        }
+      }),
+      style: {
+        minWidth: "150px"
+      }
+    }, {
+      field: "actions",
+      header: "Acciones",
+      body: rowData => /*#__PURE__*/React.createElement(Button, {
+        className: "p-button-rounded p-button-danger p-button-text",
+        onClick: () => removeProduct(rowData.id),
+        disabled: productsArray.length <= 1,
+        tooltip: "Eliminar Producto"
+      }, /*#__PURE__*/React.createElement("i", {
+        className: "fa-solid fa-trash"
+      })),
+      style: {
+        width: "100px",
+        textAlign: "center"
+      }
+    }];
+  };
   const save = async formData => {
     if (productsArray.length === 0) {
       window["toast"].show({
@@ -510,7 +641,7 @@ export const SalesBilling = ({
         changeType(e.value);
       },
       placeholder: "Seleccione un tipo",
-      className: classNames("w-100"),
+      className: classNames("w-100 dropdown-billing"),
       appendTo: "self",
       showClear: true
     })))
@@ -577,7 +708,7 @@ export const SalesBilling = ({
       optionLabel: "name",
       optionValue: "id",
       placeholder: "Seleccione un proveedor",
-      className: classNames("flex-grow-1"),
+      className: classNames("flex-grow-1 dropdown-billing"),
       appendTo: "self",
       disabled: disabledInpputs,
       showClear: true
@@ -609,7 +740,7 @@ export const SalesBilling = ({
       optionLabel: "full_name",
       optionValue: "id",
       placeholder: "Seleccione un vendedor",
-      className: classNames("w-100"),
+      className: classNames("w-100 dropdown-billing"),
       appendTo: "self",
       disabled: disabledInpputs,
       showClear: true
@@ -630,7 +761,7 @@ export const SalesBilling = ({
       options: centresCosts,
       optionLabel: "name",
       placeholder: "Seleccione centro",
-      className: classNames("w-100"),
+      className: classNames("w-100 dropdown-billing"),
       appendTo: "self",
       disabled: disabledInpputs,
       showClear: true
@@ -644,15 +775,19 @@ export const SalesBilling = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-shopping-cart me-2 text-primary"
   }), "Productos"), /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-plus",
     label: "A\xF1adir Producto",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: e => {
       e.preventDefault();
       addProduct();
     },
     disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-shopping-cart me-2",
+    style: {
+      marginLeft: "10px"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "card-body p-0"
   }, loadingProductTypes ? /*#__PURE__*/React.createElement("div", {
     className: "text-center py-5"
@@ -664,143 +799,28 @@ export const SalesBilling = ({
   }, "Cargando...")), /*#__PURE__*/React.createElement("p", {
     className: "mt-2 text-muted"
   }, "Cargando productos...")) : /*#__PURE__*/React.createElement("div", {
-    className: "table-responsive-md"
-  }, /*#__PURE__*/React.createElement("table", {
-    className: "table table-hover mb-0"
-  }, /*#__PURE__*/React.createElement("thead", {
-    className: "table-light"
-  }, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "120px"
-    }
-  }, "Tipo"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "180px"
-    }
-  }, "Producto"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "100px"
-    }
-  }, "Cantidad"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "200px"
-    }
-  }, "Valor unitario"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "220px"
-    }
-  }, "Descuento %"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "120px"
-    }
-  }, "Impuestos"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "130px"
-    }
-  }, "Dep\xF3sito"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      minWidth: "200px !important"
-    }
-  }, "Valor total"), /*#__PURE__*/React.createElement("th", {
-    scope: "col",
-    style: {
-      width: "80px"
-    }
-  }, "Acciones"))), /*#__PURE__*/React.createElement("tbody", null, productsArray.map(product => /*#__PURE__*/React.createElement("tr", {
-    key: product.id
-  }, /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(TypeColumnBody, {
-    rowData: product,
-    onChange: newType => {
-      handleProductChange(product.id, "typeProduct", newType);
-      handleProductChange(product.id, "product", null);
-    },
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(ProductColumnBody, {
-    rowData: product,
-    type: product.typeProduct,
-    onChange: value => {
-      handleProductChange(product.id, "product", value);
-    },
-    handleProductChange: handleProductChange,
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(QuantityColumnBody, {
-    onChange: value => handleProductChange(product.id, "quantity", value || 0),
-    value: product.quantity,
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(PriceColumnBody, {
-    onChange: value => handleProductChange(product.id, "price", value || 0),
-    value: product.price,
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(DiscountColumnBody, {
-    onChange: value => handleProductChange(product.id, "discount", value || 0),
-    onTypeChange: type => handleProductChange(product.id, "discountType", type),
-    value: product.discount,
-    discountType: product.discountType || "percentage",
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(IvaColumnBody, {
-    onChange: value => {
-      handleProductChange(product.id, "iva", value?.percentage || 0);
-      handleProductChange(product.id, "taxAccountingAccountId", value?.accounting_account_id || null);
-      handleProductChange(product.id, "taxChargeId", value?.id || null);
-    },
-    value: product.iva,
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(DepositColumnBody, {
-    onChange: value => handleProductChange(product.id, "depositId", value),
-    value: product.depositId,
-    disabled: disabledInpputs
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "p-2"
-  }, /*#__PURE__*/React.createElement(InputNumber, {
-    value: calculateLineTotal(product),
-    mode: "currency",
-    currency: "DOP",
-    locale: "es-DO",
-    readOnly: true,
-    inputClassName: "form-control bg-light",
-    style: {
-      minWidth: "200px"
-    }
-  })), /*#__PURE__*/React.createElement("td", {
-    className: "text-center p-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    className: "p-button-rounded p-button-danger p-button-text",
-    onClick: () => removeProduct(product.id),
-    disabled: productsArray.length <= 1
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-trash"
-  })))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-4 shadow-sm"
-  }, /*#__PURE__*/React.createElement(RetentionsSection, {
+    className: "table-responsive"
+  }, /*#__PURE__*/React.createElement(DataTable, {
+    value: productsArray,
+    responsiveLayout: "scroll",
+    className: "p-datatable-sm p-datatable-gridlines",
+    showGridlines: true,
+    stripedRows: true,
+    emptyMessage: "No hay productos agregados"
+  }, getProductColumns().map((col, index) => /*#__PURE__*/React.createElement(Column, {
+    key: index,
+    field: col.field,
+    header: col.header,
+    body: col.body,
+    style: col.style
+  })))))), /*#__PURE__*/React.createElement(RetentionsSection, {
     subtotal: calculateSubtotal(),
     totalDiscount: calculateTotalDiscount(),
     retentions: retentions,
     onRetentionsChange: setRetentions,
     productsArray: productsArray,
     type: "sale"
-  })), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header bg-light d-flex justify-content-between align-items-center p-3"
@@ -809,14 +829,18 @@ export const SalesBilling = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-credit-card me-2 text-primary"
   }), "M\xE9todos de Pago (DOP)"), /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-plus",
     label: "Agregar M\xE9todo",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: e => {
       e.preventDefault();
       addPayment();
     }
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "far fa-credit-card me-2",
+    style: {
+      marginLeft: "10px"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "card-body p-3"
   }, paymentMethodsArray.map(payment => /*#__PURE__*/React.createElement("div", {
     key: payment.id,
@@ -834,12 +858,13 @@ export const SalesBilling = ({
     optionLabel: "method",
     optionValue: "id",
     placeholder: "Seleccione m\xE9todo",
-    className: "w-100",
+    className: "w-100 dropdown-billing-retention",
     onChange: e => {
       handlePaymentChange(payment.id, "method", e.value);
     },
     appendTo: "self",
-    filter: true
+    filter: true,
+    showClear: true
   }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-5"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1050,127 +1075,145 @@ export const SalesBilling = ({
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar",
-    icon: "pi pi-check",
-    className: "btn-info",
+    label: "Guardar Factura Venta",
+    className: "p-button-primary",
     type: "submit"
-  }))))), /*#__PURE__*/React.createElement(Toast, {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-save",
+    style: {
+      marginLeft: "10px"
+    }
+  })))))), /*#__PURE__*/React.createElement(Toast, {
     ref: el => {
       window["toast"] = el;
     }
   }), /*#__PURE__*/React.createElement("style", null, `
-            .form-control {
-              height: 38px;
-              padding: 0.375rem 0.75rem;
-              font-size: 0.9rem;
-              border: 1px solid #ced4da;
-              border-radius: 0.375rem;
-              transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            }
-            
-            .form-control:focus {
-              border-color: #86b7fe;
-              outline: 0;
-              box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            }
-            
-            .p-inputnumber-input {
-              height: 38px;
-              padding: 0.375rem 0.75rem;
-              font-size: 0.9rem;
-            }
-            
-            .p-dropdown {
-              height: 38px;
-              display: flex;
-              align-items: center;
-            }
-            
-            .p-calendar {
-              height: 38px;
-            }
-            
-            .table-responsive-md {
-              overflow-x: auto;
-              -webkit-overflow-scrolling: touch;
-            }
-            
-            .table th, .table td {
-              vertical-align: middle;
-              padding: 0.75rem;
-            }
-            
-            .table thead th {
-              border-bottom: 2px solid #dee2e6;
-              background-color: #f8f9fa;
-              font-weight: 600;
-            }
-            
-            .price-input {
-              width: 200px; !important;
-              min-width: 120px;
-              width: auto !important;
-            }
-            
-            .price-input .p-inputnumber-input {
-              width: auto; !important;
-              min-width: 120px;
-            }
-            
-            @media (max-width: 768px) {
-              .container-fluid {
-                padding-left: 10px;
-                padding-right: 10px;
-              }
-              
-              .card-body {
-                padding: 1rem;
-              }
-              
-              .table-responsive-md {
-                border: 1px solid #dee2e6;
-                border-radius: 0.375rem;
-              }
-              
-              .table {
-                margin-bottom: 0;
-                min-width: 800px;
-              }
-              
-              .btn {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.875rem;
-              }
-              
-              .price-input {
-              width: 300px; !important;
-                min-width: 100px;
-              }
-            }
-            
-            .table .p-inputnumber, 
-            .table .p-dropdown, 
-            .table .p-calendar {
-              width: 100% !important;
-              min-width: 100px;
-            }
-            
-            .p-dropdown-panel {
-              z-index: 1100 !important;
-            }
-            
-            @media (max-width: 576px) {
-              .alert-info .d-flex {
-                flex-direction: column;
-                gap: 1rem;
-              }
-              
-              .alert-info .d-flex > div {
-                width: 100%;
-                justify-content: space-between;
-              }
-            }
-          `));
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+        }
+        
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
+        }
+        
+        .p-calendar {
+          height: 38px;
+        }
+        
+        .table-responsive {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .p-datatable .p-datatable-thead > tr > th,
+        .p-datatable .p-datatable-tbody > tr > td {
+          padding: 0.5rem;
+          vertical-align: middle;
+        }
+        
+        .p-datatable .p-column-title {
+          font-weight: 600;
+          font-size: 0.875rem;
+        }
+        
+        .p-datatable-tbody > tr > td {
+          border: 1px solid #e9ecef;
+        }
+        
+        /* Asegurar que los inputs dentro de la tabla se vean bien */
+        .p-datatable .p-inputtext,
+        .p-datatable .p-dropdown,
+        .p-datatable .p-inputnumber {
+          width: 100%;
+          font-size: 0.875rem;
+        }
+        
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+          width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .p-datatable {
+            min-width: 800px;
+          }
+          
+          .p-datatable .p-datatable-thead > tr > th,
+          .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.375rem;
+            font-size: 0.8rem;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+            width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        .p-datatable .p-inputnumber, 
+        .p-datatable .p-dropdown, 
+        .p-datatable .p-calendar {
+          width: 100% !important;
+          min-width: 250px;
+        }
+        
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+      `));
 };
 const TypeColumnBody = ({
   rowData,
@@ -1203,7 +1246,7 @@ const TypeColumnBody = ({
     optionLabel: "name",
     optionValue: "id",
     placeholder: "Seleccione Tipo",
-    className: "w-100",
+    className: "w-100 dropwdow-content-type dropdown-billing-product",
     onChange: e => {
       onChange(e.value);
     },
@@ -1255,7 +1298,7 @@ const ProductColumnBody = ({
       optionLabel: "label",
       optionValue: "id",
       placeholder: "Seleccione Activo",
-      className: "w-100",
+      className: "w-100 dropdown-billing-products",
       filter: true,
       onChange: e => {
         e.originalEvent?.preventDefault();
@@ -1277,7 +1320,7 @@ const ProductColumnBody = ({
     optionLabel: "label",
     optionValue: "id",
     placeholder: "Seleccione Producto",
-    className: "w-100",
+    className: "w-100 dropdown-billing-products",
     filter: true,
     onChange: e => {
       onChange(e.value);
@@ -1302,7 +1345,9 @@ const QuantityColumnBody = ({
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(InputNumber, {
     value: value,
     placeholder: "Cantidad",
-    className: "w-100",
+    style: {
+      minWidth: "100px"
+    },
     min: 0,
     onValueChange: e => {
       onChange(e.value);
@@ -1325,7 +1370,9 @@ const PriceColumnBody = ({
   }, /*#__PURE__*/React.createElement(InputNumber, {
     value: value,
     placeholder: "RD$ 0.00",
-    className: "w-100",
+    style: {
+      minWidth: "150px"
+    },
     mode: "currency",
     currency: "DOP",
     locale: "es-DO",
@@ -1371,9 +1418,10 @@ const DiscountColumnBody = ({
       value: "fixed"
     }],
     optionLabel: "label",
+    className: "dropdown-billing-products",
     optionValue: "value",
     style: {
-      width: "50px"
+      minWidth: "200px"
     },
     onChange: e => {
       handleTypeChange(e.value);
@@ -1383,7 +1431,7 @@ const DiscountColumnBody = ({
   }), /*#__PURE__*/React.createElement(InputNumber, {
     value: value,
     placeholder: discountType === "percentage" ? "Descuento %" : "Descuento $",
-    className: "flex-grow-1",
+    className: "flex-grow-1 w-100",
     style: {
       minWidth: "100px"
     },
@@ -1415,19 +1463,20 @@ const IvaColumnBody = ({
     fetchTaxes();
   }, []);
   return /*#__PURE__*/React.createElement(Dropdown, {
-    value: value,
+    value: value?.percentage // Mostrar por porcentaje
+    ,
     options: taxes,
     optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
     optionValue: "percentage",
     placeholder: "Seleccione IVA",
-    className: "w-100",
+    className: "w-100 dropdown-billing-products",
     onChange: e => {
       if (e.value === null) {
         onChange(null);
       } else {
         const selectedTax = taxes.find(tax => tax.percentage === e.value);
         if (selectedTax) {
-          onChange(selectedTax);
+          onChange(selectedTax); // ← Pasar el objeto completo
         }
       }
     },
@@ -1456,7 +1505,7 @@ const DepositColumnBody = ({
     optionLabel: option => `${option.attributes.name}`,
     optionValue: "id",
     placeholder: "Seleccione",
-    className: "w-100",
+    className: "w-100 dropdown-billing-products",
     onChange: e => {
       onChange(e.value);
     },

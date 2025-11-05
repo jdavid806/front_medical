@@ -18,6 +18,7 @@ interface PaymentMethodsSectionProps {
   onPaymentMethodsChange: (paymentMethods: PaymentMethod[]) => void;
   onAdvancesFormOpen?: (customerId: number, paymentMethodId: string) => void;
   labelTotal?: string;
+  isNote?: boolean;
 }
 
 export const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
@@ -26,6 +27,7 @@ export const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   availablePaymentMethods,
   onPaymentMethodsChange,
   labelTotal,
+  isNote,
 }) => {
   const calculateTotalPayments = (): number => {
     return paymentMethods.reduce((total, payment) => {
@@ -35,7 +37,11 @@ export const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
 
   const paymentCoverage = (): boolean => {
     const payments = calculateTotalPayments();
-    return Math.abs(payments - totalInvoice) < 0.01;
+    if (totalInvoice < 0) {
+      return Math.abs(payments + totalInvoice) < 0.01;
+    } else {
+      return Math.abs(payments - totalInvoice) < 0.01;
+    }
   };
 
   const addPayment = () => {

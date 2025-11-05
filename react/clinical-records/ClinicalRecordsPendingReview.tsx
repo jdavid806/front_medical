@@ -10,6 +10,11 @@ import { VerifySupervisorForm } from "../users/VerifySupervisorForm";
 import { usePRToast } from "../hooks/usePRToast";
 import { Toast } from "primereact/toast";
 import { Divider } from "primereact/divider";
+import { Button } from "primereact/button";
+import { OTPModal } from "../login/modal/OTPModal";
+import { useLoggedUser } from "../users/hooks/useLoggedUser";
+import { useAuth } from "../login/hooks/useAuth";
+import { ClinicalRecordReview } from "./ClinicalRecordReview";
 
 interface TableItem {
     id: string;
@@ -26,6 +31,15 @@ interface TableItem {
 export const ClinicalRecordsPendingReview = () => {
     const { clinicalRecords, fetchClinicalRecords, loading, totalRecords } = useClinicalRecordsPendingReview();
     const { showErrorToast, toast } = usePRToast()
+    const { loggedUser } = useLoggedUser()
+    const {
+        verifyOtp,
+        verifyOtpBasic,
+        resendOtp,
+        sendOtp,
+        Toast: toastRef
+    } = useAuth()
+    const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
 
     const [mappedClinicalRecords, setMappedClinicalRecords] = useState<TableItem[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -34,7 +48,7 @@ export const ClinicalRecordsPendingReview = () => {
     const [search, setSearch] = useState<string | null>(null);
     const [showResolveRequestModal, setShowResolveRequestModal] = useState(false);
     const [showVerifySupervisorModal, setShowVerifySupervisorModal] = useState(false);
-    const [selectedRequestId, setSelectedRequestId] = useState<string>("");
+    const [selectedItem, setSelectedItem] = useState<TableItem | null>(null);
 
     useEffect(() => {
         setMappedClinicalRecords(clinicalRecords.map((item: PatientClinicalRecordDto) => {
@@ -55,7 +69,7 @@ export const ClinicalRecordsPendingReview = () => {
         }));
     }, [clinicalRecords]);
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page: any) => {
         console.log(page);
         const calculatedPage = Math.floor(page.first / page.rows) + 1
         setFirst(page.first);
@@ -99,9 +113,13 @@ export const ClinicalRecordsPendingReview = () => {
         crearDocumento(requestableId, "Impresion", "Consulta", "Completa", "Historia Clinica");
     };
 
-    const openVerifySupervisorModal = (requestId: string) => {
-        setSelectedRequestId(requestId);
-        setShowVerifySupervisorModal(true);
+    const openVerifySupervisorModal = async (item: TableItem) => {
+        setSelectedItem(item);
+        setShowResolveRequestModal(true);
+        // setShowVerifySupervisorModal(true);
+        // console.log(loggedUser);
+        // if (!loggedUser?.external_id) return;
+        // await sendOtp(loggedUser?.external_id)
     };
 
     const columns: CustomPRTableColumnProps[] = [
@@ -118,7 +136,7 @@ export const ClinicalRecordsPendingReview = () => {
                         title="Ver historia clinica"
                     ></i>
                 </button>
-                <button className="btn btn-link" onClick={() => openVerifySupervisorModal(rowData.requestId)}>
+                <button className="btn btn-link" onClick={() => openVerifySupervisorModal(rowData)}>
                     <i
                         className="fs-7 fa-solid fa-file-signature cursor-pointer"
                         title="Resolver solicitud"
@@ -140,8 +158,25 @@ export const ClinicalRecordsPendingReview = () => {
         setShowResolveRequestModal(true);
     };
 
+    const handleVerifyOtp = async () => {
+        const otpCode = otp.join('')
+        if (otpCode.length === 6 && loggedUser?.email) {
+            const result = await verifyOtpBasic(otpCode, loggedUser?.email, loggedUser?.phone)
+            if (result.status === 200) {
+                console.log("OTP verificado exitosamente")
+                setOtp(['', '', '', '', '', '']) // Reset OTP
+                handleVerifySupervisor(true)
+            }
+        }
+    }
+
+    const handleResendOtp = async () => {
+        await resendOtp(loggedUser?.email)
+    }
+
     return (
         <>
+            <Toast ref={toastRef} />
             <Toast ref={toast} />
             <div
                 className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
@@ -166,18 +201,42 @@ export const ClinicalRecordsPendingReview = () => {
             <Dialog
                 visible={showVerifySupervisorModal}
                 onHide={() => setShowVerifySupervisorModal(false)}
-                header="Verificar supervisor">
-                <VerifySupervisorForm onVerify={handleVerifySupervisor} />
+                header="Verificación de usuario"
+                footer={
+                    <div className="d-flex justify-content-end">
+                        <Button
+                            label="Cancelar"
+                            icon="pi pi-times"
+                            className="btn btn-sm btn-outline-secondary me-2"
+                            onClick={() => setShowVerifySupervisorModal(false)}
+                        />
+                        <Button
+                            label="Verificar"
+                            icon="pi pi-check"
+                            className="btn btn-sm btn-primary"
+                            onClick={handleVerifyOtp}
+                        />
+                    </div>
+                }
+            >
+                {loggedUser?.email && loggedUser?.phone && (
+                    <OTPModal
+                        otp={otp}
+                        setOtp={setOtp}
+                        onResendOTP={handleResendOtp}
+                        email={loggedUser.email}
+                        phone={loggedUser.phone}
+                    />
+                )}
             </Dialog>
 
             <Dialog
                 visible={showResolveRequestModal}
                 onHide={() => setShowResolveRequestModal(false)}
                 header="Resolver solicitud">
-
-                <Divider />
-                <ResolveClinicalRecordReviewRequestForm
-                    requestId={selectedRequestId}
+                <ClinicalRecordReview
+                    clinicalRecordId={selectedItem?.id || ""}
+                    requestId={selectedItem?.requestId || ""}
                     onSave={handleSave}
                 />
             </Dialog>

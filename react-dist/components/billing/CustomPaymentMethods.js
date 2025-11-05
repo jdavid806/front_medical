@@ -7,7 +7,8 @@ export const PaymentMethodsSection = ({
   paymentMethods,
   availablePaymentMethods,
   onPaymentMethodsChange,
-  labelTotal
+  labelTotal,
+  isNote
 }) => {
   const calculateTotalPayments = () => {
     return paymentMethods.reduce((total, payment) => {
@@ -16,7 +17,11 @@ export const PaymentMethodsSection = ({
   };
   const paymentCoverage = () => {
     const payments = calculateTotalPayments();
-    return Math.abs(payments - totalInvoice) < 0.01;
+    if (totalInvoice < 0) {
+      return Math.abs(payments + totalInvoice) < 0.01;
+    } else {
+      return Math.abs(payments - totalInvoice) < 0.01;
+    }
   };
   const addPayment = () => {
     const newPayment = {

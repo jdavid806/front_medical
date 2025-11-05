@@ -12,7 +12,7 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 10%;
-    height: 5vh;
+    height: auto;
 }
 
 .p-dropdown-trigger:focus,
@@ -62,3 +62,57 @@
     z-index: -1 !important;
     border: none !important;
 }
+
+/*Dropdown Facturas de Ventas Inicio */
+.dropdown-billing.p-dropdown .p-dropdown-trigger {
+   height: 100%;
+}
+
+.dropdown-billing-product.p-dropdown .p-dropdown-trigger {
+   width: 20%;
+   height: 100%;
+}
+.dropdown-billing-product .p-dropdown-clear-icon{
+    margin-right: 10px !important;
+}
+
+.dropdown-billing-products.p-dropdown .p-dropdown-trigger {
+   width: 15%;
+   height: 100%;
+}
+.dropdown-billing-retention.p-dropdown .p-dropdown-trigger
+{
+    width: 3vw;
+    height: 100%;
+}
+.dropdown-billing-retention .p-dropdown-clear-icon{
+    margin-right: 30px !important;
+}
+
+/*Dropdown Facturas de Ventas Fin */
+
+/*Dropdown Citas Inicia*/
+
+.dropdown-appointment.p-dropdown .p-dropdown-trigger {
+   width: 20%;
+   height: auto !important;
+}
+/*Dropdown Citas Finaliza*/
+
+.dropwdow-content-type{
+    min-width: 240px !important;
+}
+
+@media (max-width: 480px) {
+    .w-100.p-dropdown .p-dropdown-trigger{
+        height: 100%;
+    }
+    .p-dropdown-clear-icon{
+        margin-right: 10px !important;
+    }
+
+    div[data-pc-section="panel"] {
+        top:0px !important; 
+    }
+}
+

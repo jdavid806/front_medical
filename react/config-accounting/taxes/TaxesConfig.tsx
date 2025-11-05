@@ -11,7 +11,6 @@ import { useTaxesDeleteTable } from './hooks/useTaxesDeleteTable';
 import { useTaxesUpdateTable } from './hooks/useTaxesUpdteTable';
 import { TaxesMapperCreate, TaxesMapperUpdate } from './mapper/mappedTaxes';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
-import { Button } from 'primereact/button';
 
 export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
@@ -155,31 +154,19 @@ export const TaxesConfig = ({ onConfigurationComplete }: { onConfigurationComple
                 </div>
             )}
 
-            <div
-                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-                style={{ minHeight: "400px" }}
-            >
-                <div className="card-body h-100 w-100 d-flex flex-column">
-                    <div className="text-end pt-3 mb-2">
-                        <Button
-                            className="p-button-primary"
-                            onClick={onCreate}
-                            disabled={createLoading || updateLoading || deleteLoading}
-                        >
-                            <i className="fas fa-plus me-2"></i>
-                            {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto'}
-                        </Button>
-                    </div>
-                    <TaxesConfigTable
-                        taxes={enrichedTaxes}
-                        onEditItem={handleTableEdit}
-                        onDeleteItem={handleDeleteTax}
-                        loading={loading || isLoadingAccounts}
-                        onReload={refreshTaxes}
 
-                    />
-                </div>
-            </div>
+            <TaxesConfigTable
+                taxes={enrichedTaxes}
+                onEditItem={handleTableEdit}
+                onDeleteItem={handleDeleteTax}
+                loading={loading || isLoadingAccounts}
+                onReload={refreshTaxes}
+                onCreate={onCreate}
+                createLoading={createLoading}
+                updateLoading={updateLoading}
+                deleteLoading={deleteLoading}
+            />
+
             <TaxConfigModal
                 isVisible={showFormModal}
                 onSave={handleSubmit}

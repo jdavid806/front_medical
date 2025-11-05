@@ -27,7 +27,8 @@ export const externalCauses = {
 export const genders = {
     MALE: 'Masculino',
     FEMALE: 'Femenino',
-    INDETERMINATE: 'Indeterminado'
+    INDETERMINATE: 'Indeterminado',
+    OTHER: 'Otro'
 }
 
 export const ticketPriorities = {

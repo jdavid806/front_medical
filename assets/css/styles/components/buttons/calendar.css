@@ -1,10 +1,11 @@
 .w-100.p-calendar {
     border: 2px solid #e2e8f0;
     background: #ffffff;
-    border-top-right-radius: 40px !important;
-    border-bottom-right-radius: 40px !important;
+    border-radius: 10px !important; 
 }
-
+.p-datepicker-trigger{
+    border-radius: 0 !important;
+}
 .w-100.p-calendar .p-inputtext {
     border: none !important;
     background: transparent;
@@ -13,7 +14,7 @@
     font-size: 14px;
     color: #334155;
     outline: none;
-   
+    border-radius: 0 !important; 
 }
 
 .w-100.p-calendar .p-inputtext::placeholder {
@@ -21,23 +22,54 @@
 }
 
 .w-100.p-calendar .p-datepicker-trigger {
-    background:  var(--primary-color) !important;
+    background: var(--primary-color) !important;
     border: none !important;
-     width: 50px !important;
-}
-.p-button.p-button-icon-only{
-    border-bottom-right-radius: 3.5px !important;
-    border-top-right-radius: 3.5px !important;
+    width: 10% !important;
+    border-radius: 0 !important; 
 }
 
-
+.p-button.p-button-icon-only {
+    border-radius: 0 !important; 
+}
 
 .w-100.p-calendar .p-datepicker-trigger .p-icon {
     color: white !important;
+}
+.p-datepicker-next,
+.p-datepicker-prev{
+    color:white !important;
 }
 
 .w-100.p-calendar .p-datepicker-trigger .p-icon path {
     fill: white !important;
 }
+.p-datepicker:not(.p-datepicker-inline) .p-datepicker-header{
+    background: var(--primary-color);
+}
+.p-datepicker table td.p-datepicker-today > span.p-highlight
+ {
+    background: var(--primary-color) !important;
+ }
+.p-datepicker-month,
+.p-datepicker-year 
+{
+    color:white !important;
+    font-weight: bold !important;
+}
 
+/* Estados adicionales para consistencia */
+.w-100.p-calendar:focus-within {
+       border-radius: 0 !important;
+    border-bottom-left-radius: 1% !important;
+    border-bottom-right-radius: 1% !important;
+    border-top-left-radius: 1% !important;
+    border-top-right-radius: 1% !important;
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.1rem #1a99fb;
+    border-color: #1a99fb;
+}
 
+.w-100.p-calendar .p-inputtext:focus {
+    box-shadow: none !important;
+}

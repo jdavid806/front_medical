@@ -515,8 +515,8 @@ export const AppointmentsTable: React.FC = () => {
         <Toast ref={toast} />
 
         <div className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto" style={{ minHeight: "400px" }}>
-          <div className="card-body h-100 w-100 d-flex flex-column">
-            <div className="d-flex align-items-center justify-content-end mb-1">
+          <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-25px" }}>
+            <div className="d-flex align-items-center justify-content-end mb-2">
               <AppointmentCreateFormModalButton />
             </div>
 

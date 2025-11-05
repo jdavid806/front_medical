@@ -1,32 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Toast } from "primereact/toast";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
+import { Calendar } from "primereact/calendar";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
+import { CustomPRTable } from "../components/CustomPRTable.js";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { billingService } from "../../services/api/index.js";
-import { SplitButton } from "primereact/splitbutton";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
 import { useByEntityFormat } from "../documents-generation/hooks/billing/by-entity/useByEntityFormat.js";
 export const BillingEntity = () => {
   // Estado para los datos de la tabla
   const [facturas, setFacturas] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   // Estados para el modal de pago
   const [facturaSeleccionada, setFacturaSeleccionada] = useState(null);
-  const [facturasFiltradas, setFacturasFiltradas] = useState([]);
   const [montoPago, setMontoPago] = useState(0);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Estado para el modal de recibo de caja
   const [showReciboModal, setShowReciboModal] = useState(false);
   const [facturaParaRecibo, setFacturaParaRecibo] = useState(null);
+
+  // Pagination state
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   // Estado para los filtros
   const [filtros, setFiltros] = useState({
@@ -36,7 +43,7 @@ export const BillingEntity = () => {
     fechaRango: null,
     montoMinimo: null,
     montoMaximo: null,
-    tipoFecha: "elaboracion" // Por defecto filtramos por fecha de elaboración
+    tipoFecha: "elaboracion"
   });
   const tipoFechaOpciones = [{
     label: "Fecha de Elaboración",
@@ -48,18 +55,34 @@ export const BillingEntity = () => {
   const {
     generateFormatByEntity
   } = useByEntityFormat();
+  const generateInvoiceRef = useRef(generateFormatByEntity);
+  useEffect(() => {
+    generateInvoiceRef.current = generateFormatByEntity;
+  }, [generateFormatByEntity]);
+  const toast = useRef(null);
 
   // Simular carga de datos
   useEffect(() => {
-    setLoading(true);
-    loadBillingReportData();
+    loadBillingReportData(1, rows);
   }, []);
-  const loadBillingReportData = async () => {
-    const response = await billingService.getBillingReportByEntityDetailed();
-    const dataMapped = handleLoadData(response);
-    setFacturas(dataMapped);
-    setFacturasFiltradas(dataMapped);
-    setLoading(false);
+  const loadBillingReportData = async (page = 1, per_page = 10) => {
+    setTableLoading(true);
+    try {
+      const response = await billingService.getBillingReportByEntityDetailed();
+      const dataMapped = handleLoadData(response);
+      const startIndex = (page - 1) * per_page;
+      const endIndex = startIndex + per_page;
+      const paginatedData = dataMapped.slice(startIndex, endIndex);
+      setFacturas(paginatedData);
+      setTotalRecords(dataMapped.length);
+    } catch (error) {
+      console.error("Error cargando facturas:", error);
+      showToast("error", "Error", "No se pudieron cargar las facturas");
+      setFacturas([]);
+      setTotalRecords(0);
+    } finally {
+      setTableLoading(false);
+    }
   };
   function handleLoadData(data) {
     const dataMapped = data.map(item => {
@@ -106,6 +129,7 @@ export const BillingEntity = () => {
     });
     return dataMapped;
   }
+
   // Manejadores de cambio de filtros
   const handleFilterChange = (field, value) => {
     setFiltros(prev => ({
@@ -113,66 +137,61 @@ export const BillingEntity = () => {
       [field]: value
     }));
   };
-  const parseDate = dateString => {
-    if (!dateString) return null;
-
-    // Si es solo fecha (YYYY-MM-DD), agregamos tiempo para evitar problemas de zona horaria
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-      return new Date(`${dateString}T12:00:00`);
-    }
-    const date = new Date(dateString);
-    return isNaN(date.getTime()) ? null : date;
+  const onPageChange = event => {
+    setFirst(event.first);
+    setRows(event.rows);
+    aplicarFiltros(event.page + 1, event.rows);
   };
 
   // Función para aplicar filtros
-  const aplicarFiltros = () => {
-    let resultadosFiltrados = [...facturas];
+  const aplicarFiltros = async (page = 1, per_page = 10) => {
+    setTableLoading(true);
+    try {
+      const response = await billingService.getBillingReportByEntityDetailed();
+      let filteredData = handleLoadData(response);
 
-    // Filtro por facturador
-    if (filtros.facturador) {
-      resultadosFiltrados = resultadosFiltrados.filter(factura => factura.biller.toLowerCase().includes(filtros.facturador.toLowerCase()));
+      // Aplicar filtros
+      if (filtros.facturador) {
+        filteredData = filteredData.filter(factura => factura.biller.toLowerCase().includes(filtros.facturador.toLowerCase()));
+      }
+      if (filtros.numeroFactura) {
+        filteredData = filteredData.filter(factura => factura.invoice_code.toLowerCase().includes(filtros.numeroFactura.toLowerCase()));
+      }
+      if (filtros.entidad) {
+        filteredData = filteredData.filter(factura => factura.entity?.name === filtros.entidad);
+      }
+      if (filtros.fechaRango && filtros.fechaRango[0] && filtros.fechaRango[1]) {
+        const fechaInicio = new Date(filtros.fechaRango[0]);
+        const fechaFin = new Date(filtros.fechaRango[1]);
+        fechaFin.setHours(23, 59, 59, 999);
+        filteredData = filteredData.filter(factura => {
+          const fechaFacturaStr = filtros.tipoFecha === "elaboracion" ? factura.elaboration_date : factura.due_date;
+          const fechaFactura = new Date(fechaFacturaStr);
+          if (isNaN(fechaFactura.getTime())) return false;
+          return fechaFactura >= fechaInicio && fechaFactura <= fechaFin;
+        });
+      }
+      if (filtros.montoMinimo !== null) {
+        filteredData = filteredData.filter(factura => factura.total_amount >= filtros.montoMinimo);
+      }
+      if (filtros.montoMaximo !== null) {
+        filteredData = filteredData.filter(factura => factura.total_amount <= filtros.montoMaximo);
+      }
+
+      // Paginación
+      const startIndex = (page - 1) * per_page;
+      const endIndex = startIndex + per_page;
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+      setFacturas(paginatedData);
+      setTotalRecords(filteredData.length);
+    } catch (error) {
+      console.error("Error aplicando filtros:", error);
+      showToast("error", "Error", "No se pudieron aplicar los filtros");
+      setFacturas([]);
+      setTotalRecords(0);
+    } finally {
+      setTableLoading(false);
     }
-
-    // Filtro por número de factura
-    if (filtros.numeroFactura) {
-      resultadosFiltrados = resultadosFiltrados.filter(factura => factura.invoice_code.toLowerCase().includes(filtros.numeroFactura.toLowerCase()));
-    }
-
-    // Filtro por entidad
-    if (filtros.entidad) {
-      resultadosFiltrados = resultadosFiltrados.filter(factura => factura.entity?.name === filtros.entidad);
-    }
-
-    // Filtro por rango de fechas (corregido)
-    if (filtros.fechaRango && filtros.fechaRango[0] && filtros.fechaRango[1]) {
-      const fechaInicio = new Date(filtros.fechaRango[0]);
-      const fechaFin = new Date(filtros.fechaRango[1]);
-
-      // Ajustar la fecha fin para incluir todo el día
-      fechaFin.setHours(23, 59, 59, 999);
-      resultadosFiltrados = resultadosFiltrados.filter(factura => {
-        // Obtener la fecha relevante según el tipo seleccionado
-        const fechaFacturaStr = filtros.tipoFecha === "elaboracion" ? factura.elaboration_date : factura.due_date;
-
-        // Convertir a objeto Date
-        const fechaFactura = new Date(fechaFacturaStr);
-
-        // Validar que la fecha sea válida
-        if (isNaN(fechaFactura.getTime())) return false;
-        return fechaFactura >= fechaInicio && fechaFactura <= fechaFin;
-      });
-    }
-
-    // Filtro por monto mínimo
-    if (filtros.montoMinimo !== null) {
-      resultadosFiltrados = resultadosFiltrados.filter(factura => factura.total_amount >= filtros.montoMinimo);
-    }
-
-    // Filtro por monto máximo
-    if (filtros.montoMaximo !== null) {
-      resultadosFiltrados = resultadosFiltrados.filter(factura => factura.total_amount <= filtros.montoMaximo);
-    }
-    setFacturasFiltradas(resultadosFiltrados);
   };
 
   // Función para limpiar filtros
@@ -186,7 +205,7 @@ export const BillingEntity = () => {
       montoMaximo: null,
       tipoFecha: "elaboracion"
     });
-    setFacturasFiltradas(facturas);
+    loadBillingReportData(1, rows);
   };
 
   // Formatear número para montos en pesos dominicanos (DOP)
@@ -200,12 +219,8 @@ export const BillingEntity = () => {
   };
 
   // Formatear fecha
-
   function formatearFecha(fechaString) {
-    // Primero normalizamos la fecha para asegurar que sea válida
     let fechaNormalizada = fechaString;
-
-    // Si es formato "YYYY-MM-DD" sin tiempo, agregamos 'T00:00' para compatibilidad
     if (/^\d{4}-\d{2}-\d{2}$/.test(fechaString)) {
       fechaNormalizada += "T00:00:00";
     }
@@ -222,30 +237,19 @@ export const BillingEntity = () => {
     }
   }
   function formatearFechaISO(fechaISO) {
-    // Verificar el formato esperado (YYYY-MM-DD)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaISO)) {
       return "Formato de fecha no válido";
     }
-
-    // Dividir la fecha en componentes
     const [año, mes, dia] = fechaISO.split("-").map(Number);
-
-    // Crear objeto Date (mes es 0-indexed en JavaScript)
     const fecha = new Date(año, mes - 1, dia);
-
-    // Validar que la fecha sea válida (por si viene "2025-02-30" por ejemplo)
     if (fecha.getFullYear() !== año || fecha.getMonth() + 1 !== mes || fecha.getDate() !== dia) {
       return "Fecha no válida";
     }
-
-    // Formatear usando Intl.DateTimeFormat
     const formateador = new Intl.DateTimeFormat("es-ES", {
       day: "numeric",
       month: "long",
       year: "numeric"
     });
-
-    // Ajustar el formato para que quede "día de mes, año"
     return formateador.format(fecha).replace(/(\d+)/, "$1 de").replace(" de ", " de ");
   }
 
@@ -256,6 +260,8 @@ export const BillingEntity = () => {
         return "success";
       case "pending":
         return "warning";
+      case "partially_pending":
+        return "info";
       case "En proceso":
         return "info";
       case "Rechazada":
@@ -267,58 +273,28 @@ export const BillingEntity = () => {
         return null;
     }
   };
-  const createActionTemplate = (icon, label, colorClass = "") => {
-    return () => /*#__PURE__*/React.createElement("div", {
-      className: "flex align-items-center gap-2 p-2 point",
-      style: {
-        cursor: "pointer"
-      } // Agrega el cursor pointer aquí
-    }, /*#__PURE__*/React.createElement("i", {
-      className: `fas fa-${icon} ${colorClass}`
-    }), /*#__PURE__*/React.createElement("span", null, label));
+  const getEstadoLabel = estado => {
+    switch (estado) {
+      case "paid":
+        return "Pagada";
+      case "pending":
+        return "Pendiente";
+      case "partially_pending":
+        return "Parcialmente Pagada";
+      case "En proceso":
+        return "En proceso";
+      case "Rechazada":
+        return "Rechazada";
+      case "Vencida":
+        return "Vencida";
+      case "canceled":
+        return "Anulada";
+      default:
+        return estado || "";
+    }
   };
-  //   Acciones para la tabla
-  const actionBodyTemplate = rowData => {
-    const items = [{
-      label: "Generar Recibo",
-      template: createActionTemplate("receipt", "Generar Recibo", "text-green-500"),
-      command: () => abrirModalRecibo(rowData)
-    }, {
-      label: "Descargar Excel",
-      template: createActionTemplate("file-excel", "Descargar Excel", "text-green-600"),
-      command: () => handleDescargarExcel(rowData)
-    }, {
-      label: "Descargar PDF",
-      template: createActionTemplate("file-pdf", "Descargar PDF", "text-red-500"),
-      command: () => handleDescargarPDF(rowData)
-    }, {
-      label: "Imprimir",
-      template: createActionTemplate("print", "Imprimir", "text-blue-500"),
-      command: () => generarFormatoContable("FacturaEntidad", rowData, "Impresion")
-    }];
-    return /*#__PURE__*/React.createElement("div", {
-      className: "flex gap-2"
-    }, /*#__PURE__*/React.createElement(SplitButton, {
-      label: "Acciones",
-      model: items,
-      severity: "contrast",
-      className: "p-button-sm point",
-      buttonClassName: "p-button-sm",
-      onClick: () => abrirModalRecibo(rowData),
-      disabled: isGeneratingPDF
-    }));
-  };
-  const handleDescargarExcel = invoice => {
-    exportToExcel({
-      data: invoice.invoice_linked,
-      // Pasamos la factura como un array de un elemento
-      fileName: `Factura_${invoice.invoice_code}`,
-      excludeColumns: ["id"] // Excluimos campos que no queremos mostrar
-    });
-  };
-  const handleDescargarPDF = async invoice => {
-    generateFormatByEntity(invoice, [], "Impresion");
-  };
+
+  // Funciones para las acciones
   const abrirModalRecibo = factura => {
     setFacturaParaRecibo({
       ...factura
@@ -330,82 +306,235 @@ export const BillingEntity = () => {
     setFacturaParaRecibo(null);
   };
   const handleGenerarRecibo = formData => {
-    // Aquí puedes manejar la generación del recibo con los datos del formulario
-
-    // Simular generación de recibo
-    alert(`Recibo generado para factura ${facturaParaRecibo?.invoice_code}\nMonto: ${formatCurrency(facturaParaRecibo?.paid_amount || 0)}`);
+    showToast("success", "Éxito", `Recibo generado para factura ${facturaParaRecibo?.invoice_code}`);
     cerrarModalRecibo();
   };
-
-  // Estilos integrados
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px"
-    },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333"
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600
-    },
-    tableCell: {
-      padding: "0.75rem 1rem"
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block"
-    }
+  const handleDescargarExcel = invoice => {
+    exportToExcel({
+      data: invoice.invoice_linked,
+      fileName: `Factura_${invoice.invoice_code}`,
+      excludeColumns: ["id"]
+    });
+    showToast("success", "Éxito", `Excel descargado para ${invoice.invoice_code}`);
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid mt-4",
+  const handleDescargarPDF = useCallback(async invoice => {
+    generateInvoiceRef.current(invoice, [], "Descargar");
+  }, [generateFormatByEntity]);
+  const printInvoice = useCallback(async invoice => {
+    generarFormatoContable("FacturaEntidad", invoice, "Impresion");
+  }, []);
+  const TableMenu = ({
+    rowData
+  }) => {
+    const menu = useRef(null);
+    const handleGenerateReceipt = () => {
+      abrirModalRecibo(rowData);
+    };
+    const handleDownloadExcel = () => {
+      handleDescargarExcel(rowData);
+    };
+    const handleDownloadPdf = () => {
+      handleDescargarPDF(rowData);
+    };
+    const handlePrintInvoice = () => {
+      printInvoice(rowData);
+    };
+    const menuItems = [{
+      label: "Generar Recibo",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-receipt me-2"
+      }),
+      command: handleGenerateReceipt
+    }, {
+      label: "Descargar Excel",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-excel me-2"
+      }),
+      command: handleDownloadExcel
+    }, {
+      label: "Descargar PDF",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-pdf me-2"
+      }),
+      command: handleDownloadPdf
+    }, {
+      label: "Imprimir",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-print me-2"
+      }),
+      command: handlePrintInvoice
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
+  };
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData
+    }));
+  };
+  const showToast = (severity, summary, detail) => {
+    toast.current?.show({
+      severity,
+      summary,
+      detail,
+      life: 3000
+    });
+  };
+
+  // Mapear los datos para la tabla
+  const tableItems = facturas.map(factura => ({
+    id: factura.id,
+    biller: factura.biller,
+    invoice_code: factura.invoice_code,
+    entity: factura.entity?.name || "",
+    total_amount: factura.total_amount,
+    paid_amount: factura.paid_amount,
+    elaboration_date: factura.elaboration_date,
+    due_date: factura.due_date,
+    status: factura.status,
+    actions: factura
+  }));
+  const columns = [{
+    field: 'biller',
+    header: 'Facturador',
+    sortable: true
+  }, {
+    field: 'invoice_code',
+    header: 'N° Factura',
+    sortable: true
+  }, {
+    field: 'entity',
+    header: 'Entidad',
+    sortable: true
+  }, {
+    field: 'total_amount',
+    header: 'Monto Total',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.total_amount)
+  }, {
+    field: 'paid_amount',
+    header: 'Monto Pagado',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.paid_amount)
+  }, {
+    field: 'elaboration_date',
+    header: 'Fecha Elaboración',
+    sortable: true,
+    body: rowData => formatearFecha(rowData.elaboration_date)
+  }, {
+    field: 'due_date',
+    header: 'Fecha Vencimiento',
+    sortable: true,
+    body: rowData => formatearFecha(rowData.due_date)
+  }, {
+    field: 'status',
+    header: 'Estado',
+    sortable: true,
+    body: rowData => /*#__PURE__*/React.createElement(Tag, {
+      value: getEstadoLabel(rowData.status),
+      severity: getEstadoSeverity(rowData.status)
+    })
+  }, {
+    field: 'actions',
+    header: 'Acciones',
+    body: rowData => actionBodyTemplate(rowData.actions),
+    exportable: false,
+    width: "120px"
+  }];
+  const handleSearchChange = searchValue => {
+    setGlobalFilter(searchValue);
+  };
+  const handleRefresh = async () => {
+    limpiarFiltros();
+    await loadBillingReportData(1, rows);
+  };
+  return /*#__PURE__*/React.createElement("main", {
+    className: "main w-100",
+    id: "top"
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-center align-items-center",
     style: {
-      width: "100%",
-      padding: "0 15px"
+      height: "50vh",
+      marginLeft: "900px",
+      marginTop: "300px"
     }
-  }, /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    style: styles.card
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
+    className: "h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-30px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: () => window.location.href = "Facturacion_Entidad"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-file-edit me-2"
+  }), "Nueva Facturaci\xF3n Entidad")), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros de B\xFAsqueda"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Facturador"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.facturador,
     onChange: e => handleFilterChange("facturador", e.target.value),
     placeholder: "Nombre del facturador",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "N\xFAmero Factura"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.numeroFactura,
     onChange: e => handleFilterChange("numeroFactura", e.target.value),
     placeholder: "B0100010001",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
-  }, "Rango de fechas"), /*#__PURE__*/React.createElement(Dropdown, {
+    className: "form-label"
+  }, "Tipo de fecha"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.tipoFecha,
     options: tipoFechaOpciones,
     onChange: e => handleFilterChange("tipoFecha", e.value),
     optionLabel: "label",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
     value: filtros.fechaRango,
     onChange: e => {
@@ -423,94 +552,38 @@ export const BillingEntity = () => {
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Limpiar",
     icon: "pi pi-trash",
-    className: "btn btn-phoenix-secondary",
+    className: "p-button-secondary",
     onClick: limpiarFiltros
   }), /*#__PURE__*/React.createElement(Button, {
     label: "Aplicar Filtros",
     icon: "pi pi-filter",
-    className: "btn btn-primary",
-    onClick: aplicarFiltros,
-    loading: loading
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Facturaci\xF3n por Entidad",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: facturasFiltradas,
+    className: "p-button-primary",
+    onClick: () => aplicarFiltros(),
+    loading: tableLoading
+  }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
+    loading: tableLoading,
+    onSearch: handleSearchChange,
+    onReload: handleRefresh,
     paginator: true,
-    rows: 10,
+    rows: rows,
+    first: first,
+    onPage: onPageChange,
+    totalRecords: totalRecords,
     rowsPerPageOptions: [5, 10, 25, 50],
-    loading: loading,
-    className: "p-datatable-striped p-datatable-gridlines",
-    emptyMessage: "No se encontraron facturas",
-    responsiveLayout: "scroll",
-    tableStyle: {
-      minWidth: "50rem"
-    }
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "biller",
-    header: "Facturador",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "invoice_code",
-    header: "N\xB0 Factura",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "entity.name",
-    header: "Entidad",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "total_amount",
-    header: "Monto Total",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.total_amount),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "paid_amount",
-    header: "Monto Pagado",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.paid_amount),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "elaboration_date",
-    header: "Fecha Elaboraci\xF3n",
-    sortable: true,
-    body: rowData => formatearFecha(rowData.elaboration_date),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "due_date",
-    header: "Fecha Vencimiento",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "status",
-    header: "Estado",
-    sortable: true,
-    body: rowData => /*#__PURE__*/React.createElement(Tag, {
-      value: rowData.status,
-      severity: getEstadoSeverity(rowData.status)
-    }),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    header: "Acciones",
-    body: actionBodyTemplate,
-    style: {
-      ...styles.tableCell,
-      width: "120px"
-    }
+    currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} facturas",
+    emptyMessage: "No se encontraron facturas"
   }))), /*#__PURE__*/React.createElement(NewReceiptBoxModal, {
     visible: showReciboModal,
     onHide: cerrarModalRecibo,
     onSubmit: handleGenerarRecibo,
     initialData: {
-      cliente: facturaParaRecibo?.third_party?.id?.toString() || "",
-      // <-- ✅ Aquí
+      cliente: facturaParaRecibo?.entity?.id?.toString() || "",
       idFactura: facturaParaRecibo?.id || 0,
       numeroFactura: facturaParaRecibo?.invoice_code || "",
-      fechaElaboracion: facturaParaRecibo?.fecha || new Date(),
-      valorPagado: facturaParaRecibo?.monto || 0,
+      fechaElaboracion: new Date(facturaParaRecibo?.elaboration_date || new Date()),
+      valorPagado: facturaParaRecibo?.total_amount || 0,
       invoiceType: "entity",
       third_party_id: facturaParaRecibo?.entity?.id || 0
     }

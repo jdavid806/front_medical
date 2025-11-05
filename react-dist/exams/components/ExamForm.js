@@ -30,10 +30,10 @@ export const ExamForm = /*#__PURE__*/forwardRef(({
     }
   }));
   useEffect(() => {
-    if (initialSelectedExamTypes) {
+    if (initialSelectedExamTypes && examTypes.length > 0) {
       setSelectedExamTypes(initialSelectedExamTypes.map(id => examTypes.find(exam => exam.id == id)).filter(exam => exam !== undefined));
     }
-  }, [initialSelectedExamTypes]);
+  }, [initialSelectedExamTypes, examTypes]);
   const handleAddExam = () => {
     if (!selectedExamType) {
       alert('Por favor, seleccione un examen');
@@ -56,7 +56,6 @@ export const ExamForm = /*#__PURE__*/forwardRef(({
     setShowExamForm(!showExamForm);
   };
   const handleSubmit = async data => {
-    console.log(data);
     try {
       const newExam = await createExamType(data);
       if (newExam) {

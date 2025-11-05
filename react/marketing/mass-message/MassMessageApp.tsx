@@ -7,6 +7,7 @@ import { useMassMessage } from "./hooks/useMassMessage";
 import { useMassMessagesAll } from "./hooks/useMassMessagesAll";
 import { MassMessageTable } from "./MassMessageTable";
 import { MassMessageFormModal } from "./MassMessageFormModal";
+import { Dialog } from "primereact/dialog";
 
 export const MassMessageApp = () => {
   const { massMessage, setMassMessage, fetchMassMessage } = useMassMessage();
@@ -110,13 +111,20 @@ export const MassMessageApp = () => {
           onEditItem={handleTableEdit}
         ></MassMessageTable>
 
-        <MassMessageFormModal
-          title="Crear Mensaje Masivo"
-          show={showFormModal}
-          handleSubmit={handleSubmit}
-          onHide={handleHideFormModal}
-          initialData={initialData}
-        ></MassMessageFormModal>
+        <Dialog
+          header="Crear Mensaje Masivo"
+          visible={showFormModal}
+          style={{ width: "75vw" }}
+          onHide={() => {
+            if (!showFormModal) return;
+            setShowFormModal(false);
+          }}
+        >
+          <MassMessageFormModal
+            handleSubmit={handleSubmit}
+            initialData={initialData}
+          ></MassMessageFormModal>
+        </Dialog>
       </PrimeReactProvider>
     </>
   );

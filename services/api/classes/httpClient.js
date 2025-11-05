@@ -55,10 +55,10 @@ export class HttpClient {
                 : await response.text();
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    sessionStorage.clear();
-                    window.location.href = "/";
-                }
+                // if (response.status === 401) {
+                //     sessionStorage.clear();
+                //     window.location.href = "/";
+                // }
                 const error = new Error(
                     responseData.message || "Error en la solicitud"
                 );

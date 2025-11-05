@@ -18,6 +18,7 @@ export const useSpecialty = () => {
   const [loadingCurrentSpecialties, setLoadingCurrentSpecialties] = useState(false)
   const [showConfigModal, setShowConfigModal] = useState(false)
   const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null)
+  const [selectedAntecedent, setSelectedAntecedent] = useState<ClinicalRecordType | null>(null)
   const [specializableElements, setSpecializableElements] = useState<SpecializableElement[]>([])
 
   // Form states
@@ -164,8 +165,23 @@ export const useSpecialty = () => {
       if (!response.ok) throw new Error('Error loading specializable elements')
       const data = await response.json()
 
+      const antecedents = data.filter((item: any) => item.specializable_type === 'Antecedente')
+
+      if (antecedents.length > 0) {
+        const response = await fetch(`${getApiUrl()}/medical/clinical-record-types`)
+        if (!response.ok) throw new Error('Error loading clinical record types')
+        const serverClinicalRecordTypes = await response.json()
+        console.log('Antecedentes:', antecedents)
+        console.log('Clinical Record Types:', serverClinicalRecordTypes)
+        const antecedent = serverClinicalRecordTypes.find((item: any) => item.id == antecedents[0].specializable_id)
+
+        if (antecedent) {
+          setSelectedAntecedent(antecedent)
+        }
+      }
+
       // Transform data to match our interface
-      const transformedData = data.map((item: any) => ({
+      const transformedData = data.filter((item: any) => item.specializable_type !== 'Antecedente').map((item: any) => ({
         id: item.id,
         specializable_type: item.specializable_type,
         specializable_id: item.specializable_id,
@@ -200,14 +216,26 @@ export const useSpecialty = () => {
   const saveSpecializableElements = async () => {
     if (!selectedSpecialty) return
 
+    const finalSpecializableElements = [...specializableElements]
+
+    if (selectedAntecedent) {
+      finalSpecializableElements.push({
+        specializable_type: 'Antecedente',
+        specializable_id: selectedAntecedent.id.toString(),
+        specialty_id: selectedSpecialty.specialty || "",
+        description: selectedAntecedent.name,
+        display_name: selectedAntecedent.name
+      })
+    }
+
     try {
-      const url = `${getApiUrl()}/medical/specializables/${selectedSpecialty.name}`
+      const url = `${getApiUrl()}/medical/specializables/${selectedSpecialty.specialty}`
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(specializableElements),
+        body: JSON.stringify(finalSpecializableElements),
       })
 
       if (!response.ok) throw new Error('Error saving data')
@@ -240,7 +268,7 @@ export const useSpecialty = () => {
 
   const openConfigModal = async (specialty: Specialty) => {
     setSelectedSpecialty(specialty)
-    await loadSpecializableElements(specialty.name)
+    await loadSpecializableElements(specialty.specialty)
     setShowConfigModal(true)
   }
 
@@ -250,7 +278,7 @@ export const useSpecialty = () => {
     const newElement: SpecializableElement = {
       specializable_type: 'Historia Clínica',
       specializable_id: String(selectedClinicalRecord.id),
-      specialty_id: selectedSpecialty.name,
+      specialty_id: selectedSpecialty.specialty,
       description: selectedClinicalRecord.name,
       display_name: selectedClinicalRecord.name
     }
@@ -278,7 +306,7 @@ export const useSpecialty = () => {
       const newElement: SpecializableElement = {
         specializable_type: 'CIE-11',
         specializable_id: String(cie11Code.codigo),
-        specialty_id: selectedSpecialty.name,
+        specialty_id: selectedSpecialty.specialty,
         description: cie11Code.descripcion,
         display_name: displayName
       }
@@ -307,6 +335,7 @@ export const useSpecialty = () => {
   }
 
   const resetModalForm = () => {
+    setSelectedAntecedent(null)
     setSelectedSpecialty(null)
     setSpecializableElements([])
     setSelectedClinicalRecord(null)
@@ -385,6 +414,8 @@ export const useSpecialty = () => {
     showWarn,
     loadCie11Codes,
     onActiveSpecialty,
-    onDeactiveSpecialty
+    onDeactiveSpecialty,
+    selectedAntecedent,
+    setSelectedAntecedent
   }
 }

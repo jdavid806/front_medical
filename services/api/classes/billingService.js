@@ -58,6 +58,13 @@ export class BillingService extends BaseApiService {
       payload
     );
   }
+
+  async updateBillingConfiguration(payload, id) {
+    return await this.httpClient.put(
+      `medical/companies/1/billings/${id}`,
+      payload
+    );
+  }
 }
 
 export default BillingService;

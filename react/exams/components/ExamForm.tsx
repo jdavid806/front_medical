@@ -34,12 +34,12 @@ export const ExamForm = forwardRef(({ initialSelectedExamTypes }: ExamFormProps,
     }));
 
     useEffect(() => {
-        if (initialSelectedExamTypes) {
+        if (initialSelectedExamTypes && examTypes.length > 0) {
             setSelectedExamTypes(
                 initialSelectedExamTypes.map(id => examTypes.find(exam => exam.id == id)).filter(exam => exam !== undefined)
             );
         }
-    }, [initialSelectedExamTypes]);
+    }, [initialSelectedExamTypes, examTypes]);
 
     const handleAddExam = () => {
         if (!selectedExamType) {
@@ -70,7 +70,6 @@ export const ExamForm = forwardRef(({ initialSelectedExamTypes }: ExamFormProps,
     };
 
     const handleSubmit = async (data: ExamTypeInputs) => {
-        console.log(data);
         try {
             const newExam = await createExamType(data)
             if (newExam) {

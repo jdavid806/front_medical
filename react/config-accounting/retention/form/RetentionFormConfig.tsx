@@ -235,9 +235,6 @@ const RetentionFormConfig: React.FC<RetentionFormProps> = ({
             <Controller
               name="tax_id"
               control={control}
-              rules={{
-                required: "La cuenta contable de compras es requerida",
-              }}
               render={({ field, fieldState }) => (
                 <>
                   <Dropdown

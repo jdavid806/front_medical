@@ -235,7 +235,7 @@ export const OptometryBillingForm: React.FC<any> = (receiptId: any) => {
       },
       invoice_detail: {
         product_id: data.product.id,
-        type_product: "",
+        type_product: "optometry",
         tax_product: 0,
       },
       payments: data.paymentMethods.map((payment) => ({

@@ -16,6 +16,7 @@ import {
 import { useBillings } from "../../billing/hooks/useBillings";
 import { stringToDate } from "../../../services/utilidades";
 import { billingService } from "../../../services/api";
+import { accountingAccountsService } from "../../../services/api";
 
 interface BillingConfigTabProps {
   onValidationChange?: (isValid: boolean) => void;
@@ -166,12 +167,6 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
       existingTypes.includes(type)
     );
 
-    console.log("🔍 Verificando configuraciones completas:", {
-      requiredTypes,
-      existingTypes,
-      hasAllConfigs,
-    });
-
     return hasAllConfigs;
   }, [billings]);
 
@@ -179,12 +174,6 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
   useEffect(() => {
     const hasExistingConfigs = billings && billings.length > 0;
     const allComplete = checkAllConfigurationsComplete();
-
-    console.log("📊 Estado de configuraciones:", {
-      totalBillings: billings?.length,
-      hasExistingConfigs,
-      allComplete,
-    });
 
     onValidationChange?.(hasExistingConfigs);
     onConfigurationComplete?.(allComplete);
@@ -198,7 +187,6 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
   // Cargar datos existentes
   useEffect(() => {
     if (billings.length > 0) {
-      console.log("🔄 Cargando configuraciones existentes:", billings);
 
       billings.forEach((billing) => {
         const resolutionDate = billing.resolution_date
@@ -246,21 +234,10 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
     const cargarCuentasContables = async () => {
       setLoading((prev) => ({ ...prev, cuentas: true }));
       try {
-        const response = await fetch(
-          "/api/v1/admin/accounting-accounts?per_page=all"
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const cuentas = Array.isArray(data)
-          ? data
-          : data.data || data.accounts || [];
+        const response = await accountingAccountsService.getAllAccounts();
 
         setCuentasContables(
-          cuentas.filter((cuenta: CuentaContable) => cuenta.status === "active")
+          response.data.filter((cuenta: CuentaContable) => cuenta.status === "active")
         );
       } catch (error) {
         console.error("Error cargando cuentas:", error);
@@ -315,14 +292,14 @@ const BillingConfigTab: React.FC<BillingConfigTabProps> = ({
         resolution_date: formatDate(data.resolution_date),
         expiration_date: formatDate(data.expiration_date),
         type: tipoApi,
+        accounting_account_reverse_id: data.accounting_account_reverse_id,
       };
 
-      if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
-        payload.accounting_account_reverse_id =
-          data.accounting_account_reverse_id;
+      if (data?.id) {
+        await billingService.updateBillingConfiguration(payload, data.id);
+      } else {
+        await billingService.saveBillingConfiguration(payload);
       }
-
-      await billingService.saveBillingConfiguration(payload);
 
       setSavedConfigs((prev) => new Set(prev).add(tipoApi));
 

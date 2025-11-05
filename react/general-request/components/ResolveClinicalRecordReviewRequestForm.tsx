@@ -1,46 +1,35 @@
 import { InputTextarea } from "primereact/inputtextarea";
 import { classNames } from "primereact/utils";
-import React from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useResolveRequest } from "../hooks/useResolveRequest";
+import React, { forwardRef, useImperativeHandle } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export type ResolveClinicalRecordReviewRequestFormInputs = {
     notes: string | undefined
-    status: string
 }
 
-type ResolveClinicalRecordReviewRequestFormProps = {
-    requestId: string,
-    onSave: (data: any) => void
+export type ResolveClinicalRecordReviewRequestFormRef = {
+    getFormData: () => ResolveClinicalRecordReviewRequestFormInputs
 }
 
-export const ResolveClinicalRecordReviewRequestForm: React.FC<ResolveClinicalRecordReviewRequestFormProps> = ({ requestId, onSave }) => {
-
-    const { resolveRequest } = useResolveRequest();
+export const ResolveClinicalRecordReviewRequestForm = forwardRef((props, ref) => {
 
     const {
         control,
-        handleSubmit,
-        setValue,
-        formState: { errors }
+        formState: { errors },
+        getValues
     } = useForm<ResolveClinicalRecordReviewRequestFormInputs>()
-    const onSubmit: SubmitHandler<ResolveClinicalRecordReviewRequestFormInputs> = (data) => onHandleSubmit(data)
 
-    const onHandleSubmit: SubmitHandler<ResolveClinicalRecordReviewRequestFormInputs> = async (data) => {
-        try {
-            const response = await resolveRequest(requestId, {
-                status: data.status,
-                notes: data.notes || null
-            });
-            onSave(response)
-        } catch (error) {
-            console.error(error);
+    useImperativeHandle(ref, () => ({
+        getFormData: () => {
+            return {
+                notes: getValues('notes')
+            }
         }
-    }
+    }))
 
     return (
         <div>
-            <form className="needs-validation" noValidate onSubmit={handleSubmit(onSubmit)}>
+            <form className="needs-validation" noValidate>
                 <div className="mb-3">
                     <Controller
                         name='notes'
@@ -60,22 +49,7 @@ export const ResolveClinicalRecordReviewRequestForm: React.FC<ResolveClinicalRec
                         }
                     />
                 </div>
-                <div className="d-flex justify-content-end gap-2">
-                    <button
-                        className="btn btn-danger"
-                        type="submit"
-                        onClick={() => setValue('status', 'rejected')}>
-                        Rechazar
-                    </button>
-                    <button
-                        className="btn btn-success"
-                        type="submit"
-                        onClick={() => setValue('status', 'approved')}
-                    >
-                        Aceptar
-                    </button>
-                </div>
             </form>
         </div>
     );
-};
+});

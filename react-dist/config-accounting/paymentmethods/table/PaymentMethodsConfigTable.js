@@ -12,7 +12,11 @@ export const PaymentMethodsConfigTable = ({
   paymentMethods = [],
   loading = false,
   onDeleteItem,
-  onReload
+  onReload,
+  onCreate,
+  createLoading = false,
+  updateLoading = false,
+  deleteLoading = false
 }) => {
   const toast = useRef(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -28,9 +32,7 @@ export const PaymentMethodsConfigTable = ({
   }, {
     label: "Vencimiento Proveedores",
     value: "supplier_expiration"
-  },
-  // { label: "Transferencia", value: "supplier_expiration" },
-  {
+  }, {
     label: "Vencimiento Clientes",
     value: "customer_expiration"
   }, {
@@ -94,8 +96,6 @@ export const PaymentMethodsConfigTable = ({
     if (methodToDelete && onDeleteItem) {
       await onDeleteItem(methodToDelete.id.toString());
       showToast("success", "Éxito", `Método ${methodToDelete.name} eliminado`);
-
-      // Refrescar después de eliminar
       if (onReload) {
         await onReload();
       }
@@ -232,10 +232,24 @@ export const PaymentMethodsConfigTable = ({
       color: "#F8BB86"
     }
   }), methodToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que desea eliminar el m\xE9todo de pago, tenga en cuenta que afectar\xE1 a todos los pagos asociados ", /*#__PURE__*/React.createElement("b", null, methodToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-50px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método')), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"

@@ -43,7 +43,7 @@ export class PatientService extends BaseApiService {
       `medical/v2/patients/${getJWTPayload().sub}`,
       {
         per_page,
-        page
+        page,
       }
     );
   }
@@ -53,7 +53,7 @@ export class PatientService extends BaseApiService {
       `medical/v2/patients-with-appointments/${getJWTPayload().sub}`,
       {
         per_page,
-        page
+        page,
       }
     );
   }
@@ -62,7 +62,7 @@ export class PatientService extends BaseApiService {
     return await this.httpClient.get(`medical/v2/patients-clinical-records`, {
       per_page,
       page,
-      search
+      search,
     });
   }
 
@@ -138,6 +138,18 @@ export class PatientService extends BaseApiService {
   async getLastDisability(patientId) {
     return await this.httpClient.get(
       "medical/patients-disabilities/last-by-patient/" + patientId
+    );
+  }
+
+  async getWithFilters(data) {
+    return await this.httpClient.post(
+      this.microservice + "/patients/withFilters",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 }

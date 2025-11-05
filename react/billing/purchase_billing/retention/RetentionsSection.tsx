@@ -55,40 +55,44 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
 
   const calculateRetentionValue = (retention: any) => {
     const base = calculateBaseAmount();
-    let productsFiltered: any =
-      productsArray.filter(
-        (item: any) => item.taxChargeId == retention?.tax?.id
-      ) || 0;
+
+    let productsFiltered: any = productsArray?.filter(
+      (item: any) => item?.taxChargeId == retention?.tax?.id
+    ) || [];
 
     if (productsFiltered.length && retention?.tax_id !== null) {
       productsFiltered = productsFiltered.reduce((total: any, product: any) => {
-        const actualQuantity = ["medications", "vaccines"].includes(
-          product.typeProduct
-        )
-          ? product.lotInfo.reduce((sum, lot) => sum + (lot.quantity || 0), 0)
-          : Number(product.quantity) || 0;
+        let actualQuantity = 0;
 
-        const subtotal = actualQuantity * product.price;
+        if (["medications", "vaccines"].includes(product?.typeProduct)) {
+          const lotInfo = product?.lotInfo || [];
+          actualQuantity = Array.isArray(lotInfo)
+            ? lotInfo.reduce((sum: number, lot: any) => sum + (Number(lot?.quantity) || 0), 0)
+            : Number(product?.quantity) || 0;
+        } else {
+          actualQuantity = Number(product?.quantity) || 0;
+        }
+
+        const subtotal = actualQuantity * (Number(product?.price) || 0);
 
         let discount = 0;
 
-        if (product.discountType === "percentage") {
-          discount = subtotal * (product.discount / 100);
+        if (product?.discountType === "percentage") {
+          discount = subtotal * ((Number(product?.discount) || 0) / 100);
         } else {
-          discount = product.discount;
+          discount = Number(product?.discount) || 0;
         }
 
         const subtotalAfterDiscount = subtotal - discount;
 
-        const taxValue =
-          (subtotalAfterDiscount * (product.tax || product.iva)) / 100;
+        const taxValue = subtotalAfterDiscount * ((Number(product?.tax) || Number(product?.iva) || 0) / 100);
 
         return total + taxValue;
       }, 0);
 
-      return (productsFiltered * (retention.percentage || 0)) / 100;
+      return (productsFiltered * (Number(retention?.percentage) || 0)) / 100;
     } else {
-      return (base * (retention.percentage || 0)) / 100;
+      return (base * (Number(retention?.percentage) || 0)) / 100;
     }
   };
 
@@ -114,7 +118,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
         };
 
         if (field === "percentage") {
-          updatedRetention.value = calculateRetentionValue(value);
+          updatedRetention.value = calculateRetentionValue({ percentage: value });
         }
 
         return updatedRetention;
@@ -128,10 +132,10 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
   useEffect(() => {
     const updatedRetentions = retentions.map((retention) => ({
       ...retention,
-      value: calculateRetentionValue(retention.percentage),
+      value: calculateRetentionValue(retention),
     }));
     onRetentionsChange(updatedRetentions);
-  }, [subtotal, totalDiscount]);
+  }, [subtotal, totalDiscount, productsArray]);
 
   return (
     <div className="card mb-4 shadow-sm">
@@ -142,11 +146,12 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
         </h2>
         <Button
           type="button"
-          icon="pi pi-plus"
           label="Agregar retención"
-          className="btn btn-primary"
+          className="p-button-primary"
           onClick={handleAddRetention}
-        />
+        >
+          <i className="fas fa-hand-holding-usd me-2" style={{ marginLeft: "10px" }}></i>
+        </Button>
       </div>
       <div className="card-body">
         <div className="retentions-section">
@@ -161,8 +166,8 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
               className="ml-2"
             />
             <small className="d-block text-muted mt-1">
-              (Subtotal: {subtotal.toFixed(2)} - Descuentos:{" "}
-              {totalDiscount.toFixed(2)})
+              (Subtotal: {(subtotal || 0).toFixed(2)} - Descuentos:{" "}
+              {(totalDiscount || 0).toFixed(2)})
             </small>
           </div>
 
@@ -179,18 +184,21 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
                     options={retentionOptions}
                     optionLabel="name"
                     placeholder="Seleccione porcentaje"
-                    className="w-100"
+                    className="w-100 dropdown-billing-retention"
                     onChange={(e: DropdownChangeEvent) =>
                       handleRetentionChange(retention.id, "percentage", e.value)
                     }
-                    appendTo={"self"}
+                    appendTo="self"
+                    filter
+                    showClear
+                    filterBy="name"
                   />
                 </div>
 
                 <div className="col-md-5">
                   <label className="form-label">Valor</label>
                   <InputNumber
-                    value={retention.value}
+                    value={retention.value || 0}
                     mode="currency"
                     currency="DOP"
                     locale="es-DO"
@@ -204,7 +212,6 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
                     type="button"
                     className="p-button-danger"
                     onClick={() => handleRemoveRetention(retention.id)}
-                    // disabled={retentions.length <= 1}
                     tooltip="Eliminar retención"
                   >
                     <i className="fa-solid fa-trash"></i>
@@ -218,7 +225,7 @@ export const RetentionsSection: React.FC<RetentionsSectionProps> = ({
             <div className="d-flex justify-content-between align-items-center">
               <h5 className="mb-0">Total retenciones:</h5>
               <InputNumber
-                value={retentions.reduce((sum, r) => sum + r.value, 0)}
+                value={retentions.reduce((sum, r) => sum + (r.value || 0), 0)}
                 mode="currency"
                 currency="DOP"
                 locale="es-DO"

@@ -9,40 +9,53 @@ class HttpClient {
         };
     }
 
-    async request(endpoint, method, data = null) {
+    // Método genérico para todas las peticiones
+    async request(endpoint, method = "GET", data = null, token = null) {
         const fullUrl = `${this.baseUrl}${endpoint}`;
-        console.log('HttpClient: fetch URL:', fullUrl);
+        const headers = { ...this.defaultHeaders };
+
+        // Si nos pasan token, lo agregamos a los headers
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         try {
             const response = await fetch(fullUrl, {
                 method,
-                headers: this.defaultHeaders,
+                headers,
                 mode: "cors",
                 body: data ? JSON.stringify(data) : null,
             });
-    
+
             if (!response.ok) {
-                throw new Error(`Error en la red: ${response.statusText}`);
+                throw new Error(`Error en la red: ${response.status} - ${response.statusText}`);
             }
-    
-            return await response.json();
+
+            // Intentar parsear JSON, si no hay contenido, devolver null
+            const text = await response.text();
+            return text ? JSON.parse(text) : null;
         } catch (error) {
             console.error(`Error en petición ${method} ${endpoint}:`, error);
             throw error;
         }
     }
-    
 
-    get(endpoint) {
-        console.log('HttpClient GET llamado con endpoint:', endpoint);
-        return this.request(endpoint, "GET");
-    }
-    
-
-    post(endpoint, data) {
-        return this.request(endpoint, "POST", data);
+    // Métodos de conveniencia
+    get(endpoint, token = null) {
+        return this.request(endpoint, "GET", null, token);
     }
 
-    // Agregar otros métodos según necesidad (put, delete, etc)
+    post(endpoint, data, token = null) {
+        return this.request(endpoint, "POST", data, token);
+    }
+
+    put(endpoint, data, token = null) {
+        return this.request(endpoint, "PUT", data, token);
+    }
+
+    delete(endpoint, token = null) {
+        return this.request(endpoint, "DELETE", null, token);
+    }
 }
 
 export const httpClient = new HttpClient(url);

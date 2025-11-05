@@ -749,7 +749,6 @@ export const AppointmentFormModal = ({
       specialty_name: app.specialty_name
     };
   };
-  console.log(errors);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PatientFormModal, {
     visible: showPatientModal,
     onHide: () => setShowPatientModal(false),
@@ -760,11 +759,11 @@ export const AppointmentFormModal = ({
     visible: isOpen,
     onHide: onClose,
     header: "Crear cita",
+    appendTo: "self",
     style: {
       width: "90vw",
       maxWidth: "1200px"
     },
-    appendTo: "self",
     maximizable: true
   }, /*#__PURE__*/React.createElement(Toast, {
     ref: toast
@@ -810,9 +809,10 @@ export const AppointmentFormModal = ({
       appendTo: "self"
     }, field))))), /*#__PURE__*/React.createElement("div", {
       className: "d-flex"
-    }, /*#__PURE__*/React.createElement("button", {
+    }, /*#__PURE__*/React.createElement(Button, {
       type: "button",
-      className: "btn btn-primary",
+      label: "Agregar Paciente",
+      className: "p-button-primary",
       onClick: () => setShowPatientModal(true)
     }, /*#__PURE__*/React.createElement("i", {
       className: "fas fa-plus"
@@ -852,13 +852,12 @@ export const AppointmentFormModal = ({
       appendTo: "self"
     }, field))))), /*#__PURE__*/React.createElement("div", {
       className: "d-flex"
-    }, /*#__PURE__*/React.createElement("button", {
+    }, /*#__PURE__*/React.createElement(Button, {
+      label: "Registrar Paciente",
       type: "button",
-      className: "btn btn-primary",
+      className: "p-button-primary",
       onClick: () => setShowPatientModal(true)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-plus"
-    })))))
+    }))))
   }), getFormErrorMessage("patient"))), !isGroup && /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1073,9 +1072,9 @@ export const AppointmentFormModal = ({
       className: classNames("w-100", {
         "p-invalid": errors.appointment_date
       }),
-      appendTo: "self",
       disabled: appointmentDateDisabled,
       enabledDates: enabledDates,
+      appendTo: "self",
       placeholder: "Seleccione una fecha"
     }))
   }), getFormErrorMessage("appointment_date")), /*#__PURE__*/React.createElement("div", {
@@ -1215,7 +1214,7 @@ export const AppointmentFormModal = ({
       filter: true,
       showClear: true,
       placeholder: "Seleccione una finalidad",
-      className: classNames("w-100", {
+      className: classNames("w-100 dropdown-appointment", {
         "p-invalid": errors.consultation_purpose
       }),
       appendTo: "self"
@@ -1241,7 +1240,7 @@ export const AppointmentFormModal = ({
       filter: true,
       showClear: true,
       placeholder: "Seleccione un tipo de consulta",
-      className: classNames("w-100", {
+      className: classNames("w-100 dropdown-appointment", {
         "p-invalid": errors.consultation_type
       }),
       appendTo: "self"
@@ -1268,7 +1267,7 @@ export const AppointmentFormModal = ({
       filter: true,
       showClear: true,
       placeholder: "Seleccione una causa externa",
-      className: classNames("w-100"),
+      className: classNames("w-100 dropdown-appointment"),
       appendTo: "self"
     }, field)))
   })))), /*#__PURE__*/React.createElement("div", {
@@ -1317,20 +1316,20 @@ export const AppointmentFormModal = ({
     min: 1
   }))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement(Button, {
     type: "button",
-    className: "btn btn-secondary",
+    className: "p-button-primary",
     onClick: () => handleClear()
-  }, "Limpiar"), /*#__PURE__*/React.createElement("button", {
+  }, "Limpiar"), /*#__PURE__*/React.createElement(Button, {
     type: "button",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: handleSubmit(addAppointments)
   }, editingId && appointments.find(a => a.uuid === editingId) ? "Actualizar cita" : "Agregar cita"))), /*#__PURE__*/React.createElement("div", {
     className: "col-md-5"
   }, /*#__PURE__*/React.createElement("h5", null, "Citas programadas"), /*#__PURE__*/React.createElement("hr", null), appointments.length === 0 ? /*#__PURE__*/React.createElement("p", {
     className: "text-muted"
   }, "No hay citas programadas") : /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column gap-3"
+    className: "d-flex flex-column gap-3 align-items-center"
   }, appointments.map(appointment => {
     const hasErrors = Object.keys(appointment.errors).length > 0;
     return /*#__PURE__*/React.createElement("div", {
@@ -1387,20 +1386,24 @@ export const AppointmentFormModal = ({
     })))));
   })))))), /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement(Button, {
     className: "btn btn-link text-danger px-3 my-0",
     "aria-label": "Close",
     type: "button",
     onClick: onClose
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-arrow-left"
-  }), " Cerrar"), /*#__PURE__*/React.createElement("button", {
+  }), " Cerrar"), /*#__PURE__*/React.createElement(Button, {
     type: "submit",
-    className: "btn btn-primary my-0",
+    label: "Guardar Cita",
+    className: "p-button-primary",
     disabled: !formValid || hasValidationErrors()
   }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-bookmark"
-  }), " Guardar")))));
+    className: "fas fa-bookmark",
+    style: {
+      marginLeft: "5px"
+    }
+  }))))));
 };
 const AppointmentErrorIndicator = ({
   appointmentId,

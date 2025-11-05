@@ -13,6 +13,7 @@ import { Badge } from "primereact/badge";
 import { useBillings } from "../../billing/hooks/useBillings.js";
 import { stringToDate } from "../../../services/utilidades.js";
 import { billingService } from "../../../services/api/index.js";
+import { accountingAccountsService } from "../../../services/api/index.js";
 const BillingConfigTab = ({
   onValidationChange,
   onConfigurationComplete
@@ -142,11 +143,6 @@ const BillingConfigTab = ({
     const requiredTypes = ["tax_invoice", "consumer", "government_invoice", "credit_note", "debit_note", "purchase_invoice"];
     const existingTypes = billings?.map(billing => billing.type) || [];
     const hasAllConfigs = requiredTypes.every(type => existingTypes.includes(type));
-    console.log("🔍 Verificando configuraciones completas:", {
-      requiredTypes,
-      existingTypes,
-      hasAllConfigs
-    });
     return hasAllConfigs;
   }, [billings]);
 
@@ -154,11 +150,6 @@ const BillingConfigTab = ({
   useEffect(() => {
     const hasExistingConfigs = billings && billings.length > 0;
     const allComplete = checkAllConfigurationsComplete();
-    console.log("📊 Estado de configuraciones:", {
-      totalBillings: billings?.length,
-      hasExistingConfigs,
-      allComplete
-    });
     onValidationChange?.(hasExistingConfigs);
     onConfigurationComplete?.(allComplete);
   }, [billings, checkAllConfigurationsComplete, onValidationChange, onConfigurationComplete]);
@@ -166,7 +157,6 @@ const BillingConfigTab = ({
   // Cargar datos existentes
   useEffect(() => {
     if (billings.length > 0) {
-      console.log("🔄 Cargando configuraciones existentes:", billings);
       billings.forEach(billing => {
         const resolutionDate = billing.resolution_date ? stringToDate(billing.resolution_date) : null;
         const expirationDate = billing.expiration_date ? stringToDate(billing.expiration_date) : null;
@@ -211,13 +201,8 @@ const BillingConfigTab = ({
         cuentas: true
       }));
       try {
-        const response = await fetch("/api/v1/admin/accounting-accounts?per_page=all");
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        const data = await response.json();
-        const cuentas = Array.isArray(data) ? data : data.data || data.accounts || [];
-        setCuentasContables(cuentas.filter(cuenta => cuenta.status === "active"));
+        const response = await accountingAccountsService.getAllAccounts();
+        setCuentasContables(response.data.filter(cuenta => cuenta.status === "active"));
       } catch (error) {
         console.error("Error cargando cuentas:", error);
         Swal.fire({
@@ -262,12 +247,14 @@ const BillingConfigTab = ({
         invoice_to: data.invoice_to,
         resolution_date: formatDate(data.resolution_date),
         expiration_date: formatDate(data.expiration_date),
-        type: tipoApi
+        type: tipoApi,
+        accounting_account_reverse_id: data.accounting_account_reverse_id
       };
-      if (["fiscal", "consumidor", "gubernamental"].includes(tipo)) {
-        payload.accounting_account_reverse_id = data.accounting_account_reverse_id;
+      if (data?.id) {
+        await billingService.updateBillingConfiguration(payload, data.id);
+      } else {
+        await billingService.saveBillingConfiguration(payload);
       }
-      await billingService.saveBillingConfiguration(payload);
       setSavedConfigs(prev => new Set(prev).add(tipoApi));
       await fetchBillings();
       Swal.fire({

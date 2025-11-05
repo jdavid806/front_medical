@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Toast } from "primereact/toast";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
+import { Calendar } from "primereact/calendar";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
-// import { invoiceService } from "../../services/api";
+import { CustomPRTable } from "../components/CustomPRTable.js";
 import { formatDate } from "../../services/utilidades.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
 import { useCompany } from "../hooks/useCompany.js";
-import { SplitButton } from "primereact/splitbutton";
 import { invoiceService } from "../../services/api/index.js";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
 export const DebitCreditNotes = () => {
   const [notas, setNotas] = useState([]);
-  const [notasFiltradas, setNotasFiltradas] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [totalRecords, setTotalRecords] = useState(0);
   const {
     company,
-    setCompany,
     fetchCompany
   } = useCompany();
+
+  // Pagination state
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [globalFilter, setGlobalFilter] = useState("");
   const [filtros, setFiltros] = useState({
     numeroNota: "",
     cliente: "",
@@ -38,23 +43,40 @@ export const DebitCreditNotes = () => {
     label: "Crédito",
     value: "Crédito"
   }];
+  const toast = useRef(null);
   useEffect(() => {
-    loadNotes();
+    loadNotes(1, rows);
   }, []);
-  async function loadNotes() {
-    setLoading(true);
-    const responseNotes = await invoiceService.getNotes();
-    console.log("Notas", responseNotes);
-    const dataMapped = handleDataMapped(responseNotes.data);
-    setNotas(dataMapped);
-    setNotasFiltradas(dataMapped);
-    setLoading(false);
+  const onPageChange = event => {
+    setFirst(event.first);
+    setRows(event.rows);
+    aplicarFiltros(event.page + 1, event.rows);
+  };
+  async function loadNotes(page = 1, per_page = 10) {
+    setTableLoading(true);
+    try {
+      const responseNotes = await invoiceService.getNotes();
+      console.log("Notas", responseNotes);
+      const dataMapped = handleDataMapped(responseNotes.data);
+      const startIndex = (page - 1) * per_page;
+      const endIndex = startIndex + per_page;
+      const paginatedData = dataMapped.slice(startIndex, endIndex);
+      setNotas(paginatedData);
+      setTotalRecords(dataMapped.length);
+    } catch (error) {
+      console.error("Error cargando notas:", error);
+      showToast("error", "Error", "No se pudieron cargar las notas");
+      setNotas([]);
+      setTotalRecords(0);
+    } finally {
+      setTableLoading(false);
+    }
   }
   function handleDataMapped(data) {
     const dataMapped = data.map(note => {
       return {
         ...note,
-        cliente: note.invoice.third_party ? `${note.invoice.third_party.first_name ?? ""} ${note.invoice.third_party.middle_name ?? ""} ${note.invoice.third_party.last_name ?? ""} ${note.invoice.third_party.second_last_name ?? ""}` : "Sin cliente",
+        cliente: note.invoice.third_party ? note.invoice.third_party.name : "Sin cliente",
         tipo: note.type === "debit" ? "Débito" : "Crédito"
       };
     });
@@ -66,42 +88,47 @@ export const DebitCreditNotes = () => {
       [field]: value
     }));
   };
-  const aplicarFiltros = () => {
-    setLoading(true);
-    let resultados = [...notas];
+  const aplicarFiltros = async (page = 1, per_page = 10) => {
+    setTableLoading(true);
+    try {
+      const responseNotes = await invoiceService.getNotes();
+      let filteredData = handleDataMapped(responseNotes.data);
 
-    // Filtro por número de nota
-    if (filtros.numeroNota) {
-      resultados = resultados.filter(nota => nota.numeroNota.toLowerCase().includes(filtros.numeroNota.toLowerCase()));
-    }
+      // Aplicar filtros
+      if (filtros.numeroNota) {
+        filteredData = filteredData.filter(nota => nota.id.toLowerCase().includes(filtros.numeroNota.toLowerCase()));
+      }
+      if (filtros.cliente) {
+        filteredData = filteredData.filter(nota => nota.cliente.toLowerCase().includes(filtros.cliente.toLowerCase()));
+      }
+      if (filtros.identificacion) {
+        filteredData = filteredData.filter(nota => nota.identificacion?.includes(filtros.identificacion));
+      }
+      if (filtros.tipoNota) {
+        filteredData = filteredData.filter(nota => nota.tipo === filtros.tipoNota);
+      }
+      if (filtros.rangoFechas && filtros.rangoFechas.length === 2) {
+        const [inicio, fin] = filtros.rangoFechas;
+        filteredData = filteredData.filter(nota => {
+          const fechaNota = new Date(nota.created_at);
+          return fechaNota >= inicio && fechaNota <= fin;
+        });
+      }
 
-    // Filtro por cliente
-    if (filtros.cliente) {
-      resultados = resultados.filter(nota => nota.cliente.toLowerCase().includes(filtros.cliente.toLowerCase()));
+      // Paginación
+      const startIndex = (page - 1) * per_page;
+      const endIndex = startIndex + per_page;
+      const paginatedData = filteredData.slice(startIndex, endIndex);
+      setNotas(paginatedData);
+      setTotalRecords(filteredData.length);
+    } catch (error) {
+      console.error("Error aplicando filtros:", error);
+      showToast("error", "Error", "No se pudieron aplicar los filtros");
+      setNotas([]);
+      setTotalRecords(0);
+    } finally {
+      setTableLoading(false);
     }
-
-    // Filtro por identificación
-    if (filtros.identificacion) {
-      resultados = resultados.filter(nota => nota.identificacion.includes(filtros.identificacion));
-    }
-
-    // Filtro por tipo de nota
-    if (filtros.tipoNota) {
-      resultados = resultados.filter(nota => nota.tipoNota === filtros.tipoNota);
-    }
-
-    // Filtro por rango de fechas
-    if (filtros.rangoFechas && filtros.rangoFechas.length === 2) {
-      const [inicio, fin] = filtros.rangoFechas;
-      resultados = resultados.filter(nota => {
-        const fechaNota = new Date(nota.fechaNota);
-        return fechaNota >= inicio && fechaNota <= fin;
-      });
-    }
-    setTimeout(() => {
-      setNotasFiltradas(resultados);
-      setLoading(false);
-    }, 300);
   };
   const limpiarFiltros = () => {
     setFiltros({
@@ -111,15 +138,15 @@ export const DebitCreditNotes = () => {
       rangoFechas: null,
       tipoNota: null
     });
-    setNotasFiltradas(notas);
+    loadNotes(1, rows);
   };
   const formatCurrency = value => {
-    return value.toLocaleString("es-DO", {
+    return value?.toLocaleString("es-DO", {
       style: "currency",
       currency: "DOP",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    });
+    }) || "$0.00";
   };
   const getTipoNotaSeverity = tipo => {
     return tipo === "debit" ? "danger" : "success";
@@ -144,6 +171,7 @@ export const DebitCreditNotes = () => {
       data: formatedData,
       fileName: `notas`
     });
+    showToast("success", "Éxito", "Excel descargado correctamente");
   }
   function exportToPDF(data) {
     const table = `
@@ -197,122 +225,212 @@ export const DebitCreditNotes = () => {
       name: "Notes"
     };
     generatePDFFromHTML(table, company, configPDF);
+    showToast("success", "Éxito", "PDF descargado correctamente");
   }
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px"
-    },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333"
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600
-    },
-    tableCell: {
-      padding: "0.75rem 1rem"
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block"
-    },
-    rangeCalendar: {
-      width: "100%"
-    }
-  };
-  const actionBodyTemplate = rowData => {
-    const items = [{
-      label: "Descargar Excel"
-      // template: createActionTemplate(
-      //   "file-excel",
-      //   "Descargar Excel",
-      //   "text-green-600"
-      // ),
-      // command: () => handleDescargarExcel(rowData),
+  const printInvoice = useCallback(async nota => {
+    generarFormatoContable("NotaDebitoCredito", nota, "Impresion");
+  }, []);
+  const TableMenu = ({
+    rowData
+  }) => {
+    const menu = useRef(null);
+    const handleDownloadExcel = () => {
+      handleDescargarExcel([rowData]);
+    };
+    const handleDownloadPdf = () => {
+      exportToPDF([rowData]);
+    };
+    const handlePrintInvoice = () => {
+      printInvoice(rowData);
+    };
+    const menuItems = [{
+      label: "Descargar Excel",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-excel me-2"
+      }),
+      command: handleDownloadExcel
     }, {
-      label: "Descargar PDF"
-      // template: createActionTemplate(
-      //   "file-pdf",
-      //   "Descargar PDF",
-      //   "text-red-500"
-      // ),
-      // command: () => handleDescargarPDF(rowData),
+      label: "Descargar PDF",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-pdf me-2"
+      }),
+      command: handleDownloadPdf
     }, {
       label: "Imprimir",
-      // template: createActionTemplate("print", "Imprimir", "text-blue-500"),
-
-      // command: () => console.log("Imprimir factura", rowData),
-      command: () => generarFormatoContable("NotaDebitoCredito", rowData, "Impresion")
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-print me-2"
+      }),
+      command: handlePrintInvoice
     }];
     return /*#__PURE__*/React.createElement("div", {
-      className: "flex gap-2"
-    }, /*#__PURE__*/React.createElement(SplitButton, {
-      label: "Acciones",
-      model: items,
-      severity: "contrast",
-      className: "p-button-sm point",
-      buttonClassName: "p-button-sm"
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      className: "p-button-primary flex items-center gap-2",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
     }));
   };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "container-fluid mt-4",
+  const actionBodyTemplate = rowData => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "flex align-items-center justify-content-center",
+      style: {
+        gap: "0.5rem",
+        minWidth: "120px"
+      }
+    }, /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData
+    }));
+  };
+  const showToast = (severity, summary, detail) => {
+    toast.current?.show({
+      severity,
+      summary,
+      detail,
+      life: 3000
+    });
+  };
+  const handleSearchChange = searchValue => {
+    setGlobalFilter(searchValue);
+  };
+  const handleRefresh = async () => {
+    limpiarFiltros();
+    await loadNotes(1, rows);
+  };
+  const handleExportAllExcel = () => {
+    handleDescargarExcel(notas);
+  };
+  const handleExportAllPDF = () => {
+    exportToPDF(notas);
+  };
+
+  // Mapear los datos para la tabla
+  const tableItems = notas.map(nota => ({
+    id: nota.id,
+    tipo: nota.tipo,
+    cliente: nota.cliente,
+    invoice_code: nota.invoice.invoice_code,
+    date: nota.created_at,
+    amount: nota.amount,
+    reason: nota.reason,
+    type: nota.type,
+    actions: nota
+  }));
+  const columns = [{
+    field: 'id',
+    header: 'No. Nota',
+    sortable: true
+  }, {
+    field: 'tipo',
+    header: 'Tipo nota',
+    sortable: true,
+    body: rowData => /*#__PURE__*/React.createElement(Tag, {
+      value: rowData.tipo,
+      severity: getTipoNotaSeverity(rowData.type)
+    })
+  }, {
+    field: 'cliente',
+    header: 'Cliente',
+    sortable: true
+  }, {
+    field: 'invoice_code',
+    header: 'Factura',
+    sortable: true
+  }, {
+    field: 'date',
+    header: 'Fecha nota',
+    sortable: true,
+    body: rowData => formatDate(rowData.date)
+  }, {
+    field: 'amount',
+    header: 'Valor nota',
+    sortable: true,
+    body: rowData => formatCurrency(rowData.amount)
+  }, {
+    field: 'reason',
+    header: 'Motivo',
+    sortable: true
+  }, {
+    field: 'actions',
+    header: 'Acciones',
+    body: rowData => actionBodyTemplate(rowData.actions),
+    exportable: false,
+    width: "120px"
+  }];
+  return /*#__PURE__*/React.createElement("main", {
+    className: "main w-100",
+    id: "top"
+  }, /*#__PURE__*/React.createElement(Toast, {
+    ref: toast
+  }), loading ? /*#__PURE__*/React.createElement("div", {
+    className: "flex justify-content-center align-items-center",
     style: {
-      width: "100%",
-      padding: "0 15px"
+      height: "50vh",
+      marginLeft: "900px",
+      marginTop: "300px"
+    }
+  }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement("div", {
+    className: "w-100"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-30px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "flex-end",
-      margin: "10px"
-    }
+    className: "text-end pt-3 mb-2"
   }, /*#__PURE__*/React.createElement(Button, {
-    label: "Nueva Nota D\xE9bito/Cr\xE9dito",
-    icon: "pi pi-file-edit",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: () => window.location.href = "NotasDebitoCredito"
-  })), /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    style: styles.card
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-file-edit me-2"
+  }), "Nueva Nota D\xE9bito/Cr\xE9dito")), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros de B\xFAsqueda"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3"
+    className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "N\xFAmero de nota"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.numeroNota,
     onChange: e => handleFilterChange("numeroNota", e.target.value),
     placeholder: "ND-001-0000001",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Cliente"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.cliente,
     onChange: e => handleFilterChange("cliente", e.target.value),
     placeholder: "Nombre del cliente",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Identificaci\xF3n"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.identificacion,
     onChange: e => handleFilterChange("identificacion", e.target.value),
     placeholder: "RNC/C\xE9dula del cliente",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-6 col-lg-3"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Tipo de nota"), /*#__PURE__*/React.createElement(Dropdown, {
     value: filtros.tipoNota,
     options: tiposNota,
@@ -321,9 +439,9 @@ export const DebitCreditNotes = () => {
     placeholder: "Seleccione tipo",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12 col-lg-6"
+    className: "col-12 col-md-6 mb-3"
   }, /*#__PURE__*/React.createElement("label", {
-    style: styles.formLabel
+    className: "form-label"
   }, "Rango de fechas"), /*#__PURE__*/React.createElement(Calendar, {
     value: filtros.rangoFechas,
     onChange: e => handleFilterChange("rangoFechas", e.value),
@@ -338,104 +456,30 @@ export const DebitCreditNotes = () => {
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Limpiar",
     icon: "pi pi-trash",
-    className: "btn btn-phoenix-secondary",
+    className: "p-button-secondary",
     onClick: limpiarFiltros
   }), /*#__PURE__*/React.createElement(Button, {
     label: "Aplicar Filtros",
     icon: "pi pi-filter",
-    className: "btn btn-primary",
-    onClick: aplicarFiltros,
-    loading: loading
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Notas de D\xE9bito/Cr\xE9dito",
-    style: styles.card
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end align-items-center m-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2 align-items-center"
-  }, /*#__PURE__*/React.createElement(Button, {
-    tooltip: "Exportar a Excel",
-    tooltipOptions: {
-      position: "top"
-    },
-    className: "p-button-success d-flex justify-content-center",
-    onClick: e => {
-      e.stopPropagation();
-      handleDescargarExcel(notasFiltradas);
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-file-excel"
-  })), /*#__PURE__*/React.createElement(Button, {
-    tooltip: "Exportar a PDF",
-    tooltipOptions: {
-      position: "top"
-    },
-    className: "p-button-secondary d-flex justify-content-center",
-    onClick: e => {
-      e.stopPropagation();
-      exportToPDF(notasFiltradas);
-    }
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fa-solid fa-file-pdf"
-  })))), /*#__PURE__*/React.createElement(DataTable, {
-    value: notasFiltradas,
+    className: "p-button-primary",
+    onClick: () => aplicarFiltros(),
+    loading: tableLoading
+  }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    columns: columns,
+    data: tableItems,
+    loading: tableLoading,
+    onSearch: handleSearchChange,
+    onReload: handleRefresh,
     paginator: true,
-    rows: 10,
+    rows: rows,
+    first: first,
+    onPage: onPageChange,
+    totalRecords: totalRecords,
     rowsPerPageOptions: [5, 10, 25, 50],
-    loading: loading,
-    className: "p-datatable-striped p-datatable-gridlines",
+    currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} notas",
     emptyMessage: "No se encontraron notas",
-    responsiveLayout: "scroll",
-    tableStyle: {
-      minWidth: "50rem"
-    }
-  }, /*#__PURE__*/React.createElement(Column, {
-    field: "id",
-    header: "No. Nota",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "tipo",
-    header: "Tipo nota",
-    sortable: true,
-    body: rowData => /*#__PURE__*/React.createElement(Tag, {
-      value: rowData.tipo,
-      severity: getTipoNotaSeverity(rowData.type)
-    }),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "cliente",
-    header: "Cliente",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "invoice.invoice_code",
-    header: "Factura",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "date",
-    header: "Fecha nota",
-    sortable: true,
-    body: rowData => formatDate(rowData.date),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "amount",
-    header: "Valor nota",
-    sortable: true,
-    body: rowData => formatCurrency(rowData.amount),
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "reason",
-    header: "Motivo",
-    sortable: true,
-    style: styles.tableCell
-  }), /*#__PURE__*/React.createElement(Column, {
-    header: "Acciones",
-    body: actionBodyTemplate,
-    style: {
-      ...styles.tableCell,
-      width: "120px"
-    }
+    exportExcel: handleExportAllExcel,
+    exportPdf: handleExportAllPDF,
+    showExportButtons: true
   }))));
 };

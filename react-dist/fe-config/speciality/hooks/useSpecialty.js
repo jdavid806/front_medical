@@ -10,6 +10,7 @@ export const useSpecialty = () => {
   const [loadingCurrentSpecialties, setLoadingCurrentSpecialties] = useState(false);
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
+  const [selectedAntecedent, setSelectedAntecedent] = useState(null);
   const [specializableElements, setSpecializableElements] = useState([]);
 
   // Form states
@@ -155,9 +156,21 @@ export const useSpecialty = () => {
       const response = await fetch(`${getApiUrl()}/medical/specializables/by-specialty/${specialtyName}`);
       if (!response.ok) throw new Error('Error loading specializable elements');
       const data = await response.json();
+      const antecedents = data.filter(item => item.specializable_type === 'Antecedente');
+      if (antecedents.length > 0) {
+        const response = await fetch(`${getApiUrl()}/medical/clinical-record-types`);
+        if (!response.ok) throw new Error('Error loading clinical record types');
+        const serverClinicalRecordTypes = await response.json();
+        console.log('Antecedentes:', antecedents);
+        console.log('Clinical Record Types:', serverClinicalRecordTypes);
+        const antecedent = serverClinicalRecordTypes.find(item => item.id == antecedents[0].specializable_id);
+        if (antecedent) {
+          setSelectedAntecedent(antecedent);
+        }
+      }
 
       // Transform data to match our interface
-      const transformedData = data.map(item => ({
+      const transformedData = data.filter(item => item.specializable_type !== 'Antecedente').map(item => ({
         id: item.id,
         specializable_type: item.specializable_type,
         specializable_id: item.specializable_id,
@@ -187,14 +200,24 @@ export const useSpecialty = () => {
   };
   const saveSpecializableElements = async () => {
     if (!selectedSpecialty) return;
+    const finalSpecializableElements = [...specializableElements];
+    if (selectedAntecedent) {
+      finalSpecializableElements.push({
+        specializable_type: 'Antecedente',
+        specializable_id: selectedAntecedent.id.toString(),
+        specialty_id: selectedSpecialty.specialty || "",
+        description: selectedAntecedent.name,
+        display_name: selectedAntecedent.name
+      });
+    }
     try {
-      const url = `${getApiUrl()}/medical/specializables/${selectedSpecialty.name}`;
+      const url = `${getApiUrl()}/medical/specializables/${selectedSpecialty.specialty}`;
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(specializableElements)
+        body: JSON.stringify(finalSpecializableElements)
       });
       if (!response.ok) throw new Error('Error saving data');
       showSuccess('Configuración guardada exitosamente');
@@ -220,7 +243,7 @@ export const useSpecialty = () => {
   };
   const openConfigModal = async specialty => {
     setSelectedSpecialty(specialty);
-    await loadSpecializableElements(specialty.name);
+    await loadSpecializableElements(specialty.specialty);
     setShowConfigModal(true);
   };
   const addClinicalRecord = () => {
@@ -228,7 +251,7 @@ export const useSpecialty = () => {
     const newElement = {
       specializable_type: 'Historia Clínica',
       specializable_id: String(selectedClinicalRecord.id),
-      specialty_id: selectedSpecialty.name,
+      specialty_id: selectedSpecialty.specialty,
       description: selectedClinicalRecord.name,
       display_name: selectedClinicalRecord.name
     };
@@ -249,7 +272,7 @@ export const useSpecialty = () => {
       const newElement = {
         specializable_type: 'CIE-11',
         specializable_id: String(cie11Code.codigo),
-        specialty_id: selectedSpecialty.name,
+        specialty_id: selectedSpecialty.specialty,
         description: cie11Code.descripcion,
         display_name: displayName
       };
@@ -272,6 +295,7 @@ export const useSpecialty = () => {
     setSpecializableElements(updatedElements);
   };
   const resetModalForm = () => {
+    setSelectedAntecedent(null);
     setSelectedSpecialty(null);
     setSpecializableElements([]);
     setSelectedClinicalRecord(null);
@@ -346,6 +370,8 @@ export const useSpecialty = () => {
     showWarn,
     loadCie11Codes,
     onActiveSpecialty,
-    onDeactiveSpecialty
+    onDeactiveSpecialty,
+    selectedAntecedent,
+    setSelectedAntecedent
   };
 };

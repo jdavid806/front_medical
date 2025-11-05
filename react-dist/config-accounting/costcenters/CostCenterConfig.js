@@ -9,7 +9,6 @@ import { useCostCentersDelete } from "./hooks/useCostCentersDelete.js";
 import { CostCentersMapperCreate, CostCentersMapperUpdate } from "./mapper/mappedCostCenters.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
 import { useCostCentersByIdConfigTable } from "./hooks/useCostCentersByConfigTable.js";
-import { Button } from "primereact/button";
 export const CostCenterConfig = ({
   onConfigurationComplete
 }) => {
@@ -78,13 +77,13 @@ export const CostCenterConfig = ({
       const success = await deleteCostCenter(id);
       if (success) {
         await refreshCostCenters();
-        SwalManager.success('Retention eliminado correctamente');
+        SwalManager.success('Centro de costo eliminado correctamente');
       } else {
-        SwalManager.error('No se pudo eliminar Retention');
+        SwalManager.error('No se pudo eliminar el centro de costo');
       }
     } catch (error) {
       console.error("Error en eliminación:", error);
-      SwalManager.error('Error al eliminar el Retention');
+      SwalManager.error('Error al eliminar el centro de costo');
     }
   };
   useEffect(() => {
@@ -109,33 +108,24 @@ export const CostCenterConfig = ({
         overlay: 100000
       }
     }
-  }, error && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("h4", {
+    className: "mb-1"
+  }, "Configuraci\xF3n de Centros de Costo")), error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end align-items-center mb-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "text-end"
-  }, /*#__PURE__*/React.createElement(Button, {
-    className: "p-button-primary d-flex align-items-center",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo'))), /*#__PURE__*/React.createElement(CostCenterConfigTable, {
+  }, error), /*#__PURE__*/React.createElement(CostCenterConfigTable, {
     costCenters: costCenters,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteCostCenter,
     loading: loading,
-    onReload: refreshCostCenters
-  }))), /*#__PURE__*/React.createElement(CostCenterModalConfig, {
+    onReload: refreshCostCenters,
+    onCreate: onCreate,
+    createLoading: createLoading,
+    updateLoading: updateLoading,
+    deleteLoading: deleteLoading
+  }), /*#__PURE__*/React.createElement(CostCenterModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {

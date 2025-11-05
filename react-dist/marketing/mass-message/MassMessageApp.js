@@ -6,6 +6,7 @@ import { useMassMessage } from "./hooks/useMassMessage.js";
 import { useMassMessagesAll } from "./hooks/useMassMessagesAll.js";
 import { MassMessageTable } from "./MassMessageTable.js";
 import { MassMessageFormModal } from "./MassMessageFormModal.js";
+import { Dialog } from "primereact/dialog";
 export const MassMessageApp = () => {
   const {
     massMessage,
@@ -96,11 +97,18 @@ export const MassMessageApp = () => {
   }), "Nuevo Mensaje"))), /*#__PURE__*/React.createElement(MassMessageTable, {
     massMessages: massMessages,
     onEditItem: handleTableEdit
-  }), /*#__PURE__*/React.createElement(MassMessageFormModal, {
-    title: "Crear Mensaje Masivo",
-    show: showFormModal,
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    header: "Crear Mensaje Masivo",
+    visible: showFormModal,
+    style: {
+      width: "75vw"
+    },
+    onHide: () => {
+      if (!showFormModal) return;
+      setShowFormModal(false);
+    }
+  }, /*#__PURE__*/React.createElement(MassMessageFormModal, {
     handleSubmit: handleSubmit,
-    onHide: handleHideFormModal,
     initialData: initialData
-  })));
+  }))));
 };

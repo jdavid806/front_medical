@@ -1,0 +1,16 @@
+@media (max-width: 480px) {
+
+.card-content-main{
+    margin-top: -15px;
+    margin-left: -20px;
+    width: 90vw !important;
+}
+}
+
+/* Tablet pequeña (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .card-content-main {
+        width: 90vw !important;
+    }
+}
+

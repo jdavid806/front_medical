@@ -185,53 +185,28 @@ export const SystemConfiguration = ({
     };
   };
   const contabilidadProgress = getContabilidadProgress();
-
-  // const getModuleSpecificMessage = () => {
-  //     switch (currentStep.id) {
-  //         case 'empresa':
-  //             return !canProceedFromCompany
-  //                 ? 'Complete todos los módulos de empresa para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Empresa configurada correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'contabilidad':
-  //             return !canProceedFromContabilidad
-  //                 ? `Complete todos los submódulos de contabilidad para habilitar el botón "Siguiente Módulo" (${contabilidadProgress?.completedSubSteps}/${contabilidadProgress?.totalSubSteps})`
-  //                 : '¡Todos los submódulos de contabilidad están completos! Puede continuar al siguiente módulo.';
-
-  //         case 'especialidades':
-  //             return !canProceedFromEspecialidades
-  //                 ? 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'servicios':
-  //             return !canProceedFromServicios
-  //                 ? 'Configure al menos un servicio para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Servicios configurados correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'usuarios':
-  //             return !canProceedFromUsuarios
-  //                 ? 'Configure al menos un usuario para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Usuarios configurados correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'roles':
-  //             return !canProceedFromRoles
-  //                 ? 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Roles configurados correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'horarios':
-  //             return !canProceedFromHorarios
-  //                 ? 'Configure al menos un horario de atención para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Horarios configurados correctamente! Puede continuar al siguiente módulo.';
-
-  //         case 'precios':
-  //             return !canProceedFromPrecios
-  //                 ? 'Configure al menos un precio para habilitar el botón "Siguiente Módulo"'
-  //                 : '¡Precios configurados correctamente! Puede continuar al siguiente módulo.';
-
-  //         default:
-  //             return 'Complete la configuración de este módulo antes de continuar al siguiente.';
-  //     }
-  // };
+  const getModuleSpecificMessage = () => {
+    switch (currentStep.id) {
+      case 'empresa':
+        return !canProceedFromCompany ? 'Complete todos los módulos de empresa para habilitar el botón "Siguiente Módulo"' : '¡Empresa configurada correctamente! Puede continuar al siguiente módulo.';
+      case 'contabilidad':
+        return !canProceedFromContabilidad ? `Complete todos los submódulos de contabilidad para habilitar el botón "Siguiente Módulo" (${contabilidadProgress?.completedSubSteps}/${contabilidadProgress?.totalSubSteps})` : '¡Todos los submódulos de contabilidad están completos! Puede continuar al siguiente módulo.';
+      case 'especialidades':
+        return !canProceedFromEspecialidades ? 'Configure al menos una especialidad activa para habilitar el botón "Siguiente Módulo"' : '¡Especialidades configuradas correctamente! Puede continuar al siguiente módulo.';
+      case 'servicios':
+        return !canProceedFromServicios ? 'Configure al menos un servicio para habilitar el botón "Siguiente Módulo"' : '¡Servicios configurados correctamente! Puede continuar al siguiente módulo.';
+      case 'usuarios':
+        return !canProceedFromUsuarios ? 'Configure al menos un usuario para habilitar el botón "Siguiente Módulo"' : '¡Usuarios configurados correctamente! Puede continuar al siguiente módulo.';
+      case 'roles':
+        return !canProceedFromRoles ? 'Configure al menos un rol de usuario para habilitar el botón "Siguiente Módulo"' : '¡Roles configurados correctamente! Puede continuar al siguiente módulo.';
+      case 'horarios':
+        return !canProceedFromHorarios ? 'Configure al menos un horario de atención para habilitar el botón "Siguiente Módulo"' : '¡Horarios configurados correctamente! Puede continuar al siguiente módulo.';
+      case 'precios':
+        return !canProceedFromPrecios ? 'Configure al menos un precio para habilitar el botón "Siguiente Módulo"' : '¡Precios configurados correctamente! Puede continuar al siguiente módulo.';
+      default:
+        return 'Complete la configuración de este módulo antes de continuar al siguiente.';
+    }
+  };
 
   // Verificar si mostrar alerta de éxito
   const shouldShowSuccessAlert = () => {

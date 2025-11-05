@@ -1,4 +1,3 @@
-/* Estilos para tabla con bordes redondeados - Diseño profesional */
 .p-datatable {
   border-radius: var(--border-radius) !important;
   box-shadow: var(--shadow) !important;
@@ -26,7 +25,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   background-color: white !important;
 }
 
-/* HEADER PROFESIONAL CON COLOR PRIMARY */
 .p-datatable-thead {
   background-color: var(--primary-color) !important;
   border: none !important;
@@ -53,7 +51,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   border-right: none !important;
 }
 
-/* ESQUINAS SUPERIORES PERFECTAS */
 .p-datatable-thead tr:first-child th:first-child {
   border-top-left-radius: var(--border-radius) !important;
 }
@@ -110,7 +107,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   border-bottom-right-radius: var(--border-radius) !important;
 }
 
-/* HEADER SUPERIOR */
 .p-datatable-header {
   background-color: white !important;
   border-bottom: 1px solid #e0e0e0 !important;
@@ -120,7 +116,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   border: none !important;
 }
 
-/* PAGINADOR COMPACTO Y ELEGANTE */
 .p-paginator {
   background-color: white !important;
   border-top: 1px solid #e0e0e0 !important;
@@ -179,14 +174,14 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   color: #666 !important;
 }
 
-/* DROPDOWN ELEGANTE */
 .p-paginator .p-dropdown {
   gap: 2px;
   min-width: 80px !important;
   background-color: white !important;
-  border: 1px solid #d0d0d0 !important;
   border-radius: 6px !important;
   margin: 0 0.5rem !important;
+  border-style: hidden;
+  
 }
 
 .p-paginator .p-dropdown .p-dropdown-label {
@@ -194,12 +189,16 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   font-weight: 500 !important;
   padding: 0.5rem 0.8rem !important;
   font-size: 0.9rem !important;
+
 }
 
 .p-paginator .p-dropdown .p-dropdown-trigger {
   background-color: var(--secondary-color) !important;
   color: #666 !important;
-  width: 2rem !important;
+  width: 2.3rem !important;
+  height: 2.3rem;
+  border-top-left-radius: 0.2rem;
+  border-bottom-left-radius: 0.2rem;
 }
 
 .p-paginator .p-dropdown .p-dropdown-trigger .p-dropdown-trigger-icon {
@@ -229,7 +228,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   outline: none !important;
 }
 
-/* ENLACES ELEGANTES */
 .p-datatable-tbody a {
   color: var(--primary-color) !important;
   text-decoration: none !important;
@@ -245,7 +243,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   background-color: rgba(52, 152, 219, 0.1) !important;
 }
 
-/* BOTÓN DE ACCIONES ELEGANTE */
 .p-button-primaryflex {
   border-radius: 6px !important;
   transition: var(--transition) !important;
@@ -257,7 +254,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* ELIMINAR CUALQUIER ESTILO RESIDUAL NO DESEADO */
 .p-datatable .p-datatable-thead > tr > th,
 .p-datatable .p-datatable-tbody > tr > td {
   box-shadow: none !important;
@@ -299,6 +295,10 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
 }
 
 @media (max-width: 480px) {
+  .p-datatable{
+  margin-left: -33px !important;
+  width: 91vw;
+  }
   .p-paginator {
     flex-direction: column !important;
     gap: 0.5rem !important;
@@ -315,6 +315,10 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   .p-datatable-tbody td {
     padding: 0.6rem 0.4rem !important;
     font-size: 0.8rem !important;
+  }
+
+  .p-column-title{
+    font-size: medium;
   }
   
   .p-datatable-thead th {
@@ -335,12 +339,13 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
     }
     
     .p-datatable-header .p-button {
-        width: 100%;
+        width: 30%;
         justify-content: center;
     }
     
     .p-datatable-header .p-inputtext {
         width: 100%;
+        margin-right: 5px !important;
     }
 }
 
@@ -351,7 +356,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
         min-width: 200px;
     }
 }
-
 
 
 /* PAGINACIÓN MINIMALISTA PARA MOBILE */
@@ -415,21 +419,17 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
     display: none !important;
   }
   
-  /* Dropdown minimalista */
   .p-paginator-rpp-options {
-    display: none !important; /* O puedes mantenerlo si es necesario */
+    display: none !important;
   }
   
-  /* Estados deshabilitados */
   .p-paginator .p-disabled {
-    background: #867f7f  !important;
     color: #999 !important;
     cursor: not-allowed !important;
     transform: none !important;
   }
 }
 
-/* ALTERNATIVA: Versión ultra minimalista con solo texto */
 @media (max-width: 480px) {
   .p-paginator-minimal {
     justify-content: center !important;
@@ -461,7 +461,6 @@ background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255,
   }
 }
 
-/* OPCIÓN 3: Solo flechas con contador en medio (como apps modernas) */
 @media (max-width: 480px) {
   .p-paginator-modern {
     justify-content: center !important;

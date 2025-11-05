@@ -11,7 +11,6 @@ import { SwalManager } from '../../../services/alertManagerImported';
 import { CreatePaymentMethodDTO } from './interfaces/PaymentMethodDTO';
 import { usePaymentMethodDelete } from './hooks/usePaymentMethodDeleteTable';
 import { useAccountingAccounts } from '../../accounting/hooks/useAccountingAccounts';
-import { Button } from 'primereact/button';
 
 export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurationComplete?: (isComplete: boolean) => void; showValidation?: boolean; }) => {
     const [showFormModal, setShowFormModal] = useState(false);
@@ -23,8 +22,6 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
     const { fetchPaymentMethodById, paymentMethod, setPaymentMethod } = usePaymentMethodById();
     const { deletePaymentMethod, loading: deleteLoading } = usePaymentMethodDelete();
     const { accounts } = useAccountingAccounts();
-
-
 
     const enrichedPaymentMethods = paymentMethods.map(method => {
         const account = accounts.find(acc => acc.id === method.accounting_account_id);
@@ -130,7 +127,8 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
     useEffect(() => {
         const hasPaymentMethod = paymentMethods && paymentMethods.length > 0;
         onConfigurationComplete?.(hasPaymentMethod)
-    }, [paymentMethod, onConfigurationComplete]);
+    }, [paymentMethods, onConfigurationComplete]);
+
     return (
         <PrimeReactProvider
             value={{
@@ -149,31 +147,18 @@ export const PaymentMethodsConfig = ({ onConfigurationComplete }: { onConfigurat
                 )
             }
 
-            <div
-                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
-                style={{ minHeight: "400px" }}
-            >
-                <div className="card-body h-100 w-100 d-flex flex-column">
-                    <div className="text-end pt-3 mb-2">
-                        <Button
-                            className="p-button-primary"
-                            onClick={onCreate}
-                            disabled={createLoading || updateLoading || deleteLoading}
-                        >
-                            <i className="fas fa-plus me-2"></i>
-                            {createLoading || updateLoading ? 'Procesando...' : 'Nuevo Método'}
-                        </Button>
-                    </div>
-                    <PaymentMethodsConfigTable
-                        onEditItem={handleTableEdit}
-                        paymentMethods={enrichedPaymentMethods}
-                        onDeleteItem={handleDeleteMethod}
-                        loading={loading}
-                        onReload={refreshPaymentMethods}
-                    />
-                </div>
+            <PaymentMethodsConfigTable
+                onEditItem={handleTableEdit}
+                paymentMethods={enrichedPaymentMethods}
+                onDeleteItem={handleDeleteMethod}
+                loading={loading}
+                onReload={refreshPaymentMethods}
+                onCreate={onCreate}
+                createLoading={createLoading}
+                updateLoading={updateLoading}
+                deleteLoading={deleteLoading}
+            />
 
-            </div>
             <PaymentMethodModalConfig
                 isVisible={showFormModal}
                 onSave={handleSubmit}

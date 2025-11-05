@@ -6,8 +6,11 @@
 @import url('./components/buttons/dropdown.css');
 @import url('./components/acordeon/acordeon.css');
 @import url('./components/cards/cardsAppoiments.css');
+@import url('./components/cards/cardsContent.css');
 @import url('./components/cards/cardsPatients.css');
 @import url('./components/buttons/calendar.css');
+@import url('./components/tabs/tabsReportFacturacion.css');
+
 @import url('../variable.css');
 
 :root {
@@ -1174,11 +1177,16 @@
   .p-dropdown:not(.p-disabled):hover {
     border-color: #ced4da;
   }
-  .p-dropdown:not(.p-disabled).p-focus {
+.p-dropdown:not(.p-disabled).p-focus {
+    border-radius: 4% !important;
+    border-bottom-left-radius: 1% !important;
+    border-bottom-right-radius: 1% !important;
+    border-top-left-radius: 1% !important;
+    border-top-right-radius: 1% !important;
     outline: 0 none;
     outline-offset: 0;
-    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-    border-color: #007bff;
+    box-shadow: 0 0 0 0.1rem #1a99fb;
+    border-color: #1a99fb;
   }
   .p-dropdown.p-variant-filled {
     background: #efefef;
@@ -2543,6 +2551,9 @@ button[data-pc-name="button"]::after {
 }
   .p-datepicker-trigger {
     background-color: #1A99FB;
+    border-radius: 0 !important;
+    border-top-right-radius: 3.5px !important;
+    border-bottom-right-radius: 3.5px !important;
   }
   .p-datepicker-trigger:hover {
     background-color: rgb(56 116 255 / 66%) !important;

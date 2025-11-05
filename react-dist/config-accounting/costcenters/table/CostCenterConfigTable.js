@@ -11,7 +11,12 @@ export const CostCenterConfigTable = ({
   onEditItem,
   onDeleteItem,
   loading = false,
-  onReload
+  onReload,
+  // Nuevas props para el botón
+  onCreate,
+  createLoading = false,
+  updateLoading = false,
+  deleteLoading = false
 }) => {
   const toast = useRef(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -118,7 +123,7 @@ export const CostCenterConfigTable = ({
         position: "relative"
       }
     }, /*#__PURE__*/React.createElement(Button, {
-      className: "p-button-primary flex items-center gap-2",
+      className: "btn-primary flex items-center gap-2",
       onClick: e => menu.current?.toggle(e),
       "aria-controls": `popup_menu_${rowData.id}`,
       "aria-haspopup": true
@@ -212,10 +217,24 @@ export const CostCenterConfigTable = ({
       color: "#F8BB86"
     }
   }), costCenterToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar el centro de costo ", /*#__PURE__*/React.createElement("b", null, costCenterToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-50px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Centro de Costo')), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -227,6 +246,15 @@ export const CostCenterConfigTable = ({
     value: filtros.code,
     onChange: e => handleFilterChange("code", e.target.value),
     placeholder: "Buscar por c\xF3digo",
+    className: "w-100"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-6"
+  }, /*#__PURE__*/React.createElement("label", {
+    className: "form-label"
+  }, "Nombre"), /*#__PURE__*/React.createElement(InputText, {
+    value: filtros.name,
+    onChange: e => handleFilterChange("name", e.target.value),
+    placeholder: "Buscar por nombre",
     className: "w-100"
   }))))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,

@@ -19,6 +19,7 @@ export const useProductsByType = () => {
     }
   };
   const fetchProductsByType = async type => {
+    setLoading(true);
     try {
       const promise = getPromise(type);
       if (!promise) {

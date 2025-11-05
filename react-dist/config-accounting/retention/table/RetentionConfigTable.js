@@ -13,7 +13,12 @@ export const RetentionConfigTable = ({
   onEditItem,
   onDeleteItem,
   loading = false,
-  onReload
+  onReload,
+  // Nuevas props para el botón
+  onCreate,
+  createLoading = false,
+  updateLoading = false,
+  deleteLoading = false
 }) => {
   const toast = useRef(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -34,24 +39,31 @@ export const RetentionConfigTable = ({
 
     // Aplicar filtros actuales
     if (filtros.name) {
-      result = result.filter(ret => ret.name.toLowerCase().includes(filtros.name.toLowerCase()));
+      result = result.filter(retention => retention.name.toLowerCase().includes(filtros.name.toLowerCase()));
     }
     if (filtros.account) {
-      result = result.filter(ret => ret.account?.id === filtros.account || ret.returnAccount?.id === filtros.account);
+      result = result.filter(retention => retention.account?.id === filtros.account || retention.returnAccount?.id === filtros.account);
     }
     setFilteredRetentions(result);
   };
 
-  // Sincroniza cuando cambian los retentions o los filtros
+  // Sincroniza cuando cambian las retenciones o los filtros
   useEffect(() => {
     syncFilteredData();
   }, [retentions, filtros]);
+  const getAccountOptions = () => {
+    if (!accountingAccounts) return [];
+    return accountingAccounts.map(account => ({
+      label: account.account_name || `Cuenta ${account.account_code}`,
+      value: account.id.toString()
+    }));
+  };
   const renderAccount = account => {
     if (!account) return "No asignada";
     if (account.name && !account.name.startsWith("Cuenta ")) {
       return account.name;
     }
-    const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id || acc.account_code?.toString() === account.id);
+    const fullAccount = accountingAccounts?.find(acc => acc.id.toString() === account.id);
     return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
   };
   const handleFilterChange = (field, value) => {
@@ -87,7 +99,7 @@ export const RetentionConfigTable = ({
     setRetentionToDelete(retention);
     setDeleteDialogVisible(true);
   };
-  const deleteRetention = async () => {
+  const deleteMethod = async () => {
     if (retentionToDelete && onDeleteItem) {
       await onDeleteItem(retentionToDelete.id.toString());
       showToast("success", "Éxito", `Retención ${retentionToDelete.name} eliminada`);
@@ -111,7 +123,7 @@ export const RetentionConfigTable = ({
     label: "Eliminar",
     icon: "pi pi-check",
     className: "p-button-danger",
-    onClick: deleteRetention
+    onClick: deleteMethod
   }));
   const TableMenu = ({
     rowData,
@@ -174,13 +186,6 @@ export const RetentionConfigTable = ({
       onDelete: confirmDelete
     }));
   };
-  const getAccountOptions = () => {
-    if (!accountingAccounts) return [];
-    return accountingAccounts.map(account => ({
-      label: account.account_name || `Cuenta ${account.account_code}`,
-      value: account.id.toString()
-    }));
-  };
 
   // Mapear los datos para la tabla
   const tableItems = filteredRetentions.map(retention => ({
@@ -194,7 +199,7 @@ export const RetentionConfigTable = ({
   }));
   const columns = [{
     field: 'name',
-    header: 'Nombre de Retención',
+    header: 'Nombre de la Retención',
     sortable: true
   }, {
     field: 'percentage',
@@ -218,8 +223,7 @@ export const RetentionConfigTable = ({
     field: 'actions',
     header: 'Acciones',
     body: rowData => actionBodyTemplate(rowData.actions),
-    exportable: false,
-    width: "120px"
+    exportable: false
   }];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-100"
@@ -242,11 +246,25 @@ export const RetentionConfigTable = ({
       fontSize: "2rem",
       color: "#F8BB86"
     }
-  }), retentionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que deseas eliminar la retenci\xF3n ", /*#__PURE__*/React.createElement("b", null, retentionToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3"
+  }), retentionToDelete && /*#__PURE__*/React.createElement("span", null, "\xBFEst\xE1s seguro que desea eliminar la retenci\xF3n ", /*#__PURE__*/React.createElement("b", null, retentionToDelete.name), "?"))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
+    style: {
+      minHeight: "400px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
-  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-50px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary",
+    onClick: onCreate,
+    disabled: createLoading || updateLoading || deleteLoading
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }), createLoading || updateLoading ? 'Procesando...' : 'Nueva Retención')), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
     header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -254,7 +272,7 @@ export const RetentionConfigTable = ({
     className: "col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "Nombre de Retenci\xF3n"), /*#__PURE__*/React.createElement(InputText, {
+  }, "Nombre de la Retenci\xF3n"), /*#__PURE__*/React.createElement(InputText, {
     value: filtros.name,
     onChange: e => handleFilterChange("name", e.target.value),
     placeholder: "Buscar por nombre",

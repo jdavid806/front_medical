@@ -10,6 +10,8 @@ import { useSpecialty } from "../hooks/useSpecialty.js";
 export default function SpecialityModal({
   visible,
   selectedSpecialty,
+  selectedAntecedent,
+  onAntecedentChange,
   clinicalRecordTypes,
   specializableElements,
   selectedClinicalRecord,
@@ -116,7 +118,28 @@ export default function SpecialityModal({
     className: "btn btn-primary my-0 w-100",
     onClick: onAddCie11Code,
     disabled: !cie11Code
-  }, "Agregar CIE-11"))), /*#__PURE__*/React.createElement("div", {
+  }, "Agregar CIE-11")), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-12 mt-3"
+  }, /*#__PURE__*/React.createElement("h6", {
+    className: "mb-3"
+  }, "Formato de Antecedentes"), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "antecedent",
+    className: "form-label"
+  }, "Seleccione Formato de Antecedentes"), /*#__PURE__*/React.createElement(Dropdown, {
+    id: "antecedent",
+    value: selectedAntecedent,
+    options: clinicalRecordTypes,
+    onChange: e => onAntecedentChange?.(e.value),
+    optionLabel: "name",
+    placeholder: "Seleccione un formato de antecedentes",
+    className: "w-100",
+    filter: true,
+    filterBy: "name",
+    showClear: true,
+    appendTo: "self"
+  })))), /*#__PURE__*/React.createElement("div", {
     className: "mt-4"
   }, /*#__PURE__*/React.createElement("h6", {
     className: "mb-3"

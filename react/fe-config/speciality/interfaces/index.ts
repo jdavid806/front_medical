@@ -1,6 +1,7 @@
 export interface Specialty {
   id: number
   name: string
+  specialty?: string
 }
 
 export interface ClinicalRecordType {
@@ -46,6 +47,8 @@ export interface CurrentSpecialtyTableProps {
 export interface SpecialityModalProps {
   visible: boolean
   selectedSpecialty: Specialty | null
+  selectedAntecedent?: ClinicalRecordType | null
+  onAntecedentChange?: (value: ClinicalRecordType | null) => void
   clinicalRecordTypes: ClinicalRecordType[]
   specializableElements: SpecializableElement[]
   selectedClinicalRecord: ClinicalRecordType | null

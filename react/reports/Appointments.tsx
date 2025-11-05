@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar } from "primereact/calendar";
 import { MultiSelect } from "primereact/multiselect";
 import { Button } from "primereact/button";
@@ -7,7 +7,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { TabView, TabPanel } from "primereact/tabview";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
 import { useCompany } from "../hooks/useCompany";
@@ -61,11 +60,8 @@ interface Appointment {
 
 // Nueva interfaz para los datos del tab de agendamiento
 interface SchedulingData {
-  // Define la estructura de los datos que esperas del endpoint de agendamiento
-  // Ajusta según la respuesta real del endpoint
   id: string;
   state: string;
-  // ... otras propiedades según tu endpoint
 }
 
 type GroupedByState = Record<string, Appointment[]>;
@@ -101,8 +97,8 @@ export const Appointments = () => {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | number[]>(0);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [loadedTabs, setLoadedTabs] = useState<number[]>([]);
+  const [activeTab, setActiveTab] = useState("byState");
+  const [loadedTabs, setLoadedTabs] = useState<string[]>([]);
   const [specialties, setSpecialties] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [appointmentStates, setAppointmentStates] = useState<any[]>([]);
@@ -116,14 +112,14 @@ export const Appointments = () => {
   const { generateFormatByScheduler } = useBySchedulerFormat();
 
   useEffect(() => {
-    if (activeTabIndex === 0 && !loadedTabs.includes(0)) {
-      loadDataForTab(0);
-    } else if (activeTabIndex === 1 && !loadedTabs.includes(1)) {
-      loadDataForTab(1);
-    } else if (activeTabIndex === 2 && !loadedTabs.includes(2)) {
-      loadDataForTab(2);
+    if (activeTab === "byState" && !loadedTabs.includes("byState")) {
+      loadDataForTab("byState");
+    } else if (activeTab === "bySpecialty" && !loadedTabs.includes("bySpecialty")) {
+      loadDataForTab("bySpecialty");
+    } else if (activeTab === "scheduling" && !loadedTabs.includes("scheduling")) {
+      loadDataForTab("scheduling");
     }
-  }, [activeTabIndex]);
+  }, [activeTab]);
 
   useEffect(() => {
     loadSpecialties();
@@ -146,9 +142,8 @@ export const Appointments = () => {
       const responseFiltered = response
         .map((user: any) => ({
           ...user,
-          full_name: `${user.first_name ?? ""} ${user.middle_name ?? ""} ${
-            user.last_name ?? ""
-          } ${user.second_last_name ?? ""}`,
+          full_name: `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""
+            } ${user.second_last_name ?? ""}`,
         }))
         .filter((user: any) => user.role.group === "DOCTOR");
       setDoctors(responseFiltered);
@@ -184,7 +179,7 @@ export const Appointments = () => {
   }
 
   const loadDataForTab = async (
-    tabIndex: number,
+    tab: string,
     filterParams: any = {
       start_date: dateRange[0] ? formatDate(dateRange[0]) : "",
       end_date: dateRange[1] ? formatDate(dateRange[1]) : "",
@@ -192,7 +187,7 @@ export const Appointments = () => {
   ) => {
     setTableLoading(true);
     try {
-      if (tabIndex === 2) {
+      if (tab === "scheduling") {
         // Tab de agendamiento - endpoint específico
         const data = await fetchSchedulingData(filterParams);
 
@@ -205,7 +200,7 @@ export const Appointments = () => {
         // Solo guardamos la data sin agrupar nada
         setSchedulingData(data);
       } else {
-        // Tabs existentes (0 y 1)
+        // Tabs existentes (byState y bySpecialty)
         const response = await appointmentService.appointmentsWithFilters(
           filterParams
         );
@@ -218,7 +213,7 @@ export const Appointments = () => {
         const processedData = handlerDataAppointments(data);
         setReportData(processedData);
 
-        if (tabIndex === 0) {
+        if (tab === "byState") {
           const grouped: GroupedByState = {};
           processedData.forEach((appointment) => {
             if (!grouped[appointment.state]) {
@@ -274,8 +269,8 @@ export const Appointments = () => {
       }
 
       // Marcar el tab como cargado
-      if (!loadedTabs.includes(tabIndex)) {
-        setLoadedTabs([...loadedTabs, tabIndex]);
+      if (!loadedTabs.includes(tab)) {
+        setLoadedTabs([...loadedTabs, tab]);
       }
     } catch (error) {
       console.error("Error loading report data:", error);
@@ -305,8 +300,8 @@ export const Appointments = () => {
         );
       }
 
-      // Cargar datos para el tab activo (incluyendo el nuevo tab 2)
-      await loadDataForTab(activeTabIndex, filterParams);
+      // Cargar datos para el tab activo (incluyendo el nuevo tab scheduling)
+      await loadDataForTab(activeTab, filterParams);
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -352,9 +347,8 @@ export const Appointments = () => {
         onTabChange={(e) => setActiveIndex(e.index)}
       >
         {schedulingData.map((scheduler: any, index) => {
-          const fullName = `${scheduler.first_name ?? ""} ${
-            scheduler.middle_name ?? ""
-          } ${scheduler.last_name ?? ""} ${scheduler.second_last_name ?? ""}`;
+          const fullName = `${scheduler.first_name ?? ""} ${scheduler.middle_name ?? ""
+            } ${scheduler.last_name ?? ""} ${scheduler.second_last_name ?? ""}`;
 
           return (
             <AccordionTab
@@ -373,18 +367,21 @@ export const Appointments = () => {
                 rows={10}
                 rowsPerPageOptions={[5, 10, 25]}
                 sortMode="multiple"
+                scrollable
+                scrollHeight="400px"
+                globalFilter={globalFilter}
               >
                 <Column
                   field="patient"
                   header="Paciente"
                   body={(rowData) => {
-                    const patientFullName = `${
-                      rowData?.patient?.first_name ?? ""
-                    } ${rowData?.patient?.middle_name ?? ""} ${
-                      rowData?.patient?.last_name ?? ""
-                    } ${rowData?.patient?.second_last_name ?? ""}`;
+                    const patientFullName = `${rowData?.patient?.first_name ?? ""
+                      } ${rowData?.patient?.middle_name ?? ""} ${rowData?.patient?.last_name ?? ""
+                      } ${rowData?.patient?.second_last_name ?? ""}`;
                     return patientFullName.toLowerCase() || "Sin nombre";
                   }}
+                  sortable
+                  style={{ minWidth: "200px" }}
                 />
                 <Column
                   field="patient.id"
@@ -392,6 +389,8 @@ export const Appointments = () => {
                   body={(rowData) => {
                     return rowData.patient.document_number || "Sin documento";
                   }}
+                  sortable
+                  style={{ minWidth: "150px" }}
                 />
                 <Column
                   field="date"
@@ -399,20 +398,21 @@ export const Appointments = () => {
                   body={(rowData) =>
                     rowData.appointment_date + ", " + rowData.appointment_time
                   }
+                  sortable
+                  style={{ minWidth: "180px" }}
                 />
                 <Column
                   field="doctorName"
                   header="Médico"
                   body={(rowData) => {
-                    const doctorFullName = `${
-                      rowData?.user_availability?.user?.first_name ?? ""
-                    } ${rowData?.user_availability?.user?.middle_name ?? ""} ${
-                      rowData?.user_availability?.user?.last_name ?? ""
-                    } ${
-                      rowData?.user_availability?.user?.second_last_name ?? ""
-                    }`;
+                    const doctorFullName = `${rowData?.user_availability?.user?.first_name ?? ""
+                      } ${rowData?.user_availability?.user?.middle_name ?? ""} ${rowData?.user_availability?.user?.last_name ?? ""
+                      } ${rowData?.user_availability?.user?.second_last_name ?? ""
+                      }`;
                     return doctorFullName;
                   }}
+                  sortable
+                  style={{ minWidth: "200px" }}
                 />
                 <Column
                   field="specialty"
@@ -422,6 +422,8 @@ export const Appointments = () => {
                       {rowData.user_availability?.user?.specialty?.name}
                     </span>
                   )}
+                  sortable
+                  style={{ minWidth: "150px" }}
                 />
                 <Column
                   field="createdAt"
@@ -431,6 +433,8 @@ export const Appointments = () => {
                       {formatDateUtils(rowData.created_at, true)}
                     </span>
                   )}
+                  sortable
+                  style={{ minWidth: "150px" }}
                 />
                 <Column
                   field="status"
@@ -440,6 +444,8 @@ export const Appointments = () => {
                       {appointmentStateFilters[rowData.appointment_state?.name]}
                     </span>
                   )}
+                  sortable
+                  style={{ minWidth: "150px" }}
                 />
               </DataTable>
             </AccordionTab>
@@ -469,19 +475,15 @@ export const Appointments = () => {
 
   const handleExportScheduling = (scheduler: string, data: any[]) => {
     const dataToExport = data.map((item) => ({
-      Paciente: `${item.patient?.first_name ?? ""} ${
-        item.patient?.middle_name ?? ""
-      } ${item.patient?.last_name ?? ""} ${
-        item.patient?.second_last_name ?? ""
-      }`,
+      Paciente: `${item.patient?.first_name ?? ""} ${item.patient?.middle_name ?? ""
+        } ${item.patient?.last_name ?? ""} ${item.patient?.second_last_name ?? ""
+        }`,
       Documento: item.patient?.document_number,
       "Fecha y hora cita":
         item?.appointment_date + ", " + item?.appointment_time,
-      Médico: `${item.user_availability?.user?.first_name ?? ""} ${
-        item.user_availability?.user?.middle_name ?? ""
-      } ${item.user_availability?.user?.last_name ?? ""} ${
-        item.user_availability?.user?.second_last_name ?? ""
-      }`,
+      Médico: `${item.user_availability?.user?.first_name ?? ""} ${item.user_availability?.user?.middle_name ?? ""
+        } ${item.user_availability?.user?.last_name ?? ""} ${item.user_availability?.user?.second_last_name ?? ""
+        }`,
       Especialidad: item.user_availability?.user?.specialty?.name,
       "Fecha creación cita": formatDateUtils(item.created_at, true),
       Estado: appointmentStateFilters[item.appointment_state?.name],
@@ -595,6 +597,199 @@ export const Appointments = () => {
     );
   };
 
+  const renderByStateTable = () => {
+    if (tableLoading) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <ProgressSpinner />
+        </div>
+      );
+    }
+
+    if (Object.keys(groupedByState).length === 0) {
+      return <p>No hay datos para mostrar</p>;
+    }
+
+    return (
+      <Accordion
+        activeIndex={activeIndex}
+        onTabChange={(e) => setActiveIndex(e.index)}
+      >
+        {Object.entries(groupedByState).map(
+          ([state, appointments]) => (
+            <AccordionTab
+              key={state}
+              header={headerTemplate(
+                state,
+                appointments.length,
+                appointments,
+                "byState"
+              )}
+            >
+              <DataTable
+                value={appointments}
+                emptyMessage={`No hay citas en estado ${state}`}
+                className="p-datatable-sm p-datatable-striped"
+                paginator
+                rows={10}
+                rowsPerPageOptions={[5, 10, 25]}
+                scrollable
+                scrollHeight="400px"
+                globalFilter={globalFilter}
+                showGridlines
+              >
+                <Column
+                  field="patient.first_name"
+                  header="Paciente"
+                  body={(data) =>
+                    `${data.patient.first_name} ${data.patient.last_name}`
+                  }
+                  sortable
+                  style={{ minWidth: "200px" }}
+                />
+                <Column
+                  field="patient.document_number"
+                  header="Documento"
+                  sortable
+                  style={{ minWidth: "150px" }}
+                />
+                <Column
+                  field="patient.city_id"
+                  header="Ciudad"
+                  sortable
+                  style={{ minWidth: "150px" }}
+                />
+                <Column
+                  field="assigned_user_availability.first_name"
+                  header="Especialista"
+                  body={(data) =>
+                    `${data.assigned_user_availability?.user?.first_name || ""
+                    } ${data.assigned_user_availability?.user?.last_name || ""
+                    }`
+                  }
+                  sortable
+                  style={{ minWidth: "200px" }}
+                />
+                <Column
+                  field="assigned_user_availability.user.specialty.name"
+                  header="Especialidad"
+                  sortable
+                  style={{ minWidth: "150px" }}
+                />
+                <Column
+                  field="product.name"
+                  header="Producto"
+                  sortable
+                  style={{ minWidth: "150px" }}
+                />
+                <Column
+                  field="created_at"
+                  header="Fecha"
+                  body={dateTemplate}
+                  sortable
+                  style={{ minWidth: "180px" }}
+                />
+              </DataTable>
+            </AccordionTab>
+          )
+        )}
+      </Accordion>
+    );
+  };
+
+  const renderBySpecialtyTable = () => {
+    if (tableLoading) {
+      return (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{ height: "200px" }}
+        >
+          <ProgressSpinner />
+        </div>
+      );
+    }
+
+    if (Object.keys(groupedBySpecialtyDoctor).length === 0) {
+      return <p>No hay datos para mostrar</p>;
+    }
+
+    return (
+      <Accordion
+        activeIndex={activeIndex}
+        onTabChange={(e) => setActiveIndex(e.index)}
+      >
+        {Object.entries(groupedBySpecialtyDoctor).map(
+          ([state, entries]) => {
+            const totalCount = entries.reduce(
+              (sum, entry) => sum + entry.count,
+              0
+            );
+            const allAppointments = entries.flatMap(
+              (entry) => entry.appointments
+            );
+
+            return (
+              <AccordionTab
+                key={state}
+                header={headerTemplate(
+                  state,
+                  totalCount,
+                  entries,
+                  "summaryAppointments"
+                )}
+              >
+                <DataTable
+                  value={entries}
+                  emptyMessage={`No hay citas en estado ${state}`}
+                  className="p-datatable-sm p-datatable-striped"
+                  paginator
+                  rows={10}
+                  rowsPerPageOptions={[5, 10, 25]}
+                  sortMode="multiple"
+                  scrollable
+                  scrollHeight="400px"
+                  globalFilter={globalFilter}
+                  showGridlines
+                >
+                  <Column
+                    field="specialty"
+                    header="Especialidad"
+                    sortable
+                    filter
+                    filterPlaceholder="Buscar especialidad"
+                    style={{ minWidth: "200px" }}
+                  />
+                  <Column
+                    field="doctorName"
+                    header="Médico"
+                    sortable
+                    filter
+                    filterPlaceholder="Buscar médico"
+                    style={{ minWidth: "200px" }}
+                  />
+                  <Column
+                    field="count"
+                    header="Cantidad"
+                    sortable
+                    body={(rowData) => (
+                      <span className="font-bold">
+                        {rowData.count}
+                      </span>
+                    )}
+                    style={{ minWidth: "120px" }}
+                  />
+                </DataTable>
+              </AccordionTab>
+            );
+          }
+        )}
+      </Accordion>
+    );
+  };
+
   if (loading) {
     return (
       <div
@@ -608,266 +803,191 @@ export const Appointments = () => {
 
   return (
     <main className="main" id="top">
-      <div className="content">
-        <div className="pb-9">
-          <h2 className="mb-4">Reporte de Citas</h2>
+      {loading ? (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{
+            height: "50vh",
+            marginLeft: "900px",
+            marginTop: "300px",
+          }}
+        >
+          <ProgressSpinner />
+        </div>
+      ) : (
+        <>
+          <div className="row g-3 justify-content-between align-items-start mb-4">
+            <div className="col-12">
+              <div
+                className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+                style={{ minHeight: "400px" }}
+              >
+                <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-40px" }}>
+                  <div className="tabs-professional-container mt-4">
+                    <Accordion>
+                      <AccordionTab header="Filtros">
+                        <div className="row">
+                          <div className="col-12 col-md-6 mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="dateRange"
+                            >
+                              Rango de fechas
+                            </label>
+                            <Calendar
+                              value={dateRange}
+                              onChange={(e) =>
+                                setDateRange(e.value as [Date | null, Date | null])
+                              }
+                              selectionMode="range"
+                              readOnlyInput
+                              dateFormat="dd/mm/yy"
+                              placeholder="Seleccione un rango"
+                              className="w-100"
+                              showIcon
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label className="form-label">
+                              Estado
+                            </label>
+                            <MultiSelect
+                              value={selectedStates}
+                              onChange={(e) => {
+                                setSelectedStates(e.value);
+                              }}
+                              options={appointmentStates}
+                              optionLabel="nameState"
+                              filter
+                              placeholder="Seleccione estados"
+                              maxSelectedLabels={3}
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label className="form-label">
+                              Especialista
+                            </label>
+                            <MultiSelect
+                              value={selectedDoctors}
+                              onChange={(e) => setSelectedDoctors(e.value)}
+                              options={doctors}
+                              optionLabel="full_name"
+                              filter
+                              placeholder="Seleccione Especialistas"
+                              maxSelectedLabels={3}
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12 col-md-6 mb-3">
+                            <label className="form-label">
+                              Especialidad
+                            </label>
+                            <MultiSelect
+                              value={selectedSpecialties}
+                              onChange={(e) => setSelectedSpecialties(e.value)}
+                              options={specialties}
+                              optionLabel="name"
+                              filter
+                              placeholder="Seleccione Especialidades"
+                              maxSelectedLabels={3}
+                              className="w-100"
+                            />
+                          </div>
+                          <div className="col-12">
+                            <div className="d-flex justify-content-end m-2">
+                              <Button
+                                label="Filtrar"
+                                icon="pi pi-filter"
+                                onClick={handleFilter}
+                                loading={tableLoading}
+                                className="p-button-primary"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionTab>
+                    </Accordion>
+                    <div className="tabs-header">
+                      <button
+                        className={`tab-item ${activeTab === "byState" ? "active" : ""}`}
+                        onClick={() => setActiveTab("byState")}
+                      >
+                        <i className="fas fa-list-alt"></i>
+                        Vista por Estado
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "bySpecialty" ? "active" : ""}`}
+                        onClick={() => setActiveTab("bySpecialty")}
+                      >
+                        <i className="fas fa-user-md"></i>
+                        Vista por Especialidad
+                      </button>
+                      <button
+                        className={`tab-item ${activeTab === "scheduling" ? "active" : ""}`}
+                        onClick={() => setActiveTab("scheduling")}
+                      >
+                        <i className="fas fa-calendar-plus"></i>
+                        Agendamiento
+                      </button>
+                    </div>
 
-          {/* Sección de Filtros */}
-          <div className="card border border-light mb-4">
-            <div className="card-body">
-              <div className="grid p-fluid row">
-                <div className="col-6 md:col-6">
-                  <label className="form-label">Rango de fechas</label>
-                  <Calendar
-                    value={dateRange}
-                    onChange={(e) =>
-                      setDateRange(e.value as [Date | null, Date | null])
-                    }
-                    selectionMode="range"
-                    readOnlyInput
-                    dateFormat="dd/mm/yy"
-                    placeholder="Seleccione un rango"
-                    className="w-full"
-                    showIcon
-                  />
+                    <div className="tabs-content">
+                      {/* Panel de Vista por Estado */}
+                      <div className={`tab-panel ${activeTab === "byState" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Citas por Estado</span>
+                          <span className="p-input-icon-left">
+                            <i className="pi pi-search" />
+                            <InputText
+                              type="search"
+                              onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                              placeholder="Buscar..."
+                            />
+                          </span>
+                        </div>
+                        {renderByStateTable()}
+                      </div>
+
+                      {/* Panel de Vista por Especialidad */}
+                      <div className={`tab-panel ${activeTab === "bySpecialty" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Citas por Especialidad y Médico</span>
+                          <span className="p-input-icon-left">
+                            <i className="pi pi-search" />
+                            <InputText
+                              type="search"
+                              onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                              placeholder="Buscar..."
+                            />
+                          </span>
+                        </div>
+                        {renderBySpecialtyTable()}
+                      </div>
+
+                      {/* Panel de Agendamiento */}
+                      <div className={`tab-panel ${activeTab === "scheduling" ? "active" : ""}`}>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                          <span className="text-xl font-semibold">Agendamiento por Usuario</span>
+                          <span className="p-input-icon-left">
+                            <i className="pi pi-search" />
+                            <InputText
+                              type="search"
+                              onInput={(e) => setGlobalFilter(e.currentTarget.value)}
+                              placeholder="Buscar..."
+                            />
+                          </span>
+                        </div>
+                        {renderSchedulingTable()}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-6 md:col-6">
-                  <label className="form-label">Estado</label>
-                  <MultiSelect
-                    value={selectedStates}
-                    onChange={(e) => {
-                      setSelectedStates(e.value);
-                    }}
-                    options={appointmentStates}
-                    optionLabel="nameState"
-                    filter
-                    placeholder="Seleccione estados"
-                    maxSelectedLabels={3}
-                    className="w-full"
-                  />
-                </div>
-                <div className="col-6 md:col-6">
-                  <label className="form-label">Especialista</label>
-                  <MultiSelect
-                    value={selectedDoctors}
-                    onChange={(e) => setSelectedDoctors(e.value)}
-                    options={doctors}
-                    optionLabel="full_name"
-                    filter
-                    placeholder="Seleccione Especialistas"
-                    maxSelectedLabels={3}
-                    className="w-full"
-                  />
-                </div>
-                <div className="col-6 md:col-6">
-                  <label className="form-label">Especialidad</label>
-                  <MultiSelect
-                    value={selectedSpecialties}
-                    onChange={(e) => setSelectedSpecialties(e.value)}
-                    options={specialties}
-                    optionLabel="name"
-                    filter
-                    placeholder="Seleccione Especialidades"
-                    maxSelectedLabels={3}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-content-end mt-3">
-                <Button
-                  label="Filtrar"
-                  icon="pi pi-filter"
-                  onClick={handleFilter}
-                  loading={tableLoading}
-                  className="p-button-primary"
-                />
               </div>
             </div>
           </div>
-
-          {/* Tabs */}
-          <div className="card">
-            <TabView
-              activeIndex={activeTabIndex}
-              onTabChange={(e) => setActiveTabIndex(e.index)}
-            >
-              {/* Tab 1 - Vista por Estado */}
-              <TabPanel header="Vista por Estado">
-                {tableLoading ? (
-                  <div
-                    className="flex justify-content-center align-items-center"
-                    style={{ height: "200px" }}
-                  >
-                    <ProgressSpinner />
-                  </div>
-                ) : Object.keys(groupedByState).length > 0 ? (
-                  <Accordion
-                    activeIndex={activeIndex}
-                    onTabChange={(e) => setActiveIndex(e.index)}
-                  >
-                    {Object.entries(groupedByState).map(
-                      ([state, appointments]) => (
-                        <AccordionTab
-                          key={state}
-                          header={headerTemplate(
-                            state,
-                            appointments.length,
-                            appointments,
-                            "byState"
-                          )}
-                        >
-                          <DataTable
-                            value={appointments}
-                            emptyMessage={`No hay citas en estado ${state}`}
-                            className="p-datatable-sm p-datatable-striped"
-                            paginator
-                            rows={10}
-                            rowsPerPageOptions={[5, 10, 25]}
-                          >
-                            <Column
-                              field="patient.first_name"
-                              header="Paciente"
-                              body={(data) =>
-                                `${data.patient.first_name} ${data.patient.last_name}`
-                              }
-                              sortable
-                            />
-                            <Column
-                              field="patient.document_number"
-                              header="Documento"
-                              sortable
-                            />
-                            <Column
-                              field="patient.city_id"
-                              header="Ciudad"
-                              sortable
-                            />
-                            <Column
-                              field="assigned_user_availability.first_name"
-                              header="Especialista"
-                              body={(data) =>
-                                `${
-                                  data.assigned_user_availability?.user
-                                    ?.first_name || ""
-                                } ${
-                                  data.assigned_user_availability?.user
-                                    ?.last_name || ""
-                                }`
-                              }
-                              sortable
-                            />
-                            <Column
-                              field="assigned_user_availability.user.specialty.name"
-                              header="Especialidad"
-                              sortable
-                            />
-                            <Column
-                              field="product.name"
-                              header="Producto"
-                              sortable
-                            />
-                            <Column
-                              field="created_at"
-                              header="Fecha"
-                              body={dateTemplate}
-                              sortable
-                            />
-                          </DataTable>
-                        </AccordionTab>
-                      )
-                    )}
-                  </Accordion>
-                ) : (
-                  <p>No hay datos para mostrar</p>
-                )}
-              </TabPanel>
-
-              {/* Tab 2 - Vista por Especialidad y Médico */}
-              <TabPanel header="Vista por Especialidad y Médico">
-                {tableLoading ? (
-                  <div
-                    className="flex justify-content-center align-items-center"
-                    style={{ height: "200px" }}
-                  >
-                    <ProgressSpinner />
-                  </div>
-                ) : Object.keys(groupedBySpecialtyDoctor).length > 0 ? (
-                  <Accordion
-                    activeIndex={activeIndex}
-                    onTabChange={(e) => setActiveIndex(e.index)}
-                  >
-                    {Object.entries(groupedBySpecialtyDoctor).map(
-                      ([state, entries]) => {
-                        const totalCount = entries.reduce(
-                          (sum, entry) => sum + entry.count,
-                          0
-                        );
-                        const allAppointments = entries.flatMap(
-                          (entry) => entry.appointments
-                        );
-
-                        return (
-                          <AccordionTab
-                            key={state}
-                            header={headerTemplate(
-                              state,
-                              totalCount,
-                              entries,
-                              "summaryAppointments"
-                            )}
-                          >
-                            <DataTable
-                              value={entries}
-                              emptyMessage={`No hay citas en estado ${state}`}
-                              className="p-datatable-sm p-datatable-striped"
-                              paginator
-                              rows={10}
-                              rowsPerPageOptions={[5, 10, 25]}
-                              sortMode="multiple"
-                            >
-                              <Column
-                                field="specialty"
-                                header="Especialidad"
-                                sortable
-                                filter
-                                filterPlaceholder="Buscar especialidad"
-                              />
-                              <Column
-                                field="doctorName"
-                                header="Médico"
-                                sortable
-                                filter
-                                filterPlaceholder="Buscar médico"
-                              />
-                              <Column
-                                field="count"
-                                header="Cantidad"
-                                sortable
-                                body={(rowData) => (
-                                  <span className="font-bold">
-                                    {rowData.count}
-                                  </span>
-                                )}
-                              />
-                            </DataTable>
-                          </AccordionTab>
-                        );
-                      }
-                    )}
-                  </Accordion>
-                ) : (
-                  <p>No hay datos para mostrar</p>
-                )}
-              </TabPanel>
-
-              {/* Nuevo Tab 3 - Agendamiento */}
-              <TabPanel header="Agendamiento">
-                {renderSchedulingTable()}
-              </TabPanel>
-            </TabView>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </main>
   );
 };

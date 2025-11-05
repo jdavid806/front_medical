@@ -6,7 +6,8 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { TreeTable } from "primereact/treetable";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { InputText } from "primereact/inputtext";
 import { exportDoctorsProceduresToExcel, exportEntityPricesToExcel, exportEntityCountsToExcel, exportConsultationsToExcel } from "./excel/ExcelSpecialist.js"; // Import your services
 import { productService, userService, patientService, billingService, entityService } from "../../services/api/index.js";
 import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
@@ -45,8 +46,7 @@ export const SpecialistsReport = () => {
   const [activeTab, setActiveTab] = useState("doctors-tab");
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
-  const [treeNodes, setTreeNodes] = useState([]);
-  const [keys, setKeys] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -98,51 +98,6 @@ export const SpecialistsReport = () => {
     };
     initializeData();
   }, []);
-  useEffect(() => {
-    if (activeTab === "productivity-tab" && reportData.length > 0) {
-      const newTreeNodes = reportData.map((user, userIndex) => {
-        let countAppointments = user.appointments.length;
-        let countProceduresInvoiced = 0;
-        const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_name ?? ""}`;
-        const children = user.appointments.map((appointment, appointmentIndex) => {
-          let status = "unInvoiced";
-          if (appointment.admission && appointment.admission.invoice && appointment?.admission?.invoice?.status !== "cancelled") {
-            countProceduresInvoiced++;
-            status = "invoiced";
-          }
-          return {
-            key: `${userIndex}-${appointmentIndex}`,
-            data: {
-              doctor: "",
-              date: appointment.appointment_date,
-              countAppointments: appointment.exam_recipe.details.map(detail => detail.exam_type.name).join(", "),
-              counrProceduresInvoiced: appointment?.admission?.invoice?.details.map(detail => detail.product.name).join(", ") ?? "Sin factura",
-              average: status,
-              isLeaf: true
-            }
-          };
-        });
-        return {
-          key: userIndex.toString(),
-          data: {
-            doctor: fullName,
-            date: "",
-            countAppointments: countAppointments,
-            counrProceduresInvoiced: countProceduresInvoiced,
-            average: (countProceduresInvoiced / countAppointments * 100).toFixed(2) + "%",
-            isLeaf: false,
-            rawData: user.appointments
-          },
-          children: children
-        };
-      });
-      setTreeNodes(newTreeNodes);
-      setKeys(treeNodes.reduce((acc, node) => {
-        acc[node.key] = true;
-        return acc;
-      }, {}));
-    }
-  }, [reportData, activeTab]);
   const loadData = async (filterParams = {}, tab = "") => {
     let data = [];
     try {
@@ -153,10 +108,10 @@ export const SpecialistsReport = () => {
         data = await billingService.getBillingReport(filterParams);
       }
       setReportData(data);
-      return data; // Retornamos los datos por si se necesitan
+      return data;
     } catch (error) {
       console.error("Error loading report data:", error);
-      throw error; // Relanzamos el error para manejarlo donde se llame
+      throw error;
     } finally {
       setTableLoading(false);
     }
@@ -272,7 +227,7 @@ export const SpecialistsReport = () => {
         filterParams.entity_id = selectedEntity;
       }
       await loadData(filterParams, activeTab);
-      setFirst(0); // Reset to first page when filtering
+      setFirst(0);
     } catch (error) {
       console.error("Error filtering data:", error);
     }
@@ -628,15 +583,14 @@ export const SpecialistsReport = () => {
     }, tableLoading ? /*#__PURE__*/React.createElement("div", {
       className: "flex justify-content-center align-items-center",
       style: {
-        height: "200px",
-        marginLeft: "800px"
+        height: "200px"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
       headerColumnGroup: headerGroup,
       value: displayData,
       loading: tableLoading,
       scrollable: true,
-      scrollHeight: "flex",
+      scrollHeight: "600px",
       showGridlines: true,
       stripedRows: true,
       size: "small",
@@ -650,7 +604,8 @@ export const SpecialistsReport = () => {
       onPage: onPageChange,
       rowsPerPageOptions: [5, 10, 25, 50],
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter
     }, procedureColumns.map((col, i) => {
       return /*#__PURE__*/React.createElement(Column, {
         key: i,
@@ -831,15 +786,14 @@ export const SpecialistsReport = () => {
     }, tableLoading ? /*#__PURE__*/React.createElement("div", {
       className: "flex justify-content-center align-items-center",
       style: {
-        height: "200px",
-        marginLeft: "800px"
+        height: "200px"
       }
     }, /*#__PURE__*/React.createElement(ProgressSpinner, null)) : /*#__PURE__*/React.createElement(DataTable, {
       headerColumnGroup: headerGroup,
       value: displayData,
       loading: tableLoading,
       scrollable: true,
-      scrollHeight: "flex",
+      scrollHeight: "600px",
       showGridlines: true,
       stripedRows: true,
       size: "small",
@@ -853,7 +807,8 @@ export const SpecialistsReport = () => {
       onPage: onPageChange,
       rowsPerPageOptions: [5, 10, 25, 50],
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter
     }, procedureColumns.map((col, i) => {
       return /*#__PURE__*/React.createElement(Column, {
         key: i,
@@ -990,7 +945,7 @@ export const SpecialistsReport = () => {
       value: tableData,
       loading: tableLoading,
       scrollable: true,
-      scrollHeight: "flex",
+      scrollHeight: "600px",
       showGridlines: true,
       stripedRows: true,
       size: "small",
@@ -1004,7 +959,8 @@ export const SpecialistsReport = () => {
       onPage: onPageChange,
       rowsPerPageOptions: [5, 10, 25, 50],
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter
     }, entityColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
       key: i,
       field: col.field,
@@ -1158,7 +1114,7 @@ export const SpecialistsReport = () => {
       value: tableData,
       loading: tableLoading,
       scrollable: true,
-      scrollHeight: "flex",
+      scrollHeight: "600px",
       showGridlines: true,
       stripedRows: true,
       size: "small",
@@ -1172,7 +1128,8 @@ export const SpecialistsReport = () => {
       onPage: onPageChange,
       rowsPerPageOptions: [5, 10, 25, 50],
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter
     }, countColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
       key: i,
       field: col.field,
@@ -1352,7 +1309,7 @@ export const SpecialistsReport = () => {
       value: tableData,
       loading: tableLoading,
       scrollable: true,
-      scrollHeight: "flex",
+      scrollHeight: "600px",
       showGridlines: true,
       stripedRows: true,
       size: "small",
@@ -1366,7 +1323,8 @@ export const SpecialistsReport = () => {
       onPage: onPageChange,
       rowsPerPageOptions: [5, 10, 25, 50],
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
-      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros"
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter
     }, consultationColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
       key: i,
       field: col.field,
@@ -1388,75 +1346,146 @@ export const SpecialistsReport = () => {
     if (isReturnData) {
       return reportData;
     }
-    const doctorTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.doctor);
-    const ordersTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.countAppointments);
-    const datesTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.date);
-    const proceduresInvoicedTemplate = node => /*#__PURE__*/React.createElement("strong", null, node.data.counrProceduresInvoiced);
-    const averageTemplate = node => node.data.isLeaf ? /*#__PURE__*/React.createElement("span", {
+
+    // Process productivity data for DataTable
+    const productivityData = [];
+    reportData.forEach((user, userIndex) => {
+      let countAppointments = user.appointments?.length;
+      let countProceduresInvoiced = 0;
+      const fullName = `${user.first_name ?? ""} ${user.middle_name ?? ""} ${user.last_name ?? ""} ${user.second_name ?? ""}`;
+
+      // Add professional summary row
+      productivityData.push({
+        id: `professional_${userIndex}`,
+        doctor: fullName,
+        date: "",
+        countAppointments: countAppointments,
+        proceduresInvoiced: countProceduresInvoiced,
+        average: countAppointments > 0 ? (countProceduresInvoiced / countAppointments * 100).toFixed(2) + "%" : "0%",
+        isProfessional: true,
+        rawData: user.appointments
+      });
+
+      // Add appointment detail rows
+      user.appointments?.forEach((appointment, appointmentIndex) => {
+        let status = "unInvoiced";
+        if (appointment.admission && appointment.admission.invoice && appointment?.admission?.invoice?.status !== "cancelled") {
+          countProceduresInvoiced++;
+          status = "invoiced";
+        }
+        productivityData.push({
+          id: `appointment_${userIndex}_${appointmentIndex}`,
+          doctor: fullName,
+          date: appointment.appointment_date,
+          countAppointments: appointment.exam_recipe.details.map(detail => detail.exam_type.name).join(", "),
+          proceduresInvoiced: appointment?.admission?.invoice?.details.map(detail => detail.product.name).join(", ") ?? "Sin factura",
+          average: status,
+          isProfessional: false,
+          rawData: [appointment]
+        });
+      });
+    });
+    const doctorTemplate = rowData => rowData.isProfessional ? /*#__PURE__*/React.createElement("strong", null, rowData.doctor) : /*#__PURE__*/React.createElement("span", {
       style: {
-        paddingLeft: "30px",
-        color: node.data.average === "unInvoiced" ? "red" : "green"
+        paddingLeft: "20px"
       }
-    }, node.data.average == "unInvoiced" ? "No facturado" : "Facturado") : /*#__PURE__*/React.createElement("strong", null, node.data.average);
+    }, rowData.doctor);
+    const ordersTemplate = rowData => rowData.isProfessional ? /*#__PURE__*/React.createElement("strong", null, rowData.countAppointments) : /*#__PURE__*/React.createElement("span", null, rowData.countAppointments);
+    const datesTemplate = rowData => rowData.isProfessional ? /*#__PURE__*/React.createElement("strong", null, rowData.date) : /*#__PURE__*/React.createElement("span", null, rowData.date);
+    const proceduresInvoicedTemplate = rowData => rowData.isProfessional ? /*#__PURE__*/React.createElement("strong", null, rowData.proceduresInvoiced) : /*#__PURE__*/React.createElement("span", null, rowData.proceduresInvoiced);
+    const averageTemplate = rowData => {
+      if (rowData.isProfessional) {
+        return /*#__PURE__*/React.createElement("strong", null, rowData.average);
+      } else {
+        return /*#__PURE__*/React.createElement("span", {
+          style: {
+            paddingLeft: "20px",
+            color: rowData.average === "unInvoiced" ? "red" : "green"
+          }
+        }, rowData.average == "unInvoiced" ? "No facturado" : "Facturado");
+      }
+    };
+    const rowClassName = data => {
+      return data.isProfessional ? 'font-bold bg-blue-50' : '';
+    };
     return /*#__PURE__*/React.createElement("div", {
       className: "border-top border-translucent"
     }, loading ? /*#__PURE__*/React.createElement("div", {
       className: "text-center p-5"
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "pi pi-spinner pi-spin",
-      style: {
-        fontSize: "2rem"
-      }
-    }), /*#__PURE__*/React.createElement("p", null, "Cargando datos...")) : /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(ProgressSpinner, null), /*#__PURE__*/React.createElement("p", {
+      className: "mt-2"
+    }, "Cargando datos...")) : /*#__PURE__*/React.createElement("div", {
       id: "purchasersSellersTable"
     }, /*#__PURE__*/React.createElement("div", {
       className: "card"
-    }, /*#__PURE__*/React.createElement(TreeTable, {
-      value: treeNodes,
-      expandedKeys: keys,
+    }, /*#__PURE__*/React.createElement(DataTable, {
+      value: productivityData,
       loading: tableLoading,
-      onToggle: e => setKeys(e.value),
       scrollable: true,
-      scrollHeight: "600px"
+      scrollHeight: "600px",
+      showGridlines: true,
+      stripedRows: true,
+      size: "small",
+      tableStyle: {
+        minWidth: "100%"
+      },
+      className: "p-datatable-sm",
+      paginator: true,
+      rows: rows,
+      first: first,
+      onPage: onPageChange,
+      rowsPerPageOptions: [5, 10, 25, 50],
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} registros",
+      globalFilter: globalFilter,
+      rowClassName: rowClassName
     }, /*#__PURE__*/React.createElement(Column, {
-      field: "profesional",
+      field: "doctor",
       header: "Profesional",
       body: doctorTemplate,
-      expander: true
+      style: {
+        minWidth: "250px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "date",
       header: "Fecha cita",
-      body: datesTemplate
+      body: datesTemplate,
+      style: {
+        minWidth: "150px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "countAppointments",
       header: "Ordenes",
-      body: ordersTemplate
+      body: ordersTemplate,
+      style: {
+        minWidth: "150px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "proceduresInvoiced",
-      header: "servicios facturados",
-      body: proceduresInvoicedTemplate
+      header: "Servicios facturados",
+      body: proceduresInvoicedTemplate,
+      style: {
+        minWidth: "200px"
+      }
     }), /*#__PURE__*/React.createElement(Column, {
       field: "average",
       header: "Productividad %",
-      body: averageTemplate
+      body: averageTemplate,
+      style: {
+        minWidth: "150px"
+      }
     }))), /*#__PURE__*/React.createElement("div", {
       className: "row align-items-center justify-content-between pe-0 fs-9 mt-3"
     }, /*#__PURE__*/React.createElement("div", {
       className: "col-auto d-flex"
     }, /*#__PURE__*/React.createElement("p", {
       className: "mb-0 d-none d-sm-block me-3 fw-semibold text-body"
-    }, "Mostrando ", treeNodes.length, " Productividad")))));
+    }, "Mostrando ", productivityData.filter(item => item.isProfessional).length, " Profesionales")))));
   };
   return /*#__PURE__*/React.createElement("main", {
     className: "main",
     id: "top"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "content"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "pb-9"
-  }, /*#__PURE__*/React.createElement("h2", {
-    className: "mb-4"
-  }, "Especialistas"), loading ? /*#__PURE__*/React.createElement("div", {
+  }, loading ? /*#__PURE__*/React.createElement("div", {
     className: "flex justify-content-center align-items-center",
     style: {
       height: "50vh",
@@ -1467,39 +1496,20 @@ export const SpecialistsReport = () => {
     className: "row g-3 justify-content-between align-items-start mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "range-dates-tab" ? "active" : ""}`,
-    id: "range-dates-tab",
-    onClick: () => setActiveTab("range-dates-tab"),
-    role: "tab"
-  }, "Filtros"))), /*#__PURE__*/React.createElement("div", {
-    className: "tab-content mt-3",
-    id: "myTabContent"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "tab-pane fade show active",
-    id: "tab-range-dates",
-    role: "tabpanel",
-    "aria-labelledby": "range-dates-tab"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex"
-  }, /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
     style: {
-      width: "100%"
+      minHeight: "400px"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row"
+    className: "card-body h-100 w-100 d-flex flex-column",
+    style: {
+      marginTop: "-40px"
+    }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card border border-light"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body"
+    className: "tabs-professional-container mt-4"
+  }, /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1571,74 +1581,66 @@ export const SpecialistsReport = () => {
     placeholder: "Seleccione entidad",
     filter: true,
     className: "w-100"
-  }))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-12"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-end m-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Filtrar",
     icon: "pi pi-filter",
     onClick: handleFilter,
     className: "p-button-primary"
-  })))))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "row gy-5"
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-header"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "doctors-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("doctors-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-dollar-sign"
+  }), "Procedimientos $"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "doctors-count-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("doctors-count-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-hashtag"
+  }), "Procedimientos #"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "precios-entidad-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("precios-entidad-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-building"
+  }), "Entidades $"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "conteo-entidad-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("conteo-entidad-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-building"
+  }), "Entidades #"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "consultas-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("consultas-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-calendar-check"
+  }), "Consultas"), /*#__PURE__*/React.createElement("button", {
+    className: `tab-item ${activeTab === "productivity-tab" ? "active" : ""}`,
+    onClick: () => handleTabChange("productivity-tab")
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-chart-line"
+  }), "Productividad")), /*#__PURE__*/React.createElement("div", {
+    className: "tabs-content"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12"
-  }, /*#__PURE__*/React.createElement("ul", {
-    className: "nav nav-underline fs-9",
-    id: "myTab",
-    role: "tablist"
-  }, /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "doctors-tab" ? "active" : ""}`,
-    id: "doctors-tab",
-    onClick: () => handleTabChange("doctors-tab"),
-    role: "tab"
-  }, "Procedimientos $")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "doctors-count-tab" ? "active" : ""}`,
-    id: "doctors-count-tab",
-    onClick: () => handleTabChange("doctors-count-tab"),
-    role: "tab"
-  }, "Procedimientos #")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "precios-entidad-tab" ? "active" : ""}`,
-    id: "precios-entidad-tab",
-    onClick: () => handleTabChange("precios-entidad-tab"),
-    role: "tab"
-  }, "Entidades $")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "conteo-entidad-tab" ? "active" : ""}`,
-    id: "conteo-entidad-tab",
-    onClick: () => handleTabChange("conteo-entidad-tab"),
-    role: "tab"
-  }, "Entidades #")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "consultas-tab" ? "active" : ""}`,
-    id: "consultas-tab",
-    onClick: () => handleTabChange("consultas-tab"),
-    role: "tab"
-  }, "Consultas")), /*#__PURE__*/React.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/React.createElement("a", {
-    className: `nav-link ${activeTab === "productivity-tab" ? "active" : ""}`,
-    id: "productivity-tab",
-    onClick: () => handleTabChange("productivity-tab"),
-    role: "tab"
-  }, "Productividad"))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-xxl-12 tab-content mt-3",
-    id: "myTabContent"
+    className: `tab-panel ${activeTab === "doctors-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "doctors-tab" ? "show active" : ""}`,
-    id: "tab-doctors",
-    role: "tabpanel",
-    "aria-labelledby": "doctors-tab"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Procedimientos por Monto"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportProcedures,
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
@@ -1646,14 +1648,23 @@ export const SpecialistsReport = () => {
     onClick: () => exportToPDF("doctors-tab"),
     loading: exporting.procedures,
     disabled: !reportData || reportData.length === 0
-  })), generateDoctorsTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "doctors-count-tab" ? "show active" : ""}`,
-    id: "tab-doctors-count",
-    role: "tabpanel",
-    "aria-labelledby": "doctors-count-tab"
+  }))), generateDoctorsTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "doctors-count-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Procedimientos por Conteo"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportProceduresCount,
     loading: exporting.proceduresCount,
     disabled: !reportData || reportData.length === 0
@@ -1661,67 +1672,103 @@ export const SpecialistsReport = () => {
     onClick: () => exportToPDF("doctors-count-tab"),
     loading: exporting.proceduresCount,
     disabled: !reportData || reportData.length === 0
-  })), generateDoctorsCountTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "precios-entidad-tab" ? "show active" : ""}`,
-    id: "tab-precios-entidad",
-    role: "tabpanel",
-    "aria-labelledby": "precios-entidad-tab"
+  }))), generateDoctorsCountTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "precios-entidad-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Entidades por Monto"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportEntityPrices,
     loading: exporting.entityPrices,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.insurance)
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToPDF("entities-tab"),
-    loading: exporting.procedures,
+    onClick: () => exportToPDF("precios-entidad-tab"),
+    loading: exporting.entityPrices,
     disabled: !reportData || reportData.length === 0
-  })), generateEntityPricesTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "conteo-entidad-tab" ? "show active" : ""}`,
-    id: "tab-conteo-entidad",
-    role: "tabpanel",
-    "aria-labelledby": "conteo-entidad-tab"
+  }))), generateEntityPricesTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "conteo-entidad-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Entidades por Conteo"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportEntityCounts,
     loading: exporting.entityCounts,
     disabled: !reportData || reportData.length === 0 || !reportData.some(item => item.insurance)
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
     onClick: () => exportToPDF("conteo-entidad-tab"),
-    loading: exporting.procedures,
+    loading: exporting.entityCounts,
     disabled: !reportData || reportData.length === 0
-  })), generateEntityCountTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "consultas-tab" ? "show active" : ""}`,
-    id: "tab-consultas",
-    role: "tabpanel",
-    "aria-labelledby": "consultas-tab"
+  }))), generateEntityCountTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "consultas-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Consultas por Profesional"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportConsultations,
     loading: exporting.consultations,
     disabled: !reportData || reportData.length === 0
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
-    onClick: () => exportToPDF("consultation-tab"),
-    loading: exporting.procedures,
+    onClick: () => exportToPDF("consultas-tab"),
+    loading: exporting.consultations,
     disabled: !reportData || reportData.length === 0
-  })), generateConsultationsTable()), /*#__PURE__*/React.createElement("div", {
-    className: `tab-pane fade ${activeTab === "productivity-tab" ? "show active" : ""}`,
-    id: "tab-productivity",
-    role: "tabpanel",
-    "aria-labelledby": "productivity-tab"
+  }))), generateConsultationsTable()), /*#__PURE__*/React.createElement("div", {
+    className: `tab-panel ${activeTab === "productivity-tab" ? "active" : ""}`
   }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2 mb-3"
-  }, /*#__PURE__*/React.createElement(ExportButtonExcel, {
+    className: "d-flex justify-content-between align-items-center mb-4"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xl font-semibold"
+  }, "Productividad por Profesional"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "p-input-icon-left"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "pi pi-search"
+  }), /*#__PURE__*/React.createElement(InputText, {
+    type: "search",
+    onInput: e => setGlobalFilter(e.currentTarget.value),
+    placeholder: "Buscar..."
+  })), /*#__PURE__*/React.createElement(ExportButtonExcel, {
     onClick: handleExportConsultations,
     loading: exporting.consultations,
     disabled: !reportData || reportData.length === 0
   }), /*#__PURE__*/React.createElement(ExportButtonPDF, {
     onClick: () => exportToPDF("productivity-tab"),
-    loading: exporting.procedures,
+    loading: exporting.consultations,
     disabled: !reportData || reportData.length === 0
-  })), generateTableProductivity()))))))));
+  }))), generateTableProductivity())))))))));
 };
 const ExportButtonExcel = ({
   onClick,

@@ -9,17 +9,22 @@ import { Button } from "primereact/button";
 import { CustomPRTable, CustomPRTableColumnProps } from "../../../components/CustomPRTable";
 import {
   RetentionConfigTableProps,
-  ToastSeverity
+  ToastSeverity,
 } from "../interfaces/RetentionConfigTableType";
-import { Retention } from "../interfaces/RetentionFormConfigType";
 import { useAccountingAccounts } from "../../../accounting/hooks/useAccountingAccounts";
+import { Retention } from "../interfaces/RetentionFormConfigType";
 
 export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
   retentions = [],
   onEditItem,
   onDeleteItem,
   loading = false,
-  onReload
+  onReload,
+  // Nuevas props para el botón
+  onCreate,
+  createLoading = false,
+  updateLoading = false,
+  deleteLoading = false
 }) => {
   const toast = useRef<Toast>(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
@@ -30,7 +35,8 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
     account: null as string | null,
   });
 
-  const { accounts: accountingAccounts, isLoading: isLoadingAccounts } = useAccountingAccounts();
+  const { accounts: accountingAccounts, isLoading: isLoadingAccounts } =
+    useAccountingAccounts();
 
   // Función para sincronizar los datos filtrados
   const syncFilteredData = () => {
@@ -38,25 +44,35 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
 
     // Aplicar filtros actuales
     if (filtros.name) {
-      result = result.filter((ret) =>
-        ret.name.toLowerCase().includes(filtros.name.toLowerCase())
+      result = result.filter((retention) =>
+        retention.name.toLowerCase().includes(filtros.name.toLowerCase())
       );
     }
 
     if (filtros.account) {
-      result = result.filter((ret) =>
-        ret.account?.id === filtros.account ||
-        ret.returnAccount?.id === filtros.account
+      result = result.filter(
+        (retention) =>
+          retention.account?.id === filtros.account ||
+          retention.returnAccount?.id === filtros.account
       );
     }
 
     setFilteredRetentions(result);
   };
 
-  // Sincroniza cuando cambian los retentions o los filtros
+  // Sincroniza cuando cambian las retenciones o los filtros
   useEffect(() => {
     syncFilteredData();
   }, [retentions, filtros]);
+
+  const getAccountOptions = () => {
+    if (!accountingAccounts) return [];
+
+    return accountingAccounts.map((account) => ({
+      label: account.account_name || `Cuenta ${account.account_code}`,
+      value: account.id.toString(),
+    }));
+  };
 
   const renderAccount = (account: { id: string; name: string } | null) => {
     if (!account) return "No asignada";
@@ -65,9 +81,8 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
       return account.name;
     }
 
-    const fullAccount = accountingAccounts?.find(acc =>
-      acc.id.toString() === account.id ||
-      acc.account_code?.toString() === account.id
+    const fullAccount = accountingAccounts?.find(
+      (acc) => acc.id.toString() === account.id
     );
 
     return fullAccount?.account_name || account.name || `Cuenta ${account.id}`;
@@ -112,7 +127,7 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
     setDeleteDialogVisible(true);
   };
 
-  const deleteRetention = async () => {
+  const deleteMethod = async () => {
     if (retentionToDelete && onDeleteItem) {
       await onDeleteItem(retentionToDelete.id.toString());
       showToast("success", "Éxito", `Retención ${retentionToDelete.name} eliminada`);
@@ -138,7 +153,7 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
         label="Eliminar"
         icon="pi pi-check"
         className="p-button-danger"
-        onClick={deleteRetention}
+        onClick={deleteMethod}
       />
     </div>
   );
@@ -210,14 +225,6 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
     );
   };
 
-  const getAccountOptions = () => {
-    if (!accountingAccounts) return [];
-    return accountingAccounts.map((account) => ({
-      label: account.account_name || `Cuenta ${account.account_code}`,
-      value: account.id.toString(),
-    }));
-  };
-
   // Mapear los datos para la tabla
   const tableItems = filteredRetentions.map(retention => ({
     id: retention.id,
@@ -232,7 +239,7 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
   const columns: CustomPRTableColumnProps[] = [
     {
       field: 'name',
-      header: 'Nombre de Retención',
+      header: 'Nombre de la Retención',
       sortable: true
     },
     {
@@ -265,8 +272,7 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
       field: 'actions',
       header: 'Acciones',
       body: (rowData: any) => actionBodyTemplate(rowData.actions),
-      exportable: false,
-      width: "120px"
+      exportable: false
     }
   ];
 
@@ -288,19 +294,35 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
           />
           {retentionToDelete && (
             <span>
-              ¿Estás seguro que deseas eliminar la retención <b>{retentionToDelete.name}</b>?
+              ¿Estás seguro que desea eliminar la retención <b>{retentionToDelete.name}</b>?
             </span>
           )}
         </div>
       </Dialog>
-      <div className="card mb-3">
-        <div className="card-body">
+
+
+
+      <div
+        className="card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto"
+        style={{ minHeight: "400px" }}
+      >
+        <div className="card-body h-100 w-100 d-flex flex-column" style={{ marginTop: "-50px" }}>
+          <div className="text-end pt-3 mb-2">
+            <Button
+              className="p-button-primary"
+              onClick={onCreate}
+              disabled={createLoading || updateLoading || deleteLoading}
+            >
+              <i className="fas fa-plus me-2"></i>
+              {createLoading || updateLoading ? 'Procesando...' : 'Nueva Retención'}
+            </Button>
+          </div>
           <Accordion>
             <AccordionTab header="Filtros">
               <div className="row">
                 <div className="col-md-6">
                   <label className="form-label">
-                    Nombre de Retención
+                    Nombre de la Retención
                   </label>
                   <InputText
                     value={filtros.name}
@@ -318,7 +340,9 @@ export const RetentionConfigTable: React.FC<RetentionConfigTableProps> = ({
                     options={getAccountOptions()}
                     onChange={(e) => handleFilterChange("account", e.value)}
                     optionLabel="label"
-                    placeholder={isLoadingAccounts ? "Cargando cuentas..." : "Seleccione cuenta"}
+                    placeholder={
+                      isLoadingAccounts ? "Cargando cuentas..." : "Seleccione cuenta"
+                    }
                     className="w-100"
                     filter
                     filterBy="label"

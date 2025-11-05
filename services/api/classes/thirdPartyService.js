@@ -17,4 +17,12 @@ export class ThirdPartyService extends BaseApiService {
             data
         );
     }
+
+    async getByFilters({ search, per_page = 10, page = 1 }) {
+        return await this.httpClient.get(`api/v1/admin/third-parties/query/filter`, {
+            per_page,
+            page,
+            search
+        });
+    }
 }

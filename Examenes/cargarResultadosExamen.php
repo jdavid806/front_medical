@@ -238,27 +238,19 @@ $examenes = [
     ReactDOMClient.createRoot(document.getElementById('examsAppReact')).render(React.createElement(ExamResultsForm, {
         examId: examOrder.id,
         handleSave: (data) => {
+            const formattedTime = formatTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('elapsedTime')));
             examResultService.create({
                     "exam_order_id": examOrder.id,
                     "created_by_user_id": UserManager.getUser().id,
-                    "results": data
+                    "results": data,
+                    "exam_order_update_data": {
+                        duration: `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
+                    }
                 })
                 .then(async (response) => {
-                    const formattedTime = formatTimeByMilliseconds(localStorage.getItem(generateURLStorageKey('elapsedTime')));
 
-                    await examOrderService.update(examOrder.id, {
-                        duration: `${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
-                    });
                     await sendMessageWhatsapp(response);
-                    await appointmentService.changeStatus(appointmentId, 'consultation_completed');
-                    const appointmentData = await appointmentService.get(appointmentId);
 
-                    if (appointmentData.exam_recipe_id) {
-                        await examRecipeService.changeStatus(
-                            appointmentData.exam_recipe_id,
-                            "uploaded"
-                        );
-                    }
                     AlertManager.success({
                         text: 'Se ha creado el registro exitosamente'
                     })

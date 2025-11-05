@@ -3,7 +3,7 @@ import { useState } from "react";
 import { clinicalRecordService } from "../../../services/api";
 
 export const useClinicalRecord = () => {
-    const [clinicalRecord, setClinicalRecord] = useState();
+    const [clinicalRecord, setClinicalRecord] = useState<any | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 

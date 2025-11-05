@@ -8,6 +8,8 @@ import { InputTextarea } from "primereact/inputtextarea";
 
 // Definimos los tipos de datos del formulario
 
+import { Dropdown } from "primereact/dropdown";
+import { depositTypes } from "../ts/consts.js";
 const DepositForm = ({
   formId,
   onSubmit,
@@ -24,9 +26,14 @@ const DepositForm = ({
   } = useForm({
     defaultValues: initialData || {
       name: "",
+      type: null,
       notes: ""
     }
   });
+  const depositTypeOptions = Object.entries(depositTypes).map(([key, value]) => ({
+    label: value,
+    value: key
+  }));
   const onFormSubmit = data => onSubmit(data);
   const getFormErrorMessage = name => {
     return errors[name] && /*#__PURE__*/React.createElement("small", {
@@ -56,6 +63,29 @@ const DepositForm = ({
       })
     }, field)))
   }), getFormErrorMessage("name")), /*#__PURE__*/React.createElement("div", {
+    className: "mb-3"
+  }, /*#__PURE__*/React.createElement(Controller, {
+    name: "type",
+    control: control,
+    rules: {
+      required: "El tipo del depósito es requerido"
+    },
+    render: ({
+      field
+    }) => /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("label", {
+      htmlFor: field.name,
+      className: "form-label"
+    }, "Tipo del Dep\xF3sito *"), /*#__PURE__*/React.createElement(Dropdown, _extends({
+      id: field.name,
+      className: classNames("w-100", {
+        "p-invalid": errors.type
+      })
+    }, field, {
+      options: depositTypeOptions,
+      optionLabel: "label",
+      optionValue: "value"
+    })))
+  }), getFormErrorMessage("type")), /*#__PURE__*/React.createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "notes",

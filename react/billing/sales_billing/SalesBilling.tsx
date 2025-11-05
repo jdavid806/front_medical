@@ -1,10 +1,10 @@
-import React, { use, useState } from "react";
-import { useForm, Controller, set } from "react-hook-form";
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { DropdownChangeEvent } from "primereact/dropdown";
-import { Dropdown } from "primereact";
+import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -99,6 +99,7 @@ export const SalesBilling: React.FC<any> = ({
       discount: 0,
       discountType: "percentage",
       iva: 0,
+      tax: null,
     },
   ]);
   const [retentions, setRetentions] = useState<RetentionItem[]>([
@@ -196,6 +197,7 @@ export const SalesBilling: React.FC<any> = ({
           discount: discount,
           discountType: "percentage",
           iva: percentageTax || 0,
+          tax: item.tax || null,
           taxAmount: item.total_taxes,
           depositId: item.deposit_id || null,
           taxAccountingAccountId: item.tax_accounting_account_id || null,
@@ -447,6 +449,154 @@ export const SalesBilling: React.FC<any> = ({
     }
   };
 
+  const getProductColumns = () => {
+    return [
+      {
+        field: "typeProduct",
+        header: "Tipo",
+        body: (rowData: InvoiceProduct) => (
+          <TypeColumnBody
+            rowData={rowData}
+            onChange={(newType: string) => {
+              handleProductChange(rowData.id, "typeProduct", newType);
+              handleProductChange(rowData.id, "product", null);
+            }}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "220px" },
+      },
+      {
+        field: "product",
+        header: "Producto",
+        body: (rowData: InvoiceProduct) => (
+          <ProductColumnBody
+            rowData={rowData}
+            type={rowData.typeProduct}
+            onChange={(value: string) => {
+              handleProductChange(rowData.id, "product", value);
+            }}
+            handleProductChange={handleProductChange}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "180px" },
+      },
+      {
+        field: "quantity",
+        header: "Cantidad",
+        body: (rowData: InvoiceProduct) => (
+          <QuantityColumnBody
+            onChange={(value: number | null) =>
+              handleProductChange(rowData.id, "quantity", value || 0)
+            }
+            value={rowData.quantity}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "50px" },
+      },
+      {
+        field: "price",
+        header: "Valor unitario",
+        body: (rowData: InvoiceProduct) => (
+          <PriceColumnBody
+            onChange={(value: number | null) =>
+              handleProductChange(rowData.id, "price", value || 0)
+            }
+            value={rowData.price}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "discount",
+        header: "Descuento",
+        body: (rowData: InvoiceProduct) => (
+          <DiscountColumnBody
+            onChange={(value: number | null) =>
+              handleProductChange(rowData.id, "discount", value || 0)
+            }
+            onTypeChange={(type: "percentage" | "fixed") =>
+              handleProductChange(rowData.id, "discountType", type)
+            }
+            value={rowData.discount}
+            discountType={rowData.discountType || "percentage"}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "iva",
+        header: "Impuestos",
+        body: (rowData: InvoiceProduct) => (
+          <IvaColumnBody
+            onChange={(value: any | null) => {
+              handleProductChange(rowData.id, "iva", value?.percentage || 0);
+              handleProductChange(rowData.id, "tax", value); // ← NUEVA LINEA: guardar objeto completo
+              handleProductChange(
+                rowData.id,
+                "taxAccountingAccountId",
+                value?.accounting_account_id || null
+              );
+              handleProductChange(rowData.id, "taxChargeId", value?.id || null);
+            }}
+            value={rowData.tax} // ← Cambiar para usar el objeto tax
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "depositId",
+        header: "Depósito",
+        body: (rowData: InvoiceProduct) => (
+          <DepositColumnBody
+            onChange={(value: string | null) =>
+              handleProductChange(rowData.id, "depositId", value)
+            }
+            value={rowData.depositId}
+            disabled={disabledInpputs}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "total",
+        header: "Valor total",
+        body: (rowData: InvoiceProduct) => (
+          <InputNumber
+            value={calculateLineTotal(rowData)}
+            mode="currency"
+            currency="DOP"
+            locale="es-DO"
+            readOnly
+            inputClassName="form-control bg-light"
+            style={{ minWidth: "200px" }}
+          />
+        ),
+        style: { minWidth: "150px" },
+      },
+      {
+        field: "actions",
+        header: "Acciones",
+        body: (rowData: InvoiceProduct) => (
+          <Button
+            className="p-button-rounded p-button-danger p-button-text"
+            onClick={() => removeProduct(rowData.id)}
+            disabled={productsArray.length <= 1}
+            tooltip="Eliminar Producto"
+          >
+            <i className="fa-solid fa-trash"></i>
+          </Button>
+        ),
+        style: { width: "100px", textAlign: "center" },
+      },
+    ];
+  };
+
   const save = async (formData: any) => {
     if (productsArray.length === 0) {
       window["toast"].show({
@@ -625,7 +775,7 @@ export const SalesBilling: React.FC<any> = ({
                                 changeType(e.value);
                               }}
                               placeholder="Seleccione un tipo"
-                              className={classNames("w-100")}
+                              className={classNames("w-100 dropdown-billing")}
                               appendTo={"self"}
                               showClear
                             />
@@ -701,7 +851,9 @@ export const SalesBilling: React.FC<any> = ({
                                 optionLabel="name"
                                 optionValue="id"
                                 placeholder="Seleccione un proveedor"
-                                className={classNames("flex-grow-1")}
+                                className={classNames(
+                                  "flex-grow-1 dropdown-billing"
+                                )}
                                 appendTo={"self"}
                                 disabled={disabledInpputs}
                                 showClear
@@ -735,7 +887,7 @@ export const SalesBilling: React.FC<any> = ({
                               optionLabel="full_name"
                               optionValue="id"
                               placeholder="Seleccione un vendedor"
-                              className={classNames("w-100")}
+                              className={classNames("w-100 dropdown-billing")}
                               appendTo={"self"}
                               disabled={disabledInpputs}
                               showClear
@@ -759,7 +911,7 @@ export const SalesBilling: React.FC<any> = ({
                             options={centresCosts}
                             optionLabel="name"
                             placeholder="Seleccione centro"
-                            className={classNames("w-100")}
+                            className={classNames("w-100 dropdown-billing")}
                             appendTo={"self"}
                             disabled={disabledInpputs}
                             showClear
@@ -772,6 +924,7 @@ export const SalesBilling: React.FC<any> = ({
               </div>
             </div>
 
+            {/* Sección de Productos con DataTable */}
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
                 <h2 className="h5 mb-0">
@@ -779,15 +932,19 @@ export const SalesBilling: React.FC<any> = ({
                   Productos
                 </h2>
                 <Button
-                  icon="pi pi-plus"
                   label="Añadir Producto"
-                  className="btn btn-primary"
+                  className="p-button-primary"
                   onClick={(e) => {
                     e.preventDefault();
                     addProduct();
                   }}
                   disabled={disabledInpputs}
-                />
+                >
+                  <i
+                    className="fa fa-shopping-cart me-2"
+                    style={{ marginLeft: "10px" }}
+                  ></i>
+                </Button>
               </div>
               <div className="card-body p-0">
                 {loadingProductTypes ? (
@@ -798,202 +955,38 @@ export const SalesBilling: React.FC<any> = ({
                     <p className="mt-2 text-muted">Cargando productos...</p>
                   </div>
                 ) : (
-                  <div className="table-responsive-md">
-                    <table className="table table-hover mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th scope="col" style={{ minWidth: "120px" }}>
-                            Tipo
-                          </th>
-                          <th scope="col" style={{ minWidth: "180px" }}>
-                            Producto
-                          </th>
-                          <th scope="col" style={{ minWidth: "100px" }}>
-                            Cantidad
-                          </th>
-                          <th scope="col" style={{ minWidth: "200px" }}>
-                            Valor unitario
-                          </th>
-                          <th scope="col" style={{ minWidth: "220px" }}>
-                            Descuento %
-                          </th>
-                          <th scope="col" style={{ minWidth: "120px" }}>
-                            Impuestos
-                          </th>
-                          <th scope="col" style={{ minWidth: "130px" }}>
-                            Depósito
-                          </th>
-                          <th
-                            scope="col"
-                            style={{ minWidth: "200px !important" }}
-                          >
-                            Valor total
-                          </th>
-                          <th scope="col" style={{ width: "80px" }}>
-                            Acciones
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {productsArray.map((product) => (
-                          <tr key={product.id}>
-                            <td className="p-2">
-                              <TypeColumnBody
-                                rowData={product}
-                                onChange={(newType: string) => {
-                                  handleProductChange(
-                                    product.id,
-                                    "typeProduct",
-                                    newType
-                                  );
-                                  handleProductChange(
-                                    product.id,
-                                    "product",
-                                    null
-                                  );
-                                }}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <ProductColumnBody
-                                rowData={product}
-                                type={product.typeProduct}
-                                onChange={(value: string) => {
-                                  handleProductChange(
-                                    product.id,
-                                    "product",
-                                    value
-                                  );
-                                }}
-                                handleProductChange={handleProductChange}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <QuantityColumnBody
-                                onChange={(value: number | null) =>
-                                  handleProductChange(
-                                    product.id,
-                                    "quantity",
-                                    value || 0
-                                  )
-                                }
-                                value={product.quantity}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <PriceColumnBody
-                                onChange={(value: number | null) =>
-                                  handleProductChange(
-                                    product.id,
-                                    "price",
-                                    value || 0
-                                  )
-                                }
-                                value={product.price}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <DiscountColumnBody
-                                onChange={(value: number | null) =>
-                                  handleProductChange(
-                                    product.id,
-                                    "discount",
-                                    value || 0
-                                  )
-                                }
-                                onTypeChange={(type: "percentage" | "fixed") =>
-                                  handleProductChange(
-                                    product.id,
-                                    "discountType",
-                                    type
-                                  )
-                                }
-                                value={product.discount}
-                                discountType={
-                                  product.discountType || "percentage"
-                                }
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <IvaColumnBody
-                                onChange={(value: any | null) => {
-                                  handleProductChange(
-                                    product.id,
-                                    "iva",
-                                    value?.percentage || 0
-                                  );
-                                  handleProductChange(
-                                    product.id,
-                                    "taxAccountingAccountId",
-                                    value?.accounting_account_id || null
-                                  );
-                                  handleProductChange(
-                                    product.id,
-                                    "taxChargeId",
-                                    value?.id || null
-                                  );
-                                }}
-                                value={product.iva}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <DepositColumnBody
-                                onChange={(value: string | null) =>
-                                  handleProductChange(
-                                    product.id,
-                                    "depositId",
-                                    value
-                                  )
-                                }
-                                value={product.depositId}
-                                disabled={disabledInpputs}
-                              />
-                            </td>
-                            <td className="p-2">
-                              <InputNumber
-                                value={calculateLineTotal(product)}
-                                mode="currency"
-                                currency="DOP"
-                                locale="es-DO"
-                                readOnly
-                                inputClassName="form-control bg-light"
-                                style={{ minWidth: "200px" }}
-                              />
-                            </td>
-                            <td className="text-center p-2">
-                              <Button
-                                className="p-button-rounded p-button-danger p-button-text"
-                                onClick={() => removeProduct(product.id)}
-                                disabled={productsArray.length <= 1}
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="table-responsive">
+                    <DataTable
+                      value={productsArray}
+                      responsiveLayout="scroll"
+                      className="p-datatable-sm p-datatable-gridlines"
+                      showGridlines
+                      stripedRows
+                      emptyMessage="No hay productos agregados"
+                    >
+                      {getProductColumns().map((col, index) => (
+                        <Column
+                          key={index}
+                          field={col.field}
+                          header={col.header}
+                          body={col.body}
+                          style={col.style}
+                        />
+                      ))}
+                    </DataTable>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="card mb-4 shadow-sm">
-              <RetentionsSection
-                subtotal={calculateSubtotal()}
-                totalDiscount={calculateTotalDiscount()}
-                retentions={retentions}
-                onRetentionsChange={setRetentions}
-                productsArray={productsArray}
-                type="sale"
-              />
-            </div>
+            <RetentionsSection
+              subtotal={calculateSubtotal()}
+              totalDiscount={calculateTotalDiscount()}
+              retentions={retentions}
+              onRetentionsChange={setRetentions}
+              productsArray={productsArray}
+              type="sale"
+            />
 
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
@@ -1002,14 +995,18 @@ export const SalesBilling: React.FC<any> = ({
                   Métodos de Pago (DOP)
                 </h2>
                 <Button
-                  icon="pi pi-plus"
                   label="Agregar Método"
-                  className="btn btn-primary"
+                  className="p-button-primary"
                   onClick={(e) => {
                     e.preventDefault();
                     addPayment();
                   }}
-                />
+                >
+                  <i
+                    className="far fa-credit-card me-2"
+                    style={{ marginLeft: "10px" }}
+                  ></i>
+                </Button>
               </div>
               <div className="card-body p-3">
                 {paymentMethodsArray.map((payment) => (
@@ -1027,12 +1024,13 @@ export const SalesBilling: React.FC<any> = ({
                           optionLabel="method"
                           optionValue="id"
                           placeholder="Seleccione método"
-                          className="w-100"
+                          className="w-100 dropdown-billing-retention"
                           onChange={(e) => {
                             handlePaymentChange(payment.id, "method", e.value);
                           }}
                           appendTo={"self"}
                           filter
+                          showClear
                         />
                       </div>
                     </div>
@@ -1269,11 +1267,12 @@ export const SalesBilling: React.FC<any> = ({
 
             <div className="d-flex justify-content-end gap-3 mb-4">
               <Button
-                label="Guardar"
-                icon="pi pi-check"
-                className="btn-info"
+                label="Guardar Factura Venta"
+                className="p-button-primary"
                 type="submit"
-              />
+              >
+                <i className="fa fa-save" style={{ marginLeft: "10px" }}></i>
+              </Button>
             </div>
           </form>
         </div>
@@ -1286,118 +1285,132 @@ export const SalesBilling: React.FC<any> = ({
       />
 
       <style>{`
-            .form-control {
-              height: 38px;
-              padding: 0.375rem 0.75rem;
-              font-size: 0.9rem;
-              border: 1px solid #ced4da;
-              border-radius: 0.375rem;
-              transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            }
-            
-            .form-control:focus {
-              border-color: #86b7fe;
-              outline: 0;
-              box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            }
-            
-            .p-inputnumber-input {
-              height: 38px;
-              padding: 0.375rem 0.75rem;
-              font-size: 0.9rem;
-            }
-            
-            .p-dropdown {
-              height: 38px;
-              display: flex;
-              align-items: center;
-            }
-            
-            .p-calendar {
-              height: 38px;
-            }
-            
-            .table-responsive-md {
-              overflow-x: auto;
-              -webkit-overflow-scrolling: touch;
-            }
-            
-            .table th, .table td {
-              vertical-align: middle;
-              padding: 0.75rem;
-            }
-            
-            .table thead th {
-              border-bottom: 2px solid #dee2e6;
-              background-color: #f8f9fa;
-              font-weight: 600;
-            }
-            
-            .price-input {
-              width: 200px; !important;
-              min-width: 120px;
-              width: auto !important;
-            }
-            
-            .price-input .p-inputnumber-input {
-              width: auto; !important;
-              min-width: 120px;
-            }
-            
-            @media (max-width: 768px) {
-              .container-fluid {
-                padding-left: 10px;
-                padding-right: 10px;
-              }
-              
-              .card-body {
-                padding: 1rem;
-              }
-              
-              .table-responsive-md {
-                border: 1px solid #dee2e6;
-                border-radius: 0.375rem;
-              }
-              
-              .table {
-                margin-bottom: 0;
-                min-width: 800px;
-              }
-              
-              .btn {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.875rem;
-              }
-              
-              .price-input {
-              width: 300px; !important;
-                min-width: 100px;
-              }
-            }
-            
-            .table .p-inputnumber, 
-            .table .p-dropdown, 
-            .table .p-calendar {
-              width: 100% !important;
-              min-width: 100px;
-            }
-            
-            .p-dropdown-panel {
-              z-index: 1100 !important;
-            }
-            
-            @media (max-width: 576px) {
-              .alert-info .d-flex {
-                flex-direction: column;
-                gap: 1rem;
-              }
-              
-              .alert-info .d-flex > div {
-                width: 100%;
-                justify-content: space-between;
-              }
-            }
-          `}</style>
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+        }
+        
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
+        }
+        
+        .p-calendar {
+          height: 38px;
+        }
+        
+        .table-responsive {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .p-datatable .p-datatable-thead > tr > th,
+        .p-datatable .p-datatable-tbody > tr > td {
+          padding: 0.5rem;
+          vertical-align: middle;
+        }
+        
+        .p-datatable .p-column-title {
+          font-weight: 600;
+          font-size: 0.875rem;
+        }
+        
+        .p-datatable-tbody > tr > td {
+          border: 1px solid #e9ecef;
+        }
+        
+        /* Asegurar que los inputs dentro de la tabla se vean bien */
+        .p-datatable .p-inputtext,
+        .p-datatable .p-dropdown,
+        .p-datatable .p-inputnumber {
+          width: 100%;
+          font-size: 0.875rem;
+        }
+        
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+          width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .p-datatable {
+            min-width: 800px;
+          }
+          
+          .p-datatable .p-datatable-thead > tr > th,
+          .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.375rem;
+            font-size: 0.8rem;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+            width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        .p-datatable .p-inputnumber, 
+        .p-datatable .p-dropdown, 
+        .p-datatable .p-calendar {
+          width: 100% !important;
+          min-width: 250px;
+        }
+        
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+      `}</style>
     </div>
   );
 };
@@ -1427,7 +1440,7 @@ const TypeColumnBody = ({
         optionLabel="name"
         optionValue="id"
         placeholder="Seleccione Tipo"
-        className="w-100"
+        className="w-100 dropwdow-content-type dropdown-billing-product"
         onChange={(e: DropdownChangeEvent) => {
           onChange(e.value);
         }}
@@ -1498,7 +1511,7 @@ const ProductColumnBody = ({
         optionLabel="label"
         optionValue="id"
         placeholder="Seleccione Activo"
-        className="w-100"
+        className="w-100 dropdown-billing-products"
         filter
         onChange={(e: DropdownChangeEvent) => {
           e.originalEvent?.preventDefault();
@@ -1527,7 +1540,7 @@ const ProductColumnBody = ({
       optionLabel="label"
       optionValue="id"
       placeholder="Seleccione Producto"
-      className="w-100"
+      className="w-100 dropdown-billing-products"
       filter
       onChange={(e: DropdownChangeEvent) => {
         onChange(e.value);
@@ -1558,7 +1571,7 @@ const QuantityColumnBody = ({
       <InputNumber
         value={value}
         placeholder="Cantidad"
-        className="w-100"
+        style={{ minWidth: "100px" }}
         min={0}
         onValueChange={(e: any) => {
           onChange(e.value);
@@ -1588,7 +1601,7 @@ const PriceColumnBody = ({
       <InputNumber
         value={value}
         placeholder="RD$ 0.00"
-        className="w-100"
+        style={{ minWidth: "150px" }}
         mode="currency"
         currency="DOP"
         locale="es-DO"
@@ -1643,8 +1656,9 @@ const DiscountColumnBody = ({
           { label: "$", value: "fixed" },
         ]}
         optionLabel="label"
+        className="dropdown-billing-products"
         optionValue="value"
-        style={{ width: "50px" }}
+        style={{ minWidth: "200px" }}
         onChange={(e: DropdownChangeEvent) => {
           handleTypeChange(e.value);
         }}
@@ -1656,7 +1670,7 @@ const DiscountColumnBody = ({
         placeholder={
           discountType === "percentage" ? "Descuento %" : "Descuento $"
         }
-        className="flex-grow-1"
+        className="flex-grow-1 w-100"
         style={{ minWidth: "100px" }}
         suffix={discountType === "percentage" ? "%" : ""}
         prefix={discountType === "fixed" ? "$ " : ""}
@@ -1692,14 +1706,14 @@ const IvaColumnBody = ({
 
   return (
     <Dropdown
-      value={value}
+      value={value?.percentage} // Mostrar por porcentaje
       options={taxes}
       optionLabel={(option: any) =>
         `${option.name} - ${Math.floor(option.percentage)}%`
       }
       optionValue="percentage"
       placeholder="Seleccione IVA"
-      className="w-100"
+      className="w-100 dropdown-billing-products"
       onChange={(e: DropdownChangeEvent) => {
         if (e.value === null) {
           onChange(null);
@@ -1708,7 +1722,7 @@ const IvaColumnBody = ({
             (tax: any) => tax.percentage === e.value
           );
           if (selectedTax) {
-            onChange(selectedTax);
+            onChange(selectedTax); // ← Pasar el objeto completo
           }
         }
       }}
@@ -1719,6 +1733,7 @@ const IvaColumnBody = ({
     />
   );
 };
+
 const DepositColumnBody = ({
   onChange,
   value,
@@ -1746,7 +1761,7 @@ const DepositColumnBody = ({
       optionLabel={(option: any) => `${option.attributes.name}`}
       optionValue="id"
       placeholder="Seleccione"
-      className="w-100"
+      className="w-100 dropdown-billing-products"
       onChange={(e: DropdownChangeEvent) => {
         onChange(e.value);
       }}

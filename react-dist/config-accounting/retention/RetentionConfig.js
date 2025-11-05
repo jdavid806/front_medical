@@ -158,28 +158,17 @@ export const RetentionConfig = ({
   }, error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "text-end pt-3 mb-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    className: "p-button-primary",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? "Procesando..." : "Nueva Retención")), /*#__PURE__*/React.createElement(RetentionConfigTable, {
+  }, error), /*#__PURE__*/React.createElement(RetentionConfigTable, {
     retentions: enrichedRetentions,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteRetention,
     loading: loading || isLoadingAccounts,
-    onReload: refreshRetentions
-  }))), /*#__PURE__*/React.createElement(RetentionModalConfig, {
+    onReload: refreshRetentions,
+    onCreate: onCreate,
+    createLoading: createLoading,
+    updateLoading: updateLoading,
+    deleteLoading: deleteLoading
+  }), /*#__PURE__*/React.createElement(RetentionModalConfig, {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {

@@ -18,7 +18,10 @@ export interface RetentionConfigTableProps {
   onDeleteItem?: (id: string) => void;
   loading?: boolean;
   onReload: () => void;
-
+  onCreate?: () => void;
+  createLoading?: boolean;
+  updateLoading?: boolean;
+  deleteLoading?: boolean;
 }
 
 export type ToastSeverity = 'success' | 'info' | 'warn' | 'error';

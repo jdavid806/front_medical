@@ -10,7 +10,6 @@ import { useTaxesDeleteTable } from "./hooks/useTaxesDeleteTable.js";
 import { useTaxesUpdateTable } from "./hooks/useTaxesUpdteTable.js";
 import { TaxesMapperCreate, TaxesMapperUpdate } from "./mapper/mappedTaxes.js";
 import { useAccountingAccounts } from "../../accounting/hooks/useAccountingAccounts.js";
-import { Button } from 'primereact/button';
 export const TaxesConfig = ({
   onConfigurationComplete
 }) => {
@@ -150,28 +149,17 @@ export const TaxesConfig = ({
   }, error && /*#__PURE__*/React.createElement("div", {
     className: "alert alert-danger",
     role: "alert"
-  }, error), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 text-body-emphasis rounded-3 p-3 w-100 w-md-100 w-lg-100 mx-auto",
-    style: {
-      minHeight: "400px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body h-100 w-100 d-flex flex-column"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "text-end pt-3 mb-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    className: "p-button-primary",
-    onClick: onCreate,
-    disabled: createLoading || updateLoading || deleteLoading
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "fas fa-plus me-2"
-  }), createLoading || updateLoading ? 'Procesando...' : 'Nuevo Impuesto')), /*#__PURE__*/React.createElement(TaxesConfigTable, {
+  }, error), /*#__PURE__*/React.createElement(TaxesConfigTable, {
     taxes: enrichedTaxes,
     onEditItem: handleTableEdit,
     onDeleteItem: handleDeleteTax,
     loading: loading || isLoadingAccounts,
-    onReload: refreshTaxes
-  }))), /*#__PURE__*/React.createElement(TaxConfigModal, {
+    onReload: refreshTaxes,
+    onCreate: onCreate,
+    createLoading: createLoading,
+    updateLoading: updateLoading,
+    deleteLoading: deleteLoading
+  }), /*#__PURE__*/React.createElement(TaxConfigModal, {
     isVisible: showFormModal,
     onSave: handleSubmit,
     onClose: () => {
