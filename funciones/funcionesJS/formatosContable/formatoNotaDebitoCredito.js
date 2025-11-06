@@ -1,4 +1,4 @@
-import { generatePDFFromHTML } from "../exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../exportPDFV2.js";
 import { generarTablaPaciente } from "../formatosImpresion/tablaDatosPaciente.js";
 import { formatDate } from "./utilsContable.js";
 import { formatCurrency } from "./utilsContable.js";
@@ -9,23 +9,21 @@ let cliente = {};
 
 async function consultarData() {
   const response = await consultarDatosEmpresa();
-  // const responePatient = await consultarDatosPaciente(patient_id);
-  // patient = responePatient;
-  // console.log(patient);
-  console.log('response', response);
   company = {
     legal_name: response.nombre_consultorio,
     document_number: response.datos_consultorio[0].RNC,
     address: response.datos_consultorio[1].Dirección,
     phone: response.datos_consultorio[2].Teléfono,
     email: response.datos_consultorio[3].Correo,
+    logo: response.logo_consultorio,
+    watermark: response.marca_agua
+,
   };
 }
-document.addEventListener("DOMContentLoaded", () => {
-  consultarData();
+document.addEventListener("DOMContentLoaded", async () => {
+  await consultarData();
 });
 export function generarFormatoNotaDebitoCredito(nota, tipo) {
-  console.log("Factura", nota);
  const namePDF = `Factura ${nota.note_code}.`;
     const companyData = {
       legal_name: "Centro Oriental de Diabetes y Endocrinologia",
@@ -194,6 +192,6 @@ export function generarFormatoNotaDebitoCredito(nota, tipo) {
     <hr style="margin: 0.25rem 0;">
    
         `;
-  generatePDFFromHTML(htmlInvoice, companyData, pdfConfig);
+  generatePDFFromHTMLV2(htmlInvoice, company || companyData, pdfConfig);
 }
 export default generarFormatoNotaDebitoCredito;

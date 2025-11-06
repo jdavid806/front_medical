@@ -1,4 +1,3 @@
-// components/MaintenanceModal.tsx
 import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -21,6 +20,12 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // Verificar si asset está definido
+  if (!asset) {
+    console.error("Asset is undefined in MaintenanceModal");
+    return null;
+  }
+
   const handleCloseAttempt = () => {
     if (closable) {
       setShowConfirm(true);
@@ -42,12 +47,15 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
     }
   };
 
+  const assetDescription = asset?.attributes?.description || "Activo sin nombre";
+  const currentStatus = asset?.attributes?.status || "";
+
   return (
     <>
       <Dialog
         visible={isVisible}
         onHide={handleCloseAttempt}
-        header={`${asset.attributes.description} - Mantenimiento y Estado`}
+        header={`${assetDescription} - Mantenimiento y Estado`}
         style={{ width: "50vw" }}
         modal
         className="p-fluid"
@@ -60,8 +68,8 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({
           statusOptions={statusOptions}
           maintenanceTypeOptions={maintenanceTypeOptions}
           userOptions={userOptions}
-          currentStatus={asset.attributes.status || ""}
-          asset={asset} // <-- Pasar la propiedad asset
+          currentStatus={currentStatus}
+          asset={asset}
         />
       </Dialog>
 

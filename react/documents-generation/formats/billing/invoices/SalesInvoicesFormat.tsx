@@ -200,7 +200,7 @@ export const SaleInvoicesFormat: React.FC<PrintInvoiceProps> = ({
       <div className="print-container">
         {/* Encabezado con estilo similar al primer componente */}
         <div className="user-header">
-          <h2 style={{ margin: 0 }}>Factura de compra</h2>
+          <h2 style={{ margin: 0 }}>Factura de venta</h2>
         </div>
 
         {/* Número de factura como subtítulo */}

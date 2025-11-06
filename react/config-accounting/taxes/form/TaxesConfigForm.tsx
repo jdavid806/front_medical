@@ -190,9 +190,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                     id={field.name}
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    options={accounts.filter(
-                      (acc) => acc.id !== selectedPurchaseAccount
-                    )}
+                    options={accounts}
                     optionLabel="account_name"
                     placeholder="Seleccione una cuenta"
                     filter
@@ -259,9 +257,7 @@ const TaxFormConfig: React.FC<TaxFormProps> = ({
                     id={field.name}
                     value={field.value}
                     onChange={(e) => field.onChange(e.value)}
-                    options={accounts.filter(
-                      (acc) => acc.id !== selectedSellAccount
-                    )}
+                    options={accounts}
                     optionLabel="account_name"
                     placeholder="Seleccione una cuenta"
                     filter

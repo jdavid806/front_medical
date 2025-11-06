@@ -289,16 +289,16 @@ export const Diagnosis: React.FC<any> = ({ data, dateRange }) => {
                   }}
                 >
                   {`${
-                    item?.appointment?.patient?.first_name.toLowerCase() ??
+                    item?.appointment?.patient?.first_name?.toLowerCase() ??
                     ""
                   } ${
-                    item?.appointment?.patient?.middle_name.toLowerCase() ??
+                    item?.appointment?.patient?.middle_name?.toLowerCase() ??
                     ""
                   } ${
-                    item?.appointment?.patient?.last_name.toLowerCase() ??
+                    item?.appointment?.patient?.last_name?.toLowerCase() ??
                     ""
                   } ${
-                    item?.appointment?.patient?.second_last_name.toLowerCase() ??
+                    item?.appointment?.patient?.second_last_name?.toLowerCase() ??
                     ""
                   }`}
                 </td>

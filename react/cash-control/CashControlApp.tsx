@@ -12,7 +12,7 @@ export const CashControlApp = () => {
         try {
             await createCashControl(data)
             setTimeout(() => {
-                window.location.href = 'homeAuditoria';
+                window.location.href = 'controlCaja';
             }, 2000);
         } catch (error) {
             console.log(error)

@@ -95,7 +95,11 @@
 
 .dropdown-accounting-voucher{
     width: 100vw;
-    height: 100vh;
+    height: auto;
+}
+.dropdown-accounting-voucher.p-dropdown .p-dropdown-trigger{
+    width: 3vw;    
+    height: auto;
 }
 /*Dropdown Comprobantes Contables Fin */
 

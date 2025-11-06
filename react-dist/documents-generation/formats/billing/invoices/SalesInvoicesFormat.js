@@ -167,7 +167,7 @@ export const SaleInvoicesFormat = ({
     style: {
       margin: 0
     }
-  }, "Factura de compra")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, "Factura #: ", invoice.numeroFactura)), /*#__PURE__*/React.createElement("div", {
+  }, "Factura de venta")), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, "Factura #: ", invoice.numeroFactura)), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: "20px",
       marginTop: "20px"

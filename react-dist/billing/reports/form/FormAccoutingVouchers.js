@@ -283,7 +283,7 @@ export const FormAccoutingVouchers = ({
       value: rowData.thirdPartyType,
       options: thirdPartyTypeOptions,
       placeholder: "Seleccione tipo",
-      className: "w-100",
+      className: "w-100 dropdown-accounting-voucher",
       style: {
         width: "100vw"
       },
@@ -436,7 +436,7 @@ export const FormAccoutingVouchers = ({
     header: col.header,
     body: col.body,
     style: {
-      minWidth: "200px"
+      minWidth: "200px !important"
     }
   })))), /*#__PURE__*/React.createElement("div", {
     className: "row mt-3 p-3"
@@ -595,6 +595,7 @@ const ThirdPartyField = ({
     onChange: e => onChange(e.value),
     filter: true,
     showClear: true,
+    className: "w-100 dropdown-accounting-voucher",
     appendTo: document.body
   }));
 };

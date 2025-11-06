@@ -1,43 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Menu } from "primereact/menu";
+import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
-import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
+import { Calendar } from "primereact/calendar";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
 import { ProgressBar } from "primereact/progressbar";
 import { classNames } from "primereact/utils";
-import { SplitButton } from "primereact/splitbutton";
-import { Toast } from "primereact/toast";
-import { MenuItem } from "primereact/menuitem";
+import { CustomPRTable, CustomPRTableColumnProps } from "../../../components/CustomPRTable";
 import FixedAssetsModal from "../modal/FixedAssetsModal";
 import { Filters, FixedAsset } from "../interfaces/FixedAssetsTableTypes";
 import DepreciationAppreciationModal from "../modal/DepreciationAppreciationModal";
 import MaintenanceModal from "../modal/MaintenanceModal";
 import { useAssets } from "../hooks/useAssets";
-import { stringToDate } from "../../../../services/utilidades";
 import { useUpdateAssetStatus } from "../hooks/useUpdateAssetStatus";
 import { useDataPagination } from "../../../hooks/useDataPagination";
-import {
-  CustomPRTable,
-  CustomPRTableColumnProps,
-} from "../../../components/CustomPRTable";
 
 export const FixedAssetsTable = () => {
   const { assets, fetchAssets } = useAssets();
-  const [filteredAssets, setFilteredAssets] = useState<FixedAsset[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<FixedAsset | null>(null);
   const [maintenanceModalVisible, setMaintenanceModalVisible] = useState(false);
-  const [selectedAssetForMaintenance, setSelectedAssetForMaintenance] =
-    useState<FixedAsset | null>(null);
-  const [depreciationModalVisible, setDepreciationModalVisible] =
-    useState(false);
-  const [selectedAssetForAdjustment, setSelectedAssetForAdjustment] =
-    useState<FixedAsset | null>(null);
+  const [selectedAssetForMaintenance, setSelectedAssetForMaintenance] = useState<FixedAsset | null>(null);
+  const [depreciationModalVisible, setDepreciationModalVisible] = useState(false);
+  const [selectedAssetForAdjustment, setSelectedAssetForAdjustment] = useState<FixedAsset | null>(null);
+
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [globalFilter, setGlobalFilter] = useState("");
+
   const toast = useRef<Toast>(null);
   const { updateAssetStatus } = useUpdateAssetStatus();
 
@@ -52,9 +50,9 @@ export const FixedAssetsTable = () => {
   const {
     data: assetsData,
     loading: loadingPaginator,
-    first,
+    first: paginatorFirst,
     perPage,
-    totalRecords,
+    totalRecords: paginatorTotalRecords,
     handlePageChange,
     handleSearchChange,
     refresh,
@@ -77,7 +75,6 @@ export const FixedAssetsTable = () => {
     { label: "Otro", value: "other" },
   ];
 
-  // En tu FixedAssetsTable.tsx, agrega estas constantes junto a las otras opciones
   const maintenanceTypeOptions = [
     { label: "Preventivo", value: "preventive" },
     { label: "Correctivo", value: "corrective" },
@@ -108,38 +105,59 @@ export const FixedAssetsTable = () => {
     }));
   };
 
+  const onPageChange = (event: any) => {
+    setFirst(event.first);
+    setRows(event.rows);
+    aplicarFiltros(event.page + 1, event.rows);
+  };
+
+  const aplicarFiltros = async (page = 1, per_page = 10) => {
+    setTableLoading(true);
+    try {
+      await refresh();
+    } catch (error) {
+      console.error("Error aplicando filtros:", error);
+      showToast("error", "Error", "No se pudieron aplicar los filtros");
+    } finally {
+      setTableLoading(false);
+    }
+  };
+
   const handleMaintenanceClick = (asset: FixedAsset) => {
     setSelectedAssetForMaintenance(asset);
     setMaintenanceModalVisible(true);
   };
 
   const clearFilters = () => {
-  setFilters({
-    name: "",
-    category: null,
-    internal_code: "",
-    status: null,
-    date_range: null,
-  });
-  
-  refresh();
-};
+    setFilters({
+      name: "",
+      category: null,
+      internal_code: "",
+      status: null,
+      date_range: null,
+    });
+    refresh();
+  };
 
   const formatCurrency = (value: number) => {
-    return value.toLocaleString("es-DO", {
-      style: "currency",
-      currency: "DOP",
+    if (value === null || value === undefined || isNaN(value)) {
+      return "RD$ 0.00";
+    }
+
+    return new Intl.NumberFormat('es-DO', {
+      style: 'currency',
+      currency: 'DOP',
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+      maximumFractionDigits: 2
+    }).format(value);
   };
 
   const formatDate = (value: Date) => {
-    return value.toLocaleDateString("es-DO", {
+    return value?.toLocaleDateString("es-DO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-    });
+    }) || "";
   };
 
   const getStatusSeverity = (status: string) => {
@@ -167,10 +185,8 @@ export const FixedAssetsTable = () => {
     return option ? option.label : category;
   };
 
-  const calculateDepreciation = (
-    purchaseValue: number,
-    currentValue: number
-  ) => {
+  const calculateDepreciation = (purchaseValue: number, currentValue: number) => {
+    if (!purchaseValue || purchaseValue === 0) return 0;
     return ((purchaseValue - currentValue) / purchaseValue) * 100;
   };
 
@@ -179,299 +195,297 @@ export const FixedAssetsTable = () => {
     setDepreciationModalVisible(true);
   };
 
-  const createActionTemplate = (
-    icon: string,
-    label: string,
-    colorClass: string = ""
-  ) => {
-    return () => (
-      <div
-        className="flex align-items-center gap-2 p-2 point"
-        style={{ cursor: "pointer" }}
-      >
-        <i className={`fas fa-${icon} ${colorClass}`} />
-        <span>{label}</span>
+  const TableMenu: React.FC<{
+    rowData: FixedAsset;
+  }> = ({ rowData }) => {
+    const menu = useRef<Menu>(null);
+
+    const handleMaintenance = () => {
+      handleMaintenanceClick(rowData);
+    };
+
+    const handleDepreciation = () => {
+      changeStatus(rowData);
+    };
+
+    const menuItems = [
+      {
+        label: "Mantenimiento/Estado",
+        icon: <i className="fas fa-book-open me-2"></i>,
+        command: handleMaintenance,
+      },
+      {
+        label: "Depreciación/Apreciación",
+        icon: <i className="fas fa-exchange-alt me-2"></i>,
+        command: handleDepreciation,
+      }
+    ];
+
+    return (
+      <div style={{ position: "relative" }}>
+        <Button
+          className="p-button-primary flex items-center gap-2"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fas fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={menuItems}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999, minWidth: "300px", maxWidth: "300px" }}
+        />
       </div>
     );
   };
 
-  // Acciones para cada fila
   const actionBodyTemplate = (rowData: FixedAsset) => {
-    const items: MenuItem[] = [
-      {
-        label: "Mantenimiento/Estado",
-        template: createActionTemplate(
-          "book-open",
-          "Mantenimiento/Estado",
-          "text-purple-500"
-        ),
-        command: () => handleMaintenanceClick(rowData),
-      },
-      {
-        label: "depreciacion o  apreciacion",
-        template: createActionTemplate(
-          "exchange-alt",
-          "Depreciación/Apreciación",
-          "text-purple-500"
-        ),
-        command: () => changeStatus(rowData),
-      },
-    ];
-
     return (
-      <SplitButton
-        label="Acciones"
-        icon="pi pi-cog"
-        model={items}
-        severity="contrast"
-        className="p-button-sm point"
-        buttonClassName="p-button-sm"
-        menuButtonClassName="p-button-sm point"
-        style={{ width: "100%" }}
-        menuStyle={{ minWidth: "300px", maxWidth: "300px", cursor: "pointer" }}
-      />
+      <div
+        className="flex align-items-center justify-content-center"
+        style={{ gap: "0.5rem", minWidth: "120px" }}
+      >
+        <TableMenu rowData={rowData} />
+      </div>
     );
   };
+
+  const depreciationBodyTemplate = (rowData: any) => {
+    const depreciation = calculateDepreciation(
+      rowData.purchaseValue,
+      rowData.currentValue
+    );
+
+    return (
+      <div className="flex flex-column gap-1">
+        <span>{depreciation.toFixed(2)}%</span>
+        <ProgressBar
+          value={depreciation}
+          showValue={false}
+          style={{ height: "6px", borderRadius: "3px" }}
+          className={classNames({
+            "p-progressbar-determinate": true,
+            "p-progressbar-danger": depreciation > 50,
+            "p-progressbar-warning": depreciation > 30 && depreciation <= 50,
+            "p-progressbar-success": depreciation <= 30,
+          })}
+        />
+      </div>
+    );
+  };
+
+  const showToast = (severity: "success" | "error" | "info" | "warn", summary: string, detail: string) => {
+    toast.current?.show({ severity, summary, detail, life: 3000 });
+  };
+
+  const handleSearchChangeCustom = (searchValue: string) => {
+    setGlobalFilter(searchValue);
+    handleSearchChange(searchValue);
+  };
+
+  const handleRefresh = async () => {
+    clearFilters();
+    await refresh();
+  };
+
+  // Mapear los datos para la tabla
+  const tableItems = assetsData.map((asset: any) => ({
+    id: asset.id,
+    internal_code: asset.internal_code,
+    description: asset.description,
+    category: asset.category?.name || "",
+    brand: asset.brand,
+    model: asset.model,
+    status: asset.status,
+    purchaseValue: asset.purchase_value || 0,
+    currentValue: asset.current_value || 0,
+    actions: asset
+  }));
 
   const columns: CustomPRTableColumnProps[] = [
     {
       field: "internal_code",
-      header: "Codigo",
+      header: "Código",
+      sortable: true
     },
     {
       field: "description",
       header: "Nombre/Descripción",
+      sortable: true
     },
     {
-      field: "category.name",
+      field: "category",
       header: "Categoría",
+      sortable: true,
+      body: (rowData: any) => getCategoryLabel(rowData.category)
     },
     {
       field: "brand",
       header: "Marca",
+      sortable: true
     },
     {
       field: "model",
       header: "Modelo",
+      sortable: true
     },
     {
       field: "status",
       header: "Estado",
-      body: (rowData) => (
+      sortable: true,
+      body: (rowData: any) => (
         <Tag
           value={getStatusLabel(rowData.status)}
           severity={getStatusSeverity(rowData.status)}
         />
-      ),
+      )
     },
     // {
     //   field: "depreciation",
     //   header: "Depreciación",
-    //   body: (rowData) => (
-    //     <div className="flex flex-column gap-1">
-    //       <span>
-    //         {calculateDepreciation(
-    //           rowData.purchaseValue,
-    //           rowData.currentValue
-    //         ).toFixed(2)}
-    //         %
-    //       </span>
-    //       <ProgressBar
-    //         value={calculateDepreciation(
-    //           rowData.purchaseValue,
-    //           rowData.currentValue
-    //         )}
-    //         showValue={false}
-    //         style={styles.depreciationBar}
-    //         className={classNames({
-    //           "p-progressbar-determinate": true,
-    //           "p-progressbar-danger":
-    //             calculateDepreciation(
-    //               rowData.purchaseValue,
-    //               rowData.currentValue
-    //             ) > 50,
-    //           "p-progressbar-warning":
-    //             calculateDepreciation(
-    //               rowData.purchaseValue,
-    //               rowData.currentValue
-    //             ) > 30 &&
-    //             calculateDepreciation(
-    //               rowData.purchaseValue,
-    //               rowData.currentValue
-    //             ) <= 50,
-    //           "p-progressbar-success":
-    //             calculateDepreciation(
-    //               rowData.purchaseValue,
-    //               rowData.currentValue
-    //             ) <= 30,
-    //         })}
-    //       />
-    //     </div>
-    //   ),
+    //   sortable: true,
+    //   body: depreciationBodyTemplate
     // },
     {
       field: "actions",
       header: "Acciones",
-      body: actionBodyTemplate,
-    },
+      body: (rowData: any) => actionBodyTemplate(rowData.actions),
+      exportable: false,
+      width: "120px"
+    }
   ];
 
-  const showToast = (severity: string, summary: string, detail: string) => {
-    toast.current?.show({ severity, summary, detail, life: 3000 });
-  };
-
-  const styles = {
-    card: {
-      marginBottom: "20px",
-      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-      borderRadius: "8px",
-    },
-    cardTitle: {
-      fontSize: "1.25rem",
-      fontWeight: 600,
-      color: "#333",
-    },
-    tableHeader: {
-      backgroundColor: "#f8f9fa",
-      color: "#495057",
-      fontWeight: 600,
-    },
-    tableCell: {
-      padding: "0.75rem 1rem",
-    },
-    formLabel: {
-      fontWeight: 500,
-      marginBottom: "0.5rem",
-      display: "block",
-    },
-    rangeCalendar: {
-      width: "100%",
-    },
-    depreciationBar: {
-      height: "6px",
-      borderRadius: "3px",
-    },
-  };
-
   return (
-    <div
-      className="container-fluid mt-4"
-      style={{ width: "100%", padding: "0 15px" }}
-    >
+    <main className="main w-100" id="top">
       <Toast ref={toast} />
-      <div
-        style={{ display: "flex", justifyContent: "flex-end", margin: "10px" }}
-      >
-        <Button
-          label="Nuevo Activo Fijo"
-          icon="pi pi-plus"
-          className="btn btn-primary"
-          onClick={() => setModalVisible(true)}
-        />
-      </div>
 
-      <Card title="Filtros de Búsqueda" style={styles.card}>
-        <div className="row g-3">
-          {/* Filtro: Nombre del Activo */}
-          <div className="col-md-6 col-lg-3">
-            <label style={styles.formLabel}>Nombre/Descripción</label>
-            <InputText
-              value={filters.name}
-              onChange={(e) => handleFilterChange("name", e.target.value)}
-              placeholder="Nombre del activo"
-              className="w-100"
-            />
-          </div>
+      {loading ? (
+        <div
+          className="flex justify-content-center align-items-center"
+          style={{
+            height: "50vh",
+            marginLeft: "900px",
+            marginTop: "300px",
+          }}
+        >
+          <ProgressSpinner />
+        </div>
+      ) : (
+        <div className="w-100">
+          <div className="h-100 w-100 d-flex flex-column" style={{ marginTop: "-30px" }}>
+            <div className="text-end pt-3 mb-2">
+              <Button
+                className="p-button-primary"
+                onClick={() => setModalVisible(true)}
+              >
+                <i className="fas fa-plus me-2"></i>
+                Nuevo Activo Fijo
+              </Button>
+            </div>
 
-          {/* Filtro: Categoría */}
-          <div className="col-md-6 col-lg-3">
-            <label style={styles.formLabel}>Categoría</label>
-            <Dropdown
-              value={filters.category}
-              options={assetCategories}
-              onChange={(e) => handleFilterChange("category", e.value)}
-              optionLabel="label"
-              placeholder="Seleccione categoría"
-              className="w-100"
-              appendTo={"self"}
-            />
-          </div>
+            <Accordion>
+              <AccordionTab header="Filtros de Búsqueda">
+                <div className="row">
+                  <div className="col-12 col-md-6 mb-3">
+                    <label className="form-label">Nombre/Descripción</label>
+                    <InputText
+                      value={filters.name}
+                      onChange={(e) => handleFilterChange("name", e.target.value)}
+                      placeholder="Nombre del activo"
+                      className="w-100"
+                    />
+                  </div>
 
-          {/* Filtro: Código Interno */}
-          <div className="col-md-6 col-lg-3">
-            <label style={styles.formLabel}>Código Interno</label>
-            <InputText
-              value={filters.internal_code}
-              onChange={(e) =>
-                handleFilterChange("internal_code", e.target.value)
-              }
-              placeholder="Código del activo"
-              className="w-100"
-            />
-          </div>
+                  <div className="col-12 col-md-6 mb-3">
+                    <label className="form-label">Categoría</label>
+                    <Dropdown
+                      value={filters.category}
+                      options={assetCategories}
+                      onChange={(e) => handleFilterChange("category", e.value)}
+                      optionLabel="label"
+                      placeholder="Seleccione categoría"
+                      className="w-100"
+                    />
+                  </div>
 
-          {/* Filtro: Estado */}
-          <div className="col-md-6 col-lg-3">
-            <label style={styles.formLabel}>Estado</label>
-            <Dropdown
-              value={filters.status}
-              options={statusOptions}
-              onChange={(e) => handleFilterChange("status", e.value)}
-              optionLabel="label"
-              placeholder="Seleccione estado"
-              className="w-100"
-            />
-          </div>
+                  <div className="col-12 col-md-6 mb-3">
+                    <label className="form-label">Código Interno</label>
+                    <InputText
+                      value={filters.internal_code}
+                      onChange={(e) => handleFilterChange("internal_code", e.target.value)}
+                      placeholder="Código del activo"
+                      className="w-100"
+                    />
+                  </div>
 
-          {/* Filtro: Rango de fechas */}
-          <div className="col-md-6 col-lg-3">
-            <label style={styles.formLabel}>Fecha de Adquisición</label>
-            <Calendar
-              value={filters.date_range}
-              onChange={(e) => handleFilterChange("date_range", e.value)}
-              selectionMode="range"
-              readOnlyInput
-              dateFormat="dd/mm/yy"
-              placeholder="Seleccione rango"
-              className="w-100"
-              showIcon
-            />
-          </div>
+                  <div className="col-12 col-md-6 mb-3">
+                    <label className="form-label">Estado</label>
+                    <Dropdown
+                      value={filters.status}
+                      options={statusOptions}
+                      onChange={(e) => handleFilterChange("status", e.value)}
+                      optionLabel="label"
+                      placeholder="Seleccione estado"
+                      className="w-100"
+                    />
+                  </div>
 
-          {/* Botones de acción */}
-          <div className="col-12 d-flex justify-content-end gap-2">
-            <Button
-              label="Limpiar"
-              icon="pi pi-trash"
-              className="btn btn-phoenix-secondary"
-              onClick={clearFilters}
-            />
-            <Button
-              label="Aplicar Filtros"
-              icon="pi pi-filter"
-              className="btn btn-primary"
-              onClick={refresh}
-              loading={loadingPaginator}
+                  <div className="col-12 col-md-6 mb-3">
+                    <label className="form-label">Fecha de Adquisición</label>
+                    <Calendar
+                      value={filters.date_range}
+                      onChange={(e) => handleFilterChange("date_range", e.value)}
+                      selectionMode="range"
+                      readOnlyInput
+                      dateFormat="dd/mm/yy"
+                      placeholder="Seleccione rango"
+                      className="w-100"
+                      showIcon
+                    />
+                  </div>
+
+                  <div className="col-12 d-flex justify-content-end gap-2">
+                    <Button
+                      label="Limpiar"
+                      icon="pi pi-trash"
+                      className="p-button-secondary"
+                      onClick={clearFilters}
+                    />
+                    <Button
+                      label="Aplicar Filtros"
+                      icon="pi pi-filter"
+                      className="p-button-primary"
+                      onClick={() => aplicarFiltros()}
+                      loading={tableLoading || loadingPaginator}
+                    />
+                  </div>
+                </div>
+              </AccordionTab>
+            </Accordion>
+
+            <CustomPRTable
+              columns={columns}
+              data={tableItems}
+              loading={tableLoading || loadingPaginator}
+              onSearch={handleSearchChangeCustom}
+              onReload={handleRefresh}
+              paginator
+              rows={rows}
+              first={first}
+              onPage={onPageChange}
+              totalRecords={paginatorTotalRecords}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} activos"
+              emptyMessage="No se encontraron activos fijos"
             />
           </div>
         </div>
-      </Card>
-
-      {/* Tabla de resultados */}
-      <Card title="Activos fijos" className="shadow-2">
-        <CustomPRTable
-          columns={columns}
-          data={assetsData}
-          lazy
-          first={first}
-          rows={perPage}
-          totalRecords={totalRecords}
-          loading={loadingPaginator}
-          onPage={handlePageChange}
-          onSearch={handleSearchChange}
-          onReload={refresh}
-        />
-      </Card>
+      )}
 
       {/* Modal para crear/editar activos */}
       <FixedAssetsModal
@@ -481,11 +495,13 @@ export const FixedAssetsTable = () => {
           setSelectedAsset(null);
         }}
         onSave={(assetData) => {
-          setFilteredAssets([...assets]);
           setModalVisible(false);
           setSelectedAsset(null);
+          refresh();
+          showToast("success", "Éxito", "Activo fijo creado correctamente");
         }}
       />
+
       {selectedAssetForAdjustment && (
         <DepreciationAppreciationModal
           isVisible={depreciationModalVisible}
@@ -494,17 +510,13 @@ export const FixedAssetsTable = () => {
             setSelectedAssetForAdjustment(null);
           }}
           onSave={async (adjustmentData) => {
-            // Aquí implementas la lógica para guardar el ajuste
-
-            // Actualiza el estado de los activos si es necesario
             setDepreciationModalVisible(false);
             setSelectedAssetForAdjustment(null);
-
-            // Muestra notificación de éxito
+            refresh();
             showToast(
               "success",
               "Ajuste registrado",
-              `El ajuste de valor para ${selectedAssetForAdjustment.attributes.description} ha sido registrado correctamente.`
+              `El ajuste de valor para ${selectedAssetForAdjustment.description} ha sido registrado correctamente.`
             );
           }}
           asset={selectedAssetForAdjustment}
@@ -518,15 +530,13 @@ export const FixedAssetsTable = () => {
             const body = {
               status: maintenanceData.assetStatus,
               status_type: maintenanceData.maintenanceType,
-              status_changed_at:
-                maintenanceData.maintenanceDate.toLocaleDateString("es-DO"),
+              status_changed_at: maintenanceData.maintenanceDate.toLocaleDateString("es-DO"),
               maintenance_cost: maintenanceData.cost || 0,
               status_comment: maintenanceData.comments || null,
             };
 
             await updateAssetStatus(selectedAssetForMaintenance.id, body);
-
-            await fetchAssets(filters);
+            await refresh();
 
             setMaintenanceModalVisible(false);
             setSelectedAssetForMaintenance(null);
@@ -534,7 +544,7 @@ export const FixedAssetsTable = () => {
             showToast(
               "success",
               "Mantenimiento registrado",
-              `El estado de ${selectedAssetForMaintenance?.attributes?.description} ha sido actualizado.`
+              `El estado de ${selectedAssetForMaintenance?.description} ha sido actualizado.`
             );
           }}
           onClose={() => {
@@ -547,7 +557,7 @@ export const FixedAssetsTable = () => {
           userOptions={userOptions}
         />
       )}
-    </div>
+    </main>
   );
 };
 

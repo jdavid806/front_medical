@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import { useCompany } from "../../hooks/useCompany";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2";
 
 export const useGeneratePDF = () => {
   const { company } = useCompany();
@@ -18,7 +18,7 @@ export const useGeneratePDF = () => {
     orientation?: "portrait" | "landscape";
     dimensions?: Array<any>;
   }) {
-    generatePDFFromHTML(html, company, {
+    generatePDFFromHTMLV2(html, company, {
       name: pdfName,
       isDownload: type !== "Impresion",
       orientation: orientation,

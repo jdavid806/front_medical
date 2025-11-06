@@ -68,4 +68,5 @@ export const useGoogleCalendarConfig = (toast: Toast | null) => {
     createGoogleCalendarConfig,
     loading
   };
+  
 };

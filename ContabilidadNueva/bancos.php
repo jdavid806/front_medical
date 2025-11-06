@@ -4,12 +4,12 @@ include "../header.php";
 ?>
 
 <style>
-.container-small {
-    max-width: 100% !important;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
+    .container-small {
+        max-width: 100% !important;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
 </style>
 <div class="content">
     <div class="container-small">
@@ -22,22 +22,21 @@ include "../header.php";
         <div class="main-content">
 
             <div class="component-container">
-                <h2>Bancos</h2>
                 <div id="bancosCuentas"></div>
             </div>
         </div>
     </div>
 </div>
 <script type="module">
-import React from "react"
-import ReactDOMClient from "react-dom/client"
-import {
-    BanksAccounting
-} from './react-dist/accounting/BanksAccounting.js';
+    import React from "react"
+    import ReactDOMClient from "react-dom/client"
+    import {
+        BanksAccounting
+    } from './react-dist/accounting/BanksAccounting.js';
 
-ReactDOMClient.createRoot(document.getElementById('bancosCuentas')).render(
-    React.createElement(BanksAccounting)
-);
+    ReactDOMClient.createRoot(document.getElementById('bancosCuentas')).render(
+        React.createElement(BanksAccounting)
+    );
 </script>
 <?php
 include "../footer.php";

@@ -1,5 +1,4 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-// components/MaintenanceForm.tsx
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
@@ -30,7 +29,7 @@ const MaintenanceForm = ({
     }
   } = useForm({
     defaultValues: initialData || {
-      assetStatus: currentStatus,
+      assetStatus: currentStatus || "",
       maintenanceDate: new Date(),
       maintenanceType: "",
       comments: "",

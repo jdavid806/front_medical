@@ -3,13 +3,12 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Paginator } from "primereact/paginator";
 import { accountingVouchersService } from "../../../services/api/index.js";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2.js";
 import { useCompany } from "../../hooks/useCompany.js";
 import { FormAccoutingVouchers } from "./form/FormAccoutingVouchers.js";
 import { Dialog } from "primereact/dialog";
@@ -156,7 +155,7 @@ export const AccountingVouchers = () => {
         return value;
     }
   };
-  function handleExportPDF(vouchers) {
+  async function handleExportPDF(vouchers) {
     const headers = `
         <tr>
             <th>Tercero</th>
@@ -235,14 +234,14 @@ export const AccountingVouchers = () => {
         </div>
     `;
     const configPDF = {
-      name: "Comprobante contable #" + vouchers.seat_number
+      name: "Comprobante contable #" + vouchers.seat_number,
+      isDownload: false
     };
-    generatePDFFromHTML(table, company, configPDF);
+    await generatePDFFromHTMLV2(table, company, configPDF);
   }
   function handleEditVoucher(voucher) {
     setSelectedVoucher(voucher);
     setEditModalVisible(true);
-    console.log("Editando comprobante contable:", voucher);
     setInitialData({
       id: voucher.id,
       date: stringToDate(voucher.seat_date),
@@ -318,23 +317,13 @@ export const AccountingVouchers = () => {
   }), /*#__PURE__*/React.createElement("span", null, option.label));
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-3"
-  }, /*#__PURE__*/React.createElement("h2", null, "Movimientos Contables"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Nuevo Comprobante",
     icon: "pi pi-file-edit",
     className: "btn btn-primary",
     onClick: () => window.location.href = "CrearComprobantesContable"
-  }), /*#__PURE__*/React.createElement(Dropdown, {
-    value: tipoComprobante,
-    options: opcionesNuevoComprobante,
-    onChange: e => handleSeleccionTipo(e.value),
-    optionLabel: "label",
-    itemTemplate: itemTemplate,
-    placeholder: "Seleccione tipo",
-    dropdownIcon: "pi pi-chevron-down",
-    appendTo: "self",
-    className: "w-full md:w-14rem"
   }))), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     className: "mb-4"
@@ -445,7 +434,7 @@ export const AccountingVouchers = () => {
     header: "Editar Comprobante",
     onHide: () => setEditModalVisible(false),
     style: {
-      width: "80vw",
+      width: "90vw",
       height: "100vh",
       maxHeight: "100vh"
     },

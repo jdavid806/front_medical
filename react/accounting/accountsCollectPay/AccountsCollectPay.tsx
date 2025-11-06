@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { MultiSelect } from "primereact/multiselect";
 import { Calendar } from "primereact/calendar";
@@ -12,13 +12,15 @@ import {
 } from "../accountsCollectPay/interfaces/accountColletcPayInterface";
 import { Paginator } from "primereact/paginator";
 import { NewReceiptBoxModal } from "../../accounting/paymentReceipt/modals/NewReceiptBoxModal";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2";
 import { useCompany } from "../../hooks/useCompany";
 import { exportToExcel } from "../../accounting/utils/ExportToExcelOptions";
+import { resourcesAdminService } from "../../../services/api";
 
 export const AccountsCollectPay = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [selectedSupplierIds, setSelectedSupplierIds] = useState<string[]>([]);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
   const [selectedDateRange, setSelectedDateRange] =
     useState<Nullable<(Date | null)[]>>(null);
   const [selectedDueDateRange, setSelectedDueDateRange] =
@@ -34,6 +36,9 @@ export const AccountsCollectPay = () => {
   const [invoiceType, setInvoiceType] = useState<any>("");
   const { company, setCompany, fetchCompany } = useCompany();
 
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
   const formatDateRange = (range: Nullable<(Date | null)[]>) => {
     if (!range || !range[0] || !range[1]) return undefined;
     const from = range[0].toISOString().slice(0, 10);
@@ -80,6 +85,11 @@ export const AccountsCollectPay = () => {
     { label: "36-45 días", value: "36-45" },
     { label: "Más de 60 días", value: "60+" },
   ];
+
+  async function fetchSuppliers() {
+    const response = await resourcesAdminService.getThirdParties();
+    setSuppliers(response.data);
+  }
 
   const onPageChange = (event: { first: number; rows: number }) => {
     setFirst(event.first);
@@ -216,8 +226,9 @@ export const AccountsCollectPay = () => {
     </table>`;
     const configPDF = {
       name: "Factura_" + item.invoice_code,
+      isDownload: true,
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
   }
 
   function downloadExcelGeneral(items: any, name) {
@@ -245,9 +256,13 @@ export const AccountsCollectPay = () => {
       Fecha: " ",
       "Fecha vencimiento": " ",
       "Días para pagar": "Totales",
-      Total: `$${items.reduce((acc, item) => acc + Number(item.total_amount), 0).toFixed(2)}`,
-      Pendiende: `$${items.reduce((acc, item) => acc + Number(item.remaining_amount), 0).toFixed(2)}`,
-      Estado: " ", 
+      Total: `$${items
+        .reduce((acc, item) => acc + Number(item.total_amount), 0)
+        .toFixed(2)}`,
+      Pendiende: `$${items
+        .reduce((acc, item) => acc + Number(item.remaining_amount), 0)
+        .toFixed(2)}`,
+      Estado: " ",
     };
     dataExport.push(totals);
     exportToExcel({
@@ -281,9 +296,13 @@ export const AccountsCollectPay = () => {
       Fecha: " ",
       "Fecha vencimiento": " ",
       "Días para pagar": "Totales",
-      Total: `$${items.reduce((acc, item) => acc + Number(item.total_amount), 0).toFixed(2)}`,
-      Pendiende: `$${items.reduce((acc, item) => acc + Number(item.remaining_amount), 0).toFixed(2)}`,
-      Estado: " ", 
+      Total: `$${items
+        .reduce((acc, item) => acc + Number(item.total_amount), 0)
+        .toFixed(2)}`,
+      Pendiende: `$${items
+        .reduce((acc, item) => acc + Number(item.remaining_amount), 0)
+        .toFixed(2)}`,
+      Estado: " ",
     };
     dataExport.push(totals);
     const table = `
@@ -330,8 +349,9 @@ export const AccountsCollectPay = () => {
     </table>`;
     const configPDF = {
       name: name,
+      isDownload: true,
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
   }
 
   const renderItemDetails = (details: InvoiceDetail[]) => (
@@ -397,7 +417,7 @@ export const AccountsCollectPay = () => {
           </div>
         </div>
 
-        {renderItemDetails(item.details)}
+        {/* {renderItemDetails(item.details)} */}
 
         <div className="mt-3 row g-3">
           <div className="col-md-4">
@@ -541,7 +561,7 @@ export const AccountsCollectPay = () => {
                   <div className="col-lg-3 col-md-6">
                     <label className="form-label">Cliente/Proveedor</label>
                     <MultiSelect
-                      options={[]} // ← Aquí debes cargar proveedores/clientes reales
+                      options={suppliers}
                       optionLabel="name"
                       optionValue="id"
                       filter

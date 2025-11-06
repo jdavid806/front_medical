@@ -220,7 +220,7 @@ export const Diagnosis = ({
       border: "1px solid #dee2e6",
       textAlign: "left"
     }
-  }, `${item?.appointment?.patient?.first_name.toLowerCase() ?? ""} ${item?.appointment?.patient?.middle_name.toLowerCase() ?? ""} ${item?.appointment?.patient?.last_name.toLowerCase() ?? ""} ${item?.appointment?.patient?.second_last_name.toLowerCase() ?? ""}`), /*#__PURE__*/React.createElement("td", {
+  }, `${item?.appointment?.patient?.first_name?.toLowerCase() ?? ""} ${item?.appointment?.patient?.middle_name?.toLowerCase() ?? ""} ${item?.appointment?.patient?.last_name?.toLowerCase() ?? ""} ${item?.appointment?.patient?.second_last_name?.toLowerCase() ?? ""}`), /*#__PURE__*/React.createElement("td", {
     style: {
       padding: "10px 8px",
       border: "1px solid #dee2e6",

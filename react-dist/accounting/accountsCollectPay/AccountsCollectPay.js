@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import { MultiSelect } from "primereact/multiselect";
 import { Calendar } from "primereact/calendar";
@@ -7,12 +7,14 @@ import { Button } from "primereact/button";
 import { useAccountsCollectPay } from "../accountsCollectPay/hooks/useAccountsCollectPay.js";
 import { Paginator } from "primereact/paginator";
 import { NewReceiptBoxModal } from "../../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2.js";
 import { useCompany } from "../../hooks/useCompany.js";
 import { exportToExcel } from "../../accounting/utils/ExportToExcelOptions.js";
+import { resourcesAdminService } from "../../../services/api/index.js";
 export const AccountsCollectPay = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedSupplierIds, setSelectedSupplierIds] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [selectedDueDateRange, setSelectedDueDateRange] = useState(null);
   const [selectedDaysToPay, setSelectedDaysToPay] = useState(null);
@@ -27,6 +29,9 @@ export const AccountsCollectPay = () => {
     setCompany,
     fetchCompany
   } = useCompany();
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
   const formatDateRange = range => {
     if (!range || !range[0] || !range[1]) return undefined;
     const from = range[0].toISOString().slice(0, 10);
@@ -86,6 +91,10 @@ export const AccountsCollectPay = () => {
     label: "Más de 60 días",
     value: "60+"
   }];
+  async function fetchSuppliers() {
+    const response = await resourcesAdminService.getThirdParties();
+    setSuppliers(response.data);
+  }
   const onPageChange = event => {
     setFirst(event.first);
     setRows(event.rows);
@@ -207,9 +216,10 @@ export const AccountsCollectPay = () => {
       </tbody>
     </table>`;
     const configPDF = {
-      name: "Factura_" + item.invoice_code
+      name: "Factura_" + item.invoice_code,
+      isDownload: true
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
   }
   function downloadExcelGeneral(items, name) {
     const dataExport = items.map(item => {
@@ -307,9 +317,10 @@ export const AccountsCollectPay = () => {
       </tbody>
     </table>`;
     const configPDF = {
-      name: name
+      name: name,
+      isDownload: true
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
   }
   const renderItemDetails = details => /*#__PURE__*/React.createElement("div", {
     className: "mt-3 d-flex align-items-center gap-3"
@@ -359,7 +370,7 @@ export const AccountsCollectPay = () => {
       className: "text-center"
     }, /*#__PURE__*/React.createElement("small", {
       className: "text-muted d-block"
-    }, "Estado"), getStatusBadge(status, daysToPay)))), renderItemDetails(item.details), /*#__PURE__*/React.createElement("div", {
+    }, "Estado"), getStatusBadge(status, daysToPay)))), /*#__PURE__*/React.createElement("div", {
       className: "mt-3 row g-3"
     }, /*#__PURE__*/React.createElement("div", {
       className: "col-md-4"
@@ -482,8 +493,7 @@ export const AccountsCollectPay = () => {
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Cliente/Proveedor"), /*#__PURE__*/React.createElement(MultiSelect, {
-    options: [] // ← Aquí debes cargar proveedores/clientes reales
-    ,
+    options: suppliers,
     optionLabel: "name",
     optionValue: "id",
     filter: true,

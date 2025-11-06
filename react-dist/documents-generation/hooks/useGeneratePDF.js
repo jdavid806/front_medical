@@ -1,5 +1,5 @@
 import { useCompany } from "../../hooks/useCompany.js";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2.js";
 export const useGeneratePDF = () => {
   const {
     company
@@ -10,7 +10,7 @@ export const useGeneratePDF = () => {
     type,
     orientation = "portrait"
   }) {
-    generatePDFFromHTML(html, company, {
+    generatePDFFromHTMLV2(html, company, {
       name: pdfName,
       isDownload: type !== "Impresion",
       orientation: orientation

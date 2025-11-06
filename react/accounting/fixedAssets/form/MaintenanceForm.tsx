@@ -1,4 +1,3 @@
-// components/MaintenanceForm.tsx
 import React from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { classNames } from "primereact/utils";
@@ -33,7 +32,7 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
     formState: { errors },
   } = useForm<MaintenanceFormInputs>({
     defaultValues: initialData || {
-      assetStatus: currentStatus,
+      assetStatus: currentStatus || "",
       maintenanceDate: new Date(),
       maintenanceType: "",
       comments: "",
@@ -44,7 +43,6 @@ const MaintenanceForm: React.FC<MaintenanceFormProps> = ({
   });
 
   const assetStatus = watch("assetStatus");
-
   const maintenanceType = watch("maintenanceType");
 
   const onFormSubmit: SubmitHandler<MaintenanceFormInputs> = (data) =>

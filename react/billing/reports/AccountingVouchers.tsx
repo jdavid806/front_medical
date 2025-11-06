@@ -10,10 +10,13 @@ import { Card } from "primereact/card";
 import { Paginator } from "primereact/paginator";
 import { accountingVouchersService } from "../../../services/api";
 import { AccountingVoucherDto, DetailsDto } from "../../models/models";
-import { generatePDFFromHTML } from "../../../funciones/funcionesJS/exportPDF";
+import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2";
 import { useCompany } from "../../hooks/useCompany";
 import { CustomModal } from "../../components/CustomModal";
-import { FormAccoutingVouchers, Transaction } from "./form/FormAccoutingVouchers";
+import {
+  FormAccoutingVouchers,
+  Transaction,
+} from "./form/FormAccoutingVouchers";
 import { Dialog } from "primereact/dialog";
 import { stringToDate } from "../../../services/utilidades";
 import { useAccountingVoucherDelete } from "./hooks/useAccountingVoucherDelete";
@@ -27,7 +30,8 @@ type DropdownOption = {
 export const AccountingVouchers: React.FC = () => {
   // Estado para los datos
   const [vouchers, setVouchers] = useState<AccountingVoucherDto[]>([]);
-  const [selectedVoucher, setSelectedVoucher] = useState<AccountingVoucherDto | null>(null);
+  const [selectedVoucher, setSelectedVoucher] =
+    useState<AccountingVoucherDto | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [dates, setDates] = useState<[Date, Date] | null>(null);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -72,7 +76,11 @@ export const AccountingVouchers: React.FC = () => {
         details: voucher.details.map((detail: any) => ({
           ...detail,
           full_name: detail.third_party
-            ? `${detail?.third_party?.first_name ?? ""} ${detail?.third_party?.middle_name ?? ""} ${detail?.third_party?.last_name ?? ""} ${detail?.third_party?.second_last_name ?? ""}`.trim() || detail?.third_party?.name
+            ? `${detail?.third_party?.first_name ?? ""} ${
+                detail?.third_party?.middle_name ?? ""
+              } ${detail?.third_party?.last_name ?? ""} ${
+                detail?.third_party?.second_last_name ?? ""
+              }`.trim() || detail?.third_party?.name
             : "No tiene terceros",
         })),
       }));
@@ -178,7 +186,7 @@ export const AccountingVouchers: React.FC = () => {
     }
   };
 
-  function handleExportPDF(vouchers: any) {
+  async function handleExportPDF(vouchers: any) {
     const headers = `
         <tr>
             <th>Tercero</th>
@@ -208,14 +216,16 @@ export const AccountingVouchers: React.FC = () => {
                     <td>${rowData.full_name}</td>
                     <td>${rowData.accounting_account.name}</td>
                     <td>${rowData.description}</td>
-                    <td class="right">${rowData.type === "debit"
-          ? formatCurrency(rowData.amount)
-          : ""
-        }</td>
-                    <td class="right">${rowData.type === "credit"
-          ? formatCurrency(rowData.amount)
-          : ""
-        }</td>
+                    <td class="right">${
+                      rowData.type === "debit"
+                        ? formatCurrency(rowData.amount)
+                        : ""
+                    }</td>
+                    <td class="right">${
+                      rowData.type === "credit"
+                        ? formatCurrency(rowData.amount)
+                        : ""
+                    }</td>
                 </tr>
                 `
       );
@@ -271,37 +281,38 @@ export const AccountingVouchers: React.FC = () => {
 
     const configPDF = {
       name: "Comprobante contable #" + vouchers.seat_number,
+      isDownload: false,
     };
 
-    generatePDFFromHTML(table, company, configPDF);
+    await generatePDFFromHTMLV2(table, company, configPDF);
   }
 
   function handleEditVoucher(voucher: AccountingVoucherDto) {
     setSelectedVoucher(voucher);
     setEditModalVisible(true);
 
-    console.log("Editando comprobante contable:", voucher);
-
     setInitialData({
       id: voucher.id,
       date: stringToDate(voucher.seat_date),
-      observations: voucher.description
-    })
+      observations: voucher.description,
+    });
 
-    setEditTransactions(voucher.details.map((detail: any) => ({
-      id: detail.id,
-      account: detail.accounting_account_id,
-      description: detail.description,
-      amount: +detail.amount,
-      type: detail.type,
-      thirdParty: detail.third_party.id,
-      thirdPartyType: detail.third_party.type
-    })));
+    setEditTransactions(
+      voucher.details.map((detail: any) => ({
+        id: detail.id,
+        account: detail.accounting_account_id,
+        description: detail.description,
+        amount: +detail.amount,
+        type: detail.type,
+        thirdParty: detail.third_party.id,
+        thirdPartyType: detail.third_party.type,
+      }))
+    );
   }
 
   const handleDeleteVoucher = async (id: string) => {
-    const confirmed = await deleteAccountingVoucher(id)
-    if (confirmed) loadData(page)
+    const confirmed = await deleteAccountingVoucher(id);
+    if (confirmed) loadData(page);
   };
 
   // Template para el encabezado del acordeón
@@ -362,25 +373,12 @@ export const AccountingVouchers: React.FC = () => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Movimientos Contables</h2>
         <div className="d-flex gap-2">
           <Button
             label="Nuevo Comprobante"
             icon="pi pi-file-edit"
             className="btn btn-primary"
             onClick={() => (window.location.href = "CrearComprobantesContable")}
-          />
-
-          <Dropdown
-            value={tipoComprobante}
-            options={opcionesNuevoComprobante}
-            onChange={(e: DropdownChangeEvent) => handleSeleccionTipo(e.value)}
-            optionLabel="label"
-            itemTemplate={itemTemplate}
-            placeholder="Seleccione tipo"
-            dropdownIcon="pi pi-chevron-down"
-            appendTo="self"
-            className="w-full md:w-14rem"
           />
         </div>
       </div>
@@ -506,7 +504,7 @@ export const AccountingVouchers: React.FC = () => {
         visible={editModalVisible}
         header="Editar Comprobante"
         onHide={() => setEditModalVisible(false)}
-        style={{ width: "80vw", height: "100vh", maxHeight: "100vh" }}
+        style={{ width: "90vw", height: "100vh", maxHeight: "100vh" }}
         modal
         closable={true}
       >
@@ -516,11 +514,9 @@ export const AccountingVouchers: React.FC = () => {
           editTransactions={editTransactions}
           onUpdate={() => {
             loadData(page);
-            setEditModalVisible(false)
+            setEditModalVisible(false);
           }}
-
         />
-
       </Dialog>
     </>
   );

@@ -50,6 +50,20 @@ export class BillingReportService extends BaseApiService {
     async getAccountingEntries() {
         return await this.httpClient.get(`api/v1/admin/general-ledger-entries`);
     }
+
+    async getBankAccountingReport({ from, to }) {
+        const params = new URLSearchParams();
+        if (from) params.append('start_date', from);
+        if (to) params.append('end_date', to);
+        return await this.httpClient.get(`api/v1/admin/reports/get-movements-transactional?${params.toString()}`);
+    }
+
+    async getAuxiliaryMovementReport({ from, to }) {
+        const params = new URLSearchParams();
+        if (from) params.append('start_date', from);
+        if (to) params.append('end_date', to);
+        return await this.httpClient.get(`api/v1/admin/reports/accounting-auxiliary?${params.toString()}`);
+    }
 }
 
 export default BillingReportService;

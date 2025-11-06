@@ -12,7 +12,7 @@ import { Tag } from "primereact/tag";
 import { CustomPRTable, CustomPRTableColumnProps } from "../components/CustomPRTable";
 import { formatDate } from "../../services/utilidades";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF";
+import { generatePDFFromHTMLV2 } from "../../funciones/funcionesJS/exportPDFV2";
 import { useCompany } from "../hooks/useCompany";
 import { invoiceService } from "../../services/api";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable";
@@ -53,7 +53,7 @@ export const DebitCreditNotes = () => {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
-  const { company, fetchCompany } = useCompany();
+  const { company, setCompany, fetchCompany } = useCompany();
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -89,7 +89,6 @@ export const DebitCreditNotes = () => {
     setTableLoading(true);
     try {
       const responseNotes = await invoiceService.getNotes();
-      console.log("Notas", responseNotes);
       const dataMapped = handleDataMapped(responseNotes.data);
 
       const startIndex = (page - 1) * per_page;
@@ -287,8 +286,9 @@ export const DebitCreditNotes = () => {
           </table>`;
     const configPDF = {
       name: "Notes",
+      isDownload:true
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
     showToast("success", "Éxito", "PDF descargado correctamente");
   }
 

@@ -24,8 +24,6 @@ include "../../../header.php";
             </ol>
         </nav>
         <div class="container">
-            <h1 class="section-title">Movimiento Auxiliar x Cuenta Contable</h1>
-
             <div id="movimientoAuxiliar"></div>
         </div>
     </div>

@@ -1,225 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Calendar } from 'primereact/calendar';
-import { Checkbox } from 'primereact/checkbox';
-import { useAccountingAccountsByCategory } from "./hooks/useAccountingAccounts.js";
+import { useBankAccountingReport } from "./hooks/useBankAccountingReport.js";
 export const BanksAccounting = () => {
-  const opcionesEstado = [{
-    label: 'Todas',
-    value: null
-  }, {
-    label: 'Activas',
-    value: 'activa'
-  }, {
-    label: 'Inactivas',
-    value: 'inactiva'
-  }];
-  const tiposCuenta = [{
-    label: 'Ahorros',
-    value: 'ahorros'
-  }, {
-    label: 'Corriente',
-    value: 'corriente'
-  }, {
-    label: 'Nómina',
-    value: 'nomina'
-  }, {
-    label: 'Plazo fijo',
-    value: 'plazo_fijo'
-  }];
-  const monedas = [{
-    label: 'DOP - Peso Dominicano',
-    value: 'DOP'
-  }, {
-    label: 'USD - Dólar Americano',
-    value: 'USD'
-  }, {
-    label: 'EUR - Euro',
-    value: 'EUR'
-  }];
-  const adaptAccountingAccountsToBankAccounts = accounts => {
-    return accounts.map(account => ({
-      id: account.id.toString(),
-      codigoCuentaContable: account.account_code,
-      nombreCuentaContable: account.account_name,
-      banco: account.auxiliary_name ?? 'Sin banco',
-      numeroCuenta: account.account,
-      tipoCuenta: account.account_type,
-      moneda: 'DOP',
-      saldoDisponible: parseFloat(account.balance ?? "0"),
-      saldoContable: parseFloat(account.initial_balance),
-      fechaApertura: new Date(account.created_at),
-      activa: account.status === 'activo' || account.status === 'active'
-    }));
-  };
-
   // Estado para los datos de la tabla
-  const [cuentasBancarias, setCuentasBancarias] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [totalRegistros, setTotalRegistros] = useState(0);
-  const [totalSaldoDisponible, setTotalSaldoDisponible] = useState(0);
-  const [totalSaldoContable, setTotalSaldoContable] = useState(0);
   const {
-    accounts,
-    isLoading,
-    error
-  } = useAccountingAccountsByCategory('category', 'bank');
+    metodosPago,
+    fetchBankAccountingReport,
+    loading
+  } = useBankAccountingReport();
+  const [expandedRows, setExpandedRows] = useState(null);
 
-  // Estado para los filtros
-  const [filtros, setFiltros] = useState({
-    codigoCuenta: '',
-    nombreBanco: '',
-    numeroCuenta: '',
-    tipoCuenta: null,
-    moneda: null,
-    estado: null,
-    fechaDesde: null,
-    fechaHasta: null,
-    incluirInactivas: false
-  });
-
-  // ...
-
+  // Estado para el filtro de fecha
+  const [rangoFechas, setRangoFechas] = useState([new Date(), new Date()]);
   useEffect(() => {
-    if (!isLoading) {
-      const adaptadas = adaptAccountingAccountsToBankAccounts(accounts);
-      setCuentasBancarias(adaptadas);
-      calcularTotales(adaptadas);
-    }
-  }, [accounts, isLoading]);
-  const calcularTotales = datos => {
-    let totalDisp = 0;
-    let totalCont = 0;
-    datos.forEach(item => {
-      totalDisp += item.saldoDisponible;
-      totalCont += item.saldoContable;
-    });
-    setTotalRegistros(datos.length);
-    setTotalSaldoDisponible(totalDisp);
-    setTotalSaldoContable(totalCont);
-  };
-
-  // Manejadores de cambio de filtros
-  const handleFilterChange = (field, value) => {
-    setFiltros(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  // Función para aplicar filtros
+    aplicarFiltros();
+  }, [rangoFechas]);
   const aplicarFiltros = () => {
-    setLoading(true);
-    // Simulación de filtrado
-    setTimeout(() => {
-      const datosFiltrados = cuentasBancarias.filter(cuenta => {
-        // Filtro por código de cuenta contable
-        if (filtros.codigoCuenta && !cuenta.codigoCuentaContable.includes(filtros.codigoCuenta)) {
-          return false;
-        }
-
-        // Filtro por nombre de banco
-        if (filtros.nombreBanco && !cuenta.banco.toLowerCase().includes(filtros.nombreBanco.toLowerCase())) {
-          return false;
-        }
-
-        // Filtro por número de cuenta
-        if (filtros.numeroCuenta && !cuenta.numeroCuenta.includes(filtros.numeroCuenta)) {
-          return false;
-        }
-
-        // Filtro por tipo de cuenta
-        if (filtros.tipoCuenta && cuenta.tipoCuenta !== filtros.tipoCuenta) {
-          return false;
-        }
-
-        // Filtro por moneda
-        if (filtros.moneda && cuenta.moneda !== filtros.moneda) {
-          return false;
-        }
-
-        // Filtro por estado
-        if (filtros.estado === 'activa' && !cuenta.activa) {
-          return false;
-        }
-        if (filtros.estado === 'inactiva' && cuenta.activa) {
-          return false;
-        }
-
-        // Filtro por fecha de apertura
-        if (filtros.fechaDesde && new Date(cuenta.fechaApertura) < new Date(filtros.fechaDesde)) {
-          return false;
-        }
-        if (filtros.fechaHasta && new Date(cuenta.fechaApertura) > new Date(filtros.fechaHasta)) {
-          return false;
-        }
-
-        // Filtro por incluir inactivas
-        if (!filtros.incluirInactivas && !cuenta.activa) {
-          return false;
-        }
-        return true;
-      });
-      setCuentasBancarias(datosFiltrados);
-      calcularTotales(datosFiltrados);
-      setLoading(false);
-    }, 500);
+    if (!rangoFechas || !rangoFechas[0] || !rangoFechas[1]) return;
+    fetchBankAccountingReport({
+      from: rangoFechas[0].toISOString(),
+      to: rangoFechas[1].toISOString()
+    });
   };
 
   // Función para limpiar filtros
   const limpiarFiltros = () => {
-    setFiltros({
-      codigoCuenta: '',
-      nombreBanco: '',
-      numeroCuenta: '',
-      tipoCuenta: null,
-      moneda: null,
-      estado: null,
-      fechaDesde: null,
-      fechaHasta: null,
-      incluirInactivas: false
-    });
-    // Aquí podrías también resetear los datos a su estado original
+    setRangoFechas(null);
   };
 
-  // Función para redirigir a movimientos contables
-  const redirectToMovimientos = cuenta => {
-    const params = new URLSearchParams();
-    params.append('cuentaId', cuenta.id);
-    params.append('codigoCuenta', cuenta.codigoCuentaContable);
-    params.append('nombreCuenta', encodeURIComponent(cuenta.nombreCuentaContable));
-    params.append('banco', encodeURIComponent(cuenta.banco));
-    params.append('numeroCuenta', cuenta.numeroCuenta);
-    params.append('moneda', cuenta.moneda);
-    window.location.href = `ReportesMovimientoAuxiliar?${params.toString()}`;
-  };
-
-  // Función para redirigir a cuentas contables
-  const redirectToCuentasContables = cuenta => {
-    const params = new URLSearchParams();
-    params.append('codigoCuenta', cuenta.codigoCuentaContable);
-    params.append('nombreCuenta', encodeURIComponent(cuenta.nombreCuentaContable));
-    params.append('banco', encodeURIComponent(cuenta.banco));
-    window.location.href = `CuentasContables?${params.toString()}`;
-  };
-
-  // Formatear número para saldos monetarios
-  const formatCurrency = (value, currency = 'DOP') => {
+  // Formatear número para montos monetarios
+  const formatCurrency = value => {
     return value.toLocaleString('es-DO', {
       style: 'currency',
-      currency: currency,
+      currency: 'DOP',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     });
   };
 
   // Formatear fecha
-  const formatDate = date => {
+  const formatDate = dateString => {
+    const date = new Date(dateString);
     return date.toLocaleDateString('es-DO', {
       year: 'numeric',
       month: '2-digit',
@@ -227,63 +52,63 @@ export const BanksAccounting = () => {
     });
   };
 
-  // Templates para columnas clickeables
-  const saldoContableTemplate = rowData => {
+  // Template para el tipo de método de pago
+  const tipoTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
-      style: {
-        cursor: 'pointer'
-      },
-      className: "text-primary",
-      onMouseEnter: e => e.currentTarget.style.textDecoration = 'underline',
-      onMouseLeave: e => e.currentTarget.style.textDecoration = 'none',
-      onClick: () => redirectToMovimientos(rowData)
-    }, formatCurrency(rowData.saldoContable, rowData.moneda));
-  };
-  const codigoContableTemplate = rowData => {
-    return /*#__PURE__*/React.createElement("span", {
-      style: {
-        cursor: 'pointer'
-      },
-      className: "text-primary",
-      onMouseEnter: e => e.currentTarget.style.textDecoration = 'underline',
-      onMouseLeave: e => e.currentTarget.style.textDecoration = 'none',
-      onClick: () => redirectToCuentasContables(rowData)
-    }, rowData.codigoCuentaContable);
-  };
-  // Template para el Bancos contable que redirige a CuentasContables
-  const bancoContableTemplate = rowData => {
-    return /*#__PURE__*/React.createElement("span", {
-      style: {
-        cursor: 'pointer'
-      },
-      className: "text-primary",
-      onMouseEnter: e => e.currentTarget.style.textDecoration = 'underline',
-      onMouseLeave: e => e.currentTarget.style.textDecoration = 'none',
-      onClick: () => redirectToCuentasContables(rowData)
-    }, rowData.banco);
+      className: `badge ${rowData.tipo === 'sale' ? 'bg-success' : 'bg-warning'}`
+    }, rowData.tipo === 'sale' ? 'Venta' : 'Compra');
   };
 
-  // Template para el estado (activo/inactivo)
-  const estadoTemplate = rowData => {
+  // Template para indicar si es efectivo
+  const efectivoTemplate = rowData => {
     return /*#__PURE__*/React.createElement("span", {
-      className: `badge ${rowData.activa ? 'bg-success' : 'bg-secondary'}`
-    }, rowData.activa ? 'Activa' : 'Inactiva');
+      className: `badge ${rowData.es_efectivo ? 'bg-primary' : 'bg-secondary'}`
+    }, rowData.es_efectivo ? 'Sí' : 'No');
   };
 
-  // Footer para los totales
-  const footerTotales = /*#__PURE__*/React.createElement("div", {
-    className: "grid"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 md:col-4"
-  }, /*#__PURE__*/React.createElement("strong", null, "Total Registros:"), " ", totalRegistros), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 md:col-4"
-  }, /*#__PURE__*/React.createElement("strong", null, "Total Saldo Disponible:"), /*#__PURE__*/React.createElement("span", {
-    className: "text-primary cursor-pointer ml-2"
-  }, formatCurrency(totalSaldoDisponible))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 md:col-4"
-  }, /*#__PURE__*/React.createElement("strong", null, "Total Saldo Contable:"), /*#__PURE__*/React.createElement("span", {
-    className: "text-primary cursor-pointer ml-2"
-  }, formatCurrency(totalSaldoContable))));
+  // Template para expandir/contraer filas
+  const rowExpansionTemplate = data => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "p-3"
+    }, /*#__PURE__*/React.createElement("h5", null, "Bancos"), /*#__PURE__*/React.createElement(DataTable, {
+      value: data.movimientos,
+      size: "small",
+      responsiveLayout: "scroll",
+      paginator: true,
+      rows: 10,
+      rowsPerPageOptions: [5, 10, 25]
+    }, /*#__PURE__*/React.createElement(Column, {
+      field: "fecha",
+      header: "Fecha",
+      body: rowData => formatDate(rowData.fecha),
+      sortable: true
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "monto",
+      header: "Monto",
+      body: rowData => formatCurrency(parseFloat(rowData.monto)),
+      style: {
+        textAlign: 'right'
+      },
+      sortable: true
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "banco_o_tarjeta",
+      header: "Banco/Tarjeta",
+      body: rowData => rowData.banco_o_tarjeta || 'N/A'
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "nro_referencia",
+      header: "N\xB0 Referencia",
+      body: rowData => rowData.nro_referencia || 'N/A'
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "cuenta",
+      header: "Cuenta",
+      body: rowData => rowData.cuenta || 'N/A'
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "notas",
+      header: "Notas",
+      body: rowData => rowData.notas || 'N/A'
+    })));
+  };
+  console.log(metodosPago);
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid mt-4",
     style: {
@@ -291,110 +116,26 @@ export const BanksAccounting = () => {
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "d-flex justify-content-between align-items-center mb-3"
-  }, /*#__PURE__*/React.createElement("h2", null, "Gesti\xF3n de Cuentas Bancarias"), /*#__PURE__*/React.createElement(Button, {
-    label: "Nueva Cuenta Bancaria",
-    icon: "pi pi-plus",
-    className: "btn btn-primary",
-    onClick: () => console.log('Nueva cuenta bancaria')
-  })), /*#__PURE__*/React.createElement(Card, {
+  }, /*#__PURE__*/React.createElement("h2", null, "Bancos")), /*#__PURE__*/React.createElement(Card, {
     title: "Filtros de B\xFAsqueda",
     className: "mb-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-md-6"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
-  }, "C\xF3digo Cuenta Contable"), /*#__PURE__*/React.createElement(InputText, {
-    value: filtros.codigoCuenta,
-    onChange: e => handleFilterChange('codigoCuenta', e.target.value),
-    placeholder: "Buscar por c\xF3digo...",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Nombre del Banco"), /*#__PURE__*/React.createElement(InputText, {
-    value: filtros.nombreBanco,
-    onChange: e => handleFilterChange('nombreBanco', e.target.value),
-    placeholder: "Buscar por banco...",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "N\xFAmero de Cuenta"), /*#__PURE__*/React.createElement(InputText, {
-    value: filtros.numeroCuenta,
-    onChange: e => handleFilterChange('numeroCuenta', e.target.value),
-    placeholder: "Buscar por n\xFAmero...",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Tipo de Cuenta"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.tipoCuenta,
-    options: tiposCuenta,
-    onChange: e => handleFilterChange('tipoCuenta', e.value),
-    optionLabel: "label",
-    placeholder: "Seleccione tipo",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Moneda"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.moneda,
-    options: monedas,
-    onChange: e => handleFilterChange('moneda', e.value),
-    optionLabel: "label",
-    placeholder: "Seleccione moneda",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Estado"), /*#__PURE__*/React.createElement(Dropdown, {
-    value: filtros.estado,
-    options: opcionesEstado,
-    onChange: e => handleFilterChange('estado', e.value),
-    optionLabel: "label",
-    className: "w-100"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Fecha Apertura Desde"), /*#__PURE__*/React.createElement(Calendar, {
-    value: filtros.fechaDesde,
-    onChange: e => handleFilterChange('fechaDesde', e.value),
+  }, "Rango de Fechas"), /*#__PURE__*/React.createElement(Calendar, {
+    value: rangoFechas,
+    onChange: e => setRangoFechas(e.value),
+    selectionMode: "range",
+    readOnlyInput: true,
     dateFormat: "dd/mm/yy",
-    placeholder: "dd/mm/aaaa",
+    placeholder: "Seleccione rango de fechas",
     className: "w-100",
     showIcon: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-3"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Fecha Apertura Hasta"), /*#__PURE__*/React.createElement(Calendar, {
-    value: filtros.fechaHasta,
-    onChange: e => handleFilterChange('fechaHasta', e.value),
-    dateFormat: "dd/mm/yy",
-    placeholder: "dd/mm/aaaa",
-    className: "w-100",
-    showIcon: true
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-12"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "field-checkbox"
-  }, /*#__PURE__*/React.createElement(Checkbox, {
-    inputId: "incluirInactivas",
-    checked: filtros.incluirInactivas,
-    onChange: e => handleFilterChange('incluirInactivas', e.checked)
-  }), /*#__PURE__*/React.createElement("label", {
-    htmlFor: "incluirInactivas",
-    className: "ml-2"
-  }, "Incluir cuentas inactivas"))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 d-flex justify-content-end gap-2"
+    className: "col-md-6 d-flex align-items-end gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Limpiar",
     icon: "pi pi-trash",
@@ -407,52 +148,54 @@ export const BanksAccounting = () => {
     onClick: aplicarFiltros,
     loading: loading
   })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Cuentas Bancarias"
+    title: "M\xE9todos de Pago y Movimientos"
   }, /*#__PURE__*/React.createElement(DataTable, {
-    value: cuentasBancarias,
+    value: metodosPago,
     paginator: true,
     rows: 10,
     rowsPerPageOptions: [5, 10, 25, 50],
     loading: loading,
-    emptyMessage: "No se encontraron cuentas bancarias",
+    emptyMessage: "No se encontraron m\xE9todos de pago",
     className: "p-datatable-striped p-datatable-gridlines",
     responsiveLayout: "scroll",
-    footer: footerTotales
+    expandedRows: expandedRows,
+    onRowToggle: e => setExpandedRows(e.data),
+    rowExpansionTemplate: rowExpansionTemplate,
+    dataKey: "metodo_pago"
   }, /*#__PURE__*/React.createElement(Column, {
-    field: "nombreCuentaContable",
-    header: "C\xF3digo Contable",
-    body: codigoContableTemplate,
+    expander: true,
+    style: {
+      width: '3em'
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "metodo_pago",
+    header: "M\xE9todo de Pago",
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "banco",
-    header: "Banco",
-    body: bancoContableTemplate,
+    field: "tipo",
+    header: "Tipo",
+    body: tipoTemplate,
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "numeroCuenta",
-    header: "N\xFAmero de Cuenta",
+    field: "es_efectivo",
+    header: "Es Efectivo",
+    body: efectivoTemplate,
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "tipoCuenta",
-    header: "Tipo de Cuenta",
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "saldoDisponible",
-    header: "Saldo Disponible",
-    body: saldoContableTemplate,
+    field: "total",
+    header: "Total",
+    body: rowData => formatCurrency(rowData.total),
     style: {
       textAlign: 'right'
     },
     sortable: true
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "fechaApertura",
-    header: "Fecha Apertura",
-    body: rowData => formatDate(rowData.fechaApertura),
-    sortable: true
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "activa",
-    header: "Estado",
-    body: estadoTemplate,
+    field: "movimientos",
+    header: "N\xB0 Movimientos",
+    body: rowData => rowData.movimientos.length,
+    style: {
+      textAlign: 'center'
+    },
     sortable: true
   }))));
 };

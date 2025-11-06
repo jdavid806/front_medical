@@ -2599,7 +2599,7 @@ button[data-pc-name="button"]::after {
     color: #6c757d;
   }
   .p-button.p-button-text {
-    background-color: transparent;
+    background-color: var(--primary-color);
     color: #007bff;
     border-color: transparent;
   }

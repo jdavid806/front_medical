@@ -191,7 +191,7 @@ $_SESSION["ID"] = 1;
         }
 
         .btn-primary {
-            background-color: #132030 !important;
+            background-color: var(--primary-color) !important;
         }
 
         .btn-info {
@@ -384,7 +384,8 @@ $_SESSION["ID"] = 1;
       "primereact/galleria": "https://esm.sh/primereact/galleria?dev",
       "primereact/skeleton": "https://esm.sh/primereact/skeleton?dev",
       "primereact/iconfield": "https://esm.sh/primereact/iconfield?dev",
-      "primereact/inputicon": "https://esm.sh/primereact/inputicon?dev"
+      "primereact/inputicon": "https://esm.sh/primereact/inputicon?dev",
+      "primereact/dataview": "https://esm.sh/primereact/dataview?dev"
     }
   }
 </script>

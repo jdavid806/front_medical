@@ -11,7 +11,7 @@ import { Tag } from "primereact/tag";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { formatDate } from "../../services/utilidades.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
-import { generatePDFFromHTML } from "../../funciones/funcionesJS/exportPDF.js";
+import { generatePDFFromHTMLV2 } from "../../funciones/funcionesJS/exportPDFV2.js";
 import { useCompany } from "../hooks/useCompany.js";
 import { invoiceService } from "../../services/api/index.js";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
@@ -22,6 +22,7 @@ export const DebitCreditNotes = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const {
     company,
+    setCompany,
     fetchCompany
   } = useCompany();
 
@@ -56,7 +57,6 @@ export const DebitCreditNotes = () => {
     setTableLoading(true);
     try {
       const responseNotes = await invoiceService.getNotes();
-      console.log("Notas", responseNotes);
       const dataMapped = handleDataMapped(responseNotes.data);
       const startIndex = (page - 1) * per_page;
       const endIndex = startIndex + per_page;
@@ -222,9 +222,10 @@ export const DebitCreditNotes = () => {
             </tbody>
           </table>`;
     const configPDF = {
-      name: "Notes"
+      name: "Notes",
+      isDownload: true
     };
-    generatePDFFromHTML(table, company, configPDF);
+    generatePDFFromHTMLV2(table, company, configPDF);
     showToast("success", "Éxito", "PDF descargado correctamente");
   }
   const printInvoice = useCallback(async nota => {
@@ -316,8 +317,6 @@ export const DebitCreditNotes = () => {
   const handleExportAllPDF = () => {
     exportToPDF(notas);
   };
-
-  // Mapear los datos para la tabla
   const tableItems = notas.map(nota => ({
     id: nota.id,
     tipo: nota.tipo,

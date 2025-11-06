@@ -351,7 +351,7 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
           value={rowData.thirdPartyType}
           options={thirdPartyTypeOptions}
           placeholder="Seleccione tipo"
-          className="w-100"
+          className="w-100 dropdown-accounting-voucher"
           style={{ width: "100vw" }}
           onChange={(e) => {
             handleTransactionChange(rowData.id, "thirdPartyType", e.value);
@@ -519,7 +519,7 @@ export const FormAccoutingVouchers: React.FC<FormAccountingVouchersProps> = ({ v
                         field={col.field}
                         header={col.header}
                         body={col.body}
-                        style={{ minWidth: "200px" }}
+                        style={{ minWidth: "200px !important" }}
                       />
                     ))}
                   </DataTable>
@@ -731,6 +731,7 @@ const ThirdPartyField = ({
       onChange={(e) => onChange(e.value)}
       filter
       showClear
+      className="w-100 dropdown-accounting-voucher"
       appendTo={document.body}
     />
   </>
