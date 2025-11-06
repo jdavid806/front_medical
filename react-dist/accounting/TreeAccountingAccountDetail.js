@@ -38,19 +38,23 @@ export const TreeAccountingAccountDetail = ({
     className: "d-flex align-items-center gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Nueva subcuenta",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-plus"
-    }),
     onClick: onAddSubAccount,
-    className: "btn btn-outline-primary"
-  }), /*#__PURE__*/React.createElement(Button, {
+    className: "p-button-primary"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus",
+    style: {
+      marginLeft: "10px"
+    }
+  })), /*#__PURE__*/React.createElement(Button, {
     label: "Editar cuenta",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-edit"
-    }),
     onClick: onEditAccount,
-    className: "btn btn-outline-primary"
-  }))), /*#__PURE__*/React.createElement(CustomPRTable, {
+    className: "p-button-primary"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-edit",
+    style: {
+      marginLeft: "10px"
+    }
+  })))), /*#__PURE__*/React.createElement(CustomPRTable, {
     columns: columns,
     data: nodePath,
     disableReload: true,

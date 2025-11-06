@@ -10,6 +10,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
 import { CustomPRTable } from "../components/CustomPRTable.js";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal.js";
+import { BillingByEntity } from "../billing/by-entity/modal.js";
 import { exportToExcel } from "../accounting/utils/ExportToExcelOptions.js";
 import { billingService } from "../../services/api/index.js";
 import { generarFormatoContable } from "../../funciones/funcionesJS/generarPDFContable.js";
@@ -29,6 +30,9 @@ export const BillingEntity = () => {
   // Estado para el modal de recibo de caja
   const [showReciboModal, setShowReciboModal] = useState(false);
   const [facturaParaRecibo, setFacturaParaRecibo] = useState(null);
+
+  // Estado para el modal de nueva facturación entidad
+  const [showNuevaFacturacionModal, setShowNuevaFacturacionModal] = useState(false);
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -305,6 +309,20 @@ export const BillingEntity = () => {
     setShowReciboModal(false);
     setFacturaParaRecibo(null);
   };
+
+  // Funciones para el modal de nueva facturación
+  const abrirModalNuevaFacturacion = () => {
+    setShowNuevaFacturacionModal(true);
+  };
+  const cerrarModalNuevaFacturacion = () => {
+    setShowNuevaFacturacionModal(false);
+  };
+  const handleNuevaFacturacionSuccess = () => {
+    showToast("success", "Éxito", "Facturación creada exitosamente");
+    cerrarModalNuevaFacturacion();
+    // Recargar los datos de la tabla
+    loadBillingReportData(1, rows);
+  };
   const handleGenerarRecibo = formData => {
     showToast("success", "Éxito", `Recibo generado para factura ${facturaParaRecibo?.invoice_code}`);
     cerrarModalRecibo();
@@ -496,7 +514,7 @@ export const BillingEntity = () => {
     className: "text-end pt-3 mb-2"
   }, /*#__PURE__*/React.createElement(Button, {
     className: "p-button-primary",
-    onClick: () => window.location.href = "Facturacion_Entidad"
+    onClick: abrirModalNuevaFacturacion
   }, /*#__PURE__*/React.createElement("i", {
     className: "fas fa-file-edit me-2"
   }), "Nueva Facturaci\xF3n Entidad")), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
@@ -574,7 +592,11 @@ export const BillingEntity = () => {
     rowsPerPageOptions: [5, 10, 25, 50],
     currentPageReportTemplate: "Mostrando {first} a {last} de {totalRecords} facturas",
     emptyMessage: "No se encontraron facturas"
-  }))), /*#__PURE__*/React.createElement(NewReceiptBoxModal, {
+  }))), /*#__PURE__*/React.createElement(BillingByEntity, {
+    visible: showNuevaFacturacionModal,
+    onHide: cerrarModalNuevaFacturacion,
+    onSuccess: handleNuevaFacturacionSuccess
+  }), /*#__PURE__*/React.createElement(NewReceiptBoxModal, {
     visible: showReciboModal,
     onHide: cerrarModalRecibo,
     onSubmit: handleGenerarRecibo,

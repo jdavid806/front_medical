@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Accordion, AccordionTab } from "primereact/accordion";
+import React, { useEffect, useState, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
@@ -7,6 +6,8 @@ import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Paginator } from "primereact/paginator";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Menu } from "primereact/menu";
 import { accountingVouchersService } from "../../../services/api/index.js";
 import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2.js";
 import { useCompany } from "../../hooks/useCompany.js";
@@ -18,6 +19,7 @@ export const AccountingVouchers = () => {
   // Estado para los datos
   const [vouchers, setVouchers] = useState([]);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [expandedRows, setExpandedRows] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [dates, setDates] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -25,13 +27,12 @@ export const AccountingVouchers = () => {
   const [initialData, setInitialData] = useState([]);
   const [editTransactions, setEditTransactions] = useState([]);
   const {
-    company,
-    setCompany,
-    fetchCompany
+    company
   } = useCompany();
   const {
     deleteAccountingVoucher
   } = useAccountingVoucherDelete();
+  const menuRef = useRef(null);
 
   // Estado para paginación
   const [first, setFirst] = useState(0);
@@ -45,27 +46,30 @@ export const AccountingVouchers = () => {
     numeroComprobante: "",
     codigoContable: ""
   });
-
-  // Estado para el modal
-  const [tipoComprobante, setTipoComprobante] = useState(null);
-
-  // Opciones para el dropdown de nuevo comprobante
-  const opcionesNuevoComprobante = [{
-    label: "Recibo de Caja",
-    value: "recibo_caja",
-    icon: "pi-money-bill"
-  }, {
-    label: "Recibo de Pago",
-    value: "recibo_pago",
-    icon: "pi-credit-card"
-  }];
-  const loadData = async (pageNumber = 1, rowsData = 10) => {
+  const loadData = async (pageNumber = 1, rowsData = 10, filters = filtros) => {
     setLoading(true);
     try {
-      const response = await accountingVouchersService.getAccountingVouchers({
+      const params = {
         page: pageNumber,
         per_page: rowsData
-      });
+      };
+
+      // Agregar filtros a los parámetros
+      if (filters.fechaInicio) {
+        params.fecha_inicio = formatDateForAPI(filters.fechaInicio);
+      }
+      if (filters.fechaFin) {
+        params.fecha_fin = formatDateForAPI(filters.fechaFin);
+      }
+      if (filters.numeroComprobante) {
+        params.numero_comprobante = filters.numeroComprobante;
+      }
+      if (filters.codigoContable) {
+        params.codigo_contable = filters.codigoContable;
+      }
+      console.log("Parámetros de búsqueda:", params); // Para debug
+
+      const response = await accountingVouchersService.getAccountingVouchers(params);
       const dataMapped = response.data.map(voucher => ({
         ...voucher,
         details: voucher.details.map(detail => ({
@@ -82,24 +86,8 @@ export const AccountingVouchers = () => {
       setLoading(false);
     }
   };
-  const buildQueryParams = () => {
-    const params = {};
-    if (filtros.fechaInicio) {
-      params.fecha_inicio = formatDateForAPI(filtros.fechaInicio);
-    }
-    if (filtros.fechaFin) {
-      params.fecha_fin = formatDateForAPI(filtros.fechaFin);
-    }
-    if (filtros.numeroComprobante) {
-      params.numero_comprobante = filtros.numeroComprobante;
-    }
-    if (filtros.codigoContable) {
-      params.codigo_contable = filtros.codigoContable;
-    }
-    return params;
-  };
   const formatDateForAPI = date => {
-    return date.toISOString().split("T")[0];
+    return date.toISOString().split("T")[0]; // Formato YYYY-MM-DD
   };
   const onPageChange = event => {
     const newPage = event.first / event.rows + 1;
@@ -108,24 +96,30 @@ export const AccountingVouchers = () => {
     setPage(newPage);
     loadData(newPage, event.rows);
   };
-  const handleSearch = () => {
-    // Resetear a la primera página al aplicar nuevos filtros
-    setPage(1);
-    setFirst(0);
-    loadData(1);
-  };
-  useEffect(() => {
-    if (dates && Array.isArray(dates)) {
-      setFiltros({
-        ...filtros,
-        fechaInicio: dates[0],
-        fechaFin: dates[1]
-      });
+
+  // Actualizar filtros cuando cambian las fechas - CORREGIDO
+  const handleDateChange = e => {
+    const selectedDates = e.value;
+    setDates(selectedDates);
+    if (selectedDates && selectedDates.length === 2) {
+      setFiltros(prev => ({
+        ...prev,
+        fechaInicio: selectedDates[0],
+        fechaFin: selectedDates[1]
+      }));
+    } else {
+      setFiltros(prev => ({
+        ...prev,
+        fechaInicio: null,
+        fechaFin: null
+      }));
     }
-  }, [dates]);
+  };
+
+  // Cargar datos iniciales
   useEffect(() => {
     loadData(page);
-  }, [filtros.fechaInicio, filtros.fechaFin, filtros.numeroComprobante, filtros.codigoContable]);
+  }, []);
 
   // Formatear fecha
   const formatDate = dateString => {
@@ -155,7 +149,7 @@ export const AccountingVouchers = () => {
         return value;
     }
   };
-  async function handleExportPDF(vouchers) {
+  async function handleExportPDF(voucher) {
     const headers = `
         <tr>
             <th>Tercero</th>
@@ -165,16 +159,13 @@ export const AccountingVouchers = () => {
             <th>Credito</th>
         </tr>
     `;
-
-    // Calculamos los totales de débito y crédito
-    let totalDebit = "";
-    let totalCredit = "";
-    const rows = vouchers.details.reduce((acc, rowData) => {
-      // Sumamos al total correspondiente
+    let totalDebit = 0;
+    let totalCredit = 0;
+    const rows = voucher.details.reduce((acc, rowData) => {
       if (rowData.type === "debit") {
-        totalDebit += formatCurrency(rowData.amount);
+        totalDebit += rowData.amount;
       } else if (rowData.type === "credit") {
-        totalCredit += formatCurrency(rowData.amount);
+        totalCredit += rowData.amount;
       }
       return acc + `
                 <tr>
@@ -186,13 +177,11 @@ export const AccountingVouchers = () => {
                 </tr>
                 `;
     }, "");
-
-    // Agregamos la fila de totales
     const totalRow = `
         <tr style="font-weight: bold; background-color: #f5f5f5;">
             <td colspan="3">Total</td>
-            <td class="right">$${totalDebit}</td>
-            <td class="right">$${totalCredit}</td>
+            <td class="right">${formatCurrency(totalDebit)}</td>
+            <td class="right">${formatCurrency(totalCredit)}</td>
         </tr>
     `;
     const table = `
@@ -218,7 +207,7 @@ export const AccountingVouchers = () => {
         </style>
 
         <div style="font-weight: bold; background-color: #f5f5f5; margin-bottom: 15px">
-        <span>Comprobante contable #: ${vouchers.id}</span>
+        <span>Comprobante contable #: ${voucher.id}</span>
         </div>
         <table>
             <thead>
@@ -230,11 +219,11 @@ export const AccountingVouchers = () => {
             </tbody>
         </table>
         <div style="font-weight: bold; background-color: #f5f5f5; margin-top: 25px">
-        <span>Observaciones: ${vouchers.description}</span>
+        <span>Observaciones: ${voucher.description}</span>
         </div>
     `;
     const configPDF = {
-      name: "Comprobante contable #" + vouchers.seat_number,
+      name: "Comprobante contable #" + voucher.seat_number,
       isDownload: false
     };
     await generatePDFFromHTMLV2(table, company, configPDF);
@@ -261,91 +250,166 @@ export const AccountingVouchers = () => {
     const confirmed = await deleteAccountingVoucher(id);
     if (confirmed) loadData(page);
   };
-
-  // Template para el encabezado del acordeón
-  const voucherTemplate = voucher => {
+  const handleAplicarFiltros = () => {
+    setPage(1);
+    setFirst(0);
+    loadData(1, rows, filtros);
+  };
+  const limpiarFiltros = () => {
+    setFiltros({
+      fechaInicio: null,
+      fechaFin: null,
+      numeroComprobante: "",
+      codigoContable: ""
+    });
+    setDates(null);
+    // Recargar datos sin filtros
+    setPage(1);
+    setFirst(0);
+    loadData(1, rows, {
+      fechaInicio: null,
+      fechaFin: null,
+      numeroComprobante: "",
+      codigoContable: ""
+    });
+  };
+  const TableMenu = ({
+    rowData,
+    onEdit,
+    onDelete,
+    onExport
+  }) => {
+    const menu = useRef(null);
+    const menuItems = [{
+      label: "Editar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-edit me-2"
+      }),
+      command: () => onEdit(rowData)
+    }, {
+      label: "Eliminar",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-trash me-2"
+      }),
+      command: () => onDelete(rowData.id.toString())
+    }, {
+      label: "Exportar PDF",
+      icon: /*#__PURE__*/React.createElement("i", {
+        className: "fas fa-file-pdf me-2"
+      }),
+      command: () => onExport(rowData)
+    }];
     return /*#__PURE__*/React.createElement("div", {
-      className: "d-flex justify-content-between align-items-center w-full"
-    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
-      className: "font-bold"
-    }, voucher.seat_number), " -", /*#__PURE__*/React.createElement("span", {
-      className: "mx-2"
-    }, formatDate(voucher.seat_date)), /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", {
-      className: "font-bold"
-    }, "Total: ", formatCurrency(voucher.total_is))), /*#__PURE__*/React.createElement("div", {
-      className: "d-flex text-end justify-content-end gap-2"
+      style: {
+        position: "relative"
+      }
     }, /*#__PURE__*/React.createElement(Button, {
-      tooltip: "Editar comprobante",
-      tooltipOptions: {
-        position: "top"
-      },
-      className: "p-button-warning",
-      onClick: () => handleEditVoucher(voucher)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-pen-to-square"
-    })), /*#__PURE__*/React.createElement(Button, {
-      tooltip: "Eliminar comprobante",
-      tooltipOptions: {
-        position: "top"
-      },
-      className: "p-button-danger",
-      onClick: () => handleDeleteVoucher(voucher.id.toString())
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-trash"
-    })), /*#__PURE__*/React.createElement(Button, {
-      tooltip: "Exportar a PDF",
-      tooltipOptions: {
-        position: "top"
-      },
-      className: "p-button-secondary",
-      onClick: () => handleExportPDF(voucher)
-    }, /*#__PURE__*/React.createElement("i", {
-      className: "fa-solid fa-file-pdf"
-    }))));
+      className: "p-button-primary flex items-center gap-2 p-button-sm",
+      onClick: e => menu.current?.toggle(e),
+      "aria-controls": `popup_menu_${rowData.id}`,
+      "aria-haspopup": true
+    }, "Acciones", /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-cog ml-2"
+    })), /*#__PURE__*/React.createElement(Menu, {
+      model: menuItems,
+      popup: true,
+      ref: menu,
+      id: `popup_menu_${rowData.id}`,
+      appendTo: document.body,
+      style: {
+        zIndex: 9999
+      }
+    }));
   };
-
-  // Handler para selección de tipo de comprobante
-  const handleSeleccionTipo = value => {
-    setTipoComprobante(value);
+  const actionsTemplate = rowData => {
+    return /*#__PURE__*/React.createElement(TableMenu, {
+      rowData: rowData,
+      onEdit: handleEditVoucher,
+      onDelete: handleDeleteVoucher,
+      onExport: handleExportPDF
+    });
   };
-
-  // Template para opciones del dropdown
-  const itemTemplate = option => /*#__PURE__*/React.createElement("div", {
-    className: "flex align-items-center"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: `pi ${option.icon} mr-2`
-  }), /*#__PURE__*/React.createElement("span", null, option.label));
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center mb-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2"
+  const rowExpansionTemplate = data => {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "p-3",
+      style: {
+        backgroundColor: '#f8f9fa'
+      }
+    }, /*#__PURE__*/React.createElement("h5", null, "Detalles del Comprobante #", data.seat_number), /*#__PURE__*/React.createElement(DataTable, {
+      value: data.details,
+      className: "p-datatable-gridlines",
+      stripedRows: true,
+      size: "small"
+    }, /*#__PURE__*/React.createElement(Column, {
+      field: "full_name",
+      header: "Tercero",
+      style: {
+        width: "200px"
+      }
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "accounting_account.name",
+      header: "Cuenta contable",
+      style: {
+        width: "150px"
+      }
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "description",
+      header: "Descripci\xF3n",
+      style: {
+        width: "200px"
+      }
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "type",
+      header: "Tipo",
+      body: rowData => formatTypeMovement(rowData.type),
+      style: {
+        width: "120px"
+      }
+    }), /*#__PURE__*/React.createElement(Column, {
+      field: "amount",
+      header: "Monto",
+      body: rowData => formatCurrency(rowData.amount),
+      style: {
+        width: "150px"
+      },
+      bodyClassName: "text-right"
+    })));
+  };
+  const onRowToggle = e => {
+    setExpandedRows(e.data);
+  };
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Card, null, /*#__PURE__*/React.createElement("div", {
+    className: "text-end pt-3 mb-2",
+    style: {
+      marginTop: "-10px"
+    }
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Nuevo Comprobante",
-    icon: "pi pi-file-edit",
-    className: "btn btn-primary",
+    className: "p-button-primary",
     onClick: () => window.location.href = "CrearComprobantesContable"
-  }))), /*#__PURE__*/React.createElement(Card, {
-    title: "Filtros de B\xFAsqueda",
-    className: "mb-4"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-plus me-2"
+  }))), /*#__PURE__*/React.createElement(Accordion, null, /*#__PURE__*/React.createElement(AccordionTab, {
+    header: "Filtros de B\xFAsqueda"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-md-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "Fechas"), /*#__PURE__*/React.createElement(Calendar, {
     value: dates,
-    onChange: e => setDates(e.value),
+    onChange: handleDateChange,
     appendTo: document.body,
     dateFormat: "dd/mm/yy",
-    placeholder: "Seleccione fecha",
+    placeholder: "Seleccione rango de fechas",
     className: "w-100",
     showIcon: true,
     selectionMode: "range",
     readOnlyInput: true,
     hideOnRangeSelection: true
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-md-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "N\xB0 Comprobante"), /*#__PURE__*/React.createElement(InputText, {
@@ -357,7 +421,7 @@ export const AccountingVouchers = () => {
     placeholder: "Buscar por n\xFAmero",
     className: "w-100"
   })), /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "col-md-3"
   }, /*#__PURE__*/React.createElement("label", {
     className: "form-label"
   }, "C\xF3digo Contable"), /*#__PURE__*/React.createElement(InputText, {
@@ -368,34 +432,57 @@ export const AccountingVouchers = () => {
     }),
     placeholder: "Buscar por c\xF3digo",
     className: "w-100"
-  })))), /*#__PURE__*/React.createElement(Card, {
-    title: "Comprobantes Contables"
-  }, loading ? /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "col-md-3 d-flex align-items-end gap-2"
+  }, /*#__PURE__*/React.createElement(Button, {
+    label: "Aplicar Filtros",
+    icon: "pi pi-search",
+    className: "p-button-primary",
+    onClick: handleAplicarFiltros
+  }), /*#__PURE__*/React.createElement(Button, {
+    label: "Limpiar",
+    icon: "pi pi-filter-slash",
+    className: "p-button-secondary",
+    onClick: limpiarFiltros
+  }))))), loading ? /*#__PURE__*/React.createElement("div", {
     className: "text-center p-5"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-spinner pi-spin",
     style: {
       fontSize: "2rem"
     }
-  }), /*#__PURE__*/React.createElement("p", null, "Cargando comprobantes...")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Accordion, {
-    multiple: true
-  }, vouchers.map(voucher => /*#__PURE__*/React.createElement(AccordionTab, {
-    key: voucher.id,
-    header: voucherTemplate(voucher)
-  }, /*#__PURE__*/React.createElement(DataTable, {
-    value: voucher.details,
-    className: "p-datatable-gridlines custom-datatable",
+  }), /*#__PURE__*/React.createElement("p", null, "Cargando comprobantes...")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(DataTable, {
+    value: vouchers,
+    expandedRows: expandedRows,
+    onRowToggle: onRowToggle,
+    rowExpansionTemplate: rowExpansionTemplate,
+    dataKey: "id",
+    className: "p-datatable-gridlines",
     stripedRows: true,
-    size: "small"
+    size: "small",
+    emptyMessage: "No se encontraron comprobantes"
   }, /*#__PURE__*/React.createElement(Column, {
-    field: `full_name`,
-    header: "Tercero",
+    expander: true,
     style: {
-      width: "130px"
+      width: '3rem'
     }
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "accounting_account.name",
-    header: "Cuenta contable",
+    field: "seat_number",
+    header: "N\xB0 Comprobante",
+    style: {
+      width: "120px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "seat_date",
+    header: "Fecha",
+    body: rowData => formatDate(rowData.seat_date),
+    style: {
+      width: "120px"
+    }
+  }), /*#__PURE__*/React.createElement(Column, {
+    field: "total_is",
+    header: "Total",
+    body: rowData => formatCurrency(rowData.total_is),
     style: {
       width: "130px"
     }
@@ -403,24 +490,16 @@ export const AccountingVouchers = () => {
     field: "description",
     header: "Descripci\xF3n",
     style: {
-      width: "130px"
+      minWidth: "200px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
-    field: "type",
-    header: "Tipo",
-    body: rowData => formatTypeMovement(rowData.type),
+    header: "Acciones",
+    body: actionsTemplate,
     style: {
-      width: "120px"
+      width: "150px"
     },
-    bodyClassName: "text-right"
-  }), /*#__PURE__*/React.createElement(Column, {
-    field: "amount",
-    header: "Monto",
-    body: rowData => formatCurrency(rowData.amount),
-    style: {
-      width: "120px"
-    }
-  }))))), /*#__PURE__*/React.createElement("div", {
+    align: "center"
+  })), /*#__PURE__*/React.createElement("div", {
     className: "mt-3"
   }, /*#__PURE__*/React.createElement(Paginator, {
     first: first,
@@ -435,7 +514,7 @@ export const AccountingVouchers = () => {
     onHide: () => setEditModalVisible(false),
     style: {
       width: "90vw",
-      height: "100vh",
+      height: "85vh",
       maxHeight: "100vh"
     },
     modal: true,

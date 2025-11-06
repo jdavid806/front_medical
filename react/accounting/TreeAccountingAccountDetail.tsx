@@ -43,16 +43,14 @@ export const TreeAccountingAccountDetail = ({ nodePath, onAddSubAccount, onEditA
                 <div className="d-flex align-items-center gap-2">
                     <Button
                         label="Nueva subcuenta"
-                        icon={<i className="fas fa-plus"></i>}
                         onClick={onAddSubAccount}
-                        className="btn btn-outline-primary"
-                    />
+                        className="p-button-primary"
+                    ><i className="fas fa-plus" style={{ marginLeft: "10px" }}></i></Button>
                     <Button
                         label="Editar cuenta"
-                        icon={<i className="fas fa-edit"></i>}
                         onClick={onEditAccount}
-                        className="btn btn-outline-primary"
-                    />
+                        className="p-button-primary"
+                    ><i className="fas fa-edit" style={{ marginLeft: "10px" }}></i></Button>
                 </div>
             </div>
             <CustomPRTable

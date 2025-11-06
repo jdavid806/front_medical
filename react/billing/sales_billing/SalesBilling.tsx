@@ -38,6 +38,7 @@ import { Dialog } from "primereact/dialog";
 import { useAdvancePayments } from "../hooks/useAdvancePayments";
 import { useBillingByType } from "../hooks/useBillingByType";
 import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
+import { CustomTaxes, TaxItem } from "../../components/billing/CustomTaxes";
 
 export const SalesBilling: React.FC<any> = ({
   selectedInvoice,
@@ -73,6 +74,13 @@ export const SalesBilling: React.FC<any> = ({
   const { fetchBillingByType } = useBillingByType();
 
   const [billing, setBilling] = useState<any>(null);
+
+  const [taxes, setTaxes] = useState<TaxItem[]>([]);
+  const {
+    taxes: availableTaxes,
+    loading: loadingTaxes,
+    fetchTaxes,
+  } = useTaxes();
 
   const invoiceType = watch("type");
 
@@ -716,6 +724,7 @@ export const SalesBilling: React.FC<any> = ({
         };
       }),
       ...retentionsValue,
+      taxes: taxes,
     };
   }
 
@@ -987,6 +996,17 @@ export const SalesBilling: React.FC<any> = ({
               productsArray={productsArray}
               type="sale"
             />
+
+            <div className="card mb-3 mb-md-4 shadow-sm">
+              <CustomTaxes
+                subtotal={calculateSubtotal()}
+                totalDiscount={calculateTotalDiscount()}
+                taxes={taxes}
+                onTaxesChange={setTaxes}
+                productsArray={productsArray}
+                taxOptions={availableTaxes}
+              />
+            </div>
 
             <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">

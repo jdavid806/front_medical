@@ -237,22 +237,20 @@ export const EditAccountingAccountFormModal: React.FC<EditAccountingAccountFormM
 
             <Divider />
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className="d-flex justify-content-center gap-2">
               <Button
                 type="button"
                 label="Cancelar"
-                icon={<i className="fa fa-times me-2"></i>}
-                className="btn btn-danger"
+                className="p-button-primary"
                 onClick={() => {
                   onHide();
                 }}
-              />
+              ><i className="fa fa-times me-2" style={{ marginLeft: "10px" }}></i></Button>
               <Button
                 label="Guardar"
                 type="submit"
-                icon={<i className="fa fa-save me-2"></i>}
-                className="btn btn-primary"
-              />
+                className="p-button-primary"
+              ><i className="fa fa-save" style={{ marginLeft: "10px" }}></i></Button>
             </div>
           </form>
         </Dialog>

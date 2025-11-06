@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Accordion, AccordionTab } from "primereact/accordion";
+import React, { useEffect, useState, useRef } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { Card } from "primereact/card";
 import { Paginator } from "primereact/paginator";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { Menu } from "primereact/menu";
 import { accountingVouchersService } from "../../../services/api";
 import { AccountingVoucherDto, DetailsDto } from "../../models/models";
 import { generatePDFFromHTMLV2 } from "../../../funciones/funcionesJS/exportPDFV2";
 import { useCompany } from "../../hooks/useCompany";
-import { CustomModal } from "../../components/CustomModal";
 import {
   FormAccoutingVouchers,
   Transaction,
@@ -21,25 +20,20 @@ import { Dialog } from "primereact/dialog";
 import { stringToDate } from "../../../services/utilidades";
 import { useAccountingVoucherDelete } from "./hooks/useAccountingVoucherDelete";
 
-type DropdownOption = {
-  label: string;
-  value: string;
-  icon: string;
-};
-
 export const AccountingVouchers: React.FC = () => {
   // Estado para los datos
   const [vouchers, setVouchers] = useState<AccountingVoucherDto[]>([]);
-  const [selectedVoucher, setSelectedVoucher] =
-    useState<AccountingVoucherDto | null>(null);
+  const [selectedVoucher, setSelectedVoucher] = useState<AccountingVoucherDto | null>(null);
+  const [expandedRows, setExpandedRows] = useState<any>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [dates, setDates] = useState<[Date, Date] | null>(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialData, setInitialData] = useState<any>([]);
   const [editTransactions, setEditTransactions] = useState<Transaction[]>([]);
-  const { company, setCompany, fetchCompany } = useCompany();
+  const { company } = useCompany();
   const { deleteAccountingVoucher } = useAccountingVoucherDelete();
+  const menuRef = useRef<Menu>(null);
 
   // Estado para paginación
   const [first, setFirst] = useState(0);
@@ -54,32 +48,39 @@ export const AccountingVouchers: React.FC = () => {
     codigoContable: "",
   });
 
-  // Estado para el modal
-  const [tipoComprobante, setTipoComprobante] = useState<string | null>(null);
-
-  // Opciones para el dropdown de nuevo comprobante
-  const opcionesNuevoComprobante: DropdownOption[] = [
-    { label: "Recibo de Caja", value: "recibo_caja", icon: "pi-money-bill" },
-    { label: "Recibo de Pago", value: "recibo_pago", icon: "pi-credit-card" },
-  ];
-
-  const loadData = async (pageNumber = 1, rowsData = 10) => {
+  const loadData = async (pageNumber = 1, rowsData = 10, filters = filtros) => {
     setLoading(true);
     try {
-      const response = await accountingVouchersService.getAccountingVouchers({
+      const params: any = {
         page: pageNumber,
         per_page: rowsData,
-      });
+      };
+
+      // Agregar filtros a los parámetros
+      if (filters.fechaInicio) {
+        params.fecha_inicio = formatDateForAPI(filters.fechaInicio);
+      }
+      if (filters.fechaFin) {
+        params.fecha_fin = formatDateForAPI(filters.fechaFin);
+      }
+      if (filters.numeroComprobante) {
+        params.numero_comprobante = filters.numeroComprobante;
+      }
+      if (filters.codigoContable) {
+        params.codigo_contable = filters.codigoContable;
+      }
+
+      console.log("Parámetros de búsqueda:", params); // Para debug
+
+      const response = await accountingVouchersService.getAccountingVouchers(params);
 
       const dataMapped = response.data.map((voucher: any) => ({
         ...voucher,
         details: voucher.details.map((detail: any) => ({
           ...detail,
           full_name: detail.third_party
-            ? `${detail?.third_party?.first_name ?? ""} ${
-                detail?.third_party?.middle_name ?? ""
-              } ${detail?.third_party?.last_name ?? ""} ${
-                detail?.third_party?.second_last_name ?? ""
+            ? `${detail?.third_party?.first_name ?? ""} ${detail?.third_party?.middle_name ?? ""
+              } ${detail?.third_party?.last_name ?? ""} ${detail?.third_party?.second_last_name ?? ""
               }`.trim() || detail?.third_party?.name
             : "No tiene terceros",
         })),
@@ -95,30 +96,8 @@ export const AccountingVouchers: React.FC = () => {
     }
   };
 
-  const buildQueryParams = () => {
-    const params: any = {};
-
-    if (filtros.fechaInicio) {
-      params.fecha_inicio = formatDateForAPI(filtros.fechaInicio);
-    }
-
-    if (filtros.fechaFin) {
-      params.fecha_fin = formatDateForAPI(filtros.fechaFin);
-    }
-
-    if (filtros.numeroComprobante) {
-      params.numero_comprobante = filtros.numeroComprobante;
-    }
-
-    if (filtros.codigoContable) {
-      params.codigo_contable = filtros.codigoContable;
-    }
-
-    return params;
-  };
-
   const formatDateForAPI = (date: Date) => {
-    return date.toISOString().split("T")[0];
+    return date.toISOString().split("T")[0]; // Formato YYYY-MM-DD
   };
 
   const onPageChange = (event: any) => {
@@ -129,31 +108,30 @@ export const AccountingVouchers: React.FC = () => {
     loadData(newPage, event.rows);
   };
 
-  const handleSearch = () => {
-    // Resetear a la primera página al aplicar nuevos filtros
-    setPage(1);
-    setFirst(0);
-    loadData(1);
+  // Actualizar filtros cuando cambian las fechas - CORREGIDO
+  const handleDateChange = (e: any) => {
+    const selectedDates = e.value;
+    setDates(selectedDates);
+
+    if (selectedDates && selectedDates.length === 2) {
+      setFiltros(prev => ({
+        ...prev,
+        fechaInicio: selectedDates[0],
+        fechaFin: selectedDates[1]
+      }));
+    } else {
+      setFiltros(prev => ({
+        ...prev,
+        fechaInicio: null,
+        fechaFin: null
+      }));
+    }
   };
 
-  useEffect(() => {
-    if (dates && Array.isArray(dates)) {
-      setFiltros({
-        ...filtros,
-        fechaInicio: dates[0],
-        fechaFin: dates[1],
-      });
-    }
-  }, [dates]);
-
+  // Cargar datos iniciales
   useEffect(() => {
     loadData(page);
-  }, [
-    filtros.fechaInicio,
-    filtros.fechaFin,
-    filtros.numeroComprobante,
-    filtros.codigoContable,
-  ]);
+  }, []);
 
   // Formatear fecha
   const formatDate = (dateString: string) => {
@@ -161,7 +139,6 @@ export const AccountingVouchers: React.FC = () => {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, "0");
     const day = String(date.getUTCDate()).padStart(2, "0");
-
     return `${year}-${month}-${day}`;
   };
 
@@ -186,7 +163,7 @@ export const AccountingVouchers: React.FC = () => {
     }
   };
 
-  async function handleExportPDF(vouchers: any) {
+  async function handleExportPDF(voucher: any) {
     const headers = `
         <tr>
             <th>Tercero</th>
@@ -197,16 +174,14 @@ export const AccountingVouchers: React.FC = () => {
         </tr>
     `;
 
-    // Calculamos los totales de débito y crédito
-    let totalDebit: any = "";
-    let totalCredit: any = "";
+    let totalDebit = 0;
+    let totalCredit = 0;
 
-    const rows = vouchers.details.reduce((acc: string, rowData: any) => {
-      // Sumamos al total correspondiente
+    const rows = voucher.details.reduce((acc: string, rowData: any) => {
       if (rowData.type === "debit") {
-        totalDebit += formatCurrency(rowData.amount);
+        totalDebit += rowData.amount;
       } else if (rowData.type === "credit") {
-        totalCredit += formatCurrency(rowData.amount);
+        totalCredit += rowData.amount;
       }
 
       return (
@@ -216,27 +191,24 @@ export const AccountingVouchers: React.FC = () => {
                     <td>${rowData.full_name}</td>
                     <td>${rowData.accounting_account.name}</td>
                     <td>${rowData.description}</td>
-                    <td class="right">${
-                      rowData.type === "debit"
-                        ? formatCurrency(rowData.amount)
-                        : ""
-                    }</td>
-                    <td class="right">${
-                      rowData.type === "credit"
-                        ? formatCurrency(rowData.amount)
-                        : ""
-                    }</td>
+                    <td class="right">${rowData.type === "debit"
+          ? formatCurrency(rowData.amount)
+          : ""
+        }</td>
+                    <td class="right">${rowData.type === "credit"
+          ? formatCurrency(rowData.amount)
+          : ""
+        }</td>
                 </tr>
                 `
       );
     }, "");
 
-    // Agregamos la fila de totales
     const totalRow = `
         <tr style="font-weight: bold; background-color: #f5f5f5;">
             <td colspan="3">Total</td>
-            <td class="right">$${totalDebit}</td>
-            <td class="right">$${totalCredit}</td>
+            <td class="right">${formatCurrency(totalDebit)}</td>
+            <td class="right">${formatCurrency(totalCredit)}</td>
         </tr>
     `;
 
@@ -263,7 +235,7 @@ export const AccountingVouchers: React.FC = () => {
         </style>
 
         <div style="font-weight: bold; background-color: #f5f5f5; margin-bottom: 15px">
-        <span>Comprobante contable #: ${vouchers.id}</span>
+        <span>Comprobante contable #: ${voucher.id}</span>
         </div>
         <table>
             <thead>
@@ -275,12 +247,12 @@ export const AccountingVouchers: React.FC = () => {
             </tbody>
         </table>
         <div style="font-weight: bold; background-color: #f5f5f5; margin-top: 25px">
-        <span>Observaciones: ${vouchers.description}</span>
+        <span>Observaciones: ${voucher.description}</span>
         </div>
     `;
 
     const configPDF = {
-      name: "Comprobante contable #" + vouchers.seat_number,
+      name: "Comprobante contable #" + voucher.seat_number,
       isDownload: false,
     };
 
@@ -315,119 +287,210 @@ export const AccountingVouchers: React.FC = () => {
     if (confirmed) loadData(page);
   };
 
-  // Template para el encabezado del acordeón
-  const voucherTemplate = (voucher: AccountingVoucherDto) => {
+  const handleAplicarFiltros = () => {
+    setPage(1);
+    setFirst(0);
+    loadData(1, rows, filtros);
+  };
+
+  const limpiarFiltros = () => {
+    setFiltros({
+      fechaInicio: null,
+      fechaFin: null,
+      numeroComprobante: "",
+      codigoContable: "",
+    });
+    setDates(null);
+    // Recargar datos sin filtros
+    setPage(1);
+    setFirst(0);
+    loadData(1, rows, {
+      fechaInicio: null,
+      fechaFin: null,
+      numeroComprobante: "",
+      codigoContable: "",
+    });
+  };
+
+  const TableMenu: React.FC<{
+    rowData: AccountingVoucherDto,
+    onEdit: (voucher: AccountingVoucherDto) => void,
+    onDelete: (id: string) => void,
+    onExport: (voucher: AccountingVoucherDto) => void
+  }> = ({ rowData, onEdit, onDelete, onExport }) => {
+    const menu = useRef<Menu>(null);
+
+    const menuItems = [
+      {
+        label: "Editar",
+        icon: <i className="fas fa-edit me-2"></i>,
+        command: () => onEdit(rowData)
+      },
+      {
+        label: "Eliminar",
+        icon: <i className="fas fa-trash me-2"></i>,
+        command: () => onDelete(rowData.id.toString())
+      },
+      {
+        label: "Exportar PDF",
+        icon: <i className="fas fa-file-pdf me-2"></i>,
+        command: () => onExport(rowData)
+      }
+    ];
+
     return (
-      <div className="d-flex justify-content-between align-items-center w-full">
-        <div>
-          <span className="font-bold">{voucher.seat_number}</span> -
-          <span className="mx-2">{formatDate(voucher.seat_date)}</span>
-          <br />
-          <span className="font-bold">
-            Total: {formatCurrency(voucher.total_is)}
-          </span>
-        </div>
-        <div className="d-flex text-end justify-content-end gap-2">
-          <Button
-            tooltip="Editar comprobante"
-            tooltipOptions={{ position: "top" }}
-            className="p-button-warning"
-            onClick={() => handleEditVoucher(voucher)}
-          >
-            <i className="fa-solid fa-pen-to-square" />
-          </Button>
-          <Button
-            tooltip="Eliminar comprobante"
-            tooltipOptions={{ position: "top" }}
-            className="p-button-danger"
-            onClick={() => handleDeleteVoucher(voucher.id.toString())}
-          >
-            <i className="fa-solid fa-trash" />
-          </Button>
-          <Button
-            tooltip="Exportar a PDF"
-            tooltipOptions={{ position: "top" }}
-            className="p-button-secondary"
-            onClick={() => handleExportPDF(voucher)}
-          >
-            <i className="fa-solid fa-file-pdf" />
-          </Button>
-        </div>
+      <div style={{ position: "relative" }}>
+        <Button
+          className="p-button-primary flex items-center gap-2 p-button-sm"
+          onClick={(e) => menu.current?.toggle(e)}
+          aria-controls={`popup_menu_${rowData.id}`}
+          aria-haspopup
+        >
+          Acciones
+          <i className="fas fa-cog ml-2"></i>
+        </Button>
+        <Menu
+          model={menuItems}
+          popup
+          ref={menu}
+          id={`popup_menu_${rowData.id}`}
+          appendTo={document.body}
+          style={{ zIndex: 9999 }}
+        />
       </div>
     );
   };
 
-  // Handler para selección de tipo de comprobante
-  const handleSeleccionTipo = (value: string) => {
-    setTipoComprobante(value);
+  const actionsTemplate = (rowData: AccountingVoucherDto) => {
+    return (
+      <TableMenu
+        rowData={rowData}
+        onEdit={handleEditVoucher}
+        onDelete={handleDeleteVoucher}
+        onExport={handleExportPDF}
+      />
+    );
   };
 
-  // Template para opciones del dropdown
-  const itemTemplate = (option: DropdownOption) => (
-    <div className="flex align-items-center">
-      <i className={`pi ${option.icon} mr-2`} />
-      <span>{option.label}</span>
-    </div>
-  );
+  const rowExpansionTemplate = (data: AccountingVoucherDto) => {
+    return (
+      <div className="p-3" style={{ backgroundColor: '#f8f9fa' }}>
+        <h5>Detalles del Comprobante #{data.seat_number}</h5>
+        <DataTable
+          value={data.details}
+          className="p-datatable-gridlines"
+          stripedRows
+          size="small"
+        >
+          <Column
+            field="full_name"
+            header="Tercero"
+            style={{ width: "200px" }}
+          />
+          <Column
+            field="accounting_account.name"
+            header="Cuenta contable"
+            style={{ width: "150px" }}
+          />
+          <Column
+            field="description"
+            header="Descripción"
+            style={{ width: "200px" }}
+          />
+          <Column
+            field="type"
+            header="Tipo"
+            body={(rowData: DetailsDto) => formatTypeMovement(rowData.type)}
+            style={{ width: "120px" }}
+          />
+          <Column
+            field="amount"
+            header="Monto"
+            body={(rowData: DetailsDto) => formatCurrency(rowData.amount)}
+            style={{ width: "150px" }}
+            bodyClassName="text-right"
+          />
+        </DataTable>
+      </div>
+    );
+  };
+
+  const onRowToggle = (e: any) => {
+    setExpandedRows(e.data);
+  };
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="d-flex gap-2">
+
+
+      <Card>
+        <div className="text-end pt-3 mb-2" style={{ marginTop: "-10px" }}>
           <Button
             label="Nuevo Comprobante"
-            icon="pi pi-file-edit"
-            className="btn btn-primary"
+            className="p-button-primary"
             onClick={() => (window.location.href = "CrearComprobantesContable")}
-          />
+
+          >
+            <i className="fas fa-plus me-2"></i>
+          </Button>
         </div>
-      </div>
+        <Accordion>
+          <AccordionTab header="Filtros de Búsqueda">
+            <div className="row g-3">
+              <div className="col-md-3">
+                <label className="form-label">Fechas</label>
+                <Calendar
+                  value={dates}
+                  onChange={handleDateChange}
+                  appendTo={document.body}
+                  dateFormat="dd/mm/yy"
+                  placeholder="Seleccione rango de fechas"
+                  className="w-100"
+                  showIcon
+                  selectionMode="range"
+                  readOnlyInput
+                  hideOnRangeSelection
+                />
+              </div>
 
-      <Card title="Filtros de Búsqueda" className="mb-4">
-        <div className="row g-3">
-          <div className="col-md-4">
-            <label className="form-label">Fechas</label>
-            <Calendar
-              value={dates}
-              onChange={(e: any) => setDates(e.value)}
-              appendTo={document.body}
-              dateFormat="dd/mm/yy"
-              placeholder="Seleccione fecha"
-              className="w-100"
-              showIcon
-              selectionMode="range"
-              readOnlyInput
-              hideOnRangeSelection
-            />
-          </div>
+              <div className="col-md-3">
+                <label className="form-label">N° Comprobante</label>
+                <InputText
+                  value={filtros.numeroComprobante}
+                  onChange={(e) => setFiltros({ ...filtros, numeroComprobante: e.target.value })}
+                  placeholder="Buscar por número"
+                  className="w-100"
+                />
+              </div>
 
-          <div className="col-md-4">
-            <label className="form-label">N° Comprobante</label>
-            <InputText
-              value={filtros.numeroComprobante}
-              onChange={(e) =>
-                setFiltros({ ...filtros, numeroComprobante: e.target.value })
-              }
-              placeholder="Buscar por número"
-              className="w-100"
-            />
-          </div>
+              <div className="col-md-3">
+                <label className="form-label">Código Contable</label>
+                <InputText
+                  value={filtros.codigoContable}
+                  onChange={(e) => setFiltros({ ...filtros, codigoContable: e.target.value })}
+                  placeholder="Buscar por código"
+                  className="w-100"
+                />
+              </div>
 
-          <div className="col-md-4">
-            <label className="form-label">Código Contable</label>
-            <InputText
-              value={filtros.codigoContable}
-              onChange={(e) =>
-                setFiltros({ ...filtros, codigoContable: e.target.value })
-              }
-              placeholder="Buscar por código"
-              className="w-100"
-            />
-          </div>
-        </div>
-      </Card>
+              <div className="col-md-3 d-flex align-items-end gap-2">
+                <Button
+                  label="Aplicar Filtros"
+                  icon="pi pi-search"
+                  className="p-button-primary"
+                  onClick={handleAplicarFiltros}
+                />
+                <Button
+                  label="Limpiar"
+                  icon="pi pi-filter-slash"
+                  className="p-button-secondary"
+                  onClick={limpiarFiltros}
+                />
+              </div>
+            </div>
+          </AccordionTab>
+        </Accordion>
 
-      <Card title="Comprobantes Contables">
         {loading ? (
           <div className="text-center p-5">
             <i
@@ -438,54 +501,50 @@ export const AccountingVouchers: React.FC = () => {
           </div>
         ) : (
           <>
-            <Accordion multiple>
-              {vouchers.map((voucher) => (
-                <AccordionTab
-                  key={voucher.id}
-                  header={voucherTemplate(voucher)}
-                >
-                  <DataTable
-                    value={voucher.details}
-                    className="p-datatable-gridlines custom-datatable"
-                    stripedRows
-                    size="small"
-                  >
-                    <Column
-                      field={`full_name`}
-                      header="Tercero"
-                      style={{ width: "130px" }}
-                    />
-                    <Column
-                      field="accounting_account.name"
-                      header="Cuenta contable"
-                      style={{ width: "130px" }}
-                    />
-                    <Column
-                      field="description"
-                      header="Descripción"
-                      style={{ width: "130px" }}
-                    />
-                    <Column
-                      field="type"
-                      header="Tipo"
-                      body={(rowData: DetailsDto) =>
-                        formatTypeMovement(rowData.type)
-                      }
-                      style={{ width: "120px" }}
-                      bodyClassName="text-right"
-                    />
-                    <Column
-                      field="amount"
-                      header="Monto"
-                      body={(rowData: DetailsDto) =>
-                        formatCurrency(rowData.amount)
-                      }
-                      style={{ width: "120px" }}
-                    />
-                  </DataTable>
-                </AccordionTab>
-              ))}
-            </Accordion>
+            <DataTable
+              value={vouchers}
+              expandedRows={expandedRows}
+              onRowToggle={onRowToggle}
+              rowExpansionTemplate={rowExpansionTemplate}
+              dataKey="id"
+              className="p-datatable-gridlines"
+              stripedRows
+              size="small"
+              emptyMessage="No se encontraron comprobantes"
+            >
+              <Column
+                expander
+                style={{ width: '3rem' }}
+              />
+              <Column
+                field="seat_number"
+                header="N° Comprobante"
+                style={{ width: "120px" }}
+              />
+              <Column
+                field="seat_date"
+                header="Fecha"
+                body={(rowData: AccountingVoucherDto) => formatDate(rowData.seat_date)}
+                style={{ width: "120px" }}
+              />
+              <Column
+                field="total_is"
+                header="Total"
+                body={(rowData: AccountingVoucherDto) => formatCurrency(rowData.total_is)}
+                style={{ width: "130px" }}
+              />
+              <Column
+                field="description"
+                header="Descripción"
+                style={{ minWidth: "200px" }}
+              />
+              <Column
+                header="Acciones"
+                body={actionsTemplate}
+                style={{ width: "150px" }}
+                align="center"
+              />
+            </DataTable>
 
             <div className="mt-3">
               <Paginator
@@ -504,7 +563,7 @@ export const AccountingVouchers: React.FC = () => {
         visible={editModalVisible}
         header="Editar Comprobante"
         onHide={() => setEditModalVisible(false)}
-        style={{ width: "90vw", height: "100vh", maxHeight: "100vh" }}
+        style={{ width: "90vw", height: "85vh", maxHeight: "100vh" }}
         modal
         closable={true}
       >

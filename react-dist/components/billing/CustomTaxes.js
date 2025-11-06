@@ -83,11 +83,15 @@ export const CustomTaxes = ({
     className: "pi pi-chart-line me-2 text-primary"
   }), "Impuestos Adicionales (DOP)"), /*#__PURE__*/React.createElement(Button, {
     type: "button",
-    icon: "pi pi-plus",
     label: "Agregar impuesto",
-    className: "btn btn-primary",
+    className: "p-btn-primary",
     onClick: handleAddTax
-  })), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-donate",
+    style: {
+      marginLeft: "10px"
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "card-body"
   }, /*#__PURE__*/React.createElement("div", {
     className: "taxes-section"

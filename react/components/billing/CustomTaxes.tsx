@@ -5,7 +5,7 @@ import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 
 export interface TaxItem {
   id: string;
-  tax: any; 
+  tax: any;
   percentage: number;
   value: number;
 }
@@ -34,27 +34,27 @@ export const CustomTaxes: React.FC<TaxesSectionProps> = ({
 
   const calculateTaxValue = (taxItem: TaxItem) => {
     const base = calculateBaseAmount();
-    
+
     if (taxItem.tax && taxItem.tax.specificLogic) {
       const productsFiltered = productsArray
         .filter((item: any) => item.taxChargeId === taxItem.tax.id)
         .reduce((total, product: any) => {
           const productSubtotal = product.quantity * product.price;
-          
+
           let discount = 0;
           if (product.discountType === "percentage") {
             discount = productSubtotal * (product.discount / 100);
           } else {
             discount = product.discount;
           }
-          
+
           const subtotalAfterDiscount = productSubtotal - discount;
           return total + subtotalAfterDiscount;
         }, 0);
-      
+
       return (productsFiltered * (taxItem.percentage || 0)) / 100;
     }
-    
+
     return (base * (taxItem.percentage || 0)) / 100;
   };
 
@@ -114,11 +114,13 @@ export const CustomTaxes: React.FC<TaxesSectionProps> = ({
         </h2>
         <Button
           type="button"
-          icon="pi pi-plus"
           label="Agregar impuesto"
-          className="btn btn-primary"
+          className="p-btn-primary"
           onClick={handleAddTax}
-        />
+        >
+          <i className="fas fa-donate" style={{ marginLeft: "10px" }}></i>
+
+        </Button>
       </div>
       <div className="card-body">
         <div className="taxes-section">

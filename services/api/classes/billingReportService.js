@@ -47,6 +47,24 @@ export class BillingReportService extends BaseApiService {
         return await this.httpClient.get(`api/v1/admin/libro-diario?${params.toString()}`);
     }
 
+    async getBalanceThirdParty({ from, to, third_party_id, account_from, account_to }) {
+        const params = new URLSearchParams();
+        if (from) params.append('start_date', from);
+        if (to) params.append('end_date', to);
+        if (third_party_id) params.append('third_party_id', third_party_id);
+        if (account_from) params.append('account_from', account_from);
+        if (account_to) params.append('account_to', account_to);
+        return await this.httpClient.get(`api/v1/admin/reports/trial-balance-third-party?${params.toString()}`);
+    }
+
+    async getBalanceAccountingAccount({ from, to, accounting_account_id }) {
+        const params = new URLSearchParams();
+        if (from) params.append('start_date', from);
+        if (to) params.append('end_date', to);
+        if (accounting_account_id) params.append('account_id', accounting_account_id);
+        return await this.httpClient.get(`api/v1/admin/reports/trial-balance-account?${params.toString()}`);
+    }
+
     async getAccountingEntries() {
         return await this.httpClient.get(`api/v1/admin/general-ledger-entries`);
     }

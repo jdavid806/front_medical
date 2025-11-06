@@ -9,12 +9,12 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
+import { Menu } from "primereact/menu";
 import { useThirdParties } from "../third-parties/hooks/useThirdParties.js";
 import { usePaymentMethods } from "../../payment-methods/hooks/usePaymentMethods.js";
 import { useProductTypes } from "../../product-types/hooks/useProductTypes.js";
 import { useUsers } from "../../users/hooks/useUsers.js";
 import { useCentresCosts } from "../../centres-cost/hooks/useCentresCosts.js";
-import { SplitButton } from "primereact/splitbutton";
 import MedicationFormModal from "../../inventory/medications/MedicationFormModal.js";
 import SupplyFormModal from "../../inventory/supply/SupplyFormModal.js";
 import VaccineFormModal from "../../inventory/vaccine/VaccineFormModal.js";
@@ -31,11 +31,13 @@ import { CustomTaxes } from "../../components/billing/CustomTaxes.js";
 import FixedAssetsForm from "../../accounting/fixedAssets/form/FixedAssetsForm.js";
 import { useAssetCategories } from "../../accounting/fixedAssets/hooks/useAssetCategories.js";
 import { useTaxes } from "../../invoices/hooks/useTaxes.js";
+import { Dialog } from "primereact/dialog";
+import { FormAdvanceCopy } from "../sales_billing/modal/FormAdvanceCopy.js";
 import { useAdvancePayments } from "../hooks/useAdvancePayments.js";
 import { useBillingByType } from "../hooks/useBillingByType.js";
 import { InventariableFormModal } from "../../inventory/inventariable/InventariableFormModal.js";
 import { SwalManager } from "../../../services/alertManagerImported.js";
-import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal.js"; // Componentes memoizados para las columnas
+import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal.js"; // Componentes memoizados para las columnas (se mantienen igual)
 const TypeColumnBody = /*#__PURE__*/React.memo(({
   control,
   productIndex,
@@ -71,7 +73,7 @@ const TypeColumnBody = /*#__PURE__*/React.memo(({
       optionValue: "id",
       filter: true,
       placeholder: "Seleccione Tipo",
-      className: "w-100",
+      className: "w-100 dropdown-billing-product",
       onChange: e => {
         field.onChange(e.value);
       },
@@ -83,7 +85,7 @@ const ProductColumnBody = /*#__PURE__*/React.memo(({
   control,
   productIndex,
   disabled,
-  setValue // ← Agregar esta prop
+  setValue
 }) => {
   const typeProduct = useWatch({
     control,
@@ -170,19 +172,13 @@ const ProductColumnBody = /*#__PURE__*/React.memo(({
       optionLabel: "label",
       optionValue: "id",
       placeholder: "Seleccione Producto",
-      className: "w-100",
+      className: "w-100 dropdown-billing-products",
+      filter: true,
       onChange: e => {
         const selectedOption = options.find(opt => opt.id === e.value);
-
-        // Actualizar el producto ID
         field.onChange(e.value);
-
-        // Actualizar la cuenta contable y descripción
         if (selectedOption) {
-          // Actualizar accountingAccount
           setValue(`products.${productIndex}.accountingAccount`, selectedOption.accountingAccount);
-
-          // Actualizar descripción
           if (selectedOption.label) {
             setValue(`products.${productIndex}.description`, selectedOption.label);
           }
@@ -209,11 +205,7 @@ const QuantityColumnBody = /*#__PURE__*/React.memo(({
     name: `products.${productIndex}.lotInfo`
   });
   const isLotProduct = ["medications", "vaccines"].includes(typeProduct);
-
-  // Calcular cantidad para productos con lotes
   const calculatedQuantity = isLotProduct ? (lotInfo || []).reduce((sum, lot) => sum + (Number(lot.quantity) || 0), 0) : 0;
-
-  // Para productos sin lotes, usar el valor del campo directamente
   const displayValue = isLotProduct ? calculatedQuantity : undefined;
   return /*#__PURE__*/React.createElement(Controller, {
     name: `products.${productIndex}.quantity`,
@@ -227,11 +219,15 @@ const QuantityColumnBody = /*#__PURE__*/React.memo(({
       min: 0,
       readOnly: isLotProduct,
       onValueChange: isLotProduct ? undefined : e => {
-        // Asegurarse de que solo pasamos el valor numérico
         const newValue = e.value !== null && e.value !== undefined ? Number(e.value) : 0;
         field.onChange(newValue);
       },
-      disabled: disabled
+      disabled: disabled,
+      inputClassName: "form-control",
+      mode: "decimal",
+      minFractionDigits: 0,
+      maxFractionDigits: 2,
+      useGrouping: false
     })
   });
 });
@@ -246,19 +242,16 @@ const PriceColumnBody = /*#__PURE__*/React.memo(({
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputNumber, {
-      value: field.value || 0 // ← Asegurar que nunca sea null/undefined
-      ,
+      value: field.value || 0,
       placeholder: "Precio",
-      className: "w-100",
+      className: "w-100 price-input",
       mode: "currency",
       currency: "DOP",
-      style: {
-        maxWidth: "300px"
-      },
       locale: "es-DO",
       min: 0,
       onValueChange: e => field.onChange(e.value),
-      disabled: disabled
+      disabled: disabled,
+      inputClassName: "form-control"
     })
   });
 });
@@ -272,7 +265,7 @@ const DiscountColumnBody = /*#__PURE__*/React.memo(({
     name: `products.${productIndex}.discountType`
   });
   return /*#__PURE__*/React.createElement("div", {
-    className: "d-flex align-items-center gap-1"
+    className: "d-flex gap-1 align-items-center"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: `products.${productIndex}.discountType`,
     control: control,
@@ -290,12 +283,11 @@ const DiscountColumnBody = /*#__PURE__*/React.memo(({
       optionLabel: "label",
       optionValue: "value",
       onChange: e => field.onChange(e.value),
-      className: "discount-type-selector",
+      className: "dropdown-billing-discount",
       style: {
-        width: "60px",
-        minWidth: "60px"
+        width: "100px",
+        minWidth: "100px"
       },
-      size: "small",
       disabled: disabled
     }))
   }), /*#__PURE__*/React.createElement(Controller, {
@@ -304,11 +296,11 @@ const DiscountColumnBody = /*#__PURE__*/React.memo(({
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(InputNumber, {
-      value: field.value || 0 // ← Asegurar valor por defecto
-      ,
+      value: field.value || 0,
       placeholder: discountType === "percentage" ? "0" : "0.00",
-      className: "flex-grow-1",
+      className: "flex-grow-1 w-100",
       suffix: discountType === "percentage" ? "%" : "",
+      prefix: discountType === "fixed" ? "$ " : "",
       mode: discountType === "fixed" ? "currency" : "decimal",
       currency: discountType === "fixed" ? "DOP" : undefined,
       locale: "es-DO",
@@ -316,9 +308,7 @@ const DiscountColumnBody = /*#__PURE__*/React.memo(({
       max: discountType === "percentage" ? 100 : undefined,
       onValueChange: e => field.onChange(e.value),
       disabled: disabled,
-      style: {
-        minWidth: "85px"
-      }
+      inputClassName: "form-control"
     })
   }));
 });
@@ -337,16 +327,11 @@ const IvaColumnBody = /*#__PURE__*/React.memo(({
     render: ({
       field
     }) => {
-      // Función para encontrar el impuesto seleccionado
       const findSelectedTax = () => {
         if (!field.value) return null;
-
-        // Si field.value es un objeto (ya tiene el impuesto completo)
         if (typeof field.value === "object" && field.value !== null) {
           return field.value;
         }
-
-        // Si field.value es solo el porcentaje, buscar el impuesto correspondiente
         if (typeof field.value === "number") {
           return taxes.find(tax => tax.percentage === field.value);
         }
@@ -358,13 +343,12 @@ const IvaColumnBody = /*#__PURE__*/React.memo(({
         options: taxes,
         optionLabel: option => `${option.name} - ${Math.floor(option.percentage)}%`,
         placeholder: "Seleccione IVA",
-        className: "w-100",
+        className: "w-100 dropdown-billing-products",
         onChange: e => {
-          // Guardar el objeto completo del impuesto
           field.onChange(e.value);
         },
         onClear: () => {
-          field.onChange(0); // O null, dependiendo de lo que prefieras
+          field.onChange(0);
         },
         appendTo: document.body,
         disabled: disabled || loadingTaxes,
@@ -391,7 +375,7 @@ const DepositColumnBody = /*#__PURE__*/React.memo(({
       optionLabel: "name",
       optionValue: "id",
       placeholder: "Seleccione dep\xF3sito",
-      className: "w-100",
+      className: "w-100 dropdown-billing-products",
       onChange: e => {
         field.onChange(e.value);
       },
@@ -453,17 +437,11 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
   };
   const shouldShowFixedAssetForm = product?.typeProduct === "assets" && product?.isExpanded;
   const shouldShowLotForm = (product?.typeProduct === "medications" || product?.typeProduct === "vaccines") && product?.isExpanded;
-
-  // Determinar si mostrar la columna de depósito
   const shouldShowDepositColumn = !["medications", "vaccines"].includes(product?.typeProduct);
-
-  // Calcular el valor total para este producto
   const calculateLineTotalForProduct = productData => {
     const actualQuantity = ["medications", "vaccines"].includes(productData.typeProduct) ? (productData.lotInfo || []).reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(productData.quantity) || 0;
     const price = Number(productData.price) || 0;
     const discount = Number(productData.discount) || 0;
-
-    // Manejar tanto objeto como número para el impuesto
     let taxRate = 0;
     if (productData.tax) {
       if (typeof productData.tax === "object" && productData.tax !== null) {
@@ -525,7 +503,10 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
     body: () => /*#__PURE__*/React.createElement(TypeColumnBody, {
       control: control,
       productIndex: productIndex
-    })
+    }),
+    style: {
+      minWidth: "220px"
+    }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "product",
     header: "Producto",
@@ -533,7 +514,10 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
       control: control,
       productIndex: productIndex,
       setValue: setValue
-    })
+    }),
+    style: {
+      minWidth: "180px"
+    }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "quantity",
     header: "Cantidad",
@@ -542,7 +526,7 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
       productIndex: productIndex
     }),
     style: {
-      minWidth: "90px"
+      minWidth: "50px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "price",
@@ -552,7 +536,7 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
       productIndex: productIndex
     }),
     style: {
-      maxWidth: "150px"
+      minWidth: "150px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "discount",
@@ -593,17 +577,15 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
       return /*#__PURE__*/React.createElement(InputNumber, {
         value: total,
         mode: "currency",
-        style: {
-          maxWidth: "300px"
-        },
         className: "w-100",
         currency: "DOP",
         locale: "es-DO",
-        readOnly: true
+        readOnly: true,
+        inputClassName: "form-control bg-light"
       });
     },
     style: {
-      minWidth: "300px"
+      minWidth: "150px"
     }
   }), /*#__PURE__*/React.createElement(Column, {
     field: "actions",
@@ -616,7 +598,7 @@ const ProductAccordion = /*#__PURE__*/React.memo(({
       className: "fa-solid fa-trash"
     })),
     style: {
-      width: "120px",
+      width: "100px",
       textAlign: "center"
     }
   })), shouldShowLotForm && /*#__PURE__*/React.createElement("div", {
@@ -739,6 +721,7 @@ export const PurchaseBilling = ({
   });
   const toast = useRef(null);
   const productsArray = watch("products") || [];
+  const menuRef = useRef(null);
   const [taxes, setTaxes] = useState([]);
   const {
     taxes: availableTaxes,
@@ -822,6 +805,29 @@ export const PurchaseBilling = ({
     value: null
   }]);
   const [purchaseOrderId, setPurchaseOrderId] = useState(0);
+
+  // Menu items para el botón de agregar
+  const menuItems = [{
+    label: 'Insumo',
+    icon: 'pi pi-plus',
+    command: () => setShowInsumoModal(true)
+  }, {
+    label: 'Vacuna',
+    icon: 'pi pi-plus',
+    command: () => setShowVaccineModal(true)
+  }, {
+    label: 'Medicamento',
+    icon: 'pi pi-plus',
+    command: () => setShowMedicamentoModal(true)
+  }, {
+    label: 'Inventariable',
+    icon: 'pi pi-plus',
+    command: () => setShowInventariableModal(true)
+  }, {
+    label: 'Marca',
+    icon: 'pi pi-plus',
+    command: () => setShowBrandFormModal(true)
+  }];
   useEffect(() => {
     if (purchaseOrder || supplierId) {
       fetchAdvancePayments(purchaseOrder?.third_id || supplierId, "provider");
@@ -932,8 +938,6 @@ export const PurchaseBilling = ({
     const actualQuantity = ["medications", "vaccines"].includes(product.typeProduct) ? (product.lotInfo || []).reduce((sum, lot) => sum + (lot.quantity || 0), 0) : Number(product.quantity) || 0;
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
-
-    // Manejar tanto objeto como número para el impuesto
     let taxRate = 0;
     if (product.tax) {
       if (typeof product.tax === "object" && product.tax !== null) {
@@ -995,8 +999,6 @@ export const PurchaseBilling = ({
         discountAmount = product.discount;
       }
       const subtotalAfterDiscount = subtotal - discountAmount;
-
-      // Manejar tanto objeto como número para el impuesto
       let taxRate = 0;
       if (product.tax) {
         if (typeof product.tax === "object" && product.tax !== null) {
@@ -1139,14 +1141,11 @@ export const PurchaseBilling = ({
   };
   const handleSaveExpiration = data => {
     if (productForExpiration) {
-      // Lógica para guardar la información de expiración
-      // Por ejemplo, actualizar el producto correspondiente
       const currentProducts = getValues("products") || [];
       const updatedProducts = currentProducts.map(product => {
         if (product.id === productForExpiration.id) {
           return {
             ...product,
-            // Aquí actualizas con los datos del lote
             lotInfo: [...(product.lotInfo || []), data]
           };
         }
@@ -1384,31 +1383,6 @@ export const PurchaseBilling = ({
       });
     });
   };
-  const saveAndSend = async formData => {
-    const invoiceData = await buildInvoiceData(formData);
-    invoiceService.storePurcharseInvoice(invoiceData).then(response => {
-      if (purchaseOrderId) {
-        onClose();
-      }
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Factura de compra guardada correctamente",
-        life: 3000
-      });
-      setTimeout(() => {
-        window.location.href = `FE_FCE`;
-      }, 2000);
-    }).catch(error => {
-      console.error("Error al guardar la factura de compra:", error);
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message,
-        life: 3000
-      });
-    });
-  };
   const {
     openModal: openThirdPartyModal,
     ThirdPartyModal
@@ -1420,27 +1394,13 @@ export const PurchaseBilling = ({
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid p-3 p-md-4"
   }, /*#__PURE__*/React.createElement(ThirdPartyModal, null), /*#__PURE__*/React.createElement("div", {
-    className: "row mb-3 mb-md-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card shadow-sm"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "card-body p-3 p-md-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", {
-    className: "h4 h3-md mb-0 text-primary"
-  }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-file-invoice me-2"
-  }), "Crear nueva factura de compra"))))))), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement("form", {
     onSubmit: handleSubmit(save)
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header bg-light p-3"
   }, /*#__PURE__*/React.createElement("h2", {
@@ -1448,15 +1408,15 @@ export const PurchaseBilling = ({
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-user-edit me-2 text-primary"
   }), "Informaci\xF3n b\xE1sica")), /*#__PURE__*/React.createElement("div", {
-    className: "card-body p-3 p-md-4"
+    className: "card-body p-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-2 g-md-3"
+    className: "row g-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "N\xFAmero de factura *"), /*#__PURE__*/React.createElement(Controller, {
     name: "invoiceNumber",
     control: control,
@@ -1464,15 +1424,14 @@ export const PurchaseBilling = ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       placeholder: "N\xFAmero de factura",
-      className: "w-100",
-      size: "small"
+      className: "w-100 form-control"
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Tipo de documento *"), /*#__PURE__*/React.createElement(Controller, {
     name: "documentType",
     control: control,
@@ -1487,17 +1446,17 @@ export const PurchaseBilling = ({
         value: "documento_soporte"
       }],
       placeholder: "Seleccione tipo",
-      className: "w-100",
+      className: "w-100 dropdown-billing",
       appendTo: "self",
       disabled: disabledInputs,
       showClear: true
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "# Comprobante fiscal *"), /*#__PURE__*/React.createElement(Controller, {
     name: "fiscalVoucher",
     control: control,
@@ -1505,16 +1464,15 @@ export const PurchaseBilling = ({
       field
     }) => /*#__PURE__*/React.createElement(InputText, _extends({}, field, {
       placeholder: "N\xFAmero de comprobante fiscal",
-      className: "w-100",
-      disabled: disabledInputs,
-      size: "small"
+      className: "w-100 form-control",
+      disabled: disabledInputs
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Fecha de elaboraci\xF3n *"), /*#__PURE__*/React.createElement(Controller, {
     name: "elaborationDate",
     control: control,
@@ -1526,14 +1484,15 @@ export const PurchaseBilling = ({
       showIcon: true,
       dateFormat: "dd/mm/yy",
       appendTo: "self",
-      disabled: disabledInputs
+      disabled: disabledInputs,
+      inputClassName: "form-control"
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Fecha vencimiento *"), /*#__PURE__*/React.createElement(Controller, {
     name: "expirationDate",
     control: control,
@@ -1545,45 +1504,46 @@ export const PurchaseBilling = ({
       showIcon: true,
       dateFormat: "dd/mm/yy",
       appendTo: "self",
-      disabled: disabledInputs
+      disabled: disabledInputs,
+      inputClassName: "form-control"
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Proveedor *"), /*#__PURE__*/React.createElement(Controller, {
     name: "supplier",
     control: control,
     render: ({
       field
     }) => /*#__PURE__*/React.createElement("div", {
-      className: "d-flex gap-1"
+      className: "d-flex gap-2"
     }, /*#__PURE__*/React.createElement(Dropdown, _extends({}, field, {
       filter: true,
       options: thirdParties,
       optionLabel: "name",
       optionValue: "id",
       placeholder: "Seleccione proveedor",
-      className: "flex-grow-1",
+      className: "flex-grow-1 dropdown-billing",
       appendTo: "self",
-      disabled: disabledInputs
+      disabled: disabledInputs,
+      showClear: true
     })), /*#__PURE__*/React.createElement(Button, {
       type: "button",
       onClick: openThirdPartyModal,
       icon: /*#__PURE__*/React.createElement("i", {
         className: "fa-solid fa-plus"
       }),
-      className: "p-button-primary",
-      size: "small"
+      className: "p-button-primary"
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Centro de costo *"), /*#__PURE__*/React.createElement(Controller, {
     name: "costCenter",
     control: control,
@@ -1595,16 +1555,17 @@ export const PurchaseBilling = ({
       optionLabel: "name",
       optionValue: "id",
       placeholder: "Seleccione centro",
-      className: "w-100",
+      className: "w-100 dropdown-billing",
       appendTo: "self",
-      disabled: disabledInputs
+      disabled: disabledInputs,
+      showClear: true
     }))
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6 col-lg-4"
+    className: "col-12 col-md-4"
   }, /*#__PURE__*/React.createElement("div", {
     className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Comprador *"), /*#__PURE__*/React.createElement(Controller, {
     name: "buyer",
     control: control,
@@ -1616,47 +1577,52 @@ export const PurchaseBilling = ({
       optionLabel: "full_name",
       optionValue: "id",
       placeholder: "Seleccione comprador",
-      className: "w-100",
+      className: "w-100 dropdown-billing",
       appendTo: "self",
-      disabled: disabledInputs
+      disabled: disabledInputs,
+      showClear: true
     }))
   })))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light p-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
+    className: "card-header bg-light d-flex justify-content-between align-items-center p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-shopping-cart me-2 text-primary"
-  }), "Productos/Servicios"), /*#__PURE__*/React.createElement(SplitButton, {
-    label: "A\xF1adir producto",
-    icon: "pi pi-plus",
-    model: [{
-      label: "Insumo",
-      command: () => setShowInsumoModal(true)
-    }, {
-      label: "Vacuna",
-      command: () => setShowVaccineModal(true)
-    }, {
-      label: "Medicamento",
-      command: () => setShowMedicamentoModal(true)
-    }, {
-      label: "Inventariable",
-      command: () => setShowInventariableModal(true)
-    }, {
-      label: "Marca",
-      command: () => setShowBrandFormModal(true)
-    }],
-    severity: "contrast",
-    onClick: addProduct,
-    disabled: loadingProductTypes || disabledInputs,
-    size: "small"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "card-body p-2 p-md-3"
+  }), "Productos/Servicios"), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex gap-2"
+  }, /*#__PURE__*/React.createElement(Menu, {
+    model: menuItems,
+    popup: true,
+    ref: menuRef,
+    id: "add_product_menu"
+  }), /*#__PURE__*/React.createElement(Button, {
+    type: "button",
+    className: "p-button-primary",
+    onClick: e => menuRef.current?.toggle(e),
+    "aria-controls": "add_product_menu",
+    "aria-haspopup": true,
+    tooltip: "Opciones de producto"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-chevron-down"
+  })), /*#__PURE__*/React.createElement(Button, {
+    label: "A\xF1adir Producto",
+    className: "p-button-primary",
+    onClick: e => {
+      e.preventDefault();
+      addProduct();
+    },
+    disabled: loadingProductTypes || disabledInputs
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-shopping-cart me-2",
+    style: {
+      marginLeft: "10px"
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "card-body p-0"
   }, loadingProductTypes ? /*#__PURE__*/React.createElement("div", {
-    className: "text-center py-4"
+    className: "text-center py-5"
   }, /*#__PURE__*/React.createElement("div", {
     className: "spinner-border text-primary",
     role: "status"
@@ -1665,7 +1631,9 @@ export const PurchaseBilling = ({
   }, "Cargando...")), /*#__PURE__*/React.createElement("p", {
     className: "mt-2 text-muted"
   }, "Cargando productos...")) : /*#__PURE__*/React.createElement("div", {
-    className: "product-accordion"
+    className: "table-responsive"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "product-accordion p-3"
   }, productsArray.map((product, index) => /*#__PURE__*/React.createElement(ProductAccordion, {
     key: `product-${product.id}`,
     control: control,
@@ -1678,8 +1646,8 @@ export const PurchaseBilling = ({
     onSaveEditedLot: handleSaveEditedLot,
     editingLot: editingLot,
     setValue: setValue
-  }))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+  })))))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement(RetentionsSection, {
     subtotal: calculateSubtotal(),
     totalDiscount: calculateTotalDiscount(),
@@ -1687,7 +1655,7 @@ export const PurchaseBilling = ({
     onRetentionsChange: setRetentions,
     productsArray: productsArray
   })), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement(CustomTaxes, {
     subtotal: calculateSubtotal(),
     totalDiscount: calculateTotalDiscount(),
@@ -1696,58 +1664,67 @@ export const PurchaseBilling = ({
     productsArray: productsArray,
     taxOptions: availableTaxes
   })), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "card-header bg-light p-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
+    className: "card-header bg-light d-flex justify-content-between align-items-center p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-credit-card me-2 text-primary"
-  }), "M\xE9todo de pago (DOP)"), /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-plus",
-    label: "Agregar m\xE9todo",
-    className: "btn-primary",
-    onClick: addPayment,
-    size: "small"
+  }), "M\xE9todos de Pago (DOP)"), /*#__PURE__*/React.createElement(Button, {
+    label: "Agregar M\xE9todo",
+    className: "p-button-primary",
+    onClick: e => {
+      e.preventDefault();
+      addPayment();
+    }
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "far fa-credit-card me-2",
+    style: {
+      marginLeft: "10px"
+    }
   }))), /*#__PURE__*/React.createElement("div", {
-    className: "card-body p-2 p-md-3"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "payment-methods-section"
+    className: "card-body p-3"
   }, paymentMethodsArray.map(payment => /*#__PURE__*/React.createElement("div", {
     key: payment.id,
-    className: "payment-method-row mb-3 p-2 border rounded"
+    className: "row g-3 mb-3 align-items-end"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-2 align-items-end"
+    className: "col-12 col-md-4 mb-1"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-4"
+    className: "form-group mb-2 mb-md-0"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "M\xE9todo *"), /*#__PURE__*/React.createElement(Dropdown, {
+    required: true,
     value: payment.method,
     options: filteredPaymentMethods,
     optionLabel: "method",
     optionValue: "id",
     placeholder: "Seleccione m\xE9todo",
-    className: "w-100",
-    onChange: e => handlePaymentChange(payment.id, "method", e.value),
+    className: "w-100 dropdown-billing-retention",
+    onChange: e => {
+      handlePaymentChange(payment.id, "method", e.value);
+    },
     appendTo: "self",
-    size: "small"
-  })), /*#__PURE__*/React.createElement("div", {
+    filter: true,
+    showClear: true
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group mb-2 mb-md-0"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Descripci\xF3n *"), /*#__PURE__*/React.createElement(InputText, {
     value: payment.authorizationNumber,
     placeholder: "Descripci\xF3n",
-    className: "w-100",
-    onChange: e => handlePaymentChange(payment.id, "authorizationNumber", e.target.value),
-    size: "small"
-  })), /*#__PURE__*/React.createElement("div", {
+    className: "w-100 form-control",
+    onChange: e => handlePaymentChange(payment.id, "authorizationNumber", e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12 col-md-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "form-group mb-2 mb-md-0"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, "Valor"), /*#__PURE__*/React.createElement(InputNumber, {
     value: payment.value,
     placeholder: "Ingrese valor",
@@ -1757,13 +1734,11 @@ export const PurchaseBilling = ({
     locale: "es-DO",
     min: 0,
     onValueChange: e => handlePaymentChange(payment.id, "value", e.value || null),
-    size: "small"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-1"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end"
+    inputClassName: "form-control"
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "col-12 col-md-1 text-md-end text-center"
   }, /*#__PURE__*/React.createElement(Button, {
-    className: "btn-danger btn-sm",
+    className: "p-button-rounded p-button-danger p-button-text",
     onClick: () => removePayment(payment.id),
     disabled: paymentMethodsArray.length <= 1,
     tooltip: "Eliminar m\xE9todo",
@@ -1772,103 +1747,104 @@ export const PurchaseBilling = ({
     }
   }, /*#__PURE__*/React.createElement("i", {
     className: "fa-solid fa-trash"
-  }))))))), /*#__PURE__*/React.createElement("div", {
-    className: "payment-summary mt-3"
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "row mt-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `payment-summary-card p-3 border rounded ${!paymentCoverage() ? "border-warning" : "border-success"}`
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-3 align-items-center"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center"
-  }, /*#__PURE__*/React.createElement("strong", {
-    className: "small"
-  }, "Total factura:"), /*#__PURE__*/React.createElement(InputNumber, {
-    value: calculateTotal() || 0,
-    className: "payment-summary-input border-0 bg-transparent text-end",
-    mode: "currency",
-    currency: "DOP",
-    locale: "es-DO",
-    minFractionDigits: 2,
-    maxFractionDigits: 3,
-    readOnly: true,
-    size: "small"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "col-12 col-md-6"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-between align-items-center"
-  }, /*#__PURE__*/React.createElement("strong", {
-    className: "small"
-  }, "Total pagos:"), /*#__PURE__*/React.createElement(InputNumber, {
-    value: calculateTotalPayments(),
-    className: "payment-summary-input border-0 bg-transparent text-end",
-    mode: "currency",
-    currency: "DOP",
-    locale: "es-DO",
-    minFractionDigits: 2,
-    maxFractionDigits: 3,
-    readOnly: true,
-    size: "small"
-  }))), /*#__PURE__*/React.createElement("div", {
     className: "col-12"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `text-center p-2 rounded ${!paymentCoverage() ? "bg-warning-light" : "bg-success-light"}`
+    className: "alert alert-info p-3",
+    style: {
+      background: "rgb(194 194 194 / 85%)",
+      border: "none",
+      color: "black"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center flex-wrap"
+  }, /*#__PURE__*/React.createElement("strong", {
+    className: "me-2"
+  }, "Total factura:"), /*#__PURE__*/React.createElement(InputNumber, {
+    value: calculateTotal() || 0,
+    className: "me-3",
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    minFractionDigits: 2,
+    maxFractionDigits: 3,
+    readOnly: true,
+    inputClassName: "form-control bg-white",
+    style: {
+      minWidth: "130px"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center flex-wrap"
+  }, /*#__PURE__*/React.createElement("strong", {
+    className: "me-2"
+  }, "Total pagos:"), /*#__PURE__*/React.createElement(InputNumber, {
+    value: calculateTotalPayments(),
+    className: "me-3",
+    mode: "currency",
+    currency: "DOP",
+    locale: "es-DO",
+    minFractionDigits: 2,
+    maxFractionDigits: 3,
+    readOnly: true,
+    inputClassName: "form-control bg-white",
+    style: {
+      minWidth: "130px"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "d-flex align-items-center"
   }, !paymentCoverage() ? /*#__PURE__*/React.createElement("span", {
-    className: "text-warning-dark small fw-bold"
+    className: "text-danger"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-exclamation-triangle me-2"
-  }), "Faltan", " ", ((calculateTotal() || 0) - (calculateTotalPayments() || 0)).toFixed(2), " ", "DOP") : /*#__PURE__*/React.createElement("span", {
-    className: "text-success-dark small fw-bold"
+    className: "pi pi-exclamation-triangle me-1"
+  }), "Faltan", " ", ((calculateTotal() || 0) - calculateTotalPayments()).toFixed(2), " ", "DOP") : /*#__PURE__*/React.createElement("span", {
+    className: "text-success"
   }, /*#__PURE__*/React.createElement("i", {
-    className: "pi pi-check-circle me-2"
-  }), "Pagos completos"))))))))), /*#__PURE__*/React.createElement("div", {
-    className: "card mb-3 mb-md-4 shadow-sm"
+    className: "pi pi-check-circle me-1"
+  }), "Pagos completos")))))))), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header bg-light p-3"
   }, /*#__PURE__*/React.createElement("h2", {
     className: "h5 mb-0"
   }, /*#__PURE__*/React.createElement("i", {
     className: "pi pi-calculator me-2 text-primary"
-  }), "Resumen de compra (DOP)")), /*#__PURE__*/React.createElement("div", {
+  }), "Totales (DOP)")), /*#__PURE__*/React.createElement("div", {
     className: "card-body p-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row g-2 g-md-3"
+    className: "row g-3"
   }, [{
-    label: "SUBTOTAL",
-    value: calculateSubtotal() || 0,
-    highlight: true
+    label: "Subtotal",
+    value: calculateSubtotal() || 0
   }, {
     label: "Descuento",
-    value: calculateTotalDiscount() || 0,
-    highlight: true
+    value: calculateTotalDiscount() || 0
   }, {
     label: "Impuestos productos",
-    value: calculateTotalTax() || 0,
-    highlight: true
+    value: calculateTotalTax() || 0
   }, {
     label: "Impuestos adicionales",
-    value: taxes.reduce((sum, t) => sum + t.value, 0),
-    highlight: false
+    value: taxes.reduce((sum, t) => sum + t.value, 0)
   }, {
     label: "Impuestos totales",
-    value: calculateAllTaxes() || 0,
-    highlight: true
+    value: calculateAllTaxes() || 0
   }, {
     label: "Retenciones",
-    value: retentions.reduce((sum, r) => sum + r.value, 0),
-    highlight: true
+    value: retentions.reduce((sum, r) => sum + r.value, 0)
   }, {
-    label: "TOTAL",
+    label: "Total",
     value: calculateTotal() || 0,
     highlight: true
   }].map((item, index) => /*#__PURE__*/React.createElement("div", {
     key: index,
-    className: "col-12 col-sm-6 col-lg-3"
+    className: "col-6 col-md-3 col-lg-2"
   }, /*#__PURE__*/React.createElement("div", {
-    className: `form-group p-2 rounded ${item.highlight ? "bg-light" : ""}`
+    className: "form-group"
   }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label small fw-bold"
+    className: "form-label"
   }, item.label), /*#__PURE__*/React.createElement(InputNumber, {
     value: item.value,
     className: "w-100",
@@ -1876,38 +1852,18 @@ export const PurchaseBilling = ({
     currency: "DOP",
     locale: "es-DO",
     readOnly: true,
-    size: "small",
-    inputClassName: item.highlight ? "fw-bold text-primary" : ""
+    inputClassName: item.highlight ? "form-control bg-light fw-bold" : "form-control bg-light"
   }))))))), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex flex-column flex-md-row justify-content-end gap-2 mb-4"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "d-flex gap-2 d-md-none"
+    className: "d-flex justify-content-end gap-3 mb-4"
   }, /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar",
-    icon: "pi pi-check",
-    className: "btn-info flex-fill",
-    type: "submit",
-    size: "small"
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Enviar",
-    icon: "pi pi-send",
-    className: "btn-info flex-fill",
-    onClick: handleSubmit(save),
-    disabled: !paymentCoverage(),
-    size: "small"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "d-none d-md-flex gap-3"
-  }, /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar",
-    icon: "pi pi-check",
-    className: "btn-info",
+    label: "Guardar Factura Compra",
+    className: "p-button-primary",
     type: "submit"
-  }), /*#__PURE__*/React.createElement(Button, {
-    label: "Guardar y enviar",
-    icon: "pi pi-send",
-    className: "btn-info",
-    onClick: handleSubmit(save),
-    disabled: !paymentCoverage()
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-save",
+    style: {
+      marginLeft: "10px"
+    }
   })))), /*#__PURE__*/React.createElement(MedicationFormModal, {
     show: showMedicamentoModal,
     onHide: () => setShowMedicamentoModal(false),
@@ -1938,52 +1894,163 @@ export const PurchaseBilling = ({
     handleSubmit: handleSubmitBrand,
     onHide: handleHideBrandFormModal,
     initialData: {}
-  }))), /*#__PURE__*/React.createElement(Toast, {
+  }), /*#__PURE__*/React.createElement(Dialog, {
+    style: {
+      width: "90vw",
+      maxWidth: "800px"
+    },
+    header: "Anticipos",
+    visible: showAdvancesForm,
+    onHide: () => setShowAdvancesForm(false)
+  }, /*#__PURE__*/React.createElement(FormAdvanceCopy, {
+    advances: advances,
+    invoiceTotal: (calculateTotal() - calculateTotalPayments()).toFixed(2),
+    onSubmit: data => {
+      handleSelectAdvances(data);
+    }
+  })))), /*#__PURE__*/React.createElement(Toast, {
     ref: toast
   }), /*#__PURE__*/React.createElement("style", null, `
-        .discount-type-selector .p-dropdown-label {
-          padding: 12px 2px;
-          text-align: center;
-          font-weight: bold;
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         
-        .discount-type-selector .p-dropdown-trigger {
-          width: 1.5rem;
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
         
-        .discount-type-selector {
-          min-width: 60px !important;
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
         }
         
-        .d-flex.align-items-center.gap-1 {
-          align-items: stretch !important;
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
         }
         
-        .d-flex.align-items-center.gap-1 .p-inputnumber {
-          flex: 1;
+        .p-calendar {
+          height: 38px;
         }
         
-        /* Estilos responsive adicionales */
-        .container-fluid {
-          max-width: 100%;
-          overflow-x: hidden;
+        .table-responsive {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
         }
         
-        .card {
-          border: 1px solid #e0e0e0;
+        .p-datatable .p-datatable-thead > tr > th,
+        .p-datatable .p-datatable-tbody > tr > td {
+          padding: 0.5rem;
+          vertical-align: middle;
         }
         
-        .card-header {
-          border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .form-label {
+        .p-datatable .p-column-title {
+          font-weight: 600;
           font-size: 0.875rem;
-          margin-bottom: 0.25rem;
         }
         
-        .p-inputtext, .p-dropdown, .p-calendar, .p-inputnumber {
+        .p-datatable-tbody > tr > td {
+          border: 1px solid #e9ecef;
+        }
+        
+        /* Asegurar que los inputs dentro de la tabla se vean bien */
+        .p-datatable .p-inputtext,
+        .p-datatable .p-dropdown,
+        .p-datatable .p-inputnumber {
+          width: 100%;
           font-size: 0.875rem;
+        }
+        
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+          width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .p-datatable {
+            min-width: 800px;
+          }
+          
+          .p-datatable .p-datatable-thead > tr > th,
+          .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.375rem;
+            font-size: 0.8rem;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+            width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        .p-datatable .p-inputnumber, 
+        .p-datatable .p-dropdown, 
+        .p-datatable .p-calendar {
+          width: 100% !important;
+          min-width: 250px;
+        }
+        
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+
+        .dropdown-billing .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-product .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-products .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-retention .p-dropdown {
+          width: 100%;
         }
       `));
 };

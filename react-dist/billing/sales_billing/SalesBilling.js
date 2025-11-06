@@ -26,6 +26,7 @@ import { Dialog } from "primereact/dialog";
 import { useAdvancePayments } from "../hooks/useAdvancePayments.js";
 import { useBillingByType } from "../hooks/useBillingByType.js";
 import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal.js";
+import { CustomTaxes } from "../../components/billing/CustomTaxes.js";
 export const SalesBilling = ({
   selectedInvoice,
   successSale
@@ -62,6 +63,12 @@ export const SalesBilling = ({
     fetchBillingByType
   } = useBillingByType();
   const [billing, setBilling] = useState(null);
+  const [taxes, setTaxes] = useState([]);
+  const {
+    taxes: availableTaxes,
+    loading: loadingTaxes,
+    fetchTaxes
+  } = useTaxes();
   const invoiceType = watch("type");
   useEffect(() => {
     if (paymentMethods) {
@@ -573,7 +580,8 @@ export const SalesBilling = ({
           notes: ""
         };
       }),
-      ...retentionsValue
+      ...retentionsValue,
+      taxes: taxes
     };
   }
   const {
@@ -821,6 +829,15 @@ export const SalesBilling = ({
     productsArray: productsArray,
     type: "sale"
   }), /*#__PURE__*/React.createElement("div", {
+    className: "card mb-3 mb-md-4 shadow-sm"
+  }, /*#__PURE__*/React.createElement(CustomTaxes, {
+    subtotal: calculateSubtotal(),
+    totalDiscount: calculateTotalDiscount(),
+    taxes: taxes,
+    onTaxesChange: setTaxes,
+    productsArray: productsArray,
+    taxOptions: availableTaxes
+  })), /*#__PURE__*/React.createElement("div", {
     className: "card mb-4 shadow-sm"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-header bg-light d-flex justify-content-between align-items-center p-3"

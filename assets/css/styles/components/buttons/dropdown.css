@@ -89,6 +89,11 @@
     margin-right: 30px !important;
 }
 
+.dropdown-billing-discount.p-dropdown .p-dropdown-trigger{
+    width: 40%;
+    height: 100%;
+}
+
 /*Dropdown Facturas de Ventas Fin */
 
 /*Dropdown Comprobantes Contables Inicia*/

@@ -16,12 +16,12 @@ import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { InputNumber } from "primereact/inputnumber";
 import { classNames } from "primereact/utils";
+import { Menu } from "primereact/menu";
 import { useThirdParties } from "../third-parties/hooks/useThirdParties";
 import { usePaymentMethods } from "../../payment-methods/hooks/usePaymentMethods";
 import { useProductTypes } from "../../product-types/hooks/useProductTypes";
 import { useUsers } from "../../users/hooks/useUsers";
 import { useCentresCosts } from "../../centres-cost/hooks/useCentresCosts";
-import { SplitButton } from "primereact/splitbutton";
 import MedicationFormModal from "../../inventory/medications/MedicationFormModal";
 import SupplyFormModal from "../../inventory/supply/SupplyFormModal";
 import VaccineFormModal from "../../inventory/vaccine/VaccineFormModal";
@@ -68,7 +68,7 @@ import { InventariableFormModal } from "../../inventory/inventariable/Inventaria
 import { SwalManager } from "../../../services/alertManagerImported";
 import { useThirdPartyModal } from "../third-parties/hooks/useThirdPartyModal";
 
-// Componentes memoizados para las columnas
+// Componentes memoizados para las columnas (se mantienen igual)
 const TypeColumnBody = React.memo(
   ({
     control,
@@ -100,7 +100,7 @@ const TypeColumnBody = React.memo(
             optionValue="id"
             filter
             placeholder="Seleccione Tipo"
-            className="w-100"
+            className="w-100 dropdown-billing-product"
             onChange={(e: DropdownChangeEvent) => {
               field.onChange(e.value);
             }}
@@ -117,12 +117,12 @@ const ProductColumnBody = React.memo(
     control,
     productIndex,
     disabled,
-    setValue, // ← Agregar esta prop
+    setValue,
   }: {
     control: Control<any>;
     productIndex: number;
     disabled?: boolean;
-    setValue: any; // ← Agregar esta prop
+    setValue: any;
   }) => {
     const typeProduct = useWatch({
       control,
@@ -244,22 +244,19 @@ const ProductColumnBody = React.memo(
             optionLabel="label"
             optionValue="id"
             placeholder="Seleccione Producto"
-            className="w-100"
+            className="w-100 dropdown-billing-products"
+            filter
             onChange={(e: DropdownChangeEvent) => {
               const selectedOption = options.find((opt) => opt.id === e.value);
 
-              // Actualizar el producto ID
               field.onChange(e.value);
 
-              // Actualizar la cuenta contable y descripción
               if (selectedOption) {
-                // Actualizar accountingAccount
                 setValue(
                   `products.${productIndex}.accountingAccount`,
                   selectedOption.accountingAccount
                 );
 
-                // Actualizar descripción
                 if (selectedOption.label) {
                   setValue(
                     `products.${productIndex}.description`,
@@ -301,15 +298,13 @@ const QuantityColumnBody = React.memo(
 
     const isLotProduct = ["medications", "vaccines"].includes(typeProduct);
 
-    // Calcular cantidad para productos con lotes
     const calculatedQuantity = isLotProduct
       ? (lotInfo || []).reduce(
-          (sum: number, lot: any) => sum + (Number(lot.quantity) || 0),
-          0
-        )
+        (sum: number, lot: any) => sum + (Number(lot.quantity) || 0),
+        0
+      )
       : 0;
 
-    // Para productos sin lotes, usar el valor del campo directamente
     const displayValue = isLotProduct ? calculatedQuantity : undefined;
 
     return (
@@ -327,15 +322,19 @@ const QuantityColumnBody = React.memo(
               isLotProduct
                 ? undefined
                 : (e: any) => {
-                    // Asegurarse de que solo pasamos el valor numérico
-                    const newValue =
-                      e.value !== null && e.value !== undefined
-                        ? Number(e.value)
-                        : 0;
-                    field.onChange(newValue);
-                  }
+                  const newValue =
+                    e.value !== null && e.value !== undefined
+                      ? Number(e.value)
+                      : 0;
+                  field.onChange(newValue);
+                }
             }
             disabled={disabled}
+            inputClassName="form-control"
+            mode="decimal"
+            minFractionDigits={0}
+            maxFractionDigits={2}
+            useGrouping={false}
           />
         )}
       />
@@ -359,16 +358,16 @@ const PriceColumnBody = React.memo(
         control={control}
         render={({ field }) => (
           <InputNumber
-            value={field.value || 0} // ← Asegurar que nunca sea null/undefined
+            value={field.value || 0}
             placeholder="Precio"
-            className="w-100"
+            className="w-100 price-input"
             mode="currency"
             currency="DOP"
-            style={{ maxWidth: "300px" }}
             locale="es-DO"
             min={0}
             onValueChange={(e: any) => field.onChange(e.value)}
             disabled={disabled}
+            inputClassName="form-control"
           />
         )}
       />
@@ -392,7 +391,7 @@ const DiscountColumnBody = React.memo(
     });
 
     return (
-      <div className="d-flex align-items-center gap-1">
+      <div className="d-flex gap-1 align-items-center">
         <Controller
           name={`products.${productIndex}.discountType`}
           control={control}
@@ -407,9 +406,8 @@ const DiscountColumnBody = React.memo(
               optionLabel="label"
               optionValue="value"
               onChange={(e) => field.onChange(e.value)}
-              className="discount-type-selector"
-              style={{ width: "60px", minWidth: "60px" }}
-              size="small"
+              className="dropdown-billing-discount"
+              style={{ width: "100px", minWidth: "100px" }}
               disabled={disabled}
             />
           )}
@@ -420,10 +418,11 @@ const DiscountColumnBody = React.memo(
           control={control}
           render={({ field }) => (
             <InputNumber
-              value={field.value || 0} // ← Asegurar valor por defecto
+              value={field.value || 0}
               placeholder={discountType === "percentage" ? "0" : "0.00"}
-              className="flex-grow-1"
+              className="flex-grow-1 w-100"
               suffix={discountType === "percentage" ? "%" : ""}
+              prefix={discountType === "fixed" ? "$ " : ""}
               mode={discountType === "fixed" ? "currency" : "decimal"}
               currency={discountType === "fixed" ? "DOP" : undefined}
               locale="es-DO"
@@ -431,7 +430,7 @@ const DiscountColumnBody = React.memo(
               max={discountType === "percentage" ? 100 : undefined}
               onValueChange={(e: any) => field.onChange(e.value)}
               disabled={disabled}
-              style={{ minWidth: "85px" }}
+              inputClassName="form-control"
             />
           )}
         />
@@ -457,16 +456,13 @@ const IvaColumnBody = React.memo(
         name={`products.${productIndex}.tax`}
         control={control}
         render={({ field }) => {
-          // Función para encontrar el impuesto seleccionado
           const findSelectedTax = () => {
             if (!field.value) return null;
 
-            // Si field.value es un objeto (ya tiene el impuesto completo)
             if (typeof field.value === "object" && field.value !== null) {
               return field.value;
             }
 
-            // Si field.value es solo el porcentaje, buscar el impuesto correspondiente
             if (typeof field.value === "number") {
               return taxes.find((tax: any) => tax.percentage === field.value);
             }
@@ -483,14 +479,13 @@ const IvaColumnBody = React.memo(
               optionLabel={(option: any) =>
                 `${option.name} - ${Math.floor(option.percentage)}%`
               }
-              placeholder="Seleccione IVA"
-              className="w-100"
+              placeholder="Seleccione Impuesto"
+              className="w-100 dropdown-billing-products"
               onChange={(e: DropdownChangeEvent) => {
-                // Guardar el objeto completo del impuesto
                 field.onChange(e.value);
               }}
               onClear={() => {
-                field.onChange(0); // O null, dependiendo de lo que prefieras
+                field.onChange(0);
               }}
               appendTo={document.body}
               disabled={disabled || loadingTaxes}
@@ -527,7 +522,7 @@ const DepositColumnBody = React.memo(
             optionLabel="name"
             optionValue="id"
             placeholder="Seleccione depósito"
-            className="w-100"
+            className="w-100 dropdown-billing-products"
             onChange={(e: DropdownChangeEvent) => {
               field.onChange(e.value);
             }}
@@ -632,26 +627,23 @@ const ProductAccordion = React.memo(
         product?.typeProduct === "vaccines") &&
       product?.isExpanded;
 
-    // Determinar si mostrar la columna de depósito
     const shouldShowDepositColumn = !["medications", "vaccines"].includes(
       product?.typeProduct
     );
 
-    // Calcular el valor total para este producto
     const calculateLineTotalForProduct = (productData: any): number => {
       const actualQuantity = ["medications", "vaccines"].includes(
         productData.typeProduct
       )
         ? (productData.lotInfo || []).reduce(
-            (sum: number, lot: any) => sum + (lot.quantity || 0),
-            0
-          )
+          (sum: number, lot: any) => sum + (lot.quantity || 0),
+          0
+        )
         : Number(productData.quantity) || 0;
 
       const price = Number(productData.price) || 0;
       const discount = Number(productData.discount) || 0;
 
-      // Manejar tanto objeto como número para el impuesto
       let taxRate = 0;
       if (productData.tax) {
         if (typeof productData.tax === "object" && productData.tax !== null) {
@@ -735,6 +727,7 @@ const ProductAccordion = React.memo(
                     productIndex={productIndex}
                   />
                 )}
+                style={{ minWidth: "220px" }}
               />
               <Column
                 field="product"
@@ -746,6 +739,7 @@ const ProductAccordion = React.memo(
                     setValue={setValue}
                   />
                 )}
+                style={{ minWidth: "180px" }}
               />
               <Column
                 field="quantity"
@@ -756,7 +750,7 @@ const ProductAccordion = React.memo(
                     productIndex={productIndex}
                   />
                 )}
-                style={{ minWidth: "90px" }}
+                style={{ minWidth: "50px" }}
               />
               <Column
                 field="price"
@@ -767,7 +761,7 @@ const ProductAccordion = React.memo(
                     productIndex={productIndex}
                   />
                 )}
-                style={{ maxWidth: "150px" }}
+                style={{ minWidth: "150px" }}
               />
               <Column
                 field="discount"
@@ -791,7 +785,6 @@ const ProductAccordion = React.memo(
                 )}
                 style={{ minWidth: "150px" }}
               />
-              {/* Mostrar columna de depósito solo para productos que no son medicamentos o vacunas */}
               {shouldShowDepositColumn && (
                 <Column
                   field="depositId"
@@ -806,7 +799,6 @@ const ProductAccordion = React.memo(
                   style={{ minWidth: "150px" }}
                 />
               )}
-              {/* Columna de Valor Total */}
               <Column
                 field="totalvalue"
                 header="Valor total"
@@ -816,15 +808,15 @@ const ProductAccordion = React.memo(
                     <InputNumber
                       value={total}
                       mode="currency"
-                      style={{ maxWidth: "300px" }}
                       className="w-100"
                       currency="DOP"
                       locale="es-DO"
                       readOnly
+                      inputClassName="form-control bg-light"
                     />
                   );
                 }}
-                style={{ minWidth: "300px" }}
+                style={{ minWidth: "150px" }}
               />
               <Column
                 field="actions"
@@ -838,7 +830,7 @@ const ProductAccordion = React.memo(
                     <i className="fa-solid fa-trash"></i>
                   </Button>
                 )}
-                style={{ width: "120px", textAlign: "center" }}
+                style={{ width: "100px", textAlign: "center" }}
               />
             </DataTable>
 
@@ -944,7 +936,7 @@ const ProductAccordion = React.memo(
                 <FixedAssetsForm
                   formId={`fixed-asset-form-${productIndex}`}
                   onSubmit={handleSaveFixedAssetLocal}
-                  onCancel={() => {}}
+                  onCancel={() => { }}
                   initialData={localFixedAssetData}
                   key={`fixed-asset-form-${productIndex}`}
                 />
@@ -959,7 +951,7 @@ const ProductAccordion = React.memo(
 
 export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   purchaseOrder,
-  onClose = () => {},
+  onClose = () => { },
 }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [productForExpiration, setProductForExpiration] = useState<{
@@ -1016,6 +1008,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
   const toast = useRef<Toast>(null);
   const productsArray = watch("products") || [];
+  const menuRef = useRef<Menu>(null);
 
   const [taxes, setTaxes] = useState<TaxItem[]>([]);
   const {
@@ -1119,6 +1112,35 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
   const [purchaseOrderId, setPurchaseOrderId] = useState<any>(0);
 
+  // Menu items para el botón de agregar
+  const menuItems = [
+    {
+      label: 'Insumo',
+      icon: 'pi pi-plus',
+      command: () => setShowInsumoModal(true)
+    },
+    {
+      label: 'Vacuna',
+      icon: 'pi pi-plus',
+      command: () => setShowVaccineModal(true)
+    },
+    {
+      label: 'Medicamento',
+      icon: 'pi pi-plus',
+      command: () => setShowMedicamentoModal(true)
+    },
+    {
+      label: 'Inventariable',
+      icon: 'pi pi-plus',
+      command: () => setShowInventariableModal(true)
+    },
+    {
+      label: 'Marca',
+      icon: 'pi pi-plus',
+      command: () => setShowBrandFormModal(true)
+    }
+  ];
+
   useEffect(() => {
     if (purchaseOrder || supplierId) {
       fetchAdvancePayments(purchaseOrder?.third_id || supplierId, "provider");
@@ -1204,8 +1226,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           }
           const discount = detail.discount
             ? (Number(detail.discount) /
-                (Number(detail.price) * Number(detail.quantity))) *
-              100
+              (Number(detail.price) * Number(detail.quantity))) *
+            100
             : 0;
 
           const subtotal = Number(detail.subtotal) - Number(detail.discount);
@@ -1263,15 +1285,14 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       product.typeProduct
     )
       ? (product.lotInfo || []).reduce(
-          (sum: number, lot: any) => sum + (lot.quantity || 0),
-          0
-        )
+        (sum: number, lot: any) => sum + (lot.quantity || 0),
+        0
+      )
       : Number(product.quantity) || 0;
 
     const price = Number(product.price) || 0;
     const discount = Number(product.discount) || 0;
 
-    // Manejar tanto objeto como número para el impuesto
     let taxRate = 0;
     if (product.tax) {
       if (typeof product.tax === "object" && product.tax !== null) {
@@ -1318,9 +1339,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         product.typeProduct
       )
         ? (product.lotInfo || []).reduce(
-            (sum: number, lot: any) => sum + (lot.quantity || 0),
-            0
-          )
+          (sum: number, lot: any) => sum + (lot.quantity || 0),
+          0
+        )
         : Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
       return total + actualQuantity * price;
@@ -1333,9 +1354,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         product.typeProduct
       )
         ? (product.lotInfo || []).reduce(
-            (sum: number, lot: any) => sum + (lot.quantity || 0),
-            0
-          )
+          (sum: number, lot: any) => sum + (lot.quantity || 0),
+          0
+        )
         : Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
 
@@ -1356,9 +1377,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
         product.typeProduct
       )
         ? (product.lotInfo || []).reduce(
-            (sum: number, lot: any) => sum + (lot.quantity || 0),
-            0
-          )
+          (sum: number, lot: any) => sum + (lot.quantity || 0),
+          0
+        )
         : Number(product.quantity) || 0;
       const price = Number(product.price) || 0;
 
@@ -1373,7 +1394,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
       const subtotalAfterDiscount = subtotal - discountAmount;
 
-      // Manejar tanto objeto como número para el impuesto
       let taxRate = 0;
       if (product.tax) {
         if (typeof product.tax === "object" && product.tax !== null) {
@@ -1543,14 +1563,11 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
   const handleSaveExpiration = (data: ExpirationLotFormInputs) => {
     if (productForExpiration) {
-      // Lógica para guardar la información de expiración
-      // Por ejemplo, actualizar el producto correspondiente
       const currentProducts = getValues("products") || [];
       const updatedProducts = currentProducts.map((product) => {
         if (product.id === productForExpiration.id) {
           return {
             ...product,
-            // Aquí actualizas con los datos del lote
             lotInfo: [...(product.lotInfo || []), data],
           };
         }
@@ -1656,9 +1673,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       prev.map((payment) =>
         payment.id === selectedAdvanceMethodId
           ? {
-              ...payment,
-              value: selectedAdvances.amount,
-            }
+            ...payment,
+            value: selectedAdvances.amount,
+          }
           : payment
       )
     );
@@ -1670,8 +1687,8 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
   const buildInvoiceData = async (formData: any) => {
     const purchaseIdValue = purchaseOrderId
       ? {
-          purchase_order_id: purchaseOrderId,
-        }
+        purchase_order_id: purchaseOrderId,
+      }
       : {};
 
     const billing = await fetchBillingByType("purchase_invoice");
@@ -1706,9 +1723,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
           product.typeProduct
         )
           ? (product.lotInfo || []).reduce(
-              (sum: number, lot: any) => sum + (lot.quantity || 0),
-              0
-            )
+            (sum: number, lot: any) => sum + (lot.quantity || 0),
+            0
+          )
           : Number(product.quantity) || 0;
 
         const subtotal = Number(actualQuantity) * Number(product.price);
@@ -1722,15 +1739,15 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
 
         const formAssets = product?.fixedAssetInfo
           ? {
-              description: product.fixedAssetInfo.description || "",
-              brand: product.fixedAssetInfo.brand || "",
-              model: product.fixedAssetInfo.model || "",
-              serial_number: product.fixedAssetInfo.serialNumber || "",
-              internal_code: product.fixedAssetInfo.internalCode || "",
-              asset_category_id:
-                Number(product.fixedAssetInfo.asset_category_id) || null,
-              accounting_account_id: product.accountingAccount?.id,
-            }
+            description: product.fixedAssetInfo.description || "",
+            brand: product.fixedAssetInfo.brand || "",
+            model: product.fixedAssetInfo.model || "",
+            serial_number: product.fixedAssetInfo.serialNumber || "",
+            internal_code: product.fixedAssetInfo.internalCode || "",
+            asset_category_id:
+              Number(product.fixedAssetInfo.asset_category_id) || null,
+            accounting_account_id: product.accountingAccount?.id,
+          }
           : {};
 
         const formLot = infoLot?.length ? infoLot : [];
@@ -1873,36 +1890,6 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
       });
   };
 
-  const saveAndSend = async (formData: any) => {
-    const invoiceData = await buildInvoiceData(formData);
-
-    invoiceService
-      .storePurcharseInvoice(invoiceData)
-      .then((response) => {
-        if (purchaseOrderId) {
-          onClose();
-        }
-        toast.current?.show({
-          severity: "success",
-          summary: "Éxito",
-          detail: "Factura de compra guardada correctamente",
-          life: 3000,
-        });
-        setTimeout(() => {
-          window.location.href = `FE_FCE`;
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error("Error al guardar la factura de compra:", error);
-        toast.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message,
-          life: 3000,
-        });
-      });
-  };
-
   const { openModal: openThirdPartyModal, ThirdPartyModal } =
     useThirdPartyModal({
       onSuccess: (data) => {
@@ -1914,42 +1901,22 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
     <div className="container-fluid p-3 p-md-4">
       <ThirdPartyModal />
 
-      {/* Main Header Section */}
-      <div className="row mb-3 mb-md-4">
-        <div className="col-12">
-          <div className="card shadow-sm">
-            <div className="card-body p-3 p-md-4">
-              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-                <div>
-                  <h1 className="h4 h3-md mb-0 text-primary">
-                    <i className="pi pi-file-invoice me-2"></i>
-                    Crear nueva factura de compra
-                  </h1>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="row">
         <div className="col-12">
           <form onSubmit={handleSubmit(save)}>
             {/* Basic Information Section */}
-            <div className="card mb-3 mb-md-4 shadow-sm">
+            <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-user-edit me-2 text-primary"></i>
                   Información básica
                 </h2>
               </div>
-              <div className="card-body p-3 p-md-4">
-                <div className="row g-2 g-md-3">
-                  <div className="col-12 col-md-6 col-lg-4">
+              <div className="card-body p-3">
+                <div className="row g-3">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Número de factura *
-                      </label>
+                      <label className="form-label">Número de factura *</label>
                       <Controller
                         name="invoiceNumber"
                         control={control}
@@ -1957,19 +1924,16 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <InputText
                             {...field}
                             placeholder="Número de factura"
-                            className="w-100"
-                            size="small"
+                            className="w-100 form-control"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Tipo de documento *
-                      </label>
+                      <label className="form-label">Tipo de documento *</label>
                       <Controller
                         name="documentType"
                         control={control}
@@ -1987,7 +1951,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               },
                             ]}
                             placeholder="Seleccione tipo"
-                            className="w-100"
+                            className="w-100 dropdown-billing"
                             appendTo={"self"}
                             disabled={disabledInputs}
                             showClear
@@ -1997,9 +1961,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
+                      <label className="form-label">
                         # Comprobante fiscal *
                       </label>
                       <Controller
@@ -2009,18 +1973,17 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           <InputText
                             {...field}
                             placeholder="Número de comprobante fiscal"
-                            className="w-100"
+                            className="w-100 form-control"
                             disabled={disabledInputs}
-                            size="small"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
+                      <label className="form-label">
                         Fecha de elaboración *
                       </label>
                       <Controller
@@ -2035,17 +1998,16 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             dateFormat="dd/mm/yy"
                             appendTo={"self"}
                             disabled={disabledInputs}
+                            inputClassName="form-control"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Fecha vencimiento *
-                      </label>
+                      <label className="form-label">Fecha vencimiento *</label>
                       <Controller
                         name="expirationDate"
                         control={control}
@@ -2058,22 +2020,21 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             dateFormat="dd/mm/yy"
                             appendTo={"self"}
                             disabled={disabledInputs}
+                            inputClassName="form-control"
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Proveedor *
-                      </label>
+                      <label className="form-label">Proveedor *</label>
                       <Controller
                         name="supplier"
                         control={control}
                         render={({ field }) => (
-                          <div className="d-flex gap-1">
+                          <div className="d-flex gap-2">
                             <Dropdown
                               {...field}
                               filter
@@ -2081,16 +2042,16 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                               optionLabel="name"
                               optionValue="id"
                               placeholder="Seleccione proveedor"
-                              className="flex-grow-1"
+                              className="flex-grow-1 dropdown-billing"
                               appendTo={"self"}
                               disabled={disabledInputs}
+                              showClear
                             />
                             <Button
                               type="button"
                               onClick={openThirdPartyModal}
                               icon={<i className="fa-solid fa-plus"></i>}
                               className="p-button-primary"
-                              size="small"
                             />
                           </div>
                         )}
@@ -2098,11 +2059,9 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Centro de costo *
-                      </label>
+                      <label className="form-label">Centro de costo *</label>
                       <Controller
                         name="costCenter"
                         control={control}
@@ -2114,20 +2073,19 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             optionLabel="name"
                             optionValue="id"
                             placeholder="Seleccione centro"
-                            className="w-100"
+                            className="w-100 dropdown-billing"
                             appendTo={"self"}
                             disabled={disabledInputs}
+                            showClear
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-6 col-lg-4">
+                  <div className="col-12 col-md-4">
                     <div className="form-group">
-                      <label className="form-label small fw-bold">
-                        Comprador *
-                      </label>
+                      <label className="form-label">Comprador *</label>
                       <Controller
                         name="buyer"
                         control={control}
@@ -2139,9 +2097,10 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                             optionLabel="full_name"
                             optionValue="id"
                             placeholder="Seleccione comprador"
-                            className="w-100"
+                            className="w-100 dropdown-billing"
                             appendTo={"self"}
                             disabled={disabledInputs}
+                            showClear
                           />
                         )}
                       />
@@ -2152,77 +2111,77 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             </div>
 
             {/* Products Section */}
-            <div className="card mb-3 mb-md-4 shadow-sm">
-              <div className="card-header bg-light p-3">
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-                  <h2 className="h5 mb-0">
-                    <i className="pi pi-shopping-cart me-2 text-primary"></i>
-                    Productos/Servicios
-                  </h2>
-                  <SplitButton
-                    label="Añadir producto"
-                    icon="pi pi-plus"
-                    model={[
-                      {
-                        label: "Insumo",
-                        command: () => setShowInsumoModal(true),
-                      },
-                      {
-                        label: "Vacuna",
-                        command: () => setShowVaccineModal(true),
-                      },
-                      {
-                        label: "Medicamento",
-                        command: () => setShowMedicamentoModal(true),
-                      },
-                      {
-                        label: "Inventariable",
-                        command: () => setShowInventariableModal(true),
-                      },
-                      {
-                        label: "Marca",
-                        command: () => setShowBrandFormModal(true),
-                      },
-                    ]}
-                    severity="contrast"
-                    onClick={addProduct}
-                    disabled={loadingProductTypes || disabledInputs}
-                    size="small"
+            <div className="card mb-4 shadow-sm">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
+                <h2 className="h5 mb-0">
+                  <i className="pi pi-shopping-cart me-2 text-primary"></i>
+                  Productos/Servicios
+                </h2>
+                <div className="d-flex gap-2">
+                  <Menu
+                    model={menuItems}
+                    popup
+                    ref={menuRef}
+                    id="add_product_menu"
                   />
+                  <Button
+                    type="button"
+                    className="p-button-primary"
+                    onClick={(e) => menuRef.current?.toggle(e)}
+                    aria-controls="add_product_menu"
+                    aria-haspopup
+                    tooltip="Opciones de producto"
+                  ><i className="fa-solid fa-chevron-down"></i></Button>
+                  <Button
+                    label="Añadir Producto"
+                    className="p-button-primary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addProduct();
+                    }}
+                    disabled={loadingProductTypes || disabledInputs}
+                  >
+                    <i
+                      className="fa fa-shopping-cart me-2"
+                      style={{ marginLeft: "10px" }}
+                    ></i>
+                  </Button>
                 </div>
               </div>
-              <div className="card-body p-2 p-md-3">
+              <div className="card-body p-0">
                 {loadingProductTypes ? (
-                  <div className="text-center py-4">
+                  <div className="text-center py-5">
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Cargando...</span>
                     </div>
                     <p className="mt-2 text-muted">Cargando productos...</p>
                   </div>
                 ) : (
-                  <div className="product-accordion">
-                    {productsArray.map((product, index) => (
-                      <ProductAccordion
-                        key={`product-${product.id}`}
-                        control={control}
-                        productIndex={index}
-                        onRemove={() => removeProduct(index)}
-                        deposits={formattedDeposits}
-                        onSaveFixedAsset={handleSaveFixedAsset}
-                        onEditLot={handleEditLot}
-                        onRemoveLot={handleRemoveLot}
-                        onSaveEditedLot={handleSaveEditedLot}
-                        editingLot={editingLot}
-                        setValue={setValue}
-                      />
-                    ))}
+                  <div className="table-responsive">
+                    <div className="product-accordion p-3">
+                      {productsArray.map((product, index) => (
+                        <ProductAccordion
+                          key={`product-${product.id}`}
+                          control={control}
+                          productIndex={index}
+                          onRemove={() => removeProduct(index)}
+                          deposits={formattedDeposits}
+                          onSaveFixedAsset={handleSaveFixedAsset}
+                          onEditLot={handleEditLot}
+                          onRemoveLot={handleRemoveLot}
+                          onSaveEditedLot={handleSaveEditedLot}
+                          editingLot={editingLot}
+                          setValue={setValue}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Retentions Section */}
-            <div className="card mb-3 mb-md-4 shadow-sm">
+            {/* Resto del código se mantiene igual... */}
+            <div className="card mb-4 shadow-sm">
               <RetentionsSection
                 subtotal={calculateSubtotal()}
                 totalDiscount={calculateTotalDiscount()}
@@ -2232,7 +2191,7 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
               />
             </div>
 
-            <div className="card mb-3 mb-md-4 shadow-sm">
+            <div className="card mb-4 shadow-sm">
               <CustomTaxes
                 subtotal={calculateSubtotal()}
                 totalDiscount={calculateTotalDiscount()}
@@ -2244,174 +2203,165 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             </div>
 
             {/* Payment Methods Section */}
-            <div className="card mb-3 mb-md-4 shadow-sm">
-              <div className="card-header bg-light p-3">
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-                  <h2 className="h5 mb-0">
-                    <i className="pi pi-credit-card me-2 text-primary"></i>
-                    Método de pago (DOP)
-                  </h2>
-                  <Button
-                    icon="pi pi-plus"
-                    label="Agregar método"
-                    className="btn-primary"
-                    onClick={addPayment}
-                    size="small"
-                  />
-                </div>
+            <div className="card mb-4 shadow-sm">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center p-3">
+                <h2 className="h5 mb-0">
+                  <i className="pi pi-credit-card me-2 text-primary"></i>
+                  Métodos de Pago (DOP)
+                </h2>
+                <Button
+                  label="Agregar Método"
+                  className="p-button-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addPayment();
+                  }}
+                >
+                  <i
+                    className="far fa-credit-card me-2"
+                    style={{ marginLeft: "10px" }}
+                  ></i>
+                </Button>
               </div>
-              <div className="card-body p-2 p-md-3">
-                <div className="payment-methods-section">
-                  {paymentMethodsArray.map((payment) => (
+              <div className="card-body p-3">
+                {paymentMethodsArray.map((payment) => (
+                  <div
+                    key={payment.id}
+                    className="row g-3 mb-3 align-items-end"
+                  >
+                    <div className="col-12 col-md-4 mb-1">
+                      <div className="form-group mb-2 mb-md-0">
+                        <label className="form-label">Método *</label>
+                        <Dropdown
+                          required
+                          value={payment.method}
+                          options={filteredPaymentMethods}
+                          optionLabel="method"
+                          optionValue="id"
+                          placeholder="Seleccione método"
+                          className="w-100 dropdown-billing-retention"
+                          onChange={(e) => {
+                            handlePaymentChange(payment.id, "method", e.value);
+                          }}
+                          appendTo={"self"}
+                          filter
+                          showClear
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-12 col-md-4">
+                      <div className="form-group mb-2 mb-md-0">
+                        <label className="form-label">Descripción *</label>
+                        <InputText
+                          value={payment.authorizationNumber}
+                          placeholder="Descripción"
+                          className="w-100 form-control"
+                          onChange={(e) =>
+                            handlePaymentChange(
+                              payment.id,
+                              "authorizationNumber",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-12 col-md-3">
+                      <div className="form-group mb-2 mb-md-0">
+                        <label className="form-label">Valor</label>
+                        <InputNumber
+                          value={payment.value}
+                          placeholder="Ingrese valor"
+                          className="w-100"
+                          mode="currency"
+                          currency="DOP"
+                          locale="es-DO"
+                          min={0}
+                          onValueChange={(e) =>
+                            handlePaymentChange(
+                              payment.id,
+                              "value",
+                              e.value || null
+                            )
+                          }
+                          inputClassName="form-control"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-12 col-md-1 text-md-end text-center">
+                      <Button
+                        className="p-button-rounded p-button-danger p-button-text"
+                        onClick={() => removePayment(payment.id)}
+                        disabled={paymentMethodsArray.length <= 1}
+                        tooltip="Eliminar método"
+                        tooltipOptions={{ position: "top" }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <div className="row mt-3">
+                  <div className="col-12">
                     <div
-                      key={payment.id}
-                      className="payment-method-row mb-3 p-2 border rounded"
+                      className="alert alert-info p-3"
+                      style={{
+                        background: "rgb(194 194 194 / 85%)",
+                        border: "none",
+                        color: "black",
+                      }}
                     >
-                      <div className="row g-2 align-items-end">
-                        <div className="col-12 col-md-4">
-                          <label className="form-label small fw-bold">
-                            Método *
-                          </label>
-                          <Dropdown
-                            value={payment.method}
-                            options={filteredPaymentMethods}
-                            optionLabel="method"
-                            optionValue="id"
-                            placeholder="Seleccione método"
-                            className="w-100"
-                            onChange={(e) =>
-                              handlePaymentChange(payment.id, "method", e.value)
-                            }
-                            appendTo={"self"}
-                            size="small"
-                          />
-                        </div>
-
-                        <div className="col-12 col-md-4">
-                          <label className="form-label small fw-bold">
-                            Descripción *
-                          </label>
-                          <InputText
-                            value={payment.authorizationNumber}
-                            placeholder="Descripción"
-                            className="w-100"
-                            onChange={(e) =>
-                              handlePaymentChange(
-                                payment.id,
-                                "authorizationNumber",
-                                e.target.value
-                              )
-                            }
-                            size="small"
-                          />
-                        </div>
-
-                        <div className="col-12 col-md-3">
-                          <label className="form-label small fw-bold">
-                            Valor
-                          </label>
+                      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                        <div className="d-flex align-items-center flex-wrap">
+                          <strong className="me-2">Total factura:</strong>
                           <InputNumber
-                            value={payment.value}
-                            placeholder="Ingrese valor"
-                            className="w-100"
+                            value={calculateTotal() || 0}
+                            className="me-3"
                             mode="currency"
                             currency="DOP"
                             locale="es-DO"
-                            min={0}
-                            onValueChange={(e) =>
-                              handlePaymentChange(
-                                payment.id,
-                                "value",
-                                e.value || null
-                              )
-                            }
-                            size="small"
+                            minFractionDigits={2}
+                            maxFractionDigits={3}
+                            readOnly
+                            inputClassName="form-control bg-white"
+                            style={{ minWidth: "130px" }}
                           />
                         </div>
-
-                        <div className="col-12 col-md-1">
-                          <div className="d-flex justify-content-end">
-                            <Button
-                              className="btn-danger btn-sm"
-                              onClick={() => removePayment(payment.id)}
-                              disabled={paymentMethodsArray.length <= 1}
-                              tooltip="Eliminar método"
-                              tooltipOptions={{ position: "top" }}
-                            >
-                              <i className="fa-solid fa-trash"></i>
-                            </Button>
-                          </div>
+                        <div className="d-flex align-items-center flex-wrap">
+                          <strong className="me-2">Total pagos:</strong>
+                          <InputNumber
+                            value={calculateTotalPayments()}
+                            className="me-3"
+                            mode="currency"
+                            currency="DOP"
+                            locale="es-DO"
+                            minFractionDigits={2}
+                            maxFractionDigits={3}
+                            readOnly
+                            inputClassName="form-control bg-white"
+                            style={{ minWidth: "130px" }}
+                          />
                         </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="payment-summary mt-3">
-                    <div
-                      className={`payment-summary-card p-3 border rounded ${
-                        !paymentCoverage() ? "border-warning" : "border-success"
-                      }`}
-                    >
-                      <div className="row g-3 align-items-center">
-                        <div className="col-12 col-md-6">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <strong className="small">Total factura:</strong>
-                            <InputNumber
-                              value={calculateTotal() || 0}
-                              className="payment-summary-input border-0 bg-transparent text-end"
-                              mode="currency"
-                              currency="DOP"
-                              locale="es-DO"
-                              minFractionDigits={2}
-                              maxFractionDigits={3}
-                              readOnly
-                              size="small"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-12 col-md-6">
-                          <div className="d-flex justify-content-between align-items-center">
-                            <strong className="small">Total pagos:</strong>
-                            <InputNumber
-                              value={calculateTotalPayments()}
-                              className="payment-summary-input border-0 bg-transparent text-end"
-                              mode="currency"
-                              currency="DOP"
-                              locale="es-DO"
-                              minFractionDigits={2}
-                              maxFractionDigits={3}
-                              readOnly
-                              size="small"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-12">
-                          <div
-                            className={`text-center p-2 rounded ${
-                              !paymentCoverage()
-                                ? "bg-warning-light"
-                                : "bg-success-light"
-                            }`}
-                          >
-                            {!paymentCoverage() ? (
-                              <span className="text-warning-dark small fw-bold">
-                                <i className="pi pi-exclamation-triangle me-2"></i>
-                                Faltan{" "}
-                                {(
-                                  (calculateTotal() || 0) -
-                                  (calculateTotalPayments() || 0)
-                                ).toFixed(2)}{" "}
-                                DOP
-                              </span>
-                            ) : (
-                              <span className="text-success-dark small fw-bold">
-                                <i className="pi pi-check-circle me-2"></i>
-                                Pagos completos
-                              </span>
-                            )}
-                          </div>
+                        <div className="d-flex align-items-center">
+                          {!paymentCoverage() ? (
+                            <span className="text-danger">
+                              <i className="pi pi-exclamation-triangle me-1"></i>
+                              Faltan{" "}
+                              {(
+                                (calculateTotal() || 0) -
+                                calculateTotalPayments()
+                              ).toFixed(2)}{" "}
+                              DOP
+                            </span>
+                          ) : (
+                            <span className="text-success">
+                              <i className="pi pi-check-circle me-1"></i>
+                              Pagos completos
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -2421,61 +2371,49 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             </div>
 
             {/* Summary Section */}
-            <div className="card mb-3 mb-md-4 shadow-sm">
+            <div className="card mb-4 shadow-sm">
               <div className="card-header bg-light p-3">
                 <h2 className="h5 mb-0">
                   <i className="pi pi-calculator me-2 text-primary"></i>
-                  Resumen de compra (DOP)
+                  Totales (DOP)
                 </h2>
               </div>
               <div className="card-body p-3">
-                <div className="row g-2 g-md-3">
+                <div className="row g-3">
                   {[
                     {
-                      label: "SUBTOTAL",
+                      label: "Subtotal",
                       value: calculateSubtotal() || 0,
-                      highlight: true,
                     },
                     {
                       label: "Descuento",
                       value: calculateTotalDiscount() || 0,
-                      highlight: true,
                     },
                     {
                       label: "Impuestos productos",
                       value: calculateTotalTax() || 0,
-                      highlight: true,
                     },
                     {
                       label: "Impuestos adicionales",
                       value: taxes.reduce((sum, t) => sum + t.value, 0),
-                      highlight: false,
                     },
                     {
                       label: "Impuestos totales",
                       value: calculateAllTaxes() || 0,
-                      highlight: true,
                     },
                     {
                       label: "Retenciones",
                       value: retentions.reduce((sum, r) => sum + r.value, 0),
-                      highlight: true,
                     },
                     {
-                      label: "TOTAL",
+                      label: "Total",
                       value: calculateTotal() || 0,
                       highlight: true,
                     },
                   ].map((item, index) => (
-                    <div key={index} className="col-12 col-sm-6 col-lg-3">
-                      <div
-                        className={`form-group p-2 rounded ${
-                          item.highlight ? "bg-light" : ""
-                        }`}
-                      >
-                        <label className="form-label small fw-bold">
-                          {item.label}
-                        </label>
+                    <div key={index} className="col-6 col-md-3 col-lg-2">
+                      <div className="form-group">
+                        <label className="form-label">{item.label}</label>
                         <InputNumber
                           value={item.value}
                           className="w-100"
@@ -2483,9 +2421,10 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
                           currency="DOP"
                           locale="es-DO"
                           readOnly
-                          size="small"
                           inputClassName={
-                            item.highlight ? "fw-bold text-primary" : ""
+                            item.highlight
+                              ? "form-control bg-light fw-bold"
+                              : "form-control bg-light"
                           }
                         />
                       </div>
@@ -2496,39 +2435,14 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="d-flex flex-column flex-md-row justify-content-end gap-2 mb-4">
-              <div className="d-flex gap-2 d-md-none">
-                <Button
-                  label="Guardar"
-                  icon="pi pi-check"
-                  className="btn-info flex-fill"
-                  type="submit"
-                  size="small"
-                />
-                <Button
-                  label="Enviar"
-                  icon="pi pi-send"
-                  className="btn-info flex-fill"
-                  onClick={handleSubmit(save)}
-                  disabled={!paymentCoverage()}
-                  size="small"
-                />
-              </div>
-              <div className="d-none d-md-flex gap-3">
-                <Button
-                  label="Guardar"
-                  icon="pi pi-check"
-                  className="btn-info"
-                  type="submit"
-                />
-                <Button
-                  label="Guardar y enviar"
-                  icon="pi pi-send"
-                  className="btn-info"
-                  onClick={handleSubmit(save)}
-                  disabled={!paymentCoverage()}
-                />
-              </div>
+            <div className="d-flex justify-content-end gap-3 mb-4">
+              <Button
+                label="Guardar Factura Compra"
+                className="p-button-primary"
+                type="submit"
+              >
+                <i className="fa fa-save" style={{ marginLeft: "10px" }}></i>
+              </Button>
             </div>
           </form>
 
@@ -2574,54 +2488,168 @@ export const PurchaseBilling: React.FC<PurchaseBillingProps> = ({
             onHide={handleHideBrandFormModal}
             initialData={{}}
           />
+
+          <Dialog
+            style={{ width: "90vw", maxWidth: "800px" }}
+            header="Anticipos"
+            visible={showAdvancesForm}
+            onHide={() => setShowAdvancesForm(false)}
+          >
+            <FormAdvanceCopy
+              advances={advances}
+              invoiceTotal={(
+                calculateTotal() - calculateTotalPayments()
+              ).toFixed(2)}
+              onSubmit={(data) => {
+                handleSelectAdvances(data);
+              }}
+            ></FormAdvanceCopy>
+          </Dialog>
         </div>
       </div>
       <Toast ref={toast} />
 
       <style>{`
-        .discount-type-selector .p-dropdown-label {
-          padding: 12px 2px;
-          text-align: center;
-          font-weight: bold;
+        .form-control {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
+          border: 1px solid #ced4da;
+          border-radius: 0.375rem;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
         
-        .discount-type-selector .p-dropdown-trigger {
-          width: 1.5rem;
+        .form-control:focus {
+          border-color: #86b7fe;
+          outline: 0;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
         
-        .discount-type-selector {
-          min-width: 60px !important;
+        .p-inputnumber-input {
+          height: 38px;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.9rem;
         }
         
-        .d-flex.align-items-center.gap-1 {
-          align-items: stretch !important;
+        .p-dropdown {
+          height: 38px;
+          display: flex;
+          align-items: center;
         }
         
-        .d-flex.align-items-center.gap-1 .p-inputnumber {
-          flex: 1;
+        .p-calendar {
+          height: 38px;
         }
         
-        /* Estilos responsive adicionales */
-        .container-fluid {
-          max-width: 100%;
-          overflow-x: hidden;
+        .table-responsive {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
         }
         
-        .card {
-          border: 1px solid #e0e0e0;
+        .p-datatable .p-datatable-thead > tr > th,
+        .p-datatable .p-datatable-tbody > tr > td {
+          padding: 0.5rem;
+          vertical-align: middle;
         }
         
-        .card-header {
-          border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .form-label {
+        .p-datatable .p-column-title {
+          font-weight: 600;
           font-size: 0.875rem;
-          margin-bottom: 0.25rem;
         }
         
-        .p-inputtext, .p-dropdown, .p-calendar, .p-inputnumber {
+        .p-datatable-tbody > tr > td {
+          border: 1px solid #e9ecef;
+        }
+        
+        /* Asegurar que los inputs dentro de la tabla se vean bien */
+        .p-datatable .p-inputtext,
+        .p-datatable .p-dropdown,
+        .p-datatable .p-inputnumber {
+          width: 100%;
           font-size: 0.875rem;
+        }
+        
+        .price-input {
+          width: 200px; !important;
+          min-width: 120px;
+          width: auto !important;
+        }
+        
+        .price-input .p-inputnumber-input {
+          width: auto; !important;
+          min-width: 120px;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+          .container-fluid {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+          
+          .card-body {
+            padding: 1rem;
+          }
+          
+          .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+          }
+          
+          .p-datatable {
+            min-width: 800px;
+          }
+          
+          .p-datatable .p-datatable-thead > tr > th,
+          .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.375rem;
+            font-size: 0.8rem;
+          }
+          
+          .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+          }
+          
+          .price-input {
+            width: 300px; !important;
+            min-width: 100px;
+          }
+        }
+        
+        .p-datatable .p-inputnumber, 
+        .p-datatable .p-dropdown, 
+        .p-datatable .p-calendar {
+          width: 100% !important;
+          min-width: 250px;
+        }
+        
+        @media (max-width: 576px) {
+          .alert-info .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          
+          .alert-info .d-flex > div {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+
+        .dropdown-billing .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-product .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-products .p-dropdown {
+          width: 100%;
+        }
+
+        .dropdown-billing-retention .p-dropdown {
+          width: 100%;
         }
       `}</style>
     </div>

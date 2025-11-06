@@ -76,12 +76,14 @@ export const AccountingAccountsTree = /*#__PURE__*/forwardRef(({
     className: "d-flex justify-content-between align-items-center w-100 gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     label: "Refrescar",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fas fa-sync-alt me-2"
-    }),
     onClick: refresh,
-    className: "btn btn-outline-primary"
-  }), /*#__PURE__*/React.createElement(InputText, {
+    className: "p-button-primary"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fas fa-sync-alt",
+    style: {
+      marginLeft: "10px"
+    }
+  })), /*#__PURE__*/React.createElement(InputText, {
     value: searchTerm,
     onChange: e => setSearchTerm(e.target.value),
     placeholder: "Buscar"

@@ -121,17 +121,17 @@ export const AccountingAccountFormModal: React.FC<AccountingAccountFormModalProp
         auxiliary:
           selectedAccount?.auxiliary ||
           (subAccountCode &&
-          selectedAccount?.account &&
-          selectedAccount?.sub_account
+            selectedAccount?.account &&
+            selectedAccount?.sub_account
             ? subAccountCode
             : null) ||
           null,
         sub_auxiliary:
           selectedAccount?.sub_auxiliary ||
           (subAccountCode &&
-          selectedAccount?.account &&
-          selectedAccount?.sub_account &&
-          selectedAccount?.auxiliary
+            selectedAccount?.account &&
+            selectedAccount?.sub_account &&
+            selectedAccount?.auxiliary
             ? subAccountCode
             : null) ||
           null,
@@ -258,13 +258,6 @@ export const AccountingAccountFormModal: React.FC<AccountingAccountFormModalProp
                 <Controller
                   name="category"
                   control={control}
-                  rules={{
-                    required: "Este campo es requerido",
-                    minLength: {
-                      value: 3,
-                      message: "El nombre debe tener al menos 3 caracteres",
-                    },
-                  }}
                   render={({ field }) => (
                     <Dropdown
                       className="w-100"
@@ -275,7 +268,6 @@ export const AccountingAccountFormModal: React.FC<AccountingAccountFormModalProp
                     />
                   )}
                 />
-                {getFormErrorMessage("category")}
               </div>
 
               <div className="field-checkbox col-12 mb-3">
@@ -315,22 +307,20 @@ export const AccountingAccountFormModal: React.FC<AccountingAccountFormModalProp
 
             <Divider />
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className="d-flex justify-content-center gap-2">
               <Button
                 type="button"
                 label="Cancelar"
-                icon={<i className="fa fa-times me-2"></i>}
-                className="btn btn-danger"
+                className="p-button-primary"
                 onClick={() => {
                   onHide();
                 }}
-              />
+              ><i className="fa fa-times me-2" style={{ marginLeft: "10px" }}></i></Button>
               <Button
                 label="Guardar"
                 type="submit"
-                icon={<i className="fa fa-save me-2"></i>}
-                className="btn btn-primary"
-              />
+                className="p-button-primary"
+              ><i className="fa fa-save me-2" style={{ marginLeft: "10px" }}></i></Button>
             </div>
           </form>
         </Dialog>

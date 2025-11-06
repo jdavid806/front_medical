@@ -191,7 +191,7 @@ $_SESSION["ID"] = 1;
         }
 
         .btn-primary {
-            background-color: var(--primary-color) !important;
+            background-color: var(--primary-colorpnp) !important;
         }
 
         .btn-info {

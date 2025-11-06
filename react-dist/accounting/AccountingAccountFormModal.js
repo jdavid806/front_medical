@@ -191,13 +191,6 @@ export const AccountingAccountFormModal = /*#__PURE__*/forwardRef((props, ref) =
   }, "Categor\xEDa *"), /*#__PURE__*/React.createElement(Controller, {
     name: "category",
     control: control,
-    rules: {
-      required: "Este campo es requerido",
-      minLength: {
-        value: 3,
-        message: "El nombre debe tener al menos 3 caracteres"
-      }
-    },
     render: ({
       field
     }) => /*#__PURE__*/React.createElement(Dropdown, {
@@ -207,7 +200,7 @@ export const AccountingAccountFormModal = /*#__PURE__*/forwardRef((props, ref) =
       options: categoryOptions,
       placeholder: "Seleccionar..."
     })
-  }), getFormErrorMessage("category")), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", {
     className: "field-checkbox col-12 mb-3"
   }, /*#__PURE__*/React.createElement(Controller, {
     name: "fiscal_difference",
@@ -238,23 +231,27 @@ export const AccountingAccountFormModal = /*#__PURE__*/forwardRef((props, ref) =
       className: "form-check-label"
     }, "Cuenta activa"))
   }))), /*#__PURE__*/React.createElement(Divider, null), /*#__PURE__*/React.createElement("div", {
-    className: "d-flex justify-content-end gap-2"
+    className: "d-flex justify-content-center gap-2"
   }, /*#__PURE__*/React.createElement(Button, {
     type: "button",
     label: "Cancelar",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-times me-2"
-    }),
-    className: "btn btn-danger",
+    className: "p-button-primary",
     onClick: () => {
       onHide();
     }
-  }), /*#__PURE__*/React.createElement(Button, {
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-times me-2",
+    style: {
+      marginLeft: "10px"
+    }
+  })), /*#__PURE__*/React.createElement(Button, {
     label: "Guardar",
     type: "submit",
-    icon: /*#__PURE__*/React.createElement("i", {
-      className: "fa fa-save me-2"
-    }),
-    className: "btn btn-primary"
-  })))));
+    className: "p-button-primary"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa fa-save me-2",
+    style: {
+      marginLeft: "10px"
+    }
+  }))))));
 });

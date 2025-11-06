@@ -1,164 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
-import { useGeneralJournal } from "./hooks/useGeneralJournal.js"; // Definición de tipos TypeScript
+import { useBalanceAccountingAccount } from "./hooks/useBalanceAccountingAccount.js";
+import { formatDateRange, formatPrice } from "../../../services/utilidades.js";
+import { useBalanceAccountingAccountFormat } from "../../documents-generation/hooks/useBalanceAccountingAccountFormat.js";
+import { AccountingAccountsDropdown } from "../../fields/dropdowns/AccountingAccountsDropdown.js";
 export const BalanceAccountingAccount = () => {
-  const [dates, setDates] = useState(null);
   const [expandedRows, setExpandedRows] = useState(null);
-  const [groupedData, setGroupedData] = useState([]);
   const {
     dateRange,
     setDateRange,
-    generalJournal,
-    fetchGeneralJournal,
+    accountId,
+    setAccountId,
+    balanceAccountingAccount,
     loading
-  } = useGeneralJournal();
-  const formatCurrency = value => {
-    return value ? `$${parseFloat(value).toFixed(2)}` : '';
-  };
+  } = useBalanceAccountingAccount();
+  const {
+    generarFormatoBalanceAccountingAccount
+  } = useBalanceAccountingAccountFormat();
 
-  // Agrupa los datos por cuenta
-  const groupByAccount = data => {
-    const grouped = {};
-    data.forEach(item => {
-      const cuenta = item.cuenta || 'Sin cuenta';
-      if (!grouped[cuenta]) {
-        grouped[cuenta] = [];
-      }
-      grouped[cuenta].push(item);
-    });
-
-    // Convertir el objeto agrupado en un array para la DataTable
-    return Object.keys(grouped).map(cuenta => ({
-      cuenta,
-      totalDebe: grouped[cuenta].reduce((sum, item) => sum + parseFloat(item.debe || 0), 0),
-      totalHaber: grouped[cuenta].reduce((sum, item) => sum + parseFloat(item.haber || 0), 0),
-      items: grouped[cuenta]
-    }));
-  };
-  useEffect(() => {
-    if (generalJournal) {
-      setGroupedData(groupByAccount(generalJournal));
-    }
-  }, [generalJournal]);
-
-  // Columnas para la tabla principal (agrupada por cuenta)
+  // Columnas para la tabla principal
   const mainColumns = [{
-    field: 'cuenta',
-    header: 'Cuenta',
-    body: rowData => rowData.cuenta || 'Sin cuenta'
+    field: 'cuenta_codigo',
+    header: 'Código',
+    body: rowData => rowData.cuenta_codigo || 'Sin código'
   }, {
-    field: 'totalDebe',
-    header: 'Total Debe',
-    body: rowData => formatCurrency(rowData.totalDebe.toString()),
+    field: 'cuenta_nombre',
+    header: 'Nombre de Cuenta',
+    body: rowData => rowData.cuenta_nombre || 'Sin nombre'
+  }, {
+    field: 'saldo_inicial',
+    header: 'Saldo Inicial',
+    body: rowData => formatPrice(rowData.saldo_inicial),
     style: {
       textAlign: 'right'
     }
   }, {
-    field: 'totalHaber',
-    header: 'Total Haber',
-    body: rowData => formatCurrency(rowData.totalHaber.toString()),
+    field: 'debe_total',
+    header: 'Total Débito',
+    body: rowData => formatPrice(rowData.debe_total),
     style: {
       textAlign: 'right'
     }
   }, {
-    field: 'saldo',
-    header: 'Saldo',
-    body: rowData => {
-      const saldo = rowData.totalDebe - rowData.totalHaber;
-      return formatCurrency(saldo.toString());
-    },
-    style: {
-      textAlign: 'right',
-      fontWeight: 'bold'
-    }
-  }];
-
-  // Columnas para la tabla expandida (detalle por asiento)
-  const detailColumns = [{
-    field: 'fecha',
-    header: 'Fecha',
-    body: rowData => new Date(rowData.fecha).toLocaleDateString()
-  }, {
-    field: 'numero_asiento',
-    header: 'N° Asiento'
-  }, {
-    field: 'tercero',
-    header: 'Tercero',
-    body: rowData => rowData.tercero || 'Sin tercero'
-  }, {
-    field: 'debe',
-    header: 'Debe',
-    body: rowData => formatCurrency(rowData.debe),
+    field: 'haber_total',
+    header: 'Total Crédito',
+    body: rowData => formatPrice(rowData.haber_total),
     style: {
       textAlign: 'right'
     }
   }, {
-    field: 'haber',
-    header: 'Haber',
-    body: rowData => formatCurrency(rowData.haber),
-    style: {
-      textAlign: 'right'
-    }
-  }, {
-    field: 'descripcion',
-    header: 'Descripción'
-  }];
-
-  // Plantilla para la expansión de filas
-  const rowExpansionTemplate = rowData => {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "p-3"
-    }, /*#__PURE__*/React.createElement(DataTable, {
-      value: rowData.items,
-      className: "p-datatable-gridlines",
-      tableStyle: {
-        minWidth: '100%'
+    field: 'saldo_final',
+    header: 'Saldo Final',
+    body: rowData => /*#__PURE__*/React.createElement("span", {
+      style: {
+        textAlign: 'right',
+        fontWeight: 'bold',
+        color: rowData.saldo_final < 0 ? '#e74c3c' : rowData.saldo_final > 0 ? '#27ae60' : '#000000'
       }
-    }, detailColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
-      key: i,
-      field: col.field,
-      header: col.header,
-      body: col.body,
-      style: col.style,
-      sortable: true
-    }))));
+    }, formatPrice(rowData.saldo_final))
+  }];
+  const exportToPdfComparativeReport = () => {
+    generarFormatoBalanceAccountingAccount(balanceAccountingAccount, formatDateRange(dateRange), 'Impresion');
   };
-  const expandAll = () => {
-    const expanded = {};
-    groupedData.forEach(item => {
-      expanded[item.cuenta] = true;
-    });
-    setExpandedRows(expanded);
-  };
-  const collapseAll = () => {
-    setExpandedRows(null);
-  };
-  const header = /*#__PURE__*/React.createElement("div", {
-    className: "flex flex-wrap justify-content-end gap-2"
-  }, /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-plus",
-    label: "Expandir Todo",
-    onClick: expandAll,
-    text: true
-  }), /*#__PURE__*/React.createElement(Button, {
-    icon: "pi pi-minus",
-    label: "Colapsar Todo",
-    onClick: collapseAll,
-    text: true
-  }));
   return /*#__PURE__*/React.createElement("div", {
     className: "container-fluid mt-4"
   }, /*#__PURE__*/React.createElement(Card, {
-    title: "Balance de Prueba por Cuenta",
     className: "mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row mb-4"
+    className: "d-flex justify-content-between align-items-center mb-3"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "col-md-4"
+    className: "d-flex gap-2 align-items-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "d-flex flex-column"
   }, /*#__PURE__*/React.createElement("label", {
     htmlFor: "dateRange",
     className: "form-label"
@@ -172,12 +89,21 @@ export const BalanceAccountingAccount = () => {
     dateFormat: "dd/mm/yy",
     placeholder: "Seleccione un rango",
     appendTo: document.body
+  })), /*#__PURE__*/React.createElement(AccountingAccountsDropdown, {
+    value: accountId,
+    handleChange: e => setAccountId(e.value)
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Button, {
+    icon: /*#__PURE__*/React.createElement("i", {
+      className: "fas fa-file-pdf"
+    }),
+    label: "Exportar a PDF",
+    className: "mr-2",
+    onClick: exportToPdfComparativeReport
   }))), /*#__PURE__*/React.createElement(DataTable, {
-    value: groupedData,
+    value: balanceAccountingAccount,
     expandedRows: expandedRows,
     onRowToggle: e => setExpandedRows(e.data),
-    rowExpansionTemplate: rowExpansionTemplate,
-    dataKey: "cuenta",
+    dataKey: "cuenta_id",
     paginator: true,
     rows: 10,
     rowsPerPageOptions: [5, 10, 25, 50],
@@ -187,14 +113,8 @@ export const BalanceAccountingAccount = () => {
     emptyMessage: "No se encontraron movimientos",
     tableStyle: {
       minWidth: "100%"
-    },
-    header: header
-  }, /*#__PURE__*/React.createElement(Column, {
-    expander: true,
-    style: {
-      width: '3rem'
     }
-  }), mainColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
+  }, mainColumns.map((col, i) => /*#__PURE__*/React.createElement(Column, {
     key: i,
     field: col.field,
     header: col.header,

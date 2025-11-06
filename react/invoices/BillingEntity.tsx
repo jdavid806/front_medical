@@ -11,6 +11,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
 import { CustomPRTable, CustomPRTableColumnProps } from "../components/CustomPRTable";
 import { NewReceiptBoxModal } from "../accounting/paymentReceipt/modals/NewReceiptBoxModal";
+import { BillingByEntity } from "../billing/by-entity/modal";
 import {
   exportToExcel,
   exportToPDF,
@@ -51,6 +52,9 @@ export const BillingEntity: React.FC = () => {
   // Estado para el modal de recibo de caja
   const [showReciboModal, setShowReciboModal] = useState<boolean>(false);
   const [facturaParaRecibo, setFacturaParaRecibo] = useState<InvoiceEntityDto | null>(null);
+
+  // Estado para el modal de nueva facturación entidad
+  const [showNuevaFacturacionModal, setShowNuevaFacturacionModal] = useState<boolean>(false);
 
   // Pagination state
   const [first, setFirst] = useState(0);
@@ -386,6 +390,22 @@ export const BillingEntity: React.FC = () => {
     setFacturaParaRecibo(null);
   };
 
+  // Funciones para el modal de nueva facturación
+  const abrirModalNuevaFacturacion = () => {
+    setShowNuevaFacturacionModal(true);
+  };
+
+  const cerrarModalNuevaFacturacion = () => {
+    setShowNuevaFacturacionModal(false);
+  };
+
+  const handleNuevaFacturacionSuccess = () => {
+    showToast("success", "Éxito", "Facturación creada exitosamente");
+    cerrarModalNuevaFacturacion();
+    // Recargar los datos de la tabla
+    loadBillingReportData(1, rows);
+  };
+
   const handleGenerarRecibo = (formData: any) => {
     showToast(
       "success",
@@ -604,7 +624,7 @@ export const BillingEntity: React.FC = () => {
             <div className="text-end pt-3 mb-2">
               <Button
                 className="p-button-primary"
-                onClick={() => (window.location.href = "Facturacion_Entidad")}
+                onClick={abrirModalNuevaFacturacion}
               >
                 <i className="fas fa-file-edit me-2"></i>
                 Nueva Facturación Entidad
@@ -700,6 +720,13 @@ export const BillingEntity: React.FC = () => {
         </div>
       )}
 
+      <BillingByEntity
+        visible={showNuevaFacturacionModal}
+        onHide={cerrarModalNuevaFacturacion}
+        onSuccess={handleNuevaFacturacionSuccess}
+      />
+
+      {/* Modal de Recibo de Caja (existente) */}
       <NewReceiptBoxModal
         visible={showReciboModal}
         onHide={cerrarModalRecibo}

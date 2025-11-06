@@ -6,6 +6,8 @@
 .p-datepicker-trigger{
     border-radius: 0 !important;
 }
+
+
 .w-100.p-calendar .p-inputtext {
     border: none !important;
     background: transparent;
@@ -56,6 +58,29 @@
     color:white !important;
     font-weight: bold !important;
 }
+
+/* Agregar contexto de z-index elementos superpuestos datapicker*/
+
+.p-datepicker {
+  z-index: 10000 !important; /* Valor muy alto para asegurar que esté por encima */
+  position: absolute !important;
+}
+
+/* Si hay algún elemento padre que pueda estar interfiriendo */
+.p-datepicker.p-component.p-connected-overlay-enter-done {
+  z-index: 10000 !important;
+}
+
+/* Para asegurar que ningún otro elemento lo tape */
+.p-datepicker * {
+  position: relative;
+  z-index: inherit;
+}
+
+.p-datepicker[style*="z-index"] {
+  z-index: 10000 !important;
+}
+/* Agregar contexto de z-index elementos Fin superpuestos datapicker*/
 
 /* Estados adicionales para consistencia */
 .w-100.p-calendar:focus-within {

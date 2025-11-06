@@ -682,9 +682,13 @@ export async function decryptAES(encryptedData, password) {
 }
 
 export const formatPrice = (price, minimumFractionDigits = 2) => {
-    return new Intl.NumberFormat('es-CO', {
+    return new Intl.NumberFormat('es-DO', {
         style: 'currency',
-        currency: 'COP',
+        currency: 'DOP',
         minimumFractionDigits: minimumFractionDigits
     }).format(price);
 };
+
+export const formatDateRange = (dateRange) => {
+    return dateRange?.map((date) => date?.toISOString().split('T')[0]).filter((date) => date !== null).join(' - ') || '';
+}

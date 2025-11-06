@@ -94,10 +94,9 @@ export const AccountingAccountsTree: React.FC<AccountingAccountsTreeProps> = for
                 <div className="d-flex justify-content-between align-items-center w-100 gap-2">
                     <Button
                         label="Refrescar"
-                        icon={<i className="fas fa-sync-alt me-2"></i>}
                         onClick={refresh}
-                        className="btn btn-outline-primary"
-                    />
+                        className="p-button-primary"
+                    ><i className="fas fa-sync-alt" style={{ marginLeft: "10px" }}></i></Button>
                     <InputText
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
